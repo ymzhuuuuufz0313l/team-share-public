@@ -196,11 +196,11 @@
       .toc-wrapper {
         position: fixed;
         top: 0;
-        right: 0;
+        left: 0;
         bottom: 0;
         width: 280px;
         z-index: 99;
-        transform: translateX(100%);
+        transform: translateX(-100%);
         transition: transform 0.25s ease;
         padding: 16px;
         background: rgba(0,0,0,0.2);
@@ -279,17 +279,17 @@
 </head>
 <body>
   <div class="layout">
-    <main class="main">
-      <article class="article" id="article"></article>
-      <div class="footer">Shared from team knowledge base</div>
-    </main>
-
     <aside class="toc-wrapper" id="toc-wrapper">
       <nav class="toc" id="toc">
         <div class="toc-title">目录</div>
         <ul id="toc-list"></ul>
       </nav>
     </aside>
+
+    <main class="main">
+      <article class="article" id="article"></article>
+      <div class="footer">Shared from team knowledge base</div>
+    </main>
   </div>
 
   <button class="toc-toggle" id="toc-toggle" aria-label="打开目录">☰</button>
