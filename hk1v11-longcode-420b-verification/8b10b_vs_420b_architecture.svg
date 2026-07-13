@@ -1,0 +1,181 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 1100" width="1400" height="1100">
+  <style>
+    text { font-family: 'Helvetica Neue', Helvetica, Arial, 'PingFang SC', 'Microsoft YaHei', 'Microsoft JhengHei', 'SimHei', sans-serif; }
+  </style>
+  <defs>
+    <marker id="arrow-blue" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#2563eb"/>
+    </marker>
+    <marker id="arrow-green" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#16a34a"/>
+    </marker>
+    <marker id="arrow-purple" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#9333ea"/>
+    </marker>
+  </defs>
+  <rect width="1400" height="1100" fill="#ffffff"/>
+  <text x="700" y="38" font-size="24" font-weight="600" fill="#111827" text-anchor="middle">8B/10B vs 420B Long Encoding Verification Architecture</text>
+  <rect x="40" y="60" width="640" height="520" rx="12" fill="#f8fafc" stroke="#e2e8f0" stroke-width="2"/>
+  <text x="360" y="92" font-size="20" font-weight="600" fill="#111827" text-anchor="middle">8B/10B Mode</text>
+  <text x="360" y="114" font-size="13" fill="#6b7280" text-anchor="middle">(no CHPI_MODE_420B macro)</text>
+  <rect x="70" y="130" width="580" height="60" rx="8" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <text x="90" y="150" font-size="12" font-weight="600" fill="#475569">Test Layer</text>
+  <rect x="90" y="160" width="130" height="38" rx="6" fill="#fff7ed" stroke="#fed7aa" stroke-width="1.5"/>
+  <text x="155" y="183" font-size="11" font-weight="600" fill="#9a3412" text-anchor="middle">t_8b1lane</text>
+  <rect x="240" y="160" width="110" height="38" rx="6" fill="#fff7ed" stroke="#fed7aa" stroke-width="1.5"/>
+  <text x="295" y="183" font-size="11" font-weight="600" fill="#9a3412" text-anchor="middle">base_vseq</text>
+  <rect x="370" y="160" width="110" height="38" rx="6" fill="#fff7ed" stroke="#fed7aa" stroke-width="1.5"/>
+  <text x="425" y="183" font-size="11" font-weight="600" fill="#9a3412" text-anchor="middle">user_def.sv</text>
+  <rect x="500" y="160" width="130" height="38" rx="6" fill="#fff7ed" stroke="#fed7aa" stroke-width="1.5"/>
+  <text x="565" y="183" font-size="11" font-weight="600" fill="#9a3412" text-anchor="middle">env_cfg</text>
+  <rect x="70" y="205" width="580" height="115" rx="8" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <text x="90" y="225" font-size="12" font-weight="600" fill="#475569">isptx_sequence.sv</text>
+  <rect x="100" y="240" width="120" height="38" rx="6" fill="#f0fdfa" stroke="#99f6e4" stroke-width="1.5"/>
+  <text x="160" y="263" font-size="10" font-weight="600" fill="#0f766e" text-anchor="middle">send_LSP_seq()</text>
+  <rect x="240" y="240" width="120" height="38" rx="6" fill="#f0fdfa" stroke="#99f6e4" stroke-width="1.5"/>
+  <text x="300" y="263" font-size="10" font-weight="600" fill="#0f766e" text-anchor="middle">send_CTRLF_seq()</text>
+  <rect x="380" y="240" width="120" height="38" rx="6" fill="#f0fdfa" stroke="#99f6e4" stroke-width="1.5"/>
+  <text x="440" y="263" font-size="10" font-weight="600" fill="#0f766e" text-anchor="middle">send_CTRLL_seq()</text>
+  <rect x="520" y="240" width="120" height="38" rx="6" fill="#f0fdfa" stroke="#99f6e4" stroke-width="1.5"/>
+  <text x="580" y="263" font-size="10" font-weight="600" fill="#0f766e" text-anchor="middle">send_ppm()</text>
+  <rect x="100" y="288" width="540" height="32" rx="6" fill="#f0fdfa" stroke="#99f6e4" stroke-width="1.5"/>
+  <text x="115" y="308" font-size="10" fill="#0f766e">8-bit pixel / reg data  ->  24-bit G24(X) scramble()  ->  encode_8b10b()  ->  10-bit symbol</text>
+  <rect x="70" y="335" width="580" height="60" rx="8" fill="#f0fdf4" stroke="#bbf7d0" stroke-width="1.5"/>
+  <text x="90" y="355" font-size="12" font-weight="600" fill="#166534">isptx_transaction.sv</text>
+  <text x="90" y="378" font-size="11" fill="#166534">bit[9:0] one_pkt;  bit[9:0] k1/k2/k3/k4;  TYPE_DRV_ONE_PKT / TYPE_DRV_Kx_KEY</text>
+  <rect x="70" y="410" width="580" height="60" rx="8" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <text x="90" y="430" font-size="12" font-weight="600" fill="#475569">isptx_driver.sv</text>
+  <text x="90" y="453" font-size="11" fill="#475569">drv_one_pkt() / drv_k1_key() ...  LSB-first: pkt[0] first  ->  vif.rxn0/rxp0</text>
+  <rect x="70" y="485" width="580" height="75" rx="8" fill="#fef2f2" stroke="#fecaca" stroke-width="1.5"/>
+  <text x="90" y="505" font-size="12" font-weight="600" fill="#991b1b">DUT: 8B/10B RX decode</text>
+  <text x="90" y="528" font-size="11" fill="#991b1b">10-bit symbol / K-code  ->  8B/10B decode  ->  8-bit data  ->  descramble (G24(X))</text>
+  <text x="90" y="548" font-size="11" fill="#991b1b">Output: 8-bit data</text>
+  <rect x="720" y="60" width="640" height="520" rx="12" fill="#faf5ff" stroke="#e9d5ff" stroke-width="2"/>
+  <text x="1040" y="92" font-size="20" font-weight="600" fill="#111827" text-anchor="middle">420B Mode</text>
+  <text x="1040" y="114" font-size="13" fill="#6b21a8" text-anchor="middle">(CHPI_MODE_420B defined)</text>
+  <rect x="750" y="130" width="580" height="60" rx="8" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <text x="770" y="150" font-size="12" font-weight="600" fill="#475569">Test Layer</text>
+  <rect x="770" y="160" width="160" height="38" rx="6" fill="#fff7ed" stroke="#fed7aa" stroke-width="1.5"/>
+  <text x="850" y="183" font-size="11" font-weight="600" fill="#9a3412" text-anchor="middle">t_8b1lane_420b_basic</text>
+  <rect x="950" y="160" width="110" height="38" rx="6" fill="#fff7ed" stroke="#fed7aa" stroke-width="1.5"/>
+  <text x="1005" y="183" font-size="11" font-weight="600" fill="#9a3412" text-anchor="middle">base_vseq</text>
+  <rect x="1080" y="160" width="110" height="38" rx="6" fill="#fff7ed" stroke="#fed7aa" stroke-width="1.5"/>
+  <text x="1135" y="183" font-size="11" font-weight="600" fill="#9a3412" text-anchor="middle">user_def.sv</text>
+  <rect x="750" y="205" width="580" height="115" rx="8" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <text x="770" y="225" font-size="12" font-weight="600" fill="#475569">isptx_sequence.sv (420b)</text>
+  <rect x="780" y="240" width="130" height="38" rx="6" fill="#f0fdfa" stroke="#99f6e4" stroke-width="1.5"/>
+  <text x="845" y="263" font-size="10" font-weight="600" fill="#0f766e" text-anchor="middle">send_420b_lsp()</text>
+  <rect x="930" y="240" width="130" height="38" rx="6" fill="#f0fdfa" stroke="#99f6e4" stroke-width="1.5"/>
+  <text x="995" y="263" font-size="10" font-weight="600" fill="#0f766e" text-anchor="middle">send_420b_ctrl_f_line()</text>
+  <rect x="1080" y="240" width="130" height="38" rx="6" fill="#f0fdfa" stroke="#99f6e4" stroke-width="1.5"/>
+  <text x="1145" y="263" font-size="10" font-weight="600" fill="#0f766e" text-anchor="middle">send_420b_active_line()</text>
+  <rect x="855" y="288" width="160" height="32" rx="6" fill="#f0fdfa" stroke="#99f6e4" stroke-width="1.5"/>
+  <text x="935" y="308" font-size="10" fill="#0f766e" text-anchor="middle">send_420b_vblank_line()</text>
+  <rect x="1040" y="288" width="130" height="32" rx="6" fill="#f0fdfa" stroke="#99f6e4" stroke-width="1.5"/>
+  <text x="1105" y="308" font-size="10" fill="#0f766e" text-anchor="middle">send_420b_idle()</text>
+  <rect x="750" y="335" width="280" height="60" rx="8" fill="#faf5ff" stroke="#e9d5ff" stroke-width="1.5"/>
+  <text x="770" y="355" font-size="12" font-weight="600" fill="#6b21a8">long_encoding_ref_model.sv</text>
+  <text x="770" y="375" font-size="10" fill="#6b21a8">encode_413b_to_420b() / decode_420b_to_413b()</text>
+  <text x="770" y="388" font-size="10" fill="#6b21a8">G16(X) / 70-bit alignment</text>
+  <rect x="1050" y="335" width="280" height="60" rx="8" fill="#f0fdf4" stroke="#bbf7d0" stroke-width="1.5"/>
+  <text x="1070" y="355" font-size="12" font-weight="600" fill="#166534">isptx_transaction.sv (420b)</text>
+  <text x="1070" y="375" font-size="10" fill="#166534">bit[19:0] one_pkt_20b; bit[39:0] k1_420b~k4_420b</text>
+  <text x="1070" y="388" font-size="10" fill="#166534">TYPE_DRV_ONE_PKT_20B</text>
+  <rect x="750" y="410" width="580" height="60" rx="8" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+  <text x="770" y="430" font-size="12" font-weight="600" fill="#475569">isptx_driver.sv (420b)</text>
+  <text x="770" y="453" font-size="11" fill="#475569">drv_one_pkt_20b() / drv_k1_key_420b() ...  MSB-first: pkt[19] first  ->  vif.rxn0/rxp0</text>
+  <rect x="750" y="485" width="580" height="75" rx="8" fill="#fef2f2" stroke="#fecaca" stroke-width="1.5"/>
+  <text x="770" y="505" font-size="12" font-weight="600" fill="#991b1b">DUT: HDL/HK1V11_digital_top/long_encoding/</text>
+  <text x="770" y="528" font-size="11" fill="#991b1b">long_decoding_top  ->  decoder_7b (420b->413b)  ->  descramble_7b (G16(X) / K3 reset)</text>
+  <text x="770" y="548" font-size="11" fill="#991b1b">Output: 24-bit + 2-bit valid</text>
+  <line x1="160" y1="198" x2="160" y2="205" stroke="#2563eb" stroke-width="1.5" marker-end="url(#arrow-blue)"/>
+  <line x1="160" y1="320" x2="160" y2="335" stroke="#2563eb" stroke-width="1.5" marker-end="url(#arrow-blue)"/>
+  <line x1="160" y1="395" x2="160" y2="410" stroke="#2563eb" stroke-width="1.5" marker-end="url(#arrow-blue)"/>
+  <line x1="160" y1="470" x2="160" y2="485" stroke="#2563eb" stroke-width="1.5" marker-end="url(#arrow-blue)"/>
+  <line x1="850" y1="198" x2="850" y2="205" stroke="#2563eb" stroke-width="1.5" marker-end="url(#arrow-blue)"/>
+  <line x1="850" y1="320" x2="850" y2="335" stroke="#2563eb" stroke-width="1.5" marker-end="url(#arrow-blue)"/>
+  <line x1="890" y1="395" x2="890" y2="410" stroke="#2563eb" stroke-width="1.5" marker-end="url(#arrow-blue)"/>
+  <line x1="850" y1="470" x2="850" y2="485" stroke="#2563eb" stroke-width="1.5" marker-end="url(#arrow-blue)"/>
+  <rect x="750" y="570" width="580" height="40" rx="8" fill="#f0fdf4" stroke="#bbf7d0" stroke-width="1.5"/>
+  <text x="770" y="595" font-size="12" fill="#166534">checker_420b.sv: collect 20-bit -> assemble 420-bit -> decode -> compare</text>
+  <rect x="40" y="620" width="1320" height="430" rx="12" fill="#f8fafc" stroke="#e2e8f0" stroke-width="2"/>
+  <text x="70" y="655" font-size="18" font-weight="600" fill="#111827">Key Differences</text>
+  <rect x="50" y="680" width="230" height="32" rx="4" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="1"/>
+  <text x="160" y="702" font-size="13" font-weight="600" fill="#111827" text-anchor="middle">Item</text>
+  <rect x="280" y="680" width="400" height="32" rx="4" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="1"/>
+  <text x="480" y="702" font-size="13" font-weight="600" fill="#111827" text-anchor="middle">8B/10B Mode</text>
+  <rect x="680" y="680" width="360" height="32" rx="4" fill="#e2e8f0" stroke="#cbd5e1" stroke-width="1"/>
+  <text x="860" y="702" font-size="13" font-weight="600" fill="#111827" text-anchor="middle">420B Mode</text>
+  <rect x="50" y="712" width="230" height="32" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
+  <text x="60" y="734" font-size="12" fill="#111827">Mode Switch</text>
+  <rect x="280" y="712" width="400" height="32" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
+  <text x="290" y="734" font-size="12" fill="#374151">No macro</text>
+  <rect x="680" y="712" width="360" height="32" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
+  <text x="690" y="734" font-size="12" fill="#6b21a8">define CHPI_MODE_420B</text>
+  <rect x="50" y="744" width="230" height="32" rx="4" fill="#f9fafb" stroke="#cbd5e1" stroke-width="1"/>
+  <text x="60" y="766" font-size="12" fill="#111827">Input Granularity</text>
+  <rect x="280" y="744" width="400" height="32" rx="4" fill="#f9fafb" stroke="#cbd5e1" stroke-width="1"/>
+  <text x="290" y="766" font-size="12" fill="#374151">8-bit byte</text>
+  <rect x="680" y="744" width="360" height="32" rx="4" fill="#f9fafb" stroke="#cbd5e1" stroke-width="1"/>
+  <text x="690" y="766" font-size="12" fill="#6b21a8">8-bit byte -> 7-bit groups (59 groups)</text>
+  <rect x="50" y="776" width="230" height="32" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
+  <text x="60" y="798" font-size="12" fill="#111827">Encoding</text>
+  <rect x="280" y="776" width="400" height="32" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
+  <text x="290" y="798" font-size="12" fill="#374151">8B/10B table -> 10-bit symbol</text>
+  <rect x="680" y="776" width="360" height="32" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
+  <text x="690" y="798" font-size="12" fill="#6b21a8">413b -> 420b tag replacement + 70-bit alignment</text>
+  <rect x="50" y="808" width="230" height="32" rx="4" fill="#f9fafb" stroke="#cbd5e1" stroke-width="1"/>
+  <text x="60" y="830" font-size="12" fill="#111827">K-code Width</text>
+  <rect x="280" y="808" width="400" height="32" rx="4" fill="#f9fafb" stroke="#cbd5e1" stroke-width="1"/>
+  <text x="290" y="830" font-size="12" fill="#374151">10-bit K1/K2/K3/K4</text>
+  <rect x="680" y="808" width="360" height="32" rx="4" fill="#f9fafb" stroke="#cbd5e1" stroke-width="1"/>
+  <text x="690" y="830" font-size="12" fill="#6b21a8">40-bit K1/K2/K3/K4</text>
+  <rect x="50" y="840" width="230" height="32" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
+  <text x="60" y="862" font-size="12" fill="#111827">IDLE Pattern</text>
+  <rect x="280" y="840" width="400" height="32" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
+  <text x="290" y="862" font-size="12" fill="#374151">No independent IDLE</text>
+  <rect x="680" y="840" width="360" height="32" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
+  <text x="690" y="862" font-size="12" fill="#6b21a8">10-bit K5/K6/K7/K8</text>
+  <rect x="50" y="872" width="230" height="32" rx="4" fill="#f9fafb" stroke="#cbd5e1" stroke-width="1"/>
+  <text x="60" y="894" font-size="12" fill="#111827">Scramble LFSR</text>
+  <rect x="280" y="872" width="400" height="32" rx="4" fill="#f9fafb" stroke="#cbd5e1" stroke-width="1"/>
+  <text x="290" y="894" font-size="12" fill="#374151">24-bit G24(X)</text>
+  <rect x="680" y="872" width="360" height="32" rx="4" fill="#f9fafb" stroke="#cbd5e1" stroke-width="1"/>
+  <text x="690" y="894" font-size="12" fill="#6b21a8">16-bit G16(X), 7-bit per step</text>
+  <rect x="50" y="904" width="230" height="32" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
+  <text x="60" y="926" font-size="12" fill="#111827">LSP Scramble</text>
+  <rect x="280" y="904" width="400" height="32" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
+  <text x="290" y="926" font-size="12" fill="#374151">Part of training</text>
+  <rect x="680" y="904" width="360" height="32" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
+  <text x="690" y="926" font-size="12" fill="#6b21a8">Direct 413b/420b encode, no scramble</text>
+  <rect x="50" y="936" width="230" height="32" rx="4" fill="#f9fafb" stroke="#cbd5e1" stroke-width="1"/>
+  <text x="60" y="958" font-size="12" fill="#111827">Send Direction</text>
+  <rect x="280" y="936" width="400" height="32" rx="4" fill="#f9fafb" stroke="#cbd5e1" stroke-width="1"/>
+  <text x="290" y="958" font-size="12" fill="#374151">LSB-first</text>
+  <rect x="680" y="936" width="360" height="32" rx="4" fill="#f9fafb" stroke="#cbd5e1" stroke-width="1"/>
+  <text x="690" y="958" font-size="12" fill="#6b21a8">MSB-first</text>
+  <rect x="50" y="968" width="230" height="32" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
+  <text x="60" y="990" font-size="12" fill="#111827">Cross-lane Align</text>
+  <rect x="280" y="968" width="400" height="32" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
+  <text x="290" y="990" font-size="12" fill="#374151">Byte aligned</text>
+  <rect x="680" y="968" width="360" height="32" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
+  <text x="690" y="990" font-size="12" fill="#6b21a8">70-bit dummy alignment</text>
+  <rect x="50" y="1000" width="230" height="32" rx="4" fill="#f9fafb" stroke="#cbd5e1" stroke-width="1"/>
+  <text x="60" y="1022" font-size="12" fill="#111827">Reference Model</text>
+  <rect x="280" y="1000" width="400" height="32" rx="4" fill="#f9fafb" stroke="#cbd5e1" stroke-width="1"/>
+  <text x="290" y="1022" font-size="12" fill="#374151">encode_8b10b() in sequence</text>
+  <rect x="680" y="1000" width="360" height="32" rx="4" fill="#f9fafb" stroke="#cbd5e1" stroke-width="1"/>
+  <text x="690" y="1022" font-size="12" fill="#6b21a8">Independent long_encoding_ref_model.sv</text>
+  <rect x="50" y="1032" width="230" height="32" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
+  <text x="60" y="1054" font-size="12" fill="#111827">DUT Decode</text>
+  <rect x="280" y="1032" width="400" height="32" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
+  <text x="290" y="1054" font-size="12" fill="#374151">8B/10B decode</text>
+  <rect x="680" y="1032" width="360" height="32" rx="4" fill="#ffffff" stroke="#cbd5e1" stroke-width="1"/>
+  <text x="690" y="1054" font-size="12" fill="#6b21a8">long_decoding_top / decoder_7b / descramble_7b</text>
+  <rect x="50" y="1064" width="230" height="32" rx="4" fill="#f9fafb" stroke="#cbd5e1" stroke-width="1"/>
+  <text x="60" y="1086" font-size="12" fill="#111827">Output</text>
+  <rect x="280" y="1064" width="400" height="32" rx="4" fill="#f9fafb" stroke="#cbd5e1" stroke-width="1"/>
+  <text x="290" y="1086" font-size="12" fill="#374151">8-bit data</text>
+  <rect x="680" y="1064" width="360" height="32" rx="4" fill="#f9fafb" stroke="#cbd5e1" stroke-width="1"/>
+  <text x="690" y="1086" font-size="12" fill="#6b21a8">24-bit + 2-bit valid</text>
+</svg>
