@@ -209,7 +209,7 @@
 |------|------|------|
 | Reference Model | `long_encoding_ref_model.sv` | 413b→420b 编码 / 420b→413b 解码 / G16(X) 加扰解扰 |
 | Sequence | `isptx_sequence.sv` | 构建 LSP / CTRL_F / CTRL_L / Active / V blanking 帧 |
-| Driver | `isptx_driver.sv` | 20-bit packet / 40-bit K-code 发送，MSB-first |
+| Driver | `isptx_driver.sv` | 20-bit packet / 40-bit K-code 发送，LSB-first |
 | Transaction | `isptx_transaction.sv` | 20-bit packet / 40-bit K-code 数据结构 |
 | Checker | `checker_420b.sv` | 20-bit 数据流检查、编码规则检查、跨 lane 长度检查 |
 
@@ -228,7 +228,7 @@
 | IDLE | 无独立 IDLE | 10-bit K5~K8 |
 | LFSR | 24-bit G24(X) | 16-bit G16(X) |
 | LFSR 复位点 | 训练/K-code 边界 | K3 上升沿 |
-| 发送方向 | LSB-first | MSB-first |
+| 发送方向 | LSB-first | LSB-first |
 | 跨 lane 对齐 | 字节对齐 | 70-bit dummy 对齐 |
 | DUT 解码 | 8B/10B decode | `long_decoding_top` / `decoder_7b` / `descramble_7b` |
 | 输出 | 8-bit data | 24-bit + 2-bit valid |
@@ -262,7 +262,7 @@ Frame:
 
 ```text
 Phase 1: Smoke
-  └─ 基础 420b 发送、MSB-first、全 0/全 1、tag bypass、scramble on/off
+  └─ 基础 420b 发送、LSB-first、全 0/全 1、tag bypass、scramble on/off
 
 Phase 2: Frame Structure
   └─ LSP、CTRL_F、CTRL_L、Active、last-active、V blanking、IDLE、multiframe
@@ -360,7 +360,9 @@ t_H{HACT}_V{VACT}_FPS{FPS}_PORT_NUM{PORT_NUM}_420b[_{extra_param}]
    - IDLE K5~K8 **不加扰**
 
 3. **发送顺序**
-   - 420b 模式：**MSB-first**（bit6 → bit0）
+   - 420b 模式：**LSB-first**（bit0 → bit6）
+   - Header 为 `{tag[5:0], toggle}`，toggle 位于 bit0，**toggle 先发**，随后 tag[0]→tag[5]
+   - 替换组为 `{type, tag[5:0]}`，**tag 先发**，最后发 type
    - 普通 8B/10B 模式：LSB-first
 
 4. **跨 lane 70-bit 对齐**
@@ -375,7 +377,7 @@ t_H{HACT}_V{VACT}_FPS{FPS}_PORT_NUM{PORT_NUM}_420b[_{extra_param}]
 | 问题 | 优先级 |
 |------|--------|
 | `long_encoding_ref_model` encode/decode 位序一致性 | 高 |
-| `isptx_driver` 420b 发送方向与 MSB-first 对齐 | 高 |
+| `isptx_driver` 420b 发送方向与 LSB-first 对齐 | 高 |
 | `checker_420b` 20-bit chunk 组装方向与 driver 对齐 | 高 |
 | CTRL_F checksum 是否需要发送 | 中 |
 | LSP 重复次数是否满足 ≥1us | 中 |
@@ -388,7 +390,7 @@ t_H{HACT}_V{VACT}_FPS{FPS}_PORT_NUM{PORT_NUM}_420b[_{extra_param}]
 
 ## 九、后续工作
 
-- [ ] 修复 reference model 与 driver 的 MSB-first / 从左到右实现
+- [ ] 修复 reference model 与 driver 的 LSB-first / 从右到左实现
 - [ ] 将 `t_8b1lane_420b_basic` 同步到 `DV_TCON_C/top/tests/`
 - [ ] 按 Phase 1~7 逐步扩展 420b case
 - [ ] 在 420b case 中关闭 C model 相关 checker
