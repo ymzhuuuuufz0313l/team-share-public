@@ -123,7 +123,7 @@ title: HK1V11 420b 长编码验证体系
 
 # HK1V11 420b 长编码验证体系
 
-> 来源：\\`E:\\\\project\\\\HK1V11\\\\longcode_ver\\`  
+> 来源：\\`E:\\project\\HK1V11\\longcode_ver\\`  
 > 整理时间：2026-07-13
 
 ---
@@ -132,7 +132,7 @@ title: HK1V11 420b 长编码验证体系
 
 420b 长编码验证环境基于 \\`DV_TCON_C\\` 现有 8B/10B 结构重建，通过 \\`CHPI_MODE_420B\\` 宏与普通模式隔离。
 
-![longcode 验证架构](/longcode_verification_architecture.png)
+![longcode 验证架构](./longcode_verification_architecture.png)
 
 ### 环境核心组件
 
@@ -148,7 +148,7 @@ title: HK1V11 420b 长编码验证体系
 
 ## 二、8B/10B vs 420B 对比
 
-![8B/10B vs 420B 架构对比](/8b10b_vs_420b_architecture.png)
+![8B/10B vs 420B 架构对比](./8b10b_vs_420b_architecture.png)
 
 | 项目 | 8B/10B | 420B |
 |------|--------|------|
@@ -169,7 +169,7 @@ title: HK1V11 420b 长编码验证体系
 ## 三、420b 帧结构
 
 \\`\\`\\`text
-Frame:\\n├─ Config Line (K4 + CTRL_F + IDLE)\\n├─ V blanking Lines (K1 + CTRL_L + VBK + K2 + IDLE) × N\\n├─ Active Lines (K1 + CTRL_L + Video + K2 + IDLE) × (VACT - 1)\\n└─ Last Active Line (K1 + CTRL_L + Video + K4 + CTRL_F)  ← 末尾嵌入帧尾\\n\\`\\`\\`
+Frame:\n├─ Config Line (K4 + CTRL_F + IDLE)\n├─ V blanking Lines (K1 + CTRL_L + VBK + K2 + IDLE) × N\n├─ Active Lines (K1 + CTRL_L + Video + K2 + IDLE) × (VACT - 1)\n└─ Last Active Line (K1 + CTRL_L + Video + K4 + CTRL_F)  ← 末尾嵌入帧尾\n\\`\\`\\`
 
 ### 关键字段
 
@@ -186,7 +186,7 @@ Frame:\\n├─ Config Line (K4 + CTRL_F + IDLE)\\n├─ V blanking Lines (K1 +
 
 ## 四、验证执行阶段
 
-\\`\\`\\`text\\nPhase 1: Smoke\\n  └─ 基础 420b 发送、MSB-first、全 0/全 1、tag bypass、scramble on/off\\n\\nPhase 2: Frame Structure\\n  └─ LSP、CTRL_F、CTRL_L、Active、last-active、V blanking、IDLE、multiframe\\n\\nPhase 3: Decode / Descramble / Unlock\\n  └─ 解码窗口、K3 同步、UTC unlock、link 恢复\\n\\nPhase 4: Error / Corner\\n  └─ 7b_01、K-code 错误、UTC header、long frame、checksum、vbk、chpi_regw 等\\n\\nPhase 5: Multi-lane / Alignment\\n  └─ 2lane/4lane、70-bit 对齐、R_BAC/AEQ/debugpin/packpos/RGB 功能复跑\\n\\nPhase 6: Resolution / Refresh / Port Sweep\\n  └─ 4K/1080p/1440p/2.5K/2.8K/3.4K × 多刷新率 × 多 port_num/CH_SEL\\n\\nPhase 7: Isolation / Regression\\n  └─ 420b vs 8B/10B 对比，8B/10B 回归防退化\\n\\`\\`\\`
+\\`\\`\\`text\nPhase 1: Smoke\n  └─ 基础 420b 发送、MSB-first、全 0/全 1、tag bypass、scramble on/off\n\nPhase 2: Frame Structure\n  └─ LSP、CTRL_F、CTRL_L、Active、last-active、V blanking、IDLE、multiframe\n\nPhase 3: Decode / Descramble / Unlock\n  └─ 解码窗口、K3 同步、UTC unlock、link 恢复\n\nPhase 4: Error / Corner\n  └─ 7b_01、K-code 错误、UTC header、long frame、checksum、vbk、chpi_regw 等\n\nPhase 5: Multi-lane / Alignment\n  └─ 2lane/4lane、70-bit 对齐、R_BAC/AEQ/debugpin/packpos/RGB 功能复跑\n\nPhase 6: Resolution / Refresh / Port Sweep\n  └─ 4K/1080p/1440p/2.5K/2.8K/3.4K × 多刷新率 × 多 port_num/CH_SEL\n\nPhase 7: Isolation / Regression\n  └─ 420b vs 8B/10B 对比，8B/10B 回归防退化\n\\`\\`\\`
 
 ---
 
@@ -194,7 +194,7 @@ Frame:\\n├─ Config Line (K4 + CTRL_F + IDLE)\\n├─ V blanking Lines (K1 +
 
 沿用 8B/10B 风格，统一加 \\`_420b\\` 后缀：
 
-\\`\\`\\`text\\nt_8b{lane_num}lane_420b_{function}[_{param}]\\nt_H{HACT}_V{VACT}_FPS{FPS}_PORT_NUM{PORT_NUM}_420b[_{extra_param}]\\n\\`\\`\\`
+\\`\\`\\`text\nt_8b{lane_num}lane_420b_{function}[_{param}]\nt_H{HACT}_V{VACT}_FPS{FPS}_PORT_NUM{PORT_NUM}_420b[_{extra_param}]\n\\`\\`\\`
 
 ### Case 数量分布
 
@@ -213,7 +213,7 @@ Frame:\\n├─ Config Line (K4 + CTRL_F + IDLE)\\n├─ V blanking Lines (K1 +
 
 ## 六、420b 解码链 RTL
 
-\\`\\`\\`text\\n20-bit 对齐输入流\\n        │\\n        ▼\\n┌───────────────────┐\\n│   decoder_7b      │  420b → 413b 解码\\n│                   │  提取 tag、还原全 0/全 1、重组数据\\n│                   │  输出 7/14/21-bit 有效数据\\n└─────────┬─────────┘\\n          │\\n          ▼\\n┌───────────────────┐\\n│  descramble_7b    │  7-bit LFSR G16(X) 解扰\\n│                   │  K3 上升沿复位\\n│                   │  scramble_en=0 时旁路\\n└─────────┬─────────┘\\n          │\\n          ▼\\n┌───────────────────┐\\n│ long_decoding_top │  42-bit 缓存\\n│                   │  按 8/16/24-bit 切分打包输出\\n└───────────────────┘\\n\\`\\`\\`
+\\`\\`\\`text\n20-bit 对齐输入流\n        │\n        ▼\n┌───────────────────┐\n│   decoder_7b      │  420b → 413b 解码\n│                   │  提取 tag、还原全 0/全 1、重组数据\n│                   │  输出 7/14/21-bit 有效数据\n└─────────┬─────────┘\n          │\n          ▼\n┌───────────────────┐\n│  descramble_7b    │  7-bit LFSR G16(X) 解扰\n│                   │  K3 上升沿复位\n│                   │  scramble_en=0 时旁路\n└─────────┬─────────┘\n          │\n          ▼\n┌───────────────────┐\n│ long_decoding_top │  42-bit 缓存\n│                   │  按 8/16/24-bit 切分打包输出\n└───────────────────┘\n\\`\\`\\`
 
 ### 关键信号
 
