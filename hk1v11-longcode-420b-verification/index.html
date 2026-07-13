@@ -29,6 +29,7 @@
       }
     }
     * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
     body {
       margin: 0;
       background: var(--bg);
@@ -37,10 +38,16 @@
       font-size: 16px;
       line-height: 1.75;
     }
-    .container {
-      max-width: 860px;
+    .layout {
+      display: flex;
+      max-width: 1240px;
       margin: 0 auto;
       padding: 48px 24px;
+      gap: 32px;
+    }
+    .main {
+      flex: 1;
+      min-width: 0;
     }
     .article {
       background: var(--surface);
@@ -48,13 +55,14 @@
       padding: 56px 64px;
       box-shadow: var(--shadow);
     }
-    @media (max-width: 640px) {
-      .container { padding: 24px 16px; }
+    @media (max-width: 1024px) {
+      .layout { flex-direction: column; padding: 24px 16px; gap: 16px; }
       .article { padding: 32px 24px; border-radius: 16px; }
     }
     h1 { font-size: 36px; margin: 0 0 20px; color: var(--accent); font-weight: 700; letter-spacing: -0.5px; }
     h2 { font-size: 26px; margin: 48px 0 18px; padding-bottom: 10px; border-bottom: 1px solid var(--line); color: var(--text); font-weight: 600; }
     h3 { font-size: 20px; margin: 32px 0 14px; color: var(--text); font-weight: 600; }
+    h1:target, h2:target, h3:target { scroll-margin-top: 24px; }
     p { margin: 14px 0; }
     a { color: var(--accent); text-decoration: none; }
     a:hover { text-decoration: underline; }
@@ -113,6 +121,98 @@
       color: var(--muted);
       margin-top: 48px;
       font-size: 13px;
+    }
+
+    /* Table of Contents */
+    .toc-wrapper {
+      width: 280px;
+      flex-shrink: 0;
+    }
+    .toc {
+      position: sticky;
+      top: 24px;
+      max-height: calc(100vh - 48px);
+      overflow-y: auto;
+      background: var(--surface);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: var(--shadow);
+    }
+    .toc-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin: 0 0 12px;
+    }
+    .toc ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .toc li { margin: 0; }
+    .toc a {
+      display: block;
+      padding: 6px 0;
+      color: var(--muted);
+      font-size: 13.5px;
+      line-height: 1.5;
+      border-left: 2px solid transparent;
+      padding-left: 12px;
+      margin-left: -2px;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .toc a:hover {
+      color: var(--accent);
+      text-decoration: none;
+    }
+    .toc a.active {
+      color: var(--accent);
+      border-left-color: var(--accent);
+      font-weight: 600;
+    }
+    .toc .toc-h2 a { padding-left: 12px; }
+    .toc .toc-h3 a { padding-left: 26px; font-size: 12.5px; }
+
+    .toc-toggle {
+      display: none;
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 100;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      box-shadow: var(--shadow);
+      font-size: 20px;
+      cursor: pointer;
+    }
+
+    @media (max-width: 1024px) {
+      .toc-wrapper {
+        position: fixed;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        width: 280px;
+        z-index: 99;
+        transform: translateX(100%);
+        transition: transform 0.25s ease;
+        padding: 16px;
+        background: rgba(0,0,0,0.2);
+      }
+      .toc-wrapper.open { transform: translateX(0); }
+      .toc {
+        max-height: 100%;
+        height: 100%;
+        top: 0;
+      }
+      .toc-toggle { display: flex; align-items: center; justify-content: center; }
+      body.toc-open { overflow: hidden; }
     }
 
     /* Image lightbox */
@@ -178,10 +278,21 @@
   </style>
 </head>
 <body>
-  <div class="container">
-    <article class="article" id="article"></article>
-    <div class="footer">Shared from team knowledge base</div>
+  <div class="layout">
+    <main class="main">
+      <article class="article" id="article"></article>
+      <div class="footer">Shared from team knowledge base</div>
+    </main>
+
+    <aside class="toc-wrapper" id="toc-wrapper">
+      <nav class="toc" id="toc">
+        <div class="toc-title">目录</div>
+        <ul id="toc-list"></ul>
+      </nav>
+    </aside>
   </div>
+
+  <button class="toc-toggle" id="toc-toggle" aria-label="打开目录">☰</button>
 
   <div class="lightbox" id="lightbox">
     <span class="close" id="lightbox-close">&times;</span>
@@ -402,6 +513,71 @@ t_H{HACT}_V{VACT}_FPS{FPS}_PORT_NUM{PORT_NUM}_420b[_{extra_param}]
     const markdown = document.getElementById('md').textContent.trim();
     document.getElementById('article').innerHTML = marked.parse(markdown);
 
+    // Build Table of Contents from rendered headings
+    const article = document.getElementById('article');
+    const tocList = document.getElementById('toc-list');
+    const headings = article.querySelectorAll('h2, h3');
+
+    headings.forEach((heading, index) => {
+      const id = 'toc-' + index;
+      heading.id = id;
+
+      const li = document.createElement('li');
+      li.className = heading.tagName === 'H2' ? 'toc-h2' : 'toc-h3';
+
+      const a = document.createElement('a');
+      a.href = '#' + id;
+      a.textContent = heading.textContent;
+      a.dataset.target = id;
+
+      a.addEventListener('click', (e) => {
+        e.preventDefault();
+        heading.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        if (window.innerWidth <= 1024) {
+          document.getElementById('toc-wrapper').classList.remove('open');
+          document.body.classList.remove('toc-open');
+        }
+      });
+
+      li.appendChild(a);
+      tocList.appendChild(li);
+    });
+
+    // Highlight current section on scroll
+    const tocLinks = tocList.querySelectorAll('a');
+    function updateActiveToc() {
+      let current = null;
+      headings.forEach(heading => {
+        const rect = heading.getBoundingClientRect();
+        if (rect.top <= 80) {
+          current = heading.id;
+        }
+      });
+      tocLinks.forEach(link => {
+        if (link.dataset.target === current) {
+          link.classList.add('active');
+        } else {
+          link.classList.remove('active');
+        }
+      });
+    }
+    window.addEventListener('scroll', updateActiveToc, { passive: true });
+    updateActiveToc();
+
+    // Mobile TOC toggle
+    const tocToggle = document.getElementById('toc-toggle');
+    const tocWrapper = document.getElementById('toc-wrapper');
+    tocToggle.addEventListener('click', () => {
+      tocWrapper.classList.toggle('open');
+      document.body.classList.toggle('toc-open');
+    });
+    tocWrapper.addEventListener('click', (e) => {
+      if (e.target === tocWrapper) {
+        tocWrapper.classList.remove('open');
+        document.body.classList.remove('toc-open');
+      }
+    });
+
     // Custom image lightbox with wheel zoom and drag pan
     const lightbox = document.getElementById('lightbox');
     const lightboxImg = document.getElementById('lightbox-img');
@@ -483,7 +659,11 @@ t_H{HACT}_V{VACT}_FPS{FPS}_PORT_NUM{PORT_NUM}_420b[_{extra_param}]
     });
 
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') closeLightbox();
+      if (e.key === 'Escape') {
+        closeLightbox();
+        tocWrapper.classList.remove('open');
+        document.body.classList.remove('toc-open');
+      }
     });
   </script>
 </body>
