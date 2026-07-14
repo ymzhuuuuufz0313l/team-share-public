@@ -374,6 +374,7 @@
       .toc-wrapper { display: none; }
       .container.with-toc { display: block; }
     }
+  .toc-divider { height: 1px; background: var(--line); margin: 12px 0; }
   </style>
 </head>
 <body>
@@ -478,20 +479,55 @@ const lightbox = document.getElementById('lightbox');
     window.addEventListener('mousemove', (e) => { if (!isDragging) return; translateX = initialTranslateX + (e.clientX - startX); translateY = initialTranslateY + (e.clientY - startY); updateTransform(); });
     window.addEventListener('mouseup', () => { isDragging = false; lightboxImg.classList.remove('grabbing'); });
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeLightbox(); });
-  // Left-side TOC
-    const article = document.getElementById('article');
+  // Left-side TOC: chapter links + in-page headings
     const toc = document.getElementById('toc');
-    const headings = article.querySelectorAll('h2, h3');
-    headings.forEach((h, i) => {
-      const id = 'toc-' + i;
-      h.id = id;
+
+    // Chapter-level navigation
+    const chapters = [
+      ['index', '首页'],
+      ['architecture', '架构'],
+      ['comparison', '对比'],
+      ['frame', '帧结构'],
+      ['phases', '阶段'],
+      ['cases', 'Case'],
+      ['decoder', '解码'],
+      ['encoding', '编码'],
+      ['issues', '问题'],
+      ['next', '后续']
+    ];
+    const currentPath = location.pathname.split('/').pop() || 'index.html';
+    chapters.forEach(([slug, label]) => {
+      const href = slug === 'index' ? './' : `./${slug}.html`;
+      const filename = slug === 'index' ? 'index.html' : `${slug}.html`;
       const a = document.createElement('a');
-      a.href = '#' + id;
-      a.textContent = h.textContent;
-      a.className = h.tagName.toLowerCase() === 'h3' ? 'toc-h3' : 'toc-h2';
+      a.href = href;
+      a.textContent = label;
+      if (currentPath === filename || currentPath.endsWith('/' + filename) || (currentPath === '' && slug === 'index')) {
+        a.classList.add('active');
+      }
       toc.appendChild(a);
     });
-    const tocLinks = Array.from(toc.querySelectorAll('a'));
+
+    // In-page headings
+    const article = document.getElementById('article');
+    const headings = article.querySelectorAll('h2, h3');
+    if (headings.length > 0) {
+      const divider = document.createElement('div');
+      divider.className = 'toc-divider';
+      toc.appendChild(divider);
+      headings.forEach((h, i) => {
+        const id = 'toc-' + i;
+        h.id = id;
+        const a = document.createElement('a');
+        a.href = '#' + id;
+        a.textContent = h.textContent;
+        a.className = h.tagName.toLowerCase() === 'h3' ? 'toc-h3' : 'toc-h2';
+        toc.appendChild(a);
+      });
+    }
+
+    // Scroll spy for in-page headings only
+    const tocLinks = Array.from(toc.querySelectorAll('a[href^="#"]'));
     function updateTocActive() {
       let current = '';
       headings.forEach(h => {
