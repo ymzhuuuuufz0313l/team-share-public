@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>引言与归档体系 · LC_CPUWR 修改记录</title>
+  <title>寄存器图解 Sheet · LC_CPUWR 修改记录</title>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>
 :root {
@@ -173,67 +173,56 @@
     <div class="content">
       <article class="article" id="article"></article>
       <div class="page-nav">
-      <a href="./index.html"><span class="label">上一篇</span><span class="title">首页</span></a>
-      <a class="next" href="./timeline.html"><span class="label">下一篇</span><span class="title">核心变更时间线</span></a>
+      <a href="./verification.html"><span class="label">上一篇</span><span class="title">验证同步与 Checker 统一</span></a>
+      <a class="next" href="./status.html"><span class="label">下一篇</span><span class="title">当前状态与后续</span></a>
       </div>
       <div class="footer">Shared from team knowledge base</div>
     </div>
   </div>
 
   <script type="text/template" id="md">
-# 一、引言与归档体系
+# 六、寄存器图解 Sheet
 
-## 1. 模块定位
+> 本页集中展示 LC_CPUWR 0714v1 寄存器相关的五张可视化大图，便于快速查阅默认字节映射、checksum 覆盖、LSI 保护范围与复位域分类。所有图片均基于 `LC_CPUWR_20260714_v1_decimal.v` 与 `LC_REG_MAPPING_20260714_v1_decimal.v` 提取生成。
 
-**LC_CPUWR** 是 HK1V11 芯片 TCON 模块中负责 **CPU 写寄存器接口** 的核心 RTL 模块。
-它接收 CPU 通过 I2C/SPI 等总线下发的配置，维护一组片内寄存器，并向后续链路（如 `LC_REG_MAPPING`、`LINK_LOGIC`）输出控制信号。
+## 1. chip_sel = 0 默认字节映射
 
-在 2026-04 至 2026-07 的开发周期中，LC_CPUWR 经历了大量迭代：校验和机制从双段演变为单段、NG Unlock 方案从 PlanA/PlanB 最终收敛为 one-shot、寄存器命名从十六进制后缀全面十进制化、并按 `chip_sel0/1` 重构了默认值体系。
+绿色为控制/配置类，黄色为电源/PWRC，蓝紫为 CDR/PLL/模拟，浅蓝为状态/只读，粉红为 chip_sel=1 专用字段（本图中显示为 Reserved）。
 
-为了管理这些密集变更，项目于 2026-06-15 建立了 `LC_CPUWR_history` 归档目录，集中保存 RTL 快照、changelist、modify plan、compliance report 及验证同步资料。
+![chip_sel=0 寄存器默认字节映射](./images/chip_sel0_register_map.svg)
 
-## 2. 为什么需要版本归档
+## 2. chip_sel = 1 默认字节映射
 
-由于 LC_CPUWR 与寄存器映射、LINK_LOGIC、验证 checker、case 配置深度耦合，每一次修改都需要同步多个文件。
-为了：
+红色边框/星标表示与 chip_sel=0 默认值不同；`0x09 / 0x0A / 0x1F` 旁标注“LC_REG_MAPPING 回拼”，表示这些地址的 chip_sel=1 默认值由 `LC_REG_MAPPING` 写标志 + 回拼字节实现。
 
-- 保留每一次重要变更的完整 RTL 快照
-- 便于回溯问题引入点
-- 支持服务器回传前的 review
+![chip_sel=1 寄存器默认字节映射](./images/chip_sel1_register_map.svg)
 
-项目在 `E:\project\HK1V11\LC_CPUWR_history` 建立了独立的归档目录。
+## 3. Checksum 地址覆盖
 
-## 3. 目录结构说明
+绿色表示参与 Seg1 checksum XOR 累加的地址；橙色为 checksum 控制寄存器 `0x07`；黄色为 frame end 边界地址 `0x27`；灰色为不参与 checksum。连续全 Reserved 地址已折叠。
 
-### 3.1 根目录（当前版本）
+![参与 checksum 的地址](./images/checksum_address_map.svg)
 
-| 文件 | 用途 |
-|------|------|
-| `LC_CPUWR_20260714_v1_decimal.v` | 当前 LC_CPUWR RTL（约 104KB） |
-| `LC_REG_MAPPING_20260714_v1_decimal.v` | 寄存器映射模块 |
-| `LINK_LOGIC_20260714_v1_decimal.v` | 上层 LINK_LOGIC 实例化同步 |
-| `LC_CPUWR_20260714_v1_changelist.md` | 当前版本变更清单 |
-| `README.md` | 归档说明与历史版本索引 |
-| `chip_sel0/1_register_address_map.md` | chip_sel 区分寄存器位字段表 |
+## 4. LSI 保护范围
 
-### 3.2 verilog_hdl（历史 RTL）
+绿色表示读回/输出不经过 `LSI_PRTECT` 掩码；红色表示受 `LSI_PRTECT` 保护；紫色为密码寄存器 `0x30`（`TEST_PRTCT`，写入 `0x72` 可开启 LSI 保护）。
 
-按日期/版本保存了 LC_CPUWR、LC_REG_MAPPING、LINK_LOGIC、LINK_MISC、LOGIC_CENTER 等模块的历史快照，从 2026-05-07 的备份一直到 2026-07-09 的常规同步。
+![LSI 保护范围](./images/lsi_unprotected_address_map.svg)
 
-### 3.3 markdownfile（变更文档）
+## 5. 复位域分类
 
-按版本分子目录保存：
+蓝色表示 `N_RST_NLOCK` 复位；紫色表示 `N_RST` 复位；青色表示 `RSTN_SCR_EN` 复位。`0x00 SCREN` 为 `RSTN_SCR_EN`，`0x01 PORSD`、`0x05 CH_SEL`、`0x06 SDC/DPLC_MODE`、`0x20 R_TESTO_SEL`、`0x21 R_UTC`、`0x30 TEST_PRTCT` 等为 `N_RST`。
 
-- `*_changelist_*.md`：变更清单
-- `*_code_changelist_*.md`：代码级变更清单
-- `*_modify_plan_*.md`：修改计划
-- `*_compliance_report_*.md`：合规报告
-- `*_simulate_plan_*.md`：仿真计划
+![复位域分类](./images/reset_domain_address_map.svg)
 
-### 3.4 case（验证相关）
+## 6. 数据说明
 
-- `case_0626v1_sync.md`：0626v1 将 `checker_for_checksum` 统一迁移到公共 agent 的同步指引
-- `checker_for_checksum_0626v1.sv`：迁移后的 checker 历史归档副本
+| 图 | 数据源 | 关键结论 |
+|----|--------|---------|
+| chip_sel 默认字节映射 | `LC_CPUWR_history/chip_sel*_register_address_map.md` | 0714v1 内部复位默认值统一为 chip_sel=0；chip_sel=1 由 LC_REG_MAPPING 回拼 |
+| Checksum 地址覆盖 | `LC_CPUWR_20260714_v1_decimal.v` Part 18 | 参与 XOR 累加：0x00~0x06、0x08~0x0A、0x1D~0x1F；0x27 为 frame end；0x07 为控制寄存器 |
+| LSI 保护范围 | `LC_CPUWR_20260714_v1_decimal.v` Part 16 | 0x00~0x1F、0x27、0x40~0x44 不保护；0x20~0x39（除 0x27）、0x90~0x92 保护 |
+| 复位域分类 | `LC_CPUWR_20260714_v1_decimal.v` 寄存器声明 | 大部分为 N_RST_NLOCK；TEST_PRTCT 等少数为 N_RST；SCREN 为 RSTN_SCR_EN |
 
   </script>
   <script>
