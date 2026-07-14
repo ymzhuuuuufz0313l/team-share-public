@@ -281,14 +281,82 @@
     .chapter-card .desc { font-size: 13px; color: var(--muted); line-height: 1.5; }
 
     .overview-img { margin: 28px 0; }
+  .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--surface);
+      border-bottom: 1px solid var(--line);
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    }
+    .navbar-inner {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .navbar-brand {
+      font-weight: 700;
+      color: var(--accent);
+      white-space: nowrap;
+      font-size: 15px;
+    }
+    .navbar-links {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      overflow-x: auto;
+      flex: 1;
+      scrollbar-width: none;
+    }
+    .navbar-links::-webkit-scrollbar { display: none; }
+    .navbar-links a {
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 14px;
+      color: var(--text);
+      white-space: nowrap;
+      transition: background 0.15s;
+    }
+    .navbar-links a:hover {
+      background: var(--bg);
+      text-decoration: none;
+    }
+    .navbar-links a.active {
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-weight: 600;
+    }
+    @media (max-width: 640px) {
+      .navbar-inner { padding: 10px 16px; gap: 10px; }
+      .navbar-brand { font-size: 14px; }
+      .navbar-links a { font-size: 13px; padding: 5px 8px; }
+    }
+    .author { margin-top: 8px; font-size: 14px; color: var(--muted); }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="top-nav">
-      <a class="home" href="./index.html">← 返回首页</a>
-    </div>
 
+<nav class="navbar">
+  <div class="navbar-inner">
+    <a class="navbar-brand" href="./">HK1V11 420b</a>
+    <div class="navbar-links">
+      <a href="./">首页</a>
+      <a href="./architecture.html">架构</a>
+      <a class="active" href="./comparison.html">对比</a>
+      <a href="./frame.html">帧结构</a>
+      <a href="./phases.html">阶段</a>
+      <a href="./cases.html">Case</a>
+      <a href="./decoder.html">解码</a>
+      <a href="./encoding.html">编码</a>
+      <a href="./issues.html">问题</a>
+      <a href="./next.html">后续</a>
+    </div>
+  </div>
+</nav>
+  <div class="container">
     <article class="article" id="article"></article>
     <div class="page-nav">
       <a href="./architecture.html">
