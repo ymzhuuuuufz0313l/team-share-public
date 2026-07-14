@@ -316,7 +316,7 @@ def generate_svg(title: str, reg_map, diffs=None, highlight_label=""):
     rows = make_rows()
     row_h = cell_h + row_gap
     content_h = len(rows) * row_h + bit_label_h + 40
-    svg_w = left_margin + addr_col_w + 8 * cell_w + 40
+    svg_w = 1100  # wide enough for note labels and legend
     svg_h = content_h + top_margin + 140  # extra for title/legend/footer
 
     # Legend
