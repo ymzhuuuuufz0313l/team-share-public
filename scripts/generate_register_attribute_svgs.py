@@ -324,18 +324,18 @@ def generate_checksum_dual_svg(title, map0, map1):
     legend_y = svg_h - 75
     lines.append(f'<text x="{left_margin}" y="{legend_y - 10}" font-size="13" font-weight="600" fill="{COLORS["text"]}">图例</text>')
     legend_items = [
-        ("普通地址（chip_sel=0/1 相同）", "chk_both"),
-        ("chip_sel=0 字段", "chk_sel0"),
-        ("chip_sel=1 字段", "chk_sel1"),
-        ("Checksum 控制 (0x07)", "chk_ctrl"),
-        ("Frame end 边界 (0x27)", "chk_end"),
+        ("普通地址", "chk_both"),
+        ("chip_sel=0", "chk_sel0"),
+        ("chip_sel=1", "chk_sel1"),
+        ("0x07 控制", "chk_ctrl"),
+        ("0x27 frame end", "chk_end"),
     ]
     lx = left_margin
     for label, color_key in legend_items:
         color = COLORS[color_key]
         lines.append(f'<rect x="{lx}" y="{legend_y}" width="14" height="14" fill="{color}" stroke="{COLORS["border"]}" rx="2"/>')
         lines.append(f'<text x="{lx + 18}" y="{legend_y + 11}" font-size="10" fill="{COLORS["text"]}">{escape_xml(label)}</text>')
-        lx += 125
+        lx += 145
 
     # Footer
     footer_text = "普通地址与 Reserved 位为灰色；蓝色=chip_sel=0 字段，绿色=chip_sel=1 字段；橙色=0x07 控制寄存器，黄色=0x27 frame end 边界。"
