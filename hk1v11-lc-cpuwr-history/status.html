@@ -190,7 +190,7 @@
 | 版本 | 主要状态 |
 |------|----------|
 | 0708v1 | 新增 `SMART_CS[3:0]` @ `0x02`，仅在 `CHIP_SEL=1` 时有效；`CHIP_SEL` 命名已统一 |
-| 0714v1 | `R_REG09` / `R_REG10` / `R_REG31` 在 chip_sel=0 下复位默认值改为 `8'h00` |
+| 0714v1 | `R_REG09` / `R_REG10` / `R_REG31` 在 `LC_CPUWR` 内部复位默认值改为 `8'h00`；chip_sel=1 默认值通过 `LC_REG_MAPPING` 回拼机制实现（`8'hFF`/`8'hA5`/`8'hAA`） |
 
 当前最新候选版本为 `LC_CPUWR_20260714_v1_decimal.v`。
 
@@ -200,21 +200,24 @@
 - 寄存器命名从十六进制全面十进制化
 - `CHIP_SEL` 命名统一
 - `SMART_CS[3:0]` 新增
-- `R_REG09/10/31` 在 chip_sel=0 下默认值为 `8'h00`
+- `R_REG09/10/31` 在 `LC_CPUWR` 内部默认值为 `8'h00`
+- chip_sel=1 默认值通过 `LC_REG_MAPPING` 回拼机制实现
 - `checker_for_checksum` 统一迁移到公共 agent
 
 ## 3. 待确认项
 
 | 事项 | 状态 | 说明 |
 |------|------|------|
-| chip_sel=1 下 R_REG09/10/31 的复位默认值 | TBD | 0714v1 已改为 chip_sel=0 的 `8'h00`，chip_sel=1 待确定 |
 | 0714v1 的服务器回传 review | 待完成 | 需确认与 SPEC 一致性 |
 | 全量 regression（含 8B/10B 模式防退化） | 待完成 | 覆盖所有 chip_sel 组合 |
+| chip_sel=0 的 checksum / I2C 读回 case | 建议回归 | 确认 `0x09`/`0x0A`/`0x1F` 读回为 `8'h00` |
+| chip_sel=1 的 I2C 读回 case | 建议回归 | 确认复位后读回为 `8'hFF`/`8'hA5`/`8'hAA` |
+| chip_sel=1 的 checksum case | 建议回归 | 确认 `cfg_frame` 写入后 R_REG 与回拼字节一致 |
 | SMART_CS[3:0] 在 chip_sel=1 下的功能验证 | 待完成 | 0708v1 新增字段 |
 
 ## 4. 后续建议
 
-1. **尽快确认 chip_sel=1 的默认值**，并同步更新 `LC_REG_MAPPING` 与 `LINK_LOGIC` 实例化。
+1. **完成 0714v1 的服务器回传 review**，确认与 SPEC 一致性。
 2. **完成 0714v1 与 `DV_TCON_C` 的同步**：
    - `env_cfg` 寄存器默认值
    - `checker_for_checksum.sv` 地址掩码与期望值

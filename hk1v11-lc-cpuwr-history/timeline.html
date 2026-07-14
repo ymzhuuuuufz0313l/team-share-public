@@ -341,8 +341,12 @@
 
 ### 4.7 0714 默认值最终调整
 
-- `R_REG09` / `R_REG10` / `R_REG31` 在 chip_sel=0 下复位默认值改为 `8'h00`
-- chip_sel=1 的复位值仍待确认（TBD）
+- `R_REG09` / `R_REG10` / `R_REG31` 在 `LC_CPUWR` 内部复位默认值统一改为 `8'h00`
+- chip_sel=1 的默认值通过 `LC_REG_MAPPING` 的**写标志 + 回拼字节**机制实现：
+  - `R_REG09_F_RECON = {SR_NF, SR_NR, SR_PF, SR_PR} = 8'hFF`
+  - `R_REG10_F_RECON = {PWRC_N, PWRC_P, PWRC_TB, PWRC_TA} = 8'hA5`
+  - `R_REG31_F_RECON = {PWRC_NB, PWRC_NA, PWRC_PB, PWRC_PA} = 8'hAA`
+- I2C 读回增加 `CHIP_SEL` mux：chip_sel=0 读回内部 R_REG，chip_sel=1 读回 LC_REG_MAPPING 回拼值
 
   </script>
   <script>

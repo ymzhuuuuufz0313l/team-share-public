@@ -353,15 +353,46 @@
 - `R_REG31_F(0x1F)` 复位默认值改为 `{CHIP_SEL,1'b0,CHIP_SEL,1'b0,CHIP_SEL,1'b0,CHIP_SEL,1'b0}`，chip_sel=1 时 `8'hAA`
 - 0706 将 `CHPI_SEL` 统一重命名为 `CHIP_SEL`
 
-### 10.6 0708 SMART_CS[3:0]
+### 10.6 0714 默认值最终方案：LC_REG_MAPPING 回拼机制
+
+0714v1 将 `LC_CPUWR` 内部 `R_REG09_F` / `R_REG10_F` / `R_REG31_F` 的复位默认值统一改为 `8'h00`（chip_sel=0 默认值），而 chip_sel=1 的默认值改由 `LC_REG_MAPPING` 的**写标志 + 回拼字节**机制实现。
+
+#### RTL 改动
+
+**LC_CPUWR 新增端口：**
+- 输出 `R_REG09_F_WR` / `R_REG10_F_WR` / `R_REG31_F_WR`：对应地址被 FCONFIG 或 I2C 写入时置 1
+- 输入 `R_REG09_F_RECON` / `R_REG10_F_RECON` / `R_REG31_F_RECON`：来自 LC_REG_MAPPING 的回拼字节
+
+**I2C 读回增加 CHIP_SEL mux：**
+- `chip_sel=0`：读回内部 `R_REG09_F` / `R_REG10_F` / `R_REG31_F`（复位后 `8'h00`）
+- `chip_sel=1`：读回 `LC_REG_MAPPING` 回拼的默认值/写入值
+
+**LC_REG_MAPPING 回拼字节：**
+
+```systemverilog
+assign R_REG09_F_RECON = {SR_NF, SR_NR, SR_PF, SR_PR};          // 8'hFF
+assign R_REG10_F_RECON = {PWRC_N, PWRC_P, PWRC_TB, PWRC_TA};    // 8'hA5
+assign R_REG31_F_RECON = {PWRC_NB, PWRC_NA, PWRC_PB, PWRC_PA};  // 8'hAA
+```
+
+**输出逻辑：**
+- 未写过时输出 chip_sel=1 默认值（`SR_*=2'b11`、`PWRC_TA/TB=2'b01`、`PWRC_PA/PB/NA/NB=2'b10`）
+- 写过时输出对应 `R_REG*_F` 字段
+- 不再依赖 `CHIP_SEL` 分支
+
+### 10.7 0708 SMART_CS[3:0]
 
 - `0x02` 增加 `SMART_CS[3:0]` 字段（`[7:6],[3:2]`），默认 `4'b0000`
 - `LC_REG_MAPPING` 新增 `SMART_CS[3:0]` 输出，仅在 `CHIP_SEL=1` 时有效
 
 ## 11. 0714 默认值最终调整
 
-- `R_REG09` / `R_REG10` / `R_REG31` 在 chip_sel=0 下复位默认值改为 `8'h00`
-- chip_sel=1 的复位值仍待确认（TBD）
+- `R_REG09` / `R_REG10` / `R_REG31` 在 `LC_CPUWR` 内部复位默认值统一改为 `8'h00`
+- chip_sel=1 的默认值通过 `LC_REG_MAPPING` 回拼机制实现：
+  - `0x09` → `8'hFF`
+  - `0x0A` → `8'hA5`
+  - `0x1F` → `8'hAA`
+- `chip_sel=0` 时 I2C 读回内部 R_REG 值；`chip_sel=1` 时读回 LC_REG_MAPPING 回拼值
 
   </script>
   <script>
