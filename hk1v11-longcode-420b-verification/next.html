@@ -424,10 +424,18 @@
   <script type="text/template" id="md">
 # 九、后续工作
 
+## 1. 实现对齐
+
 - [ ] 修复 reference model 与 driver 的 LSB-first / 从右到左实现
 - [ ] 将 `t_8b1lane_420b_basic` 同步到 `DV_TCON_C/top/tests/`
+
+## 2. Case 扩展
+
 - [ ] 按 Phase 1~7 逐步扩展 420b case
 - [ ] 在 420b case 中关闭 C model 相关 checker
+
+## 3. Spec 与回归
+
 - [ ] 确认 CTRL_F checksum、LSP 时长、UTC 责任模块等 Spec 差异点
 - [ ] 普通 8B/10B 模式回归，确保未引入副作用
   </script>

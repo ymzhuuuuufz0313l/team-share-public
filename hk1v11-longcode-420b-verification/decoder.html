@@ -427,6 +427,8 @@
   <script type="text/template" id="md">
 # 六、420b 解码链 RTL
 
+## 1. 解码链路
+
 ```text
 20-bit 对齐输入流
         │
@@ -451,15 +453,27 @@
 └───────────────────┘
 ```
 
-### 关键信号
+## 2. 关键信号
 
-| 信号 | 说明 |
-|------|------|
-| `decode_en` | 解码窗口使能；K1/K4 开，K2/K3 关 |
-| `tag_value` | 6-bit 标签，用于全 0/全 1 替换 |
-| `dout_21b_valid` | 有效位宽：01=7bit / 10=14bit / 11=21bit |
-| `scramble_en_k3` | K3 锁存的解扰使能 |
-| `dout_24b` / `dout_valid` | 最终 24-bit 输出及有效指示 |
+### 2.1 decode_en
+
+解码窗口使能；K1/K4 开，K2/K3 关。
+
+### 2.2 tag_value
+
+6-bit 标签，用于全 0/全 1 替换。
+
+### 2.3 dout_21b_valid
+
+有效位宽：01=7bit / 10=14bit / 11=21bit。
+
+### 2.4 scramble_en_k3
+
+K3 锁存的解扰使能。
+
+### 2.5 dout_24b / dout_valid
+
+最终 24-bit 输出及有效指示。
 
 ---
   </script>

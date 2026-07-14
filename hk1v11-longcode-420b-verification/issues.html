@@ -427,15 +427,27 @@
   <script type="text/template" id="md">
 # 八、关键待确认问题
 
+## 1. 高优先级
+
 | 问题 | 优先级 |
 |------|--------|
 | `long_encoding_ref_model` encode/decode 位序一致性 | 高 |
 | `isptx_driver` 420b 发送方向与 LSB-first 对齐 | 高 |
 | `checker_420b` 20-bit chunk 组装方向与 driver 对齐 | 高 |
+
+## 2. 中优先级
+
+| 问题 | 优先级 |
+|------|--------|
 | CTRL_F checksum 是否需要发送 | 中 |
 | LSP 重复次数是否满足 ≥1us | 中 |
 | IDLE 长度精确换算（htotal-hact） | 中 |
 | UTC 错误检测责任模块确认 | 中 |
+
+## 3. 低优先级
+
+| 问题 | 优先级 |
+|------|--------|
 | 跨 lane raw 长度是否需 70 整数倍 | 低 |
 | V blanking 行数是否含 setting_line | 低 |
 

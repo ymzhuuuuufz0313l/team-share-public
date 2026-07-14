@@ -427,28 +427,33 @@
   <script type="text/template" id="md">
 # 四、验证执行阶段
 
-```text
-Phase 1: Smoke
-  └─ 基础 420b 发送、LSB-first、全 0/全 1、tag bypass、scramble on/off
+## 1. Phase 1: Smoke
 
-Phase 2: Frame Structure
-  └─ LSP、CTRL_F、CTRL_L、Active、last-active、V blanking、IDLE、multiframe
+基础 420b 发送、LSB-first、全 0/全 1、tag bypass、scramble on/off。
 
-Phase 3: Decode / Descramble / Unlock
-  └─ 解码窗口、K3 同步、UTC unlock、link 恢复
+## 2. Phase 2: Frame Structure
 
-Phase 4: Error / Corner
-  └─ 7b_01、K-code 错误、UTC header、long frame、checksum、vbk、chpi_regw 等
+LSP、CTRL_F、CTRL_L、Active、last-active、V blanking、IDLE、multiframe。
 
-Phase 5: Multi-lane / Alignment
-  └─ 2lane/4lane、70-bit 对齐、R_BAC/AEQ/debugpin/packpos/RGB 功能复跑
+## 3. Phase 3: Decode / Descramble / Unlock
 
-Phase 6: Resolution / Refresh / Port Sweep
-  └─ 4K/1080p/1440p/2.5K/2.8K/3.4K × 多刷新率 × 多 port_num/CH_SEL
+解码窗口、K3 同步、UTC unlock、link 恢复。
 
-Phase 7: Isolation / Regression
-  └─ 420b vs 8B/10B 对比，8B/10B 回归防退化
-```
+## 4. Phase 4: Error / Corner
+
+7b_01、K-code 错误、UTC header、long frame、checksum、vbk、chpi_regw 等。
+
+## 5. Phase 5: Multi-lane / Alignment
+
+2lane/4lane、70-bit 对齐、R_BAC/AEQ/debugpin/packpos/RGB 功能复跑。
+
+## 6. Phase 6: Resolution / Refresh / Port Sweep
+
+4K/1080p/1440p/2.5K/2.8K/3.4K × 多刷新率 × 多 port_num/CH_SEL。
+
+## 7. Phase 7: Isolation / Regression
+
+420b vs 8B/10B 对比，8B/10B 回归防退化。
 
 ---
   </script>

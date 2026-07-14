@@ -427,6 +427,8 @@
   <script type="text/template" id="md">
 # 三、420b 帧结构
 
+## 1. 帧格式概览
+
 ```text
 Frame:
 ├─ Config Line (K4 + CTRL_F + IDLE)
@@ -435,16 +437,31 @@ Frame:
 └─ Last Active Line (K1 + CTRL_L + Video + K4 + CTRL_F)  ← 末尾嵌入帧尾
 ```
 
-### 关键字段
+## 2. 关键字段
 
-| 字段 | 内容 | 说明 |
-|------|------|------|
-| LSP | K2 + 0xEA/EB/EC/ED×8 + dummy + K3 | 训练数据，**不加扰** |
-| CTRL_F | Config Line 配置数据 | payload，**加扰** |
-| CTRL_L | Line 控制数据 | payload，**加扰** |
-| Active | RGB 像素数据 | payload，**加扰** |
-| VBK | V blanking 数据 | payload，**加扰** |
-| IDLE | K5/K6/K7/K8 pattern | **不加扰** |
+### 2.1 LSP
+
+K2 + 0xEA/EB/EC/ED×8 + dummy + K3；训练数据，**不加扰**。
+
+### 2.2 CTRL_F
+
+Config Line 配置数据；payload，**加扰**。
+
+### 2.3 CTRL_L
+
+Line 控制数据；payload，**加扰**。
+
+### 2.4 Active
+
+RGB 像素数据；payload，**加扰**。
+
+### 2.5 VBK
+
+V blanking 数据；payload，**加扰**。
+
+### 2.6 IDLE
+
+K5/K6/K7/K8 pattern；**不加扰**。
 
 ---
   </script>
