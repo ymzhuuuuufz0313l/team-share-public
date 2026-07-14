@@ -34,9 +34,9 @@ COLORS = {
     "lsi_pwd":    "#c084fc",   # password register (0x30 TEST_PRTCT)
 
     # reset domains
-    "rst_nlock":  "#60a5fa",   # N_RST_NLOCK
-    "rst_n":      "#a78bfa",   # N_RST
-    "rst_scr":    "#2dd4bf",   # RSTN_SCR_EN
+    "rst_nlock":  "#dbeafe",   # N_RST_NLOCK (muted, most common)
+    "rst_n":      "#f97316",   # N_RST (emphasized)
+    "rst_scr":    "#22c55e",   # RSTN_SCR_EN (emphasized)
     "rst_other":  "#fbbf24",   # other / mixed
 }
 
