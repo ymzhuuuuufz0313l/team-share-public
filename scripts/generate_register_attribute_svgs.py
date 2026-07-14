@@ -205,11 +205,12 @@ def generate_checksum_dual_svg(title, map0, map1):
     addr_col_w = 90
     label_col_w = 80
     cell_w = 80
-    cell_h = 36
-    row_gap = 4
-    group_gap_single = 14
-    group_gap_dual = 20
+    cell_h = 40
+    row_gap = 8
+    group_gap_single = 16
+    group_gap_dual = 24
     bit_label_h = 24
+    label_header_h = 22  # vertical space for address label
 
     # participating addresses (including control/frame-end for context)
     addresses = [0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06,
@@ -236,8 +237,9 @@ def generate_checksum_dual_svg(title, map0, map1):
         lines.append(f'<text x="{x + cell_w/2}" y="{bit_y}" text-anchor="middle" font-size="12" fill="{COLORS["muted"]}">[{bit}]</text>')
 
     def render_row(y, dec, mode_label, reg_map, base_color_key):
-        # mode label
-        lines.append(f'<text x="{left_margin + addr_col_w - 8}" y="{y + cell_h/2 + 4}" text-anchor="end" font-size="12" fill="{COLORS["muted"]}">{escape_xml(mode_label)}</text>')
+        # mode label (only for dual-row groups)
+        if mode_label:
+            lines.append(f'<text x="{left_margin + addr_col_w - 8}" y="{y + cell_h/2 + 4}" text-anchor="end" font-size="12" fill="{COLORS["muted"]}">{escape_xml(mode_label)}</text>')
 
         entries = reg_map.get(dec, [])
         # build per-bit map
@@ -286,25 +288,28 @@ def generate_checksum_dual_svg(title, map0, map1):
             if has_field:
                 name = e["name"]
                 display_name = name[:14] + "…" if len(name) > 14 else name
-                font_size = 9 if width_bits >= 2 else 7
-                lines.append(f'<text x="{x + w/2}" y="{y + cell_h/2 - 2}" text-anchor="middle" font-size="{font_size}" font-weight="500" fill="{COLORS["text"]}">{escape_xml(display_name)}</text>')
-                lines.append(f'<text x="{x + w/2}" y="{y + cell_h/2 + 10}" text-anchor="middle" font-size="{font_size - 1}" fill="{COLORS["muted"]}">{escape_xml(e["default"])}</text>')
+                font_size = 9 if width_bits >= 2 else 8
+                lines.append(f'<text x="{x + w/2}" y="{y + cell_h/2 - 3}" text-anchor="middle" font-size="{font_size}" font-weight="500" fill="{COLORS["text"]}">{escape_xml(display_name)}</text>')
+                lines.append(f'<text x="{x + w/2}" y="{y + cell_h/2 + 11}" text-anchor="middle" font-size="{font_size - 1}" fill="{COLORS["muted"]}">{escape_xml(e["default"])}</text>')
 
     gy = top_margin + bit_label_h + 16
     for dec in addresses:
         is_diff = diff_flags[dec]
         hex_str = f"0x{dec:02X}"
-        row_count = 2 if is_diff else 1
-        group_h = row_count * cell_h + (row_count - 1) * row_gap + 8
 
-        lines.append(f'<text x="{left_margin + addr_col_w - 10}" y="{gy + group_h/2 - 6}" text-anchor="end" font-size="14" font-weight="600" fill="{COLORS["text"]}">{hex_str} ({dec})</text>')
+        # address label always sits in a small header above the row(s)
+        lines.append(f'<text x="{left_margin + addr_col_w - 10}" y="{gy + 16}" text-anchor="end" font-size="14" font-weight="600" fill="{COLORS["text"]}">{hex_str} ({dec})</text>')
 
         if is_diff:
-            render_row(gy, dec, "chip_sel=0", map0, "chk_sel0")
-            render_row(gy + cell_h + row_gap + 2, dec, "chip_sel=1", map1, "chk_sel1")
+            group_h = label_header_h + 2 * cell_h + row_gap + 8
+            row0_y = gy + label_header_h + 4
+            row1_y = row0_y + cell_h + row_gap
+            render_row(row0_y, dec, "chip_sel=0", map0, "chk_sel0")
+            render_row(row1_y, dec, "chip_sel=1", map1, "chk_sel1")
         else:
-            # single row, teal color to indicate "same for both chip_sel modes"
-            render_row(gy, dec, "chip_sel=0/1", map0, "chk_both")
+            group_h = label_header_h + cell_h + 8
+            # single row: no mode label, color (chk_both) indicates same for both chip_sel modes
+            render_row(gy + label_header_h + 4, dec, "", map0, "chk_both")
 
         gy += group_h + (group_gap_dual if is_diff else group_gap_single)
 
