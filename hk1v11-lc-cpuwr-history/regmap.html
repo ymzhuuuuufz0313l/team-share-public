@@ -410,6 +410,18 @@ assign R_REG31_F_RECON = {PWRC_NB, PWRC_NA, PWRC_PB, PWRC_PA};  // 8'hAA
   - `0x1F` → `8'hAA`
 - `chip_sel=0` 时 I2C 读回内部 R_REG 值；`chip_sel=1` 时读回 LC_REG_MAPPING 回拼值
 
+## 12. 默认字节映射可视化
+
+下图按地址逐字节展示 chip_sel=0 与 chip_sel=1 的复位默认值。每个单元格标注字段名与默认值；颜色区分字段类别；红色边框/星标表示与 chip_sel=0 不同。
+
+### chip_sel = 0
+
+![chip_sel=0 寄存器默认字节映射](./images/chip_sel0_register_map.svg)
+
+### chip_sel = 1
+
+![chip_sel=1 寄存器默认字节映射](./images/chip_sel1_register_map.svg)
+
   </script>
   <script>
     document.getElementById('article').innerHTML = marked.parse(document.getElementById('md').textContent.trim());
