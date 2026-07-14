@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>核心变更时间线 · LC_CPUWR 修改记录</title>
+  <title>寄存器规格交叉验证 · LC_CPUWR 修改记录</title>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>
 :root {
@@ -234,204 +234,101 @@
     <div class="content">
       <article class="article" id="article"></article>
       <div class="page-nav">
-      <a href="./diagrams.html"><span class="label">上一篇</span><span class="title">寄存器图解 Sheet</span></a>
-      <a class="next" href="./checksum.html"><span class="label">下一篇</span><span class="title">校验和机制演进</span></a>
+      <a href="./regmap.html"><span class="label">上一篇</span><span class="title">寄存器映射与命名规范化</span></a>
+      <a class="next" href="./verification.html"><span class="label">下一篇</span><span class="title">验证同步与 Checker 统一</span></a>
       </div>
       <div class="footer">Shared from team knowledge base</div>
     </div>
   </div>
 
   <script type="text/template" id="md">
-# 三、核心变更时间线
+# 六、寄存器规格交叉验证
 
-## 0. 2026-06-15：LC_CPUWR_history 归档目录建立
+## 1. 验证目的与基线
 
-在迭代进入密集期之前，项目建立了独立的版本归档目录 `E:\\project\\HK1V11\\LC_CPUWR_history`，用于：
+`register_research/` 是对 `LC_CPUWR` 寄存器表、RTL 实现与 Excel 规格三者的一次交叉核对。它补充了前面章节中只讲"改了什么"所缺少的"依据是什么"。
 
-- 保存每一次重要变更的 RTL 快照
-- 集中存放 changelist、modify plan、compliance report 等文档
-- 支持服务器回传前的 review 与追溯
+| 基线 | 来源 |
+|------|------|
+| RTL | `LC_CPUWR_20260707_v1_decimal.v` |
+| Excel 规格 | `HK1V11_Register_20260708.xlsm` |
+| 地址映射 | `chip_sel0/1_register_address_map.md` |
 
-初始目录包含 `README.md`、changelist、plan 文档，后续逐步扩展为 `verilog_hdl/`、`markdownfile/`、`case/` 等子目录。
+本地完整资料见：`E:\project\HK1V11\register_research\`
 
-## 1. 2026-04：寄存器模块重写与 checksum 雏形
+## 2. 关键结论
 
-### 1.1 读写寄存器模块重写（0421）
+### 2.1 20260708 Excel 已同步项
 
-- `LC_CPUWR.v` 按地址顺序重新组织
-- 对应寄存器 Excel 修改信号复位值与复位信号
-- 总体结构与代码风格保持不变
+| 地址 | 变更 | 默认值 | 状态 |
+|------|------|--------|------|
+| `0x02` (CHIP_SEL=1) | 新增 `SMART_CS[3:0]` | `4'b0000` | 已同步到 RTL / 文档 |
+| `0x09` (CHIP_SEL=1) | `SR_PR/PF/NR/NF[1:0]` 默认值规范为 `2'b11` | `8'hFF` | MDs / RTL 一致 |
+| `0x24` | `reg_cr_done_cnt[5:0]` 默认值改为 `6'b010101` | `0x15` | MDs / RTL 一致 |
+| `0x32` | 字段名规范为 `sw_reg_lane_ctrl[4:0]` | `5'b00010` | MDs / RTL 一致 |
 
-### 1.2 寄存器稳定判断（0430）
+### 2.2 混合复位域
 
-- 增加寄存器判断功能：只有寄存器信息稳定且多帧得到相同信息时才更新进寄存器表
-- 为后续 checksum 的"三帧一致"机制打下基础
+以下位使用 `N_RST`（不依赖 CDR lock），其余多为 `N_RST_NLOCK`：
 
-### 1.3 I2C only 区域 password 保护（0506）
+- `0x01[5]` PORSD
+- `0x05[7:5]` CH_SEL
+- `0x06[1:0]` SDC / DPLC_MODE
+- `0x20[5:0]` R_TESTO_SEL
+- `0x21[5:4]` R_UTC
+- `0x30` TEST_PRTCT
 
-- 按照 `LSI_PROTECT` 要求，对 I2C 专用地址 `0x50~0x56` 中所有可写寄存器增加 password error reset 保护
+`0x00[4]` SCREN 使用独立复位 `RSTN_SCR_EN`。
 
-## 2. 2026-05：REG07 与 checksum 机制成型
+### 2.3 访问类型 / LSI 保护差异
 
-### 2.1 0507 寄存器大表更新
+- `0x34[5:0]` 为只读 lane 状态位，Excel 仍标 `R/W`，以 RTL 为准。
+- `0x20-0x39`、`0x90-0x92` 读回受 `LSI_PRTECT` 掩码（`0x30 = 0x72` 时激活）。
 
-- `AVE_R` 从 `0x00[2:0]` 移到 `0x00[7:5]`
-- `reg_lane_ck_inv_en` 从 `0x25[7]` 移到 `0x50[1]`
+## 3. Excel 版本差异（20260703 → 20260708）
 
-### 2.2 0511 REG07 checksum update 功能
+- 旧字段：337 / 新字段：340
+- 新增 5 个、删除 2 个、变更 7 个
 
-- 新增 `REG07` 寄存器相关的 checksum update 功能
-- 后续演变为 `CTRLF_CHECKSUM[3:0]`，控制 checksum 使能
+主要变更：
 
-### 2.3 0512 部分寄存器不能进行 checksum update
+| 类型 | 地址 | 字段 | 说明 |
+|------|------|------|------|
+| 新增 | `0x02` (CHIP_SEL=1) | `SMART_CS[3:0]` | `[7:6]` / `[3:2]`，默认 `2'b00` |
+| 新增 | `0x20` (CHIP_SEL=0) | `PWRC_TSEL` | 默认 `1'b0` |
+| 变更 | `0x09` (CHIP_SEL=1) | `SR_*[1:0]` | 默认从 `1'b1` 改为 `2'b11` |
+| 变更 | `0x24` | `reg_cr_done_cnt[5:0]` | 默认从 `6'b010010` 改为 `6'b010101` |
 
-发现三帧一致更新机制与时序冲突：
-- `PORSD` / `POL` 等信号需要在第一帧结束就置位，但 checksum 要求 3 帧一致才生效
-- `ch_sel` 寄存器响应滞后，导致后级模块按旧默认值处理新数据
+## 4. 寄存器属性总表
 
-**解决方案（最终演化为 0520 方案）**：
-- **LSP 阶段结束至 K1 发起前**：此阶段不做 checksum，寄存器直写
-- **K1 后做一个 latch**：latch=1 后保持 checksum 功能
-- 即 **LSP 结束后第一次发送指令改为直写**，确保关键信号在第一帧即可生效，而不是永久绕过 checksum
+完整逐位属性表（时钟域、复位域、Access、LSI、Checksum、RTL 行号、下游信号）见本地文件：
 
-### 2.4 0512 寄存器新增修改项
+- `E:\project\HK1V11\register_research\register_atlas.md`
+- `E:\project\HK1V11\register_research\register_research.xlsx`
 
-删除字段：
-- `SMART_CS[3:0]` @ 0x02
-- `VPS_EN[1:0]` @ 0x03 / 0x28
-- `PDF_EN` / `PDF_CTRL` @ 0x06
-- `R_BWDB_V_OFF` @ 0x23
-- `R_LSP_DET_EN` @ 0x50
+下方为按地址段展开的入口：
 
-修改字段：
-- `reg_pin_eq_auto[3:2]` 地址从 `0x02[5:4]` 改为 `0x02[3:2]`
-- `regr_lane_ctrl[4:0]` 默认值改为 `5'b11000`
+| 地址段 | 文档 |
+|--------|------|
+| `0x00-0x3F` | `00_CTRL_F.md` |
+| `0x40-0x44` | `40_CTRL_L.md` |
+| `0x90-0x92` | `90_CDR.md` |
+| `0xF0-0xF1` | `F0_I2C_PASSWORD.md` |
+| 保留地址 | `reserved_addresses.md` |
 
-### 2.5 0519~0520 checksum 功能最终方案
+## 5. 待确认项
 
-- `REG07[3:0]` 命名为 `CTRLF_CHECKSUM[3:0]`，默认值 `0x05`（使能校验和）
-- 最终方案：`REG07` 默认值为 `0`（使能 checksum 检测），写入 `0x05` 时关闭 checksum（直写模式）
-- LSP 阶段结束至 K1 发起前不做 checksum，寄存器直写；K1 后 latch 保持 checksum 功能
+来自 `delta_report.md` 的遗留问题：
 
-## 3. 2026-06：时钟域统一、命名规范化与大规模重构
+1. `0x33[6:4]` 的 access type 待 design owner 确认。
+2. `LSI_PRTECT` 是否拆分为"读回掩码"与"功能门控"两列。
+3. `0xF0/0xF1` 是否可读，当前按 I2C-only 写处理。
+4. 部分 Reserved 位在 RTL 中仍有存储单元，是否区分 `Reserved (stored)` / `Reserved (unimplemented)`。
+5. `LC_REG_MAPPING` 下游信号映射需逐位核对。
 
-### 3.1 0615 时钟域统一
+这些事项与 [七、当前状态与后续](./status.html) 中的待确认项相互引用。
 
-- `Seg2` 时钟从 `WCK1_A_TEST` 统一为 `WCK1_A`
-- 删除 `WCK1_A_TEST` 输入端口
-- 替换约 85 处 always 敏感列表
-- 消除 `chksum_mode` 跨时钟域 CDC 问题
-
-### 3.2 0615 I2C 地址译码十进制化
-
-- I2C 专用地址译码信号 `ADDR50~56_I2C_TEST` 重命名为 `ADDR80~86_I2C_TEST`
-- I2C readback case 地址字面量从 `8'h*` 改为 `8'd*`
-
-### 3.3 0615 Seg2 checksum 删除
-
-- 彻底移除 `CHKSUM_T_EN` 宏、Seg2 shadow 寄存器及 XOR checksum 校验逻辑
-- `0x20~0x38` 全部 25 个测试寄存器改为 `WCK1_A` 时钟域直写
-
-### 3.4 0616 Seg1 扩展与 NG Unlock
-
-- `R_REG09_F` / `R_REG10_F` / `R_REG29_F` / `R_REG30_F` 加入 Seg1 寄存器并参与 checksum
-- Seg1 shadow 寄存器从 9 个扩展到 13 个
-- 新增 `unmatch_cnt_a` 连续 mismatch 计数器与 `unlock_latch_a` 解锁锁存器
-- 连续 5 帧 mismatch 后自动旁路 checksum 直写
-
-### 3.5 0616 LC_REG_MAPPING 输出重构
-
-- 删除 `LSI_PRTECT` 输入
-- `SP_S` / `VBK` / `VBK_EN` 直接由对应寄存器输出，不再受 `LSI_PRTECT` 掩码控制
-- 新增 chip_sel=1 专用 `SR_*` / `PWRC_T*` / `PWRC_PA/PB/NA/NB` 输出
-
-### 3.6 0616 寄存器位置调整与新增
-
-- `R_BAC` 从 `R_REG31_F[1]` 移到 `R_REG40_F[2]`
-- 多个寄存器名从十六进制改为十进制：`R_REG20~38_F` → `R_REG32~56_F`，`R_REG50~56_I2C` → `R_REG80~86_I2C`
-- `LSI_PRTECT` 源从 `R_REG30_F == 8'h72` 改为 `R_REG48_F == 8'h72`
-- 新增 `ACS_EN`、`Level_Skip_frame`、`Skip_frame_count` 等字段
-
-### 3.7 0617 SMART_CS / Pattern Detect / 动态 PWRC 删除
-
-- 移除 `PAT_DET_DYN`、`PAT_DET_STA`、`PTN_DET_ENB`、`POL_SW`、`POL_SW_PRE`
-- 移除 `SMART_CS`、`R_SUBP_CS_OPT`、`R_SUBP_TPE_OPT` 等 smart charge share 寄存器
-- 移除 `R_STATIC_PWRC_OPT`、`R_TPW_EXTEND_EN` 等动态 PWRC 控制
-- `VPS_EN` 功能由 pattern detect 触发改为直接由 `VPS_EN & BKD` 控制
-
-### 3.8 0622 SSFC 信号新增与 SCREN 控制
-
-- 新增 `SSFC` 输入端口
-- `R_SCREN` 由 `R_REG00_F[4]` 直接输出改为 `R_REG00_F[4] & SSFC`
-- scramble enable 仅在 `SSFC==1` 时有效
-
-### 3.9 0624 寄存器大规模重构
-
-- `AVE_R/G/B` 合并为 `AVE_RGBW` @ `0x00[7:5]`
-- 删除 `AVE_AUTO`、`AVE_G`、`AVE_B`、`AVE_DELTA`
-- `EQ_DC_L0[2:0]` 从 `0x03[4:2]` 移到 `0x33[6:4]`
-- `reg_lane_ck_inv_en` 从 `0x50[1]` 移到 `0x33[1]`
-- `CG_OFF` 从 `0x54[0]` 移到 `0x33[0]`
-- `reg_lane_ctrl` 改名为 `sw_reg_lane_ctrl`，统一为 `0x32[4:0]`
-- 6 个 lane 状态从 `0x86` 移到 `0x34[5:0]`
-- 删除 I2C 专用地址 `80~86` 及所有 autoEQ 相关字段
-- `0x50/0x51/0x52` 作为 `0x32/0x33/0x34` 的 I2C 读回别名
-
-## 4. 2026-07：CDR/UTC、默认值与命名统一
-
-### 4.1 0701 CDR/UTC 更新
-
-- `reg_cr_done_cnt[5:0]` 默认值从 `0x12` 改为 `0x15`（@0x24）
-- 新增 `reg56/57` 承载 `UTC_long01_frame` / `UTC_header_cnt` / `UTC_header_frame`，默认值 `0x05/0x03`
-- 新增 `reg144~146` 直接映射 CDR fast/fine lock 参数
-
-### 4.1a 0702 UTC 0x38/0x39 修复
-
-0702 发现 `env_cfg.sv` 中 0x38/0x39 仍被当作 reserved，导致 UTC 相关字段无法通过 cfg_frame 配置。修复：新增 0x38/0x39 成员与 cfg_frame 覆盖入口。
-
-### 4.2 0702 PWRC_TSEL
-
-- 新增 `PWRC_TSEL` @ `0x20[7]`，由 `R_REG32_F[7]` 驱动，默认 `1'b0`
-
-### 4.3 0703 Segment1 frame end 改为 0x27
-
-- 地址 `39(0x27)` 加入 Segment1 checksum，作为新的 frame end
-- 地址 `31(0x1F)` 改为普通 shadow 寄存器，不再作为 frame end
-- `reg_lane_ctrl` 改名为 `sw_reg_lane_ctrl`
-- 删除 `CHPI_SEL ? ... : ...` 条件复位默认值，统一使用 `8'h00`
-
-### 4.4 0705 复位值支持 CHIP_SEL 选择
-
-- `R_REG10_F(0x0A)` 复位默认值改为 `{CHPI_SEL,1'b0,CHPI_SEL,1'b0,1'b0,CHPI_SEL,1'b0,CHPI_SEL}`，chip_sel=1 时为 `8'hA5`
-- `R_REG31_F(0x1F)` 复位默认值改为 `{CHPI_SEL,1'b0,CHPI_SEL,1'b0,CHPI_SEL,1'b0,CHPI_SEL,1'b0}`，chip_sel=1 时为 `8'hAA`
-
-### 4.5 0706 CHPI_SEL → CHIP_SEL 与 checker 数组扩展
-
-- 模块端口 `CHPI_SEL` 统一重命名为 `CHIP_SEL`
-- 内部所有 `CHPI_SEL` 引用同步修改
-- 跨模块实例化命名端口连接同步更新
-- `checker_for_checksum.sv` 跨模块读取路径同步更新
-- 因 0x27 加入 Segment1，checker 的 `expected/loaded` 数组从 32 元素扩展为 256 元素
-- 全量 checksum case 回归通过
-
-### 4.6 0708 SMART_CS[3:0]
-
-- `0x02` 增加 `SMART_CS[3:0]` 字段（`[7:6],[3:2]`），默认 `4'b0000`
-- `LC_REG_MAPPING` 新增 `SMART_CS[3:0]` 输出，仅在 `CHIP_SEL=1` 时有效
-- `LINK_LOGIC` 连接 `SMART_CS` 到 `LC_REG_MAPPING`
-
-### 4.7 0714 默认值最终调整
-
-- `R_REG09` / `R_REG10` / `R_REG31` 在 `LC_CPUWR` 内部复位默认值统一改为 `8'h00`
-- chip_sel=1 的默认值通过 `LC_REG_MAPPING` 的**写标志 + 回拼字节**机制实现：
-  - `R_REG09_F_RECON = {SR_NF, SR_NR, SR_PF, SR_PR} = 8'hFF`
-  - `R_REG10_F_RECON = {PWRC_N, PWRC_P, PWRC_TB, PWRC_TA} = 8'hA5`
-  - `R_REG31_F_RECON = {PWRC_NB, PWRC_NA, PWRC_PB, PWRC_PA} = 8'hAA`
-- I2C 读回增加 `CHIP_SEL` mux：chip_sel=0 读回内部 R_REG，chip_sel=1 读回 LC_REG_MAPPING 回拼值
-- 使用 `iverilog -g2005-sv -DFF_DLY=0` 完成三份 RTL 语法检查
-- 修复注释块与 `always` 关键字合并到同一行导致的语法错误
-
-  </script>
+    </script>
   <script>
     document.getElementById('article').innerHTML = marked.parse(document.getElementById('md').textContent.trim());
 const chapters = [
