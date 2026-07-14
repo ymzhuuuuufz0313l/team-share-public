@@ -183,52 +183,185 @@
   <script type="text/template" id="md">
 # 四、寄存器映射与命名规范化
 
-## 1. 位段迁移
+## 1. 寄存器模块重写（0421）
 
-0612 基线重构对多位段进行了迁移：
+- `LC_CPUWR.v` 读写寄存器模块重写
+- 按地址顺序组织
+- 对应寄存器 Excel 修改信号复位值与复位信号
+- 总体结构与代码风格保持不变
 
-- M1~M5 等控制字段重新分配地址和位宽
-- 新增 `ACS_EN`、`Level_Skip_frame`、`Skip_frame_count`、`VBK_EN` 等字段
-- 0617v2 将 `SP_S` / `VBK` 输出从 LC_CPUWR 移出到 `LC_REG_MAPPING`
+## 2. I2C 地址与 LSI_PROTECT
 
-## 2. chip_sel 默认值演进
+### 2.1 0506 I2C only 区域 password 保护
 
-### 2.1 0626 引入 chip_sel 区分
+- 按照 `LSI_PROTECT` 要求，对 I2C 专用地址 `0x50~0x56` 中所有可写寄存器增加 password error reset 保护
 
-首次按 `chip_sel0` / `chip_sel1` 区分复位默认值：
-- `0x09`、`0x0A`、`0x1F` 在 chip_sel1 下分别为 `FF` / `A5` / `AA`
+### 2.2 0615 I2C 地址译码十进制化
 
-### 2.2 0703 统一 chip_sel=0
+- I2C 专用地址译码信号 `ADDR50~56_I2C_TEST` 重命名为 `ADDR80~86_I2C_TEST`
+- I2C readback case 地址字面量从 `8'h*` 改为 `8'd*`
 
-删除 CHIP_SEL 条件复位默认值，统一按 chip_sel=0 处理。
+### 2.3 0617 LSI_PRTECT 重构
 
-### 2.3 0705 恢复 CHIP_SEL 相关默认值
+- `LC_REG_MAPPING` 删除 `LSI_PRTECT` 输入
+- `SP_S` / `VBK` / `VBK_EN` 直接由对应寄存器输出，不再受 `LSI_PRTECT` 掩码控制
 
-根据项目反馈，恢复 CHIP_SEL 相关的位拼接默认值。
+## 3. 0507 寄存器大表更新
 
-### 2.4 0714 最终方案
+| 信号 | 旧位置 | 新位置 |
+|------|--------|--------|
+| `AVE_R` | `0x00[2:0]` | `0x00[7:5]` |
+| `reg_lane_ck_inv_en` | `0x25[7]` | `0x50[1]` |
 
-当前候选版本再次调整为：
-- `chip_sel=0` 时，`R_REG09` / `R_REG10` / `R_REG31` 复位默认值为 `8'h00`
-- `chip_sel=1` 的复位值仍待确认（TBD）
+## 4. 0512 寄存器新增修改项
 
-## 3. 命名十进制化
+### 4.1 删除字段
 
-0616~0617 期间完成了寄存器名和 I2C 地址的十进制化：
+| 信号 | 地址 |
+|------|------|
+| `SMART_CS[3:0]` | `0x02[7:6], [3:2]` |
+| `VPS_EN[1:0]` | `0x03[7]`, `0x28[6]` |
+| `PDF_EN` | `0x06[4]` |
+| `PDF_CTRL` | `0x06[6]` |
+| `R_BWDB_V_OFF` | `0x23[0]` |
+| `R_LSP_DET_EN` | `0x50[0]` |
 
-| 旧命名 | 新命名 |
-|--------|--------|
-| `R_REG1F_F` | `R_REG31_F` |
-| `R_REG09_F` | `R_REG09_F`（保持不变，但体系统一） |
-| I2C 地址 0x50~0x56 | 80~86 |
+### 4.2 修改字段
 
-## 4. CHPI_SEL → CHIP_SEL
+| 信号 | 变更项 | 旧值 | 新值 |
+|------|--------|------|------|
+| `reg_pin_eq_auto[3:2]` | 地址 | `0x02[5:4]` | `0x02[3:2]` |
+| `regr_lane_ctrl[4:0]` | 默认值 | `5'b00000` | `5'b11000` |
 
-0706v1 版本进行了命名统一：
+## 5. 0519/0520 REG07 相关
 
-- 所有 `CHPI_SEL` 信号/参数统一改为 `CHIP_SEL`
-- 同时影响 LC_CPUWR、LC_REG_MAPPING、LINK_LOGIC 等多个模块
-- 0703v2 中 `reg_lane_ctrl` 也同步改为 `sw_reg_lane_ctrl`
+- `reg_kvco_ctrl[3:0]` 默认值从 `8` 改为 `A`，地址 `@0x26[7:4]`
+- `REG07[3:0]` 更新为 `CTRLF_CHECKSUM[3:0]`，默认值 `0x05`
+- 注释掉未使用的 `shadow1F` 寄存器，优化面积和时序
+
+## 6. LC_REG_MAPPING 修复
+
+### 6.1 0519 PWRC 与 BKDU 相关性错误
+
+- 原逻辑 `assign a = b & c`，删除 `b` 寄存器后等效 `assign a = c`
+- 导致 PWRC 与 BKDU 呈现相关性
+- 修复：赋值为 `0`
+
+### 6.2 0521 DBC code 被错误删除
+
+- DBC 功能与 PDF 寄存器关联，PDF 删除后 DBC 被级联误删除
+- 修正：`DBC = 1'b1` 独立，KEEPLOW 已实现
+
+### 6.3 0521 PWRC 寄存器映射同步
+
+- `P2WRC` 映射由 `3'b001` 改为 `3'b000`
+
+## 7. 0616 寄存器位置调整与新增
+
+### 7.1 位置移动
+
+| 信号 | 旧位置 | 新位置 |
+|------|--------|--------|
+| `R_BAC` | `R_REG31_F[1]` | `R_REG40_F[2]` |
+| `reg_ana_test_sel[3:0]` | `R_REG37_F[3:0]` | `R_REG35_F[7:4]` |
+| `reg_cal_result_display_sel[1:0]` | `R_REG37_F[5:4]` | `R_REG35_F[1:0]` |
+| `reg_cdr_rlpf[3:0]` | `R_REG39_F[3:0]` | `R_REG37_F[3:0]` |
+| `reg_cdr_icp[3:0]` | `R_REG39_F[7:4]` | `R_REG37_F[7:4]` |
+| `LSI_PRTECT` 源 | `R_REG30_F == 8'h72` | `R_REG48_F == 8'h72` |
+
+### 7.2 命名十进制化
+
+- `R_REG20~38_F` → `R_REG32~56_F`
+- `R_REG50~56_I2C` → `R_REG80~86_I2C`
+
+### 7.3 新增字段
+
+- `R_REG09_F` / `R_REG10_F` / `R_REG29_F` / `R_REG30_F`
+- `ACS_EN` @ `R_REG39_F[7]`
+- `Level_Skip_frame` @ `R_REG39_F[1]`
+- `Skip_frame_count` @ `R_REG39_F[0]`
+- `R_BAC` @ `R_REG40_F[2]`
+- chip_sel=1 专用 `SR_*` @ `R_REG09_F`
+- chip_sel=1 专用 `PWRC_T*` @ `R_REG10_F`
+- chip_sel=1 专用 `PWRC_PA/PB/NA/NB` @ `R_REG31_F`
+
+## 8. 0617 SMART_CS / Pattern Detect / 动态 PWRC 删除
+
+- 移除 `PAT_DET_DYN`、`PAT_DET_STA`、`PTN_DET_ENB`、`POL_SW`、`POL_SW_PRE`
+- 移除 `SMART_CS`、`R_SUBP_CS_OPT`、`R_SUBP_TPE_OPT`、`R_SMT_CS_EXT_TP`、`FALLING_CS_OPT`
+- 移除 `R_STATIC_PWRC_OPT`、`R_TPW_EXTEND_EN`、`R_TPW_EXTEND`、`TPW_EXTEND`、`TP_EXTEND`
+- `VPS_EN` 功能由 pattern detect 触发改为直接由 `VPS_EN & BKD` 控制
+
+## 9. 0624 寄存器大规模重构
+
+### 9.1 AVE 合并
+
+- `AVE_R/G/B` 合并为 `AVE_RGBW` @ `0x00[7:5]`，默认 `000`
+- 删除 `AVE_AUTO`、`AVE_G`、`AVE_B`、`AVE_DELTA`，改为 Reserved
+
+### 9.2 字段移动
+
+| 信号 | 旧位置 | 新位置 |
+|------|--------|--------|
+| `EQ_DC_L0[2:0]` | `0x03[4:2]` | `0x33[6:4]` |
+| `reg_lane_ck_inv_en` | `0x50[1]` | `0x33[1]` |
+| `CG_OFF` | `0x54[0]` | `0x33[0]` |
+| 6 个 lane 状态 | `0x86` | `0x34[5:0]` |
+
+### 9.3 lane_ctrl 统一
+
+- 删除 `reg_lane_ctrl_00/01/10/11`
+- 统一为 `sw_reg_lane_ctrl[4:0]` @ `0x32[4:0]`
+- 新增 `reg_pin_eq` @ `0x32[7]`
+
+### 9.4 autoEQ 字段删除
+
+删除以下 I2C / autoEQ 相关字段：
+
+- `reg_loop_cnt`、`reg_eq_mode`、`reg_win_sel`、`reg_eq_golden_time`
+- `reg_eq_shift_sel`、`reg_eq_utc_thd_sel`、`reg_thd_sel`、`reg_rst_eq_en`
+- `reg_eq_cal_sel`、`reg_eq_crc_count_en`、`reg_eq_golden_pin`、`reg_eq_crc_block_en`
+- `regr_dfe_state`、`regr_autoeq_state`、`regr_lane_ctrl`、`regr_autoeq_update`
+
+保留别名：`0x50/0x51/0x52` 作为 `0x32/0x33/0x34` 的 I2C 读回别名。
+
+## 10. 0701~0708 细节更新
+
+### 10.1 0701 CDR/UTC
+
+- `reg_cr_done_cnt[5:0]` 默认值 `0x12` → `0x15`（@0x24）
+- 新增 `reg56/57` 承载 UTC 相关字段，默认值 `0x05/0x03`
+- 新增 `reg144~146` 直接映射 CDR fast/fine lock 参数
+
+### 10.2 0702 PWRC_TSEL
+
+- 新增 `PWRC_TSEL` @ `0x20[7]`，默认 `1'b0`
+
+### 10.3 0703 EQ_DC_L0 删除
+
+- `EQ_DC_L0` 寄存器删除，同步修改相关模块
+
+### 10.4 0703 frame end 与寄存器重命名
+
+- `0x27` 加入 Segment1 checksum，作为新 frame end
+- `0x1F` 改为普通 shadow 寄存器
+- `reg_lane_ctrl` 改名为 `sw_reg_lane_ctrl`
+
+### 10.5 0705/0706 CHIP_SEL 默认值
+
+- `R_REG10_F(0x0A)` 复位默认值改为 `{CHIP_SEL,1'b0,CHIP_SEL,1'b0,1'b0,CHIP_SEL,1'b0,CHIP_SEL}`，chip_sel=1 时 `8'hA5`
+- `R_REG31_F(0x1F)` 复位默认值改为 `{CHIP_SEL,1'b0,CHIP_SEL,1'b0,CHIP_SEL,1'b0,CHIP_SEL,1'b0}`，chip_sel=1 时 `8'hAA`
+- 0706 将 `CHPI_SEL` 统一重命名为 `CHIP_SEL`
+
+### 10.6 0708 SMART_CS[3:0]
+
+- `0x02` 增加 `SMART_CS[3:0]` 字段（`[7:6],[3:2]`），默认 `4'b0000`
+- `LC_REG_MAPPING` 新增 `SMART_CS[3:0]` 输出，仅在 `CHIP_SEL=1` 时有效
+
+## 11. 0714 默认值最终调整
+
+- `R_REG09` / `R_REG10` / `R_REG31` 在 chip_sel=0 下复位默认值改为 `8'h00`
+- chip_sel=1 的复位值仍待确认（TBD）
 
   </script>
   <script>

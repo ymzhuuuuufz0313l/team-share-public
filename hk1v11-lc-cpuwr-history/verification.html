@@ -197,9 +197,9 @@ DV_TCON_C/top/agents/isprx_env/isptx_agent/checker_for_checksum.sv
 - 便于随 RTL 变更同步更新
 - 减少重复代码
 
-## 2. 受影响的 case 列表
+## 2. 受影响的 checksum case 列表
 
-共影响 18 个 checksum 相关 case，例如：
+共影响 20+ 个 checksum 相关 case，例如：
 
 - `t_8b1lane_checksum_pwrc*`
 - `t_8b1lane_checksum_vbk_en*`
@@ -210,15 +210,34 @@ DV_TCON_C/top/agents/isprx_env/isptx_agent/checker_for_checksum.sv
 - 引用公共 `checker_for_checksum.sv`
 - 更新 `env_cfg` 与 `reg_model` 的 RTL baseline 标记
 
-## 3. 仿真计划
+## 3. 各版本 case 环境同步需求
+
+| 版本 | 同步内容 |
+|------|----------|
+| 0615 | I2C 地址译码十进制化后，case 环境需更新寄存器地址解析 |
+| 0615 | Seg2 checksum 删除后，case 环境需移除 Seg2 相关 checker |
+| 0616 | Seg1 扩展与 NG Unlock 新增后，需添加 mismatch 计数验证 case |
+| 0616 | LC_REG_MAPPING 输出重构后，需更新 scoreboard 预期 |
+| 0617 | SMART_CS/Pattern Detect/动态 PWRC 删除后，相关 case 需移除或改写 |
+| 0622 | SSFC 信号新增后，scramble 相关 case 需加入 SSFC 激励 |
+| 0624 | 大规模寄存器重构后，case 环境需同步 reg_model 位字段 |
+| 0701 | CDR/UTC 寄存器新增后，需更新相关 case 配置 |
+| 0703 | frame end 改为 0x27 后，checksum case 需更新期望帧尾地址 |
+| 0705/0706 | CHIP_SEL 默认值变化后，case 需覆盖 chip_sel=0/1 两种复位值 |
+| 0708 | SMART_CS[3:0] 新增后，需添加 chip_sel=1 的 SMART_CS 验证 case |
+
+## 4. 仿真计划
 
 各版本变更均伴随仿真计划更新：
 
-- 0615/0616：制定 checksum 仿真计划
-- 0617：验证 I2C 地址十进制化后的寄存器访问
-- 0618：验证 NG Unlock one-shot 行为
-- 0703~0708：逐版本回归 Seg1 checksum 范围变化
-- 0714：待完成 chip_sel=1 默认值的验证
+- 0511：REG07 checksum update 功能验证
+- 0512：PORSD/POL/ch_sel 直写机制验证
+- 0615：Seg2 checksum 删除后的单一时钟域验证
+- 0616：NG Unlock 连续 5 帧 mismatch 验证
+- 0703：0x27 frame end 变更验证
+- 0705/0706：chip_sel=0/1 默认值验证
+- 0708：SMART_CS[3:0] 在 chip_sel=1 下的行为验证
+- 0714：chip_sel=1 默认值确认后的回归验证
 
   </script>
   <script>

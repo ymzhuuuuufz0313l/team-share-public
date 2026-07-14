@@ -183,31 +183,47 @@
   <script type="text/template" id="md">
 # 六、当前状态与后续
 
-## 1. 当前版本 0714v1
+## 1. 当前版本
 
-截至 2026-07-14，LC_CPUWR 的最新候选版本为 **LC_CPUWR_20260714_v1_decimal.v**。
+截至最新归档，LC_CPUWR 经历了 0708v1 和 0714v1 两次关键迭代：
 
-当前已完成：
-- 校验和机制收敛为 Seg1 单段 + one-shot NG Unlock
-- 寄存器命名十进制化
+| 版本 | 主要状态 |
+|------|----------|
+| 0708v1 | 新增 `SMART_CS[3:0]` @ `0x02`，仅在 `CHIP_SEL=1` 时有效；`CHIP_SEL` 命名已统一 |
+| 0714v1 | `R_REG09` / `R_REG10` / `R_REG31` 在 chip_sel=0 下复位默认值改为 `8'h00` |
+
+当前最新候选版本为 `LC_CPUWR_20260714_v1_decimal.v`。
+
+## 2. 已完成工作
+
+- 校验和机制收敛为 Seg1 单段 + 三帧一致更新 + NG Unlock
+- 寄存器命名从十六进制全面十进制化
 - `CHIP_SEL` 命名统一
 - `SMART_CS[3:0]` 新增
-- `R_REG09` / `R_REG10` / `R_REG31` 在 chip_sel=0 下默认值为 `8'h00`
+- `R_REG09/10/31` 在 chip_sel=0 下默认值为 `8'h00`
+- `checker_for_checksum` 统一迁移到公共 agent
 
-## 2. 待确认项
+## 3. 待确认项
 
-| 事项 | 状态 |
-|------|------|
-| chip_sel=1 下 R_REG09/10/31 的复位默认值 | TBD |
-| 0714v1 的服务器回传 review | 待完成 |
-| 全量 regression（含 8B/10B 模式防退化） | 待完成 |
+| 事项 | 状态 | 说明 |
+|------|------|------|
+| chip_sel=1 下 R_REG09/10/31 的复位默认值 | TBD | 0714v1 已改为 chip_sel=0 的 `8'h00`，chip_sel=1 待确定 |
+| 0714v1 的服务器回传 review | 待完成 | 需确认与 SPEC 一致性 |
+| 全量 regression（含 8B/10B 模式防退化） | 待完成 | 覆盖所有 chip_sel 组合 |
+| SMART_CS[3:0] 在 chip_sel=1 下的功能验证 | 待完成 | 0708v1 新增字段 |
 
-## 3. 后续建议
+## 4. 后续建议
 
-1. 尽快确认 chip_sel=1 的默认值，并更新 `LC_REG_MAPPING` 与 `LINK_LOGIC` 的实例化。
-2. 完成 0714v1 与 `DV_TCON_C` 的同步：env_cfg、checker、reg_model baseline。
-3. 跑完 checksum 全量 case 回归，重点验证 0x27 frame end 变更。
-4. 将最终版本归档到 `LC_CPUWR_history/verilog_hdl/`，并更新 README 索引。
+1. **尽快确认 chip_sel=1 的默认值**，并同步更新 `LC_REG_MAPPING` 与 `LINK_LOGIC` 实例化。
+2. **完成 0714v1 与 `DV_TCON_C` 的同步**：
+   - `env_cfg` 寄存器默认值
+   - `checker_for_checksum.sv` 地址掩码与期望值
+   - `reg_model` baseline 标记
+3. **跑完 checksum 全量 case 回归**，重点验证：
+   - 0x27 作为新 frame end 的边界
+   - chip_sel=0/1 的复位默认值差异
+   - NG Unlock 连续 mismatch 触发条件
+4. **将最终版本归档到 `LC_CPUWR_history/verilog_hdl/`**，并更新 README 索引。
 
   </script>
   <script>

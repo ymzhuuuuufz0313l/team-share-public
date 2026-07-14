@@ -183,55 +183,99 @@
   <script type="text/template" id="md">
 # 三、校验和机制演进
 
-## 1. 双段 checksum 设计
+## 1. 三帧一致更新机制
 
-早期 LC_CPUWR 采用两段独立 XOR 校验和：
+LC_CPUWR 的寄存器更新核心机制：**写入一个寄存器需要连续 3 次 CHPI 帧 blank 期间数据一致，才会真正更新**。
 
-| 段 | 地址范围 | 说明 |
-|----|----------|------|
-| Seg1 | 0x00 ~ 0x1F | 第一段 XOR 校验 |
-| Seg2 | 0x20 ~ 0x38 | 第二段 XOR 校验 |
+这一机制可以保证在噪声或单帧误码情况下不会错误更新寄存器，但也带来了时序冲突问题：
 
-CPU 写寄存器时，硬件自动计算并比对 checksum；mismatch 时触发保护或报警。
+| 冲突点 | 说明 |
+|--------|------|
+| PORSD / POL | 需要在第一帧结束就置位 1 或 0，但 checksum 要求 3 帧一致 |
+| ch_sel | 环境发送指令时按新值选择 channel，但寄存器仍为旧默认值，导致后级模块处理错误 |
 
-## 2. NG Unlock 机制
+解决方案：这些关键信号改为**直写模式**，不走 checksum update。
 
-为防止偶发误报导致寄存器长期被锁，引入了 **NG Unlock** 机制。
+## 2. REG07 与 checksum update
 
-### 2.1 PlanA 组合逻辑方案
+### 2.1 0511 新增 REG07 checksum update 功能
 
-最早在 0614 提出，用组合逻辑检测连续 6 帧 mismatch，然后输出解锁信号。
+- 新增 `REG07` 寄存器控制 checksum update 行为
+- 后续演变为 `CTRLF_CHECKSUM[3:0]`
+- 该功能影响 20+ 个 checksum case
 
-### 2.2 PlanB 锁存方案
+### 2.2 0519 CTRLF_CHECKSUM 定义
 
-改进为寄存器锁存版本，时序更稳定，但会引入 sticky 状态。
+- `REG07[3:0]` 命名为 `CTRLF_CHECKSUM[3:0]`
+- 默认值 `0x05`（使能校验和）
 
-### 2.3 one-shot 最终方案
+### 2.3 0520 最终方案
 
-0618 版本将 NG Unlock 改为 **one-shot** 模式：
-- 仅在连续 mismatch 条件满足时产生一个单周期脉冲
-- 解锁后不会保持，需要重新计数
-- 兼顾稳定性与安全性
+- `REG07` 默认值为 `0`（使能 checksum 检测）
+- 写入 `0x05` 时关闭 checksum 检测（直写模式）
+- **LSP 阶段结束至 K1 发起前**：此阶段不做 checksum，寄存器直写
+- **K1 后**：做一个 latch，latch=1 后保持 checksum 功能
 
-## 3. Seg2 checksum 删除
+## 3. Seg2 checksum 删除与时钟域统一
 
-0616v3 是一次重大精简：
+### 3.1 0615 时钟域统一
 
-- 删除 Seg2 checksum 逻辑（`CHKSUM_T_EN` 及相关寄存器）
-- 代码从约 **3280 行缩减到约 2060 行**
-- 校验机制收敛为仅 Seg1（0x00~0x1F）
+早期 Seg2 checksum 使用独立的 `WCK1_A_TEST` 时钟，导致跨时钟域同步问题：
 
-这一改动降低了硬件复杂度，也简化了验证 checker。
+| 变更项 | 原实现 | 新实现 |
+|--------|--------|--------|
+| Seg2 时钟 | `WCK1_A_TEST` | 统一为 `WCK1_A` |
+| 端口 | `input WCK1_A_TEST` | 已删除 |
+| always 敏感列表 | `@(posedge WCK1_A_TEST ...)` | 全部改为 `@(posedge WCK1_A ...)` |
+| CDC 问题 | `chksum_mode` 跨 `WCK1_A → WCK1_A_TEST` | 单一时钟域，无需同步器 |
 
-## 4. 校验范围扩展
+涉及替换约 85 处。
 
-0617v2 之后，Seg1 校验范围逐步扩展：
+### 3.2 0615 Seg2 checksum 删除
 
-- 0x09 / 0x0A / 0x1D / 0x1E 加入 Seg1 checksum
-- 0703v2 将 0x27 加入 Seg1 checksum 作为新的 frame end
-- 0x1F 从 checksum 寄存器改为普通 shadow 寄存器
+- 彻底移除 `CHKSUM_T_EN` 宏
+- 删除 Seg2 shadow 寄存器及 XOR checksum 校验逻辑
+- `0x20~0x38` 全部 25 个测试寄存器改为 `WCK1_A` 时钟域直写
+- 移除跨 `WCK1_A` / `WCK1_A_TEST` 的 CDC 相关逻辑
 
-验证侧同步更新了 `checker_for_checksum` 的地址掩码与期望值生成逻辑。
+代码量从约 3280 行精简到约 2060 行。
+
+## 4. Seg1 扩展与 frame end 变更
+
+### 4.1 0616 Seg1 地址扩展
+
+- `R_REG09_F` / `R_REG10_F` / `R_REG29_F` / `R_REG30_F` 加入 Seg1 寄存器并参与 checksum
+- Seg1 shadow 寄存器从 9 个扩展到 13 个
+
+### 4.2 0703 frame end 改为 0x27
+
+- 地址 `39(0x27)` 加入 Segment1 checksum，作为新的 frame end
+- 地址 `31(0x1F)` 改为普通 shadow 寄存器，不再作为 frame end
+- `0x27` 字段映射为 `ACS_EN(bit7)` / `Level_Skip_frame(bit1)` / `Skip_frame_count(bit0)`
+
+## 5. NG Unlock 机制
+
+为防止偶发误报导致寄存器长期被锁，引入 NG Unlock 机制：
+
+| 版本 | 方案 | 说明 |
+|------|------|------|
+| 0614 PlanA | 组合逻辑 | 连续 6 帧 mismatch 后解锁 |
+| 0614 PlanB | 寄存器锁存 | 时序更稳定，但会 sticky |
+| 0618 | one-shot | 仅在连续 mismatch 条件满足时产生单周期脉冲，解锁后需重新计数 |
+| 0616 最终 | 连续 5 帧 mismatch | `unmatch_cnt_a` 计数器 + `unlock_latch_a` 锁存器 |
+
+## 6. SCR_EN 与 SSFC 门控
+
+### 6.1 0512 SCR_EN 复位逻辑
+
+- `SCR_EN` 在 I2C model 下，即使 K3 检测到也不会 reset
+- 新增该功能以满足 I2C 模式下的 scramble 控制需求
+
+### 6.2 0622 SSFC 信号
+
+- 新增 `SSFC` 输入端口
+- `R_SCREN` 由 `R_REG00_F[4]` 直接输出改为 `R_REG00_F[4] & SSFC`
+- scramble enable 仅在 `SSFC==1` 时有效
 
   </script>
   <script>
