@@ -250,6 +250,8 @@
 
 ## 1. chip_sel = 0 默认字节映射
 
+这张图展示 0714v1 在 chip_sel=0 模式下 POR 后的寄存器默认值布局，与 `LC_CPUWR_history/chip_sel0_register_address_map.md` 及 RTL 中复位默认值完全一致，用于建立寄存器空间基线并支撑后续 chip_sel=1 回拼差异分析。
+
 chip_sel=0 模式下 POR 后寄存器默认值全景；绿色为控制、黄色为电源、蓝紫为模拟相关字段。
 
 ![chip_sel=0 寄存器默认字节映射](./images/chip_sel0_register_map.svg)
