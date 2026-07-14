@@ -2,6 +2,9 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>编码规则要点 · HK1V11 420b 长编码验证体系</title>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -424,26 +427,34 @@
   <script type="text/template" id="md">
 # 七、编码规则要点
 
-1. **413b → 420b 编码**
-   - 413 bit 分成 59 组，每组 7 bit
-   - 找一个未出现的 6-bit 样式作为 tag
-   - 全 0 / 全 1 组替换为 `tag + 1-bit 类型指示符`
 
-2. **加扰规则**
-   - payload（CTRL_F / CTRL_L / RGB / VBK）**加扰**
-   - LSP 训练数据**不加扰**
-   - IDLE K5~K8 **不加扰**
+### 1. 413b → 420b 编码
 
-3. **发送顺序**
-   - 420b 模式：**LSB-first**（bit0 → bit6）
-   - Header 为 `{tag[5:0], toggle}`，toggle 位于 bit0，**toggle 先发**，随后 tag[0]→tag[5]
-   - 替换组为 `{type, tag[5:0]}`，**tag 先发**，最后发 type
-   - 普通 8B/10B 模式：LSB-first
+- 413 bit 分成 59 组，每组 7 bit
+- 找一个未出现的 6-bit 样式作为 tag
+- 全 0 / 全 1 组替换为 `tag + 1-bit 类型指示符`
 
-4. **跨 lane 70-bit 对齐**
-   - 各 lane 编码后长度一致
-   - 统一按最大 lane 的 dummy 长度填充
-   - 保证 K-code 插入点在各 lane 对齐
+
+### 2. 加扰规则
+
+- payload（CTRL_F / CTRL_L / RGB / VBK）**加扰**
+- LSP 训练数据**不加扰**
+- IDLE K5~K8 **不加扰**
+
+
+### 3. 发送顺序
+
+- 420b 模式：**LSB-first**（bit0 → bit6）
+- Header 为 `{tag[5:0], toggle}`，toggle 位于 bit0，**toggle 先发**，随后 tag[0]→tag[5]
+- 替换组为 `{type, tag[5:0]}`，**tag 先发**，最后发 type
+- 普通 8B/10B 模式：LSB-first
+
+
+### 4. 跨 lane 70-bit 对齐
+
+- 各 lane 编码后长度一致
+- 统一按最大 lane 的 dummy 长度填充
+- 保证 K-code 插入点在各 lane 对齐
 
 ---
   </script>
