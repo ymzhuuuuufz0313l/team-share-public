@@ -427,34 +427,57 @@
   <script type="text/template" id="md">
 # 七、编码规则要点
 
+## 1. 413b → 420b 编码
 
-### 1. 413b → 420b 编码
+### 1.1 分组与 tag
 
-- 413 bit 分成 59 组，每组 7 bit
-- 找一个未出现的 6-bit 样式作为 tag
-- 全 0 / 全 1 组替换为 `tag + 1-bit 类型指示符`
+413 bit 分成 59 组，每组 7 bit；找一个未出现的 6-bit 样式作为 tag。
 
+### 1.2 全 0 / 全 1 替换
 
-### 2. 加扰规则
+全 0 / 全 1 组替换为 `tag + 1-bit 类型指示符`。
 
-- payload（CTRL_F / CTRL_L / RGB / VBK）**加扰**
-- LSP 训练数据**不加扰**
-- IDLE K5~K8 **不加扰**
+## 2. 加扰规则
 
+### 2.1 payload 加扰
 
-### 3. 发送顺序
+payload（CTRL_F / CTRL_L / RGB / VBK）**加扰**。
 
-- 420b 模式：**LSB-first**（bit0 → bit6）
-- Header 为 `{tag[5:0], toggle}`，toggle 位于 bit0，**toggle 先发**，随后 tag[0]→tag[5]
-- 替换组为 `{type, tag[5:0]}`，**tag 先发**，最后发 type
-- 普通 8B/10B 模式：LSB-first
+### 2.2 LSP 不加扰
 
+LSP 训练数据**不加扰**。
 
-### 4. 跨 lane 70-bit 对齐
+### 2.3 IDLE 不加扰
 
-- 各 lane 编码后长度一致
-- 统一按最大 lane 的 dummy 长度填充
-- 保证 K-code 插入点在各 lane 对齐
+IDLE K5~K8 **不加扰**。
+
+## 3. 发送顺序
+
+### 3.1 420b LSB-first
+
+420b 模式为**LSB-first**（bit0 → bit6）。
+
+### 3.2 Header 位序
+
+Header 为 `{tag[5:0], toggle}`，toggle 位于 bit0，**toggle 先发**，随后 tag[0]→tag[5]。
+
+### 3.3 替换组位序
+
+替换组为 `{type, tag[5:0]}`，**tag 先发**，最后发 type。
+
+### 3.4 普通 8B/10B 模式
+
+普通 8B/10B 模式同样 LSB-first。
+
+## 4. 跨 lane 70-bit 对齐
+
+### 4.1 对齐原则
+
+各 lane 编码后长度一致。
+
+### 4.2 dummy 填充
+
+统一按最大 lane 的 dummy 长度填充，保证 K-code 插入点在各 lane 对齐。
 
 ---
   </script>
