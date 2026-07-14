@@ -27,6 +27,9 @@ COLORS = {
     "chk_ctrl":   "#f97316",   # checksum control (0x07)
     "chk_end":    "#facc15",   # frame end boundary (0x27)
     "chk_none":   "#e2e8f0",   # no checksum
+    "chk_sel0":   "#22c55e",   # field exists in chip_sel=0
+    "chk_sel1":   "#0ea5e9",   # field exists in chip_sel=1
+    "chk_both":   "#14b8a6",   # same field exists in both chip_sel modes
 
     # LSI protection
     "lsi_prot":   "#f87171",   # protected by LSI_PRTECT
@@ -183,6 +186,133 @@ def escape_xml(text: str) -> str:
             .replace('"', "&quot;"))
 
 
+def generate_checksum_dual_svg(title, map0, map1):
+    """
+    Generate a dual-row checksum diagram: one row per chip_sel mode.
+    Only participating addresses are shown.
+    """
+    left_margin = 90
+    top_margin = 100
+    addr_col_w = 90
+    label_col_w = 80
+    cell_w = 80
+    cell_h = 36
+    row_gap = 4
+    group_gap = 18
+    bit_label_h = 24
+
+    # participating addresses (including control/frame-end for context)
+    addresses = [0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06,
+                 0x07, 0x08, 0x09, 0x0A,
+                 0x1D, 0x1E, 0x1F,
+                 0x27]
+
+    svg_w = left_margin + addr_col_w + label_col_w + 8 * cell_w + 40
+    group_h = 2 * (cell_h + row_gap) + 8  # two rows + labels
+    content_h = len(addresses) * (group_h + group_gap) + bit_label_h + 40
+    svg_h = content_h + top_margin + 140
+
+    lines = []
+    lines.append('<?xml version="1.0" encoding="UTF-8"?>')
+    lines.append(f'<svg xmlns="http://www.w3.org/2000/svg" width="{svg_w}" height="{svg_h}" viewBox="0 0 {svg_w} {svg_h}" style="background:{COLORS["bg"]}">')
+    lines.append(f'<rect width="{svg_w}" height="{svg_h}" fill="{COLORS["bg"]}"/>')
+    lines.append(f'<text x="{svg_w/2}" y="40" text-anchor="middle" font-size="22" font-weight="bold" fill="{COLORS["text"]}">{escape_xml(title)}</text>')
+
+    # Bit labels
+    bit_y = top_margin + 16
+    for i in range(8):
+        bit = 7 - i
+        x = left_margin + addr_col_w + label_col_w + i * cell_w
+        lines.append(f'<text x="{x + cell_w/2}" y="{bit_y}" text-anchor="middle" font-size="12" fill="{COLORS["muted"]}">[{bit}]</text>')
+
+    def render_row(y, dec, mode_label, reg_map, base_color_key):
+        # mode label
+        lines.append(f'<text x="{left_margin + addr_col_w - 8}" y="{y + cell_h/2 + 4}" text-anchor="end" font-size="12" fill="{COLORS["muted"]}">{escape_xml(mode_label)}</text>')
+
+        entries = reg_map.get(dec, [])
+        # build per-bit map
+        bit_fields = {b: None for b in range(8)}
+        for e in entries:
+            for b in range(e["lsb"], e["msb"] + 1):
+                bit_fields[b] = e
+
+        # merge contiguous same-field cells
+        cells = []
+        current = None
+        start = None
+        prev_bit = None
+        current_entry = None
+        for bit in range(7, -1, -1):
+            e = bit_fields[bit]
+            key = (e["name"] if e else None, e["default"] if e else None)
+            if key != current:
+                if current is not None:
+                    cells.append((start, prev_bit, current_entry))
+                current = key
+                current_entry = e
+                start = bit
+            prev_bit = bit
+        if current is not None:
+            cells.append((start, prev_bit, current_entry))
+
+        for msb, lsb, e in cells:
+            width_bits = msb - lsb + 1
+            start_col = 7 - msb
+            x = left_margin + addr_col_w + label_col_w + start_col * cell_w
+            w = width_bits * cell_w - 1
+            has_field = e is not None
+
+            # determine base color by address type
+            if dec == 0x07:
+                fill = COLORS["chk_ctrl"]
+            elif dec == 0x27:
+                fill = COLORS["chk_end"]
+            else:
+                fill = COLORS[base_color_key] if has_field else COLORS["chk_none"]
+
+            stroke = COLORS["border"]
+            lines.append(f'<rect x="{x}" y="{y}" width="{w}" height="{cell_h}" fill="{fill}" stroke="{stroke}" stroke-width="1" rx="4"/>')
+
+            if has_field:
+                name = e["name"]
+                display_name = name[:14] + "…" if len(name) > 14 else name
+                font_size = 9 if width_bits >= 2 else 7
+                lines.append(f'<text x="{x + w/2}" y="{y + cell_h/2 - 2}" text-anchor="middle" font-size="{font_size}" font-weight="500" fill="{COLORS["text"]}">{escape_xml(display_name)}</text>')
+                lines.append(f'<text x="{x + w/2}" y="{y + cell_h/2 + 10}" text-anchor="middle" font-size="{font_size - 1}" fill="{COLORS["muted"]}">{escape_xml(e["default"])}</text>')
+
+    for idx, dec in enumerate(addresses):
+        gy = top_margin + bit_label_h + 16 + idx * (group_h + group_gap)
+        hex_str = f"0x{dec:02X}"
+        lines.append(f'<text x="{left_margin + addr_col_w - 10}" y="{gy + group_h/2 + 4}" text-anchor="end" font-size="14" font-weight="600" fill="{COLORS["text"]}">{hex_str} ({dec})</text>')
+
+        render_row(gy, dec, "chip_sel=0", map0, "chk_sel0")
+        render_row(gy + cell_h + row_gap + 2, dec, "chip_sel=1", map1, "chk_sel1")
+
+    # Legend
+    legend_y = svg_h - 90
+    lines.append(f'<text x="{left_margin}" y="{legend_y - 10}" font-size="13" font-weight="600" fill="{COLORS["text"]}">图例</text>')
+    legend_items = [
+        ("chip_sel=0 字段", "chk_sel0"),
+        ("chip_sel=1 字段", "chk_sel1"),
+        ("Checksum 控制 (0x07)", "chk_ctrl"),
+        ("Frame end 边界 (0x27)", "chk_end"),
+        ("Reserved / 不参与", "chk_none"),
+    ]
+    lx = left_margin
+    for label, color_key in legend_items:
+        color = COLORS[color_key]
+        lines.append(f'<rect x="{lx}" y="{legend_y}" width="14" height="14" fill="{color}" stroke="{COLORS["border"]}" rx="2"/>')
+        lines.append(f'<text x="{lx + 18}" y="{legend_y + 11}" font-size="10" fill="{COLORS["text"]}">{escape_xml(label)}</text>')
+        lx += 125
+
+    # Footer
+    footer_text = "0616_v2 起 0x09/0x0A/0x1D/0x1E 纳入 Seg1 checksum；Seg2 (0x20~0x38) 无 checksum。绿色=chip_sel=0 字段，蓝色=chip_sel=1 字段。"
+    lines.append(f'<text x="{svg_w/2}" y="{svg_h - 30}" text-anchor="middle" font-size="11" fill="{COLORS["muted"]}">{escape_xml(footer_text)}</text>')
+
+    lines.append('</svg>')
+    return "\n".join(lines)
+
+
 def generate_attr_svg(title, reg_map, attr_func, legend_items, footer_text=""):
     left_margin = 90
     top_margin = 90
@@ -277,32 +407,28 @@ def generate_attr_svg(title, reg_map, attr_func, legend_items, footer_text=""):
 
 
 def main():
-    src = Path("E:/project/HK1V11/LC_CPUWR_history/chip_sel1_register_address_map.md")
-    rows = parse_table(src)
-    reg_map = build_address_map(rows)
+    src0 = Path("E:/project/HK1V11/LC_CPUWR_history/chip_sel0_register_address_map.md")
+    src1 = Path("E:/project/HK1V11/LC_CPUWR_history/chip_sel1_register_address_map.md")
+    rows0 = parse_table(src0)
+    rows1 = parse_table(src1)
+    map0 = build_address_map(rows0)
+    map1 = build_address_map(rows1)
 
     out_dir = Path("E:/project/team-share-public/hk1v11-lc-cpuwr-history/images")
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    # 1. Checksum participation
-    svg_chk = generate_attr_svg(
-        "LC_CPUWR 0714v1 参与 checksum 的地址",
-        reg_map,
-        lambda dec, name: checksum_status(dec),
-        [
-            ("参与 XOR 累加", "chk_full"),
-            ("Checksum 控制", "chk_ctrl"),
-            ("Frame end 边界", "chk_end"),
-            ("不参与", "chk_none"),
-        ],
-        "0616_v2 起 0x09/0x0A/0x1D/0x1E 纳入 Seg1 checksum；Seg2 (0x20~0x38) 无 checksum"
+    # 1. Checksum participation (dual chip_sel view)
+    svg_chk = generate_checksum_dual_svg(
+        "LC_CPUWR 0714v1 参与 checksum 的地址（chip_sel=0 / chip_sel=1 对照）",
+        map0,
+        map1,
     )
     (out_dir / "checksum_address_map.svg").write_text(svg_chk, encoding="utf-8")
 
     # 2. LSI protection
     svg_lsi = generate_attr_svg(
         "LC_CPUWR 0714v1 不受 LSI_PRTECT 保护的地址",
-        reg_map,
+        map1,
         lambda dec, name: lsi_status(dec),
         [
             ("受 LSI_PRTECT 保护", "lsi_prot"),
@@ -316,7 +442,7 @@ def main():
     # 3. Reset domain
     svg_rst = generate_attr_svg(
         "LC_CPUWR 0714v1 复位域分类",
-        reg_map,
+        map1,
         lambda dec, name: reset_domain(dec, name),
         [
             ("N_RST_NLOCK", "rst_nlock"),

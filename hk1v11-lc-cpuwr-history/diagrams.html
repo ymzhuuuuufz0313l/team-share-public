@@ -199,7 +199,7 @@
 
 ## 3. Checksum 地址覆盖
 
-绿色表示参与 Seg1 checksum XOR 累加的地址；橙色为 checksum 控制寄存器 `0x07`；黄色为 frame end 边界地址 `0x27`；灰色为不参与 checksum。连续全 Reserved 地址已折叠。
+每个参与 checksum 的地址都有两行：**上行绿色 = `chip_sel=0`**，**下行蓝色 = `chip_sel=1`**。橙色为 checksum 控制寄存器 `0x07`；黄色为 frame end 边界地址 `0x27`。这样可清晰区分同一地址在两种 chip_sel 模式下的字段差异（如 `0x09/0x0A/0x1F`）。
 
 ![参与 checksum 的地址](./images/checksum_address_map.svg)
 
