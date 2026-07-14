@@ -286,7 +286,9 @@ chip_sel=1 模式下 POR 后默认值；红色标出与 chip_sel=0 不同、由 
 
 标出各寄存器所属的复位域；紫色为 N_RST、青色为 RSTN_SCR_EN，其余多为 N_RST_NLOCK。
 
-从 RTL 端口注释与 always 块敏感列表可见：`N_RST` 是全局异步复位，用于影响系统级关键行为的寄存器，如 `0x01 PORSD`、`0x05 CH_SEL`、`0x06 SDC/DPLC_MODE`、`0x20 R_TESTO_SEL`、`0x21 R_UTC` 以及密码寄存器 `0x30 TEST_PRTCT`；`N_RST_NLOCK` 是 Lock 丢失/未锁定复位，覆盖其余大部分普通控制与状态寄存器。实际代码中 `N_RST_NLOCK_NORMAL = N_RST_NLOCK || I_TEST_REG_EN`，调试开启时该复位域会被旁路。
+从 RTL 端口注释与 always 块敏感列表可见：`N_RST` 是全局异步复位，用于影响系统级关键行为的寄存器，如 `0x01 PORSD`、`0x05 CH_SEL`、`0x06 SDC/DPLC_MODE`、`0x20 R_TESTO_SEL`、`0x21 R_UTC` 以及密码寄存器 `0x30 TEST_PRTCT`；`N_RST_NLOCK` 是 Lock 丢失/未锁定复位，覆盖其余大部分普通控制与状态寄存器。
+
+SPEC 中「I2C_EN=1 时所有寄存器不做 unlock reset」的 RTL 路径为：通过 I2C 向 `0xF0` 写 `0x5A`、向 `0xF1` 写 `0xA5` 后，`I2C_EN_CTL.v` 输出 `I2C_EN=1`；`I2C_CTL.v` 中 `assign TEST_EN = I2C_EN`，该信号作为 `LC_CPUWR` 的 `I_TEST_REG_EN` 输入；于是 `N_RST_NLOCK_NORMAL = N_RST_NLOCK || I_TEST_REG_EN = 1`，`N_RST_NLOCK` 复位域对所有寄存器失效。这与 checksum mismatch 无关，后者由独立的 NG Unlock 机制处理。
 
 `RSTN_SCR_EN` 是独立的加扰复位，仅作用于 `0x00` 中的 `SCREN` 加扰使能位（实际敏感信号为 `RSTN_SCR_EN_NORMAL = RSTN_SCR_EN || I_TEST_REG_EN`），保证 scramble 相关配置可单独复位而不影响其他寄存器。
 
