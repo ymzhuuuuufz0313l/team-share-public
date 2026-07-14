@@ -287,8 +287,35 @@ def generate_svg(title: str, reg_map, diffs=None, highlight_label=""):
     bit_label_h = 24
 
     addresses = sorted(reg_map.keys())
+
+    def is_fully_reserved(dec):
+        entries = reg_map.get(dec, [])
+        if not entries:
+            return True
+        # check if single entry [7:0] is Reserved
+        if len(entries) == 1 and entries[0]["name"] == "Reserved" and entries[0]["msb"] == 7 and entries[0]["lsb"] == 0:
+            return True
+        return False
+
+    def make_rows():
+        rows = []
+        run_start = None
+        for dec in addresses:
+            if is_fully_reserved(dec):
+                if run_start is None:
+                    run_start = dec
+                continue
+            if run_start is not None:
+                rows.append(("range", run_start, dec - 1))
+                run_start = None
+            rows.append(("addr", dec))
+        if run_start is not None:
+            rows.append(("range", run_start, addresses[-1]))
+        return rows
+
+    rows = make_rows()
     row_h = cell_h + row_gap
-    content_h = len(addresses) * row_h + bit_label_h + 40
+    content_h = len(rows) * row_h + bit_label_h + 40
     svg_w = left_margin + addr_col_w + 8 * cell_w + 40
     svg_h = content_h + top_margin + 140  # extra for title/legend/footer
 
@@ -318,8 +345,23 @@ def generate_svg(title: str, reg_map, diffs=None, highlight_label=""):
         lines.append(f'<text x="{x + cell_w/2}" y="{bit_y}" text-anchor="middle" font-size="12" fill="{COLORS["muted"]}">[{bit}]</text>')
 
     # Rows
-    for idx, dec in enumerate(addresses):
+    for idx, row in enumerate(rows):
         y = top_margin + bit_label_h + 10 + idx * row_h
+
+        if row[0] == "range":
+            start_dec, end_dec = row[1], row[2]
+            start_hex = f"0x{start_dec:02X}"
+            end_hex = f"0x{end_dec:02X}"
+            label = f"{start_hex} ~ {end_hex} ({start_dec} ~ {end_dec})"
+            # collapsed reserved row
+            lines.append(f'<text x="{left_margin + addr_col_w - 12}" y="{y + cell_h/2 + 5}" text-anchor="end" font-size="13" font-weight="600" fill="{COLORS["muted"]}">{escape_xml(label)}</text>')
+            x = left_margin + addr_col_w
+            w = 8 * cell_w - 1
+            lines.append(f'<rect x="{x}" y="{y}" width="{w}" height="{cell_h}" fill="{COLORS["reserved"]}" stroke="{COLORS["border"]}" stroke-width="1" stroke-dasharray="4,3" rx="4"/>')
+            lines.append(f'<text x="{x + w/2}" y="{y + cell_h/2 + 4}" text-anchor="middle" font-size="12" fill="{COLORS["muted"]}">⋯ 全 Reserved ⋯</text>')
+            continue
+
+        dec = row[1]
         hex_str = reg_map[dec][0]["hex"] if reg_map[dec] else f"0x{dec:02X}"
         # address label
         lines.append(f'<text x="{left_margin + addr_col_w - 12}" y="{y + cell_h/2 + 5}" text-anchor="end" font-size="14" font-weight="600" fill="{COLORS["text"]}">{hex_str} ({dec})</text>')
