@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>HK1V11 420b 长编码验证体系</title>
+  <title>Case 命名规则 · HK1V11 420b 长编码验证体系</title>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>
 :root {
@@ -285,71 +285,22 @@
 </head>
 <body>
   <div class="container">
-    <article class="article">
-      <div class="hero">
-        <h1>HK1V11 420b 长编码验证体系</h1>
-        <div class="meta">来源：E:\project\HK1V11\longcode_ver · 整理时间：2026-07-13</div>
-        <p class="lead">
-          基于 DV_TCON_C 现有 8B/10B 结构重建的 420b 长编码验证环境，通过
-          <code>CHPI_MODE_420B</code> 宏隔离，覆盖帧结构、参考模型、解码链 RTL、case 体系与后续计划。
-        </p>
-      </div>
+    <div class="top-nav">
+      <a class="home" href="./index.html">← 返回首页</a>
+    </div>
 
-      <div class="section-title">整体框架</div>
-      <img class="overview-img" src="./longcode_verification_architecture.svg" alt="longcode 验证架构">
+    <article class="article" id="article"></article>
+    <div class="page-nav">
+      <a href="./phases.html">
+        <span class="label">上一篇</span>
+        <span class="title">验证执行阶段</span>
+      </a>
+      <a class="next" href="./decoder.html">
+        <span class="label">下一篇</span>
+        <span class="title">420b 解码链 RTL</span>
+      </a>
+    </div>
 
-      <div class="section-title">模式对比</div>
-      <img class="overview-img" src="./8b10b_vs_420b_architecture.svg" alt="8B/10B vs 420B 架构对比">
-
-      <div class="section-title">章节索引</div>
-      <div class="chapter-grid">
-    <a class="chapter-card" href="./architecture.html">
-      <div class="num">1</div>
-      <div class="title">一、整体架构</div>
-      <div class="desc">验证环境组件与数据流总览</div>
-    </a>
-    <a class="chapter-card" href="./comparison.html">
-      <div class="num">2</div>
-      <div class="title">二、8B/10B vs 420B 对比</div>
-      <div class="desc">8B/10B 与 420B 模式差异对照</div>
-    </a>
-    <a class="chapter-card" href="./frame.html">
-      <div class="num">3</div>
-      <div class="title">三、420b 帧结构</div>
-      <div class="desc">Config / V blanking / Active / IDLE 帧格式</div>
-    </a>
-    <a class="chapter-card" href="./phases.html">
-      <div class="num">4</div>
-      <div class="title">四、验证执行阶段</div>
-      <div class="desc">Smoke 到 Regression 的 7 个执行阶段</div>
-    </a>
-    <a class="chapter-card" href="./cases.html">
-      <div class="num">5</div>
-      <div class="title">五、Case 命名规则</div>
-      <div class="desc">53 个 case 的命名规范与分布</div>
-    </a>
-    <a class="chapter-card" href="./decoder.html">
-      <div class="num">6</div>
-      <div class="title">六、420b 解码链 RTL</div>
-      <div class="desc">decoder_7b / descramble_7b / long_decoding_top</div>
-    </a>
-    <a class="chapter-card" href="./encoding.html">
-      <div class="num">7</div>
-      <div class="title">七、编码规则要点</div>
-      <div class="desc">413b→420b 编码、加扰、发送顺序</div>
-    </a>
-    <a class="chapter-card" href="./issues.html">
-      <div class="num">8</div>
-      <div class="title">八、关键待确认问题</div>
-      <div class="desc">位序、LSP、IDLE、UTC 等待确认项</div>
-    </a>
-    <a class="chapter-card" href="./next.html">
-      <div class="num">9</div>
-      <div class="title">九、后续工作</div>
-      <div class="desc">待同步到 DV_TCON_C 的后续任务</div>
-    </a>
-      </div>
-    </article>
     <div class="footer">Shared from team knowledge base</div>
   </div>
 
@@ -359,7 +310,34 @@
     <div class="hint">滚轮缩放 · 拖拽移动 · 点击关闭</div>
   </div>
 
+  <script type="text/template" id="md">
+# 五、Case 命名规则
+
+沿用 8B/10B 风格，统一加 `_420b` 后缀：
+
+```text
+t_8b{lane_num}lane_420b_{function}[_{param}]
+t_H{HACT}_V{VACT}_FPS{FPS}_PORT_NUM{PORT_NUM}_420b[_{extra_param}]
+```
+
+### Case 数量分布
+
+| 类别 | 数量 | 说明 |
+|------|------|------|
+| Smoke | 7 | basic / scramble_off/on / msb_first / all_zero / all_one / tag_bypass |
+| Frame Structure | 8 | lsp / ctrl_f / ctrl_l / active / active_last / vblank / idle / multiframe |
+| Decode / Unlock | 10 | 解码窗口、K3 同步、UTC/unlock 系列 |
+| Error / Corner | 9 | 7b_01、kcode、UTC header、long frame、checksum、vbk、chpi_regw 等 |
+| Multi-lane | 9 | 2lane/4lane、70-bit 对齐、R_BAC/AEQ/debugpin/packpos/RGB |
+| Resolution Sweep | 8 | 4K/1080p/1440p 等 × 多刷新率/端口 |
+| Isolation | 2 | 420b vs 8B/10B、8B/10B regression |
+| **合计** | **53** | 按 Phase 1~7 分阶段执行 |
+
+---
+  </script>
+
   <script>
+    document.getElementById('article').innerHTML = marked.parse(document.getElementById('md').textContent.trim());
 const lightbox = document.getElementById('lightbox');
     const lightboxImg = document.getElementById('lightbox-img');
     const lightboxClose = document.getElementById('lightbox-close');
