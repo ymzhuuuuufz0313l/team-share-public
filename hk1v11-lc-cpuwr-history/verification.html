@@ -290,7 +290,7 @@ one-shot unlock 实现后，checker 出现误判：
 各版本变更均伴随仿真计划更新：
 
 - 0511：REG07 checksum update 功能验证
-- 0512：PORSD/POL/ch_sel 直写机制验证
+- 0512~0520：LSP 结束至第一次发送指令期间的直写窗口验证（PORSD/POL/ch_sel 等关键信号在第一帧生效）
 - 0615：Seg2 checksum 删除后的单一时钟域验证
 - 0616：NG Unlock 连续 5 帧 mismatch 验证
 - 0703：0x27 frame end 变更验证
