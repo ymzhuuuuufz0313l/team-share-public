@@ -22,14 +22,14 @@ COLORS = {
     "border":     "#94a3b8",
     "bg":         "#ffffff",
 
-    # checksum
-    "chk_full":   "#22c55e",   # participates in XOR accumulation
-    "chk_ctrl":   "#f97316",   # checksum control (0x07)
-    "chk_end":    "#facc15",   # frame end boundary (0x27)
-    "chk_none":   "#e2e8f0",   # no checksum
-    "chk_sel0":   "#22c55e",   # field exists in chip_sel=0
-    "chk_sel1":   "#0ea5e9",   # field exists in chip_sel=1
-    "chk_both":   "#14b8a6",   # same field exists in both chip_sel modes
+    # checksum - muted palette: normal addresses gray, only diffs/special colored
+    "chk_full":   "#f1f5f9",   # participates in XOR accumulation (now muted gray)
+    "chk_ctrl":   "#fed7aa",   # checksum control (0x07)
+    "chk_end":    "#fef08a",   # frame end boundary (0x27)
+    "chk_none":   "#e2e8f0",   # reserved/empty (slightly darker gray)
+    "chk_sel0":   "#bfdbfe",   # chip_sel=0 field (soft blue)
+    "chk_sel1":   "#bbf7d0",   # chip_sel=1 field (soft green)
+    "chk_both":   "#f1f5f9",   # same in both chip_sel modes (gray)
 
     # LSI protection
     "lsi_prot":   "#f87171",   # protected by LSI_PRTECT
@@ -274,13 +274,15 @@ def generate_checksum_dual_svg(title, map0, map1):
             w = width_bits * cell_w - 1
             has_field = e is not None
 
-            # determine base color by address type
-            if dec == 0x07:
+            # determine fill color: reserved/empty always gray; real fields colored
+            if not has_field or e["name"] == "Reserved":
+                fill = COLORS["chk_none"]
+            elif dec == 0x07:
                 fill = COLORS["chk_ctrl"]
             elif dec == 0x27:
                 fill = COLORS["chk_end"]
             else:
-                fill = COLORS[base_color_key] if has_field else COLORS["chk_none"]
+                fill = COLORS[base_color_key]
 
             stroke = COLORS["border"]
             lines.append(f'<rect x="{x}" y="{y}" width="{w}" height="{cell_h}" fill="{fill}" stroke="{stroke}" stroke-width="1" rx="4"/>')
@@ -322,12 +324,11 @@ def generate_checksum_dual_svg(title, map0, map1):
     legend_y = svg_h - 75
     lines.append(f'<text x="{left_margin}" y="{legend_y - 10}" font-size="13" font-weight="600" fill="{COLORS["text"]}">图例</text>')
     legend_items = [
-        ("chip_sel=0/1 相同", "chk_both"),
+        ("普通地址（chip_sel=0/1 相同）", "chk_both"),
         ("chip_sel=0 字段", "chk_sel0"),
         ("chip_sel=1 字段", "chk_sel1"),
         ("Checksum 控制 (0x07)", "chk_ctrl"),
         ("Frame end 边界 (0x27)", "chk_end"),
-        ("Reserved / 不参与", "chk_none"),
     ]
     lx = left_margin
     for label, color_key in legend_items:
@@ -337,7 +338,7 @@ def generate_checksum_dual_svg(title, map0, map1):
         lx += 125
 
     # Footer
-    footer_text = "0616_v2 起 0x09/0x0A/0x1D/0x1E 纳入 Seg1 checksum；Seg2 (0x20~0x38) 无 checksum。绿色=chip_sel=0 字段，蓝色=chip_sel=1 字段。"
+    footer_text = "普通地址与 Reserved 位为灰色；蓝色=chip_sel=0 字段，绿色=chip_sel=1 字段；橙色=0x07 控制寄存器，黄色=0x27 frame end 边界。"
     lines.append(f'<text x="{svg_w/2}" y="{svg_h - 30}" text-anchor="middle" font-size="11" fill="{COLORS["muted"]}">{escape_xml(footer_text)}</text>')
 
     lines.append('</svg>')
