@@ -179,14 +179,17 @@
           覆盖 2026-05 至 2026-07-14 的迭代过程，包括校验和机制演进、寄存器映射重构、命名规范化与验证同步。
         </p>
       </div>
+      <blockquote>
+        <strong>⭐ 推荐阅读顺序：</strong>先读 <a href="./intro.html">引言</a>，然后直接跳到 <a href="./diagrams.html">寄存器图解 Sheet</a> 看五张全景图，建立寄存器空间整体印象后再看后续详细分析。
+      </blockquote>
       <div class="section-title">章节索引</div>
       <div class="chapter-grid">
         <a class="chapter-card" href="./intro.html"><div class="num">1</div><div class="title">引言与归档体系</div><div class="desc">模块定位、目录结构与归档规则</div></a>
-        <a class="chapter-card" href="./timeline.html"><div class="num">2</div><div class="title">核心变更时间线</div><div class="desc">从 0612 基线重构到 0714 默认值调整</div></a>
-        <a class="chapter-card" href="./checksum.html"><div class="num">3</div><div class="title">校验和机制演进</div><div class="desc">双段 checksum、NG Unlock、Seg2 删除</div></a>
-        <a class="chapter-card" href="./regmap.html"><div class="num">4</div><div class="title">寄存器映射与命名规范化</div><div class="desc">位段迁移、chip_sel 默认值、十进制命名</div></a>
-        <a class="chapter-card" href="./verification.html"><div class="num">5</div><div class="title">验证同步与 Checker 统一</div><div class="desc">checker 迁移、case 同步、仿真计划</div></a>
-        <a class="chapter-card" href="./diagrams.html"><div class="num">6</div><div class="title">寄存器图解 Sheet</div><div class="desc">chip_sel 默认字节映射、checksum、LSI、复位域</div></a>
+        <a class="chapter-card" href="./diagrams.html"><div class="num">2</div><div class="title">寄存器图解 Sheet ⭐ 先看图</div><div class="desc">chip_sel 默认字节映射、checksum、LSI、复位域全景图</div></a>
+        <a class="chapter-card" href="./timeline.html"><div class="num">3</div><div class="title">核心变更时间线</div><div class="desc">从 0612 基线重构到 0714 默认值调整</div></a>
+        <a class="chapter-card" href="./checksum.html"><div class="num">4</div><div class="title">校验和机制演进</div><div class="desc">双段 checksum、NG Unlock、Seg2 删除</div></a>
+        <a class="chapter-card" href="./regmap.html"><div class="num">5</div><div class="title">寄存器映射与命名规范化</div><div class="desc">位段迁移、chip_sel 默认值、十进制命名</div></a>
+        <a class="chapter-card" href="./verification.html"><div class="num">6</div><div class="title">验证同步与 Checker 统一</div><div class="desc">checker 迁移、case 同步、仿真计划</div></a>
         <a class="chapter-card" href="./status.html"><div class="num">7</div><div class="title">当前状态与后续</div><div class="desc">0714v1 状态、待确认项、后续建议</div></a>
       </div>
     </article>
@@ -201,11 +204,11 @@
 const chapters = [
       ['index', '首页'],
       ['intro', '引言'],
+      ['diagrams', '图解'],
       ['timeline', '时间线'],
       ['checksum', '校验和'],
       ['regmap', '寄存器'],
       ['verification', '验证'],
-      ['diagrams', '图解'],
       ['status', '后续']
     ];
     const currentPath = location.pathname.split('/').pop() || 'index.html';

@@ -174,7 +174,7 @@
       <article class="article" id="article"></article>
       <div class="page-nav">
       <a href="./index.html"><span class="label">上一篇</span><span class="title">首页</span></a>
-      <a class="next" href="./timeline.html"><span class="label">下一篇</span><span class="title">核心变更时间线</span></a>
+      <a class="next" href="./diagrams.html"><span class="label">下一篇</span><span class="title">寄存器图解 Sheet</span></a>
       </div>
       <div class="footer">Shared from team knowledge base</div>
     </div>
@@ -182,6 +182,8 @@
 
   <script type="text/template" id="md">
 # 一、引言与归档体系
+
+> ⭐ **建议阅读顺序**：引言之后，请先看 **[二、寄存器图解 Sheet](./diagrams.html)**，通过五张全景图建立对 LC_CPUWR 寄存器默认字节映射、checksum 覆盖、LSI 保护与复位域的直观认识，再回来看后续详细变更分析。
 
 ## 1. 模块定位
 
@@ -241,11 +243,11 @@
 const chapters = [
       ['index', '首页'],
       ['intro', '引言'],
+      ['diagrams', '图解'],
       ['timeline', '时间线'],
       ['checksum', '校验和'],
       ['regmap', '寄存器'],
       ['verification', '验证'],
-      ['diagrams', '图解'],
       ['status', '后续']
     ];
     const currentPath = location.pathname.split('/').pop() || 'index.html';
