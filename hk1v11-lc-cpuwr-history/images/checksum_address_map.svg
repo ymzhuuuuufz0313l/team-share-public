@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="940" height="1894" viewBox="0 0 940 1894" style="background:#ffffff">
-<rect width="940" height="1894" fill="#ffffff"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="940" height="1304" viewBox="0 0 940 1304" style="background:#ffffff">
+<rect width="940" height="1304" fill="#ffffff"/>
 <text x="470.0" y="40" text-anchor="middle" font-size="22" font-weight="bold" fill="#1e293b">LC_CPUWR 0714v1 参与 checksum 的地址（chip_sel=0 / chip_sel=1 对照）</text>
 <text x="300.0" y="116" text-anchor="middle" font-size="12" fill="#64748b">[7]</text>
 <text x="380.0" y="116" text-anchor="middle" font-size="12" fill="#64748b">[6]</text>
@@ -10,352 +10,238 @@
 <text x="700.0" y="116" text-anchor="middle" font-size="12" fill="#64748b">[2]</text>
 <text x="780.0" y="116" text-anchor="middle" font-size="12" fill="#64748b">[1]</text>
 <text x="860.0" y="116" text-anchor="middle" font-size="12" fill="#64748b">[0]</text>
-<text x="170" y="188.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x00 (0)</text>
-<text x="172" y="162.0" text-anchor="end" font-size="12" fill="#64748b">chip_sel=0</text>
-<rect x="260" y="140" width="239" height="36" fill="#22c55e" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="170" y="156.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x00 (0)</text>
+<text x="172" y="162.0" text-anchor="end" font-size="12" fill="#64748b">chip_sel=0/1</text>
+<rect x="260" y="140" width="239" height="36" fill="#14b8a6" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="379.5" y="156.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">AVE_RGBW[2:0]</text>
 <text x="379.5" y="168.0" text-anchor="middle" font-size="8" fill="#64748b">3'b000</text>
-<rect x="500" y="140" width="79" height="36" fill="#22c55e" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<rect x="500" y="140" width="79" height="36" fill="#14b8a6" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="539.5" y="156.0" text-anchor="middle" font-size="7" font-weight="500" fill="#1e293b">SCREN</text>
 <text x="539.5" y="168.0" text-anchor="middle" font-size="6" fill="#64748b">1'b0</text>
-<rect x="580" y="140" width="319" height="36" fill="#22c55e" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<rect x="580" y="140" width="319" height="36" fill="#14b8a6" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="739.5" y="156.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">Reserved</text>
 <text x="739.5" y="168.0" text-anchor="middle" font-size="8" fill="#64748b">0</text>
-<text x="172" y="204.0" text-anchor="end" font-size="12" fill="#64748b">chip_sel=1</text>
-<rect x="260" y="182" width="239" height="36" fill="#0ea5e9" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="379.5" y="198.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">AVE_RGBW[2:0]</text>
-<text x="379.5" y="210.0" text-anchor="middle" font-size="8" fill="#64748b">3'b000</text>
-<rect x="500" y="182" width="79" height="36" fill="#0ea5e9" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="539.5" y="198.0" text-anchor="middle" font-size="7" font-weight="500" fill="#1e293b">SCREN</text>
-<text x="539.5" y="210.0" text-anchor="middle" font-size="6" fill="#64748b">1'b0</text>
-<rect x="580" y="182" width="319" height="36" fill="#0ea5e9" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="739.5" y="198.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">Reserved</text>
-<text x="739.5" y="210.0" text-anchor="middle" font-size="8" fill="#64748b">0</text>
-<text x="170" y="294.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x01 (1)</text>
-<text x="172" y="268.0" text-anchor="end" font-size="12" fill="#64748b">chip_sel=0</text>
-<rect x="260" y="246" width="79" height="36" fill="#22c55e" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="299.5" y="262.0" text-anchor="middle" font-size="7" font-weight="500" fill="#1e293b">AVE_LAST</text>
-<text x="299.5" y="274.0" text-anchor="middle" font-size="6" fill="#64748b">1'b0</text>
-<rect x="340" y="246" width="79" height="36" fill="#22c55e" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="379.5" y="262.0" text-anchor="middle" font-size="7" font-weight="500" fill="#1e293b">Reserved</text>
-<text x="379.5" y="274.0" text-anchor="middle" font-size="6" fill="#64748b">0</text>
-<rect x="420" y="246" width="79" height="36" fill="#22c55e" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="459.5" y="262.0" text-anchor="middle" font-size="7" font-weight="500" fill="#1e293b">PORSD</text>
-<text x="459.5" y="274.0" text-anchor="middle" font-size="6" fill="#64748b">1'b0</text>
-<rect x="500" y="246" width="399" height="36" fill="#22c55e" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="699.5" y="262.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">Reserved</text>
-<text x="699.5" y="274.0" text-anchor="middle" font-size="8" fill="#64748b">0</text>
-<text x="172" y="310.0" text-anchor="end" font-size="12" fill="#64748b">chip_sel=1</text>
-<rect x="260" y="288" width="79" height="36" fill="#0ea5e9" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="299.5" y="304.0" text-anchor="middle" font-size="7" font-weight="500" fill="#1e293b">AVE_LAST</text>
-<text x="299.5" y="316.0" text-anchor="middle" font-size="6" fill="#64748b">1'b0</text>
-<rect x="340" y="288" width="79" height="36" fill="#0ea5e9" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="379.5" y="304.0" text-anchor="middle" font-size="7" font-weight="500" fill="#1e293b">Reserved</text>
-<text x="379.5" y="316.0" text-anchor="middle" font-size="6" fill="#64748b">0</text>
-<rect x="420" y="288" width="79" height="36" fill="#0ea5e9" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="459.5" y="304.0" text-anchor="middle" font-size="7" font-weight="500" fill="#1e293b">PORSD</text>
-<text x="459.5" y="316.0" text-anchor="middle" font-size="6" fill="#64748b">1'b0</text>
-<rect x="500" y="288" width="399" height="36" fill="#0ea5e9" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="699.5" y="304.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">Reserved</text>
-<text x="699.5" y="316.0" text-anchor="middle" font-size="8" fill="#64748b">0</text>
-<text x="170" y="400.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x02 (2)</text>
-<text x="172" y="374.0" text-anchor="end" font-size="12" fill="#64748b">chip_sel=0</text>
-<rect x="260" y="352" width="639" height="36" fill="#22c55e" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="579.5" y="368.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">Reserved</text>
-<text x="579.5" y="380.0" text-anchor="middle" font-size="8" fill="#64748b">0</text>
-<text x="172" y="416.0" text-anchor="end" font-size="12" fill="#64748b">chip_sel=1</text>
-<rect x="260" y="394" width="159" height="36" fill="#0ea5e9" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="339.5" y="410.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">SMART_CS[3:2]</text>
-<text x="339.5" y="422.0" text-anchor="middle" font-size="8" fill="#64748b">2'b00</text>
-<rect x="420" y="394" width="159" height="36" fill="#0ea5e9" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="499.5" y="410.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">Reserved</text>
-<text x="499.5" y="422.0" text-anchor="middle" font-size="8" fill="#64748b">0</text>
-<rect x="580" y="394" width="159" height="36" fill="#0ea5e9" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="659.5" y="410.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">SMART_CS[1:0]</text>
-<text x="659.5" y="422.0" text-anchor="middle" font-size="8" fill="#64748b">2'b00</text>
-<rect x="740" y="394" width="159" height="36" fill="#0ea5e9" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="819.5" y="410.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">Reserved</text>
-<text x="819.5" y="422.0" text-anchor="middle" font-size="8" fill="#64748b">0</text>
-<text x="170" y="506.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x03 (3)</text>
-<text x="172" y="480.0" text-anchor="end" font-size="12" fill="#64748b">chip_sel=0</text>
-<rect x="260" y="458" width="639" height="36" fill="#22c55e" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="579.5" y="474.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">Reserved</text>
-<text x="579.5" y="486.0" text-anchor="middle" font-size="8" fill="#64748b">0</text>
-<text x="172" y="522.0" text-anchor="end" font-size="12" fill="#64748b">chip_sel=1</text>
-<rect x="260" y="500" width="639" height="36" fill="#0ea5e9" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="579.5" y="516.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">Reserved</text>
-<text x="579.5" y="528.0" text-anchor="middle" font-size="8" fill="#64748b">0</text>
-<text x="170" y="612.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x04 (4)</text>
-<text x="172" y="586.0" text-anchor="end" font-size="12" fill="#64748b">chip_sel=0</text>
-<rect x="260" y="564" width="239" height="36" fill="#22c55e" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="379.5" y="580.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">SD_CHOP[2:0]</text>
-<text x="379.5" y="592.0" text-anchor="middle" font-size="8" fill="#64748b">3'b000</text>
-<rect x="500" y="564" width="399" height="36" fill="#22c55e" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="699.5" y="580.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">Reserved</text>
-<text x="699.5" y="592.0" text-anchor="middle" font-size="8" fill="#64748b">0</text>
-<text x="172" y="628.0" text-anchor="end" font-size="12" fill="#64748b">chip_sel=1</text>
-<rect x="260" y="606" width="239" height="36" fill="#0ea5e9" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="379.5" y="622.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">SD_CHOP[2:0]</text>
-<text x="379.5" y="634.0" text-anchor="middle" font-size="8" fill="#64748b">3'b000</text>
-<rect x="500" y="606" width="399" height="36" fill="#0ea5e9" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="699.5" y="622.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">Reserved</text>
-<text x="699.5" y="634.0" text-anchor="middle" font-size="8" fill="#64748b">0</text>
-<text x="170" y="718.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x05 (5)</text>
-<text x="172" y="692.0" text-anchor="end" font-size="12" fill="#64748b">chip_sel=0</text>
-<rect x="260" y="670" width="239" height="36" fill="#22c55e" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="379.5" y="686.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">CH_SEL[2:0]</text>
-<text x="379.5" y="698.0" text-anchor="middle" font-size="8" fill="#64748b">3'b011</text>
-<rect x="500" y="670" width="399" height="36" fill="#22c55e" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="699.5" y="686.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">Reserved</text>
-<text x="699.5" y="698.0" text-anchor="middle" font-size="8" fill="#64748b">0</text>
-<text x="172" y="734.0" text-anchor="end" font-size="12" fill="#64748b">chip_sel=1</text>
-<rect x="260" y="712" width="239" height="36" fill="#0ea5e9" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="379.5" y="728.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">CH_SEL[2:0]</text>
-<text x="379.5" y="740.0" text-anchor="middle" font-size="8" fill="#64748b">3'b011</text>
-<rect x="500" y="712" width="399" height="36" fill="#0ea5e9" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="699.5" y="728.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">Reserved</text>
-<text x="699.5" y="740.0" text-anchor="middle" font-size="8" fill="#64748b">0</text>
-<text x="170" y="824.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x06 (6)</text>
-<text x="172" y="798.0" text-anchor="end" font-size="12" fill="#64748b">chip_sel=0</text>
-<rect x="260" y="776" width="79" height="36" fill="#22c55e" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="299.5" y="792.0" text-anchor="middle" font-size="7" font-weight="500" fill="#1e293b">DPLC_GROUP</text>
-<text x="299.5" y="804.0" text-anchor="middle" font-size="6" fill="#64748b">0</text>
-<rect x="340" y="776" width="79" height="36" fill="#22c55e" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="379.5" y="792.0" text-anchor="middle" font-size="7" font-weight="500" fill="#1e293b">Reserved</text>
-<text x="379.5" y="804.0" text-anchor="middle" font-size="6" fill="#64748b">0</text>
-<rect x="420" y="776" width="79" height="36" fill="#22c55e" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="459.5" y="792.0" text-anchor="middle" font-size="7" font-weight="500" fill="#1e293b">DPOLINV</text>
-<text x="459.5" y="804.0" text-anchor="middle" font-size="6" fill="#64748b">1'b0</text>
-<rect x="500" y="776" width="79" height="36" fill="#22c55e" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="539.5" y="792.0" text-anchor="middle" font-size="7" font-weight="500" fill="#1e293b">Reserved</text>
-<text x="539.5" y="804.0" text-anchor="middle" font-size="6" fill="#64748b">0</text>
-<rect x="580" y="776" width="79" height="36" fill="#22c55e" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="619.5" y="792.0" text-anchor="middle" font-size="7" font-weight="500" fill="#1e293b">AVE_MODE</text>
-<text x="619.5" y="804.0" text-anchor="middle" font-size="6" fill="#64748b">1'b0</text>
-<rect x="660" y="776" width="79" height="36" fill="#22c55e" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="699.5" y="792.0" text-anchor="middle" font-size="7" font-weight="500" fill="#1e293b">DPLC_MODE</text>
-<text x="699.5" y="804.0" text-anchor="middle" font-size="6" fill="#64748b">1'b0</text>
-<rect x="740" y="776" width="79" height="36" fill="#22c55e" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="779.5" y="792.0" text-anchor="middle" font-size="7" font-weight="500" fill="#1e293b">SDC</text>
-<text x="779.5" y="804.0" text-anchor="middle" font-size="6" fill="#64748b">1'b1</text>
-<rect x="820" y="776" width="79" height="36" fill="#22c55e" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="859.5" y="792.0" text-anchor="middle" font-size="7" font-weight="500" fill="#1e293b">Reserved</text>
-<text x="859.5" y="804.0" text-anchor="middle" font-size="6" fill="#64748b">0</text>
-<text x="172" y="840.0" text-anchor="end" font-size="12" fill="#64748b">chip_sel=1</text>
-<rect x="260" y="818" width="79" height="36" fill="#0ea5e9" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="299.5" y="834.0" text-anchor="middle" font-size="7" font-weight="500" fill="#1e293b">DPLC_GROUP</text>
-<text x="299.5" y="846.0" text-anchor="middle" font-size="6" fill="#64748b">0</text>
-<rect x="340" y="818" width="79" height="36" fill="#0ea5e9" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="379.5" y="834.0" text-anchor="middle" font-size="7" font-weight="500" fill="#1e293b">Reserved</text>
-<text x="379.5" y="846.0" text-anchor="middle" font-size="6" fill="#64748b">0</text>
-<rect x="420" y="818" width="79" height="36" fill="#0ea5e9" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="459.5" y="834.0" text-anchor="middle" font-size="7" font-weight="500" fill="#1e293b">DPOLINV</text>
-<text x="459.5" y="846.0" text-anchor="middle" font-size="6" fill="#64748b">1'b0</text>
-<rect x="500" y="818" width="79" height="36" fill="#0ea5e9" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="539.5" y="834.0" text-anchor="middle" font-size="7" font-weight="500" fill="#1e293b">Reserved</text>
-<text x="539.5" y="846.0" text-anchor="middle" font-size="6" fill="#64748b">0</text>
-<rect x="580" y="818" width="79" height="36" fill="#0ea5e9" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="619.5" y="834.0" text-anchor="middle" font-size="7" font-weight="500" fill="#1e293b">AVE_MODE</text>
-<text x="619.5" y="846.0" text-anchor="middle" font-size="6" fill="#64748b">1'b0</text>
-<rect x="660" y="818" width="79" height="36" fill="#0ea5e9" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="699.5" y="834.0" text-anchor="middle" font-size="7" font-weight="500" fill="#1e293b">DPLC_MODE</text>
-<text x="699.5" y="846.0" text-anchor="middle" font-size="6" fill="#64748b">1'b0</text>
-<rect x="740" y="818" width="79" height="36" fill="#0ea5e9" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="779.5" y="834.0" text-anchor="middle" font-size="7" font-weight="500" fill="#1e293b">SDC</text>
-<text x="779.5" y="846.0" text-anchor="middle" font-size="6" fill="#64748b">1'b1</text>
-<rect x="820" y="818" width="79" height="36" fill="#0ea5e9" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="859.5" y="834.0" text-anchor="middle" font-size="7" font-weight="500" fill="#1e293b">Reserved</text>
-<text x="859.5" y="846.0" text-anchor="middle" font-size="6" fill="#64748b">0</text>
-<text x="170" y="930.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x07 (7)</text>
-<text x="172" y="904.0" text-anchor="end" font-size="12" fill="#64748b">chip_sel=0</text>
-<rect x="260" y="882" width="319" height="36" fill="#f97316" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="419.5" y="898.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">Reserved</text>
-<text x="419.5" y="910.0" text-anchor="middle" font-size="8" fill="#64748b">0</text>
-<rect x="580" y="882" width="319" height="36" fill="#f97316" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="739.5" y="898.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">CTRLF_CHECKSUM…</text>
-<text x="739.5" y="910.0" text-anchor="middle" font-size="8" fill="#64748b">4'b0000</text>
-<text x="172" y="946.0" text-anchor="end" font-size="12" fill="#64748b">chip_sel=1</text>
-<rect x="260" y="924" width="319" height="36" fill="#f97316" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="419.5" y="940.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">Reserved</text>
-<text x="419.5" y="952.0" text-anchor="middle" font-size="8" fill="#64748b">0</text>
-<rect x="580" y="924" width="319" height="36" fill="#f97316" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="739.5" y="940.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">CTRLF_CHECKSUM…</text>
-<text x="739.5" y="952.0" text-anchor="middle" font-size="8" fill="#64748b">4'b0000</text>
-<text x="170" y="1036.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x08 (8)</text>
-<text x="172" y="1010.0" text-anchor="end" font-size="12" fill="#64748b">chip_sel=0</text>
-<rect x="260" y="988" width="159" height="36" fill="#22c55e" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="339.5" y="1004.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">SD_CHOP_F[1:0]</text>
-<text x="339.5" y="1016.0" text-anchor="middle" font-size="8" fill="#64748b">2'b00</text>
-<rect x="420" y="988" width="159" height="36" fill="#22c55e" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="499.5" y="1004.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">Reserved</text>
-<text x="499.5" y="1016.0" text-anchor="middle" font-size="8" fill="#64748b">2'b00</text>
-<rect x="580" y="988" width="79" height="36" fill="#22c55e" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="619.5" y="1004.0" text-anchor="middle" font-size="7" font-weight="500" fill="#1e293b">TP_CONTROL</text>
-<text x="619.5" y="1016.0" text-anchor="middle" font-size="6" fill="#64748b">1'b0</text>
-<rect x="660" y="988" width="79" height="36" fill="#22c55e" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="699.5" y="1004.0" text-anchor="middle" font-size="7" font-weight="500" fill="#1e293b">STP_EN</text>
-<text x="699.5" y="1016.0" text-anchor="middle" font-size="6" fill="#64748b">1'b0</text>
-<rect x="740" y="988" width="79" height="36" fill="#22c55e" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="779.5" y="1004.0" text-anchor="middle" font-size="7" font-weight="500" fill="#1e293b">reg_eq_rbc1</text>
-<text x="779.5" y="1016.0" text-anchor="middle" font-size="6" fill="#64748b">1'b0</text>
-<rect x="820" y="988" width="79" height="36" fill="#22c55e" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="859.5" y="1004.0" text-anchor="middle" font-size="7" font-weight="500" fill="#1e293b">reg_eq_rbc0</text>
-<text x="859.5" y="1016.0" text-anchor="middle" font-size="6" fill="#64748b">1'b0</text>
-<text x="172" y="1052.0" text-anchor="end" font-size="12" fill="#64748b">chip_sel=1</text>
-<rect x="260" y="1030" width="159" height="36" fill="#0ea5e9" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="339.5" y="1046.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">SD_CHOP_F[1:0]</text>
-<text x="339.5" y="1058.0" text-anchor="middle" font-size="8" fill="#64748b">2'b00</text>
-<rect x="420" y="1030" width="159" height="36" fill="#0ea5e9" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="499.5" y="1046.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">Reserved</text>
-<text x="499.5" y="1058.0" text-anchor="middle" font-size="8" fill="#64748b">2'b00</text>
-<rect x="580" y="1030" width="79" height="36" fill="#0ea5e9" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="619.5" y="1046.0" text-anchor="middle" font-size="7" font-weight="500" fill="#1e293b">TP_CONTROL</text>
-<text x="619.5" y="1058.0" text-anchor="middle" font-size="6" fill="#64748b">1'b0</text>
-<rect x="660" y="1030" width="79" height="36" fill="#0ea5e9" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="699.5" y="1046.0" text-anchor="middle" font-size="7" font-weight="500" fill="#1e293b">STP_EN</text>
-<text x="699.5" y="1058.0" text-anchor="middle" font-size="6" fill="#64748b">1'b0</text>
-<rect x="740" y="1030" width="79" height="36" fill="#0ea5e9" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="779.5" y="1046.0" text-anchor="middle" font-size="7" font-weight="500" fill="#1e293b">reg_eq_rbc1</text>
-<text x="779.5" y="1058.0" text-anchor="middle" font-size="6" fill="#64748b">1'b0</text>
-<rect x="820" y="1030" width="79" height="36" fill="#0ea5e9" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="859.5" y="1046.0" text-anchor="middle" font-size="7" font-weight="500" fill="#1e293b">reg_eq_rbc0</text>
-<text x="859.5" y="1058.0" text-anchor="middle" font-size="6" fill="#64748b">1'b0</text>
-<text x="170" y="1142.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x09 (9)</text>
-<text x="172" y="1116.0" text-anchor="end" font-size="12" fill="#64748b">chip_sel=0</text>
-<rect x="260" y="1094" width="639" height="36" fill="#22c55e" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="579.5" y="1110.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">Reserved</text>
-<text x="579.5" y="1122.0" text-anchor="middle" font-size="8" fill="#64748b">0</text>
-<text x="172" y="1158.0" text-anchor="end" font-size="12" fill="#64748b">chip_sel=1</text>
-<rect x="260" y="1136" width="159" height="36" fill="#0ea5e9" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="339.5" y="1152.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">SR_NF[1:0]</text>
-<text x="339.5" y="1164.0" text-anchor="middle" font-size="8" fill="#64748b">2'b11</text>
-<rect x="420" y="1136" width="159" height="36" fill="#0ea5e9" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="499.5" y="1152.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">SR_NR[1:0]</text>
-<text x="499.5" y="1164.0" text-anchor="middle" font-size="8" fill="#64748b">2'b11</text>
-<rect x="580" y="1136" width="159" height="36" fill="#0ea5e9" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="659.5" y="1152.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">SR_PF[1:0]</text>
-<text x="659.5" y="1164.0" text-anchor="middle" font-size="8" fill="#64748b">2'b11</text>
-<rect x="740" y="1136" width="159" height="36" fill="#0ea5e9" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="819.5" y="1152.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">SR_PR[1:0]</text>
-<text x="819.5" y="1164.0" text-anchor="middle" font-size="8" fill="#64748b">2'b11</text>
-<text x="170" y="1248.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x0A (10)</text>
-<text x="172" y="1222.0" text-anchor="end" font-size="12" fill="#64748b">chip_sel=0</text>
-<rect x="260" y="1200" width="639" height="36" fill="#22c55e" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="579.5" y="1216.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">Reserved</text>
-<text x="579.5" y="1228.0" text-anchor="middle" font-size="8" fill="#64748b">0</text>
-<text x="172" y="1264.0" text-anchor="end" font-size="12" fill="#64748b">chip_sel=1</text>
-<rect x="260" y="1242" width="159" height="36" fill="#0ea5e9" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="339.5" y="1258.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">PWRC_N[1:0]</text>
-<text x="339.5" y="1270.0" text-anchor="middle" font-size="8" fill="#64748b">2'b10</text>
-<rect x="420" y="1242" width="159" height="36" fill="#0ea5e9" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="499.5" y="1258.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">PWRC_P[1:0]</text>
-<text x="499.5" y="1270.0" text-anchor="middle" font-size="8" fill="#64748b">2'b10</text>
-<rect x="580" y="1242" width="159" height="36" fill="#0ea5e9" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="659.5" y="1258.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">PWRC_TB[1:0]</text>
-<text x="659.5" y="1270.0" text-anchor="middle" font-size="8" fill="#64748b">2'b01</text>
-<rect x="740" y="1242" width="159" height="36" fill="#0ea5e9" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="819.5" y="1258.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">PWRC_TA[1:0]</text>
-<text x="819.5" y="1270.0" text-anchor="middle" font-size="8" fill="#64748b">2'b01</text>
-<text x="170" y="1354.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x1D (29)</text>
-<text x="172" y="1328.0" text-anchor="end" font-size="12" fill="#64748b">chip_sel=0</text>
-<rect x="260" y="1306" width="399" height="36" fill="#22c55e" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="459.5" y="1322.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">Reserved</text>
-<text x="459.5" y="1334.0" text-anchor="middle" font-size="8" fill="#64748b">0</text>
-<rect x="660" y="1306" width="239" height="36" fill="#22c55e" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="779.5" y="1322.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">SP_S[2:0]</text>
-<text x="779.5" y="1334.0" text-anchor="middle" font-size="8" fill="#64748b">3'b000</text>
-<text x="172" y="1370.0" text-anchor="end" font-size="12" fill="#64748b">chip_sel=1</text>
-<rect x="260" y="1348" width="399" height="36" fill="#0ea5e9" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="459.5" y="1364.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">Reserved</text>
-<text x="459.5" y="1376.0" text-anchor="middle" font-size="8" fill="#64748b">0</text>
-<rect x="660" y="1348" width="239" height="36" fill="#0ea5e9" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="779.5" y="1364.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">SP_S[2:0]</text>
-<text x="779.5" y="1376.0" text-anchor="middle" font-size="8" fill="#64748b">3'b000</text>
-<text x="170" y="1460.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x1E (30)</text>
-<text x="172" y="1434.0" text-anchor="end" font-size="12" fill="#64748b">chip_sel=0</text>
-<rect x="260" y="1412" width="639" height="36" fill="#22c55e" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="579.5" y="1428.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">VBK[7:0]</text>
-<text x="579.5" y="1440.0" text-anchor="middle" font-size="8" fill="#64748b">8'b00000000</text>
-<text x="172" y="1476.0" text-anchor="end" font-size="12" fill="#64748b">chip_sel=1</text>
-<rect x="260" y="1454" width="639" height="36" fill="#0ea5e9" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="579.5" y="1470.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">VBK[7:0]</text>
-<text x="579.5" y="1482.0" text-anchor="middle" font-size="8" fill="#64748b">8'b00000000</text>
-<text x="170" y="1566.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x1F (31)</text>
-<text x="172" y="1540.0" text-anchor="end" font-size="12" fill="#64748b">chip_sel=0</text>
-<rect x="260" y="1518" width="79" height="36" fill="#22c55e" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="299.5" y="1534.0" text-anchor="middle" font-size="7" font-weight="500" fill="#1e293b">PWRC_P3</text>
-<text x="299.5" y="1546.0" text-anchor="middle" font-size="6" fill="#64748b">1'b0</text>
-<rect x="340" y="1518" width="79" height="36" fill="#22c55e" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="379.5" y="1534.0" text-anchor="middle" font-size="7" font-weight="500" fill="#1e293b">PWRC_N3</text>
-<text x="379.5" y="1546.0" text-anchor="middle" font-size="6" fill="#64748b">1'b0</text>
-<rect x="420" y="1518" width="79" height="36" fill="#22c55e" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="459.5" y="1534.0" text-anchor="middle" font-size="7" font-weight="500" fill="#1e293b">PWRC_P2</text>
-<text x="459.5" y="1546.0" text-anchor="middle" font-size="6" fill="#64748b">1'b0</text>
-<rect x="500" y="1518" width="79" height="36" fill="#22c55e" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="539.5" y="1534.0" text-anchor="middle" font-size="7" font-weight="500" fill="#1e293b">PWRC_N2</text>
-<text x="539.5" y="1546.0" text-anchor="middle" font-size="6" fill="#64748b">1'b0</text>
-<rect x="580" y="1518" width="79" height="36" fill="#22c55e" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="619.5" y="1534.0" text-anchor="middle" font-size="7" font-weight="500" fill="#1e293b">PWRC_P1</text>
-<text x="619.5" y="1546.0" text-anchor="middle" font-size="6" fill="#64748b">1'b0</text>
-<rect x="660" y="1518" width="79" height="36" fill="#22c55e" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="699.5" y="1534.0" text-anchor="middle" font-size="7" font-weight="500" fill="#1e293b">PWRC_N1</text>
-<text x="699.5" y="1546.0" text-anchor="middle" font-size="6" fill="#64748b">1'b0</text>
-<rect x="740" y="1518" width="79" height="36" fill="#22c55e" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="779.5" y="1534.0" text-anchor="middle" font-size="7" font-weight="500" fill="#1e293b">VBK_EN</text>
-<text x="779.5" y="1546.0" text-anchor="middle" font-size="6" fill="#64748b">1'b0</text>
-<rect x="820" y="1518" width="79" height="36" fill="#22c55e" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="859.5" y="1534.0" text-anchor="middle" font-size="7" font-weight="500" fill="#1e293b">PWRC_CTRL</text>
-<text x="859.5" y="1546.0" text-anchor="middle" font-size="6" fill="#64748b">1'b0</text>
-<text x="172" y="1582.0" text-anchor="end" font-size="12" fill="#64748b">chip_sel=1</text>
-<rect x="260" y="1560" width="159" height="36" fill="#0ea5e9" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="339.5" y="1576.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">PWRC_NB[1:0]</text>
-<text x="339.5" y="1588.0" text-anchor="middle" font-size="8" fill="#64748b">2'b10</text>
-<rect x="420" y="1560" width="159" height="36" fill="#0ea5e9" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="499.5" y="1576.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">PWRC_NA[1:0]</text>
-<text x="499.5" y="1588.0" text-anchor="middle" font-size="8" fill="#64748b">2'b10</text>
-<rect x="580" y="1560" width="159" height="36" fill="#0ea5e9" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="659.5" y="1576.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">PWRC_PB[1:0]</text>
-<text x="659.5" y="1588.0" text-anchor="middle" font-size="8" fill="#64748b">2'b10</text>
-<rect x="740" y="1560" width="159" height="36" fill="#0ea5e9" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="819.5" y="1576.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">PWRC_PA[1:0]</text>
-<text x="819.5" y="1588.0" text-anchor="middle" font-size="8" fill="#64748b">2'b10</text>
-<text x="170" y="1672.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x27 (39)</text>
-<text x="172" y="1646.0" text-anchor="end" font-size="12" fill="#64748b">chip_sel=0</text>
-<rect x="260" y="1624" width="79" height="36" fill="#facc15" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="299.5" y="1640.0" text-anchor="middle" font-size="7" font-weight="500" fill="#1e293b">ACS_EN</text>
-<text x="299.5" y="1652.0" text-anchor="middle" font-size="6" fill="#64748b">0</text>
-<rect x="340" y="1624" width="399" height="36" fill="#facc15" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="539.5" y="1640.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">Reserved</text>
-<text x="539.5" y="1652.0" text-anchor="middle" font-size="8" fill="#64748b">0</text>
-<rect x="740" y="1624" width="79" height="36" fill="#facc15" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="779.5" y="1640.0" text-anchor="middle" font-size="7" font-weight="500" fill="#1e293b">Level_Skip_fra…</text>
-<text x="779.5" y="1652.0" text-anchor="middle" font-size="6" fill="#64748b">0</text>
-<rect x="820" y="1624" width="79" height="36" fill="#facc15" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="859.5" y="1640.0" text-anchor="middle" font-size="7" font-weight="500" fill="#1e293b">Skip_frame_cou…</text>
-<text x="859.5" y="1652.0" text-anchor="middle" font-size="6" fill="#64748b">0</text>
-<text x="172" y="1688.0" text-anchor="end" font-size="12" fill="#64748b">chip_sel=1</text>
-<rect x="260" y="1666" width="79" height="36" fill="#facc15" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="299.5" y="1682.0" text-anchor="middle" font-size="7" font-weight="500" fill="#1e293b">ACS_EN</text>
-<text x="299.5" y="1694.0" text-anchor="middle" font-size="6" fill="#64748b">0</text>
-<rect x="340" y="1666" width="399" height="36" fill="#facc15" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="539.5" y="1682.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">Reserved</text>
-<text x="539.5" y="1694.0" text-anchor="middle" font-size="8" fill="#64748b">0</text>
-<rect x="740" y="1666" width="79" height="36" fill="#facc15" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="779.5" y="1682.0" text-anchor="middle" font-size="7" font-weight="500" fill="#1e293b">Level_Skip_fra…</text>
-<text x="779.5" y="1694.0" text-anchor="middle" font-size="6" fill="#64748b">0</text>
-<rect x="820" y="1666" width="79" height="36" fill="#facc15" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="859.5" y="1682.0" text-anchor="middle" font-size="7" font-weight="500" fill="#1e293b">Skip_frame_cou…</text>
-<text x="859.5" y="1694.0" text-anchor="middle" font-size="6" fill="#64748b">0</text>
-<text x="90" y="1794" font-size="13" font-weight="600" fill="#1e293b">图例</text>
-<rect x="90" y="1804" width="14" height="14" fill="#22c55e" stroke="#94a3b8" rx="2"/>
-<text x="108" y="1815" font-size="10" fill="#1e293b">chip_sel=0 字段</text>
-<rect x="215" y="1804" width="14" height="14" fill="#0ea5e9" stroke="#94a3b8" rx="2"/>
-<text x="233" y="1815" font-size="10" fill="#1e293b">chip_sel=1 字段</text>
-<rect x="340" y="1804" width="14" height="14" fill="#f97316" stroke="#94a3b8" rx="2"/>
-<text x="358" y="1815" font-size="10" fill="#1e293b">Checksum 控制 (0x07)</text>
-<rect x="465" y="1804" width="14" height="14" fill="#facc15" stroke="#94a3b8" rx="2"/>
-<text x="483" y="1815" font-size="10" fill="#1e293b">Frame end 边界 (0x27)</text>
-<rect x="590" y="1804" width="14" height="14" fill="#e2e8f0" stroke="#94a3b8" rx="2"/>
-<text x="608" y="1815" font-size="10" fill="#1e293b">Reserved / 不参与</text>
-<text x="470.0" y="1864" text-anchor="middle" font-size="11" fill="#64748b">0616_v2 起 0x09/0x0A/0x1D/0x1E 纳入 Seg1 checksum；Seg2 (0x20~0x38) 无 checksum。绿色=chip_sel=0 字段，蓝色=chip_sel=1 字段。</text>
+<text x="170" y="214.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x01 (1)</text>
+<text x="172" y="220.0" text-anchor="end" font-size="12" fill="#64748b">chip_sel=0/1</text>
+<rect x="260" y="198" width="79" height="36" fill="#14b8a6" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="299.5" y="214.0" text-anchor="middle" font-size="7" font-weight="500" fill="#1e293b">AVE_LAST</text>
+<text x="299.5" y="226.0" text-anchor="middle" font-size="6" fill="#64748b">1'b0</text>
+<rect x="340" y="198" width="79" height="36" fill="#14b8a6" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="379.5" y="214.0" text-anchor="middle" font-size="7" font-weight="500" fill="#1e293b">Reserved</text>
+<text x="379.5" y="226.0" text-anchor="middle" font-size="6" fill="#64748b">0</text>
+<rect x="420" y="198" width="79" height="36" fill="#14b8a6" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="459.5" y="214.0" text-anchor="middle" font-size="7" font-weight="500" fill="#1e293b">PORSD</text>
+<text x="459.5" y="226.0" text-anchor="middle" font-size="6" fill="#64748b">1'b0</text>
+<rect x="500" y="198" width="399" height="36" fill="#14b8a6" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="699.5" y="214.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">Reserved</text>
+<text x="699.5" y="226.0" text-anchor="middle" font-size="8" fill="#64748b">0</text>
+<text x="170" y="292.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x02 (2)</text>
+<text x="172" y="278.0" text-anchor="end" font-size="12" fill="#64748b">chip_sel=0</text>
+<rect x="260" y="256" width="639" height="36" fill="#22c55e" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="579.5" y="272.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">Reserved</text>
+<text x="579.5" y="284.0" text-anchor="middle" font-size="8" fill="#64748b">0</text>
+<text x="172" y="320.0" text-anchor="end" font-size="12" fill="#64748b">chip_sel=1</text>
+<rect x="260" y="298" width="159" height="36" fill="#0ea5e9" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="339.5" y="314.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">SMART_CS[3:2]</text>
+<text x="339.5" y="326.0" text-anchor="middle" font-size="8" fill="#64748b">2'b00</text>
+<rect x="420" y="298" width="159" height="36" fill="#0ea5e9" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="499.5" y="314.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">Reserved</text>
+<text x="499.5" y="326.0" text-anchor="middle" font-size="8" fill="#64748b">0</text>
+<rect x="580" y="298" width="159" height="36" fill="#0ea5e9" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="659.5" y="314.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">SMART_CS[1:0]</text>
+<text x="659.5" y="326.0" text-anchor="middle" font-size="8" fill="#64748b">2'b00</text>
+<rect x="740" y="298" width="159" height="36" fill="#0ea5e9" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="819.5" y="314.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">Reserved</text>
+<text x="819.5" y="326.0" text-anchor="middle" font-size="8" fill="#64748b">0</text>
+<text x="170" y="376.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x03 (3)</text>
+<text x="172" y="382.0" text-anchor="end" font-size="12" fill="#64748b">chip_sel=0/1</text>
+<rect x="260" y="360" width="639" height="36" fill="#14b8a6" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="579.5" y="376.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">Reserved</text>
+<text x="579.5" y="388.0" text-anchor="middle" font-size="8" fill="#64748b">0</text>
+<text x="170" y="434.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x04 (4)</text>
+<text x="172" y="440.0" text-anchor="end" font-size="12" fill="#64748b">chip_sel=0/1</text>
+<rect x="260" y="418" width="239" height="36" fill="#14b8a6" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="379.5" y="434.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">SD_CHOP[2:0]</text>
+<text x="379.5" y="446.0" text-anchor="middle" font-size="8" fill="#64748b">3'b000</text>
+<rect x="500" y="418" width="399" height="36" fill="#14b8a6" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="699.5" y="434.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">Reserved</text>
+<text x="699.5" y="446.0" text-anchor="middle" font-size="8" fill="#64748b">0</text>
+<text x="170" y="492.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x05 (5)</text>
+<text x="172" y="498.0" text-anchor="end" font-size="12" fill="#64748b">chip_sel=0/1</text>
+<rect x="260" y="476" width="239" height="36" fill="#14b8a6" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="379.5" y="492.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">CH_SEL[2:0]</text>
+<text x="379.5" y="504.0" text-anchor="middle" font-size="8" fill="#64748b">3'b011</text>
+<rect x="500" y="476" width="399" height="36" fill="#14b8a6" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="699.5" y="492.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">Reserved</text>
+<text x="699.5" y="504.0" text-anchor="middle" font-size="8" fill="#64748b">0</text>
+<text x="170" y="550.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x06 (6)</text>
+<text x="172" y="556.0" text-anchor="end" font-size="12" fill="#64748b">chip_sel=0/1</text>
+<rect x="260" y="534" width="79" height="36" fill="#14b8a6" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="299.5" y="550.0" text-anchor="middle" font-size="7" font-weight="500" fill="#1e293b">DPLC_GROUP</text>
+<text x="299.5" y="562.0" text-anchor="middle" font-size="6" fill="#64748b">0</text>
+<rect x="340" y="534" width="79" height="36" fill="#14b8a6" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="379.5" y="550.0" text-anchor="middle" font-size="7" font-weight="500" fill="#1e293b">Reserved</text>
+<text x="379.5" y="562.0" text-anchor="middle" font-size="6" fill="#64748b">0</text>
+<rect x="420" y="534" width="79" height="36" fill="#14b8a6" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="459.5" y="550.0" text-anchor="middle" font-size="7" font-weight="500" fill="#1e293b">DPOLINV</text>
+<text x="459.5" y="562.0" text-anchor="middle" font-size="6" fill="#64748b">1'b0</text>
+<rect x="500" y="534" width="79" height="36" fill="#14b8a6" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="539.5" y="550.0" text-anchor="middle" font-size="7" font-weight="500" fill="#1e293b">Reserved</text>
+<text x="539.5" y="562.0" text-anchor="middle" font-size="6" fill="#64748b">0</text>
+<rect x="580" y="534" width="79" height="36" fill="#14b8a6" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="619.5" y="550.0" text-anchor="middle" font-size="7" font-weight="500" fill="#1e293b">AVE_MODE</text>
+<text x="619.5" y="562.0" text-anchor="middle" font-size="6" fill="#64748b">1'b0</text>
+<rect x="660" y="534" width="79" height="36" fill="#14b8a6" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="699.5" y="550.0" text-anchor="middle" font-size="7" font-weight="500" fill="#1e293b">DPLC_MODE</text>
+<text x="699.5" y="562.0" text-anchor="middle" font-size="6" fill="#64748b">1'b0</text>
+<rect x="740" y="534" width="79" height="36" fill="#14b8a6" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="779.5" y="550.0" text-anchor="middle" font-size="7" font-weight="500" fill="#1e293b">SDC</text>
+<text x="779.5" y="562.0" text-anchor="middle" font-size="6" fill="#64748b">1'b1</text>
+<rect x="820" y="534" width="79" height="36" fill="#14b8a6" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="859.5" y="550.0" text-anchor="middle" font-size="7" font-weight="500" fill="#1e293b">Reserved</text>
+<text x="859.5" y="562.0" text-anchor="middle" font-size="6" fill="#64748b">0</text>
+<text x="170" y="608.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x07 (7)</text>
+<text x="172" y="614.0" text-anchor="end" font-size="12" fill="#64748b">chip_sel=0/1</text>
+<rect x="260" y="592" width="319" height="36" fill="#f97316" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="419.5" y="608.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">Reserved</text>
+<text x="419.5" y="620.0" text-anchor="middle" font-size="8" fill="#64748b">0</text>
+<rect x="580" y="592" width="319" height="36" fill="#f97316" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="739.5" y="608.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">CTRLF_CHECKSUM…</text>
+<text x="739.5" y="620.0" text-anchor="middle" font-size="8" fill="#64748b">4'b0000</text>
+<text x="170" y="666.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x08 (8)</text>
+<text x="172" y="672.0" text-anchor="end" font-size="12" fill="#64748b">chip_sel=0/1</text>
+<rect x="260" y="650" width="159" height="36" fill="#14b8a6" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="339.5" y="666.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">SD_CHOP_F[1:0]</text>
+<text x="339.5" y="678.0" text-anchor="middle" font-size="8" fill="#64748b">2'b00</text>
+<rect x="420" y="650" width="159" height="36" fill="#14b8a6" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="499.5" y="666.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">Reserved</text>
+<text x="499.5" y="678.0" text-anchor="middle" font-size="8" fill="#64748b">2'b00</text>
+<rect x="580" y="650" width="79" height="36" fill="#14b8a6" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="619.5" y="666.0" text-anchor="middle" font-size="7" font-weight="500" fill="#1e293b">TP_CONTROL</text>
+<text x="619.5" y="678.0" text-anchor="middle" font-size="6" fill="#64748b">1'b0</text>
+<rect x="660" y="650" width="79" height="36" fill="#14b8a6" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="699.5" y="666.0" text-anchor="middle" font-size="7" font-weight="500" fill="#1e293b">STP_EN</text>
+<text x="699.5" y="678.0" text-anchor="middle" font-size="6" fill="#64748b">1'b0</text>
+<rect x="740" y="650" width="79" height="36" fill="#14b8a6" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="779.5" y="666.0" text-anchor="middle" font-size="7" font-weight="500" fill="#1e293b">reg_eq_rbc1</text>
+<text x="779.5" y="678.0" text-anchor="middle" font-size="6" fill="#64748b">1'b0</text>
+<rect x="820" y="650" width="79" height="36" fill="#14b8a6" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="859.5" y="666.0" text-anchor="middle" font-size="7" font-weight="500" fill="#1e293b">reg_eq_rbc0</text>
+<text x="859.5" y="678.0" text-anchor="middle" font-size="6" fill="#64748b">1'b0</text>
+<text x="170" y="744.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x09 (9)</text>
+<text x="172" y="730.0" text-anchor="end" font-size="12" fill="#64748b">chip_sel=0</text>
+<rect x="260" y="708" width="639" height="36" fill="#22c55e" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="579.5" y="724.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">Reserved</text>
+<text x="579.5" y="736.0" text-anchor="middle" font-size="8" fill="#64748b">0</text>
+<text x="172" y="772.0" text-anchor="end" font-size="12" fill="#64748b">chip_sel=1</text>
+<rect x="260" y="750" width="159" height="36" fill="#0ea5e9" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="339.5" y="766.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">SR_NF[1:0]</text>
+<text x="339.5" y="778.0" text-anchor="middle" font-size="8" fill="#64748b">2'b11</text>
+<rect x="420" y="750" width="159" height="36" fill="#0ea5e9" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="499.5" y="766.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">SR_NR[1:0]</text>
+<text x="499.5" y="778.0" text-anchor="middle" font-size="8" fill="#64748b">2'b11</text>
+<rect x="580" y="750" width="159" height="36" fill="#0ea5e9" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="659.5" y="766.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">SR_PF[1:0]</text>
+<text x="659.5" y="778.0" text-anchor="middle" font-size="8" fill="#64748b">2'b11</text>
+<rect x="740" y="750" width="159" height="36" fill="#0ea5e9" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="819.5" y="766.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">SR_PR[1:0]</text>
+<text x="819.5" y="778.0" text-anchor="middle" font-size="8" fill="#64748b">2'b11</text>
+<text x="170" y="848.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x0A (10)</text>
+<text x="172" y="834.0" text-anchor="end" font-size="12" fill="#64748b">chip_sel=0</text>
+<rect x="260" y="812" width="639" height="36" fill="#22c55e" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="579.5" y="828.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">Reserved</text>
+<text x="579.5" y="840.0" text-anchor="middle" font-size="8" fill="#64748b">0</text>
+<text x="172" y="876.0" text-anchor="end" font-size="12" fill="#64748b">chip_sel=1</text>
+<rect x="260" y="854" width="159" height="36" fill="#0ea5e9" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="339.5" y="870.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">PWRC_N[1:0]</text>
+<text x="339.5" y="882.0" text-anchor="middle" font-size="8" fill="#64748b">2'b10</text>
+<rect x="420" y="854" width="159" height="36" fill="#0ea5e9" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="499.5" y="870.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">PWRC_P[1:0]</text>
+<text x="499.5" y="882.0" text-anchor="middle" font-size="8" fill="#64748b">2'b10</text>
+<rect x="580" y="854" width="159" height="36" fill="#0ea5e9" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="659.5" y="870.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">PWRC_TB[1:0]</text>
+<text x="659.5" y="882.0" text-anchor="middle" font-size="8" fill="#64748b">2'b01</text>
+<rect x="740" y="854" width="159" height="36" fill="#0ea5e9" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="819.5" y="870.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">PWRC_TA[1:0]</text>
+<text x="819.5" y="882.0" text-anchor="middle" font-size="8" fill="#64748b">2'b01</text>
+<text x="170" y="932.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x1D (29)</text>
+<text x="172" y="938.0" text-anchor="end" font-size="12" fill="#64748b">chip_sel=0/1</text>
+<rect x="260" y="916" width="399" height="36" fill="#14b8a6" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="459.5" y="932.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">Reserved</text>
+<text x="459.5" y="944.0" text-anchor="middle" font-size="8" fill="#64748b">0</text>
+<rect x="660" y="916" width="239" height="36" fill="#14b8a6" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="779.5" y="932.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">SP_S[2:0]</text>
+<text x="779.5" y="944.0" text-anchor="middle" font-size="8" fill="#64748b">3'b000</text>
+<text x="170" y="990.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x1E (30)</text>
+<text x="172" y="996.0" text-anchor="end" font-size="12" fill="#64748b">chip_sel=0/1</text>
+<rect x="260" y="974" width="639" height="36" fill="#14b8a6" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="579.5" y="990.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">VBK[7:0]</text>
+<text x="579.5" y="1002.0" text-anchor="middle" font-size="8" fill="#64748b">8'b00000000</text>
+<text x="170" y="1068.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x1F (31)</text>
+<text x="172" y="1054.0" text-anchor="end" font-size="12" fill="#64748b">chip_sel=0</text>
+<rect x="260" y="1032" width="79" height="36" fill="#22c55e" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="299.5" y="1048.0" text-anchor="middle" font-size="7" font-weight="500" fill="#1e293b">PWRC_P3</text>
+<text x="299.5" y="1060.0" text-anchor="middle" font-size="6" fill="#64748b">1'b0</text>
+<rect x="340" y="1032" width="79" height="36" fill="#22c55e" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="379.5" y="1048.0" text-anchor="middle" font-size="7" font-weight="500" fill="#1e293b">PWRC_N3</text>
+<text x="379.5" y="1060.0" text-anchor="middle" font-size="6" fill="#64748b">1'b0</text>
+<rect x="420" y="1032" width="79" height="36" fill="#22c55e" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="459.5" y="1048.0" text-anchor="middle" font-size="7" font-weight="500" fill="#1e293b">PWRC_P2</text>
+<text x="459.5" y="1060.0" text-anchor="middle" font-size="6" fill="#64748b">1'b0</text>
+<rect x="500" y="1032" width="79" height="36" fill="#22c55e" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="539.5" y="1048.0" text-anchor="middle" font-size="7" font-weight="500" fill="#1e293b">PWRC_N2</text>
+<text x="539.5" y="1060.0" text-anchor="middle" font-size="6" fill="#64748b">1'b0</text>
+<rect x="580" y="1032" width="79" height="36" fill="#22c55e" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="619.5" y="1048.0" text-anchor="middle" font-size="7" font-weight="500" fill="#1e293b">PWRC_P1</text>
+<text x="619.5" y="1060.0" text-anchor="middle" font-size="6" fill="#64748b">1'b0</text>
+<rect x="660" y="1032" width="79" height="36" fill="#22c55e" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="699.5" y="1048.0" text-anchor="middle" font-size="7" font-weight="500" fill="#1e293b">PWRC_N1</text>
+<text x="699.5" y="1060.0" text-anchor="middle" font-size="6" fill="#64748b">1'b0</text>
+<rect x="740" y="1032" width="79" height="36" fill="#22c55e" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="779.5" y="1048.0" text-anchor="middle" font-size="7" font-weight="500" fill="#1e293b">VBK_EN</text>
+<text x="779.5" y="1060.0" text-anchor="middle" font-size="6" fill="#64748b">1'b0</text>
+<rect x="820" y="1032" width="79" height="36" fill="#22c55e" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="859.5" y="1048.0" text-anchor="middle" font-size="7" font-weight="500" fill="#1e293b">PWRC_CTRL</text>
+<text x="859.5" y="1060.0" text-anchor="middle" font-size="6" fill="#64748b">1'b0</text>
+<text x="172" y="1096.0" text-anchor="end" font-size="12" fill="#64748b">chip_sel=1</text>
+<rect x="260" y="1074" width="159" height="36" fill="#0ea5e9" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="339.5" y="1090.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">PWRC_NB[1:0]</text>
+<text x="339.5" y="1102.0" text-anchor="middle" font-size="8" fill="#64748b">2'b10</text>
+<rect x="420" y="1074" width="159" height="36" fill="#0ea5e9" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="499.5" y="1090.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">PWRC_NA[1:0]</text>
+<text x="499.5" y="1102.0" text-anchor="middle" font-size="8" fill="#64748b">2'b10</text>
+<rect x="580" y="1074" width="159" height="36" fill="#0ea5e9" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="659.5" y="1090.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">PWRC_PB[1:0]</text>
+<text x="659.5" y="1102.0" text-anchor="middle" font-size="8" fill="#64748b">2'b10</text>
+<rect x="740" y="1074" width="159" height="36" fill="#0ea5e9" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="819.5" y="1090.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">PWRC_PA[1:0]</text>
+<text x="819.5" y="1102.0" text-anchor="middle" font-size="8" fill="#64748b">2'b10</text>
+<text x="170" y="1152.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x27 (39)</text>
+<text x="172" y="1158.0" text-anchor="end" font-size="12" fill="#64748b">chip_sel=0/1</text>
+<rect x="260" y="1136" width="79" height="36" fill="#facc15" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="299.5" y="1152.0" text-anchor="middle" font-size="7" font-weight="500" fill="#1e293b">ACS_EN</text>
+<text x="299.5" y="1164.0" text-anchor="middle" font-size="6" fill="#64748b">0</text>
+<rect x="340" y="1136" width="399" height="36" fill="#facc15" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="539.5" y="1152.0" text-anchor="middle" font-size="9" font-weight="500" fill="#1e293b">Reserved</text>
+<text x="539.5" y="1164.0" text-anchor="middle" font-size="8" fill="#64748b">0</text>
+<rect x="740" y="1136" width="79" height="36" fill="#facc15" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="779.5" y="1152.0" text-anchor="middle" font-size="7" font-weight="500" fill="#1e293b">Level_Skip_fra…</text>
+<text x="779.5" y="1164.0" text-anchor="middle" font-size="6" fill="#64748b">0</text>
+<rect x="820" y="1136" width="79" height="36" fill="#facc15" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="859.5" y="1152.0" text-anchor="middle" font-size="7" font-weight="500" fill="#1e293b">Skip_frame_cou…</text>
+<text x="859.5" y="1164.0" text-anchor="middle" font-size="6" fill="#64748b">0</text>
+<text x="90" y="1219" font-size="13" font-weight="600" fill="#1e293b">图例</text>
+<rect x="90" y="1229" width="14" height="14" fill="#14b8a6" stroke="#94a3b8" rx="2"/>
+<text x="108" y="1240" font-size="10" fill="#1e293b">chip_sel=0/1 相同</text>
+<rect x="215" y="1229" width="14" height="14" fill="#22c55e" stroke="#94a3b8" rx="2"/>
+<text x="233" y="1240" font-size="10" fill="#1e293b">chip_sel=0 字段</text>
+<rect x="340" y="1229" width="14" height="14" fill="#0ea5e9" stroke="#94a3b8" rx="2"/>
+<text x="358" y="1240" font-size="10" fill="#1e293b">chip_sel=1 字段</text>
+<rect x="465" y="1229" width="14" height="14" fill="#f97316" stroke="#94a3b8" rx="2"/>
+<text x="483" y="1240" font-size="10" fill="#1e293b">Checksum 控制 (0x07)</text>
+<rect x="590" y="1229" width="14" height="14" fill="#facc15" stroke="#94a3b8" rx="2"/>
+<text x="608" y="1240" font-size="10" fill="#1e293b">Frame end 边界 (0x27)</text>
+<rect x="715" y="1229" width="14" height="14" fill="#e2e8f0" stroke="#94a3b8" rx="2"/>
+<text x="733" y="1240" font-size="10" fill="#1e293b">Reserved / 不参与</text>
+<text x="470.0" y="1274" text-anchor="middle" font-size="11" fill="#64748b">0616_v2 起 0x09/0x0A/0x1D/0x1E 纳入 Seg1 checksum；Seg2 (0x20~0x38) 无 checksum。绿色=chip_sel=0 字段，蓝色=chip_sel=1 字段。</text>
 </svg>

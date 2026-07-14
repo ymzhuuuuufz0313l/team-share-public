@@ -189,31 +189,31 @@
 
 ## 1. chip_sel = 0 默认字节映射
 
-绿色为控制/配置类，黄色为电源/PWRC，蓝紫为 CDR/PLL/模拟，浅蓝为状态/只读，粉红为 chip_sel=1 专用字段（本图中显示为 Reserved）。
+chip_sel=0 模式下 POR 后寄存器默认值全景；绿色为控制、黄色为电源、蓝紫为模拟相关字段。
 
 ![chip_sel=0 寄存器默认字节映射](./images/chip_sel0_register_map.svg)
 
 ## 2. chip_sel = 1 默认字节映射
 
-红色边框/星标表示与 chip_sel=0 默认值不同；`0x09 / 0x0A / 0x1F` 旁标注“LC_REG_MAPPING 回拼”，表示这些地址的 chip_sel=1 默认值由 `LC_REG_MAPPING` 写标志 + 回拼字节实现。
+chip_sel=1 模式下 POR 后默认值；红色标出与 chip_sel=0 不同、由 LC_REG_MAPPING 回拼的字段。
 
 ![chip_sel=1 寄存器默认字节映射](./images/chip_sel1_register_map.svg)
 
 ## 3. Checksum 地址覆盖
 
-每个参与 checksum 的地址都有两行：**上行绿色 = `chip_sel=0`**，**下行蓝色 = `chip_sel=1`**。橙色为 checksum 控制寄存器 `0x07`；黄色为 frame end 边界地址 `0x27`。这样可清晰区分同一地址在两种 chip_sel 模式下的字段差异（如 `0x09/0x0A/0x1F`）。
+标出参与 checksum XOR 累加的地址；同一地址在两种 chip_sel 下字段不同时拆成双行展示。
 
 ![参与 checksum 的地址](./images/checksum_address_map.svg)
 
 ## 4. LSI 保护范围
 
-绿色表示读回/输出不经过 `LSI_PRTECT` 掩码；红色表示受 `LSI_PRTECT` 保护；紫色为密码寄存器 `0x30`（`TEST_PRTCT`，写入 `0x72` 可开启 LSI 保护）。
+标出各地址是否受 LSI_PRTECT 保护；紫色为密码寄存器 0x30，写入 0x72 可开启保护。
 
 ![LSI 保护范围](./images/lsi_unprotected_address_map.svg)
 
 ## 5. 复位域分类
 
-蓝色表示 `N_RST_NLOCK` 复位；紫色表示 `N_RST` 复位；青色表示 `RSTN_SCR_EN` 复位。`0x00 SCREN` 为 `RSTN_SCR_EN`，`0x01 PORSD`、`0x05 CH_SEL`、`0x06 SDC/DPLC_MODE`、`0x20 R_TESTO_SEL`、`0x21 R_UTC`、`0x30 TEST_PRTCT` 等为 `N_RST`。
+标出各寄存器所属的复位域；紫色为 N_RST、青色为 RSTN_SCR_EN，其余多为 N_RST_NLOCK。
 
 ![复位域分类](./images/reset_domain_address_map.svg)
 

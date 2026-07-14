@@ -186,10 +186,19 @@ def escape_xml(text: str) -> str:
             .replace('"', "&quot;"))
 
 
+def entries_equal(entries0, entries1):
+    """Return True if two address entry lists are identical in name/default/bits."""
+    if len(entries0) != len(entries1):
+        return False
+    def key(e):
+        return (e["msb"], e["lsb"], e["name"], e["default"])
+    return sorted((key(e) for e in entries0), reverse=True) == sorted((key(e) for e in entries1), reverse=True)
+
+
 def generate_checksum_dual_svg(title, map0, map1):
     """
-    Generate a dual-row checksum diagram: one row per chip_sel mode.
-    Only participating addresses are shown.
+    Generate checksum diagram. Addresses with identical chip_sel0/1 content
+    are shown as a single row; differing addresses show two rows.
     """
     left_margin = 90
     top_margin = 100
@@ -198,7 +207,8 @@ def generate_checksum_dual_svg(title, map0, map1):
     cell_w = 80
     cell_h = 36
     row_gap = 4
-    group_gap = 18
+    group_gap_single = 14
+    group_gap_dual = 20
     bit_label_h = 24
 
     # participating addresses (including control/frame-end for context)
@@ -208,14 +218,14 @@ def generate_checksum_dual_svg(title, map0, map1):
                  0x27]
 
     svg_w = left_margin + addr_col_w + label_col_w + 8 * cell_w + 40
-    group_h = 2 * (cell_h + row_gap) + 8  # two rows + labels
-    content_h = len(addresses) * (group_h + group_gap) + bit_label_h + 40
-    svg_h = content_h + top_margin + 140
+
+    # precompute which addresses differ
+    diff_flags = {dec: not entries_equal(map0.get(dec, []), map1.get(dec, [])) for dec in addresses}
 
     lines = []
     lines.append('<?xml version="1.0" encoding="UTF-8"?>')
-    lines.append(f'<svg xmlns="http://www.w3.org/2000/svg" width="{svg_w}" height="{svg_h}" viewBox="0 0 {svg_w} {svg_h}" style="background:{COLORS["bg"]}">')
-    lines.append(f'<rect width="{svg_w}" height="{svg_h}" fill="{COLORS["bg"]}"/>')
+    lines.append(f'<svg xmlns="http://www.w3.org/2000/svg" width="{svg_w}" height="" viewBox="0 0 {svg_w}" style="background:{COLORS["bg"]}">')
+    lines.append(f'<rect width="{svg_w}" height="" fill="{COLORS["bg"]}"/>')
     lines.append(f'<text x="{svg_w/2}" y="40" text-anchor="middle" font-size="22" font-weight="bold" fill="{COLORS["text"]}">{escape_xml(title)}</text>')
 
     # Bit labels
@@ -280,18 +290,34 @@ def generate_checksum_dual_svg(title, map0, map1):
                 lines.append(f'<text x="{x + w/2}" y="{y + cell_h/2 - 2}" text-anchor="middle" font-size="{font_size}" font-weight="500" fill="{COLORS["text"]}">{escape_xml(display_name)}</text>')
                 lines.append(f'<text x="{x + w/2}" y="{y + cell_h/2 + 10}" text-anchor="middle" font-size="{font_size - 1}" fill="{COLORS["muted"]}">{escape_xml(e["default"])}</text>')
 
-    for idx, dec in enumerate(addresses):
-        gy = top_margin + bit_label_h + 16 + idx * (group_h + group_gap)
+    gy = top_margin + bit_label_h + 16
+    for dec in addresses:
+        is_diff = diff_flags[dec]
         hex_str = f"0x{dec:02X}"
-        lines.append(f'<text x="{left_margin + addr_col_w - 10}" y="{gy + group_h/2 + 4}" text-anchor="end" font-size="14" font-weight="600" fill="{COLORS["text"]}">{hex_str} ({dec})</text>')
+        row_count = 2 if is_diff else 1
+        group_h = row_count * cell_h + (row_count - 1) * row_gap + 8
 
-        render_row(gy, dec, "chip_sel=0", map0, "chk_sel0")
-        render_row(gy + cell_h + row_gap + 2, dec, "chip_sel=1", map1, "chk_sel1")
+        lines.append(f'<text x="{left_margin + addr_col_w - 10}" y="{gy + group_h/2 - 6}" text-anchor="end" font-size="14" font-weight="600" fill="{COLORS["text"]}">{hex_str} ({dec})</text>')
+
+        if is_diff:
+            render_row(gy, dec, "chip_sel=0", map0, "chk_sel0")
+            render_row(gy + cell_h + row_gap + 2, dec, "chip_sel=1", map1, "chk_sel1")
+        else:
+            # single row, teal color to indicate "same for both chip_sel modes"
+            render_row(gy, dec, "chip_sel=0/1", map0, "chk_both")
+
+        gy += group_h + (group_gap_dual if is_diff else group_gap_single)
+
+    svg_h = gy + 110
+    # patch height attributes
+    lines[1] = f'<svg xmlns="http://www.w3.org/2000/svg" width="{svg_w}" height="{svg_h}" viewBox="0 0 {svg_w} {svg_h}" style="background:{COLORS["bg"]}">'
+    lines[2] = f'<rect width="{svg_w}" height="{svg_h}" fill="{COLORS["bg"]}"/>'
 
     # Legend
-    legend_y = svg_h - 90
+    legend_y = svg_h - 75
     lines.append(f'<text x="{left_margin}" y="{legend_y - 10}" font-size="13" font-weight="600" fill="{COLORS["text"]}">图例</text>')
     legend_items = [
+        ("chip_sel=0/1 相同", "chk_both"),
         ("chip_sel=0 字段", "chk_sel0"),
         ("chip_sel=1 字段", "chk_sel1"),
         ("Checksum 控制 (0x07)", "chk_ctrl"),
