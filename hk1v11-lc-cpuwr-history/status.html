@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>当前状态与后续 · LC_CPUWR 修改记录</title>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <style>
+:root {
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --text: #1e293b;
+      --muted: #64748b;
+      --accent: #0f766e;
+      --accent-soft: #ccfbf1;
+      --line: #e2e8f0;
+      --shadow: 0 10px 40px rgba(0,0,0,0.08);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0f172a;
+        --surface: #1e293b;
+        --text: #f1f5f9;
+        --muted: #94a3b8;
+        --accent: #2dd4bf;
+        --accent-soft: #115e59;
+        --line: #334155;
+        --shadow: 0 10px 40px rgba(0,0,0,0.35);
+      }
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      font-size: 16px;
+      line-height: 1.75;
+    }
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--surface);
+      border-bottom: 1px solid var(--line);
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    }
+    .navbar-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .navbar-brand {
+      font-weight: 700;
+      color: var(--accent);
+      white-space: nowrap;
+      font-size: 15px;
+    }
+    .navbar-links {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      overflow-x: auto;
+      flex: 1;
+      scrollbar-width: none;
+    }
+    .navbar-links::-webkit-scrollbar { display: none; }
+    .navbar-links a {
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 14px;
+      color: var(--text);
+      white-space: nowrap;
+      transition: background 0.15s;
+    }
+    .navbar-links a:hover { background: var(--bg); text-decoration: none; }
+    .navbar-links a.active { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+    @media (max-width: 640px) {
+      .navbar-inner { padding: 10px 16px; gap: 10px; }
+      .navbar-brand { font-size: 14px; }
+      .navbar-links a { font-size: 13px; padding: 5px 8px; }
+    }
+    .container { max-width: 1200px; margin: 0 auto; padding: 48px 24px; }
+    .container.with-toc { display: flex; gap: 32px; align-items: stretch; }
+    .toc-wrapper { width: 260px; flex-shrink: 0; align-self: stretch; }
+    .toc {
+      position: sticky;
+      top: 64px;
+      max-height: calc(100vh - 88px);
+      overflow-y: auto;
+      padding: 16px;
+      background: var(--surface);
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      font-size: 14px;
+      box-shadow: var(--shadow);
+    }
+    .toc a { display: block; padding: 6px 8px; border-radius: 6px; color: var(--muted); margin: 2px 0; transition: background 0.15s, color 0.15s; }
+    .toc a:hover { background: var(--bg); color: var(--accent); text-decoration: none; }
+    .toc a.active { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+    .toc a.toc-h1 { font-weight: 700; color: var(--accent); margin-bottom: 8px; cursor: default; }
+    .toc a.toc-h3 { padding-left: 18px; font-size: 13px; }
+    h2, h3 { scroll-margin-top: 72px; }
+    .content { flex: 1; min-width: 0; }
+    .article {
+      background: var(--surface);
+      border-radius: 20px;
+      padding: 56px 64px;
+      box-shadow: var(--shadow);
+    }
+    @media (max-width: 640px) {
+      .container { padding: 24px 16px; }
+      .article { padding: 32px 24px; border-radius: 16px; }
+      .toc-wrapper { display: none; }
+      .container.with-toc { display: block; }
+    }
+    h1 { font-size: 36px; margin: 0 0 20px; color: var(--accent); font-weight: 700; letter-spacing: -0.5px; }
+    h2 { font-size: 26px; margin: 48px 0 18px; padding-bottom: 10px; border-bottom: 1px solid var(--line); color: var(--text); font-weight: 600; }
+    h3 { font-size: 20px; margin: 32px 0 14px; color: var(--text); font-weight: 600; }
+    p { margin: 14px 0; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    img { max-width: 100%; border-radius: 10px; border: 1px solid var(--line); cursor: zoom-in; display: block; margin: 28px auto; }
+    table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 14.5px; }
+    th, td { border: 1px solid var(--line); padding: 10px 14px; text-align: left; }
+    th { background: var(--accent-soft); font-weight: 600; }
+    tr:nth-child(even) { background: rgba(0,0,0,0.02); }
+    code { background: var(--bg); padding: 3px 7px; border-radius: 5px; font-family: "SFMono-Regular", Consolas, monospace; font-size: 14px; color: var(--accent); }
+    pre { background: var(--bg); padding: 18px; border-radius: 10px; overflow-x: auto; border: 1px solid var(--line); }
+    pre code { padding: 0; background: transparent; color: var(--text); }
+    blockquote { border-left: 4px solid var(--accent); margin: 20px 0; padding: 14px 20px; background: var(--accent-soft); border-radius: 0 10px 10px 0; }
+    ul, ol { padding-left: 28px; }
+    li { margin: 8px 0; }
+    hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
+    .footer { text-align: center; color: var(--muted); margin-top: 48px; font-size: 13px; }
+    .page-nav { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 48px; }
+    .page-nav a { display: block; padding: 16px 20px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; color: var(--text); transition: border-color 0.2s, box-shadow 0.2s; }
+    .page-nav a:hover { border-color: var(--accent); box-shadow: var(--shadow); text-decoration: none; }
+    .page-nav a.next { text-align: right; margin-left: auto; }
+    .page-nav .label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+    .page-nav .title { font-weight: 600; color: var(--accent); }
+    @media (max-width: 640px) { .page-nav { grid-template-columns: 1fr; } .page-nav a.next { text-align: left; margin-left: 0; } }
+    .hero { text-align: center; margin-bottom: 40px; }
+    .hero h1 { margin-bottom: 12px; }
+    .hero .author { color: var(--muted); font-size: 14px; margin-bottom: 16px; }
+    .hero .lead { font-size: 17px; max-width: 720px; margin: 0 auto; }
+    .section-title { font-size: 14px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin: 40px 0 16px; }
+    .chapter-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+    .chapter-card { display: block; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 20px; color: var(--text); transition: border-color 0.2s, transform 0.15s, box-shadow 0.2s; }
+    .chapter-card:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: var(--shadow); text-decoration: none; }
+    .chapter-card .num { display: inline-block; width: 28px; height: 28px; line-height: 28px; border-radius: 50%; background: var(--accent-soft); color: var(--accent); font-size: 13px; font-weight: 700; text-align: center; margin-bottom: 10px; }
+    .chapter-card .title { font-weight: 600; font-size: 15px; margin-bottom: 6px; }
+    .chapter-card .desc { font-size: 13px; color: var(--muted); line-height: 1.5; }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a class="navbar-brand" href="./">LC_CPUWR</a>
+      <div class="navbar-links" id="navbar-links"></div>
+    </div>
+  </nav>
+
+  <div class="container with-toc">
+    <aside class="toc-wrapper" id="toc-wrapper"><nav class="toc" id="toc"></nav></aside>
+    <div class="content">
+      <article class="article" id="article"></article>
+      <div class="page-nav">
+      <a href="./verification.html"><span class="label">上一篇</span><span class="title">验证同步与 Checker 统一</span></a>
+      <span></span>
+      </div>
+      <div class="footer">Shared from team knowledge base</div>
+    </div>
+  </div>
+
+  <script type="text/template" id="md">
+# 六、当前状态与后续
+
+## 1. 当前版本 0714v1
+
+截至 2026-07-14，LC_CPUWR 的最新候选版本为 **LC_CPUWR_20260714_v1_decimal.v**。
+
+当前已完成：
+- 校验和机制收敛为 Seg1 单段 + one-shot NG Unlock
+- 寄存器命名十进制化
+- `CHIP_SEL` 命名统一
+- `SMART_CS[3:0]` 新增
+- `R_REG09` / `R_REG10` / `R_REG31` 在 chip_sel=0 下默认值为 `8'h00`
+
+## 2. 待确认项
+
+| 事项 | 状态 |
+|------|------|
+| chip_sel=1 下 R_REG09/10/31 的复位默认值 | TBD |
+| 0714v1 的服务器回传 review | 待完成 |
+| 全量 regression（含 8B/10B 模式防退化） | 待完成 |
+
+## 3. 后续建议
+
+1. 尽快确认 chip_sel=1 的默认值，并更新 `LC_REG_MAPPING` 与 `LINK_LOGIC` 的实例化。
+2. 完成 0714v1 与 `DV_TCON_C` 的同步：env_cfg、checker、reg_model baseline。
+3. 跑完 checksum 全量 case 回归，重点验证 0x27 frame end 变更。
+4. 将最终版本归档到 `LC_CPUWR_history/verilog_hdl/`，并更新 README 索引。
+
+  </script>
+  <script>
+    document.getElementById('article').innerHTML = marked.parse(document.getElementById('md').textContent.trim());
+const chapters = [
+      ['index', '首页'],
+      ['intro', '引言'],
+      ['timeline', '时间线'],
+      ['checksum', '校验和'],
+      ['regmap', '寄存器'],
+      ['verification', '验证'],
+      ['status', '后续']
+    ];
+    const currentPath = location.pathname.split('/').pop() || 'index.html';
+    const linksContainer = document.getElementById('navbar-links');
+    chapters.forEach(([slug, label]) => {
+      const href = slug === 'index' ? './' : `./${slug}.html`;
+      const filename = slug === 'index' ? 'index.html' : `${slug}.html`;
+      const a = document.createElement('a');
+      a.href = href;
+      a.textContent = label;
+      if (currentPath === filename || currentPath.endsWith('/' + filename) || (currentPath === '' && slug === 'index')) {
+        a.classList.add('active');
+      }
+      linksContainer.appendChild(a);
+    });
+const article = document.getElementById('article');
+    const toc = document.getElementById('toc');
+    const h1 = article.querySelector('h1');
+    if (h1) {
+      const a = document.createElement('a');
+      a.href = '#';
+      a.textContent = h1.textContent;
+      a.className = 'toc-h1';
+      toc.appendChild(a);
+    }
+    const headings = article.querySelectorAll('h2, h3');
+    headings.forEach((h, i) => {
+      const id = 'toc-' + i;
+      h.id = id;
+      const a = document.createElement('a');
+      a.href = '#' + id;
+      a.textContent = h.textContent;
+      a.className = h.tagName.toLowerCase() === 'h3' ? 'toc-h3' : 'toc-h2';
+      toc.appendChild(a);
+    });
+    const tocLinks = Array.from(toc.querySelectorAll('a'));
+    function updateTocActive() {
+      let current = '';
+      headings.forEach(h => { if (h.getBoundingClientRect().top < 100) current = h.id; });
+      tocLinks.forEach(a => a.classList.remove('active'));
+      if (current) {
+        const active = tocLinks.find(a => a.getAttribute('href') === '#' + current);
+        if (active) active.classList.add('active');
+      }
+    }
+    window.addEventListener('scroll', updateTocActive);
+    updateTocActive();
+  </script>
+</body>
+</html>
