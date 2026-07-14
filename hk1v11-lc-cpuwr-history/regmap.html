@@ -422,6 +422,24 @@ assign R_REG31_F_RECON = {PWRC_NB, PWRC_NA, PWRC_PB, PWRC_PA};  // 8'hAA
 
 ![chip_sel=1 寄存器默认字节映射](./images/chip_sel1_register_map.svg)
 
+## 13. Checksum 地址覆盖
+
+下图绿色表示参与 Seg1 checksum XOR 累加的地址；橙色为 checksum 控制寄存器 `0x07`；黄色为 frame end 边界地址 `0x27`；灰色为不参与 checksum。
+
+![参与 checksum 的地址](./images/checksum_address_map.svg)
+
+## 14. LSI 保护范围
+
+下图基于 0714v1 I2C 读回逻辑：绿色表示读回/输出不经过 `LSI_PRTECT` 掩码；红色表示受 `LSI_PRTECT` 保护；紫色为密码寄存器 `0x30`（`TEST_PRTCT`，写入 `0x72` 可开启 LSI 保护）。
+
+![LSI 保护范围](./images/lsi_unprotected_address_map.svg)
+
+## 15. 复位域分类
+
+下图按字段标注复位域。大部分字段由 `N_RST_NLOCK` 复位；特殊字段如 `SCREN` 由 `RSTN_SCR_EN` 复位，`PORSD`、`CH_SEL`、`SDC`、`DPLC_MODE`、`R_TESTO_SEL`、`R_UTC`、`TEST_PRTCT` 等由 `N_RST` 复位。
+
+![复位域分类](./images/reset_domain_address_map.svg)
+
   </script>
   <script>
     document.getElementById('article').innerHTML = marked.parse(document.getElementById('md').textContent.trim());
