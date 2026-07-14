@@ -185,6 +185,8 @@
 
 ## 1. checker_for_checksum 迁移
 
+### 1.1 迁移背景
+
 0626v1 之前，checksum 验证 checker 分散在各个 case 目录中，版本不一致。
 0626v1 统一迁移到公共 agent：
 
@@ -192,12 +194,69 @@
 DV_TCON_C/top/agents/isprx_env/isptx_agent/checker_for_checksum.sv
 ```
 
+迁移后的架构变化：
+- `checker_for_checksum.sv` 由 `tb.f` 统一编译
+- 各 case 不再包含本地 checker 文件，改为 class 实例化
+- 共 18 个 checksum case 同步升级
+
 迁移收益：
 - 单一 truth source，避免 case 间 checker 漂移
 - 便于随 RTL 变更同步更新
 - 减少重复代码
 
-## 2. 受影响的 checksum case 列表
+### 1.2 迁移前的关键同步（0617v2）
+
+在统一迁移之前，0617v2 先完成了一次 checker 重写：
+- 检查地址从 9 个扩展到 13 个（对应 Seg1 地址扩展）
+- 17 个 test class 的数组维度与寄存器名同步更新
+- BAC case 的参考字段从 `R_BAC` 改为 `VBK_EN`（因寄存器职责转移）
+
+## 2. 关键 checker 修复
+
+### 2.1 0618 one-shot unlock 误判修复
+
+one-shot unlock 实现后，checker 出现误判：
+- 原 checker 在 unlock 帧内已把 `expected[]` 切换到下一帧 cfg
+- 导致 `R_REG31_F rreg=00 expected=02` 的误报
+
+修复方案：
+- unlock 帧内期望继续使用当前帧 `shadow`
+- 帧末再用实际 R_REG 更新 `loaded[]`
+
+修复后 19 个 checksum case 本地 + 服务器回归通过。
+
+### 2.2 0622 K4_FIND 帧边界对齐
+
+原 checker 以 `frame_end_a` 计数并取 `cfg_frame(fid+1)`，导致 F5 采样到 F6 的 R_REG。
+
+修复：
+- 改用 `K4_FIND` 上升沿作为帧入口
+- `cfg_frame{fid}` 一一对应
+- 移除 `+1` 偏移
+
+修复后回归结果：20 checksum PASS、19 i2c PASS、5 i2c FAIL（FAIL case 多与 test 文件被误替换有关，如 `t_reg_i2c_wr_testreg_lastLSI`）。
+
+### 2.3 0706 checker 数组越界修复
+
+0x27 加入 Segment1 checksum 后，原 checker 的 `expected/loaded` 数组只有 32 个元素，无法覆盖 0x27。
+
+修复：
+- 数组从 32 元素扩展为 256 元素 `bit [7:0]`
+- 增加 `CHPI_SEL` 读取与 chip_sel=1 支持
+
+修复后全量 checksum case 回归通过。
+
+### 2.4 0708 I2C checker 调整
+
+- 0x27 从 LSI 门控判断中排除（因 0707v1 RTL 已移除 0x27 的 `LSI_PRTECT`）
+- ID mismatch 时读回 `0xFF` 由 error 降级为 warning
+
+### 2.5 0702 UTC 0x38/0x39 与 datamerge checker
+
+- `env_cfg.sv` 新增 0x38/0x39 成员与 cfg_frame 覆盖入口
+- 因 datamerge checker 与 checksum case 关注点冲突，统一关闭 16 个 `t_8b1lane_checksum_*` case 的 `data_merge_check_on`
+
+## 3. 受影响的 checksum case 列表
 
 共影响 20+ 个 checksum 相关 case，例如：
 
@@ -210,7 +269,7 @@ DV_TCON_C/top/agents/isprx_env/isptx_agent/checker_for_checksum.sv
 - 引用公共 `checker_for_checksum.sv`
 - 更新 `env_cfg` 与 `reg_model` 的 RTL baseline 标记
 
-## 3. 各版本 case 环境同步需求
+## 4. 各版本 case 环境同步需求
 
 | 版本 | 同步内容 |
 |------|----------|
@@ -226,7 +285,7 @@ DV_TCON_C/top/agents/isprx_env/isptx_agent/checker_for_checksum.sv
 | 0705/0706 | CHIP_SEL 默认值变化后，case 需覆盖 chip_sel=0/1 两种复位值 |
 | 0708 | SMART_CS[3:0] 新增后，需添加 chip_sel=1 的 SMART_CS 验证 case |
 
-## 4. 仿真计划
+## 5. 仿真计划
 
 各版本变更均伴随仿真计划更新：
 
@@ -238,6 +297,16 @@ DV_TCON_C/top/agents/isprx_env/isptx_agent/checker_for_checksum.sv
 - 0705/0706：chip_sel=0/1 默认值验证
 - 0708：SMART_CS[3:0] 在 chip_sel=1 下的行为验证
 - 0714：chip_sel=1 默认值确认后的回归验证
+
+## 6. 项目约定：cfg_frame 解析一致性
+
+0708 期间发现并固化了一条验证环境约定：
+
+- `env_cfg.sv` 使用 `atobin()` 按二进制字符串解析 `cfg_frame`
+- 消费端（如 `checker_for_checksum.sv`）必须使用 `$sscanf(..., "%b", ...)` 或等效二进制解析
+- **禁止用 `%d` 解析**，因为 1-3bit 字段低几位在十进制/二进制下可能相同，但 ≥4bit 字段（如 `SMART_CS`）会错位
+
+该规则已写入项目 `AGENTS.md`。
 
   </script>
   <script>

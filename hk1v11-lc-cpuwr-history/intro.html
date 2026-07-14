@@ -188,7 +188,9 @@
 **LC_CPUWR** 是 HK1V11 芯片 TCON 模块中负责 **CPU 写寄存器接口** 的核心 RTL 模块。
 它接收 CPU 通过 I2C/SPI 等总线下发的配置，维护一组片内寄存器，并向后续链路（如 `LC_REG_MAPPING`、`LINK_LOGIC`）输出控制信号。
 
-在 2026-05 至 2026-07 的开发周期中，LC_CPUWR 经历了大量迭代：校验和机制从双段演变为单段、NG Unlock 方案从 PlanA/PlanB 最终收敛为 one-shot、寄存器命名从十六进制后缀全面十进制化、并按 `chip_sel0/1` 重构了默认值体系。
+在 2026-04 至 2026-07 的开发周期中，LC_CPUWR 经历了大量迭代：校验和机制从双段演变为单段、NG Unlock 方案从 PlanA/PlanB 最终收敛为 one-shot、寄存器命名从十六进制后缀全面十进制化、并按 `chip_sel0/1` 重构了默认值体系。
+
+为了管理这些密集变更，项目于 2026-06-15 建立了 `LC_CPUWR_history` 归档目录，集中保存 RTL 快照、changelist、modify plan、compliance report 及验证同步资料。
 
 ## 2. 为什么需要版本归档
 

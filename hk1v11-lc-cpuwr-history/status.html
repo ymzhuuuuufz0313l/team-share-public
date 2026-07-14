@@ -194,6 +194,13 @@
 
 当前最新候选版本为 `LC_CPUWR_20260714_v1_decimal.v`。
 
+0714v1 交付物：
+- 三份 RTL 文件：`LC_CPUWR` / `LC_REG_MAPPING` / `LINK_LOGIC`
+- 更新后的寄存器映射文档
+- 验证环境同步：`checker_for_checksum.sv`、`i2c_scoreboard.sv` 等文件头 baseline 更新
+- `REVIEW.md` 回传 review 文档
+- `iverilog -g2005-sv -DFF_DLY=0` 语法检查通过
+
 ## 2. 已完成工作
 
 - 校验和机制收敛为 Seg1 单段 + 三帧一致更新 + NG Unlock
@@ -208,16 +215,18 @@
 
 | 事项 | 状态 | 说明 |
 |------|------|------|
-| 0714v1 的服务器回传 review | 待完成 | 需确认与 SPEC 一致性 |
+| 0714v1 的服务器回传 review | 待完成 | 已生成 `REVIEW.md`，待正式回传 |
 | 全量 regression（含 8B/10B 模式防退化） | 待完成 | 覆盖所有 chip_sel 组合 |
 | chip_sel=0 的 checksum / I2C 读回 case | 建议回归 | 确认 `0x09`/`0x0A`/`0x1F` 读回为 `8'h00` |
 | chip_sel=1 的 I2C 读回 case | 建议回归 | 确认复位后读回为 `8'hFF`/`8'hA5`/`8'hAA` |
 | chip_sel=1 的 checksum case | 建议回归 | 确认 `cfg_frame` 写入后 R_REG 与回拼字节一致 |
 | SMART_CS[3:0] 在 chip_sel=1 下的功能验证 | 待完成 | 0708v1 新增字段 |
+| 顶层模块旧 `reg_lane_ctrl` 端口连接 | 风险 | `HK1V11_digital_top.v`、`HK1V11.v`、`MACRO_TOP_1V11.v` 等仍连接旧 `reg_lane_ctrl` 端口，推广 0705v1/0714v1 前需统一替换为 `sw_reg_lane_ctrl` |
+| `i2c_model.sv` 仍使用旧层次与十六进制映射 | 风险 | 服务器编译可能报错，需从 filelist 移除或替换 |
 
 ## 4. 后续建议
 
-1. **完成 0714v1 的服务器回传 review**，确认与 SPEC 一致性。
+1. **完成 0714v1 的服务器回传 review**，确认与 SPEC 一致性；重点核对 LC_REG_MAPPING 回拼字节与 chip_sel=1 默认值的映射。
 2. **完成 0714v1 与 `DV_TCON_C` 的同步**：
    - `env_cfg` 寄存器默认值
    - `checker_for_checksum.sv` 地址掩码与期望值
