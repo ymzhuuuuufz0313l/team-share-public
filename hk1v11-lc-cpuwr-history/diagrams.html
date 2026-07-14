@@ -258,11 +258,15 @@ chip_sel=0 模式下 POR 后寄存器默认值全景；绿色为控制、黄色�
 
 ## 2. chip_sel = 1 默认字节映射
 
+这张图展示 0714v1 在 chip_sel=1 模式下 POR 后的寄存器默认值布局，与 `LC_CPUWR_history/chip_sel1_register_address_map.md` 及 `LC_REG_MAPPING_20260714_v1_decimal.v` 回拼机制一致，用于定位 chip_sel=1 相对于 chip_sel=0 发生默认值变化的字段。
+
 chip_sel=1 模式下 POR 后默认值；红色标出与 chip_sel=0 不同、由 LC_REG_MAPPING 回拼的字段。
 
 ![chip_sel=1 寄存器默认字节映射](./images/chip_sel1_register_map.svg)
 
 ## 3. Checksum 地址覆盖
+
+这张图基于 `LC_CPUWR_20260714_v1_decimal.v` Part 18 的 checksum 逻辑，标出参与 XOR 累加的地址范围，帮助确认 0x07 控制寄存器、0x27 frame end 边界以及 Seg1/Seg2 的 checksum 覆盖范围。
 
 标出参与 checksum XOR 累加的地址；同一地址在两种 chip_sel 下字段不同时拆成双行展示。
 
@@ -270,11 +274,15 @@ chip_sel=1 模式下 POR 后默认值；红色标出与 chip_sel=0 不同、由 
 
 ## 4. LSI 保护范围
 
+这张图基于 `LC_CPUWR_20260714_v1_decimal.v` Part 16 的 LSI_PRTECT 逻辑，说明各地址读回/输出是否经过保护掩码，用于理解密码解锁前后的寄存器可见性差异。
+
 标出各地址是否受 LSI_PRTECT 保护；紫色为密码寄存器 0x30，写入 0x72 可开启保护。
 
 ![LSI 保护范围](./images/lsi_unprotected_address_map.svg)
 
 ## 5. 复位域分类
+
+这张图基于 `LC_CPUWR_20260714_v1_decimal.v` 寄存器声明中的复位域属性，用于判断全局复位或局部复位后哪些配置会被清零、哪些会保持。
 
 标出各寄存器所属的复位域；紫色为 N_RST、青色为 RSTN_SCR_EN，其余多为 N_RST_NLOCK。
 
