@@ -219,51 +219,41 @@
       transition: background 0.2s;
     }
     .lightbox .close:hover { background: rgba(255,255,255,0.15); color: #fff; }
-    /* Diagram tabs */
-    .diagram-tabs {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin: 28px 0 32px;
-      padding: 12px;
-      background: var(--bg);
-      border-radius: 12px;
-      border: 1px solid var(--line);
-    }
-    .diagram-tabs button {
-      padding: 8px 16px;
-      border: 1px solid var(--line);
-      border-radius: 8px;
-      background: var(--surface);
-      color: var(--text);
-      font-size: 14px;
+    /* Left-side diagram navigation buttons */
+    .toc button {
+      display: block;
+      width: 100%;
+      text-align: left;
+      padding: 8px 10px;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      border-radius: 6px;
       cursor: pointer;
-      transition: all 0.15s;
+      margin: 2px 0;
+      font-size: 14px;
+      line-height: 1.5;
+      transition: background 0.15s, color 0.15s;
     }
-    .diagram-tabs button:hover {
-      border-color: var(--accent);
-      color: var(--accent);
-    }
-    .diagram-tabs button.active {
-      background: var(--accent-soft);
-      border-color: var(--accent);
-      color: var(--accent);
-      font-weight: 600;
+    .toc button:hover { background: var(--bg); color: var(--accent); text-decoration: none; }
+    .toc button.active { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+    .toc button.all-btn {
+      margin-top: 12px;
+      border-top: 1px solid var(--line);
+      border-radius: 0 0 6px 6px;
+      padding-top: 10px;
     }
     .diagram-section {
       display: none;
-      animation: fadeIn 0.2s ease;
+      animation: fadeIn 0.25s ease;
     }
     .diagram-section.active {
       display: block;
     }
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(4px); }
+      from { opacity: 0; transform: translateY(6px); }
       to { opacity: 1; transform: translateY(0); }
     }
-    /* Hide left TOC on this page; tabs act as navigation */
-    .toc-wrapper { display: none; }
-    .container.with-toc { display: block; }
 
   </style>
 </head>
@@ -377,10 +367,9 @@ const chapters = [
       linksContainer.appendChild(a);
     });
 
-    // Diagram tab navigation: show one section at a time, plus an "all" option
-    function buildDiagramTabs() {
+    // Left-side diagram navigation: show one section at a time, plus an "all" option
+    function buildDiagramSections() {
       const article = document.getElementById('article');
-      const firstH2 = article.querySelector('h2');
       const h2s = Array.from(article.querySelectorAll('h2'));
       const sections = h2s.map((h2, idx) => {
         const title = h2.textContent.trim().replace(/^\d+\.\s*/, '');
@@ -396,24 +385,7 @@ const chapters = [
 
       if (sections.length === 0) return;
 
-      const tabNav = document.createElement('div');
-      tabNav.className = 'diagram-tabs';
-      sections.forEach((sec, idx) => {
-        const btn = document.createElement('button');
-        btn.textContent = sec.title;
-        btn.dataset.target = sec.id;
-        if (idx === 0) btn.classList.add('active');
-        btn.addEventListener('click', () => switchDiagramSection(sec.id));
-        tabNav.appendChild(btn);
-      });
-      const allBtn = document.createElement('button');
-      allBtn.textContent = '全部';
-      allBtn.dataset.target = 'all';
-      allBtn.addEventListener('click', () => switchDiagramSection('all'));
-      tabNav.appendChild(allBtn);
-
-      article.insertBefore(tabNav, firstH2);
-
+      // Wrap each section so it can be shown/hidden
       sections.forEach((sec, idx) => {
         const wrapper = document.createElement('div');
         wrapper.className = 'diagram-section' + (idx === 0 ? ' active' : '');
@@ -421,27 +393,54 @@ const chapters = [
         sec.elements.forEach(e => wrapper.appendChild(e));
         article.appendChild(wrapper);
       });
+
+      // Build left TOC into navigation buttons
+      const toc = document.getElementById('toc');
+      toc.innerHTML = '';
+      const h1 = article.querySelector('h1');
+      if (h1) {
+        const a = document.createElement('a');
+        a.href = '#';
+        a.textContent = h1.textContent;
+        a.className = 'toc-h1';
+        toc.appendChild(a);
+      }
+
+      const buttons = [];
+      sections.forEach((sec, idx) => {
+        const btn = document.createElement('button');
+        btn.textContent = sec.title;
+        btn.dataset.target = sec.id;
+        if (idx === 0) btn.classList.add('active');
+        btn.addEventListener('click', () => switchDiagramSection(sec.id));
+        toc.appendChild(btn);
+        buttons.push(btn);
+      });
+
+      const allBtn = document.createElement('button');
+      allBtn.textContent = '全部展开';
+      allBtn.className = 'all-btn';
+      allBtn.dataset.target = 'all';
+      allBtn.addEventListener('click', () => switchDiagramSection('all'));
+      toc.appendChild(allBtn);
+      buttons.push(allBtn);
+
+      return buttons;
     }
 
     function switchDiagramSection(targetId) {
-      document.querySelectorAll('.diagram-tabs button').forEach(btn => {
+      document.querySelectorAll('#toc button').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.target === targetId);
       });
       document.querySelectorAll('.diagram-section').forEach(sec => {
         const show = targetId === 'all' || sec.id === targetId;
         sec.classList.toggle('active', show);
       });
-      if (targetId !== 'all') {
-        const target = document.getElementById(targetId);
-        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
+      const target = document.getElementById(targetId === 'all' ? 'diagram-section-0' : targetId);
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 
-    buildDiagramTabs();
-
-    // Hide left TOC on this page since tabs replace section navigation
-    const tocWrapper = document.getElementById('toc-wrapper');
-    if (tocWrapper) tocWrapper.style.display = 'none';
+    buildDiagramSections();
   </script>
 
   <div class="lightbox" id="lightbox">
