@@ -417,7 +417,10 @@ const chapters = [
       return buttons;
     }
 
+    let currentDiagramMode = 'diagram-section-0';
+
     function switchDiagramSection(targetId) {
+      currentDiagramMode = targetId;
       document.querySelectorAll('#toc button').forEach(btn => {
         btn.classList.toggle('active', btn.dataset.target === targetId);
       });
@@ -428,6 +431,25 @@ const chapters = [
       // Always scroll to the top of the page so the selected content starts from above
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
+
+    function updateDiagramTocActive() {
+      if (currentDiagramMode !== 'all') return;
+      const sections = Array.from(document.querySelectorAll('.diagram-section'));
+      const navbarHeight = 64;
+      let current = '';
+      sections.forEach(sec => {
+        if (sec.getBoundingClientRect().top <= navbarHeight + 20) {
+          current = sec.id;
+        }
+      });
+      if (current) {
+        document.querySelectorAll('#toc button').forEach(btn => {
+          btn.classList.toggle('active', btn.dataset.target === current);
+        });
+      }
+    }
+
+    window.addEventListener('scroll', updateDiagramTocActive);
 
     buildDiagramSections();
   </script>
