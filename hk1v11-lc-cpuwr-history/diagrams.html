@@ -219,6 +219,52 @@
       transition: background 0.2s;
     }
     .lightbox .close:hover { background: rgba(255,255,255,0.15); color: #fff; }
+    /* Diagram tabs */
+    .diagram-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 28px 0 32px;
+      padding: 12px;
+      background: var(--bg);
+      border-radius: 12px;
+      border: 1px solid var(--line);
+    }
+    .diagram-tabs button {
+      padding: 8px 16px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface);
+      color: var(--text);
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .diagram-tabs button:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+    .diagram-tabs button.active {
+      background: var(--accent-soft);
+      border-color: var(--accent);
+      color: var(--accent);
+      font-weight: 600;
+    }
+    .diagram-section {
+      display: none;
+      animation: fadeIn 0.2s ease;
+    }
+    .diagram-section.active {
+      display: block;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    /* Hide left TOC on this page; tabs act as navigation */
+    .toc-wrapper { display: none; }
+    .container.with-toc { display: block; }
+
   </style>
 </head>
 <body>
@@ -330,38 +376,72 @@ const chapters = [
       }
       linksContainer.appendChild(a);
     });
-const article = document.getElementById('article');
-    const toc = document.getElementById('toc');
-    const h1 = article.querySelector('h1');
-    if (h1) {
-      const a = document.createElement('a');
-      a.href = '#';
-      a.textContent = h1.textContent;
-      a.className = 'toc-h1';
-      toc.appendChild(a);
+
+    // Diagram tab navigation: show one section at a time, plus an "all" option
+    function buildDiagramTabs() {
+      const article = document.getElementById('article');
+      const firstH2 = article.querySelector('h2');
+      const h2s = Array.from(article.querySelectorAll('h2'));
+      const sections = h2s.map((h2, idx) => {
+        const title = h2.textContent.trim().replace(/^\d+\.\s*/, '');
+        const sectionId = 'diagram-section-' + idx;
+        const elements = [h2];
+        let node = h2.nextElementSibling;
+        while (node && node.tagName !== 'H2') {
+          elements.push(node);
+          node = node.nextElementSibling;
+        }
+        return { id: sectionId, title, elements };
+      });
+
+      if (sections.length === 0) return;
+
+      const tabNav = document.createElement('div');
+      tabNav.className = 'diagram-tabs';
+      sections.forEach((sec, idx) => {
+        const btn = document.createElement('button');
+        btn.textContent = sec.title;
+        btn.dataset.target = sec.id;
+        if (idx === 0) btn.classList.add('active');
+        btn.addEventListener('click', () => switchDiagramSection(sec.id));
+        tabNav.appendChild(btn);
+      });
+      const allBtn = document.createElement('button');
+      allBtn.textContent = '全部';
+      allBtn.dataset.target = 'all';
+      allBtn.addEventListener('click', () => switchDiagramSection('all'));
+      tabNav.appendChild(allBtn);
+
+      article.insertBefore(tabNav, firstH2);
+
+      sections.forEach((sec, idx) => {
+        const wrapper = document.createElement('div');
+        wrapper.className = 'diagram-section' + (idx === 0 ? ' active' : '');
+        wrapper.id = sec.id;
+        sec.elements.forEach(e => wrapper.appendChild(e));
+        article.appendChild(wrapper);
+      });
     }
-    const headings = article.querySelectorAll('h2, h3');
-    headings.forEach((h, i) => {
-      const id = 'toc-' + i;
-      h.id = id;
-      const a = document.createElement('a');
-      a.href = '#' + id;
-      a.textContent = h.textContent;
-      a.className = h.tagName.toLowerCase() === 'h3' ? 'toc-h3' : 'toc-h2';
-      toc.appendChild(a);
-    });
-    const tocLinks = Array.from(toc.querySelectorAll('a'));
-    function updateTocActive() {
-      let current = '';
-      headings.forEach(h => { if (h.getBoundingClientRect().top < 100) current = h.id; });
-      tocLinks.forEach(a => a.classList.remove('active'));
-      if (current) {
-        const active = tocLinks.find(a => a.getAttribute('href') === '#' + current);
-        if (active) active.classList.add('active');
+
+    function switchDiagramSection(targetId) {
+      document.querySelectorAll('.diagram-tabs button').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.target === targetId);
+      });
+      document.querySelectorAll('.diagram-section').forEach(sec => {
+        const show = targetId === 'all' || sec.id === targetId;
+        sec.classList.toggle('active', show);
+      });
+      if (targetId !== 'all') {
+        const target = document.getElementById(targetId);
+        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
     }
-    window.addEventListener('scroll', updateTocActive);
-    updateTocActive();
+
+    buildDiagramTabs();
+
+    // Hide left TOC on this page since tabs replace section navigation
+    const tocWrapper = document.getElementById('toc-wrapper');
+    if (tocWrapper) tocWrapper.style.display = 'none';
   </script>
 
   <div class="lightbox" id="lightbox">
