@@ -328,15 +328,6 @@ SPEC 中「I2C_EN=1 时所有寄存器不做 unlock reset」的 RTL 路径为：
 
 ![复位域分类](./images/reset_domain_address_map.svg)
 
-## 6. 数据说明
-
-| 图 | 数据源 | 关键结论 |
-|----|--------|---------|
-| chip_sel 默认字节映射 | `LC_CPUWR_history/chip_sel*_register_address_map.md` | 0714v1 内部复位默认值统一为 chip_sel=0；chip_sel=1 由 LC_REG_MAPPING 回拼 |
-| Checksum 地址覆盖 | `LC_CPUWR_20260714_v1_decimal.v` Part 18 | 参与 XOR 累加：0x00~0x06、0x08~0x0A、0x1D~0x1F；0x27 为 frame end；0x07 为控制寄存器 |
-| LSI 保护范围 | `LC_CPUWR_20260714_v1_decimal.v` Part 16 | 0x00~0x1F、0x27、0x40~0x44 不保护；0x20~0x39（除 0x27）、0x90~0x92 保护 |
-| 复位域分类 | `LC_CPUWR_20260714_v1_decimal.v` 寄存器声明 | 大部分为 N_RST_NLOCK；TEST_PRTCT 等少数为 N_RST；SCREN 为 RSTN_SCR_EN |
-
   </script>
   <script>
     document.getElementById('article').innerHTML = marked.parse(document.getElementById('md').textContent.trim());
