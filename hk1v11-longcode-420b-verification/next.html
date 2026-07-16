@@ -426,8 +426,10 @@
 
 ## 1. 实现对齐
 
-- [ ] 修复 reference model 与 driver 的 LSB-first / 从右到左实现
-- [ ] 将 `t_8b1lane_420b_basic` 同步到 `DV_TCON_C/top/tests/`
+- [x] 修复 reference model 与 driver 的 LSB-first / 从右到左实现（0713 已完成）
+- [x] 将 `t_8b1lane_420b_basic` 同步到 `DV_TCON_C/top/tests/`（0716 已完成并跑通）
+- [x] Config Line 单独成行，Active Line 统一 K2 结束（0717v1 已完成）
+- [ ] 0717v1 帧结构修改后重新仿真，用 `long_kcode_seq/drv` 日志复核 K-code 序列
 
 ## 2. Case 扩展
 

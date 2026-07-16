@@ -430,12 +430,17 @@
 ## 1. 帧格式概览
 
 ```text
-Frame:
-├─ Config Line (K4 + CTRL_F + IDLE)
-├─ V blanking Lines (K1 + CTRL_L + VBK + K2 + IDLE) × N
-├─ Active Lines (K1 + CTRL_L + Video + K2 + IDLE) × (VACT - 1)
-└─ Last Active Line (K1 + CTRL_L + Video + K4 + CTRL_F)  ← 末尾嵌入帧尾
+Frame c:
+├─ VBP/V blanking Lines (K1 + CTRL_L + VBK + K2 + IDLE) × VBP
+├─ Active Lines (K1 + CTRL_L + Video + K2 + IDLE) × VACT   ← 最后一行也以 K2 结束
+├─ Config Line (K4 + CTRL_F(ENC) + Dmy + K2 + IDLE)        ← 单独成行（下一帧配置）
+└─ VFP/V blanking Lines (K1 + CTRL_L + VBK + K2 + IDLE) × VFP
 ```
+
+> **0717v1 帧结构修改**（按 PDF spec 截图确认）：
+> 1. **Config Line 单独成行**：最后一行 Active Line 不再嵌入 K4+CTRL_F，改为 VACT 结束后单独发送一行 `K4 + CTRL_F(ENC) + Dmy + K2`（位置对齐 8B/10B 的 `send_CTRLF_seq(c+1)`）。
+> 2. **Active Line 结束标记**：所有 Active Line 统一以 K2 结束（spec 允许 K2 或 K3，绝不使用 K4；K3 使用条件待确认）。
+> 3. **Config Line 的 Dmy**：已内嵌于 413b/420b 编码对齐（64B CTRL_F → 560 encoded bits，含 Dmy），结构无需额外处理。
 
 ## 2. 关键字段
 
@@ -445,7 +450,7 @@ K2 + 0xEA/EB/EC/ED×8 + dummy + K3；训练数据，**不加扰**。
 
 ### 2.2 CTRL_F
 
-Config Line 配置数据；payload，**加扰**。
+Config Line 配置数据；payload，**加扰**；Dmy 内嵌于编码对齐，行尾以 K2 结束。
 
 ### 2.3 CTRL_L
 
