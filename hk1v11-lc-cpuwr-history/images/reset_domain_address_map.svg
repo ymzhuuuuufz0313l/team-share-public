@@ -436,9 +436,13 @@
 <rect x="744" y="1944" width="81" height="46" fill="#dbeafe" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="784.5" y="1965.0" text-anchor="middle" font-size="8" font-weight="500" fill="#1e293b">regr_lane_pll_do…</text>
 <text x="784.5" y="1979.0" text-anchor="middle" font-size="7" fill="#64748b">1'b0</text>
-<text x="158" y="2024.0" text-anchor="end" font-size="13" font-weight="600" fill="#64748b">0x35 ~ 0x35 (53 ~ 53)</text>
-<rect x="170" y="1996" width="655" height="46" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1" stroke-dasharray="4,3" rx="4"/>
-<text x="497.5" y="2023.0" text-anchor="middle" font-size="12" fill="#64748b">⋯ 全 Reserved ⋯</text>
+<text x="158" y="2024.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x35 (53)</text>
+<rect x="170" y="1996" width="491" height="46" fill="#dbeafe" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="415.5" y="2017.0" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">Reserved[7:2]</text>
+<text x="415.5" y="2031.0" text-anchor="middle" font-size="9" fill="#64748b">6'b000000</text>
+<rect x="662" y="1996" width="163" height="46" fill="#dbeafe" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="743.5" y="2017.0" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">FSEL[1:0]</text>
+<text x="743.5" y="2031.0" text-anchor="middle" font-size="9" fill="#64748b">2'b00</text>
 <text x="158" y="2076.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x36 (54)</text>
 <rect x="170" y="2048" width="655" height="46" fill="#dbeafe" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="497.5" y="2069.0" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">reg_eq_bias_tune…</text>
