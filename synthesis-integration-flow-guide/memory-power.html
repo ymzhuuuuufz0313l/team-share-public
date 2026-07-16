@@ -8,6 +8,7 @@
   <meta http-equiv="Expires" content="0">
   <title>Memory 与功耗 · ASIC IP Synthesis &amp; Integration Flow 工具使用指南</title>
   <script src="https://cdn.jsdelivr.net/npm/marked@9.1.6/marked.min.js"></script>
+  <script src="./glossary.js"></script>
   <style>
 
 :root {
@@ -224,6 +225,84 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
 }
 .lightbox .close:hover { background: rgba(255,255,255,0.15); color: #fff; }
 
+/* Hover glossary tooltip */
+.term {
+  position: relative;
+  border-bottom: 1px dashed var(--accent);
+  cursor: help;
+  color: var(--accent);
+  transition: background 0.15s ease, border-bottom-style 0.15s ease;
+}
+.term:hover {
+  background: var(--accent-soft);
+  border-bottom-style: solid;
+  border-radius: 4px;
+}
+.term-tooltip {
+  position: fixed;
+  max-width: 320px;
+  padding: 14px 18px;
+  background: var(--accent-soft);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+  font-size: 14px;
+  line-height: 1.7;
+  z-index: 1000;
+  opacity: 0;
+  transform: translateY(8px) scale(0.98);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  pointer-events: none;
+}
+.term-tooltip.visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+.term-tooltip::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  transform: translateX(-50%);
+}
+.term-tooltip.arrow-bottom::after {
+  bottom: -10px;
+  border-width: 10px 8px 0 8px;
+  border-color: var(--line) transparent transparent transparent;
+}
+.term-tooltip.arrow-bottom::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -8px;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 8px 7px 0 7px;
+  border-color: var(--accent-soft) transparent transparent transparent;
+  transform: translateX(-50%);
+}
+.term-tooltip.arrow-top::after {
+  top: -10px;
+  border-width: 0 8px 10px 8px;
+  border-color: transparent transparent var(--line) transparent;
+}
+.term-tooltip.arrow-top::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: -8px;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 0 7px 8px 7px;
+  border-color: transparent transparent var(--accent-soft) transparent;
+  transform: translateX(-50%);
+}
+
   </style>
 </head>
 <body>
@@ -250,8 +329,6 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
 
 ## 1. Memory 与 mem_wrap 生成
 
-memory compiler 是按工艺参数自动生成 SRAM 或 memory 宏单元的模型、版图及库文件的专用工具。
-
 ### 1.1 生成 memory
 利用 memory compiler 工具，按工艺要求填写：
 - word / bit / byte（byte 通常写 1）
@@ -270,8 +347,6 @@ memory compiler 是按工艺参数自动生成 SRAM 或 memory 宏单元的模�
 
 ### 1.3 生成 mem_wrap
 
-mem_wrap（memory wrapper）是对 memory 硬核进行接口封装的 RTL 层，统一端口命名、电源、测试等信号。
-
 1. 修改 memory wrapper config，常见字段：
    - `wrapper_name`：按命名规则填写，如 `mem_wrap_1p_208_640_x2`
    - `msize`：memory depth
@@ -285,8 +360,6 @@ mem_wrap（memory wrapper）是对 memory 硬核进行接口封装的 RTL 层，
 
 ## 2. 功耗仿真
 
-PTPX（PrimeTime PX）是基于 PrimeTime 的功耗分析工具，通常使用 VCD 或 SAIF 作为开关活动输入。
-
 功耗仿真通常在 `SYNTHESIS/top/power/0.px_template/` 下运行。
 
 ### 2.1 配置要点
@@ -297,16 +370,10 @@ PTPX（PrimeTime PX）是基于 PrimeTime 的功耗分析工具，通常使用 V
    - `spec_dir`：PR release 的 timing 目录
    - `ip0_inst` / `ip0_strip` / `ip0_vcd`：对应顶层实例与 VCD 路径
 
-     VCD（Value Change Dump）是记录仿真过程中信号值变化的通用波形文件格式。
-
 3. 生成 VCD 前，需在 post-PT 对应 corner 生成 SDF，并在 post-sim case 中读取。
-
-  SDF（Standard Delay Format）是包含门级网表延迟反标信息的时序文件，用于后端 signoff。
 
 4. VCD 获取方式：
    - 将原来 dump fsdb 的函数换成 `$dumpvars` 直接 dump VCD；或
-
-     FSDB（Fast Signal DataBase）是 Verdi 工具常用的高效压缩波形文件格式。
 
    - 从 fsdb 截取 VCD，例如：`fsdb2vcd chip_tb_top_000.fsdb -bt 500ps -et 700ps -o verilog.dump`
 
@@ -318,8 +385,6 @@ run_ptpx
 
 结果：
 - `*_toggle_rate_detail.rpt`：toggle rate
-
-  toggle rate 是信号在单位时间内发生 0/1 翻转的平均次数，是评估动态功耗的重要指标。
 
 - `*_power.rpt`：功耗结果
 - 上层目录生成 fsdb，可用 Verdi 打开查看功耗波形
@@ -424,9 +489,9 @@ document.addEventListener('mouseup', () => {
   </script>
 
   <script>
-document.getElementById('article').innerHTML = marked.parse(document.getElementById('md').textContent, {gfm:true, breaks:false});
-
 const article = document.getElementById('article');
+article.innerHTML = marked.parse(document.getElementById('md').textContent, {gfm:true, breaks:false});
+applyGlossary(article);
 const toc = document.getElementById('toc');
 const h1 = article.querySelector('h1');
 let tocHtml = '';

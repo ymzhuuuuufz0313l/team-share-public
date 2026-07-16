@@ -8,6 +8,7 @@
   <meta http-equiv="Expires" content="0">
   <title>环境与配置 · ASIC IP Synthesis &amp; Integration Flow 工具使用指南</title>
   <script src="https://cdn.jsdelivr.net/npm/marked@9.1.6/marked.min.js"></script>
+  <script src="./glossary.js"></script>
   <style>
 
 :root {
@@ -224,6 +225,84 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
 }
 .lightbox .close:hover { background: rgba(255,255,255,0.15); color: #fff; }
 
+/* Hover glossary tooltip */
+.term {
+  position: relative;
+  border-bottom: 1px dashed var(--accent);
+  cursor: help;
+  color: var(--accent);
+  transition: background 0.15s ease, border-bottom-style 0.15s ease;
+}
+.term:hover {
+  background: var(--accent-soft);
+  border-bottom-style: solid;
+  border-radius: 4px;
+}
+.term-tooltip {
+  position: fixed;
+  max-width: 320px;
+  padding: 14px 18px;
+  background: var(--accent-soft);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+  font-size: 14px;
+  line-height: 1.7;
+  z-index: 1000;
+  opacity: 0;
+  transform: translateY(8px) scale(0.98);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  pointer-events: none;
+}
+.term-tooltip.visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+.term-tooltip::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  transform: translateX(-50%);
+}
+.term-tooltip.arrow-bottom::after {
+  bottom: -10px;
+  border-width: 10px 8px 0 8px;
+  border-color: var(--line) transparent transparent transparent;
+}
+.term-tooltip.arrow-bottom::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -8px;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 8px 7px 0 7px;
+  border-color: var(--accent-soft) transparent transparent transparent;
+  transform: translateX(-50%);
+}
+.term-tooltip.arrow-top::after {
+  top: -10px;
+  border-width: 0 8px 10px 8px;
+  border-color: transparent transparent var(--line) transparent;
+}
+.term-tooltip.arrow-top::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: -8px;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 0 7px 8px 7px;
+  border-color: transparent transparent var(--accent-soft) transparent;
+  transform: translateX(-50%);
+}
+
   </style>
 </head>
 <body>
@@ -272,8 +351,6 @@ $PROJECT_PATH/SYNTHESIS/ip/<top_name>/
 
 ### 1.2 环境初始化
 
-`gensyn` 是项目内部封装的环境初始化脚本，用于自动生成标准综合目录结构并完成版本管理 check in。
-
 进入 `$PROJECT_PATH/SYNTHESIS/ip/` 后执行：
 
 ```bash
@@ -303,8 +380,6 @@ NOTE: 若 cshrc 中同时 source 了仿真工具（如 Verdi / VCS），在运�
 
 ## 2. design.set 核心配置
 
-`design.set` 是综合环境的总控配置文件，记录顶层名、工具选择、库文件、PVT corner、宏定义等关键参数，是 flow 各阶段读取的权威输入。
-
 `design.set` 是综合环境的总控文件，关键字段如下：
 
 | 字段 | 说明 | 常用设置 |
@@ -323,14 +398,6 @@ NOTE: 若 cshrc 中同时 source 了仿真工具（如 Verdi / VCS），在运�
 | `SYN_TOOL` | 综合工具 | `dc` 或 `genus` |
 | `CORNER` | PVT corner | 与标准单元库一致 |
 
-PVT corner 是工艺、电压、温度三种条件组合成的仿真角，用于覆盖芯片在不同工况下的时序与功耗。
-
-SAIF（Switching Activity Interchange Format）是记录电路节点翻转活动的文件，主要用于功耗分析。
-
-LVT/SVT/RVT/HVT 分别对应低阈值、标准阈值、常规阈值、高阈值标准单元，阈值越低速度越快但漏电越大。
-
-analog db 与 memory db 是模拟 IP 和 SRAM 等宏单元的时序、功耗库文件，供综合与 STA 工具查表使用。
-
 补充说明：
 - `ANA_EN`：analog db 使能，按项目需要开启。
 - `MEM_EN` / `MEM_SNPS_EN` / `MEM_FARA_EN`：memory db 来源开关，按实际库配置选择。
@@ -344,11 +411,7 @@ TIP: 同一项目下的不同 IP 应尽量使用相同的 `CORNER` 和库配置�
 
 ## 3. Filelist 管理
 
-RTL filelist 是列出所有参与综合的 RTL/SystemVerilog 源文件路径的文本清单，综合工具按此顺序读取并解析设计。
-
 ### 3.1 文件分类
-
-DDC 是 Design Compiler 数据库格式，保存综合后的设计信息，可被后续工具读取与恢复。
 
 综合 filelist 通常按文件类型拆分：
 
@@ -468,9 +531,9 @@ document.addEventListener('mouseup', () => {
   </script>
 
   <script>
-document.getElementById('article').innerHTML = marked.parse(document.getElementById('md').textContent, {gfm:true, breaks:false});
-
 const article = document.getElementById('article');
+article.innerHTML = marked.parse(document.getElementById('md').textContent, {gfm:true, breaks:false});
+applyGlossary(article);
 const toc = document.getElementById('toc');
 const h1 = article.querySelector('h1');
 let tocHtml = '';

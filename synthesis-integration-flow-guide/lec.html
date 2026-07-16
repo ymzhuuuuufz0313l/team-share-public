@@ -8,6 +8,7 @@
   <meta http-equiv="Expires" content="0">
   <title>LEC 验证 · ASIC IP Synthesis &amp; Integration Flow 工具使用指南</title>
   <script src="https://cdn.jsdelivr.net/npm/marked@9.1.6/marked.min.js"></script>
+  <script src="./glossary.js"></script>
   <style>
 
 :root {
@@ -224,6 +225,84 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
 }
 .lightbox .close:hover { background: rgba(255,255,255,0.15); color: #fff; }
 
+/* Hover glossary tooltip */
+.term {
+  position: relative;
+  border-bottom: 1px dashed var(--accent);
+  cursor: help;
+  color: var(--accent);
+  transition: background 0.15s ease, border-bottom-style 0.15s ease;
+}
+.term:hover {
+  background: var(--accent-soft);
+  border-bottom-style: solid;
+  border-radius: 4px;
+}
+.term-tooltip {
+  position: fixed;
+  max-width: 320px;
+  padding: 14px 18px;
+  background: var(--accent-soft);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+  font-size: 14px;
+  line-height: 1.7;
+  z-index: 1000;
+  opacity: 0;
+  transform: translateY(8px) scale(0.98);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  pointer-events: none;
+}
+.term-tooltip.visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+.term-tooltip::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  transform: translateX(-50%);
+}
+.term-tooltip.arrow-bottom::after {
+  bottom: -10px;
+  border-width: 10px 8px 0 8px;
+  border-color: var(--line) transparent transparent transparent;
+}
+.term-tooltip.arrow-bottom::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -8px;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 8px 7px 0 7px;
+  border-color: var(--accent-soft) transparent transparent transparent;
+  transform: translateX(-50%);
+}
+.term-tooltip.arrow-top::after {
+  top: -10px;
+  border-width: 0 8px 10px 8px;
+  border-color: transparent transparent var(--line) transparent;
+}
+.term-tooltip.arrow-top::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: -8px;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 0 7px 8px 7px;
+  border-color: transparent transparent var(--accent-soft) transparent;
+  transform: translateX(-50%);
+}
+
   </style>
 </head>
 <body>
@@ -248,7 +327,7 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
 
 &gt; 综合完成后，必须通过 LEC 验证综合后的网表与 RTL 功能一致。
 
-LEC（Logic Equivalence Check）是形式验证方法，用于确认综合后的门级网表与 RTL 功能等价。
+## 1. LEC 基本流程
 
 ```bash
 cd lec
@@ -257,23 +336,15 @@ run_lec
 
 - `run_lec` 和 `rtl_gate.do` 一般无需修改；ECO 场景下才需调整。
 
-  ECO（Engineering Change Order）是工程变更指令，通常指对网表或 RTL 进行的小规模工程修改。
-
 - 如果 LEC 不通过，工具可能自动弹出 GUI 窗口用于分析。
 
 通过标准：
 - `lec.log` 无 Error
 - `abort.rpt` = 0 个 abort point
 
-  abort point 是 LEC 中工具因无法完成比较而放弃的对应点，需人工介入分析其等价性。
-
 - `non-eq.rpt` = 0 个 non-equivalent point
 
-  non-equivalent point 是 LEC 判定 RTL 与网表在功能上不一致的比较点，必须逐一定位并修复。
-
 - `unmapped.rpt` = 0 个 unmapped point
-
-  unmapped point 是 LEC 无法在参考设计与实现设计之间建立一一对应关系的比较点。
 
 ![LEC PASS 结果示例](./image_01.png)
 
@@ -385,9 +456,9 @@ document.addEventListener('mouseup', () => {
   </script>
 
   <script>
-document.getElementById('article').innerHTML = marked.parse(document.getElementById('md').textContent, {gfm:true, breaks:false});
-
 const article = document.getElementById('article');
+article.innerHTML = marked.parse(document.getElementById('md').textContent, {gfm:true, breaks:false});
+applyGlossary(article);
 const toc = document.getElementById('toc');
 const h1 = article.querySelector('h1');
 let tocHtml = '';
