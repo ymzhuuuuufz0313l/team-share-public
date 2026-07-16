@@ -7,7 +7,8 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <title>Signoff 与时序 · ASIC IP Synthesis &amp; Integration Flow 工具使用指南</title>
-  <script src="https://cdn.jsdelivr.net/npm/marked@9.1.6/marked.min.js"></script>\n  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked@9.1.6/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
   <style>
 
 :root {
@@ -323,21 +324,6 @@ run_pt
 
 各步骤的并行与串行关系如下：
 
-```mermaid
-flowchart LR
-    A[环境准备] --&gt; B[CKF]
-    A --&gt; C[nLint]
-    A --&gt; D[lec_upf]
-    B --&gt; E[DC / Genus]
-    C --&gt; E
-    D --&gt; E
-    E --&gt; F[LEC]
-    E --&gt; G[Pre-PT]
-    F --&gt; H[Signoff]
-    G --&gt; H
-    H --&gt; I[交付]
-```
-
 - CKF、nLint、lec_upf、DC/Genus 原则上可并行。
 - 为保证 signoff 的版本一致性检查，DC/Genus 需在 CKF、nLint 之后运行。
 - Pre-PT 与 LEC 可并行。
@@ -469,6 +455,6 @@ const observer = new IntersectionObserver((entries) => {
 }, { rootMargin: '-80px 0px -60% 0px', threshold: 0 });
 headings.forEach(h => observer.observe(h));
 </script>
-  <script>\n    document.getElementById('article').innerHTML = marked.parse(document.getElementById('md').textContent, {gfm:true, breaks:false});\n    if (typeof mermaid !== 'undefined') {\n      mermaid.initialize({startOnLoad:true, theme:'default'});\n      mermaid.run({querySelector: '.language-mermaid'});\n    }\n  </script>
+  <script>document.getElementById('article').innerHTML = marked.parse(document.getElementById('md').textContent, {gfm:true, breaks:false});</script>
 </body>
 </html>
