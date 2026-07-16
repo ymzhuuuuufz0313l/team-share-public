@@ -250,7 +250,12 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
 
 ## 1. UPF 准备与检查
 
+UPF（Unified Power Format）是描述芯片电源域划分、供电网络及低功耗控制意图的规范文件。
+
 ### 1.1 lec_upf
+
+`lec_upf` 是检查手写 UPF 语法正确性与电源意图一致性的流程，通常在综合前执行。
+
 `lec_upf` 用于检查 UPF 文件本身的正确性。
 
 - UPF 文件通常放在 `SYNTHESIS/common/upf/` 下。
@@ -263,6 +268,9 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
 NOTE: `lec_upf` 与 CKF、nLint 一样，建议在综合前完成。
 
 ### 1.2 genus_upf（生成 final.upf）
+
+`genus_upf` 是借助 Genus 工具解析电源意图并生成最终 `*_final.upf` 的脚本流程。
+
 部分 flow 需要借助 Genus 生成最终的 `*_final.upf`：
 
 1. 从 genus 目录复制并新建 `*_genus_upf` 目录。
@@ -280,7 +288,11 @@ WARNING: 综合时代码中的 output / inout 不能直接接常量，否则 `ge
 
 ## 2. 综合（DC / Genus）
 
+netlist（门级网表）是综合后得到的标准单元、宏单元及互连描述，是后端布局布线的输入。
+
 ### 2.1 Design Compiler
+
+Design Compiler 是 Synopsys 逻辑综合工具，将 RTL 描述映射为基于标准单元的门级网表。
 
 ```bash
 cd dc
@@ -297,8 +309,16 @@ run_dc
 - `kv_inout`
 - `kv_2clklist_group_path`
 - `set_multicycle_path`
+
+  `set_multicycle_path` 允许指定路径在多个时钟周期内完成数据传输的时序约束命令。
+
 - `set_false_path`
+
+  `set_false_path` 告知时序工具不对指定路径做建立/保持检查，常用于异步跨时钟域路径。
+
 - `set_dont_touch`：analog macro、standard cell、IO 等，防止被 DC 优化掉
+
+  `set_dont_touch` 标记单元或网络禁止综合工具优化、合并或删除，常用于关键路径或 IP 边界。
 
 部分项目还会有统一的公共 cons（如对 MEM scan_mode 等的 setting），可放在公共 tcl 中，也可放在 IP constraint 中。
 
@@ -309,7 +329,11 @@ run_dc
   - area 符合预期
   - timing slack ≥ 0（signoff 版本必须 slack &gt; 0）
 
+  timing slack（时序裕量）表示数据实际到达时间与要求到达时间之差，正值表示满足时序。
+
 ### 2.2 Genus
+
+Genus 是 Cadence 逻辑综合工具，功能与 DC 类似，部分 flow 用它生成综合网表或 final UPF。
 
 ```bash
 cd genus

@@ -258,9 +258,18 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
 ### 1.2 综合优化相关
 - 仅包含 input 的 module 会被工具优化掉，可设置 `set_dont_touch` 保留。
 - `set_ideal_network`：常用于 clock / reset，避免工具插 buffer。
+
+  `set_ideal_network` 将 clock、reset 等网络设为理想网络，阻止工具自动插入 buffer 或调整延迟。
+
 - `set_dont_touch`：常用于 analog cell，防止被优化。
 - `set_dont_touch_network`：作用与 `set_dont_touch` 类似，但范围更广，通常到 DFF。
+
+  `set_dont_touch_network` 将指定网络及其下游触发器整体设为不可优化对象，作用范围比 `set_dont_touch` 更广。
+
 - `set_false_path`：常用于两个异步时钟之间。
+
+  asynchronous clocks 是频率或相位无固定关系的时钟，跨此类时钟域的路径通常设为 false path。
+
 - 综合时代码中的 output / inout 不能直接接常量，否则 `genus_upf` 可能报错。
 
 ### 1.3 工具链冲突

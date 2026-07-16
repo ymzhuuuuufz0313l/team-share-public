@@ -248,19 +248,32 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
 
 &gt; 综合完成后，必须通过 LEC 验证综合后的网表与 RTL 功能一致。
 
+LEC（Logic Equivalence Check）是形式验证方法，用于确认综合后的门级网表与 RTL 功能等价。
+
 ```bash
 cd lec
 run_lec
 ```
 
 - `run_lec` 和 `rtl_gate.do` 一般无需修改；ECO 场景下才需调整。
+
+  ECO（Engineering Change Order）是工程变更指令，通常指对网表或 RTL 进行的小规模工程修改。
+
 - 如果 LEC 不通过，工具可能自动弹出 GUI 窗口用于分析。
 
 通过标准：
 - `lec.log` 无 Error
 - `abort.rpt` = 0 个 abort point
+
+  abort point 是 LEC 中工具因无法完成比较而放弃的对应点，需人工介入分析其等价性。
+
 - `non-eq.rpt` = 0 个 non-equivalent point
+
+  non-equivalent point 是 LEC 判定 RTL 与网表在功能上不一致的比较点，必须逐一定位并修复。
+
 - `unmapped.rpt` = 0 个 unmapped point
+
+  unmapped point 是 LEC 无法在参考设计与实现设计之间建立一一对应关系的比较点。
 
 ![LEC PASS 结果示例](./image_01.png)
 

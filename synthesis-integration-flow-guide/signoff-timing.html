@@ -249,6 +249,8 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
 
 &gt; 综合和 LEC 通过后，进入 signoff、时序分析和最终交付阶段。
 
+signoff 是综合、时序、形式验证等关键检查全部通过后的最终确认与交付流程。
+
 ## 1. Signoff 与交付
 
 ### 1.1 Signoff 检查
@@ -259,7 +261,12 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
 
 WARNING:
 - 若 CKF / nLint / DC / LEC 无法全部 pass，可申请 `signoff fake`。
+
+  signoff fake 指部分检查项未完全通过时，经项目审批后执行的临时性或有条件签核。
+
 - silver netlist 后通常不允许 `signoff fake`，紧急情况需单独申请。
+
+  silver netlist 是项目流程中某一阶段释放的中间版本网表，通常接近最终版用于下游提前开展工作。
 
 ![Signoff 检查输出示例](./image_02.png)
 
@@ -280,7 +287,11 @@ WARNING:
 
 ## 2. 时序分析（PrimeTime）
 
+PrimeTime 是 Synopsys 静态时序分析工具，用于验证综合后或 APR 后门级网表的时序收敛。
+
 ### 2.1 Pre-PT
+
+Pre-PT 是基于综合后网表进行的预布局布线静态时序分析，用于评估综合阶段时序质量。
 
 ```bash
 cd pt
@@ -296,6 +307,9 @@ run_pt
 - `*.rpt` 中 timing slack &gt; 0
 
 ### 2.2 Post-PT
+
+Post-PT 是基于 APR 后端输出网表进行的 signoff 级静态时序分析，是最终时序验收环节。
+
 基于 APR 后端输出进行 signoff 级时序分析：
 
 ```bash
@@ -305,6 +319,9 @@ run_pt
 
 需修改：
 - `corner_set.tcl`：wc / wcl / lt / ml / tt 等 corner
+
+  wc、wcl、lt、ml、tt 是典型 PVT corner 缩写，分别对应低压高温、低压低温、高压低温、高压高温、典型温压。
+
   - `wc`：低压高温（LVHT）
   - `wcl`：低压低温（LVLT）
   - `lt` / `bc`：高压低温（HVLT）

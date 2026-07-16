@@ -250,6 +250,8 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
 
 ## 1. CKF（连接性检查）
 
+CKF（Connectivity Check Flow）用于检查 RTL 端口连接性、black box、Floating 信号等连接问题，是综合前的必要检查。
+
 ```bash
 cd ckf
 run_ckf
@@ -262,10 +264,20 @@ run_ckf
 检查项：
 - `ckf.log` 无 Error
 - `ckf.rpt` 中 **Floating** 必须清零
+
+  Floating 指未连接任何驱动源或负载的信号或端口，通常反映 RTL 连接遗漏或接口声明错误。
+
 - `black box` 需逐一确认，通常为 analog、memory、digital macro，确保都是真实的 black box
+
+  black box 是仅有端口声明而无内部实现的模块，综合工具无法看到其内部功能，常用于 IP 或待实现模块。
+
 - `Latch` 只允许来自统一库（如 `gclk`、`io_latch`）或配合 analog design 直接调用的 latch，其余需检查 RTL
 
+  Latch 是电平敏感的存储单元，非预期引入可能带来时序不确定性和综合优化困难，应重点检查。
+
 ## 2. nLint
+
+nLint 是 RTL 语法、可综合性与代码风格检查工具，在综合前发现 latch、未初始化等问题。
 
 ```bash
 cd nlint

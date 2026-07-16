@@ -271,6 +271,9 @@ $PROJECT_PATH/SYNTHESIS/ip/<top_name>/
 | `power` | 功耗仿真 |
 
 ### 1.2 环境初始化
+
+`gensyn` 是项目内部封装的环境初始化脚本，用于自动生成标准综合目录结构并完成版本管理 check in。
+
 进入 `$PROJECT_PATH/SYNTHESIS/ip/` 后执行：
 
 ```bash
@@ -300,6 +303,8 @@ NOTE: 若 cshrc 中同时 source 了仿真工具（如 Verdi / VCS），在运�
 
 ## 2. design.set 核心配置
 
+`design.set` 是综合环境的总控配置文件，记录顶层名、工具选择、库文件、PVT corner、宏定义等关键参数，是 flow 各阶段读取的权威输入。
+
 `design.set` 是综合环境的总控文件，关键字段如下：
 
 | 字段 | 说明 | 常用设置 |
@@ -318,6 +323,14 @@ NOTE: 若 cshrc 中同时 source 了仿真工具（如 Verdi / VCS），在运�
 | `SYN_TOOL` | 综合工具 | `dc` 或 `genus` |
 | `CORNER` | PVT corner | 与标准单元库一致 |
 
+PVT corner 是工艺、电压、温度三种条件组合成的仿真角，用于覆盖芯片在不同工况下的时序与功耗。
+
+SAIF（Switching Activity Interchange Format）是记录电路节点翻转活动的文件，主要用于功耗分析。
+
+LVT/SVT/RVT/HVT 分别对应低阈值、标准阈值、常规阈值、高阈值标准单元，阈值越低速度越快但漏电越大。
+
+analog db 与 memory db 是模拟 IP 和 SRAM 等宏单元的时序、功耗库文件，供综合与 STA 工具查表使用。
+
 补充说明：
 - `ANA_EN`：analog db 使能，按项目需要开启。
 - `MEM_EN` / `MEM_SNPS_EN` / `MEM_FARA_EN`：memory db 来源开关，按实际库配置选择。
@@ -331,7 +344,12 @@ TIP: 同一项目下的不同 IP 应尽量使用相同的 `CORNER` 和库配置�
 
 ## 3. Filelist 管理
 
+RTL filelist 是列出所有参与综合的 RTL/SystemVerilog 源文件路径的文本清单，综合工具按此顺序读取并解析设计。
+
 ### 3.1 文件分类
+
+DDC 是 Design Compiler 数据库格式，保存综合后的设计信息，可被后续工具读取与恢复。
+
 综合 filelist 通常按文件类型拆分：
 
 | 文件 | 内容 |
