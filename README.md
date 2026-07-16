@@ -4,4 +4,6 @@
 
 访问地址：https://ymzhuuuuufz0313l.github.io/team-share-public/
 
-当前文章：HK1V11 420b 长编码验证体系
+当前文章：
+- HK1V11 420b 长编码验证体系
+- ASIC IP Synthesis & Integration Flow 工具使用指南
