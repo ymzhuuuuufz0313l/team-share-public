@@ -242,7 +242,10 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
   position: fixed;
   max-width: 320px;
   padding: 14px 18px;
-  background: var(--accent-soft);
+  --tooltip-bg-rgb: 219, 234, 254;
+  background: rgba(var(--tooltip-bg-rgb), 0.88);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   color: var(--text);
   border: 1px solid var(--line);
   border-radius: 14px;
@@ -282,7 +285,7 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
   height: 0;
   border-style: solid;
   border-width: 8px 7px 0 7px;
-  border-color: var(--accent-soft) transparent transparent transparent;
+  border-color: rgba(var(--tooltip-bg-rgb), 0.88) transparent transparent transparent;
   transform: translateX(-50%);
 }
 .term-tooltip.arrow-top::after {
@@ -299,11 +302,17 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
   height: 0;
   border-style: solid;
   border-width: 0 7px 8px 7px;
-  border-color: transparent transparent var(--accent-soft) transparent;
+  border-color: transparent transparent rgba(var(--tooltip-bg-rgb), 0.88) transparent;
   transform: translateX(-50%);
 }
 
-  </style>
+  
+@media (prefers-color-scheme: dark) {
+  .term-tooltip {
+    --tooltip-bg-rgb: 30, 58, 138;
+  }
+}
+</style>
 </head>
 <body>
   <nav class="navbar">
