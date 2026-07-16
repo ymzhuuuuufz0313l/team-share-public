@@ -284,7 +284,7 @@
 
 ## 1. chip_sel = 0 默认字节映射
 
-这张图展示 0716v1 在 chip_sel=0 模式下 POR 后的寄存器默认值布局，与 `LC_CPUWR_history/chip_sel0_register_address_map.md` 及 RTL 中复位默认值完全一致，用于建立寄存器空间基线并支撑后续 chip_sel=1 回拼差异分析。
+这张图展示 0714v1 在 chip_sel=0 模式下 POR 后的寄存器默认值布局，与 `LC_CPUWR_history/chip_sel0_register_address_map.md` 及 RTL 中复位默认值完全一致，用于建立寄存器空间基线并支撑后续 chip_sel=1 回拼差异分析。
 
 chip_sel=0 模式下 POR 后寄存器默认值全景；绿色为控制、黄色为电源、蓝紫为模拟相关字段。
 
@@ -292,9 +292,7 @@ chip_sel=0 模式下 POR 后寄存器默认值全景；绿色为控制、黄色�
 
 ## 2. chip_sel = 1 默认字节映射
 
-这张图展示 0716v1 在 chip_sel=1 模式下 POR 后的寄存器默认值布局，与 `LC_CPUWR_history/chip_sel1_register_address_map.md` 及 `LC_REG_MAPPING_20260714_v1_decimal.v` 回拼机制一致，用于定位 chip_sel=1 相对于 chip_sel=0 发生默认值变化的字段。
-
-所谓「回拼」是因为 LC_CPUWR 模块内部的默认值逻辑只针对 chip_sel=0 场景实现；当 chip_sel=1 时，部分地址（如 0x09 / 0x0A / 0x1F）需要通过 LC_REG_MAPPING 额外写标志并把对应字节回写到寄存器影子值，才能让 I2C 读出的内容与 chip_sel=1 期望的默认值一致。
+这张图展示 0714v1 在 chip_sel=1 模式下 POR 后的寄存器默认值布局，与 `LC_CPUWR_history/chip_sel1_register_address_map.md` 及 `LC_REG_MAPPING_20260714_v1_decimal.v` 回拼机制一致，用于定位 chip_sel=1 相对于 chip_sel=0 发生默认值变化的字段。
 
 chip_sel=1 模式下 POR 后默认值；红色标出与 chip_sel=0 不同、由 LC_REG_MAPPING 回拼的字段。
 

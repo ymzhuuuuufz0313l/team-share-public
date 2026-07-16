@@ -255,14 +255,10 @@ cd ckf
 run_ckf
 ```
 
-前置条件：CKF 建议在 `run_dc` 之前完成，以提前发现 RTL 连接性问题。
-
-`ckf_rtl.do` 一般不需要修改。
-
 检查项：
 - `ckf.log` 无 Error
 - `ckf.rpt` 中 **Floating** 必须清零
-- `black box` 需逐一确认，通常为 analog、memory、digital macro，确保都是真实的 black box
+- `black box` 需逐一确认，通常为 analog、memory、digital macro
 - `Latch` 只允许来自统一库（如 `gclk`、`io_latch`）或配合 analog design 直接调用的 latch，其余需检查 RTL
 
 ## 2. nLint
@@ -271,8 +267,6 @@ run_ckf
 cd nlint
 run_nlint
 ```
-
-前置条件：nLint 建议在 `run_dc` 之前完成，以显著减少后续综合阶段的 RTL 问题。
 
 检查项：
 - `nlint.log` / `nlint.rpt`

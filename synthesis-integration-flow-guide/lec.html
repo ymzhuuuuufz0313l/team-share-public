@@ -254,7 +254,7 @@ run_lec
 ```
 
 - `run_lec` 和 `rtl_gate.do` 一般无需修改；ECO 场景下才需调整。
-- 如果 LEC 不通过，工具可能自动弹出 GUI 窗口用于分析。
+- 使用 Genus 综合时，可设置 `EC_R2V_EN=1` 以加速；若存在无法解决的 abort，再改为分步进行。
 
 通过标准：
 - `lec.log` 无 Error
@@ -262,15 +262,7 @@ run_lec
 - `non-eq.rpt` = 0 个 non-equivalent point
 - `unmapped.rpt` = 0 个 unmapped point
 
-![LEC PASS 结果示例](./image_01.png)
-
 即使 abort 全部解决，也视为 PASS。
-
-### 1.1 使用 Genus 综合时的加速选项
-
-若使用 Genus 综合，可优先在 `design.set` 中设置 `EC_R2V_EN=1`，以节约 LEC 运行时间。
-
-若存在无法解决的 abort point，再将 `EC_R2V_EN` 设为 0，分两步进行 LEC。
 
 </script>
 

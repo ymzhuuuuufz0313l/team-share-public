@@ -253,14 +253,10 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
 ### 1.1 Signoff 检查
 运行 signoff 脚本时，会：
 - check 综合相关目录对应的版本号，确保 CKF / nLint / DC / LEC 等步骤基于同一 RTL 版本
-- 输出 `signoff.rpt`，汇总所有 error 与 check 信息；每一项报错都需要修掉
+- 输出 `signoff.rpt`，汇总所有 error 与 check 信息
 - 全部通过后，自动 release 到指定目录并指向 `latest`
 
-WARNING:
-- 若 CKF / nLint / DC / LEC 无法全部 pass，可申请 `signoff fake`。
-- silver netlist 后通常不允许 `signoff fake`，紧急情况需单独申请。
-
-![Signoff 检查输出示例](./image_02.png)
+WARNING: 若 CKF / nLint / DC / LEC 无法全部 pass，可申请 `signoff fake`，但 silver netlist 后通常不允许 fake。
 
 ### 1.2 交付物示例
 
@@ -273,8 +269,6 @@ WARNING:
 | `signoff.rpt` | signoff 检查报告 |
 | release 目录 | 按版本归档的完整结果 |
 
-![Signoff PASS 与 release 示例](./image_03.png)
-
 ---
 
 ## 2. 时序分析（PrimeTime）
@@ -286,9 +280,9 @@ cd pt
 run_pt
 ```
 
-- `pt_setup.tcl` 一般无需修改。
-- `common_db_pvt.tcl` 选择与实际综合一致的 corner（如 `wc_cworst`）。
-- 注意 memory / analog 的 PVT 可能与标准单元不同。
+- `pt_setup.tcl` 一般无需修改
+- `common_db_pvt.tcl` 选择与实际综合一致的 corner（如 `wc_cworst`）
+- 注意 memory / analog 的 PVT 可能与标准单元不同
 
 检查项：
 - `pt.log` 无 Error
@@ -304,18 +298,9 @@ run_pt
 
 需修改：
 - `corner_set.tcl`：wc / wcl / lt / ml / tt 等 corner
-  - `wc`：低压高温（LVHT）
-  - `wcl`：低压低温（LVLT）
-  - `lt` / `bc`：高压低温（HVLT）
-  - `ml`：高压高温（HVHT）
-  - `tt`：典型温压
 - `pt_setup.tcl`：读取 APR 吐出的网表、设置 operating conditions
 - `pt/design.set`：路径、LINK_LIB、TAR_LIB、NET_DEFINE、POSTPT_EN=1 等
-  - `POSTPT_EN` 必须为 1
-  - `PT_HOLD` 仅针对特定工艺（如 22nm）
 - `common_db_pvt.tcl`
-
-注意 memory / analog 的 PVT 可能与标准单元不同。
 
 ---
 
@@ -341,8 +326,6 @@ flowchart LR
 - CKF、nLint、lec_upf、DC/Genus 原则上可并行。
 - 为保证 signoff 的版本一致性检查，DC/Genus 需在 CKF、nLint 之后运行。
 - Pre-PT 与 LEC 可并行。
-
-![综合集成流程依赖关系](./image_04.png)
 
 </script>
 
