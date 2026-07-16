@@ -228,23 +228,6 @@
 <rect x="820" y="1594" width="79" height="40" fill="#fef08a" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="859.5" y="1611.0" text-anchor="middle" font-size="8" font-weight="500" fill="#1e293b">Skip_frame_cou…</text>
 <text x="859.5" y="1625.0" text-anchor="middle" font-size="7" fill="#64748b">0</text>
-<!-- Badges marking dual-chip_sel addresses -->
-<g>
-  <rect x="175" y="336" width="72" height="16" fill="#ef4444" rx="8"/>
-  <text x="211" y="347" text-anchor="middle" font-size="8" font-weight="600" fill="#ffffff">双 chip_sel</text>
-</g>
-<g>
-  <rect x="175" y="994" width="72" height="16" fill="#a855f7" rx="8"/>
-  <text x="211" y="1005" text-anchor="middle" font-size="8" font-weight="600" fill="#ffffff">双 chip_sel</text>
-</g>
-<g>
-  <rect x="175" y="1136" width="72" height="16" fill="#ec4899" rx="8"/>
-  <text x="211" y="1147" text-anchor="middle" font-size="8" font-weight="600" fill="#ffffff">双 chip_sel</text>
-</g>
-<g>
-  <rect x="175" y="1450" width="72" height="16" fill="#06b6d4" rx="8"/>
-  <text x="211" y="1461" text-anchor="middle" font-size="8" font-weight="600" fill="#ffffff">双 chip_sel</text>
-</g>
 <text x="90" y="1679" font-size="13" font-weight="600" fill="#1e293b">图例</text>
 <rect x="90" y="1689" width="14" height="14" fill="#f1f5f9" stroke="#94a3b8" rx="2"/>
 <text x="108" y="1700" font-size="10" fill="#1e293b">普通地址</text>
@@ -257,5 +240,5 @@
 <rect x="670" y="1689" width="14" height="14" fill="#fef08a" stroke="#94a3b8" rx="2"/>
 <text x="688" y="1700" font-size="10" fill="#1e293b">0x27 frame end</text>
 <text x="470.0" y="1734" text-anchor="middle" font-size="11" fill="#64748b">普通地址与 Reserved 位为灰色；蓝色=chip_sel=0 字段，绿色=chip_sel=1 字段；橙色=0x07 控制寄存器，黄色=0x27 frame end 边界。</text>
-<text x="470.0" y="1758" text-anchor="middle" font-size="10" fill="#64748b">红/紫/粉/青左侧竖条与角标：同一地址在 chip_sel=0 与 chip_sel=1 下包含不同字段（双 chip_sel 地址）。</text>
+<text x="470.0" y="1758" text-anchor="middle" font-size="10" fill="#64748b">红/紫/粉/青左侧竖条：同一地址在 chip_sel=0 与 chip_sel=1 下包含不同字段。</text>
 </svg>
