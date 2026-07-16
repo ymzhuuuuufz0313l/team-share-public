@@ -260,6 +260,8 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
   - power port 电压定义是否合理
 - 即使 UPF 已修正，仍可能存在 Error / Warning，需与模拟设计同事确认。
 
+NOTE: `lec_upf` 与 CKF、nLint 一样，建议在综合前完成。
+
 ### 1.2 genus_upf（生成 final.upf）
 部分 flow 需要借助 Genus 生成最终的 `*_final.upf`：
 
@@ -271,6 +273,8 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
 4. 顶层约束 `.tcl` 中的层级分隔符需与工具要求一致。
 5. `setting.upf` 一般无需修改。
 6. 运行 `run_genus`，检查 `genus.log` 与报告。
+
+WARNING: 综合时代码中的 output / inout 不能直接接常量，否则 `genus_upf` 可能报错。
 
 ---
 
@@ -285,12 +289,7 @@ run_dc
 
 前置条件：CKF、nLint、lec_upf 问题已清理。
 
-主要检查项：
-- `dc.log`：无 Error、无 unresolved
-- `*.chk_design`：无 undrive
-- `*.rpt`：
-  - area 符合预期
-  - timing slack ≥ 0（signoff 版本必须 slack &gt; 0）
+`run_dc` 与 `compile_dc.tcl` 一般无需修改；Top synthesis 场景下可能需要修改 `compile_dc.tcl` 以生成 `dont_touch.tcl`，配合 APR 使用。
 
 约束文件（通常位于 `SYNTHESIS/common/ip_cons/`）应包括：
 - `kv_clock` / `kv_v_clock`：clock 点需为 macro 或 standard cell pin
@@ -301,8 +300,27 @@ run_dc
 - `set_false_path`
 - `set_dont_touch`：analog macro、standard cell、IO 等，防止被 DC 优化掉
 
+部分项目还会有统一的公共 cons（如对 MEM scan_mode 等的 setting），可放在公共 tcl 中，也可放在 IP constraint 中。
+
+主要检查项：
+- `dc.log`：无 Error、无 unresolved
+- `*.chk_design`：无 undrive
+- `*.rpt`：
+  - area 符合预期
+  - timing slack ≥ 0（signoff 版本必须 slack &gt; 0）
+
 ### 2.2 Genus
+
+```bash
+cd genus
+run_genus
+```
+
 若使用 DC，通常不需要运行 Genus。若项目指定使用 Genus，则需配置 `design.set` 中 `SYN_TOOL=genus`。
+
+主要检查项：
+- `genus.log` 无 Error
+- `*.rpt` 中 area、timing 符合预期
 
 </script>
 

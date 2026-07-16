@@ -259,8 +259,9 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
 - 仅包含 input 的 module 会被工具优化掉，可设置 `set_dont_touch` 保留。
 - `set_ideal_network`：常用于 clock / reset，避免工具插 buffer。
 - `set_dont_touch`：常用于 analog cell，防止被优化。
-- `set_dont_touch_network`：作用范围更广，通常到 DFF。
+- `set_dont_touch_network`：作用与 `set_dont_touch` 类似，但范围更广，通常到 DFF。
 - `set_false_path`：常用于两个异步时钟之间。
+- 综合时代码中的 output / inout 不能直接接常量，否则 `genus_upf` 可能报错。
 
 ### 1.3 工具链冲突
 - 综合环境 source 前，若 cshrc 中同时 source 了 Verdi / VCS 环境，建议先注释，避免 DC / PT 报错。
