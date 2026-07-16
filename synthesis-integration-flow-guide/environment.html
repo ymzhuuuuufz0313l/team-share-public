@@ -284,6 +284,11 @@ gensyn &lt;TOP_NAME&gt; -noadd
 gensyn &lt;TOP_NAME&gt; -noadd &lt;custom_dir&gt;
 ```
 
+其他常用选项：
+- 初次生成环境时，默认会 check in 到版本管理，以保持目录干净；不需要 check in 时用 `-noadd`。
+- 生成的目录中通常包含 `Readme`，可再次阅读 synthesis flow 说明。
+- 如果模板有更新，可再次运行 `gensyn &lt;TOP_NAME&gt;` 自动 copy 新模板并备份原文件；`filelist` 与约束文件一般不会被覆盖。
+
 ASSUMPTION: 本指南以项目内部封装脚本 `gensyn` 为例；若使用其他 flow，需替换为对应的环境初始化命令。
 
 ### 1.3 环境 source 与工具配置
@@ -313,6 +318,13 @@ NOTE: 若 cshrc 中同时 source 了仿真工具（如 Verdi / VCS），在运�
 | `SYN_TOOL` | 综合工具 | `dc` 或 `genus` |
 | `CORNER` | PVT corner | 与标准单元库一致 |
 
+补充说明：
+- `ANA_EN`：analog db 使能，按项目需要开启。
+- `MEM_EN` / `MEM_SNPS_EN` / `MEM_FARA_EN`：memory db 来源开关，按实际库配置选择。
+- `LVT_EN` / `SVT_EN`：低阈值 / 标准阈值单元使能，常用默认值即可；不同项目可能使用 RVT、HVT 等其它命名。
+- `LINK_LIB` / `TAR_LIB`：标准单元库选择，若需多种 std_cell，用空格分隔，例如 `"lib_a lib_b"`。
+- `NET_DEFINE0` / `NET_DEFINE1`：全局宏定义，与 `clk_rst` 下文件对应；不同工具下通常合并到一个 `NET_DEFINE` 变量中。
+
 TIP: 同一项目下的不同 IP 应尽量使用相同的 `CORNER` 和库配置，以保证时序 signoff 口径一致。
 
 ---
@@ -328,14 +340,15 @@ TIP: 同一项目下的不同 IP 应尽量使用相同的 `CORNER` 和库配置�
 | `&lt;top&gt;.sv.f` | SystemVerilog 文件列表 |
 | `&lt;top&gt;.ddc_dc.f` | 引用 DDC 的 design |
 | `&lt;top&gt;.dummy_lec.f` | LEC 对比时需要的 dummy 文件 |
-| `advanced/*.vhdl_dc.f` | VHDL 相关处理 |
+| `advanced/*.vhdl_dc.f` / `*.vhdl_lec.f` | VHDL 相关处理 |
 
 ### 3.2 填写建议
 1. `clk_rst` 中的 define 一般由环境自动加入，filelist 中无需重复。
-2. memory / analog 模块在综合时引用 db / lib，filelist 中通常不需要加入 RTL。
+2. memory / analog 模块在综合时引用 db / lib，filelist 中通常不需要加入 RTL；LEC 环境会自行使用相关 dummy 文件。
 3. filelist 支持嵌套 `*.f`。
 4. 对于底层/中层模块、mem_wrap、bist、clk_rst、std_ip 相关文件，建议由 owner 明确填写，增强可控性。
 5. 能直接复用 `HDL/file_list/*.f` 时，优先复用，以保证仿真与综合的一致性。
+6. 若不确定是否有遗漏，可通过 `run_ckf` 结果反向补充 filelist 中未添加的 `.v`。
 
 </script>
 
