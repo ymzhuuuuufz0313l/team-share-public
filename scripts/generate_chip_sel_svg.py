@@ -383,6 +383,13 @@ def generate_svg(title: str, reg_map, diffs=None, highlight_label=""):
         x = left_margin + addr_col_w + i * cell_w
         lines.append(f'<text x="{x + cell_w/2}" y="{bit_y}" text-anchor="middle" font-size="12" fill="{COLORS["muted"]}">[{bit}]</text>')
 
+    # POR default value column header
+    badge_w = 64
+    badge_h = 26
+    badge_x = left_margin + addr_col_w + 8 * cell_w + 16
+    header_y = top_margin + 6
+    lines.append(f'<text x="{badge_x + badge_w/2}" y="{header_y}" text-anchor="middle" font-size="10" fill="{COLORS["muted"]}" font-weight="600">POR 默认值</text>')
+
     # Rows
     for idx, row in enumerate(rows):
         y = top_margin + bit_label_h + 10 + idx * row_h
@@ -405,10 +412,18 @@ def generate_svg(title: str, reg_map, diffs=None, highlight_label=""):
         # address label
         lines.append(f'<text x="{left_margin + addr_col_w - 12}" y="{y + cell_h/2 + 5}" text-anchor="end" font-size="14" font-weight="600" fill="{COLORS["text"]}">{hex_str} ({dec})</text>')
 
-        # Byte-level initvalue hex label on the right side
+        # Byte-level initvalue hex badge on the right side
         byte_default = compute_byte_default(reg_map[dec])
-        hex_x = left_margin + addr_col_w + 8 * cell_w + 8
-        lines.append(f'<text x="{hex_x}" y="{y + cell_h/2 + 4}" font-size="12" font-weight="600" fill="{COLORS["text"]}">{escape_xml(f"= 0x{byte_default:02X}")}</text>')
+        badge_y = y + (cell_h - badge_h) / 2
+        badge_fill = "#f8fafc"
+        badge_stroke = "#e2e8f0"
+        # Rounded pill badge
+        lines.append(f'<rect x="{badge_x}" y="{badge_y}" width="{badge_w}" height="{badge_h}" fill="{badge_fill}" stroke="{badge_stroke}" stroke-width="1" rx="13"/>')
+        # Status dot: green when default is 0x00, amber otherwise
+        dot_color = "#22c55e" if byte_default == 0 else "#f59e0b"
+        lines.append(f'<circle cx="{badge_x + 12}" cy="{badge_y + badge_h/2}" r="3.5" fill="{dot_color}"/>')
+        # Hex value inside badge
+        lines.append(f'<text x="{badge_x + badge_w/2 + 3}" y="{badge_y + badge_h/2 + 4}" text-anchor="middle" font-size="12" font-weight="700" fill="{COLORS["text"]}" font-family="Consolas, Monaco, monospace">0x{byte_default:02X}</text>')
 
         # note for chip_sel1 special addresses
         note_text = ""
@@ -449,7 +464,7 @@ def generate_svg(title: str, reg_map, diffs=None, highlight_label=""):
                 lines.append(f'<text x="{star_x}" y="{star_y + 3}" text-anchor="middle" font-size="8" fill="white" font-weight="bold">★</text>')
 
         if note_text:
-            nx = left_margin + addr_col_w + 8 * cell_w + 80
+            nx = badge_x + badge_w + 14
             lines.append(f'<text x="{nx}" y="{y + cell_h/2 + 4}" font-size="11" fill="{COLORS["diff"]}" font-weight="600">{escape_xml(note_text)}</text>')
 
     # Legend
