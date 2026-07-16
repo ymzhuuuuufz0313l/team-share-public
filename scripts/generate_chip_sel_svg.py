@@ -248,6 +248,45 @@ def normalize_default(d):
     return d.strip().replace("b'", "'").replace("b0", "0").replace("b1", "1")
 
 
+def parse_default_value(s):
+    """Parse a field-level default into an integer. Supports 0xNN, N'bNNN, decimal."""
+    if s is None:
+        return None
+    s = s.strip()
+    # Hex
+    m = re.match(r"^(?:0x|0X)([0-9a-fA-F]+)$", s)
+    if m:
+        return int(m.group(1), 16)
+    # Binary with bit-width prefix (e.g. 2'b11, 8'b00000000)
+    m = re.match(r"^(\d+)'b([01]+)$", s)
+    if m:
+        return int(m.group(2), 2)
+    # Plain binary (e.g. 0b1010)
+    m = re.match(r"^0b([01]+)$", s, re.IGNORECASE)
+    if m:
+        return int(m.group(1), 2)
+    # Decimal
+    m = re.match(r"^\d+$", s)
+    if m:
+        return int(s)
+    return None
+
+
+def compute_byte_default(entries):
+    """Compute byte-level POR default from field-level entries."""
+    value = 0
+    for e in entries:
+        name = e.get("name", "")
+        default = e.get("default", "")
+        if "Reserved" in name or not default:
+            continue
+        val = parse_default_value(default)
+        if val is None:
+            continue
+        value |= (val << e["lsb"])
+    return value
+
+
 def compute_differences(map0, map1):
     """Return set of (dec, msb, lsb) cells that differ between chip_sel0 and chip_sel1."""
     diffs = set()
@@ -366,6 +405,11 @@ def generate_svg(title: str, reg_map, diffs=None, highlight_label=""):
         # address label
         lines.append(f'<text x="{left_margin + addr_col_w - 12}" y="{y + cell_h/2 + 5}" text-anchor="end" font-size="14" font-weight="600" fill="{COLORS["text"]}">{hex_str} ({dec})</text>')
 
+        # Byte-level initvalue hex label on the right side
+        byte_default = compute_byte_default(reg_map[dec])
+        hex_x = left_margin + addr_col_w + 8 * cell_w + 8
+        lines.append(f'<text x="{hex_x}" y="{y + cell_h/2 + 4}" font-size="12" font-weight="600" fill="{COLORS["text"]}">{escape_xml(f"= 0x{byte_default:02X}")}</text>')
+
         # note for chip_sel1 special addresses
         note_text = ""
         if highlight_label and dec in (0x09, 0x0A, 0x1F):
@@ -405,7 +449,7 @@ def generate_svg(title: str, reg_map, diffs=None, highlight_label=""):
                 lines.append(f'<text x="{star_x}" y="{star_y + 3}" text-anchor="middle" font-size="8" fill="white" font-weight="bold">★</text>')
 
         if note_text:
-            nx = left_margin + addr_col_w + 8 * cell_w + 8
+            nx = left_margin + addr_col_w + 8 * cell_w + 80
             lines.append(f'<text x="{nx}" y="{y + cell_h/2 + 4}" font-size="11" fill="{COLORS["diff"]}" font-weight="600">{escape_xml(note_text)}</text>')
 
     # Legend
@@ -423,7 +467,7 @@ def generate_svg(title: str, reg_map, diffs=None, highlight_label=""):
 
     # Footer
     footer_y = svg_h - 30
-    lines.append(f'<text x="{svg_w/2}" y="{footer_y}" text-anchor="middle" font-size="11" fill="{COLORS["muted"]}">0714v1+：chip_sel=1 的 0x09/0x0A/0x1F 默认值由 LC_REG_MAPPING 写标志 + 回拼字节实现</text>')
+    lines.append(f'<text x="{svg_w/2}" y="{footer_y}" text-anchor="middle" font-size="11" fill="{COLORS["muted"]}">0716v1+：右侧标注字节级 POR 默认值（hex）；chip_sel=1 的 0x09/0x0A/0x1F 由 LC_REG_MAPPING 回拼实现</text>')
 
     lines.append('</svg>')
     return "\n".join(lines)

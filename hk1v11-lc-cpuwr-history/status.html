@@ -246,14 +246,15 @@
 
 ## 1. 当前版本
 
-截至最新归档，LC_CPUWR 经历了 0708v1 和 0714v1 两次关键迭代：
+截至最新归档，LC_CPUWR 经历了 0708v1、0714v1 与 0716 Excel 更新：
 
 | 版本 | 主要状态 |
 |------|----------|
 | 0708v1 | 新增 `SMART_CS[3:0]` @ `0x02`，仅在 `CHIP_SEL=1` 时有效；`CHIP_SEL` 命名已统一 |
 | 0714v1 | `R_REG09` / `R_REG10` / `R_REG31` 在 `LC_CPUWR` 内部复位默认值改为 `8'h00`；chip_sel=1 默认值通过 `LC_REG_MAPPING` 回拼机制实现（`8'hFF`/`8'hA5`/`8'hAA`） |
+| 0716 Excel | 新增 `FSEL[1:0]` @ `0x35`；`0x01`/`0x04`/`0x02(CHIP_SEL=1)` 字节默认值改为 `0x00` |
 
-当前最新候选版本为 `LC_CPUWR_20260714_v1_decimal.v`。
+当前最新候选版本为 `LC_CPUWR_20260714_v1_decimal.v`，待按 0716 Excel 同步 RTL。
 
 0714v1 交付物：
 - 三份 RTL 文件：`LC_CPUWR` / `LC_REG_MAPPING` / `LINK_LOGIC`
@@ -268,6 +269,7 @@
 - 寄存器命名从十六进制全面十进制化
 - `CHIP_SEL` 命名统一
 - `SMART_CS[3:0]` 新增
+- `FSEL[1:0]` @ `0x35` 新增
 - `R_REG09/10/31` 在 `LC_CPUWR` 内部默认值为 `8'h00`
 - chip_sel=1 默认值通过 `LC_REG_MAPPING` 回拼机制实现
 - `checker_for_checksum` 统一迁移到公共 agent
@@ -285,6 +287,8 @@
 | chip_sel=1 的 I2C 读回 case | **已通过** | 确认复位后读回为 `8'hFF`/`8'hA5`/`8'hAA` ✅ |
 | chip_sel=1 的 checksum case | **已通过** | 确认 `cfg_frame` 写入后 R_REG 与回拼字节一致 ✅ |
 | SMART_CS[3:0] 在 chip_sel=1 下的功能验证 | 待完成 | 0708v1 新增字段 |
+| `FSEL[1:0]` @ `0x35` 同步到 RTL | 待完成 | 0716 Excel 新增字段 |
+| `0x01`/`0x04`/`0x02(CHIP_SEL=1)` 默认值改为 `0x00` | 待完成 | 0716 Excel 默认值更新 |
 | 顶层模块旧 `reg_lane_ctrl` 端口连接 | 风险 | `HK1V11_digital_top.v`、`HK1V11.v`、`MACRO_TOP_1V11.v` 等仍连接旧 `reg_lane_ctrl` 端口，推广 0705v1/0714v1 前需统一替换为 `sw_reg_lane_ctrl` |
 | `i2c_model.sv` 仍使用旧层次与十六进制映射 | 风险 | 服务器编译可能报错，需从 filelist 移除或替换 |
 

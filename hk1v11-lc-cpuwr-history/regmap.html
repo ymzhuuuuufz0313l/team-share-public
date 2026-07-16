@@ -471,7 +471,23 @@ assign R_REG31_F_RECON = {PWRC_NB, PWRC_NA, PWRC_PB, PWRC_PA};  // 8'hAA
   - `0x1F` → `8'hAA`
 - `chip_sel=0` 时 I2C 读回内部 R_REG 值；`chip_sel=1` 时读回 LC_REG_MAPPING 回拼值
 
-## 12. 寄存器可视化大图
+## 12. 0716 FSEL[1:0] 新增
+
+- `0x35` 新增 `FSEL[1:0]` 字段，用于选择 OSC 频率（9~12MHz）
+  - `2'b00` → 10MHz
+  - `2'b01` → 9MHz
+  - `2'b10` → 12MHz
+  - `2'b11` → 11MHz
+- 默认值为 `2'b00`（字节级 `0x00`），对 chip_sel=0 与 chip_sel=1 均相同
+- 原 `0x35[7:0]` 的 `Reserved` 拆分为 `FSEL[1:0]` + `Reserved[7:2]`
+
+## 13. 0716 其他默认值调整
+
+- `0x01` 字节默认值从 `0x04` 改为 `0x00`
+- `0x04` 字节默认值从 `0x04` 改为 `0x00`
+- `0x02`（CHIP_SEL=1）字节默认值从 `0x0F` 改为 `0x00`（与字段级 `SMART_CS[3:0]=4'b0000` 一致）
+
+## 14. 寄存器可视化大图
 
 chip_sel=0/1 默认字节映射、checksum 地址覆盖、LSI 保护范围、复位域分类等五张 SVG 大图已集中到独立的 **寄存器图解 Sheet**：
 

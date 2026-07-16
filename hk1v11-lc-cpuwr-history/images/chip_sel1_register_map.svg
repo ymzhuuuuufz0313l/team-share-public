@@ -11,6 +11,7 @@
 <text x="703.0" y="110" text-anchor="middle" font-size="12" fill="#64748b">[1]</text>
 <text x="785.0" y="110" text-anchor="middle" font-size="12" fill="#64748b">[0]</text>
 <text x="158" y="152.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x00 (0)</text>
+<text x="834" y="151.0" font-size="12" font-weight="600" fill="#1e293b">= 0x00</text>
 <rect x="170" y="124" width="245" height="46" fill="#ccfbf1" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="292.5" y="145.0" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">AVE_RGBW[2:0]</text>
 <text x="292.5" y="159.0" text-anchor="middle" font-size="9" fill="#64748b">3'b000</text>
@@ -24,6 +25,7 @@
 <text x="702.5" y="145.0" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">Reserved</text>
 <text x="702.5" y="159.0" text-anchor="middle" font-size="9" fill="#64748b">0</text>
 <text x="158" y="204.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x01 (1)</text>
+<text x="834" y="203.0" font-size="12" font-weight="600" fill="#1e293b">= 0x00</text>
 <rect x="170" y="176" width="81" height="46" fill="#ccfbf1" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="210.5" y="197.0" text-anchor="middle" font-size="8" font-weight="500" fill="#1e293b">AVE_LAST</text>
 <text x="210.5" y="211.0" text-anchor="middle" font-size="7" fill="#64748b">1'b0</text>
@@ -37,6 +39,7 @@
 <text x="620.5" y="197.0" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">Reserved</text>
 <text x="620.5" y="211.0" text-anchor="middle" font-size="9" fill="#64748b">0</text>
 <text x="158" y="256.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x02 (2)</text>
+<text x="834" y="255.0" font-size="12" font-weight="600" fill="#1e293b">= 0x00</text>
 <rect x="170" y="228" width="163" height="46" fill="#fce7f3" stroke="#ef4444" stroke-width="2.5" rx="4"/>
 <text x="251.5" y="249.0" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">SMART_CS[3:2]</text>
 <text x="251.5" y="263.0" text-anchor="middle" font-size="9" fill="#64748b">2'b00</text>
@@ -61,6 +64,7 @@
 <rect x="170" y="280" width="655" height="46" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1" stroke-dasharray="4,3" rx="4"/>
 <text x="497.5" y="307.0" text-anchor="middle" font-size="12" fill="#64748b">⋯ 全 Reserved ⋯</text>
 <text x="158" y="360.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x04 (4)</text>
+<text x="834" y="359.0" font-size="12" font-weight="600" fill="#1e293b">= 0x00</text>
 <rect x="170" y="332" width="245" height="46" fill="#ccfbf1" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="292.5" y="353.0" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">SD_CHOP[2:0]</text>
 <text x="292.5" y="367.0" text-anchor="middle" font-size="9" fill="#64748b">3'b000</text>
@@ -68,6 +72,7 @@
 <text x="620.5" y="353.0" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">Reserved</text>
 <text x="620.5" y="367.0" text-anchor="middle" font-size="9" fill="#64748b">0</text>
 <text x="158" y="412.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x05 (5)</text>
+<text x="834" y="411.0" font-size="12" font-weight="600" fill="#1e293b">= 0x60</text>
 <rect x="170" y="384" width="245" height="46" fill="#ccfbf1" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="292.5" y="405.0" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">CH_SEL[2:0]</text>
 <text x="292.5" y="419.0" text-anchor="middle" font-size="9" fill="#64748b">3'b011</text>
@@ -75,6 +80,7 @@
 <text x="620.5" y="405.0" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">Reserved</text>
 <text x="620.5" y="419.0" text-anchor="middle" font-size="9" fill="#64748b">0</text>
 <text x="158" y="464.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x06 (6)</text>
+<text x="834" y="463.0" font-size="12" font-weight="600" fill="#1e293b">= 0x02</text>
 <rect x="170" y="436" width="81" height="46" fill="#ccfbf1" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="210.5" y="457.0" text-anchor="middle" font-size="8" font-weight="500" fill="#1e293b">DPLC_GROUP</text>
 <text x="210.5" y="471.0" text-anchor="middle" font-size="7" fill="#64748b">0</text>
@@ -100,6 +106,7 @@
 <text x="784.5" y="457.0" text-anchor="middle" font-size="8" font-weight="500" fill="#1e293b">Reserved</text>
 <text x="784.5" y="471.0" text-anchor="middle" font-size="7" fill="#64748b">0</text>
 <text x="158" y="516.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x07 (7)</text>
+<text x="834" y="515.0" font-size="12" font-weight="600" fill="#1e293b">= 0x00</text>
 <rect x="170" y="488" width="327" height="46" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="333.5" y="509.0" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">Reserved</text>
 <text x="333.5" y="523.0" text-anchor="middle" font-size="9" fill="#64748b">0</text>
@@ -107,6 +114,7 @@
 <text x="661.5" y="509.0" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">CTRLF_CHECKSUM[3…</text>
 <text x="661.5" y="523.0" text-anchor="middle" font-size="9" fill="#64748b">4'b0000</text>
 <text x="158" y="568.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x08 (8)</text>
+<text x="834" y="567.0" font-size="12" font-weight="600" fill="#1e293b">= 0x00</text>
 <rect x="170" y="540" width="163" height="46" fill="#ccfbf1" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="251.5" y="561.0" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">SD_CHOP_F[1:0]</text>
 <text x="251.5" y="575.0" text-anchor="middle" font-size="9" fill="#64748b">2'b00</text>
@@ -126,6 +134,7 @@
 <text x="784.5" y="561.0" text-anchor="middle" font-size="8" font-weight="500" fill="#1e293b">reg_eq_rbc0</text>
 <text x="784.5" y="575.0" text-anchor="middle" font-size="7" fill="#64748b">1'b0</text>
 <text x="158" y="620.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x09 (9)</text>
+<text x="834" y="619.0" font-size="12" font-weight="600" fill="#1e293b">= 0xFF</text>
 <rect x="170" y="592" width="163" height="46" fill="#fef3c7" stroke="#ef4444" stroke-width="2.5" rx="4"/>
 <text x="251.5" y="613.0" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">SR_NF[1:0]</text>
 <text x="251.5" y="627.0" text-anchor="middle" font-size="9" fill="#64748b">2'b11</text>
@@ -146,8 +155,9 @@
 <text x="743.5" y="627.0" text-anchor="middle" font-size="9" fill="#64748b">2'b11</text>
 <circle cx="817" cy="600" r="5" fill="#ef4444"/>
 <text x="817" y="603" text-anchor="middle" font-size="8" fill="white" font-weight="bold">★</text>
-<text x="834" y="619.0" font-size="11" fill="#ef4444" font-weight="600">LC_REG_MAPPING 回拼</text>
+<text x="906" y="619.0" font-size="11" fill="#ef4444" font-weight="600">LC_REG_MAPPING 回拼</text>
 <text x="158" y="672.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x0A (10)</text>
+<text x="834" y="671.0" font-size="12" font-weight="600" fill="#1e293b">= 0xA5</text>
 <rect x="170" y="644" width="163" height="46" fill="#fef3c7" stroke="#ef4444" stroke-width="2.5" rx="4"/>
 <text x="251.5" y="665.0" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">PWRC_N[1:0]</text>
 <text x="251.5" y="679.0" text-anchor="middle" font-size="9" fill="#64748b">2'b10</text>
@@ -168,11 +178,12 @@
 <text x="743.5" y="679.0" text-anchor="middle" font-size="9" fill="#64748b">2'b01</text>
 <circle cx="817" cy="652" r="5" fill="#ef4444"/>
 <text x="817" y="655" text-anchor="middle" font-size="8" fill="white" font-weight="bold">★</text>
-<text x="834" y="671.0" font-size="11" fill="#ef4444" font-weight="600">LC_REG_MAPPING 回拼</text>
+<text x="906" y="671.0" font-size="11" fill="#ef4444" font-weight="600">LC_REG_MAPPING 回拼</text>
 <text x="158" y="724.0" text-anchor="end" font-size="13" font-weight="600" fill="#64748b">0x0B ~ 0x1C (11 ~ 28)</text>
 <rect x="170" y="696" width="655" height="46" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1" stroke-dasharray="4,3" rx="4"/>
 <text x="497.5" y="723.0" text-anchor="middle" font-size="12" fill="#64748b">⋯ 全 Reserved ⋯</text>
 <text x="158" y="776.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x1D (29)</text>
+<text x="834" y="775.0" font-size="12" font-weight="600" fill="#1e293b">= 0x00</text>
 <rect x="170" y="748" width="409" height="46" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="374.5" y="769.0" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">Reserved</text>
 <text x="374.5" y="783.0" text-anchor="middle" font-size="9" fill="#64748b">0</text>
@@ -180,10 +191,12 @@
 <text x="702.5" y="769.0" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">SP_S[2:0]</text>
 <text x="702.5" y="783.0" text-anchor="middle" font-size="9" fill="#64748b">3'b000</text>
 <text x="158" y="828.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x1E (30)</text>
+<text x="834" y="827.0" font-size="12" font-weight="600" fill="#1e293b">= 0x00</text>
 <rect x="170" y="800" width="655" height="46" fill="#ccfbf1" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="497.5" y="821.0" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">VBK[7:0]</text>
 <text x="497.5" y="835.0" text-anchor="middle" font-size="9" fill="#64748b">8'b00000000</text>
 <text x="158" y="880.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x1F (31)</text>
+<text x="834" y="879.0" font-size="12" font-weight="600" fill="#1e293b">= 0xAA</text>
 <rect x="170" y="852" width="163" height="46" fill="#ccfbf1" stroke="#ef4444" stroke-width="2.5" rx="4"/>
 <text x="251.5" y="873.0" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">PWRC_NB[1:0]</text>
 <text x="251.5" y="887.0" text-anchor="middle" font-size="9" fill="#64748b">2'b10</text>
@@ -204,8 +217,9 @@
 <text x="743.5" y="887.0" text-anchor="middle" font-size="9" fill="#64748b">2'b10</text>
 <circle cx="817" cy="860" r="5" fill="#ef4444"/>
 <text x="817" y="863" text-anchor="middle" font-size="8" fill="white" font-weight="bold">★</text>
-<text x="834" y="879.0" font-size="11" fill="#ef4444" font-weight="600">LC_REG_MAPPING 回拼</text>
+<text x="906" y="879.0" font-size="11" fill="#ef4444" font-weight="600">LC_REG_MAPPING 回拼</text>
 <text x="158" y="932.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x20 (32)</text>
+<text x="834" y="931.0" font-size="12" font-weight="600" fill="#1e293b">= 0x00</text>
 <rect x="170" y="904" width="81" height="46" fill="#fef3c7" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="210.5" y="925.0" text-anchor="middle" font-size="8" font-weight="500" fill="#1e293b">PWRC_TSEL</text>
 <text x="210.5" y="939.0" text-anchor="middle" font-size="7" fill="#64748b">1'b0</text>
@@ -216,6 +230,7 @@
 <text x="579.5" y="925.0" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">R_TESTO_SEL[5:0]</text>
 <text x="579.5" y="939.0" text-anchor="middle" font-size="9" fill="#64748b">6'b000000</text>
 <text x="158" y="984.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x21 (33)</text>
+<text x="834" y="983.0" font-size="12" font-weight="600" fill="#1e293b">= 0x00</text>
 <rect x="170" y="956" width="81" height="46" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="210.5" y="977.0" text-anchor="middle" font-size="8" font-weight="500" fill="#1e293b">Reserved</text>
 <text x="210.5" y="991.0" text-anchor="middle" font-size="7" fill="#64748b">0</text>
@@ -232,6 +247,7 @@
 <text x="702.5" y="977.0" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">R_MON_DC_VOL[2:0…</text>
 <text x="702.5" y="991.0" text-anchor="middle" font-size="9" fill="#64748b">3'b000</text>
 <text x="158" y="1036.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x22 (34)</text>
+<text x="834" y="1035.0" font-size="12" font-weight="600" fill="#1e293b">= 0x00</text>
 <rect x="170" y="1008" width="81" height="46" fill="#ccfbf1" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="210.5" y="1029.0" text-anchor="middle" font-size="8" font-weight="500" fill="#1e293b">CVBP_SEPARATE</text>
 <text x="210.5" y="1043.0" text-anchor="middle" font-size="7" fill="#64748b">1b'0</text>
@@ -257,6 +273,7 @@
 <text x="784.5" y="1029.0" text-anchor="middle" font-size="8" font-weight="500" fill="#1e293b">HIZ_SEL</text>
 <text x="784.5" y="1043.0" text-anchor="middle" font-size="7" fill="#64748b">1'b0</text>
 <text x="158" y="1088.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x23 (35)</text>
+<text x="834" y="1087.0" font-size="12" font-weight="600" fill="#1e293b">= 0x00</text>
 <rect x="170" y="1060" width="327" height="46" fill="#ccfbf1" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="333.5" y="1081.0" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">reg_ana_test_sel…</text>
 <text x="333.5" y="1095.0" text-anchor="middle" font-size="9" fill="#64748b">4b0000</text>
@@ -270,6 +287,7 @@
 <text x="743.5" y="1081.0" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">Reserved</text>
 <text x="743.5" y="1095.0" text-anchor="middle" font-size="9" fill="#64748b">0</text>
 <text x="158" y="1140.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x24 (36)</text>
+<text x="834" y="1139.0" font-size="12" font-weight="600" fill="#1e293b">= 0x15</text>
 <rect x="170" y="1112" width="163" height="46" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="251.5" y="1133.0" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">Reserved</text>
 <text x="251.5" y="1147.0" text-anchor="middle" font-size="9" fill="#64748b">0</text>
@@ -277,6 +295,7 @@
 <text x="579.5" y="1133.0" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">reg_cr_done_cnt[…</text>
 <text x="579.5" y="1147.0" text-anchor="middle" font-size="9" fill="#64748b">6'b010101</text>
 <text x="158" y="1192.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x25 (37)</text>
+<text x="834" y="1191.0" font-size="12" font-weight="600" fill="#1e293b">= 0x6C</text>
 <rect x="170" y="1164" width="327" height="46" fill="#e0e7ff" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="333.5" y="1185.0" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">reg_cdr_icp[3:0]</text>
 <text x="333.5" y="1199.0" text-anchor="middle" font-size="9" fill="#64748b">4'b0110</text>
@@ -284,6 +303,7 @@
 <text x="661.5" y="1185.0" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">reg_cdr_rlpf[3:0…</text>
 <text x="661.5" y="1199.0" text-anchor="middle" font-size="9" fill="#64748b">4'b1100</text>
 <text x="158" y="1244.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x26 (38)</text>
+<text x="834" y="1243.0" font-size="12" font-weight="600" fill="#1e293b">= 0xA4</text>
 <rect x="170" y="1216" width="327" height="46" fill="#e0e7ff" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="333.5" y="1237.0" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">reg_kvco_ctrl[3:…</text>
 <text x="333.5" y="1251.0" text-anchor="middle" font-size="9" fill="#64748b">4'b1010</text>
@@ -294,6 +314,7 @@
 <text x="702.5" y="1237.0" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">reg_icp_bias_tun…</text>
 <text x="702.5" y="1251.0" text-anchor="middle" font-size="9" fill="#64748b">3'b100</text>
 <text x="158" y="1296.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x27 (39)</text>
+<text x="834" y="1295.0" font-size="12" font-weight="600" fill="#1e293b">= 0x00</text>
 <rect x="170" y="1268" width="81" height="46" fill="#ccfbf1" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="210.5" y="1289.0" text-anchor="middle" font-size="8" font-weight="500" fill="#1e293b">ACS_EN</text>
 <text x="210.5" y="1303.0" text-anchor="middle" font-size="7" fill="#64748b">0</text>
@@ -307,6 +328,7 @@
 <text x="784.5" y="1289.0" text-anchor="middle" font-size="8" font-weight="500" fill="#1e293b">Skip_frame_count</text>
 <text x="784.5" y="1303.0" text-anchor="middle" font-size="7" fill="#64748b">0</text>
 <text x="158" y="1348.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x28 (40)</text>
+<text x="834" y="1347.0" font-size="12" font-weight="600" fill="#1e293b">= 0x00</text>
 <rect x="170" y="1320" width="81" height="46" fill="#ccfbf1" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="210.5" y="1341.0" text-anchor="middle" font-size="8" font-weight="500" fill="#1e293b">DBC_VBK_ON</text>
 <text x="210.5" y="1355.0" text-anchor="middle" font-size="7" fill="#64748b">1'b0</text>
@@ -326,6 +348,7 @@
 <text x="743.5" y="1341.0" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">AABB[1:0]</text>
 <text x="743.5" y="1355.0" text-anchor="middle" font-size="9" fill="#64748b">2b'00</text>
 <text x="158" y="1400.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x29 (41)</text>
+<text x="834" y="1399.0" font-size="12" font-weight="600" fill="#1e293b">= 0x00</text>
 <rect x="170" y="1372" width="163" height="46" fill="#ccfbf1" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="251.5" y="1393.0" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">CP_VBP2R[1:0]</text>
 <text x="251.5" y="1407.0" text-anchor="middle" font-size="9" fill="#64748b">2'b00</text>
@@ -342,6 +365,7 @@
 <text x="784.5" y="1393.0" text-anchor="middle" font-size="8" font-weight="500" fill="#1e293b">DBC</text>
 <text x="784.5" y="1407.0" text-anchor="middle" font-size="7" fill="#64748b">1'b0</text>
 <text x="158" y="1452.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x2A (42)</text>
+<text x="834" y="1451.0" font-size="12" font-weight="600" fill="#1e293b">= 0x06</text>
 <rect x="170" y="1424" width="163" height="46" fill="#ccfbf1" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="251.5" y="1445.0" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">CP_VBN2L[1:0]</text>
 <text x="251.5" y="1459.0" text-anchor="middle" font-size="9" fill="#64748b">2'b00</text>
@@ -355,6 +379,7 @@
 <text x="743.5" y="1445.0" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">OVC_POS[1:0]</text>
 <text x="743.5" y="1459.0" text-anchor="middle" font-size="9" fill="#64748b">2'b10</text>
 <text x="158" y="1504.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x2B (43)</text>
+<text x="834" y="1503.0" font-size="12" font-weight="600" fill="#1e293b">= 0x00</text>
 <rect x="170" y="1476" width="163" height="46" fill="#ccfbf1" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="251.5" y="1497.0" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">DC_MON_SEL[1:0]</text>
 <text x="251.5" y="1511.0" text-anchor="middle" font-size="9" fill="#64748b">2'b00</text>
@@ -365,6 +390,7 @@
 <text x="661.5" y="1497.0" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">DCBIAS_CHOP[3:0]</text>
 <text x="661.5" y="1511.0" text-anchor="middle" font-size="9" fill="#64748b">4'b0000</text>
 <text x="158" y="1556.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x2C (44)</text>
+<text x="834" y="1555.0" font-size="12" font-weight="600" fill="#1e293b">= 0x00</text>
 <rect x="170" y="1528" width="81" height="46" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="210.5" y="1549.0" text-anchor="middle" font-size="8" font-weight="500" fill="#1e293b">Reserved</text>
 <text x="210.5" y="1563.0" text-anchor="middle" font-size="7" fill="#64748b">0</text>
@@ -375,6 +401,7 @@
 <text x="661.5" y="1549.0" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">BGR_SEL[3:0]</text>
 <text x="661.5" y="1563.0" text-anchor="middle" font-size="9" fill="#64748b">4'b0000</text>
 <text x="158" y="1608.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x2D (45)</text>
+<text x="834" y="1607.0" font-size="12" font-weight="600" fill="#1e293b">= 0x00</text>
 <rect x="170" y="1580" width="163" height="46" fill="#ccfbf1" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="251.5" y="1601.0" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">CN_VBP2R[1:0]</text>
 <text x="251.5" y="1615.0" text-anchor="middle" font-size="9" fill="#64748b">2'b00</text>
@@ -388,6 +415,7 @@
 <text x="743.5" y="1601.0" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">Reserved</text>
 <text x="743.5" y="1615.0" text-anchor="middle" font-size="9" fill="#64748b">0</text>
 <text x="158" y="1660.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x2E (46)</text>
+<text x="834" y="1659.0" font-size="12" font-weight="600" fill="#1e293b">= 0x00</text>
 <rect x="170" y="1632" width="163" height="46" fill="#ccfbf1" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="251.5" y="1653.0" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">CN_VBN2L[1:0]</text>
 <text x="251.5" y="1667.0" text-anchor="middle" font-size="9" fill="#64748b">2'b00</text>
@@ -404,6 +432,7 @@
 <text x="784.5" y="1653.0" text-anchor="middle" font-size="8" font-weight="500" fill="#1e293b">R_PTAT_EN</text>
 <text x="784.5" y="1667.0" text-anchor="middle" font-size="7" fill="#64748b">1'b0</text>
 <text x="158" y="1712.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x2F (47)</text>
+<text x="834" y="1711.0" font-size="12" font-weight="600" fill="#1e293b">= 0x00</text>
 <rect x="170" y="1684" width="81" height="46" fill="#ccfbf1" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="210.5" y="1705.0" text-anchor="middle" font-size="8" font-weight="500" fill="#1e293b">LD_D_OPT</text>
 <text x="210.5" y="1719.0" text-anchor="middle" font-size="7" fill="#64748b">1'b0</text>
@@ -417,6 +446,7 @@
 <text x="784.5" y="1705.0" text-anchor="middle" font-size="8" font-weight="500" fill="#1e293b">Reserved</text>
 <text x="784.5" y="1719.0" text-anchor="middle" font-size="7" fill="#64748b">0</text>
 <text x="158" y="1764.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x30 (48)</text>
+<text x="834" y="1763.0" font-size="12" font-weight="600" fill="#1e293b">= 0x00</text>
 <rect x="170" y="1736" width="655" height="46" fill="#ccfbf1" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="497.5" y="1757.0" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">TEST_PRTCT[7:0]</text>
 <text x="497.5" y="1771.0" text-anchor="middle" font-size="9" fill="#64748b">8'b00000000</text>
@@ -424,6 +454,7 @@
 <rect x="170" y="1788" width="655" height="46" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1" stroke-dasharray="4,3" rx="4"/>
 <text x="497.5" y="1815.0" text-anchor="middle" font-size="12" fill="#64748b">⋯ 全 Reserved ⋯</text>
 <text x="158" y="1868.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x32 (50)</text>
+<text x="834" y="1867.0" font-size="12" font-weight="600" fill="#1e293b">= 0x02</text>
 <rect x="170" y="1840" width="81" height="46" fill="#ccfbf1" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="210.5" y="1861.0" text-anchor="middle" font-size="8" font-weight="500" fill="#1e293b">reg_pin_eq</text>
 <text x="210.5" y="1875.0" text-anchor="middle" font-size="7" fill="#64748b">1'b0</text>
@@ -434,6 +465,7 @@
 <text x="620.5" y="1861.0" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">reg_lane_ctrl[4:…</text>
 <text x="620.5" y="1875.0" text-anchor="middle" font-size="9" fill="#64748b">5'b00010</text>
 <text x="158" y="1920.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x33 (51)</text>
+<text x="834" y="1919.0" font-size="12" font-weight="600" fill="#1e293b">= 0x00</text>
 <rect x="170" y="1892" width="81" height="46" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="210.5" y="1913.0" text-anchor="middle" font-size="8" font-weight="500" fill="#1e293b">Reserved</text>
 <text x="210.5" y="1927.0" text-anchor="middle" font-size="7" fill="#64748b">0</text>
@@ -450,6 +482,7 @@
 <text x="784.5" y="1913.0" text-anchor="middle" font-size="8" font-weight="500" fill="#1e293b">CG_OFF</text>
 <text x="784.5" y="1927.0" text-anchor="middle" font-size="7" fill="#64748b">1'b0</text>
 <text x="158" y="1972.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x34 (52)</text>
+<text x="834" y="1971.0" font-size="12" font-weight="600" fill="#1e293b">= 0x00</text>
 <rect x="170" y="1944" width="163" height="46" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="251.5" y="1965.0" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">Reserved</text>
 <text x="251.5" y="1979.0" text-anchor="middle" font-size="9" fill="#64748b">0</text>
@@ -471,14 +504,21 @@
 <rect x="744" y="1944" width="81" height="46" fill="#e0f2fe" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="784.5" y="1965.0" text-anchor="middle" font-size="8" font-weight="500" fill="#1e293b">regr_lane_pll_do…</text>
 <text x="784.5" y="1979.0" text-anchor="middle" font-size="7" fill="#64748b">1'b0</text>
-<text x="158" y="2024.0" text-anchor="end" font-size="13" font-weight="600" fill="#64748b">0x35 ~ 0x35 (53 ~ 53)</text>
-<rect x="170" y="1996" width="655" height="46" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1" stroke-dasharray="4,3" rx="4"/>
-<text x="497.5" y="2023.0" text-anchor="middle" font-size="12" fill="#64748b">⋯ 全 Reserved ⋯</text>
+<text x="158" y="2024.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x35 (53)</text>
+<text x="834" y="2023.0" font-size="12" font-weight="600" fill="#1e293b">= 0x00</text>
+<rect x="170" y="1996" width="491" height="46" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="415.5" y="2017.0" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">Reserved</text>
+<text x="415.5" y="2031.0" text-anchor="middle" font-size="9" fill="#64748b">0</text>
+<rect x="662" y="1996" width="163" height="46" fill="#ccfbf1" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="743.5" y="2017.0" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">FSEL[1:0]</text>
+<text x="743.5" y="2031.0" text-anchor="middle" font-size="9" fill="#64748b">2'b00</text>
 <text x="158" y="2076.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x36 (54)</text>
+<text x="834" y="2075.0" font-size="12" font-weight="600" fill="#1e293b">= 0x55</text>
 <rect x="170" y="2048" width="655" height="46" fill="#e0e7ff" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="497.5" y="2069.0" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">reg_eq_bias_tune…</text>
 <text x="497.5" y="2083.0" text-anchor="middle" font-size="9" fill="#64748b">8'b01010101</text>
 <text x="158" y="2128.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x37 (55)</text>
+<text x="834" y="2127.0" font-size="12" font-weight="600" fill="#1e293b">= 0x60</text>
 <rect x="170" y="2100" width="81" height="46" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="210.5" y="2121.0" text-anchor="middle" font-size="8" font-weight="500" fill="#1e293b">Reserved</text>
 <text x="210.5" y="2135.0" text-anchor="middle" font-size="7" fill="#64748b">0</text>
@@ -489,6 +529,7 @@
 <text x="579.5" y="2121.0" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">reg_vos_ctrl[5:0…</text>
 <text x="579.5" y="2135.0" text-anchor="middle" font-size="9" fill="#64748b">6'b100000</text>
 <text x="158" y="2180.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x38 (56)</text>
+<text x="834" y="2179.0" font-size="12" font-weight="600" fill="#1e293b">= 0x05</text>
 <rect x="170" y="2152" width="327" height="46" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="333.5" y="2173.0" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">Reserved</text>
 <text x="333.5" y="2187.0" text-anchor="middle" font-size="9" fill="#64748b">0</text>
@@ -499,6 +540,7 @@
 <text x="743.5" y="2173.0" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">UTC_long01_frame…</text>
 <text x="743.5" y="2187.0" text-anchor="middle" font-size="9" fill="#64748b">2'b01</text>
 <text x="158" y="2232.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x39 (57)</text>
+<text x="834" y="2231.0" font-size="12" font-weight="600" fill="#1e293b">= 0x03</text>
 <rect x="170" y="2204" width="409" height="46" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="374.5" y="2225.0" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">Reserved</text>
 <text x="374.5" y="2239.0" text-anchor="middle" font-size="9" fill="#64748b">0</text>
@@ -506,6 +548,7 @@
 <text x="702.5" y="2225.0" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">UTC_header_frame…</text>
 <text x="702.5" y="2239.0" text-anchor="middle" font-size="9" fill="#64748b">3'b011</text>
 <text x="158" y="2284.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x40 (64)</text>
+<text x="834" y="2283.0" font-size="12" font-weight="600" fill="#1e293b">= 0x10</text>
 <rect x="170" y="2256" width="245" height="46" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="292.5" y="2277.0" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">Reserved</text>
 <text x="292.5" y="2291.0" text-anchor="middle" font-size="9" fill="#64748b">0</text>
@@ -525,14 +568,17 @@
 <text x="784.5" y="2277.0" text-anchor="middle" font-size="8" font-weight="500" fill="#1e293b">FSYNC</text>
 <text x="784.5" y="2291.0" text-anchor="middle" font-size="7" fill="#64748b">1'b0</text>
 <text x="158" y="2336.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x41 (65)</text>
+<text x="834" y="2335.0" font-size="12" font-weight="600" fill="#1e293b">= 0x05</text>
 <rect x="170" y="2308" width="655" height="46" fill="#ccfbf1" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="497.5" y="2329.0" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">LD_R[7:0]</text>
 <text x="497.5" y="2343.0" text-anchor="middle" font-size="9" fill="#64748b">8'b00000101</text>
 <text x="158" y="2388.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x42 (66)</text>
+<text x="834" y="2387.0" font-size="12" font-weight="600" fill="#1e293b">= 0x16</text>
 <rect x="170" y="2360" width="655" height="46" fill="#ccfbf1" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="497.5" y="2381.0" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">LD_F[7:0]</text>
 <text x="497.5" y="2395.0" text-anchor="middle" font-size="9" fill="#64748b">8'b00010110</text>
 <text x="158" y="2440.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x43 (67)</text>
+<text x="834" y="2439.0" font-size="12" font-weight="600" fill="#1e293b">= 0x00</text>
 <rect x="170" y="2412" width="81" height="46" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="210.5" y="2433.0" text-anchor="middle" font-size="8" font-weight="500" fill="#1e293b">Reserved</text>
 <text x="210.5" y="2447.0" text-anchor="middle" font-size="7" fill="#64748b">0</text>
@@ -555,6 +601,7 @@
 <rect x="170" y="2464" width="655" height="46" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1" stroke-dasharray="4,3" rx="4"/>
 <text x="497.5" y="2491.0" text-anchor="middle" font-size="12" fill="#64748b">⋯ 全 Reserved ⋯</text>
 <text x="158" y="2544.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x90 (144)</text>
+<text x="834" y="2543.0" font-size="12" font-weight="600" fill="#1e293b">= 0x68</text>
 <rect x="170" y="2516" width="327" height="46" fill="#e0e7ff" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="333.5" y="2537.0" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">reg_fast_lock_rl…</text>
 <text x="333.5" y="2551.0" text-anchor="middle" font-size="9" fill="#64748b">4'b0110</text>
@@ -562,6 +609,7 @@
 <text x="661.5" y="2537.0" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">reg_fast_lock_ic…</text>
 <text x="661.5" y="2551.0" text-anchor="middle" font-size="9" fill="#64748b">4'b1000</text>
 <text x="158" y="2596.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x91 (145)</text>
+<text x="834" y="2595.0" font-size="12" font-weight="600" fill="#1e293b">= 0x3C</text>
 <rect x="170" y="2568" width="327" height="46" fill="#e0e7ff" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="333.5" y="2589.0" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">reg_fine_lock_rl…</text>
 <text x="333.5" y="2603.0" text-anchor="middle" font-size="9" fill="#64748b">4'b0011</text>
@@ -569,6 +617,7 @@
 <text x="661.5" y="2589.0" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">reg_fine_lock_ic…</text>
 <text x="661.5" y="2603.0" text-anchor="middle" font-size="9" fill="#64748b">4'b1100</text>
 <text x="158" y="2648.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x92 (146)</text>
+<text x="834" y="2647.0" font-size="12" font-weight="600" fill="#1e293b">= 0x02</text>
 <rect x="170" y="2620" width="409" height="46" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="374.5" y="2641.0" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">Reserved</text>
 <text x="374.5" y="2655.0" text-anchor="middle" font-size="9" fill="#64748b">0</text>
@@ -593,5 +642,5 @@
 <text x="660" y="2773" font-size="11" fill="#1e293b">chip_sel=1 专用</text>
 <rect x="750" y="2762" width="14" height="14" fill="#ccfbf1" stroke="#ef4444" stroke-width="2" rx="2"/>
 <text x="770" y="2773" font-size="11" fill="#1e293b">与 chip_sel=0 不同</text>
-<text x="550.0" y="2812" text-anchor="middle" font-size="11" fill="#64748b">0714v1+：chip_sel=1 的 0x09/0x0A/0x1F 默认值由 LC_REG_MAPPING 写标志 + 回拼字节实现</text>
+<text x="550.0" y="2812" text-anchor="middle" font-size="11" fill="#64748b">0716v1+：右侧标注字节级 POR 默认值（hex）；chip_sel=1 的 0x09/0x0A/0x1F 由 LC_REG_MAPPING 回拼实现</text>
 </svg>
