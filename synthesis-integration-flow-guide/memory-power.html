@@ -405,10 +405,17 @@ document.addEventListener('mouseup', () => {
   </script>
 
   <script>
+document.getElementById('article').innerHTML = marked.parse(document.getElementById('md').textContent, {gfm:true, breaks:false});
+
 const article = document.getElementById('article');
 const toc = document.getElementById('toc');
+const h1 = article.querySelector('h1');
+let tocHtml = '';
+if (h1) {
+  tocHtml += `<a class="toc-h1" href="#">${h1.textContent}</a>`;
+}
+tocHtml += '<ul style="list-style:none;padding:0;margin:0;">';
 const headings = article.querySelectorAll('h2, h3');
-let tocHtml = '<a class="toc-h1">本页目录</a><ul style="list-style:none;padding:0;margin:0;">';
 headings.forEach((h, i) => {
   const id = 'sec-' + i;
   h.id = id;
@@ -430,6 +437,5 @@ const observer = new IntersectionObserver((entries) => {
 }, { rootMargin: '-80px 0px -60% 0px', threshold: 0 });
 headings.forEach(h => observer.observe(h));
 </script>
-  <script>document.getElementById('article').innerHTML = marked.parse(document.getElementById('md').textContent, {gfm:true, breaks:false});</script>
 </body>
 </html>

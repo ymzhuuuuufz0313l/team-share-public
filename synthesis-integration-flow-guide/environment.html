@@ -254,7 +254,7 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
 典型的综合环境位于：
 
 ```
-$PROJECT_PATH/SYNTHESIS/ip/&lt;top_name&gt;/
+$PROJECT_PATH/SYNTHESIS/ip/<top_name>/
 ```
 
 主要子目录说明：
@@ -275,13 +275,13 @@ $PROJECT_PATH/SYNTHESIS/ip/&lt;top_name&gt;/
 
 ```bash
 # 生成综合环境（默认会 check in 到版本管理）
-gensyn &lt;TOP_NAME&gt;
+gensyn <TOP_NAME>
 
 # 不自动 check in
-gensyn &lt;TOP_NAME&gt; -noadd
+gensyn <TOP_NAME> -noadd
 
 # 自定义目录名
-gensyn &lt;TOP_NAME&gt; -noadd &lt;custom_dir&gt;
+gensyn <TOP_NAME> -noadd <custom_dir>
 ```
 
 ASSUMPTION: 本指南以项目内部封装脚本 `gensyn` 为例；若使用其他 flow，需替换为对应的环境初始化命令。
@@ -289,7 +289,7 @@ ASSUMPTION: 本指南以项目内部封装脚本 `gensyn` 为例；若使用其�
 其他常用选项：
 - 初次生成环境时，默认会 check in 到版本管理，以保持目录干净；不需要 check in 时用 `-noadd`。
 - 生成的目录中通常包含 `Readme`，可再次阅读 synthesis flow 说明。
-- 如果模板有更新，可再次运行 `gensyn &lt;TOP_NAME&gt;` 自动 copy 新模板并备份原文件；`filelist` 与约束文件一般不会被覆盖。
+- 如果模板有更新，可再次运行 `gensyn <TOP_NAME>` 自动 copy 新模板并备份原文件；`filelist` 与约束文件一般不会被覆盖。
 
 ### 1.3 环境 source 与工具配置
 综合前通常需要 source 项目特定的 cshrc 或 bashrc，以保证工具链版本与 verification 环境一致。
@@ -336,10 +336,10 @@ TIP: 同一项目下的不同 IP 应尽量使用相同的 `CORNER` 和库配置�
 
 | 文件 | 内容 |
 |------|------|
-| `&lt;top&gt;.f` | Verilog RTL 文件列表 |
-| `&lt;top&gt;.sv.f` | SystemVerilog 文件列表 |
-| `&lt;top&gt;.ddc_dc.f` | 引用 DDC 的 design |
-| `&lt;top&gt;.dummy_lec.f` | LEC 对比时需要的 dummy 文件 |
+| `<top>.f` | Verilog RTL 文件列表 |
+| `<top>.sv.f` | SystemVerilog 文件列表 |
+| `<top>.ddc_dc.f` | 引用 DDC 的 design |
+| `<top>.dummy_lec.f` | LEC 对比时需要的 dummy 文件 |
 | `advanced/*.vhdl_dc.f` / `*.vhdl_lec.f` | VHDL 相关处理 |
 
 ### 3.2 填写建议
@@ -450,10 +450,17 @@ document.addEventListener('mouseup', () => {
   </script>
 
   <script>
+document.getElementById('article').innerHTML = marked.parse(document.getElementById('md').textContent, {gfm:true, breaks:false});
+
 const article = document.getElementById('article');
 const toc = document.getElementById('toc');
+const h1 = article.querySelector('h1');
+let tocHtml = '';
+if (h1) {
+  tocHtml += `<a class="toc-h1" href="#">${h1.textContent}</a>`;
+}
+tocHtml += '<ul style="list-style:none;padding:0;margin:0;">';
 const headings = article.querySelectorAll('h2, h3');
-let tocHtml = '<a class="toc-h1">本页目录</a><ul style="list-style:none;padding:0;margin:0;">';
 headings.forEach((h, i) => {
   const id = 'sec-' + i;
   h.id = id;
@@ -475,6 +482,5 @@ const observer = new IntersectionObserver((entries) => {
 }, { rootMargin: '-80px 0px -60% 0px', threshold: 0 });
 headings.forEach(h => observer.observe(h));
 </script>
-  <script>document.getElementById('article').innerHTML = marked.parse(document.getElementById('md').textContent, {gfm:true, breaks:false});</script>
 </body>
 </html>
