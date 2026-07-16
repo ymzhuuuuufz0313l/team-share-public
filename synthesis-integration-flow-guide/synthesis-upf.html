@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>ASIC IP Synthesis &amp; Integration Flow 工具使用指南</title>
+  <title>综合与 UPF · ASIC IP Synthesis &amp; Integration Flow 工具使用指南</title>
   <script src="https://cdn.jsdelivr.net/npm/marked@9.1.6/marked.min.js"></script>
   <style>
 
@@ -234,38 +234,77 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
     </div>
   </nav>
 
-  <div class="container">
-    <article class="article">
+  <div class="container with-toc"><aside class="toc-wrapper"><nav class="toc" id="toc"></nav></aside><div class="content">
+    <article class="article" id="article">
       
-<div class="hero">
-  <h1>ASIC IP Synthesis & Integration Flow 工具使用指南</h1>
-  <div class="author">作者：ymzhuuuu</div>
-  <p class="lead">
-    一份面向数字 IC 设计工程师的通用综合与集成流程参考手册，
-    涵盖环境搭建、RTL 检查、综合、一致性验证、时序 signoff 及功耗分析等关键环节。
-    内容已去除具体项目信息，保留可复用的工具使用方法和检查要点。
-  </p>
-</div>
-<blockquote>
-  <strong>⭐ 推荐阅读顺序：</strong>先读 <a href="./environment.html">环境与配置</a>，然后按顶部导航依次阅读 RTL 检查、综合与 UPF、LEC、Signoff 与时序、Memory 与功耗，最后查看 FAQ 与清单。
-</blockquote>
-<div class="section-title">章节索引</div>
-<div class="chapter-grid">
-  <a class="chapter-card" href="./environment.html"><div class="num">1</div><div class="title">环境与配置</div><div class="desc">环境准备、design.set、filelist</div></a>
-<a class="chapter-card" href="./rtl-check.html"><div class="num">2</div><div class="title">RTL 检查</div><div class="desc">CKF 与 nLint</div></a>
-<a class="chapter-card" href="./synthesis-upf.html"><div class="num">3</div><div class="title">综合与 UPF</div><div class="desc">UPF 检查、DC / Genus</div></a>
-<a class="chapter-card" href="./lec.html"><div class="num">4</div><div class="title">LEC 验证</div><div class="desc">形式验证与一致性检查</div></a>
-<a class="chapter-card" href="./signoff-timing.html"><div class="num">5</div><div class="title">Signoff 与时序</div><div class="desc">Signoff、PrimeTime、流程依赖</div></a>
-<a class="chapter-card" href="./memory-power.html"><div class="num">6</div><div class="title">Memory 与功耗</div><div class="desc">Memory 生成、mem_wrap、PTPX</div></a>
-<a class="chapter-card" href="./faq.html"><div class="num">7</div><div class="title">FAQ 与清单</div><div class="desc">注意事项与检查清单</div></a>
-</div>
-
     </article>
-    
+    <div class="page-nav"><a href="./rtl-check.html"><span class="label">上一篇</span><span class="title">RTL 检查</span></a>
+<a class="next" href="./lec.html"><span class="label">下一篇</span><span class="title">LEC 验证</span></a></div>
     <div class="footer">Shared from team knowledge base</div>
-  </div>
+  </div></div>
 
-  <script type="text/template" id="md"></script>
+  <script type="text/template" id="md">
+# 三、UPF 准备与综合
+
+&gt; UPF 与综合是 RTL 到 netlist 转化的核心环节，包括 UPF 正确性检查、DC / Genus 综合以及 final UPF 的生成。
+
+## 1. UPF 准备与检查
+
+### 1.1 lec_upf
+`lec_upf` 用于检查 UPF 文件本身的正确性。
+
+- UPF 文件通常放在 `SYNTHESIS/common/upf/` 下。
+- 输入 `report_top.txt` 需逐行检查：
+  - library PG pin 定义是否正确
+  - analog 电源域是否缺失
+  - power port 电压定义是否合理
+- 即使 UPF 已修正，仍可能存在 Error / Warning，需与模拟设计同事确认。
+
+### 1.2 genus_upf（生成 final.upf）
+部分 flow 需要借助 Genus 生成最终的 `*_final.upf`：
+
+1. 从 genus 目录复制并新建 `*_genus_upf` 目录。
+2. 修改 `compile_genus.tcl`：
+   - 注释掉 `kv_genus_compile &quot;generic&quot;`
+   - 增加 read UPF 相关命令
+3. filelist 引用网表（`*.gv`）而非 RTL。
+4. 顶层约束 `.tcl` 中的层级分隔符需与工具要求一致。
+5. `setting.upf` 一般无需修改。
+6. 运行 `run_genus`，检查 `genus.log` 与报告。
+
+---
+
+## 2. 综合（DC / Genus）
+
+### 2.1 Design Compiler
+
+```bash
+cd dc
+run_dc
+```
+
+前置条件：CKF、nLint、lec_upf 问题已清理。
+
+主要检查项：
+- `dc.log`：无 Error、无 unresolved
+- `*.chk_design`：无 undrive
+- `*.rpt`：
+  - area 符合预期
+  - timing slack ≥ 0（signoff 版本必须 slack &gt; 0）
+
+约束文件（通常位于 `SYNTHESIS/common/ip_cons/`）应包括：
+- `kv_clock` / `kv_v_clock`：clock 点需为 macro 或 standard cell pin
+- `kv_reset`
+- `kv_inout`
+- `kv_2clklist_group_path`
+- `set_multicycle_path`
+- `set_false_path`
+- `set_dont_touch`：analog macro、standard cell、IO 等，防止被 DC 优化掉
+
+### 2.2 Genus
+若使用 DC，通常不需要运行 Genus。若项目指定使用 Genus，则需配置 `design.set` 中 `SYN_TOOL=genus`。
+
+</script>
 
   <script>
 
@@ -364,7 +403,32 @@ document.addEventListener('mouseup', () => {
 
   </script>
 
-  
-  
+  <script>
+const article = document.getElementById('article');
+const toc = document.getElementById('toc');
+const headings = article.querySelectorAll('h2, h3');
+let tocHtml = '<a class="toc-h1">本页目录</a><ul style="list-style:none;padding:0;margin:0;">';
+headings.forEach((h, i) => {
+  const id = 'sec-' + i;
+  h.id = id;
+  const cls = h.tagName === 'H2' ? '' : 'toc-h3';
+  tocHtml += `<li><a class="${cls}" href="#${id}">${h.textContent}</a></li>`;
+});
+tocHtml += '</ul>';
+toc.innerHTML = tocHtml;
+
+const tocLinks = toc.querySelectorAll('a[href^="#"]');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      tocLinks.forEach(a => a.classList.remove('active'));
+      const active = toc.querySelector('a[href="#' + entry.target.id + '"]');
+      if (active) active.classList.add('active');
+    }
+  });
+}, { rootMargin: '-80px 0px -60% 0px', threshold: 0 });
+headings.forEach(h => observer.observe(h));
+</script>
+  <script>document.getElementById('article').innerHTML = marked.parse(document.getElementById('md').textContent, {gfm:true, breaks:false});</script>
 </body>
 </html>

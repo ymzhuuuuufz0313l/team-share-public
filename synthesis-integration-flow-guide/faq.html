@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>ASIC IP Synthesis &amp; Integration Flow 工具使用指南</title>
+  <title>FAQ 与清单 · ASIC IP Synthesis &amp; Integration Flow 工具使用指南</title>
   <script src="https://cdn.jsdelivr.net/npm/marked@9.1.6/marked.min.js"></script>
   <style>
 
@@ -234,38 +234,60 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
     </div>
   </nav>
 
-  <div class="container">
-    <article class="article">
+  <div class="container with-toc"><aside class="toc-wrapper"><nav class="toc" id="toc"></nav></aside><div class="content">
+    <article class="article" id="article">
       
-<div class="hero">
-  <h1>ASIC IP Synthesis & Integration Flow 工具使用指南</h1>
-  <div class="author">作者：ymzhuuuu</div>
-  <p class="lead">
-    一份面向数字 IC 设计工程师的通用综合与集成流程参考手册，
-    涵盖环境搭建、RTL 检查、综合、一致性验证、时序 signoff 及功耗分析等关键环节。
-    内容已去除具体项目信息，保留可复用的工具使用方法和检查要点。
-  </p>
-</div>
-<blockquote>
-  <strong>⭐ 推荐阅读顺序：</strong>先读 <a href="./environment.html">环境与配置</a>，然后按顶部导航依次阅读 RTL 检查、综合与 UPF、LEC、Signoff 与时序、Memory 与功耗，最后查看 FAQ 与清单。
-</blockquote>
-<div class="section-title">章节索引</div>
-<div class="chapter-grid">
-  <a class="chapter-card" href="./environment.html"><div class="num">1</div><div class="title">环境与配置</div><div class="desc">环境准备、design.set、filelist</div></a>
-<a class="chapter-card" href="./rtl-check.html"><div class="num">2</div><div class="title">RTL 检查</div><div class="desc">CKF 与 nLint</div></a>
-<a class="chapter-card" href="./synthesis-upf.html"><div class="num">3</div><div class="title">综合与 UPF</div><div class="desc">UPF 检查、DC / Genus</div></a>
-<a class="chapter-card" href="./lec.html"><div class="num">4</div><div class="title">LEC 验证</div><div class="desc">形式验证与一致性检查</div></a>
-<a class="chapter-card" href="./signoff-timing.html"><div class="num">5</div><div class="title">Signoff 与时序</div><div class="desc">Signoff、PrimeTime、流程依赖</div></a>
-<a class="chapter-card" href="./memory-power.html"><div class="num">6</div><div class="title">Memory 与功耗</div><div class="desc">Memory 生成、mem_wrap、PTPX</div></a>
-<a class="chapter-card" href="./faq.html"><div class="num">7</div><div class="title">FAQ 与清单</div><div class="desc">注意事项与检查清单</div></a>
-</div>
-
     </article>
-    
+    <div class="page-nav"><a href="./memory-power.html"><span class="label">上一篇</span><span class="title">Memory 与功耗</span></a>
+<a class="next" href="./index.html"><span class="label">下一篇</span><span class="title">首页</span></a></div>
     <div class="footer">Shared from team knowledge base</div>
-  </div>
+  </div></div>
 
-  <script type="text/template" id="md"></script>
+  <script type="text/template" id="md">
+# 七、常见问题与检查清单
+
+&gt; 最后整理一些综合与集成阶段容易踩坑的点，以及一份可复用的检查清单。
+
+## 1. 常见问题与注意事项
+
+### 1.1 UPF 相关
+- `lec_upf` 检查手写 UPF 是否正确；`genus_upf` 用于生成 `*_final.upf`。
+- `genus_upf` 引用网表时，若引用 RTL 则需打开全部编译步骤；引用网表可注释 generic 编译。
+- 综合时代码中的 output / inout 不能直接接常量，否则 `genus_upf` 可能报错。
+
+### 1.2 综合优化相关
+- 仅包含 input 的 module 会被工具优化掉，可设置 `set_dont_touch` 保留。
+- `set_ideal_network`：常用于 clock / reset，避免工具插 buffer。
+- `set_dont_touch`：常用于 analog cell，防止被优化。
+- `set_dont_touch_network`：作用范围更广，通常到 DFF。
+- `set_false_path`：常用于两个异步时钟之间。
+
+### 1.3 工具链冲突
+- 综合环境 source 前，若 cshrc 中同时 source 了 Verdi / VCS 环境，建议先注释，避免 DC / PT 报错。
+
+---
+
+## 2. 检查清单
+
+| 步骤 | 检查项 | 状态 |
+|------|--------|------|
+| 环境 | `gensyn` 环境完整、模板最新 | TBD |
+| 配置 | `design.set` 中库、corner、工具选择正确 | TBD |
+| Filelist | Verilog / SV / DDC / dummy 文件分类完整 | TBD |
+| CKF | 无 Floating、black box 已确认 | TBD |
+| nLint | 可接受 error 已填入 waive list | TBD |
+| UPF | PG pin / analog / power port 定义合理 | TBD |
+| DC | `dc.log` 无 Error、slack ≥ 0 | TBD |
+| LEC | 0 abort / 0 non-equivalent / 0 unmapped | TBD |
+| Signoff | 版本一致、`signoff.rpt` 全部通过 | TBD |
+| PT | `pt.log` 无 Error、slack &gt; 0 | TBD |
+| 功耗 | VCD / SDF / SDC 路径正确、功耗收敛 | TBD |
+
+---
+
+*本指南由项目综合/集成流程文档整理而成，已去除具体项目信息，仅保留通用工具使用方法和检查要点。*
+
+</script>
 
   <script>
 
@@ -364,7 +386,32 @@ document.addEventListener('mouseup', () => {
 
   </script>
 
-  
-  
+  <script>
+const article = document.getElementById('article');
+const toc = document.getElementById('toc');
+const headings = article.querySelectorAll('h2, h3');
+let tocHtml = '<a class="toc-h1">本页目录</a><ul style="list-style:none;padding:0;margin:0;">';
+headings.forEach((h, i) => {
+  const id = 'sec-' + i;
+  h.id = id;
+  const cls = h.tagName === 'H2' ? '' : 'toc-h3';
+  tocHtml += `<li><a class="${cls}" href="#${id}">${h.textContent}</a></li>`;
+});
+tocHtml += '</ul>';
+toc.innerHTML = tocHtml;
+
+const tocLinks = toc.querySelectorAll('a[href^="#"]');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      tocLinks.forEach(a => a.classList.remove('active'));
+      const active = toc.querySelector('a[href="#' + entry.target.id + '"]');
+      if (active) active.classList.add('active');
+    }
+  });
+}, { rootMargin: '-80px 0px -60% 0px', threshold: 0 });
+headings.forEach(h => observer.observe(h));
+</script>
+  <script>document.getElementById('article').innerHTML = marked.parse(document.getElementById('md').textContent, {gfm:true, breaks:false});</script>
 </body>
 </html>

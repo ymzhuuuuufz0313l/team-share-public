@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>ASIC IP Synthesis &amp; Integration Flow 工具使用指南</title>
+  <title>环境与配置 · ASIC IP Synthesis &amp; Integration Flow 工具使用指南</title>
   <script src="https://cdn.jsdelivr.net/npm/marked@9.1.6/marked.min.js"></script>
   <style>
 
@@ -234,38 +234,110 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
     </div>
   </nav>
 
-  <div class="container">
-    <article class="article">
+  <div class="container with-toc"><aside class="toc-wrapper"><nav class="toc" id="toc"></nav></aside><div class="content">
+    <article class="article" id="article">
       
-<div class="hero">
-  <h1>ASIC IP Synthesis & Integration Flow 工具使用指南</h1>
-  <div class="author">作者：ymzhuuuu</div>
-  <p class="lead">
-    一份面向数字 IC 设计工程师的通用综合与集成流程参考手册，
-    涵盖环境搭建、RTL 检查、综合、一致性验证、时序 signoff 及功耗分析等关键环节。
-    内容已去除具体项目信息，保留可复用的工具使用方法和检查要点。
-  </p>
-</div>
-<blockquote>
-  <strong>⭐ 推荐阅读顺序：</strong>先读 <a href="./environment.html">环境与配置</a>，然后按顶部导航依次阅读 RTL 检查、综合与 UPF、LEC、Signoff 与时序、Memory 与功耗，最后查看 FAQ 与清单。
-</blockquote>
-<div class="section-title">章节索引</div>
-<div class="chapter-grid">
-  <a class="chapter-card" href="./environment.html"><div class="num">1</div><div class="title">环境与配置</div><div class="desc">环境准备、design.set、filelist</div></a>
-<a class="chapter-card" href="./rtl-check.html"><div class="num">2</div><div class="title">RTL 检查</div><div class="desc">CKF 与 nLint</div></a>
-<a class="chapter-card" href="./synthesis-upf.html"><div class="num">3</div><div class="title">综合与 UPF</div><div class="desc">UPF 检查、DC / Genus</div></a>
-<a class="chapter-card" href="./lec.html"><div class="num">4</div><div class="title">LEC 验证</div><div class="desc">形式验证与一致性检查</div></a>
-<a class="chapter-card" href="./signoff-timing.html"><div class="num">5</div><div class="title">Signoff 与时序</div><div class="desc">Signoff、PrimeTime、流程依赖</div></a>
-<a class="chapter-card" href="./memory-power.html"><div class="num">6</div><div class="title">Memory 与功耗</div><div class="desc">Memory 生成、mem_wrap、PTPX</div></a>
-<a class="chapter-card" href="./faq.html"><div class="num">7</div><div class="title">FAQ 与清单</div><div class="desc">注意事项与检查清单</div></a>
-</div>
-
     </article>
-    
+    <div class="page-nav"><a href="./index.html"><span class="label">上一篇</span><span class="title">首页</span></a>
+<a class="next" href="./rtl-check.html"><span class="label">下一篇</span><span class="title">RTL 检查</span></a></div>
     <div class="footer">Shared from team knowledge base</div>
-  </div>
+  </div></div>
 
-  <script type="text/template" id="md"></script>
+  <script type="text/template" id="md">
+# 一、环境与配置
+
+&gt; 综合开始之前，需要先准备好项目环境、正确配置 `design.set`，并管理好 RTL filelist。
+
+## 1. 环境准备
+
+### 1.1 目录结构
+典型的综合环境位于：
+
+```
+$PROJECT_PATH/SYNTHESIS/ip/&lt;top_name&gt;/
+```
+
+主要子目录说明：
+
+| 目录 | 用途 |
+|------|------|
+| `ckf` | RTL 连接性检查 |
+| `nlint` | Lint 检查 |
+| `lec_upf` | UPF 正确性检查 |
+| `dc` | Design Compiler 综合 |
+| `genus` / `genus_upf` | Genus 综合 / UPF 生成 |
+| `lec` | 形式验证 |
+| `pt` / `sta/post/pt` | 时序分析 |
+| `power` | 功耗仿真 |
+
+### 1.2 环境初始化
+进入 `$PROJECT_PATH/SYNTHESIS/ip/` 后执行：
+
+```bash
+# 生成综合环境（默认会 check in 到版本管理）
+gensyn &lt;TOP_NAME&gt;
+
+# 不自动 check in
+gensyn &lt;TOP_NAME&gt; -noadd
+
+# 自定义目录名
+gensyn &lt;TOP_NAME&gt; -noadd &lt;custom_dir&gt;
+```
+
+ASSUMPTION: 本指南以项目内部封装脚本 `gensyn` 为例；若使用其他 flow，需替换为对应的环境初始化命令。
+
+### 1.3 环境 source 与工具配置
+综合前通常需要 source 项目特定的 cshrc 或 bashrc，以保证工具链版本与 verification 环境一致。
+
+NOTE: 若 cshrc 中同时 source 了仿真工具（如 Verdi / VCS），在运行 DC / PT 时可能产生冲突，建议临时注释相关行。
+
+---
+
+## 2. design.set 核心配置
+
+`design.set` 是综合环境的总控文件，关键字段如下：
+
+| 字段 | 说明 | 常用设置 |
+|------|------|---------|
+| `TOP_NAME` | 顶层模块名 | 由 `gensyn` 自动填充 |
+| `UPPER_CASE` | 是否大写处理 | 默认 |
+| `PARA_DESIGN` | 是否并行综合 | 默认 |
+| `USE_SAIF` | 是否使用 SAIF 功耗引导 | 默认 |
+| `POWER_OPTIMIZATION` | 功耗优化开关 | 默认 |
+| `SCAN_EN` | 扫描链使能 | 综合阶段常设为 0 |
+| `LINK_LIB` / `TAR_LIB` | 标准单元库 | 可填多个，空格分隔 |
+| `NET_DEFINE0` / `NET_DEFINE1` | 全局宏定义 | 与 clk_rst 相关 |
+| `ANA_EN` | analog db 使能 | 按项目需要 |
+| `MEM_EN` / `MEM_SNPS_EN` / `MEM_FARA_EN` | memory db 来源 | 按库配置 |
+| `LVT_EN` / `SVT_EN` | 低阈值 / 标准阈值单元使能 | 常用默认值 |
+| `SYN_TOOL` | 综合工具 | `dc` 或 `genus` |
+| `CORNER` | PVT corner | 与标准单元库一致 |
+
+TIP: 同一项目下的不同 IP 应尽量使用相同的 `CORNER` 和库配置，以保证时序 signoff 口径一致。
+
+---
+
+## 3. Filelist 管理
+
+### 3.1 文件分类
+综合 filelist 通常按文件类型拆分：
+
+| 文件 | 内容 |
+|------|------|
+| `&lt;top&gt;.f` | Verilog RTL 文件列表 |
+| `&lt;top&gt;.sv.f` | SystemVerilog 文件列表 |
+| `&lt;top&gt;.ddc_dc.f` | 引用 DDC 的 design |
+| `&lt;top&gt;.dummy_lec.f` | LEC 对比时需要的 dummy 文件 |
+| `advanced/*.vhdl_dc.f` | VHDL 相关处理 |
+
+### 3.2 填写建议
+1. `clk_rst` 中的 define 一般由环境自动加入，filelist 中无需重复。
+2. memory / analog 模块在综合时引用 db / lib，filelist 中通常不需要加入 RTL。
+3. filelist 支持嵌套 `*.f`。
+4. 对于底层/中层模块、mem_wrap、bist、clk_rst、std_ip 相关文件，建议由 owner 明确填写，增强可控性。
+5. 能直接复用 `HDL/file_list/*.f` 时，优先复用，以保证仿真与综合的一致性。
+
+</script>
 
   <script>
 
@@ -364,7 +436,32 @@ document.addEventListener('mouseup', () => {
 
   </script>
 
-  
-  
+  <script>
+const article = document.getElementById('article');
+const toc = document.getElementById('toc');
+const headings = article.querySelectorAll('h2, h3');
+let tocHtml = '<a class="toc-h1">本页目录</a><ul style="list-style:none;padding:0;margin:0;">';
+headings.forEach((h, i) => {
+  const id = 'sec-' + i;
+  h.id = id;
+  const cls = h.tagName === 'H2' ? '' : 'toc-h3';
+  tocHtml += `<li><a class="${cls}" href="#${id}">${h.textContent}</a></li>`;
+});
+tocHtml += '</ul>';
+toc.innerHTML = tocHtml;
+
+const tocLinks = toc.querySelectorAll('a[href^="#"]');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      tocLinks.forEach(a => a.classList.remove('active'));
+      const active = toc.querySelector('a[href="#' + entry.target.id + '"]');
+      if (active) active.classList.add('active');
+    }
+  });
+}, { rootMargin: '-80px 0px -60% 0px', threshold: 0 });
+headings.forEach(h => observer.observe(h));
+</script>
+  <script>document.getElementById('article').innerHTML = marked.parse(document.getElementById('md').textContent, {gfm:true, breaks:false});</script>
 </body>
 </html>

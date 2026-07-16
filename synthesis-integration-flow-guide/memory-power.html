@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>ASIC IP Synthesis &amp; Integration Flow 工具使用指南</title>
+  <title>Memory 与功耗 · ASIC IP Synthesis &amp; Integration Flow 工具使用指南</title>
   <script src="https://cdn.jsdelivr.net/npm/marked@9.1.6/marked.min.js"></script>
   <style>
 
@@ -234,38 +234,71 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
     </div>
   </nav>
 
-  <div class="container">
-    <article class="article">
+  <div class="container with-toc"><aside class="toc-wrapper"><nav class="toc" id="toc"></nav></aside><div class="content">
+    <article class="article" id="article">
       
-<div class="hero">
-  <h1>ASIC IP Synthesis & Integration Flow 工具使用指南</h1>
-  <div class="author">作者：ymzhuuuu</div>
-  <p class="lead">
-    一份面向数字 IC 设计工程师的通用综合与集成流程参考手册，
-    涵盖环境搭建、RTL 检查、综合、一致性验证、时序 signoff 及功耗分析等关键环节。
-    内容已去除具体项目信息，保留可复用的工具使用方法和检查要点。
-  </p>
-</div>
-<blockquote>
-  <strong>⭐ 推荐阅读顺序：</strong>先读 <a href="./environment.html">环境与配置</a>，然后按顶部导航依次阅读 RTL 检查、综合与 UPF、LEC、Signoff 与时序、Memory 与功耗，最后查看 FAQ 与清单。
-</blockquote>
-<div class="section-title">章节索引</div>
-<div class="chapter-grid">
-  <a class="chapter-card" href="./environment.html"><div class="num">1</div><div class="title">环境与配置</div><div class="desc">环境准备、design.set、filelist</div></a>
-<a class="chapter-card" href="./rtl-check.html"><div class="num">2</div><div class="title">RTL 检查</div><div class="desc">CKF 与 nLint</div></a>
-<a class="chapter-card" href="./synthesis-upf.html"><div class="num">3</div><div class="title">综合与 UPF</div><div class="desc">UPF 检查、DC / Genus</div></a>
-<a class="chapter-card" href="./lec.html"><div class="num">4</div><div class="title">LEC 验证</div><div class="desc">形式验证与一致性检查</div></a>
-<a class="chapter-card" href="./signoff-timing.html"><div class="num">5</div><div class="title">Signoff 与时序</div><div class="desc">Signoff、PrimeTime、流程依赖</div></a>
-<a class="chapter-card" href="./memory-power.html"><div class="num">6</div><div class="title">Memory 与功耗</div><div class="desc">Memory 生成、mem_wrap、PTPX</div></a>
-<a class="chapter-card" href="./faq.html"><div class="num">7</div><div class="title">FAQ 与清单</div><div class="desc">注意事项与检查清单</div></a>
-</div>
-
     </article>
-    
+    <div class="page-nav"><a href="./signoff-timing.html"><span class="label">上一篇</span><span class="title">Signoff 与时序</span></a>
+<a class="next" href="./faq.html"><span class="label">下一篇</span><span class="title">FAQ 与清单</span></a></div>
     <div class="footer">Shared from team knowledge base</div>
-  </div>
+  </div></div>
 
-  <script type="text/template" id="md"></script>
+  <script type="text/template" id="md">
+# 六、Memory 与功耗仿真
+
+&gt; 本章介绍 memory compiler 生成 memory、整理 DB、生成 mem_wrap，以及基于 PTPX 的功耗仿真流程。
+
+## 1. Memory 与 mem_wrap 生成
+
+### 1.1 生成 memory
+利用 memory compiler 工具，按工艺要求填写：
+- word / bit / byte
+- ring layer（决定 memory 方向）
+- bus format 选 YES，保证总线信号打包
+- feature 选择 Generic
+
+### 1.2 整理 lib / DB
+1. 修改 `sram.list`、`corner.list`、`gen_tcl.pl`
+2. 生成 cp_lib 和 gen_db_tcl
+3. 创建 `cfg cir db ds dummy gds lef lib lvlib sim pglib` 等目录
+4. 执行 `cp_lib`、`run_lc` 生成 db
+5. merge lib 和 db：执行 `do_merge_db` 与 `do_merge_back`
+6. 将 `mem_db` 复制到 database 下（只复制 corner 目录，不复制 `*_merged` 目录）
+
+### 1.3 生成 mem_wrap
+1. 修改 memory wrapper config：
+   - wrapper_name、msize、mwide、mem_num
+   - 添加 `pg_en`、`repair` 列，默认 0
+2. source `run.tcl` 生成 wrapper.v 与 fault_info 文件
+3. 将生成的 `.v` 复制到 `HDL/mem_wrap/`
+
+---
+
+## 2. 功耗仿真
+
+功耗仿真通常在 `SYNTHESIS/top/power/0.px_template/` 下运行。
+
+### 2.1 配置要点
+1. `design.set` 中 `TOP_NAME` 改为实际顶层。
+2. `px_cfg.tcl` 中修改：
+   - `verilog_file`：PR release 的网表路径
+   - `sdc_file`：post-PT release 的 SDC（注意 `sdc_version` 需改为 2.0）
+   - `spec_dir`：PR release 的 timing 目录
+   - `ip0_inst` / `ip0_strip` / `ip0_vcd`：对应顶层实例与 VCD 路径
+3. 生成 VCD 前，需在 post-PT 对应 corner 生成 SDF，并在 post-sim case 中读取。
+
+### 2.2 运行与查看
+
+```bash
+run_ptpx
+```
+
+结果：
+- `*_toggle_rate_detail.rpt`：toggle rate
+- `*_power.rpt`：功耗结果
+- 上层目录生成 fsdb，可用 Verdi 打开查看功耗波形
+
+</script>
 
   <script>
 
@@ -364,7 +397,32 @@ document.addEventListener('mouseup', () => {
 
   </script>
 
-  
-  
+  <script>
+const article = document.getElementById('article');
+const toc = document.getElementById('toc');
+const headings = article.querySelectorAll('h2, h3');
+let tocHtml = '<a class="toc-h1">本页目录</a><ul style="list-style:none;padding:0;margin:0;">';
+headings.forEach((h, i) => {
+  const id = 'sec-' + i;
+  h.id = id;
+  const cls = h.tagName === 'H2' ? '' : 'toc-h3';
+  tocHtml += `<li><a class="${cls}" href="#${id}">${h.textContent}</a></li>`;
+});
+tocHtml += '</ul>';
+toc.innerHTML = tocHtml;
+
+const tocLinks = toc.querySelectorAll('a[href^="#"]');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      tocLinks.forEach(a => a.classList.remove('active'));
+      const active = toc.querySelector('a[href="#' + entry.target.id + '"]');
+      if (active) active.classList.add('active');
+    }
+  });
+}, { rootMargin: '-80px 0px -60% 0px', threshold: 0 });
+headings.forEach(h => observer.observe(h));
+</script>
+  <script>document.getElementById('article').innerHTML = marked.parse(document.getElementById('md').textContent, {gfm:true, breaks:false});</script>
 </body>
 </html>
