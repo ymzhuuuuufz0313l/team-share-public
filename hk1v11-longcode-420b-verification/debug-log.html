@@ -6,7 +6,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Case 命名规则 · HK1V11 420b 长编码验证体系</title>
+  <title>排障实录 · HK1V11 420b 长编码验证体系</title>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>
 :root {
@@ -392,11 +392,11 @@
       <a href="./comparison.html">对比</a>
       <a href="./frame.html">帧结构</a>
       <a href="./phases.html">阶段</a>
-      <a class="active" href="./cases.html">Case</a>
+      <a href="./cases.html">Case</a>
       <a href="./decoder.html">解码</a>
       <a href="./encoding.html">编码</a>
       <a href="./issues.html">问题</a>
-      <a href="./debug-log.html">排障</a>
+      <a class="active" href="./debug-log.html">排障</a>
       <a href="./next.html">后续</a>
     </div>
   </div>
@@ -406,13 +406,13 @@
     <div class="content">
       <article class="article" id="article"></article>
     <div class="page-nav">
-      <a href="./phases.html">
+      <a href="./issues.html">
         <span class="label">上一篇</span>
-        <span class="title">验证执行阶段</span>
+        <span class="title">关键待确认问题</span>
       </a>
-      <a class="next" href="./decoder.html">
+      <a class="next" href="./next.html">
         <span class="label">下一篇</span>
-        <span class="title">420b 解码链 RTL</span>
+        <span class="title">后续工作</span>
       </a>
     </div>
 
@@ -426,29 +426,87 @@
   </div>
 
   <script type="text/template" id="md">
-# 五、Case 命名规则
+# 九、排障实录：联调问题 · 定位 · 进展 · 结论
 
-## 1. 命名格式
+> 📌 **最终结论（0717）**：接收端使用 Python 对 `DATA_ALIGN_PRE` 进行离线 413b/420b 解码比对，**LSP / CTRL_F / CTRL_L / VBK / Video 线上数据全部正确** —— 剩余问题在 RTL 解码侧，不在发送数据。
 
-沿用 8B/10B 风格，统一加 `_420b` 后缀：
+## 1. 调试方法论：三级独立交叉验证
 
-```text
-t_8b{lane_num}lane_420b_{function}[_{param}]
-t_H{HACT}_V{VACT}_FPS{FPS}_PORT_NUM{PORT_NUM}_420b[_{extra_param}]
-```
+不依赖 DUT 自身解码结果，用独立路径证明"线上数据是否正确"：
 
-## 2. 数量分布
-
-| 类别 | 数量 | 说明 |
+| 步骤 | 内容 | 产出 |
 |------|------|------|
-| Smoke | 7 | basic / scramble_off/on / msb_first / all_zero / all_one / tag_bypass |
-| Frame Structure | 8 | lsp / ctrl_f / ctrl_l / active / active_last / vblank / idle / multiframe |
-| Decode / Unlock | 10 | 解码窗口、K3 同步、UTC/unlock 系列 |
-| Error / Corner | 9 | 7b_01、kcode、UTC header、long frame、checksum、vbk、chpi_regw 等 |
-| Multi-lane | 9 | 2lane/4lane、70-bit 对齐、R_BAC/AEQ/debugpin/packpos/RGB |
-| Resolution Sweep | 8 | 4K/1080p/1440p 等 × 多刷新率/端口 |
-| Isolation | 2 | 420b vs 8B/10B、8B/10B regression |
-| **合计** | **53** | 按 Phase 1~7 分阶段执行 |
+| ① 抓取 | `long_rtl_tap_debug.sv` 以 `bind` 注入 DUT（零 RTL 修改），抓 K_FIND / BK_ST / INDATA / DATA0_ALIGN / 解码器输入输出 / DATA_ALIGN_PRE | `long_rtl_rx_lane0.md`、`long_rtl_dec_lane0.md`、`long_rtl_grp_lane0.md`、`long_rtl_dap_lane0.md` |
+| ② 解码 | Python `decode_dap.py` 离线 413b/420b 解码（K 码对定位、tag 替换、G16 解扰；与 encode/DUT 语义一致，roundtrip 500 块随机数据全对） | `long_pydec_lane0.md` |
+| ③ 比对 | 与发送端编码前原始字节 `long_rawbyte_seq_lane0.md` 逐区域 diff | `long_pydec_report_lane0.md` |
+
+## 2. 问题定位记录
+
+### 2.1 🔵 LSP 阶段 K-code 错解：enum 顺序不一致（0715）
+
+- **现象**：LSP 波形出现 5 次 `K1 K2` 重复 + 末尾 `K3 K4`，与 sequence 发出的 `K2/K3` 不符。
+- **定位**：`isptx_transaction` 的 420B `type_head` enum 顺序为 `K2/K3/K4/K1`，与 driver 的 `K1/K2/K3/K4` 不一致，sequence 发 K2/K3 被 driver 错解为 K1/K2。
+- **解决**：transaction enum 顺序对齐 driver，clean rebuild 后 case 通过。
+
+### 2.2 🔵 "K1 K2 K2 K1 K2"：K1 被 BK_ST 与逻辑遮盖（0717，RTL 移交俊杰）
+
+- **现象**：driver 侧偶发两个 K2 之间缺一个 K1。
+- **定位**：`CHPI_KCODE_ALIGN_LONG_L0.v` 中 `K1_FIND = K1_CODE2 & K1_CODE1_D1 & BK_ST`（K2/K3/K4 无 BK_ST 门控）；`BK_ST` 由 `BIT_ALIGN_PT | (R_BKDU & K2_FIND)` 置位、K1_FIND 清零，而 `BIT_ALIGN_PT` 源自 8B/10B 的 `CHPI_SD_CTRL` 数据结束时序，420b 行结构下置位不匹配 → `BK_ST` 保持 0，后续 K1 被与逻辑遮盖。
+- **解决**：属 420b/8B10B mux 信号逻辑未更新问题，RTL 修复移交俊杰。
+
+### 2.3 🔵 解码输出与载荷无关：`din_20b_aligned` 误接（0717）
+
+- **现象**：LSP / CTRL_F / VBLK 三个区域解码输出同一套重复模式（`28 00 80 02`），与发送内容完全无关。
+- **定位**：`LINK_LOGIC.v:1250` 将 `DATA_POINT_LAT`（对齐**位置标志**锁存，准静态）接到 `long_decoding_top.din_20b_aligned`；对齐数据 `DATA0_ALIGN` 只去了 8B/10B 消费端。
+- **解决**：改接 `DATA0_ALIGN_LONG` 后 LSP 立即解出原始训练码 `ed ec eb ea`，数据通路打通。
+
+### 2.4 🔵 CTRL_F / VBLK / ACT 密文：加扰策略不一致（0717，TX 侧）
+
+- **现象**：接线修复后 LSP 能对上，但 CTRL_F/VBLK/ACT 仍为随机状密文。
+- **定位**：TX sequence 对 payload 硬编码 `scramble_en=1'b1`，而 case `SCREN=0`（DUT `R_SCREN=0` 不解扰直通）；LSP 因 TX 本来就不加扰而能对上，反向印证。
+- **解决**：三处 `encode_with_70b_alignment()` 的 `scramble_en` 改为 `env_cfg.SCREN`（与 DUT `R_SCREN` 同源），LSP 保持不加扰。
+
+### 2.5 🔵 ACT 像素逐位反转：pixel/VBK 压流位序（0717，TX 侧）
+
+- **现象**：pydec 解码 ACT 行，像素 `00 01 02 03...` 变为 `00 80 40 c0...`（逐位反转），CTRL_L 前 5 字节正常。
+- **定位**：TX 的 pixel/VBK 压流循环按 MSB-first（`j=7..0`）推入 bit_stream，而 CTRL_L/CTRL_F/LSP 均为 LSB-first，发送侧位序不一致。
+- **解决**：两处循环改 LSB-first（`j=0..7`），修复后像素渐变与发送完全一致。
+
+### 2.6 🟡 RTL 解码区域边界异常（待跟进）
+
+- **现象**：rtl_dec 区域起始 9 字节残流（上一区段滞后排出）、尾部字节溢出到下一区段、个别位错（如 `a4`→`a0`）。
+- **定位**：DUT `decoder_7b` / `descramble_7b` / 24-bit 打包逻辑的窗口开闭与流水线时序问题；pydec（线上数据正确）可作对照证据。
+- **进展**：待 RTL 侧跟进。
+
+### 2.7 🟡 ref model `decode_420b_to_413b` 与 encode 不一致（DV 备注）
+
+- tag 提取与 encode 差一位（encode 把 tag 放 header bits1-6，decode 取 bits0-5），且 scren=1 时先解扰后判定替换的顺序错误。
+- 仅被 display-only 的 checker 使用，从未暴露；Python 解码器已实现正确语义，SV 侧待修正。
+
+### 2.8 🟡 K3 使用条件（待 Spec 确认）
+
+- DUT：`K4` 关闭解扰（`ctrl_f_scramble_en=0`），仅 `K3` 重新使能；当前 Active Line 统一以 K2 结束（spec 允许 K2 或 K3），K3 的引入条件待与 spec 确认。
+
+## 3. 调试工具链
+
+| 文件 | 写入方 | 内容 |
+|------|--------|------|
+| `long_rawbyte_seq_laneN.md` | isptx_sequence | 编码前 raw 数据按 byte 转储 + K 码时间标记交织 |
+| `long_pkt20_seq_laneN.md` | isptx_sequence | 实际发出的 20-bit 包流（含 K 码拆分、IDLE） |
+| `long_kcode_seq/drv_laneN.md` | sequence / driver | 两侧 K 码序列与解析结果 |
+| `long_diag_debug_laneN.md` | isptx_sequence | 数据长度/K 码时序摘要 |
+| `long_rtl_rx_lane0.md` | bind 进 LINK_LOGIC | `[K]`/`[BST]`/`[DIN]`/`[DAL]`/`[D20]`/`[PIX]` |
+| `long_rtl_dec_lane0.md` | bind 进 LINK_LOGIC | 解码+解扰后字节流（`[K]` 分段） |
+| `long_rtl_grp_lane0.md` | bind 进 long_decoding_top | 7-bit group 流 + decode_en 窗口 |
+| `long_rtl_dap_lane0.md` | bind 进 CHPI_KCODE_ALIGN_LONG_L0 | DATA_ALIGN_PRE 每拍全量 |
+| `long_pydec_lane0.md` / `long_pydec_report_lane0.md` | `decode_dap.py` | 离线解码结果 + 逐区域对比报告 |
+
+## 4. 最终结论与证据
+
+![0717 长编码 python 解码数据正确](./0717_longcode_pydec_ok.jpg)
+
+> ACT 行离线解码：`11 05 16 00 00`（CTRL_L，FSYNC=1）+ `00 01 02 03...` 像素渐变，与发送端原始字节完全一致。
+> 线上数据正确 ⇒ 发送端（sequence/编码/driver/链路/对齐）排除；后续聚焦 RTL 解码链（第 2.6 节）。
 
 ---
   </script>
