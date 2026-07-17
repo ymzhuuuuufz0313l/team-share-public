@@ -379,6 +379,46 @@
     }
   .toc-divider { height: 1px; background: var(--line); margin: 12px 0; }
   .toc a.toc-h1 { font-weight: 700; color: var(--accent); margin-bottom: 8px; cursor: default; }
+
+  /* ===== 排障实录 定制可视化 ===== */
+  /* 状态/侧徽章 */
+  .badge { display: inline-block; padding: 2px 12px; border-radius: 999px; font-size: 13px; font-weight: 600; line-height: 1.6; white-space: nowrap; }
+  .badge-fixed   { background: #dcfce7; color: #166534; }
+  .badge-pending { background: #fef9c3; color: #854d0e; }
+  .badge-rtl     { background: #fee2e2; color: #991b1b; }
+  .badge-tx      { background: #dbeafe; color: #1e40af; }
+  .badge-dv      { background: #f3e8ff; color: #6b21a8; }
+  @media (prefers-color-scheme: dark) {
+    .badge-fixed   { background: #14532d; color: #86efac; }
+    .badge-pending { background: #713f12; color: #fde047; }
+    .badge-rtl     { background: #7f1d1d; color: #fca5a5; }
+    .badge-tx      { background: #1e3a8a; color: #93c5fd; }
+    .badge-dv      { background: #581c87; color: #d8b4fe; }
+  }
+  /* 统计条 */
+  .statbar { display: flex; gap: 16px; flex-wrap: wrap; margin: 24px 0 8px; }
+  .stat { flex: 1; min-width: 130px; text-align: center; border: 1px solid var(--line); border-radius: 14px; padding: 14px 8px; background: var(--surface); }
+  .stat .num { font-size: 30px; font-weight: 800; color: var(--accent); line-height: 1.2; }
+  .stat .num.ok { color: #16a34a; }
+  .stat .num.warn { color: #eab308; }
+  .stat .lbl { font-size: 13px; color: var(--muted); margin-top: 4px; }
+  /* 三级流程图 */
+  .flow { display: flex; gap: 10px; align-items: stretch; flex-wrap: wrap; margin: 18px 0; }
+  .fbox { flex: 1; min-width: 210px; border: 1.5px solid var(--accent); border-radius: 12px; padding: 14px 16px; background: var(--accent-soft); font-size: 14.5px; }
+  .fbox b { color: var(--accent); }
+  .fbox code { font-size: 12.5px; }
+  .farrow { align-self: center; font-size: 26px; color: var(--accent); font-weight: 800; }
+  /* 时间线 */
+  .timeline { border-left: 3px solid var(--accent); margin: 16px 0 8px 14px; padding-left: 22px; }
+  .titem { position: relative; margin-bottom: 14px; font-size: 15px; }
+  .titem::before { content: ''; position: absolute; left: -29px; top: 7px; width: 11px; height: 11px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  .tdate { font-weight: 700; color: var(--accent); margin-right: 8px; }
+  /* 问题卡片 */
+  .pcard { border: 1px solid var(--line); border-left: 5px solid #16a34a; border-radius: 12px; padding: 14px 20px; margin: 14px 0 26px; background: var(--surface); }
+  .pcard.pending { border-left-color: #eab308; }
+  .prow { display: grid; grid-template-columns: 52px 1fr; gap: 10px; margin: 7px 0; font-size: 15px; }
+  .prow .k { font-weight: 700; color: var(--accent); }
+  .prow code { font-size: 13px; }
   </style>
 </head>
 <body>
@@ -430,83 +470,125 @@
 
 > 📌 **最终结论（0717）**：接收端使用 Python 对 `DATA_ALIGN_PRE` 进行离线 413b/420b 解码比对，**LSP / CTRL_F / CTRL_L / VBK / Video 线上数据全部正确** —— 剩余问题在 RTL 解码侧，不在发送数据。
 
+<div class="statbar">
+  <div class="stat"><div class="num">8</div><div class="lbl">定位问题总数</div></div>
+  <div class="stat"><div class="num ok">6</div><div class="lbl">🔵 已解决 / 移交</div></div>
+  <div class="stat"><div class="num warn">2</div><div class="lbl">🟡 待跟进</div></div>
+  <div class="stat"><div class="num ok">5/5</div><div class="lbl">✅ 线上数据区域全对</div></div>
+</div>
+
 ## 1. 调试方法论：三级独立交叉验证
 
 不依赖 DUT 自身解码结果，用独立路径证明"线上数据是否正确"：
 
-| 步骤 | 内容 | 产出 |
-|------|------|------|
-| ① 抓取 | `long_rtl_tap_debug.sv` 以 `bind` 注入 DUT（零 RTL 修改），抓 K_FIND / BK_ST / INDATA / DATA0_ALIGN / 解码器输入输出 / DATA_ALIGN_PRE | `long_rtl_rx_lane0.md`、`long_rtl_dec_lane0.md`、`long_rtl_grp_lane0.md`、`long_rtl_dap_lane0.md` |
-| ② 解码 | Python `decode_dap.py` 离线 413b/420b 解码（K 码对定位、tag 替换、G16 解扰；与 encode/DUT 语义一致，roundtrip 500 块随机数据全对） | `long_pydec_lane0.md` |
-| ③ 比对 | 与发送端编码前原始字节 `long_rawbyte_seq_lane0.md` 逐区域 diff | `long_pydec_report_lane0.md` |
+<div class="flow">
+  <div class="fbox"><b>① 抓取</b><br/>long_rtl_tap_debug.sv 以 bind 注入 DUT（零 RTL 修改），抓 K_FIND / BK_ST / INDATA / DATA0_ALIGN / 解码器输入输出 / DATA_ALIGN_PRE<br/><code>long_rtl_rx / dec / grp / dap_lane0.md</code></div>
+  <div class="farrow">→</div>
+  <div class="fbox"><b>② 解码</b><br/>Python decode_dap.py 离线 413b/420b 解码（K 码对定位、tag 替换、G16 解扰；与 encode/DUT 语义一致，roundtrip 500 块全对）<br/><code>long_pydec_lane0.md</code></div>
+  <div class="farrow">→</div>
+  <div class="fbox"><b>③ 比对</b><br/>与发送端编码前原始字节 long_rawbyte_seq_lane0.md 逐区域 diff<br/><code>long_pydec_report_lane0.md</code></div>
+</div>
 
-## 2. 问题定位记录
+## 2. 问题定位时间线
 
-### 2.1 🔵 LSP 阶段 K-code 错解：enum 顺序不一致（0715）
+<div class="timeline">
+  <div class="titem"><span class="tdate">07/15</span>LSP 阶段 K-code 错解 → 定位为 enum 顺序不一致，修复通过 🔵</div>
+  <div class="titem"><span class="tdate">07/16</span>帧结构对齐 PDF spec：Config Line 单独成行，Active Line 统一 K2 结束 🔵</div>
+  <div class="titem"><span class="tdate">07/17</span>din 误接 / SCREN / 位序 / BK_ST 四项定位；建立三级交叉验证体系，证实线上数据全部正确 ✅</div>
+</div>
 
-- **现象**：LSP 波形出现 5 次 `K1 K2` 重复 + 末尾 `K3 K4`，与 sequence 发出的 `K2/K3` 不符。
-- **定位**：`isptx_transaction` 的 420B `type_head` enum 顺序为 `K2/K3/K4/K1`，与 driver 的 `K1/K2/K3/K4` 不一致，sequence 发 K2/K3 被 driver 错解为 K1/K2。
-- **解决**：transaction enum 顺序对齐 driver，clean rebuild 后 case 通过。
+## 3. 问题定位记录
 
-### 2.2 🔵 "K1 K2 K2 K1 K2"：K1 被 BK_ST 与逻辑遮盖（0717，RTL 移交俊杰）
+### 3.1 LSP 阶段 K-code 错解：enum 顺序不一致
 
-- **现象**：driver 侧偶发两个 K2 之间缺一个 K1。
-- **定位**：`CHPI_KCODE_ALIGN_LONG_L0.v` 中 `K1_FIND = K1_CODE2 & K1_CODE1_D1 & BK_ST`（K2/K3/K4 无 BK_ST 门控）；`BK_ST` 由 `BIT_ALIGN_PT | (R_BKDU & K2_FIND)` 置位、K1_FIND 清零，而 `BIT_ALIGN_PT` 源自 8B/10B 的 `CHPI_SD_CTRL` 数据结束时序，420b 行结构下置位不匹配 → `BK_ST` 保持 0，后续 K1 被与逻辑遮盖。
-- **解决**：属 420b/8B10B mux 信号逻辑未更新问题，RTL 修复移交俊杰。
+<div class="pcard">
+<div class="prow"><span class="k">状态</span><span><span class="badge badge-fixed">🔵 已解决</span> <span class="badge badge-dv">DV 侧</span> <span class="badge">07/15</span></span></div>
+<div class="prow"><span class="k">现象</span><span>LSP 波形出现 5 次 <code>K1 K2</code> 重复 + 末尾 <code>K3 K4</code>，与 sequence 发出的 K2/K3 不符。</span></div>
+<div class="prow"><span class="k">定位</span><span><code>isptx_transaction</code> 的 420B type_head enum 顺序为 <code>K2/K3/K4/K1</code>，与 driver 的 <code>K1/K2/K3/K4</code> 不一致，sequence 发 K2/K3 被 driver 错解为 K1/K2。</span></div>
+<div class="prow"><span class="k">解决</span><span>transaction enum 顺序对齐 driver，clean rebuild 后 case 通过。</span></div>
+</div>
 
-### 2.3 🔵 解码输出与载荷无关：`din_20b_aligned` 误接（0717）
+### 3.2 "K1 K2 K2 K1 K2"：K1 被 BK_ST 与逻辑遮盖
 
-- **现象**：LSP / CTRL_F / VBLK 三个区域解码输出同一套重复模式（`28 00 80 02`），与发送内容完全无关。
-- **定位**：`LINK_LOGIC.v:1250` 将 `DATA_POINT_LAT`（对齐**位置标志**锁存，准静态）接到 `long_decoding_top.din_20b_aligned`；对齐数据 `DATA0_ALIGN` 只去了 8B/10B 消费端。
-- **解决**：改接 `DATA0_ALIGN_LONG` 后 LSP 立即解出原始训练码 `ed ec eb ea`，数据通路打通。
+<div class="pcard">
+<div class="prow"><span class="k">状态</span><span><span class="badge badge-fixed">🔵 已移交</span> <span class="badge badge-rtl">RTL 侧</span> <span class="badge">07/17 · 俊杰</span></span></div>
+<div class="prow"><span class="k">现象</span><span>driver 侧偶发两个 K2 之间缺一个 K1。</span></div>
+<div class="prow"><span class="k">定位</span><span><code>CHPI_KCODE_ALIGN_LONG_L0.v</code> 中 <code>K1_FIND = K1_CODE2 &amp; K1_CODE1_D1 &amp; BK_ST</code>（K2/K3/K4 无 BK_ST 门控）；<code>BK_ST</code> 由 <code>BIT_ALIGN_PT | (R_BKDU &amp; K2_FIND)</code> 置位、K1_FIND 清零，而 <code>BIT_ALIGN_PT</code> 源自 8B/10B 的 CHPI_SD_CTRL 数据结束时序，420b 行结构下置位不匹配 → BK_ST 保持 0，后续 K1 被与逻辑遮盖。</span></div>
+<div class="prow"><span class="k">解决</span><span>属 420b/8B10B mux 信号逻辑未更新问题，RTL 修复移交俊杰。</span></div>
+</div>
 
-### 2.4 🔵 CTRL_F / VBLK / ACT 密文：加扰策略不一致（0717，TX 侧）
+### 3.3 解码输出与载荷无关：din_20b_aligned 误接
 
-- **现象**：接线修复后 LSP 能对上，但 CTRL_F/VBLK/ACT 仍为随机状密文。
-- **定位**：TX sequence 对 payload 硬编码 `scramble_en=1'b1`，而 case `SCREN=0`（DUT `R_SCREN=0` 不解扰直通）；LSP 因 TX 本来就不加扰而能对上，反向印证。
-- **解决**：三处 `encode_with_70b_alignment()` 的 `scramble_en` 改为 `env_cfg.SCREN`（与 DUT `R_SCREN` 同源），LSP 保持不加扰。
+<div class="pcard">
+<div class="prow"><span class="k">状态</span><span><span class="badge badge-fixed">🔵 已解决</span> <span class="badge badge-rtl">RTL 侧</span> <span class="badge">07/17</span></span></div>
+<div class="prow"><span class="k">现象</span><span>LSP / CTRL_F / VBLK 三个区域解码输出同一套重复模式（<code>28 00 80 02</code>），与发送内容完全无关。</span></div>
+<div class="prow"><span class="k">定位</span><span><code>LINK_LOGIC.v:1250</code> 将 <code>DATA_POINT_LAT</code>（对齐<b>位置标志</b>锁存，准静态）接到 <code>long_decoding_top.din_20b_aligned</code>；对齐数据 <code>DATA0_ALIGN</code> 只去了 8B/10B 消费端。</span></div>
+<div class="prow"><span class="k">解决</span><span>改接 <code>DATA0_ALIGN_LONG</code> 后 LSP 立即解出原始训练码 <code>ed ec eb ea</code>，数据通路打通。</span></div>
+</div>
 
-### 2.5 🔵 ACT 像素逐位反转：pixel/VBK 压流位序（0717，TX 侧）
+### 3.4 CTRL_F / VBLK / ACT 密文：加扰策略不一致
 
-- **现象**：pydec 解码 ACT 行，像素 `00 01 02 03...` 变为 `00 80 40 c0...`（逐位反转），CTRL_L 前 5 字节正常。
-- **定位**：TX 的 pixel/VBK 压流循环按 MSB-first（`j=7..0`）推入 bit_stream，而 CTRL_L/CTRL_F/LSP 均为 LSB-first，发送侧位序不一致。
-- **解决**：两处循环改 LSB-first（`j=0..7`），修复后像素渐变与发送完全一致。
+<div class="pcard">
+<div class="prow"><span class="k">状态</span><span><span class="badge badge-fixed">🔵 已解决</span> <span class="badge badge-tx">TX 侧</span> <span class="badge">07/17</span></span></div>
+<div class="prow"><span class="k">现象</span><span>接线修复后 LSP 能对上，但 CTRL_F / VBLK / ACT 仍为随机状密文。</span></div>
+<div class="prow"><span class="k">定位</span><span>TX sequence 对 payload 硬编码 <code>scramble_en=1'b1</code>，而 case <code>SCREN=0</code>（DUT R_SCREN=0 不解扰直通）；LSP 因 TX 本来就不加扰而能对上，反向印证。</span></div>
+<div class="prow"><span class="k">解决</span><span>三处 <code>encode_with_70b_alignment()</code> 的 scramble_en 改为 <code>env_cfg.SCREN</code>（与 DUT R_SCREN 同源），LSP 保持不加扰。</span></div>
+</div>
 
-### 2.6 🟡 RTL 解码区域边界异常（待跟进）
+### 3.5 ACT 像素逐位反转：pixel/VBK 压流位序
 
-- **现象**：rtl_dec 区域起始 9 字节残流（上一区段滞后排出）、尾部字节溢出到下一区段、个别位错（如 `a4`→`a0`）。
-- **定位**：DUT `decoder_7b` / `descramble_7b` / 24-bit 打包逻辑的窗口开闭与流水线时序问题；pydec（线上数据正确）可作对照证据。
-- **进展**：待 RTL 侧跟进。
+<div class="pcard">
+<div class="prow"><span class="k">状态</span><span><span class="badge badge-fixed">🔵 已解决</span> <span class="badge badge-tx">TX 侧</span> <span class="badge">07/17</span></span></div>
+<div class="prow"><span class="k">现象</span><span>pydec 解码 ACT 行，像素 <code>00 01 02 03...</code> 变为 <code>00 80 40 c0...</code>（逐位反转），CTRL_L 前 5 字节正常。</span></div>
+<div class="prow"><span class="k">定位</span><span>TX 的 pixel/VBK 压流循环按 MSB-first（<code>j=7..0</code>）推入 bit_stream，而 CTRL_L/CTRL_F/LSP 均为 LSB-first，发送侧位序不一致。</span></div>
+<div class="prow"><span class="k">解决</span><span>两处循环改 LSB-first（<code>j=0..7</code>），修复后像素渐变与发送完全一致。</span></div>
+</div>
 
-### 2.7 🟡 ref model `decode_420b_to_413b` 与 encode 不一致（DV 备注）
+### 3.6 RTL 解码区域边界异常
 
-- tag 提取与 encode 差一位（encode 把 tag 放 header bits1-6，decode 取 bits0-5），且 scren=1 时先解扰后判定替换的顺序错误。
-- 仅被 display-only 的 checker 使用，从未暴露；Python 解码器已实现正确语义，SV 侧待修正。
+<div class="pcard pending">
+<div class="prow"><span class="k">状态</span><span><span class="badge badge-pending">🟡 待跟进</span> <span class="badge badge-rtl">RTL 侧</span> <span class="badge">07/17</span></span></div>
+<div class="prow"><span class="k">现象</span><span>rtl_dec 区域起始 9 字节残流（上一区段滞后排出）、尾部字节溢出到下一区段、个别位错（如 <code>a4</code>→<code>a0</code>）。</span></div>
+<div class="prow"><span class="k">定位</span><span>DUT decoder_7b / descramble_7b / 24-bit 打包逻辑的窗口开闭与流水线时序问题；pydec（线上数据正确）可作对照证据。</span></div>
+<div class="prow"><span class="k">进展</span><span>待 RTL 侧跟进，可用 <code>long_rtl_grp_lane0.md</code>（group 级流 + decode_en 窗口）辅助定位。</span></div>
+</div>
 
-### 2.8 🟡 K3 使用条件（待 Spec 确认）
+### 3.7 ref model decode_420b_to_413b 与 encode 不一致
 
-- DUT：`K4` 关闭解扰（`ctrl_f_scramble_en=0`），仅 `K3` 重新使能；当前 Active Line 统一以 K2 结束（spec 允许 K2 或 K3），K3 的引入条件待与 spec 确认。
+<div class="pcard pending">
+<div class="prow"><span class="k">状态</span><span><span class="badge badge-pending">🟡 待修正</span> <span class="badge badge-dv">DV 侧</span> <span class="badge">07/17</span></span></div>
+<div class="prow"><span class="k">现象</span><span>decode 的 tag 提取与 encode 差一位（encode 把 tag 放 header bits1-6，decode 取 bits0-5），且 scren=1 时先解扰后判定替换的顺序错误。</span></div>
+<div class="prow"><span class="k">影响</span><span>仅被 display-only 的 checker_420b 使用，从未暴露；Python 解码器已实现正确语义，SV ref model 待修正。</span></div>
+</div>
 
-## 3. 调试工具链
+### 3.8 K3 使用条件
+
+<div class="pcard pending">
+<div class="prow"><span class="k">状态</span><span><span class="badge badge-pending">🟡 待确认</span> <span class="badge">07/17 · Spec</span></span></div>
+<div class="prow"><span class="k">现象</span><span>DUT：K4 关闭解扰（ctrl_f_scramble_en=0），仅 K3 重新使能解扰。</span></div>
+<div class="prow"><span class="k">现状</span><span>当前 Active Line 统一以 K2 结束（spec 允许 K2 或 K3）；K3 的引入条件（及 TX 侧 LFSR 重启策略）待与 spec 确认。</span></div>
+</div>
+
+## 4. 调试工具链
 
 | 文件 | 写入方 | 内容 |
 |------|--------|------|
-| `long_rawbyte_seq_laneN.md` | isptx_sequence | 编码前 raw 数据按 byte 转储 + K 码时间标记交织 |
-| `long_pkt20_seq_laneN.md` | isptx_sequence | 实际发出的 20-bit 包流（含 K 码拆分、IDLE） |
-| `long_kcode_seq/drv_laneN.md` | sequence / driver | 两侧 K 码序列与解析结果 |
-| `long_diag_debug_laneN.md` | isptx_sequence | 数据长度/K 码时序摘要 |
-| `long_rtl_rx_lane0.md` | bind 进 LINK_LOGIC | `[K]`/`[BST]`/`[DIN]`/`[DAL]`/`[D20]`/`[PIX]` |
-| `long_rtl_dec_lane0.md` | bind 进 LINK_LOGIC | 解码+解扰后字节流（`[K]` 分段） |
-| `long_rtl_grp_lane0.md` | bind 进 long_decoding_top | 7-bit group 流 + decode_en 窗口 |
-| `long_rtl_dap_lane0.md` | bind 进 CHPI_KCODE_ALIGN_LONG_L0 | DATA_ALIGN_PRE 每拍全量 |
-| `long_pydec_lane0.md` / `long_pydec_report_lane0.md` | `decode_dap.py` | 离线解码结果 + 逐区域对比报告 |
+| `long_rawbyte_seq_laneN.md` | <span class="badge badge-tx">sequence</span> | 编码前 raw 数据按 byte 转储 + K 码时间标记交织 |
+| `long_pkt20_seq_laneN.md` | <span class="badge badge-tx">sequence</span> | 实际发出的 20-bit 包流（含 K 码拆分、IDLE） |
+| `long_kcode_seq/drv_laneN.md` | <span class="badge badge-tx">seq / drv</span> | 两侧 K 码序列与解析结果 |
+| `long_diag_debug_laneN.md` | <span class="badge badge-tx">sequence</span> | 数据长度/K 码时序摘要 |
+| `long_rtl_rx_lane0.md` | <span class="badge badge-rtl">bind LINK_LOGIC</span> | `[K]` / `[BST]` / `[DIN]` / `[DAL]` / `[D20]` / `[PIX]` |
+| `long_rtl_dec_lane0.md` | <span class="badge badge-rtl">bind LINK_LOGIC</span> | 解码+解扰后字节流（`[K]` 分段） |
+| `long_rtl_grp_lane0.md` | <span class="badge badge-rtl">bind decoding_top</span> | 7-bit group 流 + decode_en 窗口 |
+| `long_rtl_dap_lane0.md` | <span class="badge badge-rtl">bind KCODE_ALIGN</span> | DATA_ALIGN_PRE 每拍全量 |
+| `long_pydec_lane0.md` / `long_pydec_report_lane0.md` | <span class="badge badge-dv">decode_dap.py</span> | 离线解码结果 + 逐区域对比报告 |
 
-## 4. 最终结论与证据
+## 5. 最终结论与证据
 
 ![0717 长编码 python 解码数据正确](./0717_longcode_pydec_ok.jpg)
 
 > ACT 行离线解码：`11 05 16 00 00`（CTRL_L，FSYNC=1）+ `00 01 02 03...` 像素渐变，与发送端原始字节完全一致。
-> 线上数据正确 ⇒ 发送端（sequence/编码/driver/链路/对齐）排除；后续聚焦 RTL 解码链（第 2.6 节）。
+> 线上数据正确 ⇒ 发送端（sequence/编码/driver/链路/对齐）排除；后续聚焦 RTL 解码链（第 3.6 节）。
 
 ---
   </script>
