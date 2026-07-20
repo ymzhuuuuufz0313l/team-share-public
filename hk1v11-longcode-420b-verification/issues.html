@@ -42,7 +42,7 @@
       line-height: 1.75;
     }
     .container {
-      max-width: 900px;
+      max-width: 1170px;
       margin: 0 auto;
       padding: 48px 24px;
     }
@@ -293,7 +293,7 @@
       box-shadow: 0 2px 12px rgba(0,0,0,0.06);
     }
     .navbar-inner {
-      max-width: 900px;
+      max-width: 1170px;
       margin: 0 auto;
       padding: 12px 24px;
       display: flex;
@@ -338,7 +338,7 @@
       .navbar-links a { font-size: 13px; padding: 5px 8px; }
     }
     .author { margin-top: 8px; font-size: 14px; color: var(--muted); }
-  .container.with-toc { display: flex; gap: 32px; align-items: flex-start; max-width: 1200px; }
+  .container.with-toc { display: flex; gap: 32px; align-items: flex-start; max-width: 1560px; }
     .toc-wrapper { width: 260px; flex-shrink: 0; align-self: stretch; }
     .toc {
       position: sticky;
@@ -379,6 +379,19 @@
     }
   .toc-divider { height: 1px; background: var(--line); margin: 12px 0; }
   .toc a.toc-h1 { font-weight: 700; color: var(--accent); margin-bottom: 8px; cursor: default; }
+  .badge { display: inline-block; padding: 2px 12px; border-radius: 999px; font-size: 13px; font-weight: 600; line-height: 1.6; white-space: nowrap; }
+  .badge-fixed   { background: #dcfce7; color: #166534; }
+  .badge-pending { background: #fef9c3; color: #854d0e; }
+  .badge-rtl     { background: #fee2e2; color: #991b1b; }
+  .badge-tx      { background: #dbeafe; color: #1e40af; }
+  .badge-dv      { background: #f3e8ff; color: #6b21a8; }
+  @media (prefers-color-scheme: dark) {
+    .badge-fixed   { background: #14532d; color: #86efac; }
+    .badge-pending { background: #713f12; color: #fde047; }
+    .badge-rtl     { background: #7f1d1d; color: #fca5a5; }
+    .badge-tx      { background: #1e3a8a; color: #93c5fd; }
+    .badge-dv      { background: #581c87; color: #d8b4fe; }
+  }
   </style>
 </head>
 <body>
@@ -428,30 +441,36 @@
   <script type="text/template" id="md">
 # 八、关键待确认问题
 
-## 1. 高优先级
+## 1. 待跟进（0717 联调暴露）
+
+| 问题 | 状态 | 侧 |
+|------|------|----|
+| RTL 解码区域边界异常（起始残流 / 尾部溢出 / 个别位错，pydec 线上数据正确可作对照证据） | <span class="badge badge-pending">🟡 待跟进</span> | <span class="badge badge-rtl">RTL 侧</span> |
+| ref model `decode_420b_to_413b` 与 encode 不一致（tag 提取差一位、scren=1 顺序错误；仅 display-only checker 使用） | <span class="badge badge-pending">🟡 待修正</span> | <span class="badge badge-dv">DV 侧</span> |
+
+## 2. Spec 待确认
 
 | 问题 | 优先级 |
 |------|--------|
-| `long_encoding_ref_model` encode/decode 位序一致性 | 高 |
-| `isptx_driver` 420b 发送方向与 LSB-first 对齐 | 高 |
-| `checker_420b` 20-bit chunk 组装方向与 driver 对齐 | 高 |
+| Active Line 结束标记 K3 使用条件（DUT：K4 关解扰、仅 K3 重新使能解扰） | <span class="badge badge-rtl">高</span> |
+| CTRL_F checksum 是否需要计算并发送 | <span class="badge badge-pending">中</span> |
+| LSP 重复次数是否满足 ≥1us | <span class="badge badge-pending">中</span> |
+| IDLE 长度精确换算（htotal-hact） | <span class="badge badge-pending">中</span> |
+| UTC 错误检测责任模块确认 | <span class="badge badge-pending">中</span> |
+| 跨 lane raw 长度是否需 70 整数倍 | <span class="badge badge-tx">低</span> |
+| V blanking 行数是否含 setting_line | <span class="badge badge-tx">低</span> |
+| K5~K8 的 lane 间轮换顺序 | <span class="badge badge-tx">低</span> |
 
-## 2. 中优先级
+## 3. 已解决（0715 ~ 0717）
 
-| 问题 | 优先级 |
-|------|--------|
-| CTRL_F checksum 是否需要发送 | 中 |
-| Active Line 结束标记 K3 使用条件（DUT：K4 关解扰、仅 K3 重新使能解扰） | 中 |
-| LSP 重复次数是否满足 ≥1us | 中 |
-| IDLE 长度精确换算（htotal-hact） | 中 |
-| UTC 错误检测责任模块确认 | 中 |
-
-## 3. 低优先级
-
-| 问题 | 优先级 |
-|------|--------|
-| 跨 lane raw 长度是否需 70 整数倍 | 低 |
-| V blanking 行数是否含 setting_line | 低 |
+| 问题 | 状态 | 说明 |
+|------|------|------|
+| transaction/driver enum 顺序不一致（K-code 错解） | <span class="badge badge-fixed">🔵 0715</span> | enum 统一为 K1/K2/K3/K4，case 通过 |
+| driver 发送方向 | <span class="badge badge-fixed">🔵 0715</span> | 恢复 LSB-first，与 8B/10B 一致 |
+| K1 被 `BK_ST` 与逻辑遮盖（"K1 K2 K2 K1 K2"） | <span class="badge badge-fixed">🔵 0717</span> | 420b/8B10B mux 逻辑未更新，移交俊杰（RTL） |
+| `din_20b_aligned` 误接 `DATA_POINT_LAT` | <span class="badge badge-fixed">🔵 0717</span> | 改接 `DATA0_ALIGN_LONG`，LSP 解出 |
+| TX/RX 加扰策略不一致 | <span class="badge badge-fixed">🔵 0717</span> | 三处 `scramble_en` 改为 `env_cfg.SCREN` |
+| pixel/VBK 压流位序（逐位反转） | <span class="badge badge-fixed">🔵 0717</span> | 两处循环改 LSB-first |
 
 ---
   </script>

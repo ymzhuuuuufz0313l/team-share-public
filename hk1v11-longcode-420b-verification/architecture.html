@@ -42,7 +42,7 @@
       line-height: 1.75;
     }
     .container {
-      max-width: 900px;
+      max-width: 1170px;
       margin: 0 auto;
       padding: 48px 24px;
     }
@@ -293,7 +293,7 @@
       box-shadow: 0 2px 12px rgba(0,0,0,0.06);
     }
     .navbar-inner {
-      max-width: 900px;
+      max-width: 1170px;
       margin: 0 auto;
       padding: 12px 24px;
       display: flex;
@@ -338,7 +338,7 @@
       .navbar-links a { font-size: 13px; padding: 5px 8px; }
     }
     .author { margin-top: 8px; font-size: 14px; color: var(--muted); }
-  .container.with-toc { display: flex; gap: 32px; align-items: flex-start; max-width: 1200px; }
+  .container.with-toc { display: flex; gap: 32px; align-items: flex-start; max-width: 1560px; }
     .toc-wrapper { width: 260px; flex-shrink: 0; align-self: stretch; }
     .toc {
       position: sticky;
@@ -379,6 +379,24 @@
     }
   .toc-divider { height: 1px; background: var(--line); margin: 12px 0; }
   .toc a.toc-h1 { font-weight: 700; color: var(--accent); margin-bottom: 8px; cursor: default; }
+  .badge { display: inline-block; padding: 2px 12px; border-radius: 999px; font-size: 13px; font-weight: 600; line-height: 1.6; white-space: nowrap; }
+  .badge-fixed   { background: #dcfce7; color: #166534; }
+  .badge-pending { background: #fef9c3; color: #854d0e; }
+  .badge-rtl     { background: #fee2e2; color: #991b1b; }
+  .badge-tx      { background: #dbeafe; color: #1e40af; }
+  .badge-dv      { background: #f3e8ff; color: #6b21a8; }
+  @media (prefers-color-scheme: dark) {
+    .badge-fixed   { background: #14532d; color: #86efac; }
+    .badge-pending { background: #713f12; color: #fde047; }
+    .badge-rtl     { background: #7f1d1d; color: #fca5a5; }
+    .badge-tx      { background: #1e3a8a; color: #93c5fd; }
+    .badge-dv      { background: #581c87; color: #d8b4fe; }
+  }
+  .flow { display: flex; gap: 10px; align-items: stretch; flex-wrap: wrap; margin: 18px 0; }
+  .fbox { flex: 1; min-width: 210px; border: 1.5px solid var(--accent); border-radius: 12px; padding: 14px 16px; background: var(--accent-soft); font-size: 14.5px; }
+  .fbox b { color: var(--accent); }
+  .fbox code { font-size: 12.5px; }
+  .farrow { align-self: center; font-size: 26px; color: var(--accent); font-weight: 800; }
   </style>
 </head>
 <body>
@@ -425,31 +443,62 @@
   <script type="text/template" id="md">
 # 一、整体架构
 
-420b 长编码验证环境基于 `DV_TCON_C` 现有 8B/10B 结构重建，通过 `CHPI_MODE_420B` 宏与普通模式隔离。
+> 当前环境：`longcode_ver/0717v1`（2026-07-17）· 基于 `DV_TCON_C` 现有 8B/10B 结构重建 · `CHPI_MODE_420B` 宏隔离
+
+## 1. 验证环境总览
 
 ![longcode 验证架构](./longcode_verification_architecture.svg)
 
-## 1. 环境核心组件
+## 2. 收发结构框图：不看 RTL 的脚本离线验证（0717 新增）
 
-### 1.1 Reference Model
+接收端验证**不再依赖 DUT 解码结果**：用 `bind` 在 K 码对齐点抓线上 20-bit 数据，Python 直接离线解码，与发送端原始字节逐区域比对。
 
-`long_encoding_ref_model.sv`：413b→420b 编码 / 420b→413b 解码 / G16(X) 加扰解扰。
+![收发结构框图：脚本离线验证](./pydec_tx_rx_structure.svg)
 
-### 1.2 Sequence
+<div class="flow">
+  <div class="fbox"><b>① 抓取</b><br/>在 <code>CHPI_KCODE_ALIGN_LONG_L0</code> 的 <code>DATA_ALIGN_PRE</code>（K 码检测同款对齐数据）tap，<code>long_rtl_tap_debug.sv</code> 以 bind 注入，零 RTL 修改<br/><code>→ long_rtl_dap_lane0.md</code></div>
+  <div class="farrow">→</div>
+  <div class="fbox"><b>② 解码</b><br/><code>decode_dap.py</code> 离线 413b/420b 解码：K 码对定位 · tag 替换 · G16 解扰（roundtrip 500 块全对）<br/><code>→ long_pydec_lane0.md</code></div>
+  <div class="farrow">→</div>
+  <div class="fbox"><b>③ 比对</b><br/>与发送端编码前原始字节 <code>long_rawbyte_seq_lane0.md</code> 逐区域 diff<br/><code>→ long_pydec_report_lane0.md</code></div>
+</div>
 
-`isptx_sequence.sv`：构建 LSP / CTRL_F / CTRL_L / Active / V blanking 帧。
+## 3. 环境核心组件（0717v1）
 
-### 1.3 Driver
+### 3.1 Reference Model
 
-`isptx_driver.sv`：20-bit packet / 40-bit K-code 发送，LSB-first。
+`long_encoding_ref_model.sv`：413b→420b 编码 / G16(X) 加扰解扰 / K 码常量 / 70-bit 对齐长度计算。（`decode_420b_to_413b` 与 encode 语义不一致，待修正，仅 display-only checker 使用，见「排障 3.7」）
 
-### 1.4 Transaction
+### 3.2 Sequence
 
-`isptx_transaction.sv`：20-bit packet / 40-bit K-code 数据结构。
+`isptx_sequence.sv`：构建 LSP / Active / Config（单独成行）/ V blanking / IDLE 帧；`scramble_en = env_cfg.SCREN`；新增 `dump_raw_bytes()` 编码前 raw byte 转储。
 
-### 1.5 Checker
+### 3.3 Driver
 
-`checker_420b.sv`：20-bit 数据流检查、编码规则检查、跨 lane 长度检查。
+`isptx_driver.sv`：20-bit packet / 40-bit K-code 发送，**LSB-first**（0715 起与 8B/10B 一致）。
+
+### 3.4 Transaction
+
+`isptx_transaction.sv`：`bit[19:0] one_pkt_20b`、`bit[39:0] k1_420b ~ k4_420b`（enum 顺序已对齐 driver）。
+
+### 3.5 Checker
+
+`checker_420b.sv`：20-bit 数据流检查、编码规则检查、跨 lane 长度检查（display-only）。
+
+### 3.6 离线验证链（0717 新增）
+
+`long_rtl_tap_debug.sv`（bind 注入 → `long_rtl_rx/dec/grp/dap_lane0.md`）+ `decode_dap.py`（→ `long_pydec_lane0.md` / `long_pydec_report_lane0.md`）。
+
+## 4. 0717 关键修改摘要
+
+| 修改项 | 说明 | 侧 |
+|--------|------|----|
+| Config Line 单独成行 | VACT 结束后单独发送 `K4+CTRL_F(ENC)+Dmy+K2` | <span class="badge badge-tx">TX 侧</span> |
+| Active Line 结束标记 | 统一以 K2 结束（不再嵌入 K4+CTRL_F） | <span class="badge badge-tx">TX 侧</span> |
+| `din_20b_aligned` 接线 | 误接 `DATA_POINT_LAT` → 改接 `DATA0_ALIGN_LONG` | <span class="badge badge-rtl">RTL 侧</span> |
+| 加扰策略对齐 | 三处 `scramble_en` 硬编码 `1'b1` → `env_cfg.SCREN` | <span class="badge badge-tx">TX 侧</span> |
+| 压流位序 | pixel/VBK 循环 MSB-first → LSB-first | <span class="badge badge-tx">TX 侧</span> |
+| 离线验证链 | 新增 bind tap + `decode_dap.py`，证实线上数据全部正确 | <span class="badge badge-dv">DV 侧</span> |
 
 ---
   </script>

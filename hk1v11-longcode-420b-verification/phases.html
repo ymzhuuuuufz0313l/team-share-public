@@ -42,7 +42,7 @@
       line-height: 1.75;
     }
     .container {
-      max-width: 900px;
+      max-width: 1170px;
       margin: 0 auto;
       padding: 48px 24px;
     }
@@ -293,7 +293,7 @@
       box-shadow: 0 2px 12px rgba(0,0,0,0.06);
     }
     .navbar-inner {
-      max-width: 900px;
+      max-width: 1170px;
       margin: 0 auto;
       padding: 12px 24px;
       display: flex;
@@ -338,7 +338,7 @@
       .navbar-links a { font-size: 13px; padding: 5px 8px; }
     }
     .author { margin-top: 8px; font-size: 14px; color: var(--muted); }
-  .container.with-toc { display: flex; gap: 32px; align-items: flex-start; max-width: 1200px; }
+  .container.with-toc { display: flex; gap: 32px; align-items: flex-start; max-width: 1560px; }
     .toc-wrapper { width: 260px; flex-shrink: 0; align-self: stretch; }
     .toc {
       position: sticky;
@@ -379,6 +379,10 @@
     }
   .toc-divider { height: 1px; background: var(--line); margin: 12px 0; }
   .toc a.toc-h1 { font-weight: 700; color: var(--accent); margin-bottom: 8px; cursor: default; }
+  .flow { display: flex; gap: 10px; align-items: stretch; flex-wrap: wrap; margin: 18px 0; }
+  .fbox { flex: 1; min-width: 210px; border: 1.5px solid var(--accent); border-radius: 12px; padding: 14px 16px; background: var(--accent-soft); font-size: 14.5px; }
+  .fbox b { color: var(--accent); }
+  .fbox code { font-size: 12.5px; }
   </style>
 </head>
 <body>
@@ -427,6 +431,16 @@
 
   <script type="text/template" id="md">
 # 四、验证执行阶段
+
+<div class="flow">
+  <div class="fbox"><b>P1 · Smoke</b><br/>基础发送 · LSB-first · 全0/全1 · scramble on/off</div>
+  <div class="fbox"><b>P2 · 帧结构</b><br/>LSP / CTRL_F / CTRL_L / Active / VBK / IDLE / multiframe</div>
+  <div class="fbox"><b>P3 · 解码 · Unlock</b><br/>解码窗口 · K3 同步 · UTC unlock · link 恢复</div>
+  <div class="fbox"><b>P4 · Error / Corner</b><br/>7b_01 · K-code 错误 · checksum · long frame</div>
+  <div class="fbox"><b>P5 · Multi-lane</b><br/>2/4 lane · 70-bit 对齐 · R_BAC/AEQ 等功能复跑</div>
+  <div class="fbox"><b>P6 · 分辨率扫描</b><br/>4K/1080p/1440p 等 × 刷新率 × port_num</div>
+  <div class="fbox"><b>P7 · 隔离 / 回归</b><br/>420b vs 8B/10B · 8B/10B 回归防退化</div>
+</div>
 
 ## 1. Phase 1: Smoke
 

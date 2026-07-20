@@ -42,7 +42,7 @@
       line-height: 1.75;
     }
     .container {
-      max-width: 900px;
+      max-width: 1170px;
       margin: 0 auto;
       padding: 48px 24px;
     }
@@ -293,7 +293,7 @@
       box-shadow: 0 2px 12px rgba(0,0,0,0.06);
     }
     .navbar-inner {
-      max-width: 900px;
+      max-width: 1170px;
       margin: 0 auto;
       padding: 12px 24px;
       display: flex;
@@ -338,6 +338,12 @@
       .navbar-links a { font-size: 13px; padding: 5px 8px; }
     }
     .author { margin-top: 8px; font-size: 14px; color: var(--muted); }
+  .statbar { display: flex; gap: 16px; flex-wrap: wrap; margin: 24px 0 8px; }
+  .stat { flex: 1; min-width: 130px; text-align: center; border: 1px solid var(--line); border-radius: 14px; padding: 14px 8px; background: var(--surface); }
+  .stat .num { font-size: 30px; font-weight: 800; color: var(--accent); line-height: 1.2; }
+  .stat .num.ok { color: #16a34a; }
+  .stat .num.warn { color: #eab308; }
+  .stat .lbl { font-size: 13px; color: var(--muted); margin-top: 4px; }
   </style>
 </head>
 <body>
@@ -367,12 +373,22 @@
         <div class="author">作者：ymzhuuuu</div>
         <p class="lead">
           基于 DV_TCON_C 现有 8B/10B 结构重建的 420b 长编码验证环境，通过
-          <code>CHPI_MODE_420B</code> 宏隔离，覆盖帧结构、参考模型、解码链 RTL、case 体系与后续计划。
+          <code>CHPI_MODE_420B</code> 宏隔离。当前版本 <code>0717v1</code>：接收端不看 RTL，
+          脚本对线上 20-bit 对齐数据做离线 413b/420b 解码比对，已证实线上数据全部正确。
         </p>
+        <div class="statbar">
+          <div class="stat"><div class="num">0717v1</div><div class="lbl">当前环境版本</div></div>
+          <div class="stat"><div class="num">53</div><div class="lbl">规划验证 Case</div></div>
+          <div class="stat"><div class="num ok">5/5</div><div class="lbl">✅ 线上数据区域全对</div></div>
+          <div class="stat"><div class="num warn">6/8</div><div class="lbl">联调问题已解决 / 移交</div></div>
+        </div>
       </div>
 
       <div class="section-title">整体框架</div>
       <img class="overview-img" src="./longcode_verification_architecture.svg" alt="longcode 验证架构">
+
+      <div class="section-title">收发结构框图 · 脚本离线验证</div>
+      <img class="overview-img" src="./pydec_tx_rx_structure.svg" alt="收发结构框图：不看 RTL 的脚本离线验证">
 
       <div class="section-title">模式对比</div>
       <img class="overview-img" src="./8b10b_vs_420b_architecture.svg" alt="8B/10B vs 420B 架构对比">
@@ -382,7 +398,7 @@
     <a class="chapter-card" href="./architecture.html">
       <div class="num">1</div>
       <div class="title">一、整体架构</div>
-      <div class="desc">验证环境组件与数据流总览</div>
+      <div class="desc">0717v1 环境组件、数据流与脚本离线验证收发框图</div>
     </a>
     <a class="chapter-card" href="./comparison.html">
       <div class="num">2</div>
