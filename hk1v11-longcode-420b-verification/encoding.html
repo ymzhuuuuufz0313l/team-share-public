@@ -430,6 +430,8 @@
 
 ## 1. 413b → 420b 编码
 
+![413b → 420b 分组标签替换](./spec_tag_replacement.svg?v=20260720)
+
 ### 1.1 分组与 tag
 
 413 bit 分成 59 组，每组 7 bit；找一个未出现的 6-bit 样式作为 tag。
@@ -439,6 +441,8 @@
 全 0 / 全 1 组替换为 `tag + 1-bit 类型指示符`。
 
 ## 2. 加扰规则
+
+![Scramble key 滚动机制](./spec_scramble_rolling.svg?v=20260720)
 
 ### 2.1 payload 加扰
 
@@ -453,6 +457,8 @@ LSP 训练数据**不加扰**。
 IDLE K5~K8 **不加扰**。
 
 ## 3. 发送顺序
+
+![数据传输方向（LSB-first）](./spec_bit_order.svg?v=20260720)
 
 ### 3.1 420b LSB-first
 
@@ -471,6 +477,8 @@ Header 为 `{tag[5:0], toggle}`，toggle 位于 bit0，**toggle 先发**，随�
 普通 8B/10B 模式同样 LSB-first。
 
 ## 4. 跨 lane 70-bit 对齐
+
+![非 413b 整数倍数据处理](./spec_dummy_70b.svg?v=20260720)
 
 ### 4.1 对齐原则
 

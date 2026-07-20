@@ -1,0 +1,126 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 560" width="1200" height="560">
+  <style>text { font-family: 'Helvetica Neue', Helvetica, Arial, 'PingFang SC', 'Microsoft YaHei', 'Microsoft JhengHei', 'SimHei', sans-serif; }</style>
+  <defs>
+    <marker id="ar-blue" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#2563eb"/></marker>
+    <marker id="ar-green" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#059669"/></marker>
+    <marker id="ar-purple" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#7c3aed"/></marker>
+    <marker id="ar-orange" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#ea580c"/></marker>
+    <marker id="ar-gray" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#9ca3af"/></marker>
+  </defs>
+  <rect width="1200" height="560" fill="#ffffff"/>
+<text x="600" y="40" font-size="21" fill="#1e293b" text-anchor="middle" font-weight="600">数据传输方向：byte → bit 串行（LSB-first）</text>
+<text x="600" y="64" font-size="12" fill="#64748b" text-anchor="middle">Packet Data 按 byte 依次发送（byte0 → byte1 → byte2 …）；每个 byte 内 Bit0 最先发出</text>
+<rect x="110" y="104" width="64" height="30" rx="8" fill="#fce7f3" stroke="#f9a8d4" stroke-width="1.5"/>
+<text x="142.0" y="122.5" font-size="10" fill="#9d174d" text-anchor="middle" font-weight="600">R0[7]</text>
+<rect x="110" y="138" width="64" height="30" rx="8" fill="#fce7f3" stroke="#f9a8d4" stroke-width="1.5"/>
+<text x="142.0" y="156.5" font-size="10" fill="#9d174d" text-anchor="middle" font-weight="600">R0[6]</text>
+<rect x="110" y="172" width="64" height="30" rx="8" fill="#fce7f3" stroke="#f9a8d4" stroke-width="1.5"/>
+<text x="142.0" y="190.5" font-size="10" fill="#9d174d" text-anchor="middle" font-weight="600">R0[5]</text>
+<rect x="110" y="206" width="64" height="30" rx="8" fill="#fce7f3" stroke="#f9a8d4" stroke-width="1.5"/>
+<text x="142.0" y="224.5" font-size="10" fill="#9d174d" text-anchor="middle" font-weight="600">R0[4]</text>
+<rect x="110" y="240" width="64" height="30" rx="8" fill="#fce7f3" stroke="#f9a8d4" stroke-width="1.5"/>
+<text x="142.0" y="258.5" font-size="10" fill="#9d174d" text-anchor="middle" font-weight="600">R0[3]</text>
+<rect x="110" y="274" width="64" height="30" rx="8" fill="#fce7f3" stroke="#f9a8d4" stroke-width="1.5"/>
+<text x="142.0" y="292.5" font-size="10" fill="#9d174d" text-anchor="middle" font-weight="600">R0[2]</text>
+<rect x="110" y="308" width="64" height="30" rx="8" fill="#fce7f3" stroke="#f9a8d4" stroke-width="1.5"/>
+<text x="142.0" y="326.5" font-size="10" fill="#9d174d" text-anchor="middle" font-weight="600">R0[1]</text>
+<rect x="110" y="342" width="64" height="30" rx="8" fill="#fce7f3" stroke="#f9a8d4" stroke-width="1.5"/>
+<text x="142.0" y="360.5" font-size="10" fill="#9d174d" text-anchor="middle" font-weight="600">R0[0]</text>
+<rect x="178" y="104" width="64" height="30" rx="8" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
+<text x="210.0" y="122.5" font-size="10" fill="#166534" text-anchor="middle" font-weight="600">G0[7]</text>
+<rect x="178" y="138" width="64" height="30" rx="8" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
+<text x="210.0" y="156.5" font-size="10" fill="#166534" text-anchor="middle" font-weight="600">G0[6]</text>
+<rect x="178" y="172" width="64" height="30" rx="8" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
+<text x="210.0" y="190.5" font-size="10" fill="#166534" text-anchor="middle" font-weight="600">G0[5]</text>
+<rect x="178" y="206" width="64" height="30" rx="8" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
+<text x="210.0" y="224.5" font-size="10" fill="#166534" text-anchor="middle" font-weight="600">G0[4]</text>
+<rect x="178" y="240" width="64" height="30" rx="8" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
+<text x="210.0" y="258.5" font-size="10" fill="#166534" text-anchor="middle" font-weight="600">G0[3]</text>
+<rect x="178" y="274" width="64" height="30" rx="8" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
+<text x="210.0" y="292.5" font-size="10" fill="#166534" text-anchor="middle" font-weight="600">G0[2]</text>
+<rect x="178" y="308" width="64" height="30" rx="8" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
+<text x="210.0" y="326.5" font-size="10" fill="#166534" text-anchor="middle" font-weight="600">G0[1]</text>
+<rect x="178" y="342" width="64" height="30" rx="8" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
+<text x="210.0" y="360.5" font-size="10" fill="#166534" text-anchor="middle" font-weight="600">G0[0]</text>
+<rect x="246" y="104" width="64" height="30" rx="8" fill="#dbeafe" stroke="#93c5fd" stroke-width="1.5"/>
+<text x="278.0" y="122.5" font-size="10" fill="#1e40af" text-anchor="middle" font-weight="600">B0[7]</text>
+<rect x="246" y="138" width="64" height="30" rx="8" fill="#dbeafe" stroke="#93c5fd" stroke-width="1.5"/>
+<text x="278.0" y="156.5" font-size="10" fill="#1e40af" text-anchor="middle" font-weight="600">B0[6]</text>
+<rect x="246" y="172" width="64" height="30" rx="8" fill="#dbeafe" stroke="#93c5fd" stroke-width="1.5"/>
+<text x="278.0" y="190.5" font-size="10" fill="#1e40af" text-anchor="middle" font-weight="600">B0[5]</text>
+<rect x="246" y="206" width="64" height="30" rx="8" fill="#dbeafe" stroke="#93c5fd" stroke-width="1.5"/>
+<text x="278.0" y="224.5" font-size="10" fill="#1e40af" text-anchor="middle" font-weight="600">B0[4]</text>
+<rect x="246" y="240" width="64" height="30" rx="8" fill="#dbeafe" stroke="#93c5fd" stroke-width="1.5"/>
+<text x="278.0" y="258.5" font-size="10" fill="#1e40af" text-anchor="middle" font-weight="600">B0[3]</text>
+<rect x="246" y="274" width="64" height="30" rx="8" fill="#dbeafe" stroke="#93c5fd" stroke-width="1.5"/>
+<text x="278.0" y="292.5" font-size="10" fill="#1e40af" text-anchor="middle" font-weight="600">B0[2]</text>
+<rect x="246" y="308" width="64" height="30" rx="8" fill="#dbeafe" stroke="#93c5fd" stroke-width="1.5"/>
+<text x="278.0" y="326.5" font-size="10" fill="#1e40af" text-anchor="middle" font-weight="600">B0[1]</text>
+<rect x="246" y="342" width="64" height="30" rx="8" fill="#dbeafe" stroke="#93c5fd" stroke-width="1.5"/>
+<text x="278.0" y="360.5" font-size="10" fill="#1e40af" text-anchor="middle" font-weight="600">B0[0]</text>
+<text x="316" y="250" font-size="14" fill="#64748b" text-anchor="middle">…</text>
+<text x="100" y="122" font-size="10" fill="#64748b" text-anchor="end">Bit7</text>
+<text x="100" y="360" font-size="10" fill="#64748b" text-anchor="end">Bit0</text>
+<text transform="rotate(-90 52 244)" x="52" y="244" font-size="10.5" fill="#64748b" text-anchor="middle">Packet Data</text>
+<path d="M 74 356 L 74 122" stroke="#2563eb" stroke-width="2" fill="none" marker-end="url(#ar-blue)"/>
+<text transform="rotate(-90 88 240)" x="88" y="240" font-size="9.5" fill="#2563eb" text-anchor="middle">发送顺序（Bit0 先发）</text>
+<text x="142" y="404" font-size="9.5" fill="#64748b" text-anchor="middle">byte0</text>
+<text x="176" y="404" font-size="9.5" fill="#64748b" text-anchor="middle">>></text>
+<text x="210" y="404" font-size="9.5" fill="#64748b" text-anchor="middle">byte1</text>
+<text x="244" y="404" font-size="9.5" fill="#64748b" text-anchor="middle">>></text>
+<text x="278" y="404" font-size="9.5" fill="#64748b" text-anchor="middle">byte2</text>
+<line x1="230" y1="420" x2="230" y2="446" stroke="#2563eb" stroke-width="2" marker-end="url(#ar-blue)"/>
+<text x="240" y="436" font-size="9.5" fill="#2563eb" text-anchor="start">串行化</text>
+<text x="60" y="470" font-size="10.5" fill="#1e293b" text-anchor="start" font-weight="600">Case1 · 413b data（bit 串行流）</text>
+<rect x="60" y="482" width="40" height="32" rx="8" fill="#fce7f3" stroke="#f9a8d4" stroke-width="1.5"/>
+<text x="80.0" y="501.5" font-size="8.5" fill="#9d174d" text-anchor="middle" font-weight="600">R0[0]</text>
+<rect x="103" y="482" width="40" height="32" rx="8" fill="#fce7f3" stroke="#f9a8d4" stroke-width="1.5"/>
+<text x="123.0" y="501.5" font-size="8.5" fill="#9d174d" text-anchor="middle" font-weight="600">R0[1]</text>
+<rect x="146" y="482" width="40" height="32" rx="8" fill="#fce7f3" stroke="#f9a8d4" stroke-width="1.5"/>
+<text x="166.0" y="501.5" font-size="8.5" fill="#9d174d" text-anchor="middle" font-weight="600">R0[2]</text>
+<rect x="189" y="482" width="40" height="32" rx="8" fill="#fce7f3" stroke="#f9a8d4" stroke-width="1.5"/>
+<text x="209.0" y="501.5" font-size="8.5" fill="#9d174d" text-anchor="middle" font-weight="600">R0[3]</text>
+<rect x="232" y="482" width="40" height="32" rx="8" fill="#fce7f3" stroke="#f9a8d4" stroke-width="1.5"/>
+<text x="252.0" y="501.5" font-size="8.5" fill="#9d174d" text-anchor="middle" font-weight="600">R0[4]</text>
+<rect x="275" y="482" width="40" height="32" rx="8" fill="#fce7f3" stroke="#f9a8d4" stroke-width="1.5"/>
+<text x="295.0" y="501.5" font-size="8.5" fill="#9d174d" text-anchor="middle" font-weight="600">R0[5]</text>
+<rect x="318" y="482" width="40" height="32" rx="8" fill="#fce7f3" stroke="#f9a8d4" stroke-width="1.5"/>
+<text x="338.0" y="501.5" font-size="8.5" fill="#9d174d" text-anchor="middle" font-weight="600">R0[6]</text>
+<rect x="361" y="482" width="40" height="32" rx="8" fill="#fce7f3" stroke="#f9a8d4" stroke-width="1.5"/>
+<text x="381.0" y="501.5" font-size="8.5" fill="#9d174d" text-anchor="middle" font-weight="600">R0[7]</text>
+<rect x="404" y="482" width="40" height="32" rx="8" fill="#dbeafe" stroke="#93c5fd" stroke-width="1.5"/>
+<text x="424.0" y="501.5" font-size="8.5" fill="#1e40af" text-anchor="middle" font-weight="600">B0[0]</text>
+<rect x="447" y="482" width="40" height="32" rx="8" fill="#dbeafe" stroke="#93c5fd" stroke-width="1.5"/>
+<text x="467.0" y="501.5" font-size="8.5" fill="#1e40af" text-anchor="middle" font-weight="600">B0[1]</text>
+<rect x="490" y="482" width="40" height="32" rx="8" fill="#dbeafe" stroke="#93c5fd" stroke-width="1.5"/>
+<text x="510.0" y="501.5" font-size="8.5" fill="#1e40af" text-anchor="middle" font-weight="600">B0[2]</text>
+<rect x="533" y="482" width="40" height="32" rx="8" fill="#dbeafe" stroke="#93c5fd" stroke-width="1.5"/>
+<text x="553.0" y="501.5" font-size="8.5" fill="#1e40af" text-anchor="middle" font-weight="600">B0[3]</text>
+<rect x="576" y="482" width="40" height="32" rx="8" fill="#dbeafe" stroke="#93c5fd" stroke-width="1.5"/>
+<text x="596.0" y="501.5" font-size="8.5" fill="#1e40af" text-anchor="middle" font-weight="600">B0[4]</text>
+<rect x="619" y="482" width="40" height="32" rx="8" fill="#dbeafe" stroke="#93c5fd" stroke-width="1.5"/>
+<text x="639.0" y="501.5" font-size="8.5" fill="#1e40af" text-anchor="middle" font-weight="600">B0[5]</text>
+<rect x="662" y="482" width="40" height="32" rx="8" fill="#dbeafe" stroke="#93c5fd" stroke-width="1.5"/>
+<text x="682.0" y="501.5" font-size="8.5" fill="#1e40af" text-anchor="middle" font-weight="600">B0[6]</text>
+<rect x="705" y="482" width="40" height="32" rx="8" fill="#dbeafe" stroke="#93c5fd" stroke-width="1.5"/>
+<text x="725.0" y="501.5" font-size="8.5" fill="#1e40af" text-anchor="middle" font-weight="600">B0[7]</text>
+<rect x="748" y="482" width="40" height="32" rx="8" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
+<text x="768.0" y="501.5" font-size="8.5" fill="#166534" text-anchor="middle" font-weight="600">G0[0]</text>
+<rect x="791" y="482" width="40" height="32" rx="8" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
+<text x="811.0" y="501.5" font-size="8.5" fill="#166534" text-anchor="middle" font-weight="600">G0[1]</text>
+<rect x="834" y="482" width="40" height="32" rx="8" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
+<text x="854.0" y="501.5" font-size="8.5" fill="#166534" text-anchor="middle" font-weight="600">G0[2]</text>
+<rect x="877" y="482" width="40" height="32" rx="8" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
+<text x="897.0" y="501.5" font-size="8.5" fill="#166534" text-anchor="middle" font-weight="600">G0[3]</text>
+<rect x="920" y="482" width="40" height="32" rx="8" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
+<text x="940.0" y="501.5" font-size="8.5" fill="#166534" text-anchor="middle" font-weight="600">G0[4]</text>
+<rect x="963" y="482" width="40" height="32" rx="8" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
+<text x="983.0" y="501.5" font-size="8.5" fill="#166534" text-anchor="middle" font-weight="600">G0[5]</text>
+<rect x="1006" y="482" width="40" height="32" rx="8" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
+<text x="1026.0" y="501.5" font-size="8.5" fill="#166534" text-anchor="middle" font-weight="600">G0[6]</text>
+<rect x="1049" y="482" width="40" height="32" rx="8" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
+<text x="1069.0" y="501.5" font-size="8.5" fill="#166534" text-anchor="middle" font-weight="600">G0[7]</text>
+<text x="1106" y="502" font-size="13" fill="#64748b" text-anchor="middle">…</text>
+<line x1="60" y1="540" x2="1140" y2="540" stroke="#2563eb" stroke-width="1.5" marker-end="url(#ar-blue)"/>
+<text x="1140" y="532" font-size="10" fill="#2563eb" text-anchor="end">传输时间轴方向</text>
+</svg>

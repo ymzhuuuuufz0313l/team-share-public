@@ -1,0 +1,134 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 660" width="1200" height="660">
+  <style>text { font-family: 'Helvetica Neue', Helvetica, Arial, 'PingFang SC', 'Microsoft YaHei', 'Microsoft JhengHei', 'SimHei', sans-serif; }</style>
+  <defs>
+    <marker id="ar-blue" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#2563eb"/></marker>
+    <marker id="ar-green" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#059669"/></marker>
+    <marker id="ar-purple" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#7c3aed"/></marker>
+    <marker id="ar-orange" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#ea580c"/></marker>
+    <marker id="ar-gray" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#9ca3af"/></marker>
+  </defs>
+  <rect width="1200" height="660" fill="#ffffff"/>
+<text x="600" y="40" font-size="21" fill="#1e293b" text-anchor="middle" font-weight="600">H/V blanking 与 IDLE（K5 ~ K8）</text>
+<text x="600" y="64" font-size="12" fill="#64748b" text-anchor="middle">H blanking 采用固定 pattern K5/K6/K7/K8 替代；为优化 EMI，不同 lane 采用不同发送顺序</text>
+<text x="60" y="106" font-size="12" fill="#1e293b" text-anchor="start" font-weight="600">IDLE pattern · 10-bit · 不加扰</text>
+<rect x="60" y="120" width="60" height="36" rx="6" fill="#fef9c3" stroke="#fde047" stroke-width="1.5"/>
+<text x="90" y="144" font-size="11.5" fill="#854d0e" text-anchor="middle" font-weight="700">K5</text>
+<rect x="124" y="120" width="200" height="36" rx="6" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+<text x="224" y="144" font-size="13" fill="#1e293b" text-anchor="middle" font-family="Consolas, Menlo, monospace">1100110011</text>
+<rect x="60" y="162" width="60" height="36" rx="6" fill="#fef9c3" stroke="#fde047" stroke-width="1.5"/>
+<text x="90" y="186" font-size="11.5" fill="#854d0e" text-anchor="middle" font-weight="700">K6</text>
+<rect x="124" y="162" width="200" height="36" rx="6" fill="#f9fafb" stroke="#d1d5db" stroke-width="1.5"/>
+<text x="224" y="186" font-size="13" fill="#1e293b" text-anchor="middle" font-family="Consolas, Menlo, monospace">0011001100</text>
+<rect x="60" y="204" width="60" height="36" rx="6" fill="#fef9c3" stroke="#fde047" stroke-width="1.5"/>
+<text x="90" y="228" font-size="11.5" fill="#854d0e" text-anchor="middle" font-weight="700">K7</text>
+<rect x="124" y="204" width="200" height="36" rx="6" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+<text x="224" y="228" font-size="13" fill="#1e293b" text-anchor="middle" font-family="Consolas, Menlo, monospace">1111000011</text>
+<rect x="60" y="246" width="60" height="36" rx="6" fill="#fef9c3" stroke="#fde047" stroke-width="1.5"/>
+<text x="90" y="270" font-size="11.5" fill="#854d0e" text-anchor="middle" font-weight="700">K8</text>
+<rect x="124" y="246" width="200" height="36" rx="6" fill="#f9fafb" stroke="#d1d5db" stroke-width="1.5"/>
+<text x="224" y="270" font-size="13" fill="#1e293b" text-anchor="middle" font-family="Consolas, Menlo, monospace">0000111100</text>
+<text x="420" y="106" font-size="12" fill="#1e293b" text-anchor="start" font-weight="600">lane 间轮换（EMI 优化）</text>
+<text x="420" y="144" font-size="11" fill="#1e293b" text-anchor="start" font-weight="600">Lane1</text>
+<rect x="490" y="120" width="40" height="30" rx="8" fill="#fef9c3" stroke="#fde047" stroke-width="1.5"/>
+<text x="510.0" y="138.5" font-size="10" fill="#854d0e" text-anchor="middle" font-weight="600">K5</text>
+<text x="539" y="140" font-size="10" fill="#64748b" text-anchor="middle">→</text>
+<rect x="548" y="120" width="40" height="30" rx="8" fill="#fef9c3" stroke="#fde047" stroke-width="1.5"/>
+<text x="568.0" y="138.5" font-size="10" fill="#854d0e" text-anchor="middle" font-weight="600">K6</text>
+<text x="597" y="140" font-size="10" fill="#64748b" text-anchor="middle">→</text>
+<rect x="606" y="120" width="40" height="30" rx="8" fill="#fef9c3" stroke="#fde047" stroke-width="1.5"/>
+<text x="626.0" y="138.5" font-size="10" fill="#854d0e" text-anchor="middle" font-weight="600">K7</text>
+<text x="655" y="140" font-size="10" fill="#64748b" text-anchor="middle">→</text>
+<rect x="664" y="120" width="40" height="30" rx="8" fill="#fef9c3" stroke="#fde047" stroke-width="1.5"/>
+<text x="684.0" y="138.5" font-size="10" fill="#854d0e" text-anchor="middle" font-weight="600">K8</text>
+<text x="420" y="186" font-size="11" fill="#1e293b" text-anchor="start" font-weight="600">Lane2</text>
+<rect x="490" y="162" width="40" height="30" rx="8" fill="#fef9c3" stroke="#fde047" stroke-width="1.5"/>
+<text x="510.0" y="180.5" font-size="10" fill="#854d0e" text-anchor="middle" font-weight="600">K6</text>
+<text x="539" y="182" font-size="10" fill="#64748b" text-anchor="middle">→</text>
+<rect x="548" y="162" width="40" height="30" rx="8" fill="#fef9c3" stroke="#fde047" stroke-width="1.5"/>
+<text x="568.0" y="180.5" font-size="10" fill="#854d0e" text-anchor="middle" font-weight="600">K7</text>
+<text x="597" y="182" font-size="10" fill="#64748b" text-anchor="middle">→</text>
+<rect x="606" y="162" width="40" height="30" rx="8" fill="#fef9c3" stroke="#fde047" stroke-width="1.5"/>
+<text x="626.0" y="180.5" font-size="10" fill="#854d0e" text-anchor="middle" font-weight="600">K8</text>
+<text x="655" y="182" font-size="10" fill="#64748b" text-anchor="middle">→</text>
+<rect x="664" y="162" width="40" height="30" rx="8" fill="#fef9c3" stroke="#fde047" stroke-width="1.5"/>
+<text x="684.0" y="180.5" font-size="10" fill="#854d0e" text-anchor="middle" font-weight="600">K5</text>
+<text x="420" y="228" font-size="11" fill="#1e293b" text-anchor="start" font-weight="600">Lane3</text>
+<rect x="490" y="204" width="40" height="30" rx="8" fill="#fef9c3" stroke="#fde047" stroke-width="1.5"/>
+<text x="510.0" y="222.5" font-size="10" fill="#854d0e" text-anchor="middle" font-weight="600">K7</text>
+<text x="539" y="224" font-size="10" fill="#64748b" text-anchor="middle">→</text>
+<rect x="548" y="204" width="40" height="30" rx="8" fill="#fef9c3" stroke="#fde047" stroke-width="1.5"/>
+<text x="568.0" y="222.5" font-size="10" fill="#854d0e" text-anchor="middle" font-weight="600">K8</text>
+<text x="597" y="224" font-size="10" fill="#64748b" text-anchor="middle">→</text>
+<rect x="606" y="204" width="40" height="30" rx="8" fill="#fef9c3" stroke="#fde047" stroke-width="1.5"/>
+<text x="626.0" y="222.5" font-size="10" fill="#854d0e" text-anchor="middle" font-weight="600">K5</text>
+<text x="655" y="224" font-size="10" fill="#64748b" text-anchor="middle">→</text>
+<rect x="664" y="204" width="40" height="30" rx="8" fill="#fef9c3" stroke="#fde047" stroke-width="1.5"/>
+<text x="684.0" y="222.5" font-size="10" fill="#854d0e" text-anchor="middle" font-weight="600">K6</text>
+<text x="420" y="270" font-size="11" fill="#1e293b" text-anchor="start" font-weight="600">Lane4</text>
+<rect x="490" y="246" width="40" height="30" rx="8" fill="#fef9c3" stroke="#fde047" stroke-width="1.5"/>
+<text x="510.0" y="264.5" font-size="10" fill="#854d0e" text-anchor="middle" font-weight="600">K8</text>
+<text x="539" y="266" font-size="10" fill="#64748b" text-anchor="middle">→</text>
+<rect x="548" y="246" width="40" height="30" rx="8" fill="#fef9c3" stroke="#fde047" stroke-width="1.5"/>
+<text x="568.0" y="264.5" font-size="10" fill="#854d0e" text-anchor="middle" font-weight="600">K5</text>
+<text x="597" y="266" font-size="10" fill="#64748b" text-anchor="middle">→</text>
+<rect x="606" y="246" width="40" height="30" rx="8" fill="#fef9c3" stroke="#fde047" stroke-width="1.5"/>
+<text x="626.0" y="264.5" font-size="10" fill="#854d0e" text-anchor="middle" font-weight="600">K6</text>
+<text x="655" y="266" font-size="10" fill="#64748b" text-anchor="middle">→</text>
+<rect x="664" y="246" width="40" height="30" rx="8" fill="#fef9c3" stroke="#fde047" stroke-width="1.5"/>
+<text x="684.0" y="264.5" font-size="10" fill="#854d0e" text-anchor="middle" font-weight="600">K7</text>
+<text x="60" y="330" font-size="12" fill="#1e293b" text-anchor="start" font-weight="600">V blanking 行结构（VBK dummy line 内容可配置）</text>
+<rect x="60" y="348" width="56" height="40" rx="8" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
+<text x="88.0" y="371.5" font-size="11" fill="#166534" text-anchor="middle" font-weight="600">K1</text>
+<rect x="120" y="348" width="110" height="40" rx="8" fill="#cffafe" stroke="#67e8f9" stroke-width="1.5"/>
+<text x="175.0" y="371.5" font-size="11" fill="#155e75" text-anchor="middle" font-weight="600">CTRL_L</text>
+<rect x="234" y="348" width="380" height="40" rx="8" fill="#dbeafe" stroke="#93c5fd" stroke-width="1.5"/>
+<text x="424.0" y="371.5" font-size="11" fill="#1e40af" text-anchor="middle" font-weight="600">VBK dummy line</text>
+<rect x="618" y="348" width="56" height="40" rx="8" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
+<text x="646.0" y="371.5" font-size="11" fill="#166534" text-anchor="middle" font-weight="600">K2</text>
+<rect x="678" y="348" width="200" height="40" rx="8" fill="#f3f4f6" stroke="#d1d5db" stroke-width="1.5"/>
+<text x="778.0" y="371.5" font-size="11" fill="#6b7280" text-anchor="middle" font-weight="600">H-IDLE</text>
+<text x="60" y="436" font-size="12" fill="#1e293b" text-anchor="start" font-weight="600">Config Line 单独成行：K4 + CTRL_F + Dmy + K2（VACT 结束后单独发送一行）</text>
+<text x="52" y="482" font-size="9.5" fill="#64748b" text-anchor="end">末行</text>
+<rect x="60" y="456" width="56" height="38" rx="8" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
+<text x="88.0" y="478.5" font-size="10" fill="#166534" text-anchor="middle" font-weight="600">K1</text>
+<rect x="120" y="456" width="90" height="38" rx="8" fill="#cffafe" stroke="#67e8f9" stroke-width="1.5"/>
+<text x="165.0" y="478.5" font-size="10" fill="#155e75" text-anchor="middle" font-weight="600">CTR_L</text>
+<rect x="214" y="456" width="320" height="38" rx="8" fill="#dbeafe" stroke="#93c5fd" stroke-width="1.5"/>
+<text x="374.0" y="478.5" font-size="10.5" fill="#1e40af" text-anchor="middle" font-weight="600">Enc Data</text>
+<rect x="538" y="456" width="90" height="38" rx="8" fill="#e5e7eb" stroke="#d1d5db" stroke-width="1.5"/>
+<text x="583.0" y="478.5" font-size="10" fill="#6b7280" text-anchor="middle" font-weight="600">Dmy</text>
+<rect x="632" y="456" width="56" height="38" rx="8" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
+<text x="660.0" y="478.5" font-size="10" fill="#166534" text-anchor="middle" font-weight="600">K2</text>
+<rect x="692" y="456" width="40" height="38" rx="8" fill="#fef9c3" stroke="#fde047" stroke-width="1.5"/>
+<text x="712.0" y="478.5" font-size="10" fill="#854d0e" text-anchor="middle" font-weight="600">K5</text>
+<rect x="736" y="456" width="40" height="38" rx="8" fill="#fef9c3" stroke="#fde047" stroke-width="1.5"/>
+<text x="756.0" y="478.5" font-size="10" fill="#854d0e" text-anchor="middle" font-weight="600">K6</text>
+<rect x="780" y="456" width="40" height="38" rx="8" fill="#fef9c3" stroke="#fde047" stroke-width="1.5"/>
+<text x="800.0" y="478.5" font-size="10" fill="#854d0e" text-anchor="middle" font-weight="600">K7</text>
+<rect x="824" y="456" width="40" height="38" rx="8" fill="#fef9c3" stroke="#fde047" stroke-width="1.5"/>
+<text x="844.0" y="478.5" font-size="10" fill="#854d0e" text-anchor="middle" font-weight="600">K8</text>
+<text x="874" y="480" font-size="13" fill="#64748b" text-anchor="middle">…</text>
+<rect x="898" y="456" width="40" height="38" rx="8" fill="#fef9c3" stroke="#fde047" stroke-width="1.5"/>
+<text x="918.0" y="478.5" font-size="10" fill="#854d0e" text-anchor="middle" font-weight="600">K5</text>
+<text x="52" y="540" font-size="9.5" fill="#64748b" text-anchor="end">VBP 首行</text>
+<rect x="60" y="514" width="56" height="38" rx="8" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
+<text x="88.0" y="536.5" font-size="10" fill="#166534" text-anchor="middle" font-weight="600">K4</text>
+<rect x="120" y="514" width="180" height="38" rx="8" fill="#fce7f3" stroke="#f9a8d4" stroke-width="1.5"/>
+<text x="210.0" y="536.5" font-size="10" fill="#9d174d" text-anchor="middle" font-weight="600">CTR_F</text>
+<rect x="304" y="514" width="90" height="38" rx="8" fill="#e5e7eb" stroke="#d1d5db" stroke-width="1.5"/>
+<text x="349.0" y="536.5" font-size="10" fill="#6b7280" text-anchor="middle" font-weight="600">Dmy</text>
+<rect x="398" y="514" width="56" height="38" rx="8" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
+<text x="426.0" y="536.5" font-size="10" fill="#166534" text-anchor="middle" font-weight="600">K2</text>
+<rect x="458" y="514" width="40" height="38" rx="8" fill="#fef9c3" stroke="#fde047" stroke-width="1.5"/>
+<text x="478.0" y="536.5" font-size="10" fill="#854d0e" text-anchor="middle" font-weight="600">K5</text>
+<rect x="502" y="514" width="40" height="38" rx="8" fill="#fef9c3" stroke="#fde047" stroke-width="1.5"/>
+<text x="522.0" y="536.5" font-size="10" fill="#854d0e" text-anchor="middle" font-weight="600">K6</text>
+<rect x="546" y="514" width="40" height="38" rx="8" fill="#fef9c3" stroke="#fde047" stroke-width="1.5"/>
+<text x="566.0" y="536.5" font-size="10" fill="#854d0e" text-anchor="middle" font-weight="600">K7</text>
+<rect x="590" y="514" width="40" height="38" rx="8" fill="#fef9c3" stroke="#fde047" stroke-width="1.5"/>
+<text x="610.0" y="536.5" font-size="10" fill="#854d0e" text-anchor="middle" font-weight="600">K8</text>
+<text x="644" y="538" font-size="13" fill="#64748b" text-anchor="middle">…</text>
+<rect x="668" y="514" width="40" height="38" rx="8" fill="#fef9c3" stroke="#fde047" stroke-width="1.5"/>
+<text x="688.0" y="536.5" font-size="10" fill="#854d0e" text-anchor="middle" font-weight="600">K5</text>
+<text x="60" y="600" font-size="10.5" fill="#64748b" text-anchor="start">注：Active Line（含最后一行）统一以 K2 结束，不再嵌入 K4+CTRL_F；Config Line 于 VACT 结束后单独发送。</text>
+</svg>

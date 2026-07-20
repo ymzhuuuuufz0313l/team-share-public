@@ -447,13 +447,13 @@
 
 ## 1. 验证环境总览
 
-![longcode 验证架构](./longcode_verification_architecture.svg)
+![longcode 验证架构](./longcode_verification_architecture.svg?v=20260720)
 
 ## 2. 收发结构框图：不看 RTL 的脚本离线验证（0717 新增）
 
 接收端验证**不再依赖 DUT 解码结果**：用 `bind` 在 K 码对齐点抓线上 20-bit 数据，Python 直接离线解码，与发送端原始字节逐区域比对。
 
-![收发结构框图：脚本离线验证](./pydec_tx_rx_structure.svg)
+![收发结构框图：脚本离线验证](./pydec_tx_rx_structure.svg?v=20260720)
 
 <div class="flow">
   <div class="fbox"><b>① 抓取</b><br/>在 <code>CHPI_KCODE_ALIGN_LONG_L0</code> 的 <code>DATA_ALIGN_PRE</code>（K 码检测同款对齐数据）tap，<code>long_rtl_tap_debug.sv</code> 以 bind 注入，零 RTL 修改<br/><code>→ long_rtl_dap_lane0.md</code></div>

@@ -430,6 +430,8 @@
 
 ## 1. 帧格式概览
 
+![420b 帧数据流](./spec_frame_flow.svg?v=20260720)
+
 ```text
 Frame c:
 ├─ VBP/V blanking Lines (K1 + CTRL_L + VBK + K2 + IDLE) × VBP
@@ -447,7 +449,9 @@ Frame c:
 
 ### 2.1 LSP
 
-K2 + 0xEA/EB/EC/ED×8 + dummy + K3；训练数据，**不加扰**。
+K2 + 0xEA/EB/EC/ED×8 + dummy + K3；训练数据，**不加扰**；至少发送 5 次，连续发送 ≥ 1us。
+
+![LSP 序列与 K 码](./spec_lsp_kcode.svg?v=20260720)
 
 ### 2.2 CTRL_F
 
@@ -467,7 +471,9 @@ V blanking 数据；payload，**加扰**。
 
 ### 2.6 IDLE
 
-K5/K6/K7/K8 pattern；**不加扰**。
+K5/K6/K7/K8 pattern；**不加扰**；为优化 EMI，不同 lane 采用不同发送顺序。
+
+![H/V blanking 与 IDLE](./spec_blanking_idle.svg?v=20260720)
 
 ---
   </script>
