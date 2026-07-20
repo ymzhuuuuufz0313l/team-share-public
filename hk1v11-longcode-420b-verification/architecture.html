@@ -443,7 +443,7 @@
   <script type="text/template" id="md">
 # 一、整体架构
 
-> 当前环境：`longcode_ver/0717v1`（2026-07-17）· 基于 `DV_TCON_C` 现有 8B/10B 结构重建 · `CHPI_MODE_420B` 宏隔离
+> 当前环境：`longcode_ver/current_work`（版本 0720v1，2026-07-20）· 基于 `DV_TCON_C` 现有 8B/10B 结构重建 · `CHPI_MODE_420B` 宏隔离
 
 ## 1. 验证环境总览
 
@@ -502,7 +502,7 @@
 - `final_tail_bit`：保持跨 line / 跨 K-code 的加扰连续
 - `encoded_bits_70aligned()`：跨 lane 编码长度计算
 - 常量：K1~K4 40-bit / K5~K8 10-bit / SOT
-- <span class="badge badge-pending">🟡 待修正</span> `decode_420b_to_413b()` 与 encode 语义不一致（tag 提取差一位、scren=1 顺序错误），仅 display-only checker 使用，见「排障 3.7」
+- <span class="badge badge-fixed">🔵 已修复 07/20</span> `decode_420b_to_413b()` 与 encode 语义已对齐（`tag = header[6:1]`、线上组先判定替换再全组统一解扰、自然位序），见「排障 3.7」
 
 ### 3.3 Transaction / Driver：20-bit 包通路
 

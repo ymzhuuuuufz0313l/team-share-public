@@ -555,10 +555,11 @@
 
 ### 3.7 ref model decode_420b_to_413b 与 encode 不一致
 
-<div class="pcard pending">
-<div class="prow"><span class="k">状态</span><span><span class="badge badge-pending">🟡 待修正</span> <span class="badge badge-dv">DV 侧</span> <span class="badge">07/17</span></span></div>
+<div class="pcard">
+<div class="prow"><span class="k">状态</span><span><span class="badge badge-fixed">🔵 已解决</span> <span class="badge badge-dv">DV 侧</span> <span class="badge">07/17 发现 · 07/20 修复</span></span></div>
 <div class="prow"><span class="k">现象</span><span>decode 的 tag 提取与 encode 差一位（encode 把 tag 放 header bits1-6，decode 取 bits0-5），且 scren=1 时先解扰后判定替换的顺序错误。</span></div>
-<div class="prow"><span class="k">影响</span><span>仅被 display-only 的 checker_420b 使用，从未暴露；Python 解码器已实现正确语义，SV ref model 待修正。</span></div>
+<div class="prow"><span class="k">影响</span><span>仅被 display-only 的 checker_420b 使用，从未暴露；Python 解码器已实现正确语义。</span></div>
+<div class="prow"><span class="k">解决</span><span>0720v1 已修复：<code>tag = header[6:1]</code>；改为先在未解扰线上组判定替换（低 6 位 == tag、bit6 = type → 还原加扰域 0x00/0x7F），再对全部 59 组统一解扰（LFSR 每组推进）；线上组同时改按自然位序处理，消除原位反转导致的 scren=1 keystream 错位。已用 SV encode/decode 逐行直译的 Python roundtrip 复验（scren=0/1、416 块、含 244 块替换路径），并与 golden <code>decode_dap.py</code> 交叉一致。启用 checker 正式比对前仍需改造 <code>check_all()</code> 的 scramble_en 硬编码与每 block LFSR 重置。</span></div>
 </div>
 
 ### 3.8 K3 使用条件

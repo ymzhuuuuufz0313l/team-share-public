@@ -430,7 +430,8 @@
 - [x] 修复 reference model 与 driver 的 LSB-first / 从右到左实现（0713 已完成）
 - [x] 将 `t_8b1lane_420b_basic` 同步到 `DV_TCON_C/top/tests/`（0716 已完成并跑通）
 - [x] Config Line 单独成行，Active Line 统一 K2 结束（0717v1 已完成）
-- [ ] 0717v1 帧结构修改后重新仿真，用 `long_kcode_seq/drv` 日志复核 K-code 序列
+- [x] 修复 ref model `decode_420b_to_413b()` 与 encode 语义不一致：tag 取 `header[6:1]`、线上组先判定替换再全组统一解扰、改自然位序（0720v1 已完成，Python roundtrip 复验通过）
+- [ ] 帧结构与 decode 修复后重新仿真，用 `long_kcode_seq/drv` 日志复核 K-code 序列
 
 ## 2. Case 扩展
 

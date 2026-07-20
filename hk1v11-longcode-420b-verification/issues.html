@@ -446,7 +446,8 @@
 | 问题 | 状态 | 侧 |
 |------|------|----|
 | RTL 解码区域边界异常（起始残流 / 尾部溢出 / 个别位错，pydec 线上数据正确可作对照证据） | <span class="badge badge-pending">🟡 待跟进</span> | <span class="badge badge-rtl">RTL 侧</span> |
-| ref model `decode_420b_to_413b` 与 encode 不一致（tag 提取差一位、scren=1 顺序错误；仅 display-only checker 使用） | <span class="badge badge-pending">🟡 待修正</span> | <span class="badge badge-dv">DV 侧</span> |
+
+> ✅ 07/20 更新：ref model `decode_420b_to_413b` 与 encode 不一致已修复（0720v1：`tag = header[6:1]`、线上组先判定替换再全组统一解扰、改自然位序；Python roundtrip 复验通过），详见「排障实录 3.7」。
 
 ## 2. Spec 待确认
 
