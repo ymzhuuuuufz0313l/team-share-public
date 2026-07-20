@@ -465,29 +465,72 @@
 
 ## 3. 环境核心组件（0717v1）
 
-### 3.1 Reference Model
+### 3.1 Sequence：帧构建与编码调度
 
-`long_encoding_ref_model.sv`：413b→420b 编码 / G16(X) 加扰解扰 / K 码常量 / 70-bit 对齐长度计算。（`decode_420b_to_413b` 与 encode 语义不一致，待修正，仅 display-only checker 使用，见「排障 3.7」）
+`isptx_sequence.sv` 是发送端核心：按 spec 帧结构组帧，调用 ref model 完成编码，经 transaction 交给 driver。
 
-### 3.2 Sequence
+<div class="flow">
+  <div class="fbox"><b>① 原始字节</b><br/><code>reg_q / pixels / vbk / lsp_raw</code><br/>同步转储 <code>long_rawbyte_seq_laneN.md</code>（离线比对期望值）</div>
+  <div class="farrow">→</div>
+  <div class="fbox"><b>② 压流 + 对齐</b><br/><code>build_bit_stream_from_bytes()</code> LSB-first<br/><code>pad_bit_stream()</code> 跨 lane 70-bit 对齐</div>
+  <div class="farrow">→</div>
+  <div class="fbox"><b>③ 编码</b><br/><code>encode_with_70b_alignment()</code><br/><code>scramble_en = env_cfg.SCREN</code>（LSP / IDLE / K 码恒不加扰）</div>
+  <div class="farrow">→</div>
+  <div class="fbox"><b>④ 发出</b><br/>20-bit packet / 40-bit K-code<br/>经 transaction 交 driver</div>
+</div>
 
-`isptx_sequence.sv`：构建 LSP / Active / Config（单独成行）/ V blanking / IDLE 帧；`scramble_en = env_cfg.SCREN`；新增 `dump_raw_bytes()` 编码前 raw byte 转储。
+发送任务族（与 8B/10B 结构一一对应）：
 
-### 3.3 Driver
+| 任务 | 发送内容 | 备注 |
+|------|----------|------|
+| `send_420b_lsp()` | `K2 + 0xEA~ED×8 + Dmy + K3` × ≥5 次 | 256-bit raw → 280-bit；不加扰 |
+| `send_420b_active_line()` | `K1 + CTRL_L + Video + K2` | 含最后一行，统一 K2 结束 |
+| `send_420b_ctrl_f_line()` | `K4 + CTRL_F(ENC) + Dmy + K2` | 0717v1：VACT 后单独成行 |
+| `send_420b_vblank_line()` | `K1 + CTRL_L + VBK + K2` | |
+| `send_420b_idle_pattern()` | `K5~K8` IDLE | 不加扰 |
+| `send_420b_encoded_region()` | K-code + 编码数据 + K-code + IDLE 统一封装 | |
+| `send_ppm_420b()` | 帧循环：VBP → VACT → Config → VFP | 与 8B/10B `send_ppm()` 位置一致 |
 
-`isptx_driver.sv`：20-bit packet / 40-bit K-code 发送，**LSB-first**（0715 起与 8B/10B 一致）。
+`CTRL_L / CTRL_F` 经 `env_cfg.get_ctrlL_reg / get_ctrlF_reg` 获取，并自动置 FSYNC / BKDU 标志位。
 
-### 3.4 Transaction
+### 3.2 Reference Model：编码 / 加扰 / 常量
 
-`isptx_transaction.sv`：`bit[19:0] one_pkt_20b`、`bit[39:0] k1_420b ~ k4_420b`（enum 顺序已对齐 driver）。
+`long_encoding_ref_model.sv`（独立实现，sequence 与 checker 共用）：
 
-### 3.5 Checker
+- `encode_413b_to_420b()`：59 组 7-bit + tag 替换；`encode_with_70b_alignment()` 按真实 group 数对齐 70-bit
+- `G16(X)` 16-bit LFSR：`lfsr_key` / `lfsr_next_7bit()`；`final_lfsr_key` 仅按实际发送的 payload group 推进，截断的 dummy group 不影响后续加扰同步
+- `final_tail_bit`：保持跨 line / 跨 K-code 的加扰连续
+- `encoded_bits_70aligned()`：跨 lane 编码长度计算
+- 常量：K1~K4 40-bit / K5~K8 10-bit / SOT
+- <span class="badge badge-pending">🟡 待修正</span> `decode_420b_to_413b()` 与 encode 语义不一致（tag 提取差一位、scren=1 顺序错误），仅 display-only checker 使用，见「排障 3.7」
 
-`checker_420b.sv`：20-bit 数据流检查、编码规则检查、跨 lane 长度检查（display-only）。
+### 3.3 Transaction / Driver：20-bit 包通路
 
-### 3.6 离线验证链（0717 新增）
+- **Transaction**（`isptx_transaction.sv`）：`bit[19:0] one_pkt_20b`、`bit[39:0] k1_420b ~ k4_420b`；字段为普通 bit 并完成 field 注册；type_head enum 顺序 `K1/K2/K3/K4` 与 driver 对齐（0715 修复）；发送改 `start_item / finish_item` 直接赋值，固定 K-code 不走随机化
+- **Driver**（`isptx_driver.sv`）：`drv_one_pkt_20b()` / `drv_kx_key_420b()`，**LSB-first** 驱动到 `vif.rxn0/rxp0`；收到 K-code 时做 reference 常量解析检查；对 `LANE_NUM` 补 `put_response`（修复 Response queue overflow）
 
-`long_rtl_tap_debug.sv`（bind 注入 → `long_rtl_rx/dec/grp/dap_lane0.md`）+ `decode_dap.py`（→ `long_pydec_lane0.md` / `long_pydec_report_lane0.md`）。
+### 3.4 Checker
+
+`checker_420b.sv`：收集 20-bit chunk → 组装 420-bit block → `decode_420b_to_413b()` 还原比对；检查编码规则、跨 lane 长度、K-code 窗口。<span class="badge badge-dv">display-only</span>
+
+### 3.5 离线验证链（0717 新增）
+
+- **抓取**：`long_rtl_tap_debug.sv` 以 bind 注入（端口连接、零 RTL 修改）→ `long_rtl_rx / dec / grp / dap_lane0.md`
+- **解码**：`decode_dap.py` 区域分类 `LSP=K2→K3`、`LINE=K1→K2`、`CTRL_F=K4→K2`，IDLE 跳过；内容只看期望长度，多余尾部标 pad；roundtrip 500 块 × scren=0/1 全对
+- **比对**：`long_pydec_report_lane0.md` 精简报告（kind 汇总 + verdict + DIFF 置顶）
+
+### 3.6 关键数据宽度速查
+
+| 层级 | 宽度 | 说明 |
+|------|------|------|
+| 输入像素 | 8-bit | byte 队列（`reg_q` / `pixels` / `vbk` / `lsp_raw`） |
+| 分组 | 7-bit × 59 组 | 413-bit |
+| 编码块 | 420-bit | 7-bit header（tag+toggle）+ 59 组 = 60 组 |
+| K-code | 40-bit | K1~K4；不加扰；按 20-bit 对齐发送 |
+| IDLE | 10-bit | K5~K8；不加扰；两个拼成 20-bit |
+| LSP raw | 256-bit → 280-bit | 编码后按 70×4 对齐 |
+| 线上 packet | 20-bit | driver LSB-first |
+| DUT 输出 | 24-bit + 2-bit valid | `long_decoding_top` |
 
 ## 4. 0717 关键修改摘要
 
