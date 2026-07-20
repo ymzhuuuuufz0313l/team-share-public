@@ -392,6 +392,11 @@
     .badge-tx      { background: #1e3a8a; color: #93c5fd; }
     .badge-dv      { background: #581c87; color: #d8b4fe; }
   }
+  .flow { display: flex; gap: 10px; align-items: stretch; flex-wrap: wrap; margin: 18px 0; }
+  .fbox { flex: 1; min-width: 210px; border: 1.5px solid var(--accent); border-radius: 12px; padding: 14px 16px; background: var(--accent-soft); font-size: 14.5px; }
+  .fbox b { color: var(--accent); }
+  .fbox code { font-size: 12.5px; }
+  .farrow { align-self: center; font-size: 26px; color: var(--accent); font-weight: 800; }
   </style>
 </head>
 <body>
@@ -500,6 +505,41 @@ Header 为 `{tag[5:0], toggle}`，toggle 位于 bit0，**toggle 先发**，随�
 ### 4.2 dummy 填充
 
 统一按最大 lane 的 dummy 长度填充，保证 K-code 插入点在各 lane 对齐。
+
+### 4.3 原始数据（编码前的 raw bytes）
+
+| Region | 原始数据 | 来源 |
+|--------|----------|------|
+| LSP | 256-bit 训练码 `0xEA/EB/EC/ED ×8`（32B） | ref model 常量 |
+| CTRL_F | 64B 帧配置寄存器（SCREN / PORSD / CH_SEL / TEST_PRTCT…） | `env_cfg.get_ctrlF_reg(frame)` |
+| Active Line | CTRL_L 5B（FSYNC / POL / BKDU…）+ Video 像素 `hact×3` B/行 | `env_cfg.get_ctrlL_reg` + `pixels` |
+| V blanking | CTRL_L 5B + VBK（可配置字节 × subpix_cnt） | `env_cfg.get_ctrlL_reg` + `vbk` |
+
+### 4.4 dummy 填充与截取（0717v1 当前实现）
+
+<div class="flow">
+  <div class="fbox"><b>① 跨 lane 补零</b><br/><code>pad_bit_stream()</code><br/>补到 <code>max_lane_raw_bits()</code> = (6 + ⌈payload_B ÷ port_num⌉) × 8<br/>bit 级补 0，此时未对齐 413</div>
+  <div class="farrow">→</div>
+  <div class="fbox"><b>② 413b 块补齐</b><br/><code>encode_with_70b_alignment()</code><br/>⌈raw ÷ 413⌉ 块，末块补 0（Dmy 内嵌）<br/>逐块加扰 + 编码 → 每块 420-bit</div>
+  <div class="farrow">→</div>
+  <div class="fbox"><b>③ 140-bit 边缘截取</b><br/>保留刚好覆盖全部真实 7-bit group 的最小 140 整倍数<br/>被截掉的正是末尾 dummy（不发送）</div>
+  <div class="farrow">→</div>
+  <div class="fbox"><b>④ 20-bit 包发出</b><br/><code>send_420b_encoded_bits()</code><br/>140 是 20 的倍数，leftover = 0</div>
+</div>
+
+**截取边缘是 140-bit**（不是 420 / 70 / 20）：
+
+- `140 = LCM(70, 20)`：同时满足 spec 的 70-bit 对齐与 DUT 的 20-bit 输入粒度
+- `send_bits = ⌈7 × (⌈raw÷413⌉ + ⌈raw÷7⌉) ÷ 140⌉ × 140`，刚好保留全部真实 group（7-bit header + 59 组）
+- LFSR 只按**实际发出**的 payload group 推进（`final_lfsr_key`），截断的 dummy group 不影响后续加扰同步；`final_tail_bit` = 实际最后发出位，保证跨 region 加扰连续
+
+实例（1 lane · H3840 · 当前主调 case）：
+
+| Region | raw（bit） | 413 块 | 编码后 | 140 截取 | 20-bit 包 |
+|--------|-----------|--------|--------|----------|-----------|
+| LSP | 256 | 1（补 157） | 420 | **280**（70×4） | 14 |
+| CTRL_F | 512（64B） | 2（补 314） | 840 | **560**（420+140） | 28 |
+| Active Line | 92200 → pad 92208 | 224 | 94080 | **93800** | 4690 |
 
 ## 5. 编码实现与联调现状（0717v1）
 
