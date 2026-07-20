@@ -379,6 +379,19 @@
     }
   .toc-divider { height: 1px; background: var(--line); margin: 12px 0; }
   .toc a.toc-h1 { font-weight: 700; color: var(--accent); margin-bottom: 8px; cursor: default; }
+  .badge { display: inline-block; padding: 2px 12px; border-radius: 999px; font-size: 13px; font-weight: 600; line-height: 1.6; white-space: nowrap; }
+  .badge-fixed   { background: #dcfce7; color: #166534; }
+  .badge-pending { background: #fef9c3; color: #854d0e; }
+  .badge-rtl     { background: #fee2e2; color: #991b1b; }
+  .badge-tx      { background: #dbeafe; color: #1e40af; }
+  .badge-dv      { background: #f3e8ff; color: #6b21a8; }
+  @media (prefers-color-scheme: dark) {
+    .badge-fixed   { background: #14532d; color: #86efac; }
+    .badge-pending { background: #713f12; color: #fde047; }
+    .badge-rtl     { background: #7f1d1d; color: #fca5a5; }
+    .badge-tx      { background: #1e3a8a; color: #93c5fd; }
+    .badge-dv      { background: #581c87; color: #d8b4fe; }
+  }
   </style>
 </head>
 <body>
@@ -426,9 +439,45 @@
   </div>
 
   <script type="text/template" id="md">
-# 六、420b 解码链 RTL
+# 六、420b 解码
 
-## 1. 解码链路
+> **当前现状**：RTL 解码链仍在联调（区域边界问题待跟进），实际承担解码验证工作的是 **Python 离线解码器** —— 不看 RTL，直接对线上 20-bit 对齐数据做 413b/420b 解码，已证实 LSP / CTRL_F / CTRL_L / VBK / Video 线上数据全部正确。
+
+## 1. 离线解码（当前实际工作路径）
+
+![收发结构框图：脚本离线验证](./pydec_tx_rx_structure.svg?v=20260720)
+
+### 1.1 工作流程
+
+| 步骤 | 内容 | 产出 |
+|------|------|------|
+| 抓取 | `long_rtl_tap_debug.sv` bind 进 `CHPI_KCODE_ALIGN_LONG_L0`，每拍全量记录 `DATA_ALIGN_PRE` | `long_rtl_dap_lane0.md` |
+| 解码 | `decode_dap.py` 离线 413b/420b 解码（与 encode / DUT 语义一致） | `long_pydec_lane0.md` |
+| 比对 | 与发送端编码前原始字节 `long_rawbyte_seq_lane0.md` 逐区域 diff | `long_pydec_report_lane0.md` |
+
+### 1.2 解码规则
+
+- **K 码定位**：以两个连续 20-bit 字识别 K1~K4
+- **区域分类**：`LSP = K2→K3`、`LINE = K1→K2`、`CTRL_F = K4→K2`，IDLE 跳过
+- **替换还原**：tag 提取 + 全 0/全 1 组还原；替换判定在线上组 `{tag[0..5], type}` 上进行，随后全组统一解扰
+- **长度判定**：内容只看期望长度，多余尾部标注 pad
+- **自检**：Python encode/decode roundtrip，scren=0/1 各 500 块随机数据全对 <span class="badge badge-fixed">✅ 通过</span>
+
+### 1.3 验证结论
+
+| 区域 | 期望 | pydec 解码 | 结果 |
+|------|------|-----------|------|
+| LSP | `ed ec eb ea` ×8 | 完全一致 | ✅ |
+| CTRL_F | 64B 帧配置 | 逐项一致 | ✅ |
+| CTRL_L | 行控制（FSYNC/BKDU/POL） | 完全一致 | ✅ |
+| VBK | dummy 全 0 | 完全一致 | ✅ |
+| Video | 像素渐变 | 完全一致 | ✅ |
+
+⇒ 发送端（sequence / 编码 / driver / 链路 / 对齐）排除；剩余问题在 RTL 解码侧（见第 2 节）。
+
+## 2. RTL 解码链（联调中）
+
+### 2.1 链路结构
 
 ```text
 20-bit 对齐输入流
@@ -454,27 +503,21 @@
 └───────────────────┘
 ```
 
-## 2. 关键信号
+### 2.2 关键信号
 
-### 2.1 decode_en
+- `decode_en`：解码窗口使能；K1/K4 开，K2/K3 关
+- `tag_value`：6-bit 标签，用于全 0/全 1 替换
+- `dout_21b_valid`：有效位宽 01=7bit / 10=14bit / 11=21bit
+- `scramble_en_k3`：K3 锁存的解扰使能
+- `dout_24b / dout_valid`：最终 24-bit 输出及有效指示
 
-解码窗口使能；K1/K4 开，K2/K3 关。
+### 2.3 联调现状
 
-### 2.2 tag_value
-
-6-bit 标签，用于全 0/全 1 替换。
-
-### 2.3 dout_21b_valid
-
-有效位宽：01=7bit / 10=14bit / 11=21bit。
-
-### 2.4 scramble_en_k3
-
-K3 锁存的解扰使能。
-
-### 2.5 dout_24b / dout_valid
-
-最终 24-bit 输出及有效指示。
+| 事项 | 状态 |
+|------|------|
+| `din_20b_aligned` 误接 `DATA_POINT_LAT` → 改接 `DATA0_ALIGN_LONG`，LSP 解出原始训练码 | <span class="badge badge-fixed">🔵 已解决</span> |
+| 区域边界异常：起始 9 字节残流 / 尾部字节溢出 / 个别位错 | <span class="badge badge-pending">🟡 待跟进</span> |
+| 定位辅助：`long_rtl_grp_lane0.md`（7-bit group 流 + decode_en 窗口），pydec 可作对照证据 | 可用 |
 
 ---
   </script>

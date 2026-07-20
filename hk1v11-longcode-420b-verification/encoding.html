@@ -379,6 +379,19 @@
     }
   .toc-divider { height: 1px; background: var(--line); margin: 12px 0; }
   .toc a.toc-h1 { font-weight: 700; color: var(--accent); margin-bottom: 8px; cursor: default; }
+  .badge { display: inline-block; padding: 2px 12px; border-radius: 999px; font-size: 13px; font-weight: 600; line-height: 1.6; white-space: nowrap; }
+  .badge-fixed   { background: #dcfce7; color: #166534; }
+  .badge-pending { background: #fef9c3; color: #854d0e; }
+  .badge-rtl     { background: #fee2e2; color: #991b1b; }
+  .badge-tx      { background: #dbeafe; color: #1e40af; }
+  .badge-dv      { background: #f3e8ff; color: #6b21a8; }
+  @media (prefers-color-scheme: dark) {
+    .badge-fixed   { background: #14532d; color: #86efac; }
+    .badge-pending { background: #713f12; color: #fde047; }
+    .badge-rtl     { background: #7f1d1d; color: #fca5a5; }
+    .badge-tx      { background: #1e3a8a; color: #93c5fd; }
+    .badge-dv      { background: #581c87; color: #d8b4fe; }
+  }
   </style>
 </head>
 <body>
@@ -487,6 +500,30 @@ Header 为 `{tag[5:0], toggle}`，toggle 位于 bit0，**toggle 先发**，随�
 ### 4.2 dummy 填充
 
 统一按最大 lane 的 dummy 长度填充，保证 K-code 插入点在各 lane 对齐。
+
+## 5. 编码实现与联调现状（0717v1）
+
+### 5.1 实现位置
+
+编码由 `long_encoding_ref_model.sv` 独立实现（`encode_413b_to_420b()` / `encode_with_70b_alignment()` / `G16(X)` LFSR），由 `isptx_sequence.sv` 在各发送任务中调用；跨 lane 70-bit 对齐由 sequence 侧 `pad_bit_stream()` / `max_lane_raw_bits()` 配合完成。
+
+### 5.2 联调暴露并已修复的编码侧问题
+
+| 问题 | 处理 | 状态 |
+|------|------|------|
+| TX 三处 encode 硬编码 `scramble_en=1'b1`，case `SCREN=0` 时 DUT 不解扰 → CTRL_F/VBLK/ACT 密文 | 改为 `env_cfg.SCREN`（与 DUT `R_SCREN` 同源），LSP 恒不加扰 | <span class="badge badge-fixed">🔵 已修复</span> |
+| pixel/VBK 压流 MSB-first，与 CTRL_L/CTRL_F/LSP 的 LSB-first 不一致 → ACT 像素逐位反转 | 两处压流循环改 LSB-first | <span class="badge badge-fixed">🔵 已修复</span> |
+| 末行 Active 嵌入 K4+CTRL_F、Active 结束标记不统一 | Config Line 单独成行；所有 Active Line 统一 K2 结束 | <span class="badge badge-fixed">🔵 已修复</span> |
+| Dmy 处理方式 | 确认内嵌于 413b 零补齐 + 140-bit 截断（64B CTRL_F → 560 encoded bits 含 Dmy） | <span class="badge badge-fixed">🔵 已确认</span> |
+
+### 5.3 已知偏差
+
+- <span class="badge badge-pending">🟡 待修正</span> ref model `decode_420b_to_413b()` 与 encode 语义不一致（tag 提取差一位；scren=1 时先解扰后判定替换的顺序错误）。仅被 display-only 的 checker 使用，从未暴露；Python 解码器已实现正确语义，SV 侧待修正。
+
+### 5.4 验证证据
+
+- Python encode/decode roundtrip：scren=0/1 各 500 块随机数据全对 ✅
+- 线上数据：pydec 对 `DATA_ALIGN_PRE` 离线解码并与发送端原始字节逐区域比对，LSP / CTRL_F / CTRL_L / VBK / Video 全部一致（详见「排障」页）✅
 
 ---
   </script>
