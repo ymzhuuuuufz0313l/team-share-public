@@ -487,9 +487,16 @@ assign R_REG31_F_RECON = {PWRC_NB, PWRC_NA, PWRC_PB, PWRC_PA};  // 8'hAA
 - `0x04` 字节默认值从 `0x04` 改为 `0x00`
 - `0x02`（CHIP_SEL=1）字节默认值从 `0x0F` 改为 `0x00`（与字段级 `SMART_CS[3:0]=4'b0000` 一致）
 
-## 14. 寄存器可视化大图
+## 14. 0721 CONFIG_DATA 位宽扩展（寄存器映射不变）
 
-chip_sel=0/1 默认字节映射、checksum 地址覆盖、LSI 保护范围、复位域分类等五张 SVG 大图已集中到独立的 **寄存器图解 Sheet**：
+0721v1 将 `LCONFIG_DATA`/`FCONFIG_DATA` 由 16bit 扩为 24bit，每个 ADD 步进写 3 个寄存器。**寄存器地址映射表本身不变**（地址、字段、默认值均未改动），变化的只是配置流中字节到拍的打包方式（2 字节/拍 → 3 字节/拍），详见：
+
+- [四、校验和 §7 三字节拍重组与 XOR 不变性](./checksum.html)
+- [二、寄存器图解 §6 配置拍重组对照图](./diagrams.html)
+
+## 15. 寄存器可视化大图
+
+chip_sel=0/1 默认字节映射、checksum 地址覆盖、LSI 保护范围、复位域分类、0721v1 拍重组对照等 SVG 大图已集中到独立的 **寄存器图解 Sheet**：
 
 → [二、寄存器图解 Sheet](./diagrams.html)
 

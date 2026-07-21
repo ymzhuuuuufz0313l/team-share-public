@@ -431,6 +431,18 @@
 - 使用 `iverilog -g2005-sv -DFF_DLY=0` 完成三份 RTL 语法检查
 - 修复注释块与 `always` 关键字合并到同一行导致的语法错误
 
+### 4.8 0721 CONFIG_DATA 16bit → 24bit（每步 3 寄存器）
+
+协议级"拍重组"变更：`LCONFIG_DATA` / `FCONFIG_DATA` 端口位宽由 16bit 扩为 24bit，每个 ADD 步进写 **3 个寄存器**。
+
+- **流内字节顺序不变**：FCONFIG 60 字节 → 20 拍（`5'h01`~`5'h14`），LCONFIG 6 字节 → 2 拍（`3'h1`~`3'h2`），恰好整除、无需 pad
+- **新增第 3 字节选择**：`DATA_E = LCONFIG_DATA[23:16]`、`DATA_F = FCONFIG_DATA[23:16]`；拍内位置定数据源（`addr%3==0→C, ==1→D, ==2→F`）
+- **地址译码表整体重排**：I2C 比较部分不变，gap 字节依旧无译码行；127 行寄存器写数据源由脚本确定性替换（含 shadow 行）
+- **checksum 按字节有效性折叠**：`0x1E/0x1F` 与 `0x20` 同拍跨 Segment1 边界，折叠逻辑按拍查表（`C^D^F` / `C^F` / `C^D` / `F` / `C`）；**XOR 总量与 0716_v1_work 完全相同**（结合律），checker 与 DV 回归行为不变
+- **过渡方案**：上游 `CHPI_CONFIG_L0` 未升 24bit 前，`LINK_LOGIC` 将 `[23:16]` tie-off `8'h00` 防 X 传播，上游升版后删除
+- 0716v1 备份为 `0716_v1_work`；DV env 升 0721v1 并补齐服务器 0716 同步遗漏的 FSEL 更新
+- 对照图见「图解」章第 6 节：`config_data_beat_regroup_0721.svg`
+
   </script>
   <script>
     document.getElementById('article').innerHTML = marked.parse(document.getElementById('md').textContent.trim());

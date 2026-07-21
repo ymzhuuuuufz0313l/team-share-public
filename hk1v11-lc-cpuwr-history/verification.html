@@ -358,6 +358,7 @@ one-shot unlock 实现后，checker 出现误判：
 - 0705/0706：chip_sel=0/1 默认值验证
 - 0708：SMART_CS[3:0] 在 chip_sel=1 下的行为验证
 - 0714：chip_sel=1 默认值确认后的回归验证
+- 0721：CONFIG_DATA 24bit 拍重组后回归——因 XOR 总量不变，预期无行为退化；前提是上游 `CHPI_CONFIG_L0` 升 24bit（每拍 3 字节采样）后联调。DV env 已升 0721v1，TX 打包无需改动（字节顺序不变，拍分组由 DUT 上游采样决定）
 
 ## 6. 项目约定：cfg_frame 解析一致性
 

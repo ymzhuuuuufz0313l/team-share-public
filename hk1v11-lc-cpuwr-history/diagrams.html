@@ -330,6 +330,20 @@ SPEC 中「I2C_EN=1 时所有寄存器不做 unlock reset」的 RTL 路径为：
 
 ![复位域分类](./images/reset_domain_address_map.svg)
 
+## 6. 0721v1 配置拍重组对照（2B/拍 → 3B/拍）
+
+这张图展示 0721v1 最核心的协议级差异：`LCONFIG_DATA` / `FCONFIG_DATA` 由 16bit 扩为 24bit，每个 ADD 步进写的寄存器数从 2 个变为 3 个。左右对照同一字节流在两种分组下的拍归属，并标注每拍参与 checksum 折叠的字节。
+
+读图要点：
+
+- **流内字节顺序不变**：FCONFIG 60B（30 拍 → 20 拍）、LCONFIG 6B（3 拍 → 2 拍），恰好整除无 pad
+- **拍内位置定数据源**：第 1/2/3 字节分别为 C/D/F（LCONFIG 为 A/B/E）
+- **区域 B 是关键难点**：`0x1E/0x1F` 与 `0x20` 同拍跨 Segment1 边界，checksum 必须按字节有效性折叠
+- **绿色汇总框**：XOR 总量与旧版完全相同（结合律），checker / DV 回归行为不变
+- **橙色汇总框**：上游 `CHPI_CONFIG_L0` 未升 24bit 前，`LINK_LOGIC` 将 `[23:16]` tie-off 防 X 传播
+
+![0721v1 配置拍重组对照](./images/config_data_beat_regroup_0721.svg)
+
   </script>
   <script>
     document.getElementById('article').innerHTML = marked.parse(document.getElementById('md').textContent.trim());

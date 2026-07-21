@@ -246,64 +246,46 @@
 
 ## 1. 当前版本
 
-截至最新归档，LC_CPUWR 经历了 0708v1、0714v1 与 0716 Excel 更新：
+当前最新候选版本为 **0721v1**（`LC_CPUWR_0721_v1_decimal.v`，进行中）：
 
 | 版本 | 主要状态 |
 |------|----------|
-| 0708v1 | 新增 `SMART_CS[3:0]` @ `0x02`，仅在 `CHIP_SEL=1` 时有效；`CHIP_SEL` 命名已统一 |
-| 0714v1 | `R_REG09` / `R_REG10` / `R_REG31` 在 `LC_CPUWR` 内部复位默认值改为 `8'h00`；chip_sel=1 默认值通过 `LC_REG_MAPPING` 回拼机制实现（`8'hFF`/`8'hA5`/`8'hAA`） |
-| 0716 Excel | 新增 `FSEL[1:0]` @ `0x35`；`0x01`/`0x04`/`0x02(CHIP_SEL=1)` 字节默认值改为 `0x00` |
+| 0714v1 | chip_sel=0 默认值 + `LC_REG_MAPPING` 回拼 chip_sel=1 默认值；回归通过 ✅ |
+| 0716v1 | 新增 `FSEL[1:0]` @ `0x35`；已归档为 `0716_v1_work` ✅ |
+| **0721v1** | **`LCONFIG_DATA`/`FCONFIG_DATA` 16bit→24bit（每步 3 寄存器）；checksum XOR 总量不变；DV env 升版；待上游 `CHPI_CONFIG_L0` 升 24bit 联调** 🔄 |
 
-当前最新候选版本为 `LC_CPUWR_20260714_v1_decimal.v`，待按 0716 Excel 同步 RTL。
+0721v1 交付物：
 
-0714v1 交付物：
-- 三份 RTL 文件：`LC_CPUWR` / `LC_REG_MAPPING` / `LINK_LOGIC`
-- 更新后的寄存器映射文档
-- 验证环境同步：`checker_for_checksum.sv`、`i2c_scoreboard.sv` 等文件头 baseline 更新
-- `REVIEW.md` 回传 review 文档
-- `iverilog -g2005-sv -DFF_DLY=0` 语法检查通过
+- 三份 RTL：`LC_CPUWR_0721_v1_decimal.v` / `LC_REG_MAPPING_0721_v1_decimal.v` / `LINK_LOGIC_0721_v1_decimal.v`
+- `LC_CPUWR_0721_v1_changelist.md` 变更清单；0716v1 备份至 `verilog_hdl/*_0716_v1_work_decimal.v`
+- `current_env/` 0721v1 版本（env_cfg / checker / i2c_scoreboard / reg_model / reg_define）
+- DV env 同步，并补齐服务器 0716 同步遗漏的 FSEL 更新
+- `iverilog -g2005-sv -DFF_DLY=0` 语法检查通过（三件套 + HDL 工作树）
 
 ## 2. 已完成工作
 
 - 校验和机制收敛为 Seg1 单段 + 三帧一致更新 + NG Unlock
-- 寄存器命名从十六进制全面十进制化
-- `CHIP_SEL` 命名统一
-- `SMART_CS[3:0]` 新增
-- `FSEL[1:0]` @ `0x35` 新增
-- `R_REG09/10/31` 在 `LC_CPUWR` 内部默认值为 `8'h00`
-- chip_sel=1 默认值通过 `LC_REG_MAPPING` 回拼机制实现
-- `checker_for_checksum` 统一迁移到公共 agent
-- chip_sel=0 的 checksum / I2C 读回 case 回归通过（`0x09`/`0x0A`/`0x1F` 读回为 `8'h00`）
-- chip_sel=1 的 I2C 读回 case 回归通过（复位后读回 `8'hFF`/`8'hA5`/`8'hAA`）
-- chip_sel=1 的 checksum case 回归通过（`cfg_frame` 写入后 R_REG 与回拼字节一致）
+- `CHIP_SEL` 命名统一、`SMART_CS[3:0]` 新增、`FSEL[1:0]` @ `0x35` 新增
+- chip_sel=1 默认值通过 `LC_REG_MAPPING` 回拼机制实现；chip_sel=0/1 回归通过
+- **0721v1 拍重组**：端口 24bit、`DATA_E`/`DATA_F` 新增、译码表 3 字节循环重排、127 行写数据源更新
+- **0721v1 checksum 重构**：按字节有效性折叠；XOR 总量与 0716_v1_work 完全相同（checker/DV 行为不变）
 
 ## 3. 待确认项
 
 | 事项 | 状态 | 说明 |
 |------|------|------|
-| 0714v1 的服务器回传 review | 待完成 | 已生成 `REVIEW.md`，待正式回传 |
-| 全量 regression（含 8B/10B 模式防退化） | 待完成 | 覆盖所有 chip_sel 组合 |
-| chip_sel=0 的 checksum / I2C 读回 case | **已通过** | 确认 `0x09`/`0x0A`/`0x1F` 读回为 `8'h00` ✅ |
-| chip_sel=1 的 I2C 读回 case | **已通过** | 确认复位后读回为 `8'hFF`/`8'hA5`/`8'hAA` ✅ |
-| chip_sel=1 的 checksum case | **已通过** | 确认 `cfg_frame` 写入后 R_REG 与回拼字节一致 ✅ |
-| SMART_CS[3:0] 在 chip_sel=1 下的功能验证 | 待完成 | 0708v1 新增字段 |
-| `FSEL[1:0]` @ `0x35` 同步到 RTL | 待完成 | 0716 Excel 新增字段 |
-| `0x01`/`0x04`/`0x02(CHIP_SEL=1)` 默认值改为 `0x00` | 待完成 | 0716 Excel 默认值更新 |
-| 顶层模块旧 `reg_lane_ctrl` 端口连接 | 风险 | `HK1V11_digital_top.v`、`HK1V11.v`、`MACRO_TOP_1V11.v` 等仍连接旧 `reg_lane_ctrl` 端口，推广 0705v1/0714v1 前需统一替换为 `sw_reg_lane_ctrl` |
-| `i2c_model.sv` 仍使用旧层次与十六进制映射 | 风险 | 服务器编译可能报错，需从 filelist 移除或替换 |
+| chip_sel=0 的 checksum / I2C 读回 case | **已通过** | `0x09`/`0x0A`/`0x1F` 读回为 `8'h00` ✅ |
+| chip_sel=1 的 I2C 读回 case | **已通过** | 复位后读回为 `8'hFF`/`8'hA5`/`8'hAA` ✅ |
+| chip_sel=1 的 checksum case | **已通过** | `cfg_frame` 写入后 R_REG 与回拼字节一致 ✅ |
+| 上游 `CHPI_CONFIG_L0` 升 24bit | **外部依赖** | 每拍 3 字节采样 + `FCONFIG_END=5'd20` / `LCONFIG_END=3'd3`；全芯片 FCONFIG 流仿真联调前提 |
+| `LINK_LOGIC` `[23:16]` tie-off 删除 | 待上游升版 | 过渡期防 X 传播，上游 24bit 输出到位后删除两条 assign |
+| 0721v1 全量回归（checksum / I2C / reset） | 待联调 | 上游升版后执行；预期 XOR 总量不变、行为不退化 |
 
 ## 4. 后续建议
 
-1. **完成 0714v1 的服务器回传 review**，确认与 SPEC 一致性；重点核对 LC_REG_MAPPING 回拼字节与 chip_sel=1 默认值的映射。
-2. **完成 0714v1 与 `DV_TCON_C` 的同步**：
-   - `env_cfg` 寄存器默认值
-   - `checker_for_checksum.sv` 地址掩码与期望值
-   - `reg_model` baseline 标记
-3. **跑完 checksum 全量 case 回归**，重点验证：
-   - 0x27 作为新 frame end 的边界
-   - chip_sel=0/1 的复位默认值差异
-   - NG Unlock 连续 mismatch 触发条件
-4. **将最终版本归档到 `LC_CPUWR_history/verilog_hdl/`**，并更新 README 索引。
+1. **跟进上游 `CHPI_CONFIG_L0` 24bit 升版**（owner/时间节点待定），这是 0721v1 全芯片仿真唯一阻塞项。
+2. 上游升版后：删除 `LINK_LOGIC` tie-off → 跑 checksum 全量 + I2C 读回 + reset（chip_sel=0/1）回归 → 0716_v1_work 正式归档、0721v1 转 DONE。
+3. 若需提前单测 LC_CPUWR，可在 testbench 层次 force `FCONFIG_DATA`/`LCONFIG_DATA`/`FCONFIG_ADD`/`LCONFIG_ADD` 直接驱动 LC_CPUWR 引脚做定向验证。
 
   </script>
   <script>

@@ -370,6 +370,40 @@ LC_CPUWR 的寄存器更新核心机制：**写入一个寄存器需要连续 3 
 - `R_SCREN` 由 `R_REG00_F[4]` 直接输出改为 `R_REG00_F[4] & SSFC`
 - scramble enable 仅在 `SSFC==1` 时有效
 
+## 7. 0721v1 三字节拍重组与 XOR 不变性
+
+0721v1 将 `FCONFIG_DATA` / `LCONFIG_DATA` 扩为 24bit，每个 ADD 步进携带 3 字节。checksum 逻辑随之从"整拍 `C^D` 折叠"重构为"**按字节有效性折叠**"。
+
+### 7.1 为什么要按字节有效性折叠
+
+3 字节/拍后，`0x1E`/`0x1F`（Segment1 末尾）与 `0x20`（测试区开头）落在**同一拍**（`5'h0B`），跨 checksum 区边界；`0x07`（控制寄存器）与 `0x06`/`0x08` 也同拍（`5'h03`）。整拍一刀切会把不该参与的字节卷入 XOR，因此必须按拍查表：
+
+| 拍 | 字节 | 参与 XOR | 说明 |
+|---|---|---|---|
+| `5'h01` / `5'h02` | 0x00~0x05 | `C^D^F` | 全部在 Seg1 |
+| `5'h03` | 0x06✓ / 0x07✗ / 0x08✓ | `C^F` | 0x07 控制寄存器排除 |
+| `5'h04` | 0x09✓ / 0x0A✓ / 0x0B✗ | `C^D` | 0x0B gap |
+| `5'h0A` | 0x1D✓ | `F` | 0x1B/0x1C gap |
+| `5'h0B` | 0x1E✓ / 0x1F✓ / 0x20✗ | `C^D` | 0x20 不在 Seg1 |
+| `5'h0E` | 0x27✓（frame_end） | `C` | 0x28/0x29 不在 Seg1 |
+
+### 7.2 XOR 总量不变（关键性质）
+
+重新分组只是 XOR 的重新加括号（结合律），总量与旧版完全一致：
+
+```
+0x00^0x01^0x02^0x03^0x04^0x05^0x06^0x08^0x09^0x0A^0x1D^0x1E^0x1F   (除 0x07)
+frame_end = 0x27
+```
+
+因此 **checker 期望、DV 环境、回归行为全部不变**——这是本次协议级变更中刻意保持的不变量。
+
+### 7.3 frame_end 位置迁移
+
+- 旧（2B/拍）：0x27 在 `5'h14` 拍 D 位置，`xdata = DATA_D`
+- 新（3B/拍）：0x27 在 `5'h0E` 拍 C 位置，`xdata = DATA_C`
+- `frame_start_a` 仍在 `ADDR00_F`（`5'h01` 拍 C 位置），首拍直存语义不变
+
   </script>
   <script>
     document.getElementById('article').innerHTML = marked.parse(document.getElementById('md').textContent.trim());
