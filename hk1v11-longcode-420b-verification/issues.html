@@ -445,9 +445,13 @@
 
 | 问题 | 状态 | 侧 |
 |------|------|----|
+| `decode_ignore` 位宽：6-bit `tag_value` 对 7-bit 常量，tag=0 无编码标记漏判 → 无替换块误解码（`0x40→0x00`、`0x50→0x40`）；应改为判 tag∈{0,63}；DV 侧标记已更正 | <span class="badge badge-pending">🟡 待修</span> | <span class="badge badge-rtl">RTL 侧</span> |
+| 真实 0x7F 替换组还原/重组异常（`FC/FE/FF` 截断错码，ramp 回卷区；可用 `check_rtl_tag.py` / `decode_max.py` 定位到具体 blk,grp） | <span class="badge badge-pending">🟡 待跟进</span> | <span class="badge badge-rtl">RTL 侧</span> |
 | RTL 解码区域边界异常（起始残流 / 尾部溢出 / 个别位错，pydec 线上数据正确可作对照证据） | <span class="badge badge-pending">🟡 待跟进</span> | <span class="badge badge-rtl">RTL 侧</span> |
 
 > ✅ 07/20 更新：ref model `decode_420b_to_413b` 与 encode 不一致已修复（0720v1：`tag = header[6:1]`、线上组先判定替换再全组统一解扰、改自然位序；Python roundtrip 复验通过），详见「排障实录 3.7」。
+>
+> ✅ 07/21 更新：spec 无编码标记确认按发送顺序读 = tag∈{0,63}（toggle 1/0）；DV 侧 encode 头部、tag 搜索跳过保留值、pydec 判定已全部更正，1044 块 roundtrip 全对，详见「排障实录 3.9」。
 
 ## 2. Spec 待确认
 

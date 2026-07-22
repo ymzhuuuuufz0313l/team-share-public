@@ -471,9 +471,9 @@
 > 📌 **最终结论（0717）**：接收端使用 Python 对 `DATA_ALIGN_PRE` 进行离线 413b/420b 解码比对，**LSP / CTRL_F / CTRL_L / VBK / Video 线上数据全部正确** —— 剩余问题在 RTL 解码侧，不在发送数据。
 
 <div class="statbar">
-  <div class="stat"><div class="num">8</div><div class="lbl">定位问题总数</div></div>
+  <div class="stat"><div class="num">10</div><div class="lbl">定位问题总数</div></div>
   <div class="stat"><div class="num ok">6</div><div class="lbl">🔵 已解决 / 移交</div></div>
-  <div class="stat"><div class="num warn">2</div><div class="lbl">🟡 待跟进</div></div>
+  <div class="stat"><div class="num warn">4</div><div class="lbl">🟡 待跟进</div></div>
   <div class="stat"><div class="num ok">5/5</div><div class="lbl">✅ 线上数据区域全对</div></div>
 </div>
 
@@ -570,6 +570,24 @@
 <div class="prow"><span class="k">现状</span><span>当前 Active Line 统一以 K2 结束（spec 允许 K2 或 K3）；K3 的引入条件（及 TX 侧 LFSR 重启策略）待与 spec 确认。</span></div>
 </div>
 
+### 3.9 无编码标记位序与 decode_ignore 位宽（"0x40→0x00、0x50→0x40"）
+
+<div class="pcard">
+<div class="prow"><span class="k">状态</span><span><span class="badge badge-fixed">🔵 已解决</span> <span class="badge badge-dv">DV 侧</span> <span class="badge badge-pending">🟡 待修</span> <span class="badge badge-rtl">RTL 侧</span> <span class="badge">07/21</span></span></div>
+<div class="prow"><span class="k">现象</span><span>ACT ramp 数据中 <code>0x40</code> 被 DUT 解为 <code>0x00</code>、<code>0x50</code> 被解为 <code>0x40</code>；设计侧一度怀疑 DV 的 tag 选择有误。</span></div>
+<div class="prow"><span class="k">定位</span><span>逐 bit 仿真对照 4 种假设：①正确 encode + 正确 decode → 零误码（线上数据正确）；②正确 encode + DUT 按 <code>decoder_7b.v</code> 字面逻辑 decode → 精确复现两个错码；③64 种强制碰撞 tag → 均无法复现；④出错组定位：无替换块内值为 <code>7'b0100000</code> 的数据组。无替换块按 spec 在头部放无编码标记——按发送顺序读（最左 = 先发 = bit0）：<code>1000000</code> = toggle=1 + tag=<code>6'b000000</code>、<code>0111111</code> = toggle=0 + tag=<code>6'b111111</code>；但 DUT <code>decode_ignore</code> 用 6-bit <code>tag_value</code> 对比 7-bit 常量（<code>7'b1000000</code>=64 永不可达），tag=0 的标记漏判，该块内低 6 位为 <code>100000</code> 的数据组被误替换为全 0。</span></div>
+<div class="prow"><span class="k">解决</span><span>DV 侧（已修）：无替换头部按 toggle 二选一发送（线上严格为 <code>1000000</code>/<code>0111111</code>），tag 搜索跳过保留值 0/63，pydec <code>no_replace ∈ {0,63}</code>；1044 块 roundtrip 全对，修复后 40/50 错码消失。RTL 侧（待修）：<code>decode_ignore</code> 改为 <code>(tag_value == 6'b000000) | (tag_value == 6'b111111)</code>；SCREN=1 验证前必须落实（无替换块约占 40%）。</span></div>
+</div>
+
+### 3.10 FC/FE/FF 错码：真实 0x7F 替换组还原/重组异常
+
+<div class="pcard pending">
+<div class="prow"><span class="k">状态</span><span><span class="badge badge-pending">🟡 待跟进</span> <span class="badge badge-rtl">RTL 侧</span> <span class="badge">07/21</span></span></div>
+<div class="prow"><span class="k">现象</span><span>标记修复（3.9）后，ramp 回卷区（每 256 字节 <code>FE FF 00</code> 处）出现 <code>FC→04</code>、<code>FE→0E</code>、<code>FE→7E</code>、<code>FF→F0</code> 错码。</span></div>
+<div class="prow"><span class="k">定位</span><span>仿真确认线上数据无误（新 encode + spec decode 全流零误码）；出错字节全部落在真实 <code>{1,tag}</code>（0x7F）替换组上（byte257 ∈ blk4 grp58、byte515/516 ∈ blk9 grp58、byte771/772 ∈ blk14 grp56）。错码呈"保留低 k 位、高位清零"的截断特征，指向 <code>decoder_7b</code> 21-bit 重组（repack）路径的部分输出零补齐，与 3.6 区域边界问题同源。</span></div>
+<div class="prow"><span class="k">进展</span><span>已提供替换点自动判定 debug（<code>long_rtl_tag_debug</code> bind <code>decoder_7b</code> → <code>check_rtl_tag.py</code> 筛异常）与 <code>dout_21b_max</code> 离线重组（<code>decode_max.py</code>，分离"替换逻辑错"与"重组/解扰错"），可将错误定位到具体 (blk,grp)；待 RTL 侧（俊杰）排查 repack/还原路径。</span></div>
+</div>
+
 ## 4. 调试工具链
 
 | 文件 | 写入方 | 内容 |
@@ -583,6 +601,17 @@
 | `long_rtl_grp_lane0.md` | <span class="badge badge-rtl">bind decoding_top</span> | 7-bit group 流 + decode_en 窗口 |
 | `long_rtl_dap_lane0.md` | <span class="badge badge-rtl">bind KCODE_ALIGN</span> | DATA_ALIGN_PRE 每拍全量 |
 | `long_pydec_lane0.md` / `long_pydec_report_lane0.md` | <span class="badge badge-dv">decode_dap.py</span> | 离线解码结果 + 逐区域对比报告 |
+| `long_rtl_tag_lane0.md` | <span class="badge badge-dv">bind decoder_7b</span> | 替换点自动判定：`[HDR]` 块头 tag/ign、`[R]` 合法替换、`[X]` 异常（带 blk/grp 坐标） |
+| `long_rtl_max_lane0.md` | <span class="badge badge-dv">bind decoder_7b</span> | `dout_21b_max` 全量 dump（每 chunk 的 tag + 7-bit 组值） |
+| `long_maxdec_lane0.md` / `long_maxdec_report_lane0.md` | <span class="badge badge-dv">decode_max.py</span> | max dump 重组字节 + 与 golden 逐段 diff（层级分离：替换逻辑 vs 重组/解扰） |
+| `long_pkt20_cmp_report_lane0.md` | <span class="badge badge-dv">compare_pkt20.py</span> | 收发 20-bit 包流对比：K 码序列 + 数据段逐字 diff |
+
+### 4.1 离线脚本用法与判定顺序
+
+- 四个离线脚本（`decode_dap.py` / `check_rtl_tag.py` / `decode_max.py` / `compare_pkt20.py`）统一支持 `--dir <sim_dd>` 或 `SIM_DD` 环境变量，放 case 路径一次即可，无需复制到 sim 目录；输入日志缺失时明确报错（不再 traceback 无输出）。
+- 判定顺序：① `decode_dap.py`（线上数据 golden 判定）→ ② `check_rtl_tag.py`（替换点异常筛选）→ ③ `decode_max.py`（层级分离实锤）→ `compare_pkt20.py`（收发逐字比对）。
+- 报告文件：`long_pydec_report_lane0.md`（golden 判定）、`long_maxdec_report_lane0.md`（层级分离）、`long_pkt20_cmp_report_lane0.md`（收发对比）。
+- 全绿标准：pydec 全 MATCH + tag 无 `[X]` + maxdec == golden + pkt20 全 MATCH。
 
 ## 5. 最终结论与证据
 

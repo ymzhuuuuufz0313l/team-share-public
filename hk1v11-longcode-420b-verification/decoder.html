@@ -506,7 +506,7 @@
 ### 2.2 关键信号
 
 - `decode_en`：解码窗口使能；K1/K4 开，K2/K3 关
-- `tag_value`：6-bit 标签，用于全 0/全 1 替换
+- `tag_value`：6-bit 标签，用于全 0/全 1 替换；`decode_ignore`（无编码旁路）应判 `tag ∈ {0,63}`（现有 RTL 以 6-bit 对 7-bit 常量比较，tag=0 标记漏判，待修，见排障 3.9）
 - `dout_21b_valid`：有效位宽 01=7bit / 10=14bit / 11=21bit
 - `scramble_en_k3`：K3 锁存的解扰使能
 - `dout_24b / dout_valid`：最终 24-bit 输出及有效指示
@@ -516,6 +516,8 @@
 | 事项 | 状态 |
 |------|------|
 | `din_20b_aligned` 误接 `DATA_POINT_LAT` → 改接 `DATA0_ALIGN_LONG`，LSP 解出原始训练码 | <span class="badge badge-fixed">🔵 已解决</span> |
+| `decode_ignore` 位宽：6-bit `tag_value` 对 7-bit 常量，tag=0 无编码标记漏判 → 无替换块误解码（`0x40→0x00`、`0x50→0x40`）；DV 标记已更正为 tag∈{0,63} | <span class="badge badge-pending">🟡 待修</span> |
+| 真实 0x7F 替换组还原/重组异常（`FC/FE/FF` 截断错码，回卷区，与区域边界同源） | <span class="badge badge-pending">🟡 待跟进</span> |
 | 区域边界异常：起始 9 字节残流 / 尾部字节溢出 / 个别位错 | <span class="badge badge-pending">🟡 待跟进</span> |
 | 定位辅助：`long_rtl_grp_lane0.md`（7-bit group 流 + decode_en 窗口），pydec 可作对照证据 | 可用 |
 
