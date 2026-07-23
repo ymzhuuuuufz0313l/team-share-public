@@ -579,13 +579,23 @@
 <div class="prow"><span class="k">解决</span><span>DV 侧（已修）：无替换头部按 toggle 二选一发送（线上严格为 <code>1000000</code>/<code>0111111</code>），tag 搜索跳过保留值 0/63，pydec <code>no_replace ∈ {0,63}</code>；1044 块 roundtrip 全对，修复后 40/50 错码消失。RTL 侧（待修）：<code>decode_ignore</code> 改为 <code>(tag_value == 6'b000000) | (tag_value == 6'b111111)</code>；SCREN=1 验证前必须落实（无替换块约占 40%）。</span></div>
 </div>
 
-### 3.10 FC/FE/FF 错码：真实 0x7F 替换组还原/重组异常
+### 3.10 FC/FE/FF 错码：真实 0x7F 替换组漏替换（根因更新为 tag_value 块边界时序错）
 
 <div class="pcard pending">
-<div class="prow"><span class="k">状态</span><span><span class="badge badge-pending">🟡 待跟进</span> <span class="badge badge-rtl">RTL 侧</span> <span class="badge">07/21</span></span></div>
+<div class="prow"><span class="k">状态</span><span><span class="badge badge-pending">🟡 待修</span> <span class="badge badge-rtl">RTL 侧</span> <span class="badge">07/22</span></span></div>
 <div class="prow"><span class="k">现象</span><span>标记修复（3.9）后，ramp 回卷区（每 256 字节 <code>FE FF 00</code> 处）出现 <code>FC→04</code>、<code>FE→0E</code>、<code>FE→7E</code>、<code>FF→F0</code> 错码。</span></div>
-<div class="prow"><span class="k">定位</span><span>仿真确认线上数据无误（新 encode + spec decode 全流零误码）；出错字节全部落在真实 <code>{1,tag}</code>（0x7F）替换组上（byte257 ∈ blk4 grp58、byte515/516 ∈ blk9 grp58、byte771/772 ∈ blk14 grp56）。错码呈"保留低 k 位、高位清零"的截断特征，指向 <code>decoder_7b</code> 21-bit 重组（repack）路径的部分输出零补齐，与 3.6 区域边界问题同源。</span></div>
-<div class="prow"><span class="k">进展</span><span>已提供替换点自动判定 debug（<code>long_rtl_tag_debug</code> bind <code>decoder_7b</code> → <code>check_rtl_tag.py</code> 筛异常）与 <code>dout_21b_max</code> 离线重组（<code>decode_max.py</code>，分离"替换逻辑错"与"重组/解扰错"），可将错误定位到具体 (blk,grp)；待 RTL 侧（俊杰）排查 repack/还原路径。</span></div>
+<div class="prow"><span class="k">定位（07/21 初判）</span><span>仿真确认线上数据无误（新 encode + spec decode 全流零误码）；出错字节全部落在真实 <code>{1,tag}</code>（0x7F）替换组上（byte257 ∈ blk4 grp58、byte515/516 ∈ blk9 grp58、byte771/772 ∈ blk14 grp56）。初步怀疑 <code>decoder_7b</code> 21-bit 重组（repack）路径的部分输出零补齐。</span></div>
+<div class="prow"><span class="k">根因更新（07/22）</span><span><strong>不是</strong>还原/重组路径错，而是 <code>tag_value</code> 在 420-bit 块边界处<strong>提前更新到下一个块的 tag</strong>，导致当前块末尾的真实替换组用错 tag、未被替换。波形证据：有效行第五行最后一个 7-bit 组为 <code>7'h41</code>（即 <code>{1, tag=1}</code>），当前块 tag=1，本应替换为 <code>7'h7F</code>；但 <code>tag_value</code> 已切到下一个 420-bit 块的 tag，该组被误判为普通数据保留 <code>7'h41</code>，后续 21-bit 字节重组后表现为 <code>0x04</code>。同理可解释 <code>FE→0E</code>、<code>FF→FF</code>、<code>FE FF→7E F0</code> 等截断错码。</span></div>
+<div class="prow"><span class="k">证据</span><span><code>check_rtl_tag.py</code> 报告 0 异常（替换点本身无 BAD_MISS/BAD_FALSE/BAD_WRONGVAL），说明替换判定逻辑没问题；<code>compare_pkt20.py</code> 以 DAP 全量流对比确认 seq 发送与线上数据一致；问题在 DUT <code>tag_value</code> 更新时机。</span></div>
+<div class="prow"><span class="k">修复方向</span><span>RTL 侧将 <code>tag_value</code> 加载延后一拍/一个组，确保当前块全部 59 个组（含末尾组）都使用本块 header 的 tag；下一个块 header 仅在当前块最后一个组处理完毕后才生效。</span></div>
+</div>
+
+### 3.11 新增 debug 工具链：替换点判定 + 层级分离
+
+<div class="pcard">
+<div class="prow"><span class="k">状态</span><span><span class="badge badge-fixed">🔵 已完成</span> <span class="badge badge-dv">DV 侧</span> <span class="badge">07/22</span></span></div>
+<div class="prow"><span class="k">新增</span><span><code>long_rtl_tag_debug.sv</code> 新增 <code>dout_21b_max</code> 全量 dump → <code>long_rtl_max_lane0.md</code>；新增 <code>decode_max.py</code> 按 7-bit 组 LSB-first 重组字节并与 golden 逐段 diff。</span></div>
+<div class="prow"><span class="k">用途</span><span>分离 DUT 解码错误层级：<code>maxdec == golden</code> 而 <code>rtl_dec != golden</code> → 替换点之后的重组/解扰问题；<code>maxdec != golden</code> → 替换逻辑本身问题。本轮 <code>maxdec</code> 预期与 golden 不一致（漏替换），直接定位到 <code>tag_value</code> 时序。</span></div>
 </div>
 
 ## 4. 调试工具链
@@ -618,7 +628,7 @@
 ![0717 长编码 python 解码数据正确](./0717_longcode_pydec_ok.jpg)
 
 > ACT 行离线解码：`11 05 16 00 00`（CTRL_L，FSYNC=1）+ `00 01 02 03...` 像素渐变，与发送端原始字节完全一致。
-> 线上数据正确 ⇒ 发送端（sequence/编码/driver/链路/对齐）排除；后续聚焦 RTL 解码链（第 3.6 节）。
+> 线上数据正确 ⇒ 发送端（sequence/编码/driver/链路/对齐）排除；后续聚焦 RTL 解码链 **tag_value 块边界时序问题（第 3.10 节）**。
 
 ---
   </script>

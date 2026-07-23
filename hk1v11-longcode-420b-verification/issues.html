@@ -446,12 +446,14 @@
 | 问题 | 状态 | 侧 |
 |------|------|----|
 | `decode_ignore` 位宽：6-bit `tag_value` 对 7-bit 常量，tag=0 无编码标记漏判 → 无替换块误解码（`0x40→0x00`、`0x50→0x40`）；应改为判 tag∈{0,63}；DV 侧标记已更正 | <span class="badge badge-pending">🟡 待修</span> | <span class="badge badge-rtl">RTL 侧</span> |
-| 真实 0x7F 替换组还原/重组异常（`FC/FE/FF` 截断错码，ramp 回卷区；可用 `check_rtl_tag.py` / `decode_max.py` 定位到具体 blk,grp） | <span class="badge badge-pending">🟡 待跟进</span> | <span class="badge badge-rtl">RTL 侧</span> |
+| **`tag_value` 块边界时序错**：当前 420-bit 块尚未处理完 59 个组，`tag_value` 已提前更新为下一个块的 tag，导致块末尾真实替换组（如 `{1,tag=1}`=`7'h41`）用错 tag、漏替换，下游 21-bit 字节重组后表现为 `FC→04`/`FE→0E`/`FF→FF`/`FE FF→7E F0`（原误判为 0x7F 组还原/重组异常） | <span class="badge badge-pending">🟡 待修</span> | <span class="badge badge-rtl">RTL 侧</span> |
 | RTL 解码区域边界异常（起始残流 / 尾部溢出 / 个别位错，pydec 线上数据正确可作对照证据） | <span class="badge badge-pending">🟡 待跟进</span> | <span class="badge badge-rtl">RTL 侧</span> |
 
 > ✅ 07/20 更新：ref model `decode_420b_to_413b` 与 encode 不一致已修复（0720v1：`tag = header[6:1]`、线上组先判定替换再全组统一解扰、改自然位序；Python roundtrip 复验通过），详见「排障实录 3.7」。
 >
 > ✅ 07/21 更新：spec 无编码标记确认按发送顺序读 = tag∈{0,63}（toggle 1/0）；DV 侧 encode 头部、tag 搜索跳过保留值、pydec 判定已全部更正，1044 块 roundtrip 全对，详见「排障实录 3.9」。
+>
+> ✅ 07/22 更新：错码根因更新——不是 0x7F 替换组还原/重组路径错，而是 `tag_value` 在块边界处提前更新。波形证据：有效行第五行最后 `7'h41`（`{1,tag=1}`）应替换为 `0x7F`，因 `tag_value` 已切到下一个块 tag 而漏替换，最终字节显示 `0x04`。`check_rtl_tag.py` 报告 0 异常、`compare_pkt20.py`（DAP 源）收发一致，均指向 DUT 替换逻辑时序而非 DV 发送数据。
 
 ## 2. Spec 待确认
 
