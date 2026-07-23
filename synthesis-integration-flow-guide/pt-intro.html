@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>PT 介绍（PrimeTime 时序分析） · ASIC IP Synthesis &amp; Integration Flow 工具使用指南</title>
+  <script src="https://cdn.jsdelivr.net/npm/marked@9.1.6/marked.min.js"></script>
+  <script src="./glossary.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <style>
+
+:root {
+  --bg: #f8fafc;
+  --surface: #ffffff;
+  --text: #1e293b;
+  --muted: #64748b;
+  --accent: #1d4ed8;
+  --accent-soft: #dbeafe;
+  --line: #e2e8f0;
+  --shadow: 0 10px 40px rgba(0,0,0,0.08);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f172a;
+    --surface: #1e293b;
+    --text: #f1f5f9;
+    --muted: #94a3b8;
+    --accent: #60a5fa;
+    --accent-soft: #1e3a8a;
+    --line: #334155;
+    --shadow: 0 10px 40px rgba(0,0,0,0.35);
+  }
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-size: 16px;
+  line-height: 1.75;
+}
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+.navbar-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.navbar-brand {
+  font-weight: 700;
+  color: var(--accent);
+  white-space: nowrap;
+  font-size: 15px;
+  text-decoration: none;
+}
+.navbar-brand:hover { text-decoration: none; }
+.navbar-links {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow-x: auto;
+  flex: 1;
+  scrollbar-width: none;
+}
+.navbar-links::-webkit-scrollbar { display: none; }
+.navbar-links a {
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 14px;
+  color: var(--text);
+  white-space: nowrap;
+  transition: background 0.15s;
+  text-decoration: none;
+}
+.navbar-links a:hover { background: var(--bg); text-decoration: none; }
+.navbar-links a.active { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+@media (max-width: 640px) {
+  .navbar-inner { padding: 10px 16px; gap: 10px; }
+  .navbar-brand { font-size: 14px; }
+  .navbar-links a { font-size: 13px; padding: 5px 8px; }
+}
+.container { max-width: 1200px; margin: 0 auto; padding: 48px 24px; }
+.container.with-toc { display: flex; gap: 32px; align-items: stretch; }
+.toc-wrapper { width: 260px; flex-shrink: 0; align-self: stretch; }
+.toc {
+  position: sticky;
+  top: 64px;
+  max-height: calc(100vh - 88px);
+  overflow-y: auto;
+  padding: 16px;
+  background: var(--surface);
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  font-size: 14px;
+  box-shadow: var(--shadow);
+}
+.toc a { display: block; padding: 6px 8px; border-radius: 6px; color: var(--muted); margin: 2px 0; transition: background 0.15s, color 0.15s; text-decoration: none; }
+.toc a:hover { background: var(--bg); color: var(--accent); text-decoration: none; }
+.toc a.active { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+.toc a.toc-h1 { font-weight: 700; color: var(--accent); margin-bottom: 8px; cursor: default; }
+.toc a.toc-h3 { padding-left: 18px; font-size: 13px; }
+h2, h3 { scroll-margin-top: 72px; }
+.content { flex: 1; min-width: 0; }
+.article {
+  background: var(--surface);
+  border-radius: 20px;
+  padding: 56px 64px;
+  box-shadow: var(--shadow);
+}
+@media (max-width: 640px) {
+  .container { padding: 24px 16px; }
+  .article { padding: 32px 24px; border-radius: 16px; }
+  .toc-wrapper { display: none; }
+  .container.with-toc { display: block; }
+}
+h1 { font-size: 36px; margin: 0 0 20px; color: var(--accent); font-weight: 700; letter-spacing: -0.5px; }
+h2 { font-size: 26px; margin: 48px 0 18px; padding-bottom: 10px; border-bottom: 1px solid var(--line); color: var(--text); font-weight: 600; }
+h3 { font-size: 20px; margin: 32px 0 14px; color: var(--text); font-weight: 600; }
+p { margin: 14px 0; }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+img { max-width: 100%; border-radius: 10px; border: 1px solid var(--line); cursor: zoom-in; display: block; margin: 28px auto; }
+table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 14.5px; }
+th, td { border: 1px solid var(--line); padding: 10px 14px; text-align: left; }
+th { background: var(--accent-soft); font-weight: 600; }
+tr:nth-child(even) { background: rgba(0,0,0,0.02); }
+code { background: var(--bg); padding: 3px 7px; border-radius: 5px; font-family: "SFMono-Regular", Consolas, monospace; font-size: 14px; color: var(--accent); }
+pre { background: var(--bg); padding: 18px; border-radius: 10px; overflow-x: auto; border: 1px solid var(--line); }
+pre code { padding: 0; background: transparent; color: var(--text); }
+blockquote { border-left: 4px solid var(--accent); margin: 20px 0; padding: 14px 20px; background: var(--accent-soft); border-radius: 0 10px 10px 0; }
+ul, ol { padding-left: 28px; }
+li { margin: 8px 0; }
+hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
+.footer { text-align: center; color: var(--muted); margin-top: 48px; font-size: 13px; }
+.page-nav { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 48px; }
+.page-nav a { display: block; padding: 16px 20px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; color: var(--text); transition: border-color 0.2s, box-shadow 0.2s; text-decoration: none; }
+.page-nav a:hover { border-color: var(--accent); box-shadow: var(--shadow); text-decoration: none; }
+.page-nav a.next { text-align: right; margin-left: auto; }
+.page-nav .label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+.page-nav .title { font-weight: 600; color: var(--accent); }
+@media (max-width: 640px) { .page-nav { grid-template-columns: 1fr; } .page-nav a.next { text-align: left; margin-left: 0; } }
+.hero { text-align: center; margin-bottom: 40px; }
+.hero h1 { margin-bottom: 12px; }
+.hero .author { color: var(--muted); font-size: 14px; margin-bottom: 16px; }
+.hero .lead { font-size: 17px; max-width: 720px; margin: 0 auto; }
+.section-title { font-size: 14px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin: 40px 0 16px; }
+.chapter-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+.chapter-card { display: block; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 20px; color: var(--text); transition: border-color 0.2s, transform 0.15s, box-shadow 0.2s; text-decoration: none; }
+.chapter-card:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: var(--shadow); text-decoration: none; }
+.chapter-card .num { display: inline-block; width: 28px; height: 28px; line-height: 28px; border-radius: 50%; background: var(--accent-soft); color: var(--accent); font-size: 13px; font-weight: 700; text-align: center; margin-bottom: 10px; }
+.chapter-card .title { font-weight: 600; font-size: 15px; margin-bottom: 6px; }
+.chapter-card .desc { font-size: 13px; color: var(--muted); line-height: 1.5; }
+
+/* Image lightbox */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.92);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.25s ease, visibility 0.25s ease;
+  cursor: grab;
+}
+.lightbox.active {
+  opacity: 1;
+  visibility: visible;
+}
+.lightbox img {
+  max-width: none;
+  max-height: none;
+  border: none;
+  border-radius: 4px;
+  cursor: grab;
+  transform-origin: center center;
+  transition: none;
+  margin: 0;
+}
+.lightbox img.grabbing { cursor: grabbing; }
+.lightbox .hint {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: rgba(255,255,255,0.7);
+  font-size: 13px;
+  pointer-events: none;
+  user-select: none;
+  background: rgba(0,0,0,0.4);
+  padding: 6px 14px;
+  border-radius: 20px;
+}
+.lightbox .close {
+  position: absolute;
+  top: 20px;
+  right: 24px;
+  color: rgba(255,255,255,0.8);
+  font-size: 32px;
+  line-height: 1;
+  cursor: pointer;
+  user-select: none;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background 0.2s;
+}
+.lightbox .close:hover { background: rgba(255,255,255,0.15); color: #fff; }
+
+/* Hover glossary tooltip */
+.term {
+  position: relative;
+  border-bottom: 1px dashed var(--accent);
+  cursor: help;
+  color: var(--accent);
+  transition: background 0.15s ease, border-bottom-style 0.15s ease;
+}
+.term:hover {
+  background: var(--accent-soft);
+  border-bottom-style: solid;
+  border-radius: 4px;
+}
+.term-tooltip {
+  position: fixed;
+  max-width: 320px;
+  padding: 14px 18px;
+  --tooltip-bg-rgb: 219, 234, 254;
+  background: rgba(var(--tooltip-bg-rgb), 0.88);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+  font-size: 14px;
+  line-height: 1.7;
+  z-index: 1000;
+  opacity: 0;
+  transform: translateY(8px) scale(0.98);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  pointer-events: none;
+}
+.term-tooltip.visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+.term-tooltip::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  transform: translateX(-50%);
+}
+.term-tooltip.arrow-bottom::after {
+  bottom: -10px;
+  border-width: 10px 8px 0 8px;
+  border-color: var(--line) transparent transparent transparent;
+}
+.term-tooltip.arrow-bottom::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -8px;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 8px 7px 0 7px;
+  border-color: rgba(var(--tooltip-bg-rgb), 0.88) transparent transparent transparent;
+  transform: translateX(-50%);
+}
+.term-tooltip.arrow-top::after {
+  top: -10px;
+  border-width: 0 8px 10px 8px;
+  border-color: transparent transparent var(--line) transparent;
+}
+.term-tooltip.arrow-top::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: -8px;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 0 7px 8px 7px;
+  border-color: transparent transparent rgba(var(--tooltip-bg-rgb), 0.88) transparent;
+  transform: translateX(-50%);
+}
+
+  
+@media (prefers-color-scheme: dark) {
+  .term-tooltip {
+    --tooltip-bg-rgb: 30, 58, 138;
+  }
+}
+</style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a class="navbar-brand" href="./">Synthesis Flow</a>
+      <div class="navbar-links" id="navbar-links"></div>
+    </div>
+  </nav>
+
+  <div class="container with-toc"><aside class="toc-wrapper"><nav class="toc" id="toc"></nav></aside><div class="content">
+    <article class="article" id="article">
+      
+    </article>
+    <div class="page-nav"><a href="./signoff-timing.html"><span class="label">上一篇</span><span class="title">Signoff 与时序</span></a>
+<a class="next" href="./memory-power.html"><span class="label">下一篇</span><span class="title">Memory 与功耗</span></a></div>
+    <div class="footer">Shared from team knowledge base</div>
+  </div></div>
+
+  <script type="text/template" id="md">
+# 六、PT 介绍：PrimeTime 时序分析
+
+&gt; 本篇基于一次 PT（PrimeTime）培训会议的完整内容整理，覆盖 STA 基础概念、PT 环境与自动化脚本、约束管理、skew 修调方法、报告解读、签核准则与常见坑。人名与项目信息已泛化，所有数值与规则按原始记录保留。
+
+## 1. STA 基础概念
+
+### 1.1 corner 全量校验
+
+当前工艺共 10 个 corner，corner 定义由 foundry 提供，不是项目自己建的。
+
+- 每个 corner 下 setup、hold、transition 全部都要 check，不做取舍。
+- 历史规律已经失效：以前是 wc corner 下 setup 更差、lt corner 下 hold 更差；现在因为修 skew 把延迟垫乱，各 corner 的表现不再符合老规律，所以必须所有 corner 全量校验。
+
+NOTE: "按经验只跑最差的 corner" 在当前项目已不成立。skew 修调会打乱延迟分布，任何 corner 都可能冒出最差值，全量跑是唯一安全的做法。
+
+### 1.2 uncertainty 与放宽纪律
+
+uncertainty 来源于历史经验值：当前项目 setup uncertainty = 400 ps，hold uncertainty = 150 ps。
+
+使用策略：
+
+- 新项目不主动放宽，一直按公版值卡；只有最后一版实在修不下去时，才找高层签字放一点。
+- 工程上它有点像 false path——不会主动先写，出问题了才放。
+- 新项目不会沿用上一版放宽后的值，继续用 0.4 ns 起步。
+
+WARNING: uncertainty 放宽是"最后手段"纪律——必须有高层签字；放宽值不跨项目继承，每个新项目从公版值重新卡。
+
+### 1.3 SI / noise 常开
+
+当前环境 SI check 默认全部打开。
+
+- 背景：某历史项目 SI 影响很大导致 corner 结果很差，想关但没敢关；脚本留有开关可做中间实验，但最终关不关必须多方共同决定，一直保持最保守（打开）执行。
+- 机理：SI 分析 noise；摆线太近 noise 很大；PT 会看走线的宽度和高度；SI 大时 cell delay 会非常大。
+- 有些工艺厂商文档写 SI 不用考虑，但团队不采信，仍以最保守方式执行。
+
+### 1.4 占空比与 min_pulse_width
+
+当前项目输出 clock 占空比不是 50%。
+
+- PT 报的 min_pulse_width 类数值**不是**真实占空比：它报的是从 clock 源头上升沿到该点与下降沿到该点的差值（rise/fall latency 差），工具并不知道实际高电平宽度，所以报那个没意义。
+- 验证占空比的正确方法：后仿，把该 clock 在波形里拉出来看；模拟方也会拉这条 clock 看有没有对到中心点。
+- 分频器经验：1.5 分频处两边的组合逻辑 delay 最好保持一致（理想情况），这是占空比恶化的来源之一。
+- 历史教训：双方对该参数理解不一致踩过坑（tapeout 前才发现），规格必须与规格方书面确认。
+- 周期越慢该参数越不可能超，速度越快 / 周期越短才紧张。
+
+WARNING: 不要用 PT 的 min_pulse_width 报告当占空比证据。占空比规格必须书面确认，并用后仿波形验证。
+
+### 1.5 准静态信号（quasi-static）
+
+一帧才变一次的信号、寄存器配出的控制信号属于准静态信号，不用 check，可设 false path。
+
+### 1.6 clock latency 判断经验
+
+报表上半部分是原始 latency 数据（clock / data latency，未做运算）；下半部分是脚本算好的 skew。
+
+- clock 之间做过 clock tree balance，相互 latency 不应差很多；clock 与 data 差得多是正常的。
+- clock 的 max 与 min 差很多，说明 clock tree 做歪了。
+- max 路径和 min 路径通常不是同一条，两条都要 check。
+- 实例：某版 CLK 最慢 10.56、最快 3，而 skew 余量只有 7——10.56 那条是假路径（mux 特别多、trace 起点没选好导致），真实 clock latency 约 3 点多。
+
+---
+
+## 2. PT 环境与自动化脚本
+
+### 2.1 批量跑 corner
+
+痛点：以前每个 corner 开一个窗口，10 个 corner 开 10 个 terminal 逐个丢 job。
+
+自研批量脚本：run 一次把全部 corner 批量提交，跑完自动结束；log 各自分开，与手动跑结果一模一样。
+
+| 项目 | 效果 |
+|------|------|
+| 多 corner 运行 | 一键批量提交，效率提升约 90% |
+| 日志管理 | 自动分类存储 |
+| 时序指标 | 自动全量抓取 |
+| 报表 | 自动生成标准化 Excel |
+
+当前项目跑一次全量 PT 约 10 分钟（项目小；大项目更慢）。
+
+### 2.2 run summary 与结果汇总
+
+批量跑完执行 run summary：summary 目录下放 latest，集中查看所有 corner 的最新结果。
+
+汇总 report 包含：transition、hold、setup、clock skew、data skew；skew report 由脚本自动抓取并 merge 各 corner。
+
+### 2.3 save session 策略
+
+PT 的 save / restore session 可把某版存回来做版本间 compare。
+
+- 跑得快（&lt;1 小时）的项目无需存 session，仅做记录 / 对比即可。
+- 跑半天以上的大项目才有省时意义。
+
+### 2.4 环境目录结构
+
+| 目录 / 文件 | 作用 |
+|-------------|------|
+| `design.set` | 环境配置入口，外层最关键的文件 |
+| corner set 文件 | 内层每个 corner 各有一份 |
+| `common` 目录 | 自动化脚本集中地，含 `common_db`（定制 lib 配置） |
+| IP constraint 目录 | 项目 constraint 存放位置；其下 script 子目录多为历史脚本，基本不再使用 |
+| Tcl 脚本目录 | 分模块存放；报错时按模块排查（如 prePT 报错看对应目录脚本） |
+| `database` 目录 | 存放 prePT 生成的正式 constraint |
+
+- dump SDF 的 option 是给后仿用的，其他 option 基本不动。
+- 有一组直抛 clock path 的 Tcl，每版项目刚开始都要改一次，位置固定在 Tcl 文件最下方。
+
+### 2.5 复用环境要改的 7 项
+
+同一项目重新跑一版（重新综合迭代）：什么都不用改，直接 run，全自动。
+
+全新项目 / 新架构复用，要改：
+
+1. `design.set`（必改）；
+2. pt setup 相关配置；
+3. data skew 抓取的三个脚本全部要重改（分组分类不同）；
+4. create clock 周期定义所在文件；
+5. 直抛 clock path 的 Tcl（项目初期必改）；
+6. 新增定制 lib 时改 `common_db` 及 .v / .lib 路径；
+7. Excel merge 脚本（手写分组对应关系，极易对错，需一一对应）。
+
+分组层级经验（沿用上一项目脚本）：L/R → 1P/2P → A/B → clock/data 四层分类。
+
+### 2.6 环境搭建检查项
+
+- 第一版搭环境时，必须确保所有 log 和 report 目录下没有任何 error。
+- 环境通用，全组共用。
+
+---
+
+## 3. 约束（constraint / SDC）管理
+
+### 3.1 dco → prePT → SDC 工作流（核心工作流）
+
+false path / multicycle 等约束统一写在指定的 dco 文件里；**不直接改 SDC**（批量展开式修改很复杂）。
+
+流程：
+
+```text
+改 dco → 重新跑 prePT → prePT 自动生成展开后的 SDC → 把新版 constraint 放到 database 目录下
+```
+
+- 改 dco 前的验证习惯：先在 live PT（手工打开的交互式 session）里把路径直接指过去试一版，确认效果再正式写入。
+- 纪律：禁止直接修改 SDC 文件；禁止提前乱写 false path，需确认路径为假后再配置。
+
+### 3.2 false path / multicycle 设置经验
+
+- 无继承机制：每版综合后 cell 流水号（自动命名）全变，false path 要全部重新报、重新加；做法是不删旧的、往文件后面叠加（叠加式维护）。
+- 跨项目经验可继承：架构没有大改时按信号功能 / 类别识别，同一类信号成组设置。
+- 准静态信号（一帧变一次）可大胆设 false path。
+- 修 skew 的副产物：往后推 data / clock 垫 delay 时会推出假 hold（只推最后一级、后面没有 DFF 承接，推超过一个周期就报 hold violation）——这种是假的，持续补 multicycle / false path 即可。
+- 修 skew 引入的真实问题多为 clock gating 的 hold。
+- 另一种造"假路径"手段：output delay（有时值设得比 max 还大）。
+- 多种 mode 合成一路输出、只有一个可 check 点时，按最严的标准卡；条数多难修但对签核安全。
+
+NOTE: "最严标准原则"——多个 mode 共用一个 check 点时按最严的规格卡。修起来条数多、辛苦，但漏报的代价比难修大得多。
+
+### 3.3 clock 定义与频率目标
+
+- create clock 周期在专用文件中修改；当前项目主频 1.8 GHz，带 1.05% 展频（spread spectrum）。
+- 相比其他项目（有要求 4 GHz 的），当前项目约束偏保守（over constraint）。
+- 另有一条慢 clock（教学示例 clock_A_L）周期约 15 ns。
+
+### 3.4 定制 lib（common_db）连环坑
+
+新加定制 lib 时在 common 下的 `common_db` 里加；可拿新 lib 与现有配置 diff 参考。
+
+连环坑：
+
+- 多个调用位置都要跟着改，漏改会一直报错；
+- 后仿对应位置没加 lib 会编译出错；
+- `.v` 和 `.lib` 都要给到对应位置，否则报 lib 找不到。
+
+### 3.5 pin 名称的坑（通配符穷举法）
+
+某输出 cell 有 I0 / I1 / O 三个 pin：直接写 `O` 设约束设不上（live PT 里 `get_pins` 能找到，但写进 constraint 跑 prePT 报找不到）；三个 pin 名都写上也不行。
+
+解决：用通配符 `*` 穷举代替，写星号后全部 pin 都会设上。两个项目都踩过这个坑。
+
+WARNING: live PT 里能 `get_pins` 到的名字，不代表 prePT 展开约束时能找到。pin 名设不上时，优先试通配符穷举。
+
+---
+
+## 4. Skew 修调方法（技术核心）
+
+### 4.1 规格与目标推导
+
+skew 规格来自规格方 / 模拟方：目标 ±3.5 ns。
+
+推导（以周期约 15 ns 的慢 clock 为例）：
+
+```text
+一周期 15 ns
+前后各留 4 ns 给 setup / hold margin
+中间允许 data 相对 clock 偏移：15 - 4 - 4 = 7 ns
+以正中间为零点 → skew = ±3.5 ns
+```
+
+占空比不是 50% → 下降沿注定不在 data 中间 → 要把 clock 往左推（对齐到 data 窗口中间）。
+
+### 4.2 修调策略：先 data 后 clock，推 clock 为主
+
+理想步骤：
+
+1. 先把 data 之间推到等长（相互偏移尽量小）；
+2. 再由 clock 推到中间位置。
+
+实际执行：大部分推 clock 不推 data——data 条数太多（一组 8 bit，多 lane 每路多路来源，每个 DFF 出来起码 6 路）；只有 clock 没法弄时才动 data。
+
+- 方向性：往后推（垫 delay）容易，往前拉（拆 delay）难；风险是垫太多绕线绕不过去，需提前预留绕线余量。
+- data skew 都是针对 clock 去设的，不单独要求 data 间 skew；clock 间因 clock tree 不会差很多，data 间差很多正常。
+
+### 4.3 修调分工与 Excel 交接
+
+- skew 修调由 APR 工程师全权负责；他自行搭建 PT 环境（link 到 PT 环境 owner 的目录），自己跑 PT、按 Excel 报表自行修调，遇修不下去的（如 setup 互卡）主动反馈。
+- 交接物：自动化环境 + Excel 报表。
+- 修不下去时先看组分得够不够细（按 lane / mode 细化 check 分组）；分到最细还修不下去，说明 skew 标准本身需要谈判。
+
+### 4.4 check 路径取舍（trace 教学）
+
+check 对象：所有 data bus、全部 clock、以及指定的输入信号。
+
+trace 方法：从输出端往里走，逐级看每个控制信号要不要 check、是不是 multicycle、gating 信号如何处理。
+
+- 不要偷懒合并报点：本想"A 包含 B / C 就只报 A"，结果 A 内部还有准静态 mux 把假路径带进来，特别难修——必须一直往前看，把来源都抓出来。
+- 历史案例：某条一帧变一次的 CK 路径连续三四个项目都修不下去，后来干脆不加进 check 列表（多打一条 path 没坏处，但明知修不下去的不加）。
+- 两路来源的路径中，一路和其他路长度差很多的，加进来必修不下去，宁可不 check。
+
+---
+
+## 5. 报告解读与报表生成
+
+### 5.1 report_timing 实战
+
+基本报法：from DFF 的 Q 端，to 输出 port。
+
+- 推荐 option：`-input_pins`（列出每级 input pin，看清路径穿过哪个 cell / pin；用 `report_timing -help` 查 option）。
+- 报全原则：路径报全；起点选错会夹带假路径。
+- 每条 path 报 1000 条；工具上限报不了 1 万条。
+- 规模：10 corner × L/R × A/B × 每组 6 条 × 每条 1000 ≈ 10 万条级 report，全靠脚本处理。
+
+### 5.2 假路径识别（肉眼判断要点）
+
+典型特征：路径中经过不该经过的寄存器 / 准静态 mux（"经过寄存器就觉得不妙"）。
+
+- 起点选错后果：报出的点 latency 异常大（别人 3 点多它 10 点多，没做 balance），merge 进 Excel 后修不动。
+- 处理：换起点——从最前面的点报，不要从夹带准静态寄存器的 DFF 报。
+
+### 5.3 自动化抓取与 Excel 报表
+
+流程：PT report 按设计好的 from/to 点批量报 → 脚本按 keyword 抓数打印 → merge 脚本合成 CSV / Excel。
+
+Excel 结构：
+
+- 上半部分：原始 clock / data latency；
+- 下半部分：自动算好的 skew（标准列在脚本里）；
+- clock 组、data 组分别抓 max / min 并排序，方便后端直接抓最大最小来推。
+
+merge 脚本是手写分组对应关系，照猫画虎改，一定要一一对应，很容易整错。
+
+NOTE: 选点必须人工——看代码、看波形或问设计方，AI 做不了。
+
+### 5.4 当前项目时序现状
+
+- 第一版综合后 setup 违例极少：最大仅 0.1 ~ 0.2 ns（周期富裕）。
+- 核心矛盾在 clock skew 收敛：clock 路径最快最慢差值曾达 7，接近余量上限；报表中 10 以上的异常值均为假路径，已清完。
+- 修 skew 过程会不断引入新的假 hold，需持续清。
+
+---
+
+## 6. 签核准则与仿真关系
+
+- 数字签核（signoff）以 PT 结果为准，不以 co-sim 为准——PT 覆盖率远高于仿真（PT 是所有检查）。
+- 跑 co-sim 的两个目的：
+  1. 确认 constraint 有没有错；
+  2. 给模拟方看（他们 spec 描述不一定 OK，完整联仿更有效）。
+
+---
+
+## 7. AI 辅助的边界与使用原则
+
+当前 AI 无法做到：
+
+- 识别准静态信号 / 特殊节点（真假路径判定）；
+- 自主判断最佳抓取节点；
+- 自动适配新项目特殊规则；
+- 基础 PT 命令可生成但存在随机参数错误，直接运行会报错。
+
+使用原则（会议共识）：
+
+- "寄存器出来的就是假路径"不能作为通用规则；
+- 宁可多报不可漏报（漏报一条 skew 没掉很可怕）；人工做完也要反复检查三四遍；
+- AI 可做中间引导 + 人工 review 的辅助；产出固化为 script 且不再改才可信，但生成 script 过程要充分评估；
+- 落地前需至少 3 轮全流程验证、准确率 100%；固化后每版仍人工抽查至少 10%；
+- 优先探索 AI 生成标准化文档、整理配置说明等低风险场景。
+
+WARNING: 真假路径判定不能交给 AI。constraint 漏报的代价是硅后才发现时序问题，远大于人工 review 的成本。
+
+---
+
+## 8. 常见问题与经验清单
+
+1. 流水号坑：每版综合后 cell 自动命名全变，针对具体 cell 名的约束每版要重加（叠加式，不删旧）。可在关键路径预埋 buffer，或用 DC / PT 脚本做 ECO 塞 buffer。
+2. 路径抓取节点选择错误会产生大量无效报表数据——严格按规范选节点，从最前端节点开始抓，避开准静态寄存器。
+3. 宁可多报不可漏报。
+4. 修不下去的路径连续几个项目都修不下去，就别再加进 check 列表。
+5. margin（给 DC 的加严量）一般 0.8，曾试 0.6；压紧 constraint → DC 难做但走线余量长；DC 可能拆逻辑、换 cell 结构（AOI / OAI），曾有案例 APR 绕不出来，发现一大串 AOI 需拆掉。
+6. report 文件太大打不开需要 license（大项目 SOC 经验）；以前看几万条 report 靠先分类、先设 false path、再迭代。
+7. 环境版本固定，报错先查 source 版本。
+8. 分组（lane / mode）先分细再修，修不下去再谈标准。
+
+</script>
+
+  <script>
+
+const chapters = [
+  ['index', '首页'],
+  ['environment', '环境与配置'],
+  ['rtl-check', 'RTL 检查'],
+  ['synthesis-upf', '综合与 UPF'],
+  ['lec', 'LEC 验证'],
+  ['signoff-timing', 'Signoff 与时序'],
+  ['pt-intro', 'PT 介绍'],
+  ['memory-power', 'Memory 与功耗'],
+  ['faq', 'FAQ 与清单']
+];
+const currentPath = location.pathname.split('/').pop() || 'index.html';
+const linksContainer = document.getElementById('navbar-links');
+chapters.forEach(([slug, label]) => {
+  const href = slug === 'index' ? './' : `./${slug}.html`;
+  const filename = slug === 'index' ? 'index.html' : `${slug}.html`;
+  const a = document.createElement('a');
+  a.href = href;
+  a.textContent = label;
+  if (currentPath === filename || currentPath.endsWith('/' + filename) || (currentPath === '' && slug === 'index')) {
+    a.classList.add('active');
+  }
+  linksContainer.appendChild(a);
+});
+
+  </script>
+
+  <div class="lightbox" id="lightbox">
+    <span class="close" id="lightbox-close">&times;</span>
+    <img id="lightbox-img" src="" alt="">
+    <div class="hint">滚轮缩放 · 拖拽移动 · 点击空白处或右上角关闭</div>
+  </div>
+
+  <script>
+
+const lightbox = document.getElementById('lightbox');
+const lbImg = document.getElementById('lightbox-img');
+const lbClose = document.getElementById('lightbox-close');
+let scale = 1;
+let isDragging = false;
+let startX = 0, startY = 0, translateX = 0, translateY = 0;
+
+function openLightbox(src) {
+  lbImg.src = src;
+  scale = 1;
+  translateX = 0;
+  translateY = 0;
+  updateTransform();
+  lightbox.classList.add('active');
+}
+
+function closeLightbox() {
+  lightbox.classList.remove('active');
+}
+
+function updateTransform() {
+  lbImg.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
+}
+
+document.querySelectorAll('img').forEach(img => {
+  if (img.id === 'lightbox-img') return;
+  img.addEventListener('click', () => openLightbox(img.src));
+});
+
+lbClose.addEventListener('click', closeLightbox);
+lightbox.addEventListener('click', (e) => { if (e.target === lightbox) closeLightbox(); });
+
+lightbox.addEventListener('wheel', (e) => {
+  e.preventDefault();
+  const delta = e.deltaY > 0 ? -0.1 : 0.1;
+  scale = Math.min(Math.max(0.5, scale + delta), 4);
+  updateTransform();
+});
+
+lbImg.addEventListener('mousedown', (e) => {
+  isDragging = true;
+  startX = e.clientX - translateX;
+  startY = e.clientY - translateY;
+  lbImg.classList.add('grabbing');
+  e.preventDefault();
+});
+
+document.addEventListener('mousemove', (e) => {
+  if (!isDragging) return;
+  translateX = e.clientX - startX;
+  translateY = e.clientY - startY;
+  updateTransform();
+});
+
+document.addEventListener('mouseup', () => {
+  isDragging = false;
+  lbImg.classList.remove('grabbing');
+});
+
+  </script>
+
+  <script>
+const article = document.getElementById('article');
+article.innerHTML = marked.parse(document.getElementById('md').textContent, {gfm:true, breaks:false});
+applyGlossary(article);
+const toc = document.getElementById('toc');
+const h1 = article.querySelector('h1');
+let tocHtml = '';
+if (h1) {
+  tocHtml += `<a class="toc-h1" href="#">${h1.textContent}</a>`;
+}
+tocHtml += '<ul style="list-style:none;padding:0;margin:0;">';
+const headings = article.querySelectorAll('h2, h3');
+headings.forEach((h, i) => {
+  const id = 'sec-' + i;
+  h.id = id;
+  const cls = h.tagName === 'H2' ? '' : 'toc-h3';
+  tocHtml += `<li><a class="${cls}" href="#${id}">${h.textContent}</a></li>`;
+});
+tocHtml += '</ul>';
+toc.innerHTML = tocHtml;
+
+const tocLinks = toc.querySelectorAll('a[href^="#"]');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      tocLinks.forEach(a => a.classList.remove('active'));
+      const active = toc.querySelector('a[href="#' + entry.target.id + '"]');
+      if (active) active.classList.add('active');
+    }
+  });
+}, { rootMargin: '-80px 0px -60% 0px', threshold: 0 });
+headings.forEach(h => observer.observe(h));
+</script>
+</body>
+</html>

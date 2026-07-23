@@ -338,6 +338,8 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
 
 ## 1. UPF 准备与检查
 
+NOTE: UPF 用于定义电源域，只有做了电源域划分的大芯片才需要。当前 Driver 类项目均不使用 UPF、不做 UPF check；仅个别大型项目有 UPF 实例，需要时可参考。
+
 ### 1.1 lec_upf
 
 `lec_upf` 用于检查 UPF 文件本身的正确性。
@@ -394,14 +396,29 @@ run_dc
 
 部分项目还会有统一的公共 cons（如对 MEM scan_mode 等的 setting），可放在公共 tcl 中，也可放在 IP constraint 中。
 
+下约束前必须非常了解 clock gen 的设计意图——约束只有下对地方，路径才能被全部 consume（覆盖）；下错地方会留下大量 unconstrained paths。
+
 主要检查项：
 - `dc.log`：无 Error、无 unresolved
 - `*.chk_design`：无 undrive
 - `*.rpt`：
   - area 符合预期
   - timing slack ≥ 0（signoff 版本必须 slack &gt; 0）
+- constraint coverage：必须查看 unconstrained paths report，确认哪些路径没有被约束到
 
-### 2.2 Genus
+WARNING: DC 综合完成后必须确认没有未收敛的 timing violation——DC 修不下去时会自动放弃，此时面积数据是假的，给到 APR 的面积不准，交付前必须清零 violation。
+
+margin 经验值：综合时序 margin 一般按 0.8 把握（曾尝试过 0.6），原则是"对自己紧一点、对后端松一点"，留太多或太少都未必好。
+
+### 2.2 don't touch 使用纪律
+
+compile 时必须加 don't touch，防止关键 cell（buffer、时钟生成单元等）被优化掉导致节点消失；但不能乱加——加错会导致后面 clock tree 出问题。
+
+- 仅对需要保留的时钟生成单元、关键 buffer 加 don't touch；约束范围过大会让后续 timing 修调没有优化空间。
+- don't touch 限制较大，实际需要的往往只是 `set_size_only`（sizing only）——更自由，允许 DC 调整 size。
+- 手塞（hand-instantiated）cell：input 会被强制插 buffer、output 按与 APR 的沟通也强制加 output buffer，理论上代码里不必手塞；但有些手塞 delay 带有时序考虑（如错开 base），不能乱动。
+
+### 2.3 Genus
 
 ```bash
 cd genus
@@ -409,6 +426,10 @@ run_genus
 ```
 
 若使用 DC，通常不需要运行 Genus。若项目指定使用 Genus，则需配置 `design.set` 中 `SYN_TOOL=genus`。
+
+Genus 是与 DC 不同家的综合工具，目前基本不用，但脚本保留。历史用途：大芯片上 DC 综合后 LEC 一直过不了时，换 Genus 重新综合可以规避（不同家工具，避免"球员兼裁判"）。使用 Genus 时仍用 LEC 验证一致性（flow 未引入 formal）。
+
+TIP: RTL 不要写得太复杂（如复杂组合回环），否则容易导致 LEC 不过。
 
 主要检查项：
 - `genus.log` 无 Error
@@ -425,6 +446,7 @@ const chapters = [
   ['synthesis-upf', '综合与 UPF'],
   ['lec', 'LEC 验证'],
   ['signoff-timing', 'Signoff 与时序'],
+  ['pt-intro', 'PT 介绍'],
   ['memory-power', 'Memory 与功耗'],
   ['faq', 'FAQ 与清单']
 ];

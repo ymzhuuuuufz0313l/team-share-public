@@ -336,12 +336,25 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
 
 &gt; 在启动综合之前，必须先通过 CKF 和 nLint 清理 RTL 中的连接性、语法和可综合性问题。
 
+CKF 与 nLint 并行执行、互为补充，分工各有侧重：
+
+| 工具 | 侧重 | 典型检查项 |
+|------|------|-----------|
+| CKF | 浅层：环境配置、filelist 链接、环境变量正确性 | 连接性、Floating、black box |
+| nLint | 深层：设计本身的问题 | multi-driver、wire floating 等 |
+
+经验：CKF 跑得特别快，适合快速过筛；很多错误 CKF 全部通过、nLint 一跑却报出一堆 error，明显的错误两边都会报，也有只在一边报的，因此两个工具缺一不可。
+
+NOTE: 也有观点认为 CKF 的必要性存疑，但因其跑得快、可作保险，流程中一直保留（流程由流程维护者统一制定与维护）。
+
 ## 1. CKF（连接性检查）
 
 ```bash
 cd ckf
 run_ckf
 ```
+
+WARNING: 通过 `bsub` 提交时，命令尾部必须加参数 `1`，即 `bsub -Ip run_ckf 1`，不加该参数跑不起来。
 
 前置条件：CKF 建议在 `run_dc` 之前完成，以提前发现 RTL 连接性问题。
 
@@ -354,6 +367,8 @@ run_ckf
 - `black box` 需逐一确认，通常为 analog、memory、digital macro，确保都是真实的 black box
 
 - `Latch` 只允许来自统一库（如 `gclk`、`io_latch`）或配合 analog design 直接调用的 latch，其余需检查 RTL
+
+结果处理规则：所有 Error 必须清零；Warning 需逐条人工确认，仅确认无逻辑风险的正常告警才可放行。
 
 ## 2. nLint
 
@@ -368,8 +383,11 @@ run_nlint
 - `nlint.log` / `nlint.rpt`
 - `no_check_module.f` 可排除不需要检查的模块
 - 确认可接受的 error 后，填入公共 waive list：`$PROJECT/SYNTHESIS/common/tcl_dir/nlint/nlint_waive.list`
+- 加入 waive list（白名单）前必须逐条确认确实无风险；两个工具重复报的已知非风险问题可加入 waive 文件，下次不再报
 
-NOTE: nLint 和 CKF 建议在综合前完成，以显著减少后续综合阶段的 RTL 问题。
+NOTE: nLint 和 CKF 建议在综合前完成，以显著减少后续综合阶段的 RTL 问题。正确顺序：CKF + nLint 一起跑 → 确认无语法错误 → 才能跑综合。
+
+WARNING: DC 不是语法检查工具，其 error / warning 数量多且不具针对性——断线在 nLint 中是 error，在 DC 中可能直接被优化掉、只报一条 warning。不要指望用 DC 替代 CKF / nLint 做 RTL 检查。
 
 </script>
 
@@ -382,6 +400,7 @@ const chapters = [
   ['synthesis-upf', '综合与 UPF'],
   ['lec', 'LEC 验证'],
   ['signoff-timing', 'Signoff 与时序'],
+  ['pt-intro', 'PT 介绍'],
   ['memory-power', 'Memory 与功耗'],
   ['faq', 'FAQ 与清单']
 ];

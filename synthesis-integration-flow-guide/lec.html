@@ -347,13 +347,15 @@ run_lec
 
 - 如果 LEC 不通过，工具可能自动弹出 GUI 窗口用于分析。
 
+WARNING: 不能以"没弹窗"作为 LEC 通过的依据——没弹窗可能只是 LEC 根本没跑起来。必须逐个打开 log，确认最后一行是真的 pass。
+
 通过标准：
 - `lec.log` 无 Error
 - `abort.rpt` = 0 个 abort point
 
 - `non-eq.rpt` = 0 个 non-equivalent point
 
-- `unmapped.rpt` = 0 个 unmapped point
+- `unmapped.rpt` = 0 个 unmapped point；小芯片一般没有 unmapped 点，出现不一定代表不过，但必须追查原因（曾因此发现过真实 bug），可结合 mapped / unreachable report 对比定位
 
 ![LEC PASS 结果示例](./image_01.png)
 
@@ -364,6 +366,18 @@ run_lec
 若使用 Genus 综合，可优先在 `design.set` 中设置 `EC_R2V_EN=1`，以节约 LEC 运行时间。
 
 若存在无法解决的 abort point，再将 `EC_R2V_EN` 设为 0，分两步进行 LEC。
+
+---
+
+## 2. 必须做 LEC 的三个节点
+
+| 节点 | 说明 |
+|------|------|
+| 综合完成后（交付 APR 前） | 此阶段常规通过率接近 100% |
+| APR 布局布线返回后 | APR 阶段的摆弄有时会把 LEC 搞不过，总体通过率较高 |
+| ECO 修改完成后 | 第一版基本都会不过；不过代表有地方没改对，需逐一定位 |
+
+经验：log 前面部分没问题可跳过不看，有问题再挨个查。
 
 </script>
 
@@ -376,6 +390,7 @@ const chapters = [
   ['synthesis-upf', '综合与 UPF'],
   ['lec', 'LEC 验证'],
   ['signoff-timing', 'Signoff 与时序'],
+  ['pt-intro', 'PT 介绍'],
   ['memory-power', 'Memory 与功耗'],
   ['faq', 'FAQ 与清单']
 ];

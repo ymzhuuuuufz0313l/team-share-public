@@ -332,7 +332,7 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
   </div></div>
 
   <script type="text/template" id="md">
-# 七、常见问题与检查清单
+# 八、常见问题与检查清单
 
 &gt; 最后整理一些综合与集成阶段容易踩坑的点，以及一份可复用的检查清单。
 
@@ -356,6 +356,27 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
 
 ### 1.3 工具链冲突
 - 综合环境 source 前，若 cshrc 中同时 source 了 Verdi / VCS 环境，建议先注释，避免 DC / PT 报错。
+- PT 环境的 Verdi / VCS 版本固定（如 18.19），不要随验证环境升级；DC / PT 报奇怪错误时，先检查 source 的工具版本是否正确。
+
+### 1.4 环境与 filelist
+- CKF 用 `bsub` 提交时，命令尾部必须加参数 `1`（`bsub -Ip run_ckf 1`），否则跑不起来。
+- filelist 中配置指定的文件即使无内容，也必须放空文件占位，否则流程直接报错。
+- filelist 拿错版本最危险：拿错版综合、再拿同一错版做 LEC，LEC 自洽通过，错误完全发现不了。务必与 HDL 侧 `.f` 保持一致（从 SVN 直接 link 获取）。
+- 综合报错找不到 cell → 检查 `common_db` 的 target library 是否加入了新 cell / APR module 对应的 lib。
+- 145 制程统一只用 LVT，SVT / LVT 混用 DRC 过不了（该工艺库特有问题）；代价是后端修 setup 只能 sizing，不能换 VT。
+
+### 1.5 综合与 LEC
+- DC 不是语法检查工具：断线在 DC 可能被优化掉只报 warning，必须先过 CKF + nLint 再综合。
+- LEC 没弹窗 ≠ 通过，必须看 log 最后一行确认真的 pass（可能根本没跑起来）。
+- ECO 后第一版 LEC 基本必不过，不过 = 有地方没改对，需逐一定位。
+- LEC 出现 unmapped 点必须追查原因（曾因此发现过真实 bug）。
+- DC 有未收敛 timing violation 时面积数据是假的，交付前必须清零。
+
+### 1.6 时序与交付
+- postPT 某 corner 结果为空 → 检查是否打开了 dump SDF 开关没关（以打开状态跑过的 corner，PT 结果会被覆盖清掉）。
+- 长方形 die 在 Innovus（默认按正方形 floorplan）上 APR 容易绕不出来；DC 阶段没有框的概念、看不出来，需提前与 APR 对接工程师确认。
+- unconstrained（未约束）路径交付 = 重大 bug；constraint 下错（如过紧）还可改，未约束无法事后补救。
+- floating 信号在 APR 可能被优化剪掉、整路逻辑消失，交付前需确认是否有意保留。
 
 ---
 
@@ -364,15 +385,21 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
 | 步骤 | 检查项 | 状态 |
 |------|--------|------|
 | 环境 | `gensyn` 环境完整、模板最新 | TBD |
+| 环境 | source 的 Verdi / VCS 版本正确（PT 环境固定版本） | TBD |
 | 配置 | `design.set` 中库、corner、工具选择正确 | TBD |
+| 配置 | 新 cell / APR module 的 lib 已加入 `common_db` target library | TBD |
 | Filelist | Verilog / SV / DDC / dummy 文件分类完整 | TBD |
+| Filelist | 与 HDL 侧 `.f` 版本完全一致、空文件已占位 | TBD |
 | CKF | 无 Floating、black box 已确认 | TBD |
 | nLint | 可接受 error 已填入 waive list | TBD |
 | UPF | PG pin / analog / power port 定义合理 | TBD |
 | DC | `dc.log` 无 Error、slack ≥ 0 | TBD |
+| DC | unconstrained paths 清零、timing violation 清零（面积数据才可信） | TBD |
 | LEC | 0 abort / 0 non-equivalent / 0 unmapped | TBD |
 | Signoff | 版本一致、`signoff.rpt` 全部通过 | TBD |
 | PT | `pt.log` 无 Error、slack &gt; 0 | TBD |
+| 交付 | 无 unconstrained 路径、floating 信号已确认 | TBD |
+| 交付 | netlist / SDC / UPF（如有）/ don't touch 列表齐全；正式 release 已填 netlist release check Excel 并签字 | TBD |
 | 功耗 | VCD / SDF / SDC 路径正确、功耗收敛 | TBD |
 
 ---
@@ -390,6 +417,7 @@ const chapters = [
   ['synthesis-upf', '综合与 UPF'],
   ['lec', 'LEC 验证'],
   ['signoff-timing', 'Signoff 与时序'],
+  ['pt-intro', 'PT 介绍'],
   ['memory-power', 'Memory 与功耗'],
   ['faq', 'FAQ 与清单']
 ];

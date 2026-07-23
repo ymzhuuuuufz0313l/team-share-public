@@ -385,11 +385,17 @@ ASSUMPTION: 本指南以项目内部封装脚本 `gensyn` 为例；若使用其�
 
 NOTE: 若 cshrc 中同时 source 了仿真工具（如 Verdi / VCS），在运行 DC / PT 时可能产生冲突，建议临时注释相关行。
 
+WARNING: DC / PT 与 Verdi / VCS 存在版本冲突——验证环境与 PT 环境需要的 Verdi / VCS 版本不同。PT 环境的 Verdi / VCS 版本长期固定（如 18.19，已沿用多年），不要随验证环境升级。若 source 错版本后跑 DC / PT，会报出很奇怪的错误；遇到莫名报错时，第一件事先检查当前 source 的工具版本是否正确。
+
 ---
 
 ## 2. design.set 核心配置
 
-`design.set` 是综合环境的总控文件，关键字段如下：
+`design.set` 是综合环境的总控文件。传入 top name 后，脚本会将整个配置中的 topname 批量替换为目标顶层名。
+
+复用惯例：制程不变时，直接从上一个已验证项目整包拷贝配置，只替换 top name 即可；最新版配置统一上传到公共路径，团队通过 SVN update 获取（上传前需核对是否为最新版本）。
+
+关键字段如下：
 
 | 字段 | 说明 | 常用设置 |
 |------|------|---------|
@@ -418,9 +424,24 @@ TIP: 同一项目下的不同 IP 应尽量使用相同的 `CORNER` 和库配置�
 
 ---
 
-## 3. Filelist 管理
+## 3. common_db 与库配置
 
-### 3.1 文件分类
+`common_db` 集中存放 lib 库、target library、wireload 等配置，项目不做库变更时基本不需要改动。
+
+必须修改的场景：
+- 项目新加自定义 cell / APR module 时，必须把对应的新 lib 加进 `common_db` 的 target library，否则 DC 找不到 cell 名会直接报错。
+- 每个新项目都需要提前申请 library。
+
+### 3.1 阈值电压库（VT 库）规则
+- 当前 145 制程项目统一只使用 LVT（低阈值库）并全部拉满。原因：排期紧张；且该工艺下 SVT / LVT 混用会导致 DRC 过不了（该工艺库特有的问题）。
+- 代价：综合阶段已全部使用最快的 cell，后端修 setup 时无法再通过换 VT 解决，只能 sizing。
+- 该制程已成熟，leakage 占比很小，全 LVT 方案可接受。
+
+---
+
+## 4. Filelist 管理
+
+### 4.1 文件分类
 
 综合 filelist 通常按文件类型拆分：
 
@@ -428,17 +449,21 @@ TIP: 同一项目下的不同 IP 应尽量使用相同的 `CORNER` 和库配置�
 |------|------|
 | `<top>.f` | Verilog RTL 文件列表 |
 | `<top>.sv.f` | SystemVerilog 文件列表 |
-| `<top>.ddc_dc.f` | 引用 DDC 的 design |
+| `<top>.ddc_dc.f` | 引用 DDC 的 design（DDC 目前已不使用，环境保留配置） |
 | `<top>.dummy_lec.f` | LEC 对比时需要的 dummy 文件 |
 | `advanced/*.vhdl_dc.f` / `*.vhdl_lec.f` | VHDL 相关处理 |
 
-### 3.2 填写建议
+### 4.2 填写建议
 1. `clk_rst` 中的 define 一般由环境自动加入，filelist 中无需重复。
 2. memory / analog 模块在综合时引用 db / lib，filelist 中通常不需要加入 RTL；LEC 环境会自行使用相关 dummy 文件。
 3. filelist 支持嵌套 `*.f`。
 4. 对于底层/中层模块、mem_wrap、bist、clk_rst、std_ip 相关文件，建议由 owner 明确填写，增强可控性。
 5. 能直接复用 `HDL/file_list/*.f` 时，优先复用，以保证仿真与综合的一致性。
 6. 若不确定是否有遗漏，可通过 `run_ckf` 结果反向补充 filelist 中未添加的 `.v`。
+7. filelist 必须与 HDL（RTL 开发侧）的 `.f` 完全一致，综合和 LEC 都从这里读取、统一管理，建议从 SVN 直接 link 获取。
+8. 空文件占位规则：配置中指定的文件即使没有内容，也必须放空文件占位，否则流程会直接报错。
+
+WARNING: filelist 拿错版本的后果极隐蔽——拿错版 filelist 做综合、再拿同一错版做 LEC，LEC 会自洽通过，逻辑错误完全发现不了（"拿错 = 白综合"）。务必确认 filelist 版本与 HDL 侧一致。
 
 </script>
 
@@ -451,6 +476,7 @@ const chapters = [
   ['synthesis-upf', '综合与 UPF'],
   ['lec', 'LEC 验证'],
   ['signoff-timing', 'Signoff 与时序'],
+  ['pt-intro', 'PT 介绍'],
   ['memory-power', 'Memory 与功耗'],
   ['faq', 'FAQ 与清单']
 ];

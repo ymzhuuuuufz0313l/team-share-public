@@ -326,17 +326,19 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
     <article class="article" id="article">
       
     </article>
-    <div class="page-nav"><a href="./signoff-timing.html"><span class="label">上一篇</span><span class="title">Signoff 与时序</span></a>
+    <div class="page-nav"><a href="./pt-intro.html"><span class="label">上一篇</span><span class="title">PT 介绍</span></a>
 <a class="next" href="./faq.html"><span class="label">下一篇</span><span class="title">FAQ 与清单</span></a></div>
     <div class="footer">Shared from team knowledge base</div>
   </div></div>
 
   <script type="text/template" id="md">
-# 六、Memory 与功耗仿真
+# 七、Memory 与功耗仿真
 
 &gt; 本章介绍 memory compiler 生成 memory、整理 DB、生成 mem_wrap，以及基于 PTPX 的功耗仿真流程。
 
 ## 1. Memory 与 mem_wrap 生成
+
+NOTE: 当前 Driver 类项目均未使用 memory，flow 里 memory 相关配置不用改动；有 memory 的项目需把 memory 库加进 `common_db`。Memory Compiler 流程由专业团队长期维护，带存储需求的项目（涉及 MBIST、CP test）可直接复用其成熟流程。
 
 ### 1.1 生成 memory
 利用 memory compiler 工具，按工艺要求填写：
@@ -409,6 +411,7 @@ const chapters = [
   ['synthesis-upf', '综合与 UPF'],
   ['lec', 'LEC 验证'],
   ['signoff-timing', 'Signoff 与时序'],
+  ['pt-intro', 'PT 介绍'],
   ['memory-power', 'Memory 与功耗'],
   ['faq', 'FAQ 与清单']
 ];

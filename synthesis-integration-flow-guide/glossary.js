@@ -63,7 +63,25 @@
     'FSDB': 'Fast Signal DataBase，Verdi 工具常用的高效压缩波形文件格式。',
     'toggle rate': '信号在单位时间内发生 0/1 翻转的平均次数，是评估动态功耗的重要指标。',
     'set_dont_touch_network': '将指定网络及其下游触发器整体设为不可优化对象，作用范围比 set_dont_touch 更广。',
-    'asynchronous clocks': '频率或相位无固定关系的时钟，跨此类时钟域的路径通常设为 false path。'
+    'asynchronous clocks': '频率或相位无固定关系的时钟，跨此类时钟域的路径通常设为 false path。',
+    'STA': 'Static Timing Analysis，静态时序分析，不依赖仿真向量、对全部时序路径做穷举式检查的验证方法，数字签核以其结果为准。',
+    'skew': '时钟或数据信号到达不同点的时间差；clock skew 由 clock tree balance 控制通常不大，data skew 相对 clock 衡量并需按规格收敛。',
+    'clock skew': '时钟到达不同寄存器 clock 端的时间差；max 与 min 差很多通常说明 clock tree 做歪了。',
+    'data skew': 'data 信号相对 clock 的偏移量，接口时序的关键收敛指标，通常要求落在以 clock 为中心的窗口内（如 ±3.5 ns）。',
+    'uncertainty': '时钟不确定度，用 set_clock_uncertainty 施加的额外时序裕量，来源于历史经验值（如 setup 400 ps / hold 150 ps）。',
+    'false path': '不需要做时序检查的路径，用 set_false_path 声明；判定错误会把真实路径漏报，必须逐条人工确认。',
+    'multicycle': '允许路径跨多个时钟周期完成数据传输的约束，用 set_multicycle_path 声明，常用于慢速控制路径。',
+    'corner': 'PVT 仿真角的简称；当前工艺共 10 个 corner，setup / hold / transition 需全量校验，不做取舍。',
+    'signal integrity': '信号完整性分析（SI），评估串扰 noise 对 cell delay 的影响；保守做法是全程打开、不做取舍。',
+    'OCV': 'On-Chip Variation，片内工艺偏差分析，通过额外 derate 覆盖同一芯片上不同位置的时序差异。',
+    'quasi-static': '准静态信号，一帧才变一次或由寄存器配置出的控制信号，可设 false path 不做时序检查。',
+    'dco': '集中书写 false path / multicycle 等约束的源文件，经 prePT 展开生成正式 SDC，禁止直接修改 SDC。',
+    'live PT': '手工打开的交互式 PrimeTime session，用于临时报路径、验证约束效果，确认后再写回 dco。',
+    'report_timing': 'PrimeTime 报时序路径的命令，常用 -input_pins 列出每级 pin；起点选错会夹带假路径。',
+    'clock latency': 'clock 从源头到寄存器 clock 端的实际延迟；clock 间做过 balance 不应差很多，与 data 差得多是正常的。',
+    'min_pulse_width': '最小时钟脉冲宽度检查；PT 报的是 rise/fall latency 差而非真实占空比，占空比需靠后仿波形确认。',
+    'spread spectrum': '展频，让 clock 频率在小范围内抖动以分散 EMI 峰值，约束需把展频比例计入周期定义。',
+    'duty cycle': '占空比，clock 高电平时间占周期的比例；非 50% 时下降沿不在窗口中间，修 skew 需相应推 clock。'
   };
 
   const skipTags = new Set(['PRE', 'CODE', 'A', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'SCRIPT', 'STYLE', 'TERM-TOOLTIP']);
