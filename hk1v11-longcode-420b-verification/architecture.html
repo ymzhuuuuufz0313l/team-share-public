@@ -513,11 +513,26 @@
 
 `checker_420b.sv`：收集 20-bit chunk → 组装 420-bit block → `decode_420b_to_413b()` 还原比对；检查编码规则、跨 lane 长度、K-code 窗口。<span class="badge badge-dv">display-only</span>
 
-### 3.5 离线验证链（0717 新增）
+### 3.5 离线验证链（0717 新增，0721~0722 扩展）
 
 - **抓取**：`long_rtl_tap_debug.sv` 以 bind 注入（端口连接、零 RTL 修改）→ `long_rtl_rx / dec / grp / dap_lane0.md`
 - **解码**：`decode_dap.py` 区域分类 `LSP=K2→K3`、`LINE=K1→K2`、`CTRL_F=K4→K2`，IDLE 跳过；内容只看期望长度，多余尾部标 pad；roundtrip 500 块 × scren=0/1 全对
 - **比对**：`long_pydec_report_lane0.md` 精简报告（kind 汇总 + verdict + DIFF 置顶）
+
+#### 新增脚本（0721~0722，定位 DUT 解码问题）
+
+| 脚本 | 输入 | 输出 | 用途 |
+|------|------|------|------|
+| `check_rtl_tag.py` | `long_rtl_tag_lane0.md`（`bind decoder_7b` 逐拍判定） | 异常行 `[X]` 汇总 + 计数 | **替换点合法性判定**：`in!=out` 只允许是 `{0,tag}→0x00` / `{1,tag}→0x7F`；异常带 (blk,grp) 坐标，免翻波形 |
+| `decode_max.py` | `long_rtl_max_lane0.md`（`dout_21b_max` 全量 dump） | `long_maxdec_lane0.md` + `long_maxdec_report_lane0.md` | **层级分离**：`dout_21b_max` 是替换点后、解扰前数据；`maxdec == golden` 而 `rtl_dec != golden` → 替换后重组/解扰问题；`maxdec != golden` → 替换逻辑本身问题 |
+| `compare_pkt20.py` | `long_pkt20_seq_lane0.md` vs `long_rtl_dap_lane0.md` | `long_pkt20_cmp_report_lane0.md` | **收发 20-bit 包流对比**：按 K 码对切分两侧，先比 K 码序列、再逐字比数据段；默认源为 DAP 全量流（避免 `[DAL]` 值变化压缩流误报） |
+
+**判定顺序**：`decode_dap.py`（线上 golden 判定）→ `check_rtl_tag.py`（替换点异常筛选）→ `decode_max.py`（层级分离实锤）→ `compare_pkt20.py`（收发逐字比对）。
+
+**新增 tap / 日志**：
+- `long_rtl_tag_lane0.md`：替换点自动判定（`[HDR]` 块头、`[R]` 合法替换、`[X]` 异常带坐标）
+- `long_rtl_max_lane0.md`：`dout_21b_max` 全量 dump（每 chunk 的 tag + 7-bit 组值）
+- 以上 tap 通过 `long_rtl_tag_debug.sv` 以 bind 注入 `decoder_7b`，零 RTL 修改；case `test.f` 已包含。
 
 ### 3.6 关键数据宽度速查
 
@@ -532,7 +547,7 @@
 | 线上 packet | 20-bit | driver LSB-first |
 | DUT 输出 | 24-bit + 2-bit valid | `long_decoding_top` |
 
-## 4. 0717 关键修改摘要
+## 4. 0717~0722 关键修改摘要
 
 | 修改项 | 说明 | 侧 |
 |--------|------|----|
@@ -541,7 +556,11 @@
 | `din_20b_aligned` 接线 | 误接 `DATA_POINT_LAT` → 改接 `DATA0_ALIGN_LONG` | <span class="badge badge-rtl">RTL 侧</span> |
 | 加扰策略对齐 | 三处 `scramble_en` 硬编码 `1'b1` → `env_cfg.SCREN` | <span class="badge badge-tx">TX 侧</span> |
 | 压流位序 | pixel/VBK 循环 MSB-first → LSB-first | <span class="badge badge-tx">TX 侧</span> |
-| 离线验证链 | 新增 bind tap + `decode_dap.py`，证实线上数据全部正确 | <span class="badge badge-dv">DV 侧</span> |
+| ref model decode 修复 | `decode_420b_to_413b()` 与 encode 语义对齐（`tag=header[6:1]`、先判定替换再全组统一解扰） | <span class="badge badge-dv">DV 侧</span> |
+| LSP 训练字节序 | `LSP_RAW_256B` 常量 `ED EC EB EA` → `EA EB EC ED`，对齐 8B/10B | <span class="badge badge-tx">TX 侧</span> |
+| 无编码标记更正 | 按发送顺序读 = tag∈{0,63}；encode 头部二选一、tag 搜索跳过保留值 | <span class="badge badge-dv">DV 侧</span> |
+| **离线验证工具链扩展** | 新增 `check_rtl_tag.py`（替换点判定）、`decode_max.py`（层级分离）、`compare_pkt20.py`（收发对比） | <span class="badge badge-dv">DV 侧</span> |
+| **新增 tap / 日志** | `long_rtl_tag_debug.sv`（bind `decoder_7b`）→ `long_rtl_tag_lane0.md`（替换判定）+ `long_rtl_max_lane0.md`（max dump） | <span class="badge badge-dv">DV 侧</span> |
 
 ---
   </script>

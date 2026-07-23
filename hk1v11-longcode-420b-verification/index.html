@@ -374,7 +374,8 @@
         <p class="lead">
           基于 DV_TCON_C 现有 8B/10B 结构重建的 420b 长编码验证环境，通过
           <code>CHPI_MODE_420B</code> 宏隔离。当前版本 <code>0720v1</code>（工作副本 <code>current_work</code>）：接收端不看 RTL，
-          脚本对线上 20-bit 对齐数据做离线 413b/420b 解码比对，已证实线上数据全部正确。
+          脚本对线上 20-bit 对齐数据做离线 413b/420b 解码比对，已证实线上数据全部正确；
+          0721~0722 新增 <code>check_rtl_tag.py</code> / <code>decode_max.py</code> / <code>compare_pkt20.py</code> 三条证据链，定位 DUT <code>tag_value</code> 块边界时序问题。
         </p>
         <div class="statbar">
           <div class="stat"><div class="num">0720v1</div><div class="lbl">当前环境版本</div></div>
@@ -398,7 +399,7 @@
     <a class="chapter-card" href="./architecture.html">
       <div class="num">1</div>
       <div class="title">一、整体架构</div>
-      <div class="desc">0720v1 环境组件、数据流与脚本离线验证收发框图</div>
+      <div class="desc">0720v1 环境组件、数据流与脚本离线验证收发框图（含 0721~0722 新增三条证据链脚本）</div>
     </a>
     <a class="chapter-card" href="./comparison.html">
       <div class="num">2</div>
@@ -423,7 +424,7 @@
     <a class="chapter-card" href="./decoder.html">
       <div class="num">6</div>
       <div class="title">六、420b 解码</div>
-      <div class="desc">Python 离线解码为主 · RTL 解码链联调中</div>
+      <div class="desc">Python 离线解码为主 · RTL 解码链联调中 · 新增替换点判定/层级分离/收发对比脚本</div>
     </a>
     <a class="chapter-card" href="./encoding.html">
       <div class="num">7</div>
@@ -438,7 +439,7 @@
     <a class="chapter-card" href="./debug-log.html">
       <div class="num">9</div>
       <div class="title">九、排障实录</div>
-      <div class="desc">联调问题定位、进展与结论：Python 离线解码证实线上数据全部正确</div>
+      <div class="desc">联调问题定位、进展与结论：Python 离线解码证实线上数据全部正确；0722 更新根因为 tag_value 块边界时序错</div>
     </a>
     <a class="chapter-card" href="./next.html">
       <div class="num">10</div>

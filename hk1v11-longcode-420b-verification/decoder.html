@@ -455,7 +455,17 @@
 | 解码 | `decode_dap.py` 离线 413b/420b 解码（与 encode / DUT 语义一致） | `long_pydec_lane0.md` |
 | 比对 | 与发送端编码前原始字节 `long_rawbyte_seq_lane0.md` 逐区域 diff | `long_pydec_report_lane0.md` |
 
-### 1.2 解码规则
+### 1.2 新增证据链脚本（0721~0722，用于定位 DUT 解码问题）
+
+| 脚本 | 输入 | 输出 | 用途 |
+|------|------|------|------|
+| `check_rtl_tag.py` | `long_rtl_tag_lane0.md`（`bind decoder_7b` 逐拍判定） | 异常行 `[X]` 汇总 + 计数 | **替换点合法性判定**：`in!=out` 只允许是 `{0,tag}→0x00` / `{1,tag}→0x7F`；异常带 (blk,grp) 坐标 |
+| `decode_max.py` | `long_rtl_max_lane0.md`（`dout_21b_max` 全量 dump） | `long_maxdec_lane0.md` + `long_maxdec_report_lane0.md` | **层级分离**：`maxdec == golden` 而 `rtl_dec != golden` → 替换后重组/解扰问题；`maxdec != golden` → 替换逻辑本身问题 |
+| `compare_pkt20.py` | `long_pkt20_seq_lane0.md` vs `long_rtl_dap_lane0.md` | `long_pkt20_cmp_report_lane0.md` | **收发 20-bit 包流对比**：按 K 码对切分，先比 K 码序列、再逐字比数据段；默认源为 DAP 全量流 |
+
+> 判定顺序：`decode_dap.py`（线上 golden）→ `check_rtl_tag.py`（替换点异常筛选）→ `decode_max.py`（层级分离）→ `compare_pkt20.py`（收发逐字比对）。本轮 `check_rtl_tag.py` 报告 0 异常、`compare_pkt20.py` 收发一致，配合 `decode_max.py` 定位到 DUT `tag_value` 块边界时序问题（见第 2 节）。
+
+### 1.3 解码规则
 
 - **K 码定位**：以两个连续 20-bit 字识别 K1~K4
 - **区域分类**：`LSP = K2→K3`、`LINE = K1→K2`、`CTRL_F = K4→K2`，IDLE 跳过
@@ -463,7 +473,7 @@
 - **长度判定**：内容只看期望长度，多余尾部标注 pad
 - **自检**：Python encode/decode roundtrip，scren=0/1 各 500 块随机数据全对 <span class="badge badge-fixed">✅ 通过</span>
 
-### 1.3 验证结论
+### 1.4 验证结论
 
 | 区域 | 期望 | pydec 解码 | 结果 |
 |------|------|-----------|------|
@@ -517,9 +527,9 @@
 |------|------|
 | `din_20b_aligned` 误接 `DATA_POINT_LAT` → 改接 `DATA0_ALIGN_LONG`，LSP 解出原始训练码 | <span class="badge badge-fixed">🔵 已解决</span> |
 | `decode_ignore` 位宽：6-bit `tag_value` 对 7-bit 常量，tag=0 无编码标记漏判 → 无替换块误解码（`0x40→0x00`、`0x50→0x40`）；DV 标记已更正为 tag∈{0,63} | <span class="badge badge-pending">🟡 待修</span> |
-| 真实 0x7F 替换组还原/重组异常（`FC/FE/FF` 截断错码，回卷区，与区域边界同源） | <span class="badge badge-pending">🟡 待跟进</span> |
+| **`tag_value` 块边界时序错**：当前 420-bit 块尚未处理完 59 个组，`tag_value` 已提前更新为下一个块的 tag，导致块末尾真实替换组（如 `{1,tag=1}`=`7'h41`）用错 tag、漏替换，下游 21-bit 字节重组后表现为 `FC→04`/`FE→0E`/`FF→FF`/`FE FF→7E F0`（原误判为 0x7F 组还原/重组异常） | <span class="badge badge-pending">🟡 待修</span> |
 | 区域边界异常：起始 9 字节残流 / 尾部字节溢出 / 个别位错 | <span class="badge badge-pending">🟡 待跟进</span> |
-| 定位辅助：`long_rtl_grp_lane0.md`（7-bit group 流 + decode_en 窗口），pydec 可作对照证据 | 可用 |
+| 定位辅助：`long_rtl_tag_lane0.md`（替换判定）、`long_rtl_max_lane0.md`（max dump）、`long_rtl_grp_lane0.md`（7-bit group 流 + decode_en 窗口），pydec 可作对照证据 | 可用 |
 
 ---
   </script>
