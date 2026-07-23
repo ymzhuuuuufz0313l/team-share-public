@@ -6,9 +6,10 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>环境与配置 · ASIC IP Synthesis &amp; Integration Flow 工具使用指南</title>
+  <title>学习路径与实操练习 · ASIC IP Synthesis &amp; Integration Flow 工具使用指南</title>
   <script src="https://cdn.jsdelivr.net/npm/marked@9.1.6/marked.min.js"></script>
   <script src="./glossary.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
   <style>
 
 :root {
@@ -326,144 +327,58 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
     <article class="article" id="article">
       
     </article>
-    <div class="page-nav"><a href="./index.html"><span class="label">上一篇</span><span class="title">首页</span></a>
-<a class="next" href="./rtl-check.html"><span class="label">下一篇</span><span class="title">RTL 检查</span></a></div>
+    <div class="page-nav"><a href="./faq.html"><span class="label">上一篇</span><span class="title">FAQ 与清单</span></a></div>
     <div class="footer">Shared from team knowledge base</div>
   </div></div>
 
   <script type="text/template" id="md">
-# 一、环境与配置
+# 九、学习路径与实操练习
 
-&gt; 综合开始之前，需要先准备好项目环境、正确配置 `design.set`，并管理好 RTL filelist。
+&gt; 按 flow 顺序动手跑一遍，每步跑完把指定截图贴回来核对结果、指出问题；确认后的好图可以嵌进网站对应页面当示例。
 
-## 1. 环境准备
-
-### 1.1 目录结构
-典型的综合环境位于：
-
-```
-$PROJECT_PATH/SYNTHESIS/ip/<top_name>/
-```
-
-主要子目录说明：
-
-| 目录 | 用途 |
-|------|------|
-| `ckf` | RTL 连接性检查 |
-| `nlint` | Lint 检查 |
-| `lec_upf` | UPF 正确性检查 |
-| `dc` | Design Compiler 综合 |
-| `genus` / `genus_upf` | Genus 综合 / UPF 生成 |
-| `lec` | 形式验证 |
-| `pt` / `sta/post/pt` | 时序分析 |
-| `power` | 功耗仿真 |
-
-### 1.2 环境初始化
-
-进入 `$PROJECT_PATH/SYNTHESIS/ip/` 后执行：
-
-```bash
-# 生成综合环境（默认会 check in 到版本管理）
-gensyn <TOP_NAME>
-
-# 不自动 check in
-gensyn <TOP_NAME> -noadd
-
-# 自定义目录名
-gensyn <TOP_NAME> -noadd <custom_dir>
-```
-
-ASSUMPTION: 本指南以项目内部封装脚本 `gensyn` 为例；若使用其他 flow，需替换为对应的环境初始化命令。
-
-其他常用选项：
-- 初次生成环境时，默认会 check in 到版本管理，以保持目录干净；不需要 check in 时用 `-noadd`。
-- 生成的目录中通常包含 `Readme`，可再次阅读 synthesis flow 说明。
-- 如果模板有更新，可再次运行 `gensyn <TOP_NAME>` 自动 copy 新模板并备份原文件；`filelist` 与约束文件一般不会被覆盖。
-
-### 1.3 环境 source 与工具配置
-综合前通常需要 source 项目特定的 cshrc 或 bashrc，以保证工具链版本与 verification 环境一致。
-
-NOTE: 若 cshrc 中同时 source 了仿真工具（如 Verdi / VCS），在运行 DC / PT 时可能产生冲突，建议临时注释相关行。
-
-WARNING: DC / PT 与 Verdi / VCS 存在版本冲突——验证环境与 PT 环境需要的 Verdi / VCS 版本不同。PT 环境的 Verdi / VCS 版本长期固定（如 18.19，已沿用多年），不要随验证环境升级。若 source 错版本后跑 DC / PT，会报出很奇怪的错误；遇到莫名报错时，第一件事先检查当前 source 的工具版本是否正确。
+建议节奏：第 1 → 5 步是主线，跑通即掌握交付全流程；第 6 步是当前项目最核心也最依赖经验的部分，值得多练。
 
 ---
 
-## 2. design.set 核心配置
+## 1. 环境配置（对照 [「环境与配置」](./environment.html) 页）
 
-`design.set` 是综合环境的总控文件。传入 top name 后，脚本会将整个配置中的 topname 批量替换为目标顶层名。
+- **跑**：`design.set` 传入 top name；确认 source 的工具版本（Verdi / VCS 固定 18.19）
+- **截图**：① 初始化后的目录结构；② 工具版本输出
+- **核对点**：版本是否 source 对（跑 PT / DC 报奇怪错误的第一嫌疑）
 
-复用惯例：制程不变时，直接从上一个已验证项目整包拷贝配置，只替换 top name 即可；最新版配置统一上传到公共路径，团队通过 SVN update 获取（上传前需核对是否为最新版本）。
+## 2. RTL 检查（对照 [「RTL 检查」](./rtl-check.html) 页）
 
-关键字段如下：
+- **跑**：`bsub -Ip run_ckf 1`（尾部必须加 `1`）、nLint
+- **截图**：③ CKF 结果尾部；④ nLint error / warning 汇总（有 error 截前几条）
+- **核对点**：哪些 error 必须修、哪些 warning 可以进 waive list
 
-| 字段 | 说明 | 常用设置 |
-|------|------|---------|
-| `TOP_NAME` | 顶层模块名 | 由 `gensyn` 自动填充 |
-| `UPPER_CASE` | 是否大写处理 | 默认 |
-| `PARA_DESIGN` | 是否并行综合 | 默认 |
-| `USE_SAIF` | 是否使用 SAIF 功耗引导 | 默认 |
-| `POWER_OPTIMIZATION` | 功耗优化开关 | 默认 |
-| `SCAN_EN` | 扫描链使能 | 综合阶段常设为 0 |
-| `LINK_LIB` / `TAR_LIB` | 标准单元库 | 可填多个，空格分隔 |
-| `NET_DEFINE0` / `NET_DEFINE1` | 全局宏定义 | 与 clk_rst 相关 |
-| `ANA_EN` | analog db 使能 | 按项目需要 |
-| `MEM_EN` / `MEM_SNPS_EN` / `MEM_FARA_EN` | memory db 来源 | 按库配置 |
-| `LVT_EN` / `SVT_EN` | 低阈值 / 标准阈值单元使能 | 常用默认值 |
-| `SYN_TOOL` | 综合工具 | `dc` 或 `genus` |
-| `CORNER` | PVT corner | 与标准单元库一致 |
+## 3. DC 综合（对照 [「综合与 UPF」](./synthesis-upf.html) 页）
 
-补充说明：
-- `ANA_EN`：analog db 使能，按项目需要开启。
-- `MEM_EN` / `MEM_SNPS_EN` / `MEM_FARA_EN`：memory db 来源开关，按实际库配置选择。
-- `LVT_EN` / `SVT_EN`：低阈值 / 标准阈值单元使能，常用默认值即可；不同项目可能使用 RVT、HVT 等其它命名。
-- `LINK_LIB` / `TAR_LIB`：标准单元库选择，若需多种 std_cell，用空格分隔，例如 `"lib_a lib_b"`。
-- `NET_DEFINE0` / `NET_DEFINE1`：全局宏定义，与 `clk_rst` 下文件对应；不同工具下通常合并到一个 `NET_DEFINE` 变量中。
+- **跑**：compile 脚本
+- **截图**：⑤ DC 结束的 timing / area summary；⑥ unconstrained paths report
+- **核对点**：有无未收敛 violation（有的话面积数据是假的，不能交付）
 
-TIP: 同一项目下的不同 IP 应尽量使用相同的 `CORNER` 和库配置，以保证时序 signoff 口径一致。
+## 4. LEC（对照 [「LEC 验证」](./lec.html) 页）
 
----
+- **跑**：LEC
+- **截图**：⑦ log 最后一行的 pass 字样（不是"没弹窗"就算过）
+- **核对点**：是真 pass 还是根本没跑起来；有 unmapped 点要追原因
 
-## 3. common_db 与库配置
+## 5. prePT + signoff（对照 [「Signoff 与时序」](./signoff-timing.html) 页）
 
-`common_db` 集中存放 lib 库、target library、wireload 等配置，项目不做库变更时基本不需要改动。
+- **跑**：prePT（`cd pt && run_pt`），然后 `signoff`
+- **截图**：⑧ pt.log 无 error + rpt 里 slack &gt; 0；⑨ prePT log 的 DFF per clock / floating 列表；⑩ signoff pass 界面
+- **核对点**：unconstrained / floating 有无风险项（这两类交付出去是重大 bug）
 
-必须修改的场景：
-- 项目新加自定义 cell / APR module 时，必须把对应的新 lib 加进 `common_db` 的 target library，否则 DC 找不到 cell 名会直接报错。
-- 每个新项目都需要提前申请 library。
+## 6. PT 深入（对照 [「PT 介绍」](./pt-intro.html) 页，重点）
 
-### 3.1 阈值电压库（VT 库）规则
-- 当前 145 制程项目统一只使用 LVT（低阈值库）并全部拉满。原因：排期紧张；且该工艺下 SVT / LVT 混用会导致 DRC 过不了（该工艺库特有的问题）。
-- 代价：综合阶段已全部使用最快的 cell，后端修 setup 时无法再通过换 VT 解决，只能 sizing。
-- 该制程已成熟，leakage 占比很小，全 LVT 方案可接受。
+- **跑**：批量脚本跑全 corner PT → run summary；再开一个 live PT 练手
+- **截图**：⑪ summary latest 全 corner setup / hold / transition 汇总；⑫ live PT 里一条 `report_timing -input_pins` 完整路径报告；⑬ 自动生成的 Excel 报表（上半 latency / 下半 skew）
+- **核对点**：会不会看 latency 判断 clock tree 有没有做歪、能不能认出假路径（经过准静态 mux 的那种）、skew 分组是否合理
 
 ---
 
-## 4. Filelist 管理
-
-### 4.1 文件分类
-
-综合 filelist 通常按文件类型拆分：
-
-| 文件 | 内容 |
-|------|------|
-| `<top>.f` | Verilog RTL 文件列表 |
-| `<top>.sv.f` | SystemVerilog 文件列表 |
-| `<top>.ddc_dc.f` | 引用 DDC 的 design（DDC 目前已不使用，环境保留配置） |
-| `<top>.dummy_lec.f` | LEC 对比时需要的 dummy 文件 |
-| `advanced/*.vhdl_dc.f` / `*.vhdl_lec.f` | VHDL 相关处理 |
-
-### 4.2 填写建议
-1. `clk_rst` 中的 define 一般由环境自动加入，filelist 中无需重复。
-2. memory / analog 模块在综合时引用 db / lib，filelist 中通常不需要加入 RTL；LEC 环境会自行使用相关 dummy 文件。
-3. filelist 支持嵌套 `*.f`。
-4. 对于底层/中层模块、mem_wrap、bist、clk_rst、std_ip 相关文件，建议由 owner 明确填写，增强可控性。
-5. 能直接复用 `HDL/file_list/*.f` 时，优先复用，以保证仿真与综合的一致性。
-6. 若不确定是否有遗漏，可通过 `run_ckf` 结果反向补充 filelist 中未添加的 `.v`。
-7. filelist 必须与 HDL（RTL 开发侧）的 `.f` 完全一致，综合和 LEC 都从这里读取、统一管理，建议从 SVN 直接 link 获取。
-8. 空文件占位规则：配置中指定的文件即使没有内容，也必须放空文件占位，否则流程会直接报错。
-
-WARNING: filelist 拿错版本的后果极隐蔽——拿错版 filelist 做综合、再拿同一错版做 LEC，LEC 会自洽通过，逻辑错误完全发现不了（"拿错 = 白综合"）。务必确认 filelist 版本与 HDL 侧一致。
+每步的图贴回后，按「结果判读 + 问题指出 + 下一步建议」给反馈。
 
 </script>
 
