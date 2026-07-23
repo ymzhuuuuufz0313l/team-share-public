@@ -312,6 +312,28 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
     --tooltip-bg-rgb: 30, 58, 138;
   }
 }
+
+/* ===== team-share 组件库：状态徽章 badge ===== */
+.badge { display: inline-block; padding: 2px 12px; border-radius: 999px; font-size: 13px; font-weight: 600; line-height: 1.6; white-space: nowrap; }
+.badge-fixed   { background: #dcfce7; color: #166534; }
+.badge-pending { background: #fef9c3; color: #854d0e; }
+.badge-rtl     { background: #fee2e2; color: #991b1b; }
+.badge-tx      { background: #dbeafe; color: #1e40af; }
+.badge-dv      { background: #f3e8ff; color: #6b21a8; }
+@media (prefers-color-scheme: dark) {
+  .badge-fixed   { background: #14532d; color: #86efac; }
+  .badge-pending { background: #713f12; color: #fde047; }
+  .badge-rtl     { background: #7f1d1d; color: #fca5a5; }
+  .badge-tx      { background: #1e3a8a; color: #93c5fd; }
+  .badge-dv      { background: #581c87; color: #d8b4fe; }
+}
+
+/* ===== team-share 组件库：问题卡片 pcard ===== */
+.pcard { border: 1px solid var(--line); border-left: 5px solid #16a34a; border-radius: 12px; padding: 14px 20px; margin: 14px 0 26px; background: var(--surface); }
+.pcard.pending { border-left-color: #eab308; }
+.prow { display: grid; grid-template-columns: 52px 1fr; gap: 10px; margin: 7px 0; font-size: 15px; }
+.prow .k { font-weight: 700; color: var(--accent); }
+.prow code { font-size: 13px; }
 </style>
 </head>
 <body>
@@ -356,24 +378,63 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
 
 ### 1.3 工具链冲突
 - 综合环境 source 前，若 cshrc 中同时 source 了 Verdi / VCS 环境，建议先注释，避免 DC / PT 报错。
-- PT 环境的 Verdi / VCS 版本固定（如 18.19），不要随验证环境升级；DC / PT 报奇怪错误时，先检查 source 的工具版本是否正确。
+
+<div class="pcard">
+<div class="prow"><span class="k">状态</span><span><span class="badge badge-fixed">🔵 已解决</span></span></div>
+<div class="prow"><span class="k">现象</span><span>DC / PT 报出很奇怪的错误。</span></div>
+<div class="prow"><span class="k">定位</span><span>当前 source 的工具版本不对——验证环境与 PT 环境需要的 Verdi / VCS 版本不同。</span></div>
+<div class="prow"><span class="k">解决</span><span>PT 环境的 Verdi / VCS 版本固定（如 <code>18.19</code>），不要随验证环境升级；DC / PT 报奇怪错误时，先检查 source 的工具版本是否正确。</span></div>
+</div>
 
 ### 1.4 环境与 filelist
 - CKF 用 `bsub` 提交时，命令尾部必须加参数 `1`（`bsub -Ip run_ckf 1`），否则跑不起来。
 - filelist 中配置指定的文件即使无内容，也必须放空文件占位，否则流程直接报错。
-- filelist 拿错版本最危险：拿错版综合、再拿同一错版做 LEC，LEC 自洽通过，错误完全发现不了。务必与 HDL 侧 `.f` 保持一致（从 SVN 直接 link 获取）。
+
+<div class="pcard">
+<div class="prow"><span class="k">状态</span><span><span class="badge badge-rtl">⛔ 必须遵守</span></span></div>
+<div class="prow"><span class="k">现象</span><span>拿错版 filelist 做综合、再拿同一错版做 LEC，LEC 自洽通过，错误完全发现不了。</span></div>
+<div class="prow"><span class="k">定位</span><span>filelist 拿错版本最危险——综合和 LEC 都从同一份 filelist 读取，错版之间自洽。</span></div>
+<div class="prow"><span class="k">解决</span><span>务必与 HDL 侧 <code>.f</code> 保持一致（从 SVN 直接 link 获取）。</span></div>
+</div>
+
 - 综合报错找不到 cell → 检查 `common_db` 的 target library 是否加入了新 cell / APR module 对应的 lib。
 - 145 制程统一只用 LVT，SVT / LVT 混用 DRC 过不了（该工艺库特有问题）；代价是后端修 setup 只能 sizing，不能换 VT。
 
 ### 1.5 综合与 LEC
-- DC 不是语法检查工具：断线在 DC 可能被优化掉只报 warning，必须先过 CKF + nLint 再综合。
-- LEC 没弹窗 ≠ 通过，必须看 log 最后一行确认真的 pass（可能根本没跑起来）。
-- ECO 后第一版 LEC 基本必不过，不过 = 有地方没改对，需逐一定位。
+
+<div class="pcard">
+<div class="prow"><span class="k">状态</span><span><span class="badge badge-rtl">⛔ 必须遵守</span></span></div>
+<div class="prow"><span class="k">现象</span><span>RTL 断线，DC 综合却只报 warning、不报错。</span></div>
+<div class="prow"><span class="k">定位</span><span>DC 不是语法检查工具：断线在 DC 可能被优化掉，只报 warning。</span></div>
+<div class="prow"><span class="k">解决</span><span>必须先过 CKF + nLint 再综合。</span></div>
+</div>
+
+<div class="pcard">
+<div class="prow"><span class="k">状态</span><span><span class="badge badge-rtl">⛔ 必须遵守</span></span></div>
+<div class="prow"><span class="k">现象</span><span>LEC 跑完没弹窗，看似通过。</span></div>
+<div class="prow"><span class="k">定位</span><span>没弹窗 ≠ 通过——LEC 可能根本没跑起来。</span></div>
+<div class="prow"><span class="k">解决</span><span>必须看 log 最后一行确认真的 pass。</span></div>
+</div>
+
+<div class="pcard pending">
+<div class="prow"><span class="k">状态</span><span><span class="badge badge-pending">🟡 注意事项</span></span></div>
+<div class="prow"><span class="k">现象</span><span>ECO 后第一版 LEC 基本必不过。</span></div>
+<div class="prow"><span class="k">定位</span><span>不过 = 有地方没改对。</span></div>
+<div class="prow"><span class="k">解决</span><span>需逐一定位。</span></div>
+</div>
+
 - LEC 出现 unmapped 点必须追查原因（曾因此发现过真实 bug）。
 - DC 有未收敛 timing violation 时面积数据是假的，交付前必须清零。
 
 ### 1.6 时序与交付
-- postPT 某 corner 结果为空 → 检查是否打开了 dump SDF 开关没关（以打开状态跑过的 corner，PT 结果会被覆盖清掉）。
+
+<div class="pcard pending">
+<div class="prow"><span class="k">状态</span><span><span class="badge badge-pending">🟡 注意事项</span></span></div>
+<div class="prow"><span class="k">现象</span><span>postPT 某 corner 结果为空。</span></div>
+<div class="prow"><span class="k">定位</span><span>dump SDF 开关打开着没关——以打开状态跑过的 corner，PT 结果会被覆盖清掉。</span></div>
+<div class="prow"><span class="k">解决</span><span>检查是否打开了 dump SDF 开关没关，关掉后重跑该 corner。</span></div>
+</div>
+
 - 长方形 die 在 Innovus（默认按正方形 floorplan）上 APR 容易绕不出来；DC 阶段没有框的概念、看不出来，需提前与 APR 对接工程师确认。
 - unconstrained（未约束）路径交付 = 重大 bug；constraint 下错（如过紧）还可改，未约束无法事后补救。
 - floating 信号在 APR 可能被优化剪掉、整路逻辑消失，交付前需确认是否有意保留。
