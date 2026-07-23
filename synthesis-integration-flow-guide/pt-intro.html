@@ -313,6 +313,34 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
     --tooltip-bg-rgb: 30, 58, 138;
   }
 }
+
+/* Metric highlight cards */
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 14px;
+  margin: 20px 0;
+}
+.metric-card {
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 16px 18px;
+  text-align: center;
+}
+.metric-card .metric-value {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--accent);
+  letter-spacing: -0.5px;
+  line-height: 1.3;
+}
+.metric-card .metric-label { font-size: 13px; color: var(--text); margin-top: 6px; }
+.metric-card .metric-note { font-size: 12px; color: var(--muted); margin-top: 4px; line-height: 1.5; }
+
+/* Mermaid diagrams */
+.mermaid { margin: 28px 0; text-align: center; }
+.mermaid svg { max-width: 100%; }
 </style>
 </head>
 <body>
@@ -351,6 +379,19 @@ NOTE: "按经验只跑最差的 corner" 在当前项目已不成立。skew 修�
 ### 1.2 uncertainty 与放宽纪律
 
 uncertainty 来源于历史经验值：当前项目 setup uncertainty = 400 ps，hold uncertainty = 150 ps。
+
+<div class="metric-grid">
+  <div class="metric-card">
+    <div class="metric-value">400 ps</div>
+    <div class="metric-label">setup uncertainty</div>
+    <div class="metric-note">放宽需高层签字，不跨项目继承</div>
+  </div>
+  <div class="metric-card">
+    <div class="metric-value">150 ps</div>
+    <div class="metric-label">hold uncertainty</div>
+    <div class="metric-note">放宽需高层签字，不跨项目继承</div>
+  </div>
+</div>
 
 使用策略：
 
@@ -412,6 +453,21 @@ WARNING: 不要用 PT 的 min_pulse_width 报告当占空比证据。占空比�
 
 当前项目跑一次全量 PT 约 10 分钟（项目小；大项目更慢）。
 
+<div class="metric-grid">
+  <div class="metric-card">
+    <div class="metric-value">10 个</div>
+    <div class="metric-label">corner 全量校验</div>
+  </div>
+  <div class="metric-card">
+    <div class="metric-value">~10 min</div>
+    <div class="metric-label">全量 PT 时长</div>
+  </div>
+  <div class="metric-card">
+    <div class="metric-value">+90 %</div>
+    <div class="metric-label">批量脚本效率提升</div>
+  </div>
+</div>
+
 ### 2.2 run summary 与结果汇总
 
 批量跑完执行 run summary：summary 目录下放 latest，集中查看所有 corner 的最新结果。
@@ -470,8 +526,12 @@ false path / multicycle 等约束统一写在指定的 dco 文件里；**不直�
 
 流程：
 
-```text
-改 dco → 重新跑 prePT → prePT 自动生成展开后的 SDC → 把新版 constraint 放到 database 目录下
+```mermaid
+flowchart LR
+  E["先在 live PT 试一版"] -.->|"验证后再写入"| A["改 dco"]
+  A --> B["重新跑 prePT"]
+  B --> C["自动生成展开后的 SDC"]
+  C --> D["放入 database 目录"]
 ```
 
 - 改 dco 前的验证习惯：先在 live PT（手工打开的交互式 session）里把路径直接指过去试一版，确认效果再正式写入。
@@ -494,6 +554,22 @@ NOTE: "最严标准原则"——多个 mode 共用一个 check 点时按最严�
 - create clock 周期在专用文件中修改；当前项目主频 1.8 GHz，带 1.05% 展频（spread spectrum）。
 - 相比其他项目（有要求 4 GHz 的），当前项目约束偏保守（over constraint）。
 - 另有一条慢 clock（教学示例 clock_A_L）周期约 15 ns。
+
+<div class="metric-grid">
+  <div class="metric-card">
+    <div class="metric-value">1.8 GHz</div>
+    <div class="metric-label">主频</div>
+  </div>
+  <div class="metric-card">
+    <div class="metric-value">1.05 %</div>
+    <div class="metric-label">展频（spread spectrum）</div>
+  </div>
+  <div class="metric-card">
+    <div class="metric-value">15 ns</div>
+    <div class="metric-label">慢 clock 周期</div>
+    <div class="metric-note">教学示例 clock_A_L</div>
+  </div>
+</div>
 
 ### 3.4 定制 lib（common_db）连环坑
 
@@ -529,6 +605,22 @@ skew 规格来自规格方 / 模拟方：目标 ±3.5 ns。
 中间允许 data 相对 clock 偏移：15 - 4 - 4 = 7 ns
 以正中间为零点 → skew = ±3.5 ns
 ```
+
+<div class="metric-grid">
+  <div class="metric-card">
+    <div class="metric-value">±3.5 ns</div>
+    <div class="metric-label">skew 目标</div>
+  </div>
+  <div class="metric-card">
+    <div class="metric-value">7 ns</div>
+    <div class="metric-label">可偏移窗口</div>
+    <div class="metric-note">15 − 4 − 4</div>
+  </div>
+  <div class="metric-card">
+    <div class="metric-value">4 ns</div>
+    <div class="metric-label">前后 setup / hold margin</div>
+  </div>
+</div>
 
 占空比不是 50% → 下降沿注定不在 data 中间 → 要把 clock 往左推（对齐到 data 窗口中间）。
 
@@ -748,6 +840,23 @@ document.addEventListener('mouseup', () => {
 const article = document.getElementById('article');
 article.innerHTML = marked.parse(document.getElementById('md').textContent, {gfm:true, breaks:false});
 applyGlossary(article);
+
+// Render mermaid diagrams (applyGlossary skips pre/code, so sources stay intact)
+(function () {
+  const blocks = article.querySelectorAll('pre > code.language-mermaid');
+  if (!blocks.length || typeof mermaid === 'undefined') return;
+  blocks.forEach(code => {
+    const div = document.createElement('div');
+    div.className = 'mermaid';
+    div.textContent = code.textContent;
+    code.parentElement.replaceWith(div);
+  });
+  mermaid.initialize({
+    startOnLoad: false,
+    theme: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default'
+  });
+  mermaid.run({ nodes: article.querySelectorAll('.mermaid') });
+})();
 const toc = document.getElementById('toc');
 const h1 = article.querySelector('h1');
 let tocHtml = '';

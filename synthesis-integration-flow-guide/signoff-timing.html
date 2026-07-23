@@ -313,6 +313,10 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
     --tooltip-bg-rgb: 30, 58, 138;
   }
 }
+
+/* Mermaid diagrams */
+.mermaid { margin: 28px 0; text-align: center; }
+.mermaid svg { max-width: 100%; }
 </style>
 </head>
 <body>
@@ -452,6 +456,19 @@ WARNING: corner 配置里有 dump SDF 开关（打开则专门生成 SDF，供�
 
 整体执行顺序：CKF + nLint（语法通过）→ DC → LEC 和 prePT → 逐个查看 report 确认无 error → DC / PT 均无 violation → 交付。
 
+```mermaid
+flowchart TD
+  CKF["CKF 连接检查"] -->|"需先通过"| SYN["DC/Genus 综合"]
+  LINT["nLint 语法检查"] -->|"需先通过"| SYN
+  SYN --> LEC["LEC"]
+  SYN --> PRE["prePT"]
+  LEC --> RPT["逐个看 report 确认无 error"]
+  PRE --> RPT
+  RPT --> SO["signoff"]
+  SO --> APR["交付 APR"]
+  APR --> POST["postPT"]
+```
+
 ![综合集成流程依赖关系](./image_04.png)
 
 </script>
@@ -559,6 +576,23 @@ document.addEventListener('mouseup', () => {
 const article = document.getElementById('article');
 article.innerHTML = marked.parse(document.getElementById('md').textContent, {gfm:true, breaks:false});
 applyGlossary(article);
+
+// Render mermaid diagrams (applyGlossary skips pre/code, so sources stay intact)
+(function () {
+  const blocks = article.querySelectorAll('pre > code.language-mermaid');
+  if (!blocks.length || typeof mermaid === 'undefined') return;
+  blocks.forEach(code => {
+    const div = document.createElement('div');
+    div.className = 'mermaid';
+    div.textContent = code.textContent;
+    code.parentElement.replaceWith(div);
+  });
+  mermaid.initialize({
+    startOnLoad: false,
+    theme: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default'
+  });
+  mermaid.run({ nodes: article.querySelectorAll('.mermaid') });
+})();
 const toc = document.getElementById('toc');
 const h1 = article.querySelector('h1');
 let tocHtml = '';

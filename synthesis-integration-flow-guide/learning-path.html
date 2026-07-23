@@ -313,6 +313,39 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
     --tooltip-bg-rgb: 30, 58, 138;
   }
 }
+
+/* Interactive checklist */
+.article li:has(> input[type="checkbox"]) { list-style: none; margin-left: -22px; }
+.article li input[type="checkbox"] {
+  margin-right: 8px;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+.article li.done { color: var(--muted); text-decoration: line-through; }
+.check-progress {
+  margin: 24px 0 8px;
+  padding: 14px 18px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+.check-progress .progress-text { font-size: 14px; color: var(--muted); white-space: nowrap; }
+.check-progress .progress-bar { flex: 1; min-width: 120px; height: 6px; background: var(--line); border-radius: 3px; overflow: hidden; }
+.check-progress .progress-fill { height: 100%; background: var(--accent); border-radius: 3px; width: 0; transition: width 0.3s ease; }
+.check-progress button {
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 13px;
+  padding: 4px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.check-progress button:hover { color: var(--accent); border-color: var(--accent); }
 </style>
 </head>
 <body>
@@ -338,42 +371,53 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
 
 建议节奏：第 1 → 5 步是主线，跑通即掌握交付全流程；第 6 步是当前项目最核心也最依赖经验的部分，值得多练。
 
+每步的「跑」和「截图」行动项可以直接勾选记录进度；勾选状态保存在浏览器本地（localStorage），换浏览器或清除缓存会重置。
+
+<div class="check-progress" id="check-progress"></div>
+
 ---
 
 ## 1. 环境配置（对照 [「环境与配置」](./environment.html) 页）
 
-- **跑**：`design.set` 传入 top name；确认 source 的工具版本（Verdi / VCS 固定 18.19）
-- **截图**：① 初始化后的目录结构；② 工具版本输出
+- [ ] **跑**：`design.set` 传入 top name；确认 source 的工具版本（Verdi / VCS 固定 18.19）
+- [ ] **截图** ①：初始化后的目录结构
+- [ ] **截图** ②：工具版本输出
 - **核对点**：版本是否 source 对（跑 PT / DC 报奇怪错误的第一嫌疑）
 
 ## 2. RTL 检查（对照 [「RTL 检查」](./rtl-check.html) 页）
 
-- **跑**：`bsub -Ip run_ckf 1`（尾部必须加 `1`）、nLint
-- **截图**：③ CKF 结果尾部；④ nLint error / warning 汇总（有 error 截前几条）
+- [ ] **跑**：`bsub -Ip run_ckf 1`（尾部必须加 `1`）、nLint
+- [ ] **截图** ③：CKF 结果尾部
+- [ ] **截图** ④：nLint error / warning 汇总（有 error 截前几条）
 - **核对点**：哪些 error 必须修、哪些 warning 可以进 waive list
 
 ## 3. DC 综合（对照 [「综合与 UPF」](./synthesis-upf.html) 页）
 
-- **跑**：compile 脚本
-- **截图**：⑤ DC 结束的 timing / area summary；⑥ unconstrained paths report
+- [ ] **跑**：compile 脚本
+- [ ] **截图** ⑤：DC 结束的 timing / area summary
+- [ ] **截图** ⑥：unconstrained paths report
 - **核对点**：有无未收敛 violation（有的话面积数据是假的，不能交付）
 
 ## 4. LEC（对照 [「LEC 验证」](./lec.html) 页）
 
-- **跑**：LEC
-- **截图**：⑦ log 最后一行的 pass 字样（不是"没弹窗"就算过）
+- [ ] **跑**：LEC
+- [ ] **截图** ⑦：log 最后一行的 pass 字样（不是"没弹窗"就算过）
 - **核对点**：是真 pass 还是根本没跑起来；有 unmapped 点要追原因
 
 ## 5. prePT + signoff（对照 [「Signoff 与时序」](./signoff-timing.html) 页）
 
-- **跑**：prePT（`cd pt && run_pt`），然后 `signoff`
-- **截图**：⑧ pt.log 无 error + rpt 里 slack &gt; 0；⑨ prePT log 的 DFF per clock / floating 列表；⑩ signoff pass 界面
+- [ ] **跑**：prePT（`cd pt && run_pt`），然后 `signoff`
+- [ ] **截图** ⑧：pt.log 无 error + rpt 里 slack &gt; 0
+- [ ] **截图** ⑨：prePT log 的 DFF per clock / floating 列表
+- [ ] **截图** ⑩：signoff pass 界面
 - **核对点**：unconstrained / floating 有无风险项（这两类交付出去是重大 bug）
 
 ## 6. PT 深入（对照 [「PT 介绍」](./pt-intro.html) 页，重点）
 
-- **跑**：批量脚本跑全 corner PT → run summary；再开一个 live PT 练手
-- **截图**：⑪ summary latest 全 corner setup / hold / transition 汇总；⑫ live PT 里一条 `report_timing -input_pins` 完整路径报告；⑬ 自动生成的 Excel 报表（上半 latency / 下半 skew）
+- [ ] **跑**：批量脚本跑全 corner PT → run summary；再开一个 live PT 练手
+- [ ] **截图** ⑪：summary latest 全 corner setup / hold / transition 汇总
+- [ ] **截图** ⑫：live PT 里一条 `report_timing -input_pins` 完整路径报告
+- [ ] **截图** ⑬：自动生成的 Excel 报表（上半 latency / 下半 skew）
 - **核对点**：会不会看 latency 判断 clock tree 有没有做歪、能不能认出假路径（经过准静态 mux 的那种）、skew 分组是否合理
 
 ---
@@ -485,6 +529,45 @@ document.addEventListener('mouseup', () => {
 const article = document.getElementById('article');
 article.innerHTML = marked.parse(document.getElementById('md').textContent, {gfm:true, breaks:false});
 applyGlossary(article);
+
+// Interactive checklist with localStorage persistence
+(function () {
+  const boxes = article.querySelectorAll('li > input[type="checkbox"]');
+  if (!boxes.length) return;
+  const KEY = 'learning-path-checks';
+  let state = {};
+  try { state = JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { state = {}; }
+  const progressEl = document.getElementById('check-progress');
+  function updateProgress() {
+    const total = boxes.length;
+    const done = Array.from(boxes).filter(b => b.checked).length;
+    if (!progressEl) return;
+    const pct = total ? Math.round(done / total * 100) : 0;
+    progressEl.innerHTML =
+      '<span class="progress-text">已完成 ' + done + ' / ' + total + ' 项</span>' +
+      '<div class="progress-bar"><div class="progress-fill" style="width:' + pct + '%"></div></div>' +
+      '<button type="button" id="check-reset">重置进度</button>';
+    document.getElementById('check-reset').addEventListener('click', () => {
+      state = {};
+      localStorage.removeItem(KEY);
+      boxes.forEach(b => { b.checked = false; b.closest('li').classList.remove('done'); });
+      updateProgress();
+    });
+  }
+  boxes.forEach((box, i) => {
+    box.disabled = false;
+    box.id = 'lp-' + i;
+    box.checked = !!state[box.id];
+    box.closest('li').classList.toggle('done', box.checked);
+    box.addEventListener('change', () => {
+      state[box.id] = box.checked;
+      localStorage.setItem(KEY, JSON.stringify(state));
+      box.closest('li').classList.toggle('done', box.checked);
+      updateProgress();
+    });
+  });
+  updateProgress();
+})();
 const toc = document.getElementById('toc');
 const h1 = article.querySelector('h1');
 let tocHtml = '';
