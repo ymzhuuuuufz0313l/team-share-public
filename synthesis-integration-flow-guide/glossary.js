@@ -60,6 +60,7 @@
     'PTPX': '基于 PrimeTime 的功耗分析工具，通常使用 VCD 或 SAIF 作为开关活动输入。',
     'VCD': 'Value Change Dump，记录仿真过程中信号值变化的通用波形文件格式。',
     'SDF': 'Standard Delay Format，包含门级网表延迟反标信息的时序文件，用于后端 signoff。',
+    'SDC': 'Synopsys Design Constraints，时序约束文件，描述时钟、I/O 延迟、false path / multicycle 等约束；prePT 展开产物放 sdc_pr/ 供 APR 使用，postPT 读 APR 返回的 postcts SDC。',
     'FSDB': 'Fast Signal DataBase，Verdi 工具常用的高效压缩波形文件格式。',
     'toggle rate': '信号在单位时间内发生 0/1 翻转的平均次数，是评估动态功耗的重要指标。',
     'set_dont_touch_network': '将指定网络及其下游触发器整体设为不可优化对象，作用范围比 set_dont_touch 更广。',
@@ -87,6 +88,15 @@
   const skipTags = new Set(['PRE', 'CODE', 'A', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'SCRIPT', 'STYLE', 'TERM-TOOLTIP']);
   const terms = Object.keys(glossary).sort((a, b) => b.length - a.length);
 
+  // 词边界匹配：术语前后不能紧跟 [A-Za-z0-9_]（中文字符不算阻挡，紧贴中文仍匹配）
+  function escapeRegExp(s) {
+    return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
+  const termRegexes = terms.map(term => ({
+    term,
+    re: new RegExp('(?<![A-Za-z0-9_])' + escapeRegExp(term) + '(?![A-Za-z0-9_])', 'g')
+  }));
+
   function applyGlossary(root) {
     if (!root) return;
     const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
@@ -110,8 +120,9 @@
     nodesToReplace.forEach(textNode => {
       const text = textNode.nodeValue;
       let hasMatch = false;
-      for (const term of terms) {
-        if (text.includes(term)) {
+      for (const { re } of termRegexes) {
+        re.lastIndex = 0;
+        if (re.test(text)) {
           hasMatch = true;
           break;
         }
@@ -123,10 +134,11 @@
       while (lastIndex < text.length) {
         let earliestTerm = null;
         let earliestIndex = Infinity;
-        for (const term of terms) {
-          const idx = text.indexOf(term, lastIndex);
-          if (idx !== -1 && idx < earliestIndex) {
-            earliestIndex = idx;
+        for (const { term, re } of termRegexes) {
+          re.lastIndex = lastIndex;
+          const m = re.exec(text);
+          if (m && m.index < earliestIndex) {
+            earliestIndex = m.index;
             earliestTerm = term;
           }
         }

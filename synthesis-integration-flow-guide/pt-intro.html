@@ -457,7 +457,7 @@ WARNING: <span class="badge badge-rtl">严禁</span> 把 PT 的 min_pulse_width 
 
 痛点：以前每个 corner 开一个窗口，10 个 corner 开 10 个 terminal 逐个丢 job。
 
-自研批量脚本 [pararrel_run_pt.py](./script-dict.html#pararrel_run_pt)（原文拼写 pararrel）：run 一次把全部 corner 用 xterm + bsub 并发批量提交，跑完自动结束；log 各自分开，与手动跑结果一模一样。注意脚本有已知 bug：内部 `error_found` / `run_summary` 变量未定义，「跑完自动接 run summary」实际不工作，批量跑完需手工再执行 run summary。
+自研批量脚本 <a href="./script-dict.html#pararrel_run_pt" target="_blank">pararrel_run_pt.py</a>（原文拼写 pararrel）：run 一次把全部 corner 用 xterm + bsub 并发批量提交，跑完自动结束；log 各自分开，与手动跑结果一模一样。注意脚本有已知 bug：内部 `error_found` / `run_summary` 变量未定义，「跑完自动接 run summary」实际不工作，批量跑完需手工再执行 run summary。
 
 | 项目 | 效果 |
 |------|------|
@@ -485,9 +485,9 @@ WARNING: <span class="badge badge-rtl">严禁</span> 把 PT 的 min_pulse_width 
 
 ### 2.2 run summary 与结果汇总
 
-批量跑完执行 [run_summary](./script-dict.html#run_summary)：summary 目录下放 latest，集中查看所有 corner 的最新结果。
+批量跑完执行 <a href="./script-dict.html#run_summary" target="_blank">run_summary</a>：summary 目录下放 latest，集中查看所有 corner 的最新结果。
 
-汇总 report 包含：transition、hold、setup、clock skew、data skew；skew report 由 `get_*.pl` 自动抓取、再由 [merge_*.pl](./script-dict.html#merge_pl) 合并各 corner——实际产物是 CSV（如 `report_sd_busskew.csv`，行 = 72 个分组指标、列 = corner），再导入 Excel 查看。
+汇总 report 包含：transition、hold、setup、clock skew、data skew；skew report 由 `get_*.pl` 自动抓取、再由 <a href="./script-dict.html#merge_pl" target="_blank">merge_*.pl</a> 合并各 corner——实际产物是 CSV（如 `report_sd_busskew.csv`，行 = 72 个分组指标、列 = corner），再导入 Excel 查看。
 
 ### 2.3 save session 策略
 
@@ -508,7 +508,7 @@ PT 的 save / restore session 可把某版存回来做版本间 compare。
 | `database` 目录 | 存放 prePT 生成的正式 constraint |
 
 - dump SDF 的 option 是给后仿用的，其他 option 基本不动。
-- 有一组直抛 clock path 的 Tcl（[report_clock_path.tcl](./script-dict.html#report_clock_path_tcl)），每版项目刚开始都要改一次，位置固定在 Tcl 文件最下方。注意它不会被 `pt_setup.tcl` 自动 source，需要手工 / 单独调用。
+- 有一组直抛 clock path 的 Tcl（<a href="./script-dict.html#report_clock_path_tcl" target="_blank">report_clock_path.tcl</a>），每版项目刚开始都要改一次，位置固定在 Tcl 文件最下方。注意它不会被 `pt_setup.tcl` 自动 source，需要手工 / 单独调用。
 
 ### 2.5 复用环境要改的 7 项
 

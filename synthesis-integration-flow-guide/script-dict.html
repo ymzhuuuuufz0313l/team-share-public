@@ -692,20 +692,7 @@ readme 提到的 `reg_merge.pl` 实际文件名是 `reg_change.pl`；`reg_change
 
 ## 6. 调用关系总图
 
-```mermaid
-flowchart TD
-  CKF["run_ckf（包外）"] -.-> SYN
-  NL["run_nlint"] -.-> SYN
-  LP["run_lec_lp（lec_upf）"] -.-> SYN
-  SYN["run_dc / compile_dc.tcl<br/>source design.set + ip_cons 约束"] --> LEC["run_lec / rtl_gate.do<br/>revised = gv_org"]
-  LEC --> SO["signoff（包外）<br/>收集 CKF / NLINT / DC / EC 版本+日期 → Release/latest"]
-  SYN --> PRE["prePT（TOP）：sta/pre/pt/run_pt → common/pt_setup.tcl<br/>读 DC 的 .gv + ip_cons 约束 → write_sdc → sdc_pr/（供 APR）"]
-  PRE --> APR["APR 布局布线"]
-  SO --> APR
-  APR --> POST["postPT：corner 目录/run_pt → corner_set.tcl → common/pt_setup.tcl<br/>读 APR 网表 + spef + postcts SDC<br/>→ rpt_DATE_N/ 下 summary、setup、hold、trans、skew"]
-  BATCH["批量：pararrel_run_pt.py（xterm + bsub 并发，有 bug）<br/>/ run_all（串行旧版）"] --> POST
-  POST --> SUM["run_summary → get_*.pl 抓数 → merge_*.pl<br/>→ report_setup / hold / trans / sd_busskew / phy_busskew .csv<br/>→ grep_cell.do"]
-```
+![脚本调用关系总图](./script-flow-overview.svg)
 
 ## 7. 已知 bug 与坑清单
 

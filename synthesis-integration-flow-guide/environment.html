@@ -393,7 +393,7 @@ gensyn <TOP_NAME> -noadd
 gensyn <TOP_NAME> -noadd <custom_dir>
 ```
 
-ASSUMPTION: 本指南以项目内部封装脚本 [gensyn](./script-dict.html#gensyn)（脚本包外，本页只有用法说明）为例；若使用其他 flow，需替换为对应的环境初始化命令。
+ASSUMPTION: 本指南以项目内部封装脚本 <a href="./script-dict.html#gensyn" target="_blank">gensyn</a>（脚本包外，本页只有用法说明）为例；若使用其他 flow，需替换为对应的环境初始化命令。
 
 其他常用选项：
 - 初次生成环境时，默认会 check in 到版本管理，以保持目录干净；不需要 check in 时用 `-noadd`。
@@ -411,9 +411,9 @@ WARNING: DC / PT 与 Verdi / VCS 存在版本冲突——验证环境与 PT 环�
 
 ## 2. design.set 核心配置
 
-[design.set](./script-dict.html#design_set) 是综合环境的总控文件，被 `compile_dc.tcl`、`compile_genus.tcl`、`rtl_gate.do`、`pt_setup.tcl` 以 `source ../design.set` 读入。
+<a href="./script-dict.html#design_set" target="_blank">design.set</a> 是综合环境的总控文件，被 `compile_dc.tcl`、`compile_genus.tcl`、`rtl_gate.do`、`pt_setup.tcl` 以 `source ../design.set` 读入。
 
-top name「批量替换」的真实机制：top name 只写在 `design.set` 的 `TOP_NAME` / `SDC_NAME` 两行；各 `run_*` 入口脚本（如 [run_dc](./script-dict.html#run_dc)）运行时 `grep "set *TOP_NAME" ../design.set` 动态提取顶层名，再由 `genfilelist` 生成 filelist。因此换项目只需要改这两行（不同项目的 design.set diff 实证只有这两行差异）。
+top name「批量替换」的真实机制：top name 只写在 `design.set` 的 `TOP_NAME` / `SDC_NAME` 两行；各 `run_*` 入口脚本（如 <a href="./script-dict.html#run_dc" target="_blank">run_dc</a>）运行时 `grep "set *TOP_NAME" ../design.set` 动态提取顶层名，再由 `genfilelist` 生成 filelist。因此换项目只需要改这两行（不同项目的 design.set diff 实证只有这两行差异）。
 
 复用惯例：制程不变时，直接从上一个已验证项目整包拷贝配置，只替换 top name 即可；最新版配置统一上传到公共路径，团队通过 SVN update 获取（上传前需核对是否为最新版本）。
 

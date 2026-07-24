@@ -354,7 +354,7 @@ cd ckf
 run_ckf
 ```
 
-WARNING: 通过 `bsub` 提交时必须带 batch 参数，即 `bsub -Ip run_ckf 1`。这是所有 `run_*` 入口脚本的统一约定：尾部带任意参数 = 跑完自动 exit（batch 模式，bsub 必须加，否则 job 挂在交互 shell）；不带参数 = 跑完留在交互 shell 里调试。run_ckf 脚本本体不在脚本包内（[本包未包含](./script-dict.html#run_ckf)），但该约定在 run_dc / run_lec / run_genus / run_pt 中均有实证。
+WARNING: 通过 `bsub` 提交时必须带 batch 参数，即 `bsub -Ip run_ckf 1`。这是所有 `run_*` 入口脚本的统一约定：尾部带任意参数 = 跑完自动 exit（batch 模式，bsub 必须加，否则 job 挂在交互 shell）；不带参数 = 跑完留在交互 shell 里调试。run_ckf 脚本本体不在脚本包内（<a href="./script-dict.html#run_ckf" target="_blank">本包未包含</a>），但该约定在 run_dc / run_lec / run_genus / run_pt 中均有实证。
 
 前置条件：CKF 建议在 `run_dc` 之前完成，以提前发现 RTL 连接性问题。
 
@@ -377,7 +377,7 @@ cd nlint
 run_nlint
 ```
 
-入口脚本 [run_nlint](./script-dict.html#run_nlint) 逐条调用 nLint 并接外部过滤脚本，产物在 `rep_dir/` 下。
+入口脚本 <a href="./script-dict.html#run_nlint" target="_blank">run_nlint</a> 逐条调用 nLint 并接外部过滤脚本，产物在 `rep_dir/` 下。
 
 前置条件：nLint 建议在 `run_dc` 之前完成，以显著减少后续综合阶段的 RTL 问题。
 
