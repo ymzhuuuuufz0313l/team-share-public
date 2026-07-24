@@ -120,6 +120,7 @@ body {
 .toc .toc-arrow.open { transform: rotate(90deg); }
 .toc .toc-arrow-spacer { flex-shrink: 0; width: 16px; }
 .toc .toc-h3-group.collapsed { display: none; }
+.toc .toc-h3-group a.toc-h3 { padding-left: 34px; }
 h2, h3 { scroll-margin-top: 72px; }
 .content { flex: 1; min-width: 0; }
 .article {
@@ -886,6 +887,21 @@ const toc = document.getElementById('toc');
 const h1 = article.querySelector('h1');
 const headings = article.querySelectorAll('h2, h3');
 headings.forEach((h, i) => { h.id = 'sec-' + i; });
+
+// 标题统一自动编号：h2 = "N."，h3 = "N.M"；先剥离手写编号再重排，只改首个文本节点以保留标题内链接
+let h2No = 0, h3No = 0;
+headings.forEach(h => {
+  if (h.firstChild && h.firstChild.nodeType === 3) {
+    h.firstChild.nodeValue = h.firstChild.nodeValue.replace(/^\s*\d+(\.\d+)*[.、]?\s+/, '');
+  }
+  if (h.tagName === 'H2') {
+    h2No++; h3No = 0;
+    h.prepend(document.createTextNode(h2No + '. '));
+  } else {
+    h3No++;
+    h.prepend(document.createTextNode(h2No + '.' + h3No + ' '));
+  }
+});
 
 let tocHtml = '';
 if (h1) {
