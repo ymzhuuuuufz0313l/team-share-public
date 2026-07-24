@@ -532,9 +532,10 @@ function updateTransform() {
   lbImg.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
 }
 
-document.querySelectorAll('img').forEach(img => {
-  if (img.id === 'lightbox-img') return;
-  img.addEventListener('click', () => openLightbox(img.src));
+document.addEventListener('click', (e) => {
+  const img = e.target.closest('img');
+  if (!img || img.id === 'lightbox-img' || !img.closest('.article')) return;
+  openLightbox(img.src);
 });
 
 lbClose.addEventListener('click', closeLightbox);
