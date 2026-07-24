@@ -383,7 +383,8 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
     <article class="article" id="article">
       
     </article>
-    <div class="page-nav"><a href="./faq.html"><span class="label">上一篇</span><span class="title">FAQ 与清单</span></a></div>
+    <div class="page-nav"><a href="./faq.html"><span class="label">上一篇</span><span class="title">FAQ 与清单</span></a>
+<a class="next" href="./script-dict.html"><span class="label">下一篇</span><span class="title">脚本字典</span></a></div>
     <div class="footer">Shared from team knowledge base</div>
   </div></div>
 
@@ -415,7 +416,7 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
 
 ## 2. RTL 检查（对照 [「RTL 检查」](./rtl-check.html) 页）
 
-- [ ] **跑**：`bsub -Ip run_ckf 1`（尾部必须加 `1`）、nLint
+- [ ] **跑**：`bsub -Ip run_ckf 1`（batch 参数，所有 `run_*` 入口同一约定：带参数 = 跑完自动 exit）、nLint
 - [ ] **截图** ③：CKF 结果尾部
 - [ ] **截图** ④：nLint error / warning 汇总（有 error 截前几条）
 - **核对点**：<span class="badge badge-rtl">必查</span> 哪些 error 必须修、哪些 warning 可以进 waive list
@@ -424,7 +425,7 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
 
 - [ ] **跑**：compile 脚本
 - [ ] **截图** ⑤：DC 结束的 timing / area summary
-- [ ] **截图** ⑥：unconstrained paths report
+- [ ] **截图** ⑥：unconstrained paths report（prePT 里对应 `pt_rpt/${TOP_NAME}_cons.rpt`）
 - **核对点**：<span class="badge badge-rtl">必查</span> 有无未收敛 violation（有的话面积数据是假的，不能交付）
 
 ## 4. LEC（对照 [「LEC 验证」](./lec.html) 页）
@@ -437,7 +438,7 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
 
 - [ ] **跑**：prePT（`cd pt && run_pt`），然后 `signoff`
 - [ ] **截图** ⑧：pt.log 无 error + rpt 里 slack &gt; 0
-- [ ] **截图** ⑨：prePT log 的 DFF per clock / floating 列表
+- [ ] **截图** ⑨：prePT 的 DFF per clock（`report_dff_num.rpt`）/ floating 列表（`pt_input_float.log`）
 - [ ] **截图** ⑩：signoff pass 界面
 - **核对点**：<span class="badge badge-rtl">必查</span> unconstrained / floating 有无风险项（这两类交付出去是重大 bug）
 
@@ -446,7 +447,7 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
 - [ ] **跑**：批量脚本跑全 corner PT → run summary；再开一个 live PT 练手
 - [ ] **截图** ⑪：summary latest 全 corner setup / hold / transition 汇总
 - [ ] **截图** ⑫：live PT 里一条 `report_timing -input_pins` 完整路径报告
-- [ ] **截图** ⑬：自动生成的 Excel 报表（上半 latency / 下半 skew）
+- [ ] **截图** ⑬：自动生成的汇总报表（实际产物是 CSV，如 `report_sd_busskew.csv`，导入 Excel 后上半 latency / 下半 skew）
 - **核对点**：<span class="badge badge-rtl">必查</span> 会不会看 latency 判断 clock tree 有没有做歪、能不能认出假路径（经过准静态 mux 的那种）、skew 分组是否合理
 
 ---
@@ -467,7 +468,8 @@ const chapters = [
   ['pt-intro', 'PT 介绍'],
   ['memory-power', 'Memory 与功耗'],
   ['faq', 'FAQ 与清单'],
-  ['learning-path', '学习路径']
+  ['learning-path', '学习路径'],
+  ['script-dict', '脚本字典']
 ];
 const currentPath = location.pathname.split('/').pop() || 'index.html';
 const linksContainer = document.getElementById('navbar-links');

@@ -393,7 +393,7 @@ gensyn <TOP_NAME> -noadd
 gensyn <TOP_NAME> -noadd <custom_dir>
 ```
 
-ASSUMPTION: 本指南以项目内部封装脚本 `gensyn` 为例；若使用其他 flow，需替换为对应的环境初始化命令。
+ASSUMPTION: 本指南以项目内部封装脚本 [gensyn](./script-dict.html#gensyn)（脚本包外，本页只有用法说明）为例；若使用其他 flow，需替换为对应的环境初始化命令。
 
 其他常用选项：
 - 初次生成环境时，默认会 check in 到版本管理，以保持目录干净；不需要 check in 时用 `-noadd`。
@@ -411,7 +411,9 @@ WARNING: DC / PT 与 Verdi / VCS 存在版本冲突——验证环境与 PT 环�
 
 ## 2. design.set 核心配置
 
-`design.set` 是综合环境的总控文件。传入 top name 后，脚本会将整个配置中的 topname 批量替换为目标顶层名。
+[design.set](./script-dict.html#design_set) 是综合环境的总控文件，被 `compile_dc.tcl`、`compile_genus.tcl`、`rtl_gate.do`、`pt_setup.tcl` 以 `source ../design.set` 读入。
+
+top name「批量替换」的真实机制：top name 只写在 `design.set` 的 `TOP_NAME` / `SDC_NAME` 两行；各 `run_*` 入口脚本（如 [run_dc](./script-dict.html#run_dc)）运行时 `grep "set *TOP_NAME" ../design.set` 动态提取顶层名，再由 `genfilelist` 生成 filelist。因此换项目只需要改这两行（不同项目的 design.set diff 实证只有这两行差异）。
 
 复用惯例：制程不变时，直接从上一个已验证项目整包拷贝配置，只替换 top name 即可；最新版配置统一上传到公共路径，团队通过 SVN update 获取（上传前需核对是否为最新版本）。
 
@@ -419,26 +421,29 @@ WARNING: DC / PT 与 Verdi / VCS 存在版本冲突——验证环境与 PT 环�
 
 | 字段 | 说明 | 常用设置 |
 |------|------|---------|
-| `TOP_NAME` | 顶层模块名 | 由 `gensyn` 自动填充 |
-| `UPPER_CASE` | 是否大写处理 | 默认 |
-| `PARA_DESIGN` | 是否并行综合 | 默认 |
-| `USE_SAIF` | 是否使用 SAIF 功耗引导 | 默认 |
-| `POWER_OPTIMIZATION` | 功耗优化开关 | 默认 |
+| `TOP_NAME` / `SDC_NAME` | 顶层模块名 / 约束名 | 换项目必改，只改这两行 |
+| `USE_SAIF` | 是否使用 SAIF 功耗引导 | 默认 0 |
 | `SCAN_EN` | 扫描链使能 | 综合阶段常设为 0 |
-| `LINK_LIB` / `TAR_LIB` | 标准单元库 | 可填多个，空格分隔 |
-| `NET_DEFINE0` / `NET_DEFINE1` | 全局宏定义 | 与 clk_rst 相关 |
+| `INCR_OPT` / `BOND_OPT` | 增量优化 / bonding 选项 | 默认 1 |
+| `USE_UPF` | UPF 流程开关 | 默认 0 |
+| `LINK_LIB` / `TAR_LIB` | 标准单元库 | 实例写法如 `nexchip_145_9t`，注释中列有各工艺候选 |
+| `NET_DEFINE` | 全局宏定义 | 与 clk_rst 相关，如 `[list "NETLIST" <库名>]` |
 | `ANA_EN` | analog db 使能 | 按项目需要 |
 | `MEM_EN` / `MEM_SNPS_EN` / `MEM_FARA_EN` | memory db 来源 | 按库配置 |
 | `LVT_EN` / `SVT_EN` | 低阈值 / 标准阈值单元使能 | 常用默认值 |
 | `SYN_TOOL` | 综合工具 | `dc` 或 `genus` |
 | `CORNER` | PVT corner | 与标准单元库一致 |
+| `DERATE_VAL` | derate 值 | 实例 1.07 |
+| `POSTPT_EN` | postPT 流程开关 | 综合阶段为 0 |
 
 补充说明：
 - `ANA_EN`：analog db 使能，按项目需要开启。
 - `MEM_EN` / `MEM_SNPS_EN` / `MEM_FARA_EN`：memory db 来源开关，按实际库配置选择。
 - `LVT_EN` / `SVT_EN`：低阈值 / 标准阈值单元使能，常用默认值即可；不同项目可能使用 RVT、HVT 等其它命名。
 - `LINK_LIB` / `TAR_LIB`：标准单元库选择，若需多种 std_cell，用空格分隔，例如 `"lib_a lib_b"`。
-- `NET_DEFINE0` / `NET_DEFINE1`：全局宏定义，与 `clk_rst` 下文件对应；不同工具下通常合并到一个 `NET_DEFINE` 变量中。
+- `NET_DEFINE`：全局宏定义，与 `clk_rst` 下文件对应。
+- `PARAM_DESIGN`（注意真实拼写，不是 `PARA_DESIGN`）与 `UPPER_CASE` 只存在于 postPT 的 `design.set` 中，综合主 `design.set` 没有这两个字段，不要照抄。
+- lane / mode 变体（`design.set_1lane` / `_2lane` / `_dplc` / `_drd`）：与主文件的唯一差异是 `FSDB_FILE` 的 powerpro 目录名——它们是 PowerPro 功耗分析的 FSDB 配置变体，与时序 skew 分组无关，手工复制改一行即可。
 
 TIP: 同一项目下的不同 IP 应尽量使用相同的 `CORNER` 和库配置，以保证时序 signoff 口径一致。
 
@@ -499,7 +504,8 @@ const chapters = [
   ['pt-intro', 'PT 介绍'],
   ['memory-power', 'Memory 与功耗'],
   ['faq', 'FAQ 与清单'],
-  ['learning-path', '学习路径']
+  ['learning-path', '学习路径'],
+  ['script-dict', '脚本字典']
 ];
 const currentPath = location.pathname.split('/').pop() || 'index.html';
 const linksContainer = document.getElementById('navbar-links');

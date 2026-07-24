@@ -354,14 +354,14 @@ cd ckf
 run_ckf
 ```
 
-WARNING: 通过 `bsub` 提交时，命令尾部必须加参数 `1`，即 `bsub -Ip run_ckf 1`，不加该参数跑不起来。
+WARNING: 通过 `bsub` 提交时必须带 batch 参数，即 `bsub -Ip run_ckf 1`。这是所有 `run_*` 入口脚本的统一约定：尾部带任意参数 = 跑完自动 exit（batch 模式，bsub 必须加，否则 job 挂在交互 shell）；不带参数 = 跑完留在交互 shell 里调试。run_ckf 脚本本体不在脚本包内（[本包未包含](./script-dict.html#run_ckf)），但该约定在 run_dc / run_lec / run_genus / run_pt 中均有实证。
 
 前置条件：CKF 建议在 `run_dc` 之前完成，以提前发现 RTL 连接性问题。
 
 `ckf_rtl.do` 一般不需要修改。
 
 检查项：
-- `ckf.log` 无 Error
+- `ckf/rep_dir/ckf.rpt` 无 Error（流程 Readme 记录的产物路径）
 - `ckf.rpt` 中 **Floating** 必须清零
 
 - `black box` 需逐一确认，通常为 analog、memory、digital macro，确保都是真实的 black box
@@ -376,6 +376,8 @@ WARNING: 通过 `bsub` 提交时，命令尾部必须加参数 `1`，即 `bsub -
 cd nlint
 run_nlint
 ```
+
+入口脚本 [run_nlint](./script-dict.html#run_nlint) 逐条调用 nLint 并接外部过滤脚本，产物在 `rep_dir/` 下。
 
 前置条件：nLint 建议在 `run_dc` 之前完成，以显著减少后续综合阶段的 RTL 问题。
 
@@ -403,7 +405,8 @@ const chapters = [
   ['pt-intro', 'PT 介绍'],
   ['memory-power', 'Memory 与功耗'],
   ['faq', 'FAQ 与清单'],
-  ['learning-path', '学习路径']
+  ['learning-path', '学习路径'],
+  ['script-dict', '脚本字典']
 ];
 const currentPath = location.pathname.split('/').pop() || 'index.html';
 const linksContainer = document.getElementById('navbar-links');

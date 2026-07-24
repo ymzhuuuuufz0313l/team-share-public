@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>脚本字典 · ASIC IP Synthesis &amp; Integration Flow 工具使用指南</title>
+  <script src="https://cdn.jsdelivr.net/npm/marked@9.1.6/marked.min.js"></script>
+  <script src="./glossary.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <style>
+
+:root {
+  --bg: #f8fafc;
+  --surface: #ffffff;
+  --text: #1e293b;
+  --muted: #64748b;
+  --accent: #db2777;
+  --accent-soft: #fce7f3;
+  --line: #e2e8f0;
+  --shadow: 0 10px 40px rgba(0,0,0,0.08);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f172a;
+    --surface: #1e293b;
+    --text: #f1f5f9;
+    --muted: #94a3b8;
+    --accent: #f472b6;
+    --accent-soft: #500f24;
+    --line: #334155;
+    --shadow: 0 10px 40px rgba(0,0,0,0.35);
+  }
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-size: 16px;
+  line-height: 1.75;
+}
+.navbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+.navbar-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.navbar-brand {
+  font-weight: 700;
+  color: var(--accent);
+  white-space: nowrap;
+  font-size: 15px;
+  text-decoration: none;
+}
+.navbar-brand:hover { text-decoration: none; }
+.navbar-links {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow-x: auto;
+  flex: 1;
+  scrollbar-width: none;
+}
+.navbar-links::-webkit-scrollbar { display: none; }
+.navbar-links a {
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 14px;
+  color: var(--text);
+  white-space: nowrap;
+  transition: background 0.15s;
+  text-decoration: none;
+}
+.navbar-links a:hover { background: var(--bg); text-decoration: none; }
+.navbar-links a.active { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+@media (max-width: 640px) {
+  .navbar-inner { padding: 10px 16px; gap: 10px; }
+  .navbar-brand { font-size: 14px; }
+  .navbar-links a { font-size: 13px; padding: 5px 8px; }
+}
+.container { max-width: 1200px; margin: 0 auto; padding: 48px 24px; }
+.container.with-toc { display: flex; gap: 32px; align-items: stretch; }
+.toc-wrapper { width: 260px; flex-shrink: 0; align-self: stretch; }
+.toc {
+  position: sticky;
+  top: 64px;
+  max-height: calc(100vh - 88px);
+  overflow-y: auto;
+  padding: 16px;
+  background: var(--surface);
+  border-radius: 12px;
+  border: 1px solid var(--line);
+  font-size: 14px;
+  box-shadow: var(--shadow);
+}
+.toc a { display: block; padding: 6px 8px; border-radius: 6px; color: var(--muted); margin: 2px 0; transition: background 0.15s, color 0.15s; text-decoration: none; }
+.toc a:hover { background: var(--bg); color: var(--accent); text-decoration: none; }
+.toc a.active { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+.toc a.toc-h1 { font-weight: 700; color: var(--accent); margin-bottom: 8px; cursor: default; }
+.toc a.toc-h3 { padding-left: 18px; font-size: 13px; }
+h2, h3 { scroll-margin-top: 72px; }
+.content { flex: 1; min-width: 0; }
+.article {
+  background: var(--surface);
+  border-radius: 20px;
+  padding: 56px 64px;
+  box-shadow: var(--shadow);
+}
+@media (max-width: 640px) {
+  .container { padding: 24px 16px; }
+  .article { padding: 32px 24px; border-radius: 16px; }
+  .toc-wrapper { display: none; }
+  .container.with-toc { display: block; }
+}
+h1 { font-size: 36px; margin: 0 0 20px; color: var(--accent); font-weight: 700; letter-spacing: -0.5px; }
+h2 { font-size: 26px; margin: 48px 0 18px; padding-bottom: 10px; border-bottom: 1px solid var(--line); color: var(--text); font-weight: 600; }
+h3 { font-size: 20px; margin: 32px 0 14px; color: var(--text); font-weight: 600; }
+p { margin: 14px 0; }
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+img { max-width: 100%; border-radius: 10px; border: 1px solid var(--line); cursor: zoom-in; display: block; margin: 28px auto; }
+table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 14.5px; }
+th, td { border: 1px solid var(--line); padding: 10px 14px; text-align: left; }
+th { background: var(--accent-soft); font-weight: 600; }
+tr:nth-child(even) { background: rgba(0,0,0,0.02); }
+code { background: var(--bg); padding: 3px 7px; border-radius: 5px; font-family: "SFMono-Regular", Consolas, monospace; font-size: 14px; color: var(--accent); }
+pre { background: var(--bg); padding: 18px; border-radius: 10px; overflow-x: auto; border: 1px solid var(--line); }
+pre code { padding: 0; background: transparent; color: var(--text); }
+blockquote { border-left: 4px solid var(--accent); margin: 20px 0; padding: 14px 20px; background: var(--accent-soft); border-radius: 0 10px 10px 0; }
+ul, ol { padding-left: 28px; }
+li { margin: 8px 0; }
+hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
+.footer { text-align: center; color: var(--muted); margin-top: 48px; font-size: 13px; }
+.page-nav { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 48px; }
+.page-nav a { display: block; padding: 16px 20px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; color: var(--text); transition: border-color 0.2s, box-shadow 0.2s; text-decoration: none; }
+.page-nav a:hover { border-color: var(--accent); box-shadow: var(--shadow); text-decoration: none; }
+.page-nav a.next { text-align: right; margin-left: auto; }
+.page-nav .label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+.page-nav .title { font-weight: 600; color: var(--accent); }
+@media (max-width: 640px) { .page-nav { grid-template-columns: 1fr; } .page-nav a.next { text-align: left; margin-left: 0; } }
+.hero { text-align: center; margin-bottom: 40px; }
+.hero h1 { margin-bottom: 12px; }
+.hero .author { color: var(--muted); font-size: 14px; margin-bottom: 16px; }
+.hero .lead { font-size: 17px; max-width: 720px; margin: 0 auto; }
+.section-title { font-size: 14px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin: 40px 0 16px; }
+.chapter-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+.chapter-card { display: block; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 20px; color: var(--text); transition: border-color 0.2s, transform 0.15s, box-shadow 0.2s; text-decoration: none; }
+.chapter-card:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: var(--shadow); text-decoration: none; }
+.chapter-card .num { display: inline-block; width: 28px; height: 28px; line-height: 28px; border-radius: 50%; background: var(--accent-soft); color: var(--accent); font-size: 13px; font-weight: 700; text-align: center; margin-bottom: 10px; }
+.chapter-card .title { font-weight: 600; font-size: 15px; margin-bottom: 6px; }
+.chapter-card .desc { font-size: 13px; color: var(--muted); line-height: 1.5; }
+
+/* Image lightbox */
+.lightbox {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.92);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.25s ease, visibility 0.25s ease;
+  cursor: grab;
+}
+.lightbox.active {
+  opacity: 1;
+  visibility: visible;
+}
+.lightbox img {
+  max-width: none;
+  max-height: none;
+  border: none;
+  border-radius: 4px;
+  cursor: grab;
+  transform-origin: center center;
+  transition: none;
+  margin: 0;
+}
+.lightbox img.grabbing { cursor: grabbing; }
+.lightbox .hint {
+  position: absolute;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: rgba(255,255,255,0.7);
+  font-size: 13px;
+  pointer-events: none;
+  user-select: none;
+  background: rgba(0,0,0,0.4);
+  padding: 6px 14px;
+  border-radius: 20px;
+}
+.lightbox .close {
+  position: absolute;
+  top: 20px;
+  right: 24px;
+  color: rgba(255,255,255,0.8);
+  font-size: 32px;
+  line-height: 1;
+  cursor: pointer;
+  user-select: none;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: background 0.2s;
+}
+.lightbox .close:hover { background: rgba(255,255,255,0.15); color: #fff; }
+
+/* Hover glossary tooltip */
+.term {
+  position: relative;
+  border-bottom: 1px dashed var(--accent);
+  cursor: help;
+  color: var(--accent);
+  transition: background 0.15s ease, border-bottom-style 0.15s ease;
+}
+.term:hover {
+  background: var(--accent-soft);
+  border-bottom-style: solid;
+  border-radius: 4px;
+}
+.term-tooltip {
+  position: fixed;
+  max-width: 320px;
+  padding: 14px 18px;
+  --tooltip-bg-rgb: 219, 234, 254;
+  background: rgba(var(--tooltip-bg-rgb), 0.88);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  box-shadow: var(--shadow);
+  font-size: 14px;
+  line-height: 1.7;
+  z-index: 1000;
+  opacity: 0;
+  transform: translateY(8px) scale(0.98);
+  transition: opacity 0.25s ease, transform 0.25s ease;
+  pointer-events: none;
+}
+.term-tooltip.visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+.term-tooltip::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  transform: translateX(-50%);
+}
+.term-tooltip.arrow-bottom::after {
+  bottom: -10px;
+  border-width: 10px 8px 0 8px;
+  border-color: var(--line) transparent transparent transparent;
+}
+.term-tooltip.arrow-bottom::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  bottom: -8px;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 8px 7px 0 7px;
+  border-color: rgba(var(--tooltip-bg-rgb), 0.88) transparent transparent transparent;
+  transform: translateX(-50%);
+}
+.term-tooltip.arrow-top::after {
+  top: -10px;
+  border-width: 0 8px 10px 8px;
+  border-color: transparent transparent var(--line) transparent;
+}
+.term-tooltip.arrow-top::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: -8px;
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 0 7px 8px 7px;
+  border-color: transparent transparent rgba(var(--tooltip-bg-rgb), 0.88) transparent;
+  transform: translateX(-50%);
+}
+
+  
+@media (prefers-color-scheme: dark) {
+  .term-tooltip {
+    --tooltip-bg-rgb: 30, 58, 138;
+  }
+}
+
+/* Mermaid diagrams */
+.mermaid { margin: 28px 0; text-align: center; }
+.mermaid svg { max-width: 100%; }
+
+/* ===== team-share 组件库：状态徽章 badge ===== */
+.badge { display: inline-block; padding: 2px 12px; border-radius: 999px; font-size: 13px; font-weight: 600; line-height: 1.6; white-space: nowrap; }
+.badge-fixed   { background: #dcfce7; color: #166534; }
+.badge-pending { background: #fef9c3; color: #854d0e; }
+.badge-rtl     { background: #fee2e2; color: #991b1b; }
+.badge-tx      { background: #dbeafe; color: #1e40af; }
+.badge-dv      { background: #f3e8ff; color: #6b21a8; }
+@media (prefers-color-scheme: dark) {
+  .badge-fixed   { background: #14532d; color: #86efac; }
+  .badge-pending { background: #713f12; color: #fde047; }
+  .badge-rtl     { background: #7f1d1d; color: #fca5a5; }
+  .badge-tx      { background: #1e3a8a; color: #93c5fd; }
+  .badge-dv      { background: #581c87; color: #d8b4fe; }
+}
+</style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a class="navbar-brand" href="./">Synthesis Flow</a>
+      <div class="navbar-links" id="navbar-links"></div>
+    </div>
+  </nav>
+
+  <div class="container with-toc"><aside class="toc-wrapper"><nav class="toc" id="toc"></nav></aside><div class="content">
+    <article class="article" id="article">
+      
+    </article>
+    <div class="page-nav"><a href="./learning-path.html"><span class="label">上一篇</span><span class="title">学习路径</span></a></div>
+    <div class="footer">Shared from team knowledge base</div>
+  </div></div>
+
+  <script type="text/template" id="md">
+# 十、脚本字典
+
+> 本页是后端流程脚本的对照字典，按脚本包 ground truth（对解压后的原始脚本逐一阅读）整理。脚本原始包不入库，本页只保留脱敏后的用法；其他页面中的脚本名可点击跳转到本页对应条目。项目名统一泛化为 `<TOP_NAME>` 或「某项目」，人名路径泛化为「环境 owner」「APR 工程师」等角色；脚本名、变量名、文件名、目录结构保持真实。
+
+- 每个条目前的锚点 id 供跨页跳转使用（如 `./script-dict.html#run_dc`）。
+- 查找脚本可用右侧 TOC 或浏览器页内搜索。
+
+## 1. 主流程环境（综合 / LEC / Lint）
+
+<a id="design_set"></a>
+### design.set（综合主控，106 行）
+
+综合环境总控 tcl 配置。被 `compile_dc.tcl`、`compile_genus.tcl`、`rtl_gate.do`、`pt_setup.tcl` 以 `source ../design.set` 读入；各 `run_*` csh 用 `grep "set *TOP_NAME" ../design.set | sed ...` 动态提取 top name，再由 `genfilelist` 生成 filelist——「批量替换」的真实机制：top name 只写一处，运行时抓取。
+
+关键变量：
+
+| 变量 | 实例值 / 说明 |
+|------|---------------|
+| `TOP_NAME` / `SDC_NAME` | 换项目必改，只改这两行（不同项目 design.set 的 diff 实证） |
+| `SYN_DIR` / `TCL_DIR` / `IP_CONS_DIR` / `TOP_CONS_DIR` / `UPF_DIR` / `HDL_DIR` | 各目录路径 |
+| `SCAN_EN 0`、`INCR_OPT 1`、`BOND_OPT 1`、`USE_SAIF 0`、`USE_UPF 0` | 流程开关 |
+| `LINK_LIB` / `TAR_LIB` | 实例 `nexchip_145_9t`，注释列各工艺候选 |
+| `NET_DEFINE` | 实例 `[list "NETLIST" "nexchip_145_9t"]` |
+| `ANA_EN 0`、`MEM_EN 0`、`LVT_EN 1`、`SVT_EN 0` | db / VT 开关 |
+| `SYN_TOOL` | `"dc"`，可切 `genus` |
+| `CORNER` | 实例 `"wcl_cmax_m40_setup"` |
+| `SLACK_EN 0`、`DERATE_VAL 1.07`、`CORE_NUM 1`、`EC_R2V_EN 0`、`POSTPT_EN 0` | 其余开关 |
+
+CORNER ↔ PVT ↔ RC_FILE 对照（注释）：`wc_cworst`=ss0p99v125c/cworst_125；`wcl_cworst`=ss0p99vn40c/cworst_m40；`lt_cbest`=ff1p21vn40c/cbest_m40；`ml_cbest`=ff1p21v125c/cbest_125；`tt_cbest`=tt1p1v25c/typical。
+
+lane / mode 变体（`design.set_1lane` / `_2lane` / `_dplc` / `_drd`）：与主文件唯一 diff 是 `FSDB_FILE` 的 powerpro 目录名——是 PowerPro 功耗分析的 FSDB 配置变体，与时序 skew 分组无关。手工复制改一行即可。
+
+<a id="run_dc"></a>
+### run_dc（csh，35 行）
+
+DC 综合入口：`cd dc && run_dc [参数]`。
+
+- 流程：建 `rep_dir`；grep TOP_NAME；`genfilelist ${top_name}.f ./advanced`；写 `rep_dir/svn.info`（日期 + `svn info $PROJECT_PATH/HDL`）；`source /eda/env/syn1709.cshrc`（备选 syn1603）。
+- **无参数** → `dc_shell-t -64bit -f compile_dc.tcl -x "set exit_flag 0"`，跑完留在交互 shell 调试；**有任意参数**（如 `1`）→ `exit_flag 1`，跑完自动 exit（batch 模式，bsub 必须加，否则 job 挂在交互 shell）。`run_lec` / `run_genus` / `run_pt` 同一机制。
+- log tee 到 `rep_dir/dc.log`。
+
+<a id="compile_dc_tcl"></a>
+### compile_dc.tcl（215 行）
+
+流程：`source design.set` → `$TCL_DIR/dc/dc_user_proc.tcl`、`basic_setup_all.tcl` → `read_filelist_all $FILELIST_DIR $NET_DEFINE`（check_error 保护，缺文件直接 quit）→ link → `check_design -multiple_designs` → design_rule / dont_use → `clk_period.tcl`、`kv_clkio.tcl` → **`source $IP_CONS_DIR/$TOP_NAME.tcl`（项目约束源文件）** + `input/output_delay.tcl` → `common_cons.tcl` → pre report → `kv_compile_unltra $INCR_OPT $USE_SAIF $BOND_OPT`（原文拼写 unltra）→ `kv_change_names` → 写出 `.gv_org` / `.ddc` / `.gv` / `_onlytop.v` + write_sdc → post report（area / power / clock_gating / timing / qor / vt_cell_usage、`kv_report_dff_num`、`kv_report_all_latch`）。
+
+- `dont_touch.tcl` 自动生成：按约 50 个 cell 名通配 pattern（`*DTCLK_INV_1P_BUF*`、`*CG_CELL`、`*CLK_INV_BUF*`、`*BUF_N_RST*`、`*IDLY*`、`SCL_BUF`、`BUF_POWERON_CLK` 等）把匹配实例写进 `rep_dir/dont_touch.tcl`（实例 147 行）。
+- 末尾 `exec netlist_reform.pl`（包外脚本）；`if {$exit_flag == 1} { exit }`；alias `rpt` / `rpt_pt` / `rpth` / `rpth_pt` / `h`。
+
+<a id="run_genus"></a>
+### run_genus
+
+同 run_dc 骨架；`source /eda/env/genus1723.cshrc`；`genus -no_gui -64 -execute "set exit_flag 0|1" -files compile_genus.tcl`。
+
+<a id="compile_genus_tcl"></a>
+### compile_genus.tcl（238 行）
+
+与 DC 版同构；`read_sdc $IP_CONS_DIR/${TOP_NAME}.tcl` + `echo $::dc::sdc_failed_commands`；`kv_upf_power $$USE_UPF`（原文双 `$` 笔误）；`kv_io_groups`；`kv_genus_compile "generic"/"map"/"opt"`；报告含 `report_timing -unconstrained`、`all_memory_final.rpt`、macro cell 面积 / leakage；`write_design -innovus`；`write_parasitics > $SPEF_FILE`。
+
+<a id="run_lec"></a>
+### run_lec
+
+`source /eda/env/confrml17.cshrc`；清 `rep_dir`；genfilelist / svn.info 同骨架；`bsub -Ip "lec -xl -64 -do rtl_gate.do -nogui | tee ./rep_dir/lec.log &"`；有参数时 `lec_exit_flag=1`。变体目录：`lec_apr/`、`lec_apr_A1/`、`lec_rtl_eco/`、`lec_upf/`。
+
+<a id="rtl_gate_do"></a>
+### rtl_gate.do（157 行）
+
+- golden = RTL（dc 流程先读 `ddc_lec.f` 再 `.sv.f` / `.f`）；revised：dc → `../dc/rep_dir/${TOP_NAME}.gv_org`；genus → `fv/fv_map.v.gz`（`EC_R2V_EN=0`，之后再做 fv_map vs .gv 第二趟）或直接 `.gv`（`=1`）。
+- `compare -NONEQ_stop 999 -NONEQ_Print` → 输出 `unmapped.rpt` / `unreach.rpt` / `abort.rpt` / **`non_eq.rpt`（下划线！尾部 "No of diff points = N"）** / `r2g_bbox.rpt` → `analyze_abort -compare -threads 8`。
+- **non_eq ≠ 0 且 `lec_exit_flag==0` 时 `set_gui on`（弹 GUI），否则 exit**——「没弹窗 ≠ 通过」的脚本依据。
+- 变体：`lec_apr` revised 改读 APR 返回网表（APR 工程师 release 路径）；`lec_rtl_eco` 读 ECO 目录网表；各 `run_lec` 变体相同。
+- `lec_upf`：`run_lec_lp`（perl）按时间戳建 `rep_dir/<ts>` 并 link latest；`lec -verify -64 -LP -NOGui -tclmode -dofile dofile_lp_check.tcl`；dofile 里 `set_lowpower_option -native_1801 -analysis_style pre_syn`，读 `.f` + `common/upf/${TOP_NAME}.upf`；自动生成文件叫 **`settings.upf`（有 s）**。
+
+<a id="run_nlint"></a>
+### run_nlint（csh，58 行）
+
+```bash
+nLint -f ../filelist/$top_name.f -f .../mem_dummy.f -f macro.f -f ./nlint_dummy.f \
+  -rs ${tcl_dir}/nlint/nlint_rules.rs -bf×4 -logfile ./rep_dir/nlint.log \
+  -top $top_name -lint -lintTop $top_name -out ./rep_dir/nlint_org.rpt \
+  -max_compile_error 100000 -syntaxerrormax 100000
+```
+
+之后接 `nlint_filter.pl` → `/eda/utility/lint/nlint.pl`（两个外部 perl 均在包外）。
+
+<a id="filelist"></a>
+### filelist 规则
+
+- `filelist/${TOP_NAME}.f` 仅一行 `-f $PROJECT_PATH/HDL/file_list/${TOP_NAME}.f`（嵌套引用 HDL 侧 filelist）。
+- `advanced/` 下 14 个文件含 **0 字节占位**（`ddc_lec.f`、`gen_*.sv.f` 等）——配置中指定的文件即使无内容也必须放空文件占位，否则流程直接报错。
+
+<a id="tool_versions"></a>
+### 工具版本对照表
+
+| 环节 | 版本（cshrc） |
+|------|---------------|
+| DC 综合 | `syn1709`（备选 `syn1603`） |
+| LEC | `confrml17` |
+| Genus | `genus1723` |
+| IP 级 prePT | `pt1706` |
+| TOP 级 prePT | `pt1806` |
+| postPT | `pt1706` |
+
+<a id="pt_ip"></a>
+### pt/（IP 级 prePT，附）
+
+- `run_pt`：`source /eda/env/pt1706.cshrc`；`pt_shell -f pt_setup.tcl -x "set exit_flag 0|1" | tee rep_dir/pt.log`。
+- `pt_setup.tcl`（32 行）：`CK_FLT_EN 0 / CK_TIM_EN 1 / CK_PWR_EN 0 / PT_HOLD 0`；verilog 取 `../${SYN_TOOL}/rep_dir/${TOP_NAME}.gv_org`；sdc 取 `$IP_CONS_DIR/$TOP_NAME.tcl` + `common_cons.tcl`；source `common_db_pvt.tcl`、`common_pt.tcl`、`common_pwr.tcl`（均在 `$TCL_DIR`，包外）。`CK_PWR_EN==1` 时 CORNER 强制 `tt_cbest` 并开 power 分析。
+
+## 2. prePT（TOP 级，sta/pre）
+
+<a id="run_pt_pre"></a>
+### run_pt（prePT，13 行）
+
+`source /eda/env/pt1806.cshrc`；`pt_shell -f ../common/pt_setup.tcl -x "set exit_flag 0" | tee ./pt_rpt/pt.log`。
+
+<a id="pt_setup_pre"></a>
+### pt_setup.tcl（prePT 主脚本，137 行）
+
+- `set_host_options -max_cores 4`；`CK_FLT_EN` / `CK_TIM_EN` 先置 1/0，随后 `source ./design.set` 又置 1/1——**执行顺序陷阱，生效的是 1/1**。
+- PT 变量：CRPR normal、`timing_crpr_threshold_ps 1`、`case_analysis_log_file`、`link_create_black_boxes false`（pre-layout 专用）等。
+- 流程：`common_db.tcl` → `read_design.tcl` → link_design → `clk_period` / `kv_clkio` → **`source ${IP_CONS_DIR}/${SDC_NAME}.tcl`**（手工维护的约束源 = 会议说的 "dco" 本体，包外）+ `input/output_delay.tcl`（有一段 `if{0}` 包着的 sd skew 约束实验残留）→ `common_cons.tcl` → update_timing → `source $TCL_DIR/pt/pt_report.tcl` → report_timing（max / min）→ **`write_sdc ../sdc_pr/${SDC_NAME}.tcl -nosplit`（展开后 SDC 落点）** → `kv_report_dff_num > pt_rpt/report_dff_num.rpt`。
+- `CK_FLT_EN` 分支：`pt_check_design -type input_float > pt_rpt/pt_input_float.log`；`-type output_short > pt_rpt/pt_output_short.log`。
+
+<a id="read_design_tcl"></a>
+### read_design.tcl
+
+`read_verilog .../ip/syn_${TOP_NAME}/dc/rep_dir/${TOP_NAME}.gv`——prePT 读的是 DC 综合吐出的 `.gv`。
+
+<a id="design_set_pre"></a>
+### design.set（prePT 版，91 行）
+
+与综合主 design.set 同族；`VOLTAGE 0p9`、`top_cons_en 1`、`CK_FLT_EN 1 / CK_TIM_EN 1`、`LVT_EN 0 / SVT_EN 1`、`CORNER "wc_cworst"`。
+
+<a id="sdc_pr"></a>
+### sdc_pr 展开产物
+
+`sdc_pr/<TOP_NAME>.tcl`（实例 1321 行）：文件头 "Created by PrimeTime write_sdc"，`sdc_version 2.1`，单位 ns——prePT 展开产物，供 APR 使用。
+
+实测时钟表（校对依据）：
+
+| clock | 周期 (ns) | uncertainty setup / hold (ns) |
+|-------|-----------|-------------------------------|
+| RX0_CLK | 9.5 | 0.475 / 0.15 |
+| RX1_CLK | 17.1 | 0.855 / 0.15 |
+| RX0_OD_CLK | 4.75 | **0.4** / 0.15 |
+| RX1_OD_CLK | 8.55 | 0.4275 / 0.15 |
+| STB_CLK | 6.43 | **0.4** / 0.15 |
+| VS / LS / POWERON_CLK | 100 | 2 / 0.15 |
+| OSC_CLK_IN | 20 | 1 / 0.15 |
+| I2C_CLK | 500 | 2 / 0.15 |
+| RX0_CLK_DIV1P5_1P | — | 0.95 / 0.15 |
+
+generated clock：`DIV2`（`-edges {2 4 6}`）、`DIV1P5`（`-edges {1 3 4}`）等。
+
+结论：**hold uncertainty 全部 0.15 ns = 150 ps 统一；setup 400 ps 只对高速 lane 时钟成立，其余 0.4275 ~ 2 ns 不等**。全包 grep 无 1.8 GHz、无 spread / 展频写法；包内最快时钟 4.75 ns ≈ 210 MHz。
+
+<a id="pt_rpt"></a>
+### pt_rpt 产出文件清单
+
+| 文件名 | 内容 | 什么时候看 |
+|--------|------|-----------|
+| `pt.log` | 主 log | 先查 error |
+| `read_verilog.log` / `link_design.log` / `read_sdc.log` / `read_tcl.log` | 各阶段 log | 报错时按阶段排查 |
+| `case_analysis.log` | case analysis 记录 | 约束排查 |
+| `update_timing.log` | 时序更新记录 | 时序异常时 |
+| `${TOP_NAME}_cons.rpt` | 约束检查，**unconstrained 在这** | 交付前必查 |
+| `${TOP_NAME}_coverage.rpt` | 分析覆盖率 | 约束完整性 |
+| `${TOP_NAME}_timing.rpt` / `report_timing.rpt` / `report_timing_min.rpt` / `report_timing.log` | setup / hold 时序报告 | 看 slack |
+| `report_dff_num.rpt` | "report the DFF number of \<clk\> : N" | 查每个 clock 域的 DFF 数 |
+| `pt_input_float.log` | floating 输入列表 | 交付前 / APR 对接工程师需要 |
+| `pt_output_short.log` | output short 检查 | 约束排查 |
+| `svn.info` | 版本记录 | 版本追溯 |
+
+## 3. postPT（sta/post）
+
+<a id="design_set_post"></a>
+### design.set（postPT 版，66 行）
+
+- `SDC_PATH ".../DataBase/Digital/Release/${TOP_NAME}_to_APR/latest"`（APR release 公共库路径）；`PR_PATH ".../AD/<APR工程师>/release/${TOP_NAME}/timing/latest"`。
+- **`PARAM_DESIGN 1`**（注意真实拼写，非 `PARA_DESIGN`；它和 `UPPER_CASE 0` 只存在于 postPT 版 design.set）。
+- `T_fastest_clock_period 2.2`；`ANA_EN 1`、`LVT_EN 1`、`POWER_OPTIMIZATION 1`、`POSTPT_EN 1`、`PT_HOLD 0`。
+- 头部注释保留多 die 拼接模板。
+
+<a id="corner_set_tcl"></a>
+### corner_set.tcl（每 corner 一份，14 行）
+
+```tcl
+set CONS_CHECK 1     # SI_CHECK 1 / EARLY_DERATING 1 / LATE_DERATING 0
+set CORNER "lt_cbest"     # 注释 "#wc, wcl, lt, ml"
+set DUMP_SDF 0            # ← dump SDF 开关真实变量名
+set QUIT 0         # DEBUG0 0 / DEBUG1 0 / DEBUG2 0
+source ../../common/pt_setup.tcl -echo
+```
+
+<a id="dump_sdf"></a>
+**DUMP_SDF==1 分支**：`write_sdf -context verilog ../../sdf/${SDC_NAME}_${RC_FILE}.sdf`，然后**跳过全部 report**——「corner 结果为空」真相：不是结果被删除，是该趟 run 与 report 分支互斥只产 SDF，且 `latest` 软链指向这趟，run_summary 抓到空。用完关掉并重跑该 corner。
+
+**坑——corner 目录命名**：实际目录叫 `lt_cbestm40`（无第二下划线），而 `run_summary` / `pararrel_run_pt.py` 期望 `lt_cbest_m40`。
+
+<a id="run_pt_post"></a>
+### run_pt（postPT，每 corner 一份，8 行）
+
+`source /eda/env/pt1706.cshrc`；`pt_shell -f ./corner_set.tcl | tee pt.log`。
+
+<a id="pt_setup_post"></a>
+### pt_setup.tcl（postPT 核心，345 行）
+
+- 按 `$pwd` 分 `scan_atspeed` / `scan_stuck` / `func`；自动编号建 `log_DATE_N`、`rpt_DATE_N`（下设 `summary/setup/hold/skew/trans/analog`）、`whole_session_DATE_N`，并 `ln -s rpt_... latest`。
+- CRPR 开启（threshold 10ps）；`SI_CHECK==1`：`si_enable_analysis true`、`composite_aggr statistical`、`double_switching clock_network`、`all_path_edges` 等（注释留备选 SI 配置）。
+- `read_verilog` APR 网表 `.v.gz`（硬编码 APR release 路径）；CORNER→RC_FILE→operating_conditions 映射（wc / lt / ml / tt × cworst / cbest / typ，**wcl_* 整段注释掉**）。
+- `read_parasitic -keep_capacitive_coupling ${PR_PATH}/${TOP_NAME}_${RC_FILE}.spef.gz` → update_timing → report_annotated_parasitics。
+- 约束：`clk_period.tcl` + `kv_clkio_postpt.tcl` + **`source ${SDC_PATH}/${SDC_NAME}_postcts.sdc`（APR 返回的 postcts SDC，非 prePT sdc_pr 产物直接喂入）** → set_propagated_clock。
+- `CONS_CHECK==1`：check_timing、report_disable_timing、report_exceptions、report_analysis_coverage 等 + `pt_report.tcl` + `report_timing_prj.tcl` → 非 scan 时 `report_timing_trans.tcl` → max 跑 skew_isprx / skew_sd / skew_io / 1P5 → min 再跑 isprx / sd / io（**1P5 只跑 max**）→ save_session。`QUIT==1` 跑完直接 quit。
+
+<a id="report_timing_prj_tcl"></a>
+### report_timing_prj.tcl（41 行，主 report 定义）
+
+- setup：`report_timing -pba_mode path -delay_type max -path_type full_clock_expanded -crosstalk_delta -derate -slack_lesser_than 0.5 -max_paths 1000 > setup/report_timing_setup.rpt`；每 clock 单独一份（slack < 0.2）；async / clock_gating 组。hold 同构。
+- trans：`report_constraint -all_violators -verbose` 全量 + max_transition / max_capacitance / min_pulse_width / min_period → `trans/` 5 份；另写 `${PROJECT}.sum.rpt`、`.drv.rpt`、`.clk.sum.rpt`。
+
+### skew 报告四件套
+
+<a id="skew_sd"></a>
+#### report_timing_skew_sd.tcl（172 行）—— SD data/clock skew（L/R × A/B）
+
+- 数据组：from `DTCTL_L0|L1/{CH_CNT_pre*,DATA*_PRE*,...}` → to ports `DBL0/2/4*`（左 A）、`DBL1/3/5*`（左 B）、`DBR0/2/4*`（右 A）、`DBR1/3/5*`（右 B），`-max_path 2000 -nworst 1000`；输入信号 `SL_DLY*`→`SLIN_A/B`、`SR_DLY*`→`SRIN_A/B`；clock 组 from `CLKGEN_U0|U1` → to `CLKA_L/CLKB_L/CLKA_R/CLKB_R`。
+- 产出命名：`skew/report_timing_sd_{l,r}_1p_{a,b}.rpt`、`..._clk_{a,b}.rpt`。
+- **bug**：SL/SR 报告用 `>` 重定向到与 DBL/DBR 同名文件会覆盖；第 100 行层次分隔符误用 `.`；**2P 版报告脚本包中缺失，但 perl 抓取层期待 `sd_*_2p_*` 文件**。
+
+<a id="skew_isprx"></a>
+#### report_timing_skew_isprx.tcl（17 行）
+
+L0 / L1 两组 `-group RX0_OD_CLK_DIV2 -rise_through dout_lane_L0[*] ... -slack_lesser_than 20 -max_paths 100` + `report_clock_timing` latency → `skew/report_timing_rx{0,1}_00_${delay_type}.rpt`。
+
+<a id="skew_io"></a>
+#### report_timing_skew_io.tcl（19 行）
+
+I2C 路径 → `skew/report_timing_io_${delay_type}.rpt`。
+
+<a id="skew_1p5"></a>
+#### report_timing_1P5.tcl（17 行）
+
+1.5 分频跨域检查（`RX0_CLK_DIV1P5` ↔ `_1P` 等，双向 max + min）→ 写到当前目录 `report_timing_1P5.rpt`。
+
+<a id="report_clock_path_tcl"></a>
+### report_clock_path.tcl（41 行）
+
+**「直抛 clock path 的 Tcl」**：`clk_start_points`（13 个）× `clkgen_endpoint`（8 个）双重循环 report_timing → `clock_path.rpt`。**注意：`pt_setup.tcl` 并不 source 它，需手工 / 单独调用**；`grep_cell.do` 依赖它检查 clock path VT 构成。
+
+<a id="report_timing_trans_tcl"></a>
+### report_timing_trans.tcl（2 行）
+
+`grep_trans_path.pl` 从 cons.rpt 抽 max_transition 违规 pin，生成逐点 report_timing。
+
+<a id="grep_cell_do"></a>
+### grep_cell.do（4 行全注释模板）
+
+```bash
+grep 'LMX|RMX|HMX' .../clock_path.rpt | grep -v 'CK\|(QD' > ck_cell_{lvt,svt,hvt}.rpt
+```
+
+检查 clock path 的 VT 构成（`run_summary` 尾部调用，注释 "in order to insure LVT in clock path"）。
+
+<a id="sort_clk_pulse"></a>
+### sort_clk_pulse.pl（119 行）
+
+- 用法：`sort_clk_pulse xxx.csv xxx_result.csv corner`。
+- 内置项目时钟表 `@gol_clk_name` / `@gol_period` / `@gol_duty_min`——**换项目必改**。
+- pulse_width 按 `slack = value - period*duty_min + uncertainty`（`uncertainty = max(period*5%, 0.1)`）重算。
+- 有 `$$clock_group` 双 `$` 笔误。
+
+## 4. 批量与汇总
+
+<a id="run_all"></a>
+### run_all（csh，60 行）—— 串行批量（旧版 6 corner）
+
+`set PROJECT = "CLKSWITCH"`（**旧项目残留！环境沿袭自 CLKSWITCH**）；`setenv DUMP_SDF 0`；顺序 cd 进 `wc_cworst_125` / `wcl_cworst_m40` / `bc_cbest_m40` / `ml_cbest_125` / `wc_rcworst_125_max` / `min` 各跑 `run_pt`；拷 cons.rpt 按 corner 命名。bc 是旧命名，只出现在这里。
+
+<a id="pararrel_run_pt"></a>
+### pararrel_run_pt.py（40 行，原文拼写 pararrel）—— 并行批量
+
+对 10 个 corner 各起 `xterm -hold -e 'cd $PROJECT_PATH && source cshrc.<项目>_pt && cd <corner> && bsub -Ip ./run_pt' &` 并发。
+
+- **bug**：`error_found` 和 `run_summary` 变量未定义——「跑完自动接 run_summary」实际不工作，批量跑完需手工执行 run_summary；`grep_cmd` 定义了未使用。
+- `cshrc.<项目>_pt` 在包外。
+
+<a id="run_summary"></a>
+### run_summary（sh，100 行）—— 汇总
+
+- corner_array = **10 个 corner**：`wc_cworst_125` `wc_cbest_125` `wc_typical_125` `lt_cworst_m40` `lt_cbest_m40` `lt_typical_m40` `ml_cbest_125` `tt_cworst_25` `tt_cbest_25` `tt_typical_25`（wc×3 + lt×3 + ml×1 + tt×3，**无 wcl、无 bc**；bc 只在旧 `run_all` 出现）。
+- `summary/${DATE}_i` 建目录并 link latest；每 corner 跑 `get_violate`（setup 取 `latest/setup/`，hold 取 `latest/hold/`）、`get_violate_trans`、`get_phy_busskew`、`get_sd_busskew`；再 `merge_*` 合成总表；末尾 `grep_cell.do`。
+
+<a id="get_pl"></a>
+### get_*.pl（perl 抓取层，run_summary 调用）
+
+| 脚本 | 输入 → 输出 |
+|------|-------------|
+| `get_violate.pl <dir>` | 扫 `*.rpt` 抓 slack ≤ -0.001 → CSV `clock名,violation数,最大违规` |
+| `get_violate_trans.pl <dir>` | 扫 `report_constraint_*.rpt` 抓违规 Pin + Slack → CSV |
+| `get_phy_busskew.pl <dir>` | skew 报告里所有 slack 行原样打印 |
+| `get_sd_busskew.pl <dir>` | 只处理 `_sd_` 报告；clk 文件取 data arrival max / min；硬编码 24 组 `sd_{l,r}_{1p,2p_l0,2p_l1}_{clk_,}{a,b}_{max,min}` 并算 24 组 margin（data_max − clk_min / data_min − clk_max），单行 72 列 CSV |
+
+<a id="merge_pl"></a>
+### merge_*.pl（perl 合并层）
+
+| 脚本 | 产物 |
+|------|------|
+| `merge_violate.pl` | 各 corner csv 横向合并 → `report_setup.csv` / `report_hold.csv` / `report_trans.csv` |
+| `merge_sd_busskew.pl` | → `report_sd_busskew.csv`（**行 = 72 个分组指标，含 margin 标注规格 [-1:6]；列 = corner**）——「Excel 上半 latency 下半 skew/margin」的真实形态，实际产物是 CSV |
+| `merge_phy_busskew.pl` | → `report_phy_busskew.csv` |
+| `grep_trans_path.pl` | 从 cons.rpt max_transition 段抽违规 pin 生成 report_timing 行 |
+
+共同坑：shebang 指向 Vera 自带 perl 的绝版路径；`close (INFLE)` 拼写错误（应为 INFILE）。
+
+## 5. 寄存器与其他 perl 工具
+
+<a id="merge_xls"></a>
+### merge_xls 流程（寄存器 Excel 合并）
+
+- readme 三步：`perl copy.pl CDR.xls CDR_1.xls` → `perl merge_xls.pl . <项目>.xls` → `perl sort.pl <项目>.xls <项目>_1.xls`；**实际 `run_merge` 用的是 `merge_xls_1.pl`**（2 参数，跳 5 行表头）——readme 与 run_merge 用的合并脚本不同。
+- `copy.pl`：ParseExcel → WriteExcel 整表复制 + 第一列向下填充；`merge_xls_1.pl`：dir 下所有 .xls 纵向合并；`sort.pl`：按第 0 列地址排序。
+- 依赖 CPAN `Spreadsheet::ParseExcel` / `WriteExcel`（只支持 .xls 老格式）。
+
+<a id="reg_8bit_32bit"></a>
+### reg_8bit_32bit（8bit 寄存器表合并成 32bit）
+
+readme 提到的 `reg_merge.pl` 实际文件名是 `reg_change.pl`；`reg_change.pl` 按地址低位 0/4/8/c 把 4 个 8bit 寄存器合并为一个 32bit。
+
+<a id="afifo_skew"></a>
+### afifo skew 三件套（另一项目，24 corner 命名体系）
+
+`get_afifo_skew.pl` 抓 data arrival time；`merge_afifo_skew.pl` 横向拼 csv；`merge_afifo_diff.pl` 求 max − min 差值；`count0.pl` 把不足 6 行的 txt 补空行对齐。
+
+<a id="other_perl"></a>
+### 其他单文件工具
+
+`address_merge.pl`、`copy.pl`、`sort.pl`（根目录版有 `$0` / `@sorted_value` 笔误跑不过）、`keywords.pl`（扫 reserved 行）、`reg_address_merge.pl`、`print3.pl`。
+
+## 6. 调用关系总图
+
+```mermaid
+flowchart TD
+  CKF["run_ckf（包外）"] -.-> SYN
+  NL["run_nlint"] -.-> SYN
+  LP["run_lec_lp（lec_upf）"] -.-> SYN
+  SYN["run_dc / compile_dc.tcl<br/>source design.set + ip_cons 约束"] --> LEC["run_lec / rtl_gate.do<br/>revised = gv_org"]
+  LEC --> SO["signoff（包外）<br/>收集 CKF / NLINT / DC / EC 版本+日期 → Release/latest"]
+  SYN --> PRE["prePT（TOP）：sta/pre/pt/run_pt → common/pt_setup.tcl<br/>读 DC 的 .gv + ip_cons 约束 → write_sdc → sdc_pr/（供 APR）"]
+  PRE --> APR["APR 布局布线"]
+  SO --> APR
+  APR --> POST["postPT：corner 目录/run_pt → corner_set.tcl → common/pt_setup.tcl<br/>读 APR 网表 + spef + postcts SDC<br/>→ rpt_DATE_N/ 下 summary、setup、hold、trans、skew"]
+  BATCH["批量：pararrel_run_pt.py（xterm + bsub 并发，有 bug）<br/>/ run_all（串行旧版）"] --> POST
+  POST --> SUM["run_summary → get_*.pl 抓数 → merge_*.pl<br/>→ report_setup / hold / trans / sd_busskew / phy_busskew .csv<br/>→ grep_cell.do"]
+```
+
+## 7. 已知 bug 与坑清单
+
+| 位置 | 问题 | 影响 / 处理 |
+|------|------|-------------|
+| `report_timing_skew_sd.tcl` | SL/SR 报告用 `>` 重定向到与 DBL/DBR 同名文件 | 同名文件互相覆盖，报告丢失 |
+| `report_timing_skew_sd.tcl` 第 100 行 | 层次分隔符误用 `.` | 层次匹配失败 |
+| skew 报告系列 | 2P 版报告脚本包中缺失 | `get_sd_busskew.pl` 期待的 `sd_*_2p_*` 文件不存在 |
+| `pararrel_run_pt.py` | `error_found` / `run_summary` 变量未定义 | 跑完自动接 run_summary 不工作 |
+| `pararrel_run_pt.py` | `grep_cmd` 定义未用 | 死代码 |
+| `sort_clk_pulse.pl` | `$$clock_group` 双 `$` 笔误 | 运行报错 |
+| `compile_genus.tcl` | `kv_upf_power $$USE_UPF` 双 `$` 笔误 | 运行报错 |
+| 根目录 `sort.pl` | `$0` / `@sorted_value` 笔误 | 跑不过 |
+| postPT corner 目录 | 实际目录 `lt_cbestm40`（无第二下划线） vs 脚本期望 `lt_cbest_m40` | run_summary / pararrel 找不到该 corner |
+| `get_*.pl` / `merge_*.pl` | shebang 指向 Vera 自带 perl 的绝版路径 | 需改 shebang 或用 `perl xxx.pl` 调用 |
+| `get_*.pl` / `merge_*.pl` | `close (INFLE)` 拼写错误 | 文件句柄未正常关闭 |
+| prePT `pt_setup.tcl` | `CK_FLT_EN` / `CK_TIM_EN` 先置 1/0，随后被 design.set 覆盖为 1/1 | 执行顺序陷阱，生效 1/1 |
+| `run_all` | `set PROJECT = "CLKSWITCH"` 旧项目残留 | 换项目必须改 |
+
+## 8. 本包未包含
+
+以下只有用法、没有脚本本体，避免按图索骥：
+
+- <a id="run_ckf"></a>`run_ckf`：CKF 入口脚本（`ckf/` 目录为空，只有 Readme 记录的产物 `ckf/rep_dir/ckf.rpt`）。
+- <a id="gensyn"></a>`gensyn`：环境初始化封装脚本（含 `-noadd` 等选项）。
+- <a id="signoff_script"></a>signoff / signoff fake：signoff 脚本本体（包内只有 `signoff.rpt` 样本）。
+- <a id="ip_cons"></a>`ip_cons` 约束源文件本体（`$IP_CONS_DIR/$TOP_NAME.tcl`，即会议说的 "dco"）。
+- <a id="tcl_dir"></a>`$TCL_DIR` 公共 tcl（`dc_user_proc.tcl`、`basic_setup_all.tcl`、`common_db_pvt.tcl`、`common_pt.tcl`、`common_pwr.tcl`、`pt_report.tcl` 等）。
+- 其余：`netlist_reform.pl`、`nlint_filter.pl`、`nlint_waive.list`、`cshrc.<项目>_pt`、1.8 GHz / 展频约束、2P 版 skew 报告脚本。
+
+</script>
+
+  <script>
+
+const chapters = [
+  ['index', '首页'],
+  ['environment', '环境与配置'],
+  ['rtl-check', 'RTL 检查'],
+  ['synthesis-upf', '综合与 UPF'],
+  ['lec', 'LEC 验证'],
+  ['signoff-timing', 'Signoff 与时序'],
+  ['pt-intro', 'PT 介绍'],
+  ['memory-power', 'Memory 与功耗'],
+  ['faq', 'FAQ 与清单'],
+  ['learning-path', '学习路径'],
+  ['script-dict', '脚本字典']
+];
+const currentPath = location.pathname.split('/').pop() || 'index.html';
+const linksContainer = document.getElementById('navbar-links');
+chapters.forEach(([slug, label]) => {
+  const href = slug === 'index' ? './' : `./${slug}.html`;
+  const filename = slug === 'index' ? 'index.html' : `${slug}.html`;
+  const a = document.createElement('a');
+  a.href = href;
+  a.textContent = label;
+  if (currentPath === filename || currentPath.endsWith('/' + filename) || (currentPath === '' && slug === 'index')) {
+    a.classList.add('active');
+  }
+  linksContainer.appendChild(a);
+});
+
+  </script>
+
+  <div class="lightbox" id="lightbox">
+    <span class="close" id="lightbox-close">&times;</span>
+    <img id="lightbox-img" src="" alt="">
+    <div class="hint">滚轮缩放 · 拖拽移动 · 点击空白处或右上角关闭</div>
+  </div>
+
+  <script>
+
+const lightbox = document.getElementById('lightbox');
+const lbImg = document.getElementById('lightbox-img');
+const lbClose = document.getElementById('lightbox-close');
+let scale = 1;
+let isDragging = false;
+let startX = 0, startY = 0, translateX = 0, translateY = 0;
+
+function openLightbox(src) {
+  lbImg.src = src;
+  scale = 1;
+  translateX = 0;
+  translateY = 0;
+  updateTransform();
+  lightbox.classList.add('active');
+}
+
+function closeLightbox() {
+  lightbox.classList.remove('active');
+}
+
+function updateTransform() {
+  lbImg.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
+}
+
+document.querySelectorAll('img').forEach(img => {
+  if (img.id === 'lightbox-img') return;
+  img.addEventListener('click', () => openLightbox(img.src));
+});
+
+lbClose.addEventListener('click', closeLightbox);
+lightbox.addEventListener('click', (e) => { if (e.target === lightbox) closeLightbox(); });
+
+lightbox.addEventListener('wheel', (e) => {
+  e.preventDefault();
+  const delta = e.deltaY > 0 ? -0.1 : 0.1;
+  scale = Math.min(Math.max(0.5, scale + delta), 4);
+  updateTransform();
+});
+
+lbImg.addEventListener('mousedown', (e) => {
+  isDragging = true;
+  startX = e.clientX - translateX;
+  startY = e.clientY - translateY;
+  lbImg.classList.add('grabbing');
+  e.preventDefault();
+});
+
+document.addEventListener('mousemove', (e) => {
+  if (!isDragging) return;
+  translateX = e.clientX - startX;
+  translateY = e.clientY - startY;
+  updateTransform();
+});
+
+document.addEventListener('mouseup', () => {
+  isDragging = false;
+  lbImg.classList.remove('grabbing');
+});
+
+  </script>
+
+  <script>
+const article = document.getElementById('article');
+article.innerHTML = marked.parse(document.getElementById('md').textContent, {gfm:true, breaks:false});
+applyGlossary(article);
+
+// Render mermaid diagrams (applyGlossary skips pre/code, so sources stay intact)
+(function () {
+  const blocks = article.querySelectorAll('pre > code.language-mermaid');
+  if (!blocks.length || typeof mermaid === 'undefined') return;
+  blocks.forEach(code => {
+    const div = document.createElement('div');
+    div.className = 'mermaid';
+    div.textContent = code.textContent;
+    code.parentElement.replaceWith(div);
+  });
+  mermaid.initialize({
+    startOnLoad: false,
+    theme: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default'
+  });
+  mermaid.run({ nodes: article.querySelectorAll('.mermaid') });
+})();
+const toc = document.getElementById('toc');
+const h1 = article.querySelector('h1');
+let tocHtml = '';
+if (h1) {
+  tocHtml += `<a class="toc-h1" href="#">${h1.textContent}</a>`;
+}
+tocHtml += '<ul style="list-style:none;padding:0;margin:0;">';
+const headings = article.querySelectorAll('h2, h3');
+headings.forEach((h, i) => {
+  const id = 'sec-' + i;
+  h.id = id;
+  const cls = h.tagName === 'H2' ? '' : 'toc-h3';
+  tocHtml += `<li><a class="${cls}" href="#${id}">${h.textContent}</a></li>`;
+});
+tocHtml += '</ul>';
+toc.innerHTML = tocHtml;
+
+const tocLinks = toc.querySelectorAll('a[href^="#"]');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      tocLinks.forEach(a => a.classList.remove('active'));
+      const active = toc.querySelector('a[href="#' + entry.target.id + '"]');
+      if (active) active.classList.add('active');
+    }
+  });
+}, { rootMargin: '-80px 0px -60% 0px', threshold: 0 });
+headings.forEach(h => observer.observe(h));
+</script>
+</body>
+</html>

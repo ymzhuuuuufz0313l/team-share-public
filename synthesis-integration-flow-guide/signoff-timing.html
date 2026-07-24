@@ -359,8 +359,8 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
 ## 1. Signoff 与交付
 
 ### 1.1 Signoff 检查
-在自己的 IP 路径下运行 signoff 脚本时，会自动：
-- 收集 CKF、nLint、DC、LEC 等各环节的 log / report
+在自己的 IP 路径下运行 signoff 脚本（脚本本体在脚本包外）时，会自动：
+- 收集 CKF、nLint、DC、LEC 等各环节的 log / report（`signoff.rpt` 样本中 LEC 环节写作 **EC**，并收集 Top name / 路径 / Project path 及各环节的 SVN Version 与 run Date）
 - check 综合相关目录对应的版本号，确保 CKF / nLint / DC / LEC 等步骤基于同一 RTL 版本
 - 输出 `signoff.rpt`，汇总所有 error 与 check 信息；每一项报错都需要修掉
 - 界面逐项显示 check 结果，全部通过显示 signoff pass；有 error 会明确指出具体环节
@@ -412,7 +412,7 @@ run_pt
 
 prePT 的作用：把 constraint 展开成完整形式、检查 SDC 语法、做简单的 timing check。
 
-- `pt_setup.tcl` 一般无需修改。
+- [pt_setup.tcl](./script-dict.html#pt_setup_pre) 一般无需修改。
 - `common_db_pvt.tcl` 选择与实际综合一致的 corner（如 `wc_cworst`）。
 - 注意 memory / analog 的 PVT 可能与标准单元不同。
 
@@ -420,13 +420,13 @@ prePT 的作用：把 constraint 展开成完整形式、检查 SDC 语法、做
 - `pt.log` 无 Error
 - `*.rpt` 中 timing slack &gt; 0
 
-运行路径：IP 路径和 TOP 路径下都有 prePT 脚本，当前一般使用 TOP 路径下的版本；IP 路径下的脚本目前跑不过、待排查（在 IP 下跑的好处是 signoff 时 PT log / report 可以一起 signoff）。
+运行路径：IP 路径和 TOP 路径下都有 prePT 脚本（两套环境的工具版本不同：IP 级用 pt1706，TOP 级用 pt1806），当前一般使用 TOP 路径下的版本；IP 路径下的脚本目前跑不过、待排查（在 IP 下跑的好处是 signoff 时 PT log / report 可以一起 signoff）。
 
-prePT log 中还可以查到：
-- unconstrained（未约束）路径列表
-- SDC 语法错误
-- 每个 clock 域下挂的 DFF 数量
-- floating 信号列表（APR 对接工程师有时需要）
+prePT 产物中还可以查到（真实文件名）：
+- unconstrained（未约束）路径列表——在 `pt_rpt/${TOP_NAME}_cons.rpt`
+- SDC 语法错误——`read_sdc.log`
+- 每个 clock 域下挂的 DFF 数量——`report_dff_num.rpt`
+- floating 信号列表（APR 对接工程师有时需要）——`pt_input_float.log`
 
 ### 2.2 Post-PT
 
@@ -437,15 +437,17 @@ cd sta/post/pt
 run_pt
 ```
 
-需修改：
-- `corner_set.tcl`：wc / wcl / lt / ml / tt 等 corner，每个 corner 下各有自己的 `corner_set.tcl`；corner 配置基本不动，换库时需照 foundry 提供的 PVT 文档（含 OCV）逐项更换
+每个 corner 目录下各有一份入口脚本 [run_pt](./script-dict.html#run_pt_post)（只跑当前 corner）。
 
-  - `wc`：低压高温（LVHT）
-  - `wcl`：低压低温（LVLT）
-  - `lt` / `bc`：高压低温（HVLT）
-  - `ml`：高压高温（HVHT）
+需修改：
+- [corner_set.tcl](./script-dict.html#corner_set_tcl)：每个 corner 下各有一份；corner 配置基本不动，换库时需照 foundry 提供的 PVT 文档（含 OCV）逐项更换。当前 [run_summary](./script-dict.html#run_summary) 实际跑 10 个 corner：`wc_cworst_125` / `wc_cbest_125` / `wc_typical_125` / `lt_cworst_m40` / `lt_cbest_m40` / `lt_typical_m40` / `ml_cbest_125` / `tt_cworst_25` / `tt_cbest_25` / `tt_typical_25`——无 wcl（脚本中已整段注释掉）、无 bc（bc 是旧命名，只出现在旧版串行脚本 `run_all` 中）
+
+  - `wc`：ss 低压高温（LVHT）
+  - `wcl`：ss 低压低温（LVLT）
+  - `lt`：ff 高压低温（HVLT）
+  - `ml`：ff 高压高温（HVHT）
   - `tt`：典型温压
-- `pt_setup.tcl`：最核心的脚本，内含大量需要 check 的 report 定义（slack、clock path 等）；读取 APR 吐出的网表、设置 operating conditions
+- [pt_setup.tcl](./script-dict.html#pt_setup_post)：最核心的脚本，内含大量需要 check 的 report 定义（slack、clock path 等）；读取 APR 吐出的网表与 spef、设置 operating conditions；约束读的是 APR 返回的 postcts SDC（`${SDC_PATH}/${SDC_NAME}_postcts.sdc`），不是 prePT `sdc_pr/` 的展开产物直接喂入
 - `pt/design.set`：路径、LINK_LIB、TAR_LIB、NET_DEFINE、POSTPT_EN=1 等
   - `POSTPT_EN` 必须为 1
   - `PT_HOLD` 仅针对特定工艺（如 22nm）
@@ -457,7 +459,7 @@ run_pt
 - 打开 postPT 环境第一件事先改 top name；SDC / 网表路径可在配置中搜索 APR 对接工程师的标识快速定位（APR 网表路径固定），并确认路径为最新。
 - 附加自研脚本：抓 worst slack、批量跑 PT、跑完后 merge 结果。
 
-WARNING: corner 配置里有 dump SDF 开关（打开则专门生成 SDF，供后仿使用）。某 corner 一旦以打开状态跑过，该 corner 的 PT 结果就会被覆盖清掉——run summary 里发现某 corner 结果为空，基本就是这个原因。用完记得关掉。
+WARNING: corner 配置里有 dump SDF 开关（真实变量名是 corner_set.tcl 里的 [DUMP_SDF](./script-dict.html#dump_sdf)，打开则专门生成 SDF，供后仿使用）。真实机理：`DUMP_SDF==1` 的那趟 run 只执行 `write_sdf` 并跳过全部 report——两个分支互斥，结果并非被删除，而是 `latest` 软链指向了这趟只产 SDF 的 run，run summary 自然抓到空。run summary 里发现某 corner 结果为空，基本就是这个原因；关掉后重跑该 corner 即可恢复。
 
 ---
 
@@ -500,7 +502,8 @@ const chapters = [
   ['pt-intro', 'PT 介绍'],
   ['memory-power', 'Memory 与功耗'],
   ['faq', 'FAQ 与清单'],
-  ['learning-path', '学习路径']
+  ['learning-path', '学习路径'],
+  ['script-dict', '脚本字典']
 ];
 const currentPath = location.pathname.split('/').pop() || 'index.html';
 const linksContainer = document.getElementById('navbar-links');

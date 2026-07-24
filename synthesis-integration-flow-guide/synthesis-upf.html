@@ -363,7 +363,7 @@ NOTE: `lec_upf` 与 CKF、nLint 一样，建议在综合前完成。
    - 增加 read UPF 相关命令
 3. filelist 引用网表（`*.gv`）而非 RTL。
 4. 顶层约束 `.tcl` 中的层级分隔符需与工具要求一致。
-5. `setting.upf` 一般无需修改。
+5. `settings.upf`（lec_upf 自动生成的文件名带 s）一般无需修改。
 6. 运行 `run_genus`，检查 `genus.log` 与报告。
 
 WARNING: 综合时代码中的 output / inout 不能直接接常量，否则 `genus_upf` 可能报错。
@@ -449,7 +449,8 @@ const chapters = [
   ['pt-intro', 'PT 介绍'],
   ['memory-power', 'Memory 与功耗'],
   ['faq', 'FAQ 与清单'],
-  ['learning-path', '学习路径']
+  ['learning-path', '学习路径'],
+  ['script-dict', '脚本字典']
 ];
 const currentPath = location.pathname.split('/').pop() || 'index.html';
 const linksContainer = document.getElementById('navbar-links');

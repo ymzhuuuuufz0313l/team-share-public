@@ -387,7 +387,7 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
 </div>
 
 ### 1.4 环境与 filelist
-- CKF 用 `bsub` 提交时，命令尾部必须加参数 `1`（`bsub -Ip run_ckf 1`），否则跑不起来。
+- CKF 用 `bsub` 提交时必须带 batch 参数（`bsub -Ip run_ckf 1`），否则跑不起来。这是所有 `run_*` 入口脚本（run_dc / run_lec / run_genus / run_pt …）的统一约定：尾部带任意参数 = 跑完自动 exit（batch 模式）；不带参数 = 留在交互 shell 调试。
 - filelist 中配置指定的文件即使无内容，也必须放空文件占位，否则流程直接报错。
 
 <div class="pcard">
@@ -431,8 +431,8 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
 <div class="pcard pending">
 <div class="prow"><span class="k">状态</span><span><span class="badge badge-pending">🟡 注意事项</span></span></div>
 <div class="prow"><span class="k">现象</span><span>postPT 某 corner 结果为空。</span></div>
-<div class="prow"><span class="k">定位</span><span>dump SDF 开关打开着没关——以打开状态跑过的 corner，PT 结果会被覆盖清掉。</span></div>
-<div class="prow"><span class="k">解决</span><span>检查是否打开了 dump SDF 开关没关，关掉后重跑该 corner。</span></div>
+<div class="prow"><span class="k">定位</span><span>dump SDF 开关（<code>corner_set.tcl</code> 里的 <code>DUMP_SDF</code>）打开着没关。<code>DUMP_SDF==1</code> 的那趟 run 只执行 <code>write_sdf</code> 并跳过全部 report——两个分支互斥，PT 结果并非被删除，而是 <code>latest</code> 软链指向了这趟只产 SDF 的 run，run summary 自然抓到空。</span></div>
+<div class="prow"><span class="k">解决</span><span>检查 <code>corner_set.tcl</code> 是否 <code>DUMP_SDF</code> 打开着没关，关掉后重跑该 corner，latest 即指回正常 report 结果。</span></div>
 </div>
 
 - 长方形 die 在 Innovus（默认按正方形 floorplan）上 APR 容易绕不出来；DC 阶段没有框的概念、看不出来，需提前与 APR 对接工程师确认。
@@ -481,7 +481,8 @@ const chapters = [
   ['pt-intro', 'PT 介绍'],
   ['memory-power', 'Memory 与功耗'],
   ['faq', 'FAQ 与清单'],
-  ['learning-path', '学习路径']
+  ['learning-path', '学习路径'],
+  ['script-dict', '脚本字典']
 ];
 const currentPath = location.pathname.split('/').pop() || 'index.html';
 const linksContainer = document.getElementById('navbar-links');

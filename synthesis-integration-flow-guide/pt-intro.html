@@ -393,13 +393,13 @@ NOTE: "按经验只跑最差的 corner" 在当前项目已不成立。skew 修�
 
 ### 1.2 uncertainty 与放宽纪律
 
-uncertainty 来源于历史经验值：当前项目 setup uncertainty = 400 ps，hold uncertainty = 150 ps。
+uncertainty 来源于历史经验值：hold uncertainty 全表统一 150 ps；setup uncertainty 按时钟不同为 0.4 ~ 2 ns 不等，只有高速 lane 时钟是 400 ps（脚本包 sdc_pr 展开产物实证）。
 
 <div class="metric-grid">
   <div class="metric-card">
     <div class="metric-value">400 ps</div>
     <div class="metric-label">setup uncertainty</div>
-    <div class="metric-note">放宽需高层签字，不跨项目继承</div>
+    <div class="metric-note">仅高速 lane 时钟；其余 0.4~2 ns 不等</div>
   </div>
   <div class="metric-card">
     <div class="metric-value">150 ps</div>
@@ -457,14 +457,14 @@ WARNING: <span class="badge badge-rtl">严禁</span> 把 PT 的 min_pulse_width 
 
 痛点：以前每个 corner 开一个窗口，10 个 corner 开 10 个 terminal 逐个丢 job。
 
-自研批量脚本：run 一次把全部 corner 批量提交，跑完自动结束；log 各自分开，与手动跑结果一模一样。
+自研批量脚本 [pararrel_run_pt.py](./script-dict.html#pararrel_run_pt)（原文拼写 pararrel）：run 一次把全部 corner 用 xterm + bsub 并发批量提交，跑完自动结束；log 各自分开，与手动跑结果一模一样。注意脚本有已知 bug：内部 `error_found` / `run_summary` 变量未定义，「跑完自动接 run summary」实际不工作，批量跑完需手工再执行 run summary。
 
 | 项目 | 效果 |
 |------|------|
 | 多 corner 运行 | 一键批量提交，效率提升约 90% |
 | 日志管理 | 自动分类存储 |
 | 时序指标 | 自动全量抓取 |
-| 报表 | 自动生成标准化 Excel |
+| 报表 | 自动生成标准化 CSV（再导入 Excel 查看） |
 
 当前项目跑一次全量 PT 约 10 分钟（项目小；大项目更慢）。
 
@@ -485,9 +485,9 @@ WARNING: <span class="badge badge-rtl">严禁</span> 把 PT 的 min_pulse_width 
 
 ### 2.2 run summary 与结果汇总
 
-批量跑完执行 run summary：summary 目录下放 latest，集中查看所有 corner 的最新结果。
+批量跑完执行 [run_summary](./script-dict.html#run_summary)：summary 目录下放 latest，集中查看所有 corner 的最新结果。
 
-汇总 report 包含：transition、hold、setup、clock skew、data skew；skew report 由脚本自动抓取并 merge 各 corner。
+汇总 report 包含：transition、hold、setup、clock skew、data skew；skew report 由 `get_*.pl` 自动抓取、再由 [merge_*.pl](./script-dict.html#merge_pl) 合并各 corner——实际产物是 CSV（如 `report_sd_busskew.csv`，行 = 72 个分组指标、列 = corner），再导入 Excel 查看。
 
 ### 2.3 save session 策略
 
@@ -508,7 +508,7 @@ PT 的 save / restore session 可把某版存回来做版本间 compare。
 | `database` 目录 | 存放 prePT 生成的正式 constraint |
 
 - dump SDF 的 option 是给后仿用的，其他 option 基本不动。
-- 有一组直抛 clock path 的 Tcl，每版项目刚开始都要改一次，位置固定在 Tcl 文件最下方。
+- 有一组直抛 clock path 的 Tcl（[report_clock_path.tcl](./script-dict.html#report_clock_path_tcl)），每版项目刚开始都要改一次，位置固定在 Tcl 文件最下方。注意它不会被 `pt_setup.tcl` 自动 source，需要手工 / 单独调用。
 
 ### 2.5 复用环境要改的 7 项
 
@@ -524,7 +524,7 @@ PT 的 save / restore session 可把某版存回来做版本间 compare。
 6. 新增定制 lib 时改 `common_db` 及 .v / .lib 路径；
 7. Excel merge 脚本（手写分组对应关系，极易对错，需一一对应）。
 
-分组层级经验（沿用上一项目脚本）：L/R → 1P/2P → A/B → clock/data 四层分类。
+分组层级经验（沿用上一项目脚本）：L/R → 1P/2P → A/B → clock/data 四层分类，落地到报告文件名即 `sd_{l,r}_{1p,2p_l0,2p_l1}_{clk_,}{a,b}` 共 24 组（2P 版报告脚本在包中缺失，perl 抓取层仍期待 `sd_*_2p_*` 文件）。
 
 ### 2.6 环境搭建检查项
 
@@ -566,14 +566,15 @@ NOTE: "最严标准原则"——多个 mode 共用一个 check 点时按最严�
 
 ### 3.3 clock 定义与频率目标
 
-- create clock 周期在专用文件中修改；当前项目主频 1.8 GHz，带 1.05% 展频（spread spectrum）。
+- create clock 周期在专用文件中修改；当前项目主频 1.8 GHz，带 1.05% 展频（spread spectrum）（会议经验值，脚本包中未见对应设置——包内最快时钟周期 4.75 ns ≈ 210 MHz）。
 - 相比其他项目（有要求 4 GHz 的），当前项目约束偏保守（over constraint）。
-- 另有一条慢 clock（教学示例 clock_A_L）周期约 15 ns。
+- 另有一条慢 clock（教学示例，端口名 `CLKA_L`，会议记录误写作 clock_A_L）周期约 15 ns（会议经验值；包内最接近的慢时钟是 RX1_CLK，周期 17.1 ns）。
 
 <div class="metric-grid">
   <div class="metric-card">
     <div class="metric-value">1.8 GHz</div>
     <div class="metric-label">主频</div>
+    <div class="metric-note">会议经验值，脚本包未见对应设置</div>
   </div>
   <div class="metric-card">
     <div class="metric-value">1.05 %</div>
@@ -582,7 +583,7 @@ NOTE: "最严标准原则"——多个 mode 共用一个 check 点时按最严�
   <div class="metric-card">
     <div class="metric-value">15 ns</div>
     <div class="metric-label">慢 clock 周期</div>
-    <div class="metric-note">教学示例 clock_A_L</div>
+    <div class="metric-note">教学示例 CLKA_L（会议经验值）</div>
   </div>
 </div>
 
@@ -677,7 +678,7 @@ trace 方法：从输出端往里走，逐级看每个控制信号要不要 chec
 
 - <span class="badge badge-fixed">推荐</span> option：`-input_pins`（列出每级 input pin，看清路径穿过哪个 cell / pin；用 `report_timing -help` 查 option）。
 - 报全原则：路径报全；起点选错会夹带假路径。
-- 每条 path 报 1000 条；工具上限报不了 1 万条。
+- 每条 path 报 1000 条；工具上限报不了 1 万条。主 report 定义集中在 `report_timing_prj.tcl`：`report_timing -pba_mode path -delay_type max -path_type full_clock_expanded -crosstalk_delta -derate -slack_lesser_than 0.5 -max_paths 1000`（每个 clock 单独一份时 slack 阈值收紧到 0.2）。
 - 规模：10 corner × L/R × A/B × 每组 6 条 × 每条 1000 ≈ 10 万条级 report，全靠脚本处理。
 
 ### 5.2 假路径识别（肉眼判断要点）
@@ -745,7 +746,7 @@ WARNING: 真假路径判定不能交给 AI。constraint 漏报的代价是硅后
 2. 路径抓取节点选择错误会产生大量无效报表数据——严格按规范选节点，从最前端节点开始抓，避开准静态寄存器。
 3. 宁可多报不可漏报。
 4. 修不下去的路径连续几个项目都修不下去，就别再加进 check 列表。
-5. margin（给 DC 的加严量）一般 0.8，曾试 0.6；压紧 constraint → DC 难做但走线余量长；DC 可能拆逻辑、换 cell 结构（AOI / OAI），曾有案例 APR 绕不出来，发现一大串 AOI 需拆掉。
+5. margin（给 DC 的加严量）一般 0.8，曾试 0.6（会议经验值，脚本包中未见对应设置）；压紧 constraint → DC 难做但走线余量长；DC 可能拆逻辑、换 cell 结构（AOI / OAI），曾有案例 APR 绕不出来，发现一大串 AOI 需拆掉。
 6. report 文件太大打不开需要 license（大项目 SOC 经验）；以前看几万条 report 靠先分类、先设 false path、再迭代。
 7. 环境版本固定，报错先查 source 版本。
 8. 分组（lane / mode）先分细再修，修不下去再谈标准。
@@ -764,7 +765,8 @@ const chapters = [
   ['pt-intro', 'PT 介绍'],
   ['memory-power', 'Memory 与功耗'],
   ['faq', 'FAQ 与清单'],
-  ['learning-path', '学习路径']
+  ['learning-path', '学习路径'],
+  ['script-dict', '脚本字典']
 ];
 const currentPath = location.pathname.split('/').pop() || 'index.html';
 const linksContainer = document.getElementById('navbar-links');

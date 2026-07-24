@@ -343,7 +343,7 @@ cd lec
 run_lec
 ```
 
-- `run_lec` 和 `rtl_gate.do` 一般无需修改；ECO 场景下才需调整。
+- [run_lec](./script-dict.html#run_lec) 和 [rtl_gate.do](./script-dict.html#rtl_gate_do) 一般无需修改；ECO 场景下才需调整。
 
 - 如果 LEC 不通过，工具可能自动弹出 GUI 窗口用于分析。
 
@@ -353,7 +353,7 @@ WARNING: 不能以"没弹窗"作为 LEC 通过的依据——没弹窗可能只�
 - `lec.log` 无 Error
 - `abort.rpt` = 0 个 abort point
 
-- `non-eq.rpt` = 0 个 non-equivalent point
+- `non_eq.rpt`（下划线）= 0 个 non-equivalent point
 
 - `unmapped.rpt` = 0 个 unmapped point；小芯片一般没有 unmapped 点，出现不一定代表不过，但必须追查原因（曾因此发现过真实 bug），可结合 mapped / unreachable report 对比定位
 
@@ -393,7 +393,8 @@ const chapters = [
   ['pt-intro', 'PT 介绍'],
   ['memory-power', 'Memory 与功耗'],
   ['faq', 'FAQ 与清单'],
-  ['learning-path', '学习路径']
+  ['learning-path', '学习路径'],
+  ['script-dict', '脚本字典']
 ];
 const currentPath = location.pathname.split('/').pop() || 'index.html';
 const linksContainer = document.getElementById('navbar-links');
