@@ -112,6 +112,13 @@ body {
 .toc a.active { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
 .toc a.toc-h1 { font-weight: 700; color: var(--accent); margin-bottom: 8px; cursor: default; }
 .toc a.toc-h3 { padding-left: 18px; font-size: 13px; }
+.toc li.toc-h2-item { display: flex; align-items: center; gap: 2px; }
+.toc li.toc-h2-item > a { flex: 1; min-width: 0; }
+.toc .toc-arrow { flex-shrink: 0; width: 16px; text-align: center; cursor: pointer; color: var(--muted); font-size: 12px; user-select: none; transition: transform 0.2s ease, color 0.15s ease; }
+.toc .toc-arrow:hover { color: var(--accent); }
+.toc .toc-arrow.open { transform: rotate(90deg); }
+.toc .toc-arrow-spacer { flex-shrink: 0; width: 16px; }
+.toc .toc-h3-group.collapsed { display: none; }
 h2, h3 { scroll-margin-top: 72px; }
 .content { flex: 1; min-width: 0; }
 .article {
@@ -544,27 +551,71 @@ article.innerHTML = marked.parse(document.getElementById('md').textContent, {gfm
 applyGlossary(article);
 const toc = document.getElementById('toc');
 const h1 = article.querySelector('h1');
+const headings = article.querySelectorAll('h2, h3');
+headings.forEach((h, i) => { h.id = 'sec-' + i; });
+
 let tocHtml = '';
 if (h1) {
   tocHtml += `<a class="toc-h1" href="#">${h1.textContent}</a>`;
 }
 tocHtml += '<ul style="list-style:none;padding:0;margin:0;">';
-const headings = article.querySelectorAll('h2, h3');
-headings.forEach((h, i) => {
-  const id = 'sec-' + i;
-  h.id = id;
-  const cls = h.tagName === 'H2' ? '' : 'toc-h3';
-  tocHtml += `<li><a class="${cls}" href="#${id}">${h.textContent}</a></li>`;
-});
+const h3ToH2 = {};
+for (let i = 0; i < headings.length; i++) {
+  const h = headings[i];
+  if (h.tagName !== 'H2') continue;
+  const children = [];
+  let j = i + 1;
+  while (j < headings.length && headings[j].tagName === 'H3') {
+    children.push(headings[j]);
+    h3ToH2[headings[j].id] = h.id;
+    j++;
+  }
+  const arrow = children.length > 0
+    ? `<span class="toc-arrow open" data-target="${h.id}">▸</span>`
+    : '<span class="toc-arrow-spacer"></span>';
+  tocHtml += `<li class="toc-h2-item">${arrow}<a href="#${h.id}">${h.textContent}</a></li>`;
+  if (children.length > 0) {
+    tocHtml += `<li class="toc-h3-group" data-group="${h.id}"><ul style="list-style:none;padding:0;margin:0;">`;
+    children.forEach(c => {
+      tocHtml += `<li><a class="toc-h3" href="#${c.id}">${c.textContent}</a></li>`;
+    });
+    tocHtml += '</ul></li>';
+  }
+}
 tocHtml += '</ul>';
 toc.innerHTML = tocHtml;
+
+toc.querySelectorAll('.toc-arrow').forEach(arrow => {
+  arrow.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const group = toc.querySelector('.toc-h3-group[data-group="' + arrow.dataset.target + '"]');
+    const collapsed = group.classList.toggle('collapsed');
+    arrow.classList.toggle('open', !collapsed);
+    if (collapsed) {
+      const activeInGroup = group.querySelector('a.active');
+      if (activeInGroup) {
+        activeInGroup.classList.remove('active');
+        const parentLink = toc.querySelector('a[href="#' + arrow.dataset.target + '"]');
+        if (parentLink) parentLink.classList.add('active');
+      }
+    }
+  });
+});
 
 const tocLinks = toc.querySelectorAll('a[href^="#"]');
 const observer = new IntersectionObserver((entries) => {
   entries.forEach(entry => {
     if (entry.isIntersecting) {
       tocLinks.forEach(a => a.classList.remove('active'));
-      const active = toc.querySelector('a[href="#' + entry.target.id + '"]');
+      let targetId = entry.target.id;
+      if (h3ToH2[targetId]) {
+        const group = toc.querySelector('.toc-h3-group[data-group="' + h3ToH2[targetId] + '"]');
+        if (group && group.classList.contains('collapsed')) {
+          targetId = h3ToH2[targetId];
+        }
+      }
+      const active = toc.querySelector('a[href="#' + targetId + '"]');
       if (active) active.classList.add('active');
     }
   });
