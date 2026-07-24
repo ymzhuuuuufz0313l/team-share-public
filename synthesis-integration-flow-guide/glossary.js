@@ -86,8 +86,71 @@
     'duty cycle': '占空比，clock 高电平时间占周期的比例；非 50% 时下降沿不在窗口中间，修 skew 需相应推 clock。'
   };
 
+  // 命令悬浮窗：命令以 ⌨ 特殊标记，悬浮显示用法示例（内容出自 HV1V21_Synthesis_Integration_Flow.docx）
+  const cmdGlossary = {
+    'gensyn': '环境初始化命令。用法示例：gensyn <TOP_NAME>（默认自动 check in）；gensyn <TOP_NAME> -noadd（不 check in）；gensyn <TOP_NAME> -noadd <目录名>（自定义目录名）。模板有更新时再次执行 gensyn <TOP_NAME>，系统会自动 copy 新模板并备份原文件（filelist 与 constraint 一般不更新）。',
+    'run_ckf': 'CKF 连接性检查入口，需在 run_dc 之前执行。用法：cd ckf && run_ckf；用 bsub 提交时必须带 batch 参数：bsub -Ip run_ckf 1。检查后看 ckf.log 与 ckf.rpt：Floating 必须清零，black box 逐一确认，Latch 只允许 gclk / io_latch 等统一引入的。',
+    'run_nlint': 'nLint 检查入口，需在 run_dc 之前执行。用法：cd nlint && run_nlint，检查 nlint.log 与 nlint.rpt；确认无风险的 error 可粘贴进 nlint_waive.list，下次自动 mask。',
+    'run_dc': 'DC 综合入口。用法：cd dc && run_dc（跑完留在交互 shell 调试）；run_dc 1（带任意参数 = batch 模式，跑完自动 exit，bsub 必须加参数）。检查 dc.log（Error / unresolved）、*.chk_design（undrive）与 *.rpt（area 合理、signoff 版本 slack > 0）。',
+    'run_genus': 'Genus 综合入口。用法：cd genus && run_genus，检查 genus.log 与 *.rpt。运行 DC 时 genus 不需要跑；genus_upf 流程用于生成 *_final.upf。',
+    'run_lec': 'LEC 形式验证入口。用法：cd lec && run_lec。通过标准：abort.rpt / non_eq.rpt / unmapped.rpt 均为 0（abort 经 analyze_abort 全部解决也算 PASS）。注意：没弹窗 ≠ 通过，可能只是没跑起来，必须看 log 确认真的 PASS。',
+    'run_pt': 'PrimeTime 时序分析入口。用法：prePT 在 pt/ 下 run_pt；postPT 在 sta/post/pt/<corner>/ 下 run_pt。检查 pt.log 无 Error、*.rpt 中 timing slack > 0。',
+    'run_ptpx': 'PTPX 功耗仿真入口。在 power/0.px_template/ 下改好 design.set 与 px_cfg.tcl 后执行 run_ptpx；结果看 rep_dir 下 *_toggle_rate_detail.rpt（翻转率）与 *_power.rpt（功耗），上层目录的 fsdb 可用 Verdi 打开看功耗波形。',
+    'run_lc': 'Library Compiler 生成 db。用法：bsub -Ip run_lc（单独生成 db，可跳过，直接做 merge 也行）。',
+    'do_merge_db': 'mem_db 流程：merge lib 和 db，生成 merged lib/db 放在 *_merged 文件夹下。',
+    'do_merge_back': 'mem_db 流程：把 *_merged 文件夹下生成的 merged lib/db 复制回对应的 corner 文件夹下。',
+    'gen_tcl.pl': 'mem_db 流程：修改 sram.list / corner.list 后执行 gen_tcl.pl，生成 cp_lib 与 gen_db_tcl。',
+    'cp_lib': 'mem_db 流程：新建 cfg cir db ds dummy gds lef lib lvlib sim pglib 等目录后执行 cp_lib 拷库。',
+    'source run.tcl': 'mem_wrap 生成：在 wrapper 目录执行 source run.tcl（注意是 source），生成 wrapper.v、fault_info_mux.v、hv_mem_bist_info.v，再把 .v 复制到 HDL/mem_wrap/ 下。',
+    'fsdb2vcd': '从 fsdb 截取 vcd 波形。用法示例：fsdb2vcd chip_tb_top_000.fsdb -bt 500ps -et 700ps -o verilog.dump（-bt/-et 指定起止时间）。',
+    '$dumpvars': 'Verilog 系统函数：把 testbench 里原来 dump fsdb 的函数换成 $dumpvars 即可直接 dump VCD 波形，供 PTPX 功耗仿真使用。',
+    'analyze_abort': 'LEC 中分析 abort point 的命令；abort point 经 analyze_abort 全部解决后同样视为 PASS。'
+  };
+
   const skipTags = new Set(['PRE', 'CODE', 'A', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'SCRIPT', 'STYLE', 'TERM-TOOLTIP']);
   const terms = Object.keys(glossary).sort((a, b) => b.length - a.length);
+  const cmds = Object.keys(cmdGlossary).sort((a, b) => b.length - a.length);
+
+  // 注入命令悬浮窗样式（.cmd）：与术语 .term 区分开，⌨ 图标 + 不同颜色，明示可悬浮
+  const cmdStyle = document.createElement('style');
+  cmdStyle.textContent = `
+.cmd {
+  position: relative;
+  border-bottom: 1px dashed #0891b2;
+  cursor: help;
+  color: #0891b2;
+  transition: background 0.15s ease, border-bottom-style 0.15s ease;
+}
+.cmd::before {
+  content: '⌨ ';
+  font-size: 0.85em;
+}
+.cmd:hover {
+  background: rgba(8, 145, 178, 0.12);
+  border-bottom-style: solid;
+  border-radius: 4px;
+}
+@media (prefers-color-scheme: dark) {
+  .cmd { color: #22d3ee; border-bottom-color: #22d3ee; }
+  .cmd:hover { background: rgba(34, 211, 238, 0.15); }
+}
+.cmd-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  padding: 10px 16px;
+  margin: 0 0 20px;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  font-size: 13px;
+  color: var(--muted);
+}
+.cmd-legend .lg { display: inline-flex; align-items: center; gap: 5px; }
+.cmd-legend .swatch-term { color: var(--accent); border-bottom: 1px dashed var(--accent); }
+.cmd-legend .swatch-cmd { color: #0891b2; border-bottom: 1px dashed #0891b2; }
+`;
+  document.head.appendChild(cmdStyle);
 
   // 词边界匹配：术语前后不能紧跟 [A-Za-z0-9_]（中文字符不算阻挡，紧贴中文仍匹配）
   function escapeRegExp(s) {
@@ -97,14 +160,17 @@
     term,
     re: new RegExp('(?<![A-Za-z0-9_])' + escapeRegExp(term) + '(?![A-Za-z0-9_])', 'g')
   }));
+  const cmdRegexes = cmds.map(cmd => ({
+    term: cmd,
+    re: new RegExp('(?<![A-Za-z0-9_])' + escapeRegExp(cmd) + '(?![A-Za-z0-9_])', 'g')
+  }));
 
-  function applyGlossary(root) {
-    if (!root) return;
+  function wrapTerms(root, regexes, dict, cls) {
     const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
       acceptNode(node) {
         let el = node.parentElement;
         while (el && el !== root) {
-          if (skipTags.has(el.tagName) || el.classList.contains('term')) {
+          if (skipTags.has(el.tagName) || el.classList.contains('term') || el.classList.contains('cmd')) {
             return NodeFilter.FILTER_REJECT;
           }
           el = el.parentElement;
@@ -121,7 +187,7 @@
     nodesToReplace.forEach(textNode => {
       const text = textNode.nodeValue;
       let hasMatch = false;
-      for (const { re } of termRegexes) {
+      for (const { re } of regexes) {
         re.lastIndex = 0;
         if (re.test(text)) {
           hasMatch = true;
@@ -135,7 +201,7 @@
       while (lastIndex < text.length) {
         let earliestTerm = null;
         let earliestIndex = Infinity;
-        for (const { term, re } of termRegexes) {
+        for (const { term, re } of regexes) {
           re.lastIndex = lastIndex;
           const m = re.exec(text);
           if (m && m.index < earliestIndex) {
@@ -151,14 +217,42 @@
           frag.appendChild(document.createTextNode(text.slice(lastIndex, earliestIndex)));
         }
         const span = document.createElement('span');
-        span.className = 'term';
-        span.dataset.def = glossary[earliestTerm];
+        span.className = cls;
+        span.dataset.def = dict[earliestTerm];
         span.textContent = earliestTerm;
         frag.appendChild(span);
         lastIndex = earliestIndex + earliestTerm.length;
       }
       textNode.parentNode.replaceChild(frag, textNode);
     });
+  }
+
+  function applyGlossary(root) {
+    if (!root) return;
+    wrapTerms(root, termRegexes, glossary, 'term');
+  }
+
+  // 命令悬浮窗：行内 <code> 精确匹配 + 正文文本匹配，统一加 .cmd 标记（⌨ 图标由 CSS ::before 提供）
+  function applyCmdGlossary(root) {
+    if (!root) return;
+    root.querySelectorAll('code').forEach(code => {
+      if (code.closest('pre')) return;
+      const text = code.textContent.trim();
+      if (cmdGlossary[text]) {
+        code.classList.add('cmd');
+        code.dataset.def = cmdGlossary[text];
+      }
+    });
+    wrapTerms(root, cmdRegexes, cmdGlossary, 'cmd');
+    // 页面顶部放一次图例，明示 ⌨ 标记可悬浮
+    if (root.querySelector('.cmd') && !root.querySelector('.cmd-legend')) {
+      const legend = document.createElement('div');
+      legend.className = 'cmd-legend';
+      legend.innerHTML =
+        '<span class="lg"><span class="swatch-term">术语</span>：悬浮查看名词解释</span>' +
+        '<span class="lg"><span class="swatch-cmd">⌨ 命令</span>：悬浮查看用法示例与注意事项</span>';
+      root.insertBefore(legend, root.firstChild);
+    }
   }
 
   let activeTooltip = null;
@@ -200,21 +294,23 @@
   }
 
   document.addEventListener('mouseover', e => {
-    const term = e.target.closest('.term');
+    const term = e.target.closest('.term, .cmd');
     if (term) showTooltip(term);
   });
 
   document.addEventListener('mouseout', e => {
-    const term = e.target.closest('.term');
+    const term = e.target.closest('.term, .cmd');
     if (term) hideTooltip();
   });
 
   window.applyGlossary = applyGlossary;
+  window.applyCmdGlossary = applyCmdGlossary;
 
   document.addEventListener('DOMContentLoaded', () => {
     const article = document.getElementById('article');
     if (article && article.children.length > 0) {
       applyGlossary(article);
+      applyCmdGlossary(article);
     }
   });
 })();

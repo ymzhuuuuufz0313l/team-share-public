@@ -420,7 +420,7 @@ run_pt
 
 prePT 的作用：把 constraint 展开成完整形式、检查 SDC 语法、做简单的 timing check。
 
-- <a href="./script-dict.html#pt_setup_pre" target="_blank">pt_setup.tcl</a> 一般无需修改。
+- <a href="./script-dict.html#pt_setup_pre" target="_blank">pt_setup.tcl</a> 一般无需修改；其中 `set auto_wire_load_selection false` 是刻意关掉的——开着时 pre_pt 的 timing 会比 DC 的 timing 差得多。IP 级环境下 pt_setup.tcl 对应的是 `common_pt.tcl`。
 - `common_db_pvt.tcl` 选择与实际综合一致的 corner（如 `wc_cworst`）。
 - 注意 memory / analog 的 PVT 可能与标准单元不同。
 
@@ -455,7 +455,7 @@ run_pt
   - `lt`：ff 高压低温（HVLT）
   - `ml`：ff 高压高温（HVHT）
   - `tt`：典型温压
-- <a href="./script-dict.html#pt_setup_post" target="_blank">pt_setup.tcl</a>：最核心的脚本，内含大量需要 check 的 report 定义（slack、clock path 等）；读取 APR 吐出的网表与 spef、设置 operating conditions；约束读的是 APR 返回的 postcts SDC（`${SDC_PATH}/${SDC_NAME}_postcts.sdc`），不是 prePT `sdc_pr/` 的展开产物直接喂入
+- <a href="./script-dict.html#pt_setup_post" target="_blank">pt_setup.tcl</a>：最核心的脚本，内含大量需要 check 的 report 定义（slack、clock path 等）；读取 APR 吐出的网表（`.v` / `.gv`）与 spef；`set_operating_conditions` 必须与 `DataBase/Analog/DB` 下对应 `.lib` 中的 operating_conditions 保持一致；约束读的是 APR 返回的 postcts SDC（`${SDC_PATH}/${SDC_NAME}_postcts.sdc`），不是 prePT `sdc_pr/` 的展开产物直接喂入
 - `pt/design.set`：路径、LINK_LIB、TAR_LIB、NET_DEFINE、POSTPT_EN=1 等
   - `POSTPT_EN` 必须为 1
   - `PT_HOLD` 仅针对特定工艺（如 22nm）
