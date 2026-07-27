@@ -1,0 +1,112 @@
+digraph script_flow {
+  graph [fontname="Microsoft YaHei", fontsize=16, label="脚本调用关系总图（综合 → LEC → 签核 → prePT/postPT → 汇总）", labelloc=t, rankdir=TB, bgcolor=white, pad=0.5, nodesep=0.6, ranksep=0.8];
+  node [fontname="Microsoft YaHei", fontsize=12, shape=box, style="rounded,filled", fillcolor=white, penwidth=1.5, margin="0.15,0.1"];
+  edge [fontname="Microsoft YaHei", fontsize=10, penwidth=1.8, arrowsize=1.0];
+
+  // Layer 1: 环境
+  subgraph cluster_L1 {
+    label="L1 环境"; style="rounded,dashed"; color="#f43f5e"; bgcolor="#fff1f2";
+    design_set [label="design.set\n总控配置，被各 tcl source", color="#f43f5e"];
+  }
+
+  // Layer 2: RTL 检查
+  subgraph cluster_L2 {
+    label="L2 RTL 检查（并行）"; style="rounded,dashed"; color="#f59e0b"; bgcolor="#fffbeb";
+    run_ckf [label="run_ckf\n包外", color="#f59e0b"];
+    run_nlint [label="run_nlint", color="#f59e0b"];
+    run_lec_lp [label="run_lec_lp\nlec_upf", color="#f59e0b"];
+  }
+
+  // Layer 3: 综合
+  subgraph cluster_L3 {
+    label="L3 综合"; style="rounded,dashed"; color="#3b82f6"; bgcolor="#eff6ff";
+    run_dc [label="run_dc", color="#3b82f6"];
+    compile_dc [label="compile_dc.tcl", color="#3b82f6"];
+    dc_rep_dir [label="dc/rep_dir\n.gv / .sdc / dont_touch.tcl", color="#3b82f6"];
+    run_genus [label="run_genus\nSYN_TOOL=genus 时替代", color="#dc2626", penwidth=2];
+  }
+
+  // Layer 4: 一致性 LEC
+  subgraph cluster_L4 {
+    label="L4 一致性 LEC"; style="rounded,dashed"; color="#6366f1"; bgcolor="#eef2ff";
+    run_lec [label="run_lec", color="#6366f1"];
+    rtl_gate [label="rtl_gate.do\ngolden=RTL / revised=gv_org", color="#6366f1"];
+  }
+
+  // Layer 5: 签核交付
+  subgraph cluster_L5 {
+    label="L5 签核交付"; style="rounded,dashed"; color="#22c55e"; bgcolor="#f0fdf4";
+    signoff [label="signoff\n收集 CKF/NLINT/DC/EC 版本", color="#22c55e"];
+    release [label="Release/latest\n交付 APR", color="#22c55e"];
+    apr [label="APR 布局布线\n后端（本脚本包外）", color="#22c55e"];
+  }
+
+  // Layer 6: prePT
+  subgraph cluster_L6 {
+    label="L6 prePT（TOP 级）"; style="rounded,dashed"; color="#a855f7"; bgcolor="#faf5ff";
+    run_pt_pre [label="run_pt\nsta/pre", color="#a855f7"];
+    pt_setup_pre [label="pt_setup.tcl\n读 .gv + ip_cons 约束", color="#a855f7"];
+    write_sdc [label="write_sdc", color="#a855f7"];
+    sdc_pr [label="sdc_pr/\n展开产物，供 APR", color="#a855f7"];
+  }
+
+  // Layer 7: postPT
+  subgraph cluster_L7 {
+    label="L7 postPT"; style="rounded,dashed"; color="#8b5cf6"; bgcolor="#f5f3ff";
+    run_pt_post [label="run_pt\nsta/post/<corner>", color="#8b5cf6"];
+    corner_set [label="corner_set.tcl\n每 corner 一份", color="#8b5cf6"];
+    pt_setup_post [label="pt_setup.tcl\n读 APR 网表+spef+postcts SDC", color="#8b5cf6"];
+    rpt_date [label="rpt_DATE_N/\nsetup / hold / trans / skew", color="#8b5cf6"];
+    write_sdf [label="write_sdf", color="#dc2626", penwidth=2];
+  }
+
+  // Layer 8: 批量与汇总
+  subgraph cluster_L8 {
+    label="L8 批量与汇总"; style="rounded,dashed"; color="#64748b"; bgcolor="#f8fafc";
+    parallel_run [label="pararrel_run_pt.py / run_all\n10 corner 并发 / 串行旧版", color="#64748b"];
+    run_summary [label="run_summary", color="#64748b"];
+    get_pl [label="get_*.pl\n抓数", color="#64748b"];
+    merge_pl [label="merge_*.pl\n合并", color="#64748b"];
+    report_csv [label="report_*.csv", color="#64748b"];
+  }
+
+  // Edges
+  design_set -> compile_dc [color="#9333ea", style=dashed, label="source"];
+  run_ckf -> run_dc [color="#6b7280", style=dashed];
+  run_nlint -> run_dc [color="#6b7280", style=dashed];
+  run_lec_lp -> run_dc [color="#6b7280", style=dashed];
+  run_dc -> compile_dc [color="#2563eb"];
+  compile_dc -> dc_rep_dir [color="#2563eb", label="生成"];
+  run_genus -> dc_rep_dir [color="#dc2626", label="替代"];
+  dc_rep_dir -> rtl_gate [color="#16a34a", label=".gv（revised=gv_org）"];
+  run_lec -> rtl_gate [color="#2563eb"];
+  rtl_gate -> signoff [color="#2563eb", label="等价通过"];
+  signoff -> release [color="#2563eb"];
+  release -> apr [color="#16a34a", label="交付"];
+  dc_rep_dir -> pt_setup_pre [color="#16a34a", label=".gv + ip_cons"];
+  run_pt_pre -> pt_setup_pre [color="#2563eb"];
+  pt_setup_pre -> write_sdc [color="#2563eb"];
+  write_sdc -> sdc_pr [color="#16a34a", label="SDC"];
+  sdc_pr -> apr [color="#16a34a", label="供 APR"];
+  apr -> pt_setup_post [color="#16a34a", label="网表+spef+postcts SDC"];
+  run_pt_post -> corner_set [color="#2563eb", label="corner 配置"];
+  corner_set -> pt_setup_post [color="#2563eb"];
+  pt_setup_post -> rpt_date [color="#2563eb"];
+  pt_setup_post -> write_sdf [color="#dc2626", style=dashed, label="DUMP_SDF=1"];
+  run_pt_post -> parallel_run [color="#9333ea", style=dashed, label="xterm + bsub 并发"];
+  parallel_run -> run_summary [color="#9333ea", style=dashed];
+  rpt_date -> run_summary [color="#2563eb", label="latest"];
+  run_summary -> get_pl [color="#2563eb"];
+  get_pl -> merge_pl [color="#2563eb"];
+  merge_pl -> report_csv [color="#16a34a", label="csv"];
+
+  // Invisible edges to enforce layer ordering
+  edge [style=invis];
+  design_set -> run_ckf;
+  run_ckf -> run_dc;
+  run_dc -> run_lec;
+  run_lec -> signoff;
+  signoff -> run_pt_pre;
+  run_pt_pre -> run_pt_post;
+  run_pt_post -> parallel_run;
+}
