@@ -611,6 +611,47 @@ dco 落点实例（真实文件）：`SYNTHESIS/common/ip_cons/HV2M23_digital_to
 - 起点能整组通配就通配（`R_*`、`DATA*`），终点是寄存器时逐列 L0/L1 两侧，避免误伤同组真实路径；
 - 每条 false path 都对应一次「报告定位 + 波形确认」，追加在文件末尾，不删旧条目。
 
+#### live PT 验证工作流（约束生效确认）
+
+约束写好后、正式重跑之前，先在 live PT 里快速验证——**session 不退出，随改随报**：
+
+1. 开 live PT：直接 `pt_shell` 起交互 session（或 restore 之前 `save_session` 存的 session，省掉重新 link / read_parasitic 的时间）；
+2. 在 session 里输入新约束：把刚写进 dco 的 `set_false_path` / `set_multicycle_path` 直接敲进去（或 `source` 对应片段），即时生效；
+3. 用 `report_timing` 报目标路径确认效果，常用完整选项组合（setup 检查一般 `-delay_type max`，hold 检查换 `-delay_type min`）：
+
+```tcl
+report_timing \
+  -path_type full_clock_expanded \
+  -delay_type max \
+  -input_pins \
+  -nworst 20 \
+  -slack_lesser_than 20 \
+  -max_paths 100 \
+  -group RX0_OD_CLK_DIV2 \
+  -transition_time \
+  -capacitance \
+  -derate \
+  -sort_by slack
+```
+
+选项含义与取舍：
+
+| 选项 | 作用 | 备注 |
+|------|------|------|
+| `-delay_type max` | 报 setup（max）路径 | 最常用；查 hold 改 `min` |
+| `-path_type full_clock_expanded` | 展开完整 clock 路径 | 看 clock latency 必备 |
+| `-input_pins` | 列出路径经过的每级 pin | 判断有没有夹带准静态 mux / 假路径 |
+| `-group RX0_OD_CLK_DIV2` | 只看指定 clock 组 | 与 merge 总表里的违例组对应 |
+| `-slack_lesser_than 20` | 只报 slack < 20 的 | 过滤掉大量无意义正 slack |
+| `-nworst 20` / `-max_paths 100` | 每终点 20 条、共 100 条 | 验证用足够；修 skew 抓数据才放大到 2000/1000 |
+| `-transition_time` / `-capacitance` / `-derate` | 附带 trans / cap / derate 信息 | 排查时一并看 |
+| `-sort_by slack` | 按 slack 排序 | 最差的排最前 |
+
+4. 确认两件事：被豁免的路径不再出现在报告里（false path 生效）；同组该 check 的真实路径还在（没误伤）；
+5. 验证 OK → 约束已写回 dco，走「重跑 prePT → database → 10 corner」正式循环；验证不对 → 在 session 里调整约束重新报，直到对了再落 dco。
+
+这套「live PT 先试、对了再写 dco」的习惯，对应的就是 §3.1 的纪律：不直接改 SDC、不提前乱写 false path。
+
 ### 3.3 false path / multicycle 设置经验
 
 - 无继承机制：每版综合后 cell 流水号（自动命名）全变，false path 要全部重新报、重新加；做法是不删旧的、往文件后面叠加（叠加式维护）。
