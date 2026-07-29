@@ -579,6 +579,7 @@ post PT 10 个 corner 全部跑完后，执行 <a href="./script-dict.html#run_s
   - 准静态信号、异步跨时钟域 → `set_false_path`
   - 数据允许跨多个周期到达的慢速路径 → `set_multicycle_path`
 - 下约束前先在 live PT 里 `report_timing -input_pins` 把这条路径报出来看明白：穿过哪些 cell、起点终点对不对、是不是夹带准静态 mux 的假路径——确认是假路径才写，判错会把真实路径漏报。
+- 报告只能告诉你「违例在哪」，**信号到底准不准静态要看波形**：把起点信号（如 `SETTING_DET`）在仿真波形里拉出来，确认它是一帧变一次的配置类信号、或与终点时钟确实异步，才能落 `set_false_path`。只看 report 不看波形就下约束，是把真实路径漏报的常见原因。
 
 第三步·落地重跑（一轮完整循环）：
 
@@ -594,6 +595,21 @@ flowchart LR
 
 - 每轮重跑后必须确认两件事：目标违例已清；没有误伤真实路径（violation number 异常减少、或别的组冒出新违例都要警惕）。
 - false path / multicycle 采用叠加式维护：不删旧的，往 dco 后面追加（cell 流水号每版都变，旧条目自然失效但无害）。
+
+dco 落点实例（真实文件）：`SYNTHESIS/common/ip_cons/HV2M23_digital_top.tcl`——上一节说的「改 dco」改的就是它（prePT 时由 `pt_setup.tcl` source 进来）。
+
+![dco 文件 ip_cons/HV2M23_digital_top.tcl 中的 set_false_path 实例](./image/digtal_Top.tcl文件修改.jpg)
+
+图中可以看到 merge 总表里那批修不掉的违例，最终都落成这个文件里的一条条 `set_false_path`：
+
+- 配置/寄存器写类：`LC_CPUWR_HV2M23/R_*`、`VGMA/R_REG*` 的 CK 与数据端，整组 from 豁免；
+- 异步复位类输出：`-to [get_ports XRSTA_R]`；
+- 跨域配置信号（与 merge 总表 `RX0_OD_CLK_DIV2` → `CLK_L*_DTCTL_OD_DIV1P5` 的负 slack 对应）：`LC_CSPIF_L0/SETTING_DET_reg` → `DTCTL_L0/L1` 的 `DBR0N/DBL0N/START_R/START_L/L5/EN1_R/EN1_L_reg`，L0、L1 两侧逐条列出；`POL_DET_reg` → `DTCTL_L0/L1/DATA*` 用 `get_cells` 通配一整组。
+
+写法经验（对照图）：
+
+- 起点能整组通配就通配（`R_*`、`DATA*`），终点是寄存器时逐列 L0/L1 两侧，避免误伤同组真实路径；
+- 每条 false path 都对应一次「报告定位 + 波形确认」，追加在文件末尾，不删旧条目。
 
 ### 3.3 false path / multicycle 设置经验
 
