@@ -676,6 +676,28 @@ trace 方法：从输出端往里走，逐级看每个控制信号要不要 chec
 - 历史案例：某条一帧变一次的 CK 路径连续三四个项目都修不下去，后来干脆不加进 check 列表（多打一条 path 没坏处，但明知修不下去的不加）。
 - 两路来源的路径中，一路和其他路长度差很多的，加进来必修不下去，宁可不 check。
 
+### 4.5 skew 报告脚本实例（report_timing_skew_sd.tcl）
+
+修 skew 用的批量报告脚本，完整路径与文件名（与 `pt_setup.tcl`、`get_*.pl` / `merge_*.pl` 抓取合并层同目录，脚本条目见 <a href="./script-dict.html#skew_sd" target="_blank">脚本字典</a>）：
+
+```text
+SYNTHESIS/top/sta/post/common/report_timing_skew_sd.tcl
+```
+
+![SD skew 报告脚本 report_timing_skew_sd.tcl 实例](./image/timing_skew_sd.jpg)
+
+内容结构（对照截图）：
+
+- data 组：`report_timing -from u_LOGIC_CENTER/CENTER1/TOTAL_DTCTL/DTCTL_L*/SL_DLY*、DATA*_PRE* 等 -to [get_ports DBL*/DBR*/SLIN_B] -max_path 2000 -nworst 1000 >> ${rpt_dir}/skew/report_timing_sd_{l,r}_1p_{a,b}.rpt`
+- clock 组：from `CLKGEN_U0/U1` 各 DCLK 到 `CLKA_L/CLKB_L` 等 port，在 `-max_path 2000 -nworst 1000` 基础上再加 `-slack_lesser_than 50`
+- 输出统一 `>>` 追加到 `${rpt_dir}/skew/report_timing_sd_*.rpt`，供 `get_sd_busskew.pl` 抓取、merge 进 Excel
+- 换 lane / 换分组的旧写法用注释保留（截图 77-79、84-85 行），不删除，方便回退对照
+
+`-max_path` 取舍（重要经验）：
+
+- 修 skew 抓数据时必须加大 `-max_path 2000 -nworst 1000`：目的是拿到每组足够多路径的 latency 分布，merge 脚本才能算出 max / min 和 margin；路径太少，推 skew 的数据基础就失真。
+- 只做点对点跨域检查时不需要大 `-max_path`：如 1P5 分频跨域、isprx、io 报告，按 `-slack_lesser_than` 过滤或少量 `-max_paths 100` 即可。
+
 ---
 
 ## 5. 报告解读与报表生成
