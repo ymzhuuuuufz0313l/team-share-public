@@ -652,6 +652,47 @@ report_timing \
 
 这套「live PT 先试、对了再写 dco」的习惯，对应的就是 §3.1 的纪律：不直接改 SDC、不提前乱写 false path。
 
+### 3.3 input / output delay 约束文件（ip_cons/input_delay.tcl）
+
+input delay 约束有专门文件，与 dco 同目录、随约束一起被 source（配套还有 `output_delay.tcl`）：
+
+```text
+SYNTHESIS/common/ip_cons/input_delay.tcl
+```
+
+![input_delay.tcl 位置与内容实例](./image/input_delay设置及位置图.jpg)
+
+文件头的编写方法（三条，照做即可）：
+
+1. 从顶层实际 input port 出发（以 `<TOP>.v` 的 port 为准）；
+2. 每个 port 往里 trace 到**第一个有效时序捕获域**（用哪个 clock 就挂哪个 clock）；
+3. 数值沿用 legacy Tcl 中仍然匹配的值——不随意收紧，避免相对旧版 under-constrain。
+
+文件组织纪律（图上半部分注释）：
+
+- 假定 base clock 已由 dco（`HV2M23_digital_top.tcl`）创建，本文件只管 input delay；
+- 专用 clock / reset port 只写注释说明，**不给** `set_input_delay`；
+- FPGA-only 的输入以注释形式列出，留待单独 review。
+
+代码实例（图下半部分）：
+
+```tcl
+# I2C 串行输入：max/min 成对
+set_input_delay -clock I2C_CLK 1     [get_ports CSCL_I]
+set_input_delay -clock I2C_CLK -min -1 [get_ports CSCL_I]
+#set_input_delay -clock OSC_CLK_IN 5 [get_ports CSCL_I] -add_delay   # 旧版第二捕获域，注释保留
+
+# RX lane 数据：整组通配，挂 OD /2 分频时钟
+set_input_delay -clock RX0_OD_CLK_DIV2 0      [get_ports dout_lane_L0*]
+set_input_delay -clock RX0_OD_CLK_DIV2 -min 0 [get_ports dout_lane_L0*]
+```
+
+写法经验（对照图）：
+
+- max / min 成对写（`1` / `-min -1`、`0` / `-min 0`），只写一个等于只卡了半边；
+- lane 类信号用通配符整组设置（`dout_lane_L0*`），clock 挂实际捕获域（OD 模式用 `*_OD_CLK_DIV2`）；
+- 换 clock 域、换数值时旧行**注释保留不删除**（图中 `#set_input_delay -clock RX0_CLK ...` 一片），方便回退和 review diff。
+
 ### 3.3 false path / multicycle 设置经验
 
 - 无继承机制：每版综合后 cell 流水号（自动命名）全变，false path 要全部重新报、重新加；做法是不删旧的、往文件后面叠加（叠加式维护）。
