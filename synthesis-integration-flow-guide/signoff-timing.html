@@ -501,6 +501,11 @@ run_pt
 
 使用经验：
 - 打开 postPT 环境第一件事先改 top name；SDC / 网表路径可在配置中搜索 APR 对接工程师的标识快速定位（APR 网表路径固定），并确认路径为最新。
+- **分析中间版本（非 latest）时必须改 `pt_setup.tcl`**：`read_verilog` 默认指向 APR release 目录下的 `.../timing/latest/<TOP>.v.gz`——`latest` 是软链，永远指向最新一版；要复查某个历史/中间版本的时序，需要把路径从 `latest` 改成具体版本目录（spef 路径同理），否则会误分析到最新版。
+
+![分析中间版本时需修改 pt_setup.tcl 的 read_verilog 路径](./image/如果是中间版本不是latest版本，那么我们需要修改pt_setuptcl的图.jpg)
+
+该文件同时是 CORNER → RC_FILE → operating_conditions 的映射表（图中 `wc_cworst` / `wc_cbest` / `lt_cbest` / `lt_cworst` 各分支，`wcl_*` 整段注释保留），换库时按 foundry PVT 文档逐项更换，且 `set_operating_conditions` 必须与 `DataBase/Analog/DB` 下对应 `.lib` 一致（见前述注意事项）。
 - 附加自研脚本：抓 worst slack、批量跑 PT、跑完后 merge 结果。
 
 WARNING: corner 配置里有 dump SDF 开关（真实变量名是 corner_set.tcl 里的 <a href="./script-dict.html#dump_sdf" target="_blank">DUMP_SDF</a>，打开则专门生成 SDF，供后仿使用）。真实机理：`DUMP_SDF==1` 的那趟 run 只执行 `write_sdf` 并跳过全部 report——两个分支互斥，结果并非被删除，而是 `latest` 软链指向了这趟只产 SDF 的 run，run summary 自然抓到空。run summary 里发现某 corner 结果为空，基本就是这个原因；关掉后重跑该 corner 即可恢复。
