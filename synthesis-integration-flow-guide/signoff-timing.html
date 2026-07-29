@@ -436,7 +436,43 @@ prePT 产物中还可以查到（真实文件名）：
 - 每个 clock 域下挂的 DFF 数量——`report_dff_num.rpt`
 - floating 信号列表（APR 对接工程师有时需要）——`pt_input_float.log`
 
-### 2.2 Post-PT
+### 2.2 prePT 报告的下游应用：后仿 notimingcheck 配置
+
+prePT 报告除了看时序，还有一个重要下游用途：**给 gate-level 后仿生成 notimingcheck 名单**。
+
+![notimingcheck_DIG.cfg 实例](./image/pre_pt之后notimingcheck.jpg)
+
+配置文件（真实路径）：
+
+```text
+HV2M23/DV_TCON_C/script/notimingcheck_DIG.cfg
+```
+
+格式为逐行列 instance 的完整仿真层次：
+
+```text
+instance {chip_tb_top.u_<TOP>.u_<TOP>_digital_top.u_LOGIC_CENTER.LINK_LOGIC.U_SYNC_L0L1.<...>_reg} {noTiming};
+```
+
+**为什么在 prePT 之后做（而不是 DC 之后）：**
+
+- 这个 cfg 是后仿（带 SDF 的 gate-level 仿真）用的，`noTiming` 让仿真工具不对这些 instance 做 setup / hold 等 timing check。
+- 「哪些 instance 不需要 check」必须由**完整约束下的 STA 报告**判定——prePT 是第一个拿综合网表 + 完整展开 SDC 做全量 STA 的节点，异步跨域、同步器、准静态路径只有在 prePT 报告里才看得全。
+- DC 阶段的 timing 只是 wireload 估计、约束未完整展开，不能作为「这条路径不用 check」的依据。
+- 图中实例名单自己也证明了来源：`U_SYNC_L0L1`（同步器）、`U_L0_CIRC_DELAY_BUF`（环形 delay buffer）、`BLANK_EN_ASYNC`、`CSPI_CMD_ALIGN` 等，全是 STA 报告里「刻意不做时序检查」的异步 / 延时链寄存器。
+
+**为什么需要它：** 后仿带 SDF 时，这些异步 / 延时 instance 会刷出大量假的 setup / hold violation 甚至 X 传播，把真实问题淹没；用 `noTiming` 屏蔽后仿真 log 才干净，真实 violation 才看得见。
+
+**操作步骤：**
+
+1. 跑完 prePT，看报告中的异步跨域 / unconstrained / 准静态路径；
+2. 确认属于「不 check」的 instance（同步器、delay buffer、async 控制信号）；
+3. 按仿真层次写进 `notimingcheck_DIG.cfg`；
+4. 后仿环境读取该 cfg，仿真时这些 instance 不做 timing check。
+
+注意：名单必须与 STA 报告逐条对应，漏加会被假 violation 淹没，错加会把真实时序问题掩盖掉——和 false path 一样需要人工逐条确认。
+
+### 2.3 Post-PT
 
 基于 APR 后端输出进行 signoff 级时序分析：
 
