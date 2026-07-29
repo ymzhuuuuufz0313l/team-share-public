@@ -560,7 +560,42 @@ flowchart LR
 - 改 dco 前的验证习惯：先在 live PT（手工打开的交互式 session）里把路径直接指过去试一版，确认效果再正式写入。
 - 纪律：<span class="badge badge-rtl">严禁</span>直接修改 SDC 文件、提前乱写 false path，需确认路径为假后再配置。
 
-### 3.2 false path / multicycle 设置经验
+### 3.2 约束迭代闭环：看 summary 总表 → 定性 → 改 dco → 重跑
+
+post PT 10 个 corner 全部跑完后，执行 <a href="./script-dict.html#run_summary" target="_blank">run_summary</a>，产物在 `SYNTHESIS/top/sta/post/pt/summary/latest/` 下：
+
+- 每 corner 单表：`<corner>_setup.csv` / `_hold.csv` / `_trans.csv` / `_phy_busskew.txt` / `_sd_busskew.txt`
+- merge 总表：`report_setup.csv` / `report_hold.csv` / `report_trans.csv` / `report_phy_busskew.csv` / `report_sd_busskew.csv`
+- 总表结构：行 = clock 组，列 = 每个 corner 各两列（violation number、biggest violation），一眼看全 10 个 corner
+
+![POST PT run_summary 后的 merge 总表 report_setup.csv](./image/POST_PT_SUMMARY_REPORT.jpg)
+
+第一步·找目标：在 merge 总表里扫 **violation number ≠ 0 或 biggest violation 为负** 的 clock 组（如上图中 `RX0_CLK`、`RX0_CLK_DIV1P5` 在某些 corner 有负 slack），这些就是要处理的违例。
+
+第二步·定性（关键判断）：逐条看违例路径，判断它**后端修不修得掉**：
+
+- 修得掉的（skew 类，垫 delay / 换 size 能收敛）→ 不动约束，留给 APR 修调；
+- 修不掉的 → 判断该下什么约束：
+  - 准静态信号、异步跨时钟域 → `set_false_path`
+  - 数据允许跨多个周期到达的慢速路径 → `set_multicycle_path`
+- 下约束前先在 live PT 里 `report_timing -input_pins` 把这条路径报出来看明白：穿过哪些 cell、起点终点对不对、是不是夹带准静态 mux 的假路径——确认是假路径才写，判错会把真实路径漏报。
+
+第三步·落地重跑（一轮完整循环）：
+
+```mermaid
+flowchart LR
+  A["违例写进 dco<br/>(false path / multicycle)"] --> B["重跑 prePT<br/>展开生成新 SDC"]
+  B --> C["新 SDC 放入<br/>database 目录"]
+  C --> D["重跑 post PT<br/>10 个 corner"]
+  D --> E["run_summary<br/>看新 merge 总表"]
+  E -->|"该组 violation 清零<br/>且无误伤"| F["✅ 收敛"]
+  E -->|"仍有修不掉的"| A
+```
+
+- 每轮重跑后必须确认两件事：目标违例已清；没有误伤真实路径（violation number 异常减少、或别的组冒出新违例都要警惕）。
+- false path / multicycle 采用叠加式维护：不删旧的，往 dco 后面追加（cell 流水号每版都变，旧条目自然失效但无害）。
+
+### 3.3 false path / multicycle 设置经验
 
 - 无继承机制：每版综合后 cell 流水号（自动命名）全变，false path 要全部重新报、重新加；做法是不删旧的、往文件后面叠加（叠加式维护）。
 - 跨项目经验可继承：架构没有大改时按信号功能 / 类别识别，同一类信号成组设置。
