@@ -782,13 +782,15 @@ SYNTHESIS/top/sta/post/common/report_timing_skew_sd.tcl
 
 - data 组：`report_timing -from u_LOGIC_CENTER/CENTER1/TOTAL_DTCTL/DTCTL_L*/SL_DLY*、DATA*_PRE* 等 -to [get_ports DBL*/DBR*/SLIN_B] -max_path 2000 -nworst 1000 >> ${rpt_dir}/skew/report_timing_sd_{l,r}_1p_{a,b}.rpt`
 - clock 组：from `CLKGEN_U0/U1` 各 DCLK 到 `CLKA_L/CLKB_L` 等 port，在 `-max_path 2000 -nworst 1000` 基础上再加 `-slack_lesser_than 50`
-- 输出统一 `>>` 追加到 `${rpt_dir}/skew/report_timing_sd_*.rpt`，供 `get_sd_busskew.pl` 抓取、merge 进 Excel
+- 输出写到 `${rpt_dir}/skew/report_timing_sd_*.rpt`（每组第一条 `>` 新建、其余 `>>` 追加），供 `get_sd_busskew.pl` 抓取、merge 进 Excel
 - 换 lane / 换分组的旧写法用注释保留（截图 77-79、84-85 行），不删除，方便回退对照
 
-`-max_path` 取舍（重要经验）：
+选项取舍（重要经验）：
 
-- 修 skew 抓数据时必须加大 `-max_path 2000 -nworst 1000`：目的是拿到每组足够多路径的 latency 分布，merge 脚本才能算出 max / min 和 margin；路径太少，推 skew 的数据基础就失真。
-- 只做点对点跨域检查时不需要大 `-max_path`：如 1P5 分频跨域、isprx、io 报告，按 `-slack_lesser_than` 过滤或少量 `-max_paths 100` 即可。
+- `-max_path 2000 -nworst 1000` 是**固定写法**：修 skew 要拿到每组足够多路径的 latency 分布，merge 脚本才能算出 max / min 和 margin；路径太少，推 skew 的数据基础就失真。
+- `-slack_lesser_than 50` **可加可不加、需要灵活考虑**：加上可以过滤掉 slack 明显为正的路径、控制报告体积（图中 clock 组带了 50，data 组没带）；但如果当前要看完整的 latency 分布（比如 data 组要推 skew），就不要加、或把阈值放宽，否则长 latency 路径被滤掉、merge 出来的数据就失真。阈值取多少（图中为 50）按当前要分析的内容定。
+- 输出重定向按分组区分：每组第一条用 `>` 新建（覆盖旧结果），后续条目用 `>>` 追加——注意 script-dict 里记录过 `>` 误用于同组文件导致报告互相覆盖的坑。
+- 只做点对点跨域检查时不需要这套大 `-max_path`：如 1P5 分频跨域、isprx、io 报告，用 `-slack_lesser_than` 过滤或少量 `-max_paths 100` 即可。
 
 ---
 
