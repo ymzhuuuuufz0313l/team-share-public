@@ -789,6 +789,8 @@ SYNTHESIS/top/sta/post/common/report_timing_skew_sd.tcl
 
 - `-max_path 2000 -nworst 1000` 是**固定写法**：修 skew 要拿到每组足够多路径的 latency 分布，merge 脚本才能算出 max / min 和 margin；路径太少，推 skew 的数据基础就失真。
 - `-slack_lesser_than 50` **可加可不加、需要灵活考虑**：加上可以过滤掉 slack 明显为正的路径、控制报告体积（图中 clock 组带了 50，data 组没带）；但如果当前要看完整的 latency 分布（比如 data 组要推 skew），就不要加、或把阈值放宽，否则长 latency 路径被滤掉、merge 出来的数据就失真。阈值取多少（图中为 50）按当前要分析的内容定。
+
+WARNING: <span class="badge badge-rtl">强调</span> `-slack_lesser_than` 加不加、阈值取多少，**很需要经验、很需要迭代**才能下结论——不是抄一组参数就万事大吉。**每一条** `report_timing` 都要单独综合考虑：这条报告的目的是什么（推 skew 抓分布 / 只看违例 / 点对点附近）、滤掉的路径会不会正是要用的数据、阈值卡多紧合适。下不了结论时就迭代：先不加跑一次看数据量，再加上对比，反复几轮才能定下每一条的写法。
 - 输出重定向按分组区分：每组第一条用 `>` 新建（覆盖旧结果），后续条目用 `>>` 追加——注意 script-dict 里记录过 `>` 误用于同组文件导致报告互相覆盖的坑。
 - 只做点对点跨域检查时不需要这套大 `-max_path`：如 1P5 分频跨域、isprx、io 报告，用 `-slack_lesser_than` 过滤或少量 `-max_paths 100` 即可。
 
