@@ -572,6 +572,12 @@ post PT 10 个 corner 全部跑完后，执行 <a href="./script-dict.html#run_s
 
 第一步·找目标：在 merge 总表里扫 **violation number ≠ 0 或 biggest violation 为负** 的 clock 组（如上图中 `RX0_CLK`、`RX0_CLK_DIV1P5` 在某些 corner 有负 slack），这些就是要处理的违例。
 
+找到目标后到**对应 corner 目录**看具体报告定位路径。示例：总表里 `wc_cbest_125` 的 `CLK_L0_DTCTL_OD_DIV1P5` 组有 5 条 violation（biggest −0.0499），打开 `SYNTHESIS/top/sta/post/pt/wc_cbest_125/latest/setup/report_timing_setup.rpt`，按 slack 排序找到 VIOLATED 路径，看清 Startpoint / Endpoint / Path Group：
+
+![wc_cbest corner 出问题路径的定位示例](./image/ccbest_Corner出问题的路径 示例图.jpg)
+
+（上例：Startpoint `LC_CSPIF_L0/DIOH_DCLK_reg`（RX0_OD_CLK_DIV2）→ Endpoint `DTCTL_L0/EN1_L_reg`（CLK_L0_DTCTL_OD_DIV1P5），slack (VIOLATED) = −0.049949。每个 corner 的 `latest/` 下按 setup / hold / skew / trans 分目录，各 clock 组单独一份 report_timing 文件。）
+
 第二步·定性（关键判断）：逐条看违例路径，判断它**后端修不修得掉**：
 
 - 修得掉的（skew 类，垫 delay / 换 size 能收敛）→ 不动约束，留给 APR 修调；
@@ -591,7 +597,14 @@ flowchart LR
   D --> E["run_summary<br/>看新 merge 总表"]
   E -->|"该组 violation 清零<br/>且无误伤"| F["✅ 收敛"]
   E -->|"仍有修不掉的"| A
+  F --> G["APR 修调全部完成"]
+  G --> H["最终再跑一次<br/>postPT + run_summary"]
+  H --> I{"5 个 csv<br/>全部 ready?"}
+  I -->|"是"| J["TO SIGNOFF<br/>(最终签核)"]
+  I -->|"否"| A
 ```
+
+最终确认环节（TO SIGNOFF）的详细操作见 <a href="./to-signoff.html" target="_blank">TO SIGNOFF</a> 页。
 
 - 每轮重跑后必须确认两件事：目标违例已清；没有误伤真实路径（violation number 异常减少、或别的组冒出新违例都要警惕）。
 - false path / multicycle 采用叠加式维护：不删旧的，往 dco 后面追加（cell 流水号每版都变，旧条目自然失效但无害）。

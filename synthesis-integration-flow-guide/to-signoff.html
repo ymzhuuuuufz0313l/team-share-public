@@ -9,6 +9,7 @@
   <title>TO SIGNOFF · ASIC IP Synthesis &amp; Integration Flow 工具使用指南</title>
   <script src="https://cdn.jsdelivr.net/npm/marked@9.1.6/marked.min.js"></script>
   <script src="./glossary.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
   <style>
 
 :root {
@@ -320,6 +321,8 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
     --tooltip-bg-rgb: 30, 58, 138;
   }
 }
+.mermaid { margin: 28px 0; text-align: center; }
+.mermaid svg { max-width: 100%; }
 </style>
 </head>
 <body>
@@ -341,7 +344,45 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
   <script type="text/template" id="md">
 # 十二、TO SIGNOFF
 
-&gt; 本页内容待补充。
+&gt; 最终签核前的最后一道确认：APR 把全部内容修改完成后，**再跑一次 postPT + run_summary**，确认时序全部 ready，才进入 signoff。
+
+## 1. 最终确认流程
+
+约束迭代收敛（见 <a href="./pt-intro.html" target="_blank">PT 介绍 §3.2</a>）之后，APR 工程师完成全部修调与 ECO。此时必须最后完整跑一轮确认：
+
+```mermaid
+flowchart LR
+  A["APR 修改全部完成<br/>(修调 / ECO)"] --> B["重跑 postPT<br/>10 个 corner"]
+  B --> C["run_summary"]
+  C --> D["逐个看 5 个 merge csv"]
+  D --> E{"全部 ready?"}
+  E -->|"是"| F["✅ TO SIGNOFF<br/>进入最终签核"]
+  E -->|"否"| G["回到约束迭代闭环<br/>或继续修调"]
+```
+
+1. APR 修改全部完成（修调 / ECO 全部落定）；
+2. 重跑 postPT 全部 10 个 corner（`pararrel_run_pt.py` 批量提交）；
+3. 执行 `run_summary` 生成 `summary/latest/` 下的 merge 总表；
+4. **逐个打开 5 个 csv 确认**（下图）；
+5. 全部 ready → 进入最终签核（TO SIGNOFF）；任何一项不 ready → 回 <a href="./pt-intro.html" target="_blank">约束迭代闭环</a> 或继续修调。
+
+![run_summary 之后需要看的 5 个 csv 报告](./image/runsummary之后需要看的报告，五个csv文件.jpg)
+
+## 2. 五个 csv 各看什么
+
+| 文件 | 看什么 | ready 标准 |
+|------|--------|-----------|
+| `report_setup.csv` | 每 clock 组 × 每 corner 的 violation number / biggest violation | violation number 全 0（或仅剩已确认并豁免的假路径），biggest violation ≥ 0 |
+| `report_hold.csv` | 同上，hold（min）路径 | 同上 |
+| `report_trans.csv` | max_transition / max_capacitance 等违规 | 无 violator |
+| `report_phy_busskew.csv` | PHY bus skew 分组 slack | 各组 skew 在规格内 |
+| `report_sd_busskew.csv` | SD data/clock skew 分组（含 margin） | margin 落在规格区间（如 [-1:6]） |
+
+注意：
+
+- 这 5 个文件由 `run_summary` 调用 `get_*.pl` / `merge_*.pl` 自动生成（脚本条目见 <a href="./script-dict.html#run_summary" target="_blank">脚本字典</a>），列 = corner、行 = 分组指标；
+- 残留违例必须逐条能说清来历：已豁免的假路径要能对上 dco 里的 `set_false_path` / `set_multicycle_path` 条目，说不清的不能放行；
+- 某 corner 结果为空先查 `DUMP_SDF` 是否忘关（见 <a href="./signoff-timing.html" target="_blank">Signoff 与时序 §2.3</a>），不要当成"无违例"放过。
 
 </script>
 
@@ -456,6 +497,22 @@ document.addEventListener('keydown', (e) => {
 const article = document.getElementById('article');
 article.innerHTML = marked.parse(document.getElementById('md').textContent, {gfm:true, breaks:false});
 applyGlossary(article);
+// Render mermaid diagrams (applyGlossary skips pre/code, so sources stay intact)
+(function () {
+  const blocks = article.querySelectorAll('pre > code.language-mermaid');
+  if (!blocks.length || typeof mermaid === 'undefined') return;
+  blocks.forEach(code => {
+    const div = document.createElement('div');
+    div.className = 'mermaid';
+    div.textContent = code.textContent;
+    code.parentElement.replaceWith(div);
+  });
+  mermaid.initialize({
+    startOnLoad: false,
+    theme: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'default'
+  });
+  mermaid.run({ nodes: article.querySelectorAll('.mermaid') });
+})();
 const toc = document.getElementById('toc');
 const h1 = article.querySelector('h1');
 const headings = article.querySelectorAll('h2, h3');
