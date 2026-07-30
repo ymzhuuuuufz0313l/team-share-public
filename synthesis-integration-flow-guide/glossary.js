@@ -126,9 +126,9 @@
   cmdStyle.textContent = `
 .cmd {
   position: relative;
-  border-bottom: 1px dashed #0891b2;
+  border-bottom: 1px dashed #2563eb;
   cursor: help;
-  color: #0891b2;
+  color: #2563eb;
   transition: background 0.15s ease, border-bottom-style 0.15s ease;
 }
 .cmd::before {
@@ -136,13 +136,13 @@
   font-size: 0.85em;
 }
 .cmd:hover {
-  background: rgba(8, 145, 178, 0.12);
+  background: rgba(37, 99, 235, 0.12);
   border-bottom-style: solid;
   border-radius: 4px;
 }
 @media (prefers-color-scheme: dark) {
-  .cmd { color: #22d3ee; border-bottom-color: #22d3ee; }
-  .cmd:hover { background: rgba(34, 211, 238, 0.15); }
+  .cmd { color: #60a5fa; border-bottom-color: #60a5fa; }
+  .cmd:hover { background: rgba(96, 165, 250, 0.15); }
 }
 .cmd-legend {
   display: flex;
@@ -158,7 +158,7 @@
 }
 .cmd-legend .lg { display: inline-flex; align-items: center; gap: 5px; }
 .cmd-legend .swatch-term { color: var(--accent); border-bottom: 1px dashed var(--accent); }
-.cmd-legend .swatch-cmd { color: #0891b2; border-bottom: 1px dashed #0891b2; }
+.cmd-legend .swatch-cmd { color: #2563eb; border-bottom: 1px dashed #2563eb; }
 `;
   document.head.appendChild(cmdStyle);
 
