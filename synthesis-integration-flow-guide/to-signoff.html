@@ -382,7 +382,7 @@ flowchart LR
 
 - 这 5 个文件由 `run_summary` 调用 `get_*.pl` / `merge_*.pl` 自动生成（脚本条目见 <a href="./script-dict.html#run_summary" target="_blank">脚本字典</a>），列 = corner、行 = 分组指标；
 - 残留违例必须逐条能说清来历：已豁免的假路径要能对上 dco 里的 `set_false_path` / `set_multicycle_path` 条目，说不清的不能放行；
-- 某 corner 结果为空先查 `DUMP_SDF` 是否忘关（见 <a href="./signoff-timing.html" target="_blank">Signoff 与时序 §2.3</a>），不要当成"无违例"放过。
+- 某 corner 结果为空先查 `DUMP_SDF` 是否忘关（见 <a href="./signoff-timing.html" target="_blank">APR SIGNOFF 页 §2.3</a>），不要当成"无违例"放过。
 
 </script>
 
@@ -394,7 +394,7 @@ const chapters = [
   ['rtl-check', 'RTL 检查'],
   ['synthesis-upf', '综合'],
   ['lec', 'LEC 验证'],
-  ['signoff-timing', 'Signoff 与时序'],
+  ['signoff-timing', 'APR SIGNOFF'],
   ['pt-intro', 'PT 介绍'],
   ['memory-power', 'Memory 与功耗'],
   ['powerpro', 'PowerPro 功耗评估'],
