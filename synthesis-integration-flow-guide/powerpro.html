@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>RTL 检查 · ASIC IP Synthesis &amp; Integration Flow 工具使用指南</title>
+  <title>PowerPro 功耗评估 · ASIC IP Synthesis &amp; Integration Flow 工具使用指南</title>
   <script src="https://cdn.jsdelivr.net/npm/marked@9.1.6/marked.min.js"></script>
   <script src="./glossary.js"></script>
   <style>
@@ -334,70 +334,148 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
     <article class="article" id="article">
       
     </article>
-    <div class="page-nav"><a href="./environment.html"><span class="label">上一篇</span><span class="title">环境与配置</span></a>
-<a class="next" href="./synthesis-upf.html"><span class="label">下一篇</span><span class="title">综合与 UPF</span></a></div>
+    <div class="page-nav"><a href="./memory-power.html"><span class="label">上一篇</span><span class="title">Memory 与功耗</span></a>
+<a class="next" href="./faq.html"><span class="label">下一篇</span><span class="title">FAQ 与清单</span></a></div>
     <div class="footer">Shared from team knowledge base</div>
   </div></div>
 
   <script type="text/template" id="md">
-# 二、RTL 质量检查
+# 十一、PowerPro 功耗评估
 
-&gt; 在启动综合之前，必须先通过 CKF 和 nLint 清理 RTL 中的连接性、语法和可综合性问题。
+&gt; 本章基于 PowerPro 低功耗设计培训（2025 年 6 月）整理，收录课件功耗评估部分：功耗构成与评估工具、PowerPro 环境搭建、运行与 report 检查。命令与路径按原文保留。
 
-CKF 与 nLint 并行执行、互为补充，分工各有侧重：
+## 1. 功耗基础与评估工具
 
-| 工具 | 侧重 | 典型检查项 |
-|------|------|-----------|
-| CKF | 浅层：环境配置、filelist 链接、环境变量正确性 | 连接性、Floating、black box |
-| nLint | 深层：设计本身的问题 | multi-driver、wire floating 等 |
+### 1.1 功耗构成
 
-经验：CKF 跑得特别快，适合快速过筛；很多错误 CKF 全部通过、nLint 一跑却报出一堆 error，明显的错误两边都会报，也有只在一边报的，因此两个工具缺一不可。
+- **静态功耗（leakage power）**：漏电流功耗，与工艺库、电压、温度相关。漏电关系 LVT &gt; SVT &gt; HVT；与电压成正比，与温度成指数关系。
+- **动态功耗（dynamic power）**：晶体管跳变产生的功耗，包含两部分：
+  - switching power：`P = C · Vdd² · Fclock`——与频率、关断时的负载电容、电压平方成正比；
+  - internal power：`P = tsc · Vdd · Ipeak · Fclock`——与频率、电流、电压成正比。
 
-NOTE: 也有观点认为 CKF 的必要性存疑，但因其跑得快、可作保险，流程中一直保留（流程由流程维护者统一制定与维护）。
+![功耗的构成：静态功耗与动态功耗](./image/powerpro/slide_5.jpg)
 
-## 1. CKF（连接性检查）
+### 1.2 评估工具对比
 
-```bash
-cd ckf
-run_ckf
+| 工具 | 评估阶段 | 级别 / 负责人 | 读取文件 | 目标 |
+|------|----------|---------------|----------|------|
+| RedHawk | 设计后端 | whole chip，APR 同事 | APR 后 post-netlist + 带 SDF 后仿 VCD | 评估功耗对 IR drop 的影响，功耗值相对偏大 |
+| PTPX | 设计后端 | whole chip，综合同事 | 同 RedHawk | 评估 whole-chip 功耗，与实际回片功耗对比 |
+| PowerPro（RTL level） | IP RTL 设计阶段 | IP level 由 IP owner；chip level 由专人 | RTL code、sdc、前仿波形 | 初步评估功耗并进行低功耗设计优化；与回片实测有一定差距 |
+| PowerPro（Gate level） | 设计后端 | whole chip，专人 | 同 PTPX | whole-chip 功耗，与 RTL level 及回片功耗对比 |
+
+![评估工具：RedHawk 与 PTPX](./image/powerpro/slide_6.jpg)
+
+![评估工具：PowerPro RTL / Gate level](./image/powerpro/slide_7.jpg)
+
+### 1.3 评估条件
+
+1. 工作模式：Idle mode 做漏电流分析与优化；Function mode 做最大功耗评估与优化。采用 **1 个 idle mode + N 个 function mode** 进行评估。
+2. 工作条件：TT corner、typical voltage、normal temperature **85°C**（lib 中无 85°C 时可选 125°C）。
+
+WARNING: 务必确保实测功耗时的条件与评估功耗时的条件一致，否则对比无意义。
+
+![PowerPro 评估条件](./image/powerpro/slide_8.jpg)
+
+---
+
+## 2. PowerPro 环境搭建与运行
+
+PowerPro 已集成到 IP 综合环境，`gensyn` 生成环境时自动创建 powerpro 目录：
+
+| 目录 / 文件 | 用途 |
+|-------------|------|
+| `fsdb/` | 存放仿真波形 |
+| `sdc/` | 存放约束文件 |
+| `WORK/` | powerpro report 目录 |
+| `script/` | 存放 vector 脚本 |
+| `run_power_opt` | powerpro 运行脚本 |
+
+![PowerPro 目录结构](./image/powerpro/slide_9.jpg)
+
+### 2.1 搭建步骤
+
+1. **RTL filelist**：维护 `syn_<ip>/filelist/` 下的 `<ip>.f` 与 `<ip>.sv.f`。
+2. **link 波形**：将仿真波形 link 到 `fsdb/` 目录。
+3. **design.set 指定波形与层次**：
+
+```tcl
+set FSDB_FILE  "fsdb/xxx.fsdb"    # 指定波形文件
+set FSDB_HIER  "tb.wdut.u_ip"     # IP_TOP 在仿真波形中的层次
 ```
 
-WARNING: 通过 `bsub` 提交时必须带 batch 参数，即 `bsub -Ip run_ckf 1`。这是所有 `run_*` 入口脚本的统一约定：尾部带任意参数 = 跑完自动 exit（batch 模式，bsub 必须加，否则 job 挂在交互 shell）；不带参数 = 跑完留在交互 shell 里调试。run_ckf 脚本本体不在脚本包内（<a href="./script-dict.html#run_ckf" target="_blank">本包未包含</a>），但该约定在 run_dc / run_lec / run_genus / run_pt 中均有实证。
+   可截取波形某一段做评估：`fsdbextract xxx.fsdb -bt xxxxns -et xxxxns -o xxxx_cut.fsdb`（`-bt` begin time、`-et` end time、`-o` 输出文件）。
 
-前置条件：CKF 建议在 `run_dc` 之前完成，以提前发现 RTL 连接性问题。
+4. **design.set 指定约束**：
 
-`ckf_rtl.do` 一般不需要修改。
-
-检查项：
-- `ckf/rep_dir/ckf.rpt` 无 Error（流程 Readme 记录的产物路径）
-- `ckf.rpt` 中 **Floating** 必须清零
-
-- `black box` 需逐一确认，通常为 analog、memory、digital macro，确保都是真实的 black box
-
-- `Latch` 只允许来自统一库（如 `gclk`、`io_latch`）或配合 analog design 直接调用的 latch，其余需检查 RTL
-
-结果处理规则：所有 Error 必须清零；Warning 需逐条人工确认，仅确认无逻辑风险的正常告警才可放行。
-
-## 2. nLint
-
-```bash
-cd nlint
-run_nlint
+```tcl
+set CLOCK_MCP_CASE_SDC  "./sdc/<ip>.sdc"     # IP 约束文件
+set CORNER  "tt_typical_85_setup"            # lib 无 85 度则用 125 度
 ```
 
-入口脚本 <a href="./script-dict.html#run_nlint" target="_blank">run_nlint</a> 逐条调用 nLint 并接外部过滤脚本，产物在 `rep_dir/` 下。
+![搭建 PowerPro 环境（filelist / 波形 / design.set）](./image/powerpro/slide_10.jpg)
 
-前置条件：nLint 建议在 `run_dc` 之前完成，以显著减少后续综合阶段的 RTL 问题。
+5. **时钟约束**（在 `sdc/<ip>.sdc` 中增加）：
 
-检查项：
-- `nlint.log` / `nlint.rpt`
-- `no_check_module.f` 可排除不需要检查的模块
-- 确认可接受的 error 后，填入公共 waive list：`$PROJECT/SYNTHESIS/common/tcl_dir/nlint/nlint_waive.list`
-- 加入 waive list（白名单）前必须逐条确认确实无风险；两个工具重复报的已知非风险问题可加入 waive 文件，下次不再报
+```tcl
+set CLK_NAME_PERIOD [expr 1000.0/720]
+create_clock -name clk_name -period $CLK_NAME_PERIOD clk                    # clk 为输入 input
+create_clock -name clk_name -period $CLK_NAME_PERIOD [get_pins xxx/xxx/xxx] # clk 为内部信号
+create_generated_clock [get_pins xxx/xxx] -name clk_name -source <reference_pin> -divide_by <N>
+```
 
-NOTE: nLint 和 CKF 建议在综合前完成，以显著减少后续综合阶段的 RTL 问题。正确顺序：CKF + nLint 一起跑 → 确认无语法错误 → 才能跑综合。
+6. **设置不优化的 module**：环境默认将 STD_IP 和 clk_cell 设为不优化；IP 有其他需求时在 `syn_<ip>/powerpro/script/user_config.tcl` 中追加，格式：`set_gray_box –module kv_sync_clkgated`。
 
-WARNING: DC 不是语法检查工具，其 error / warning 数量多且不具针对性——断线在 nLint 中是 error，在 DC 中可能直接被优化掉、只报一条 warning。不要指望用 DC 替代 CKF / nLint 做 RTL 检查。
+![搭建 PowerPro 环境（时钟约束 / gray box）](./image/powerpro/slide_11.jpg)
+
+### 2.2 运行
+
+```bash
+source /eda/env/NEXT/powerpro2024.2.1.cshrc   # ① license / 环境
+cd powerpro
+bsub -Ip run_power_opt                        # ② 运行
+python3 powerpro_script.py                    # ③ 生成 report_info（重要信息汇总，逐项 check）
+python3 powerpro_chk.py report_info report_info2  # 生成 report_info2（末 3 行为指标占比）
+show_analyzer                                 # ④ 启动图形化界面
+```
+
+![运行 PowerPro](./image/powerpro/slide_12.jpg)
+
+### 2.3 report 检查
+
+- 打开 `powerpro.log`，**反标率需 100%**；
+- 打开 `sa.log`，查看未反标的信号并清理；
+- 打开 `sa.log`，查看 `X` 态信号并清理。
+
+![report 检查实例：powerpro.log 反标率 / sa.log 未反标与 X 态](./image/powerpro/slide_13.jpg)
+
+- 查看 IP Efficiency：重点关注 Memory Gating Efficiency、CG Efficiency 与 Power Summary 各分组占比。
+
+![IP Efficiency 示例](./image/powerpro/slide_14.jpg)
+
+- observability 优化后的 efficiency：关注 CG Efficiency 提升与 Register Power Saved。
+
+![observability 优化后的 efficiency](./image/powerpro/slide_15.jpg)
+
+- Dashboard：总览 Design Statistics（Flop / Memory / CG Efficiency）、Design Power、Early Design Checks 与各类 Redundancy 计数。
+
+![PowerPro Dashboard](./image/powerpro/slide_16.jpg)
+
+- GUI 中还可以直接下钻：如 Dashboard → Memory Info 逐个看 memory 的 Leakage Power，左下角可 Export as PowerPro Command Line 把当前视图导出为命令行复现。
+
+![Dashboard：Memory Info 下钻与导出命令行](./image/powerpro/slide_20.jpg)
+
+### 2.4 常见问题
+
+1. **读取 VHDL 文件**：VHDL 与 Verilog 需分开读取，不同 library 分别读取，且不能读取无法综合的文件：`read_design –library grlib –vhdl –f xxx/xxx.vhd.f`。
+2. **filelist 同时含 VHDL 和 Verilog**：仅 verilog 时 `build_design –sv –top ${module_top} –f $RTL_FILE_LIST $DEFINE`；混合时分步 build：`source $VHDL_FILE_LIST` → `read_design –sv –f $RTL_FILE_LIST $DEFINE` → `link_design –top ${module_top}` → `build_db`。
+3. **退出命令行后快速恢复**：首次运行时各阶段可用 `write_db xxx.db` 保存 database；重启后 `read_db xxx.db` 直接调入继续。
+4. **build_design 出错**：PowerPro 读取的 RTL 必须是可综合代码，无法综合会 internal ERROR 退出。查看 `WORK/build_design.log`，如出现 `$display` 等，可在 design.set 中设定 `set NET_DEFINE [list "SYNTHESIS"]`。
+5. **Missing definitions**：查看 `WORK/create_bbox.tcl` 中需设成 box 的模块名进行 debug。
+6. **create_black_box 失效**：高版本机制不同，加 `set_global __auto_port_inferencing 1` 恢复原机制。
+7. **数组无法 dump 波形**：在 dump_waveform.v 中增加 `$fsdbDumpvars(0, bench_top.u_top);` 与 `$fsdbDumpMDA(bench_top.u_top);`。
+8. **导出各 hier 功耗到 Excel**：`report_power -hierarchical -csv -filename xxx.csv`；单项指标用 `report_format –metric "Clock Toggle – Data Stable" –csv –filename ctds_pwr.csv`（另有 `Clock Gating`、`Not Combinationally Enabled Flops`）。
+9. **RTL level 与 gate level 功耗差异**：PowerPro 预综合不考虑时序；实际综合因时序紧张采用 LVT cell 后，gate level 功耗会比 RTL level 大，主要是 LVT leakage 大。
 
 </script>
 

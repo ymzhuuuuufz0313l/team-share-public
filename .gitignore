@@ -3,3 +3,10 @@ synthesis-integration-flow-guide/后端/
 
 # 服务器脚本原始包与解压内容（含内部路径/项目名），不入库
 synthesis-integration-flow-guide/script/
+
+# 原始 Office 文档（IRM 加密/内部材料），不入库
+synthesis-integration-flow-guide/*.docx
+synthesis-integration-flow-guide/*.pptx
+
+# PPT 导出图片的暂存目录（正式图在 image/ 下），不入库
+synthesis-integration-flow-guide/pptimage/

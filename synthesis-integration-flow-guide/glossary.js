@@ -83,7 +83,14 @@
     'margin': '时序裕量，本流程有三种用法：① 综合加严量——下给 DC 的约束比频率目标再收紧的经验值（约 0.8 ns，曾试 0.6），"对自己紧一点、对后端松一点"（会议经验值，脚本中无对应设置）；② skew margin——skew 报表中 data 相对 clock 的裕量，由 merge_sd_busskew.pl 按 data_max−clk_min、data_min−clk_max 逐组计算，规格区间如 [-1:6]；③ setup/hold margin——接口时序推导中前后各预留的窗口（如 15 ns 周期前后各留 4 ns，中间 7 ns 即 skew ±3.5 ns 的来源）。',
     'min_pulse_width': '最小时钟脉冲宽度检查；PT 报的是 rise/fall latency 差而非真实占空比，占空比需靠后仿波形确认。',
     'spread spectrum': '展频，让 clock 频率在小范围内抖动以分散 EMI 峰值，约束需把展频比例计入周期定义。',
-    'duty cycle': '占空比，clock 高电平时间占周期的比例；非 50% 时下降沿不在窗口中间，修 skew 需相应推 clock。'
+    'duty cycle': '占空比，clock 高电平时间占周期的比例；非 50% 时下降沿不在窗口中间，修 skew 需相应推 clock。',
+    'PowerPro': 'Mentor（西门子 EDA）RTL 级功耗评估与优化工具，已集成到 IP 综合环境（gensyn 自动生成 powerpro 目录）；RTL level 用于 IP 设计阶段低功耗优化，gate level 用于后端 whole-chip 功耗对比。',
+    'clock gating': '时钟门控：在时钟路径上插入门控单元（CGIC/ICG），enable 无效时关断时钟以消除冗余翻转功耗；PowerPro signoff 要求其冗余占比 < 5%。',
+    'CGIC': 'Clock Gating Integrated Cell，集成时钟门控单元（也写作 ICG），根据 enable 条件关断/放行时钟。',
+    'light sleep': 'memory 的轻休眠模式：空闲期关断部分内部电路以节省漏电；进入条件是空闲期可预估、且节省的 leakage 大于浪费的动态功耗。',
+    'gray box': 'PowerPro 中设为不优化的模块（set_gray_box），其内部逻辑不参与功耗优化改写；环境默认 STD_IP 与 clk_cell。',
+    'toggle': '信号翻转（0/1 跳变）；动态功耗的直接来源，冗余 toggle 是 PowerPro 各类冗余检查的主要消除对象。',
+    'observability': '可观测性分析：判断信号翻转是否能传播到被消费的输出；翻转而不可观测（无人消费）的功耗即冗余功耗。'
   };
 
   // 命令悬浮窗：命令以 ⌨ 特殊标记，悬浮显示用法示例（内容出自 HV1V21_Synthesis_Integration_Flow.docx）
@@ -104,7 +111,10 @@
     'source run.tcl': 'mem_wrap 生成：在 wrapper 目录执行 source run.tcl（注意是 source），生成 wrapper.v、fault_info_mux.v、hv_mem_bist_info.v，再把 .v 复制到 HDL/mem_wrap/ 下。',
     'fsdb2vcd': '从 fsdb 截取 vcd 波形。用法示例：fsdb2vcd chip_tb_top_000.fsdb -bt 500ps -et 700ps -o verilog.dump（-bt/-et 指定起止时间）。',
     '$dumpvars': 'Verilog 系统函数：把 testbench 里原来 dump fsdb 的函数换成 $dumpvars 即可直接 dump VCD 波形，供 PTPX 功耗仿真使用。',
-    'analyze_abort': 'LEC 中分析 abort point 的命令；abort point 经 analyze_abort 全部解决后同样视为 PASS。'
+    'analyze_abort': 'LEC 中分析 abort point 的命令；abort point 经 analyze_abort 全部解决后同样视为 PASS。',
+    'run_power_opt': 'PowerPro 运行脚本。用法：source powerpro cshrc 后 cd powerpro && bsub -Ip run_power_opt；跑完用 python3 powerpro_script.py 汇总 report_info，再用 powerpro_chk.py 生成含指标占比的 report_info2。',
+    'fsdbextract': '截取 fsdb 波形的某一段用于功耗评估。用法：fsdbextract xxx.fsdb -bt xxxxns -et xxxxns -o xxx_cut.fsdb（-bt 开始时间、-et 结束时间、-o 输出文件）。',
+    'show_analyzer': 'PowerPro 图形化界面启动命令，run_power_opt 跑完后执行，用于查看 Efficiency / Dashboard 并对各项指标做 GUI 优化。'
   };
 
   const skipTags = new Set(['PRE', 'CODE', 'A', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'SCRIPT', 'STYLE', 'TERM-TOOLTIP']);
