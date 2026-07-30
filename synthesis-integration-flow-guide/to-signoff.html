@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>FAQ 与清单 · ASIC IP Synthesis &amp; Integration Flow 工具使用指南</title>
+  <title>TO SIGNOFF · ASIC IP Synthesis &amp; Integration Flow 工具使用指南</title>
   <script src="https://cdn.jsdelivr.net/npm/marked@9.1.6/marked.min.js"></script>
   <script src="./glossary.js"></script>
   <style>
@@ -320,28 +320,6 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
     --tooltip-bg-rgb: 30, 58, 138;
   }
 }
-
-/* ===== team-share 组件库：状态徽章 badge ===== */
-.badge { display: inline-block; padding: 2px 12px; border-radius: 999px; font-size: 13px; font-weight: 600; line-height: 1.6; white-space: nowrap; }
-.badge-fixed   { background: #dcfce7; color: #166534; }
-.badge-pending { background: #fef9c3; color: #854d0e; }
-.badge-rtl     { background: #fee2e2; color: #991b1b; }
-.badge-tx      { background: #dbeafe; color: #1e40af; }
-.badge-dv      { background: #f3e8ff; color: #6b21a8; }
-@media (prefers-color-scheme: dark) {
-  .badge-fixed   { background: #14532d; color: #86efac; }
-  .badge-pending { background: #713f12; color: #fde047; }
-  .badge-rtl     { background: #7f1d1d; color: #fca5a5; }
-  .badge-tx      { background: #1e3a8a; color: #93c5fd; }
-  .badge-dv      { background: #581c87; color: #d8b4fe; }
-}
-
-/* ===== team-share 组件库：问题卡片 pcard ===== */
-.pcard { border: 1px solid var(--line); border-left: 5px solid #16a34a; border-radius: 12px; padding: 14px 20px; margin: 14px 0 26px; background: var(--surface); }
-.pcard.pending { border-left-color: #eab308; }
-.prow { display: grid; grid-template-columns: 52px 1fr; gap: 10px; margin: 7px 0; font-size: 15px; }
-.prow .k { font-weight: 700; color: var(--accent); }
-.prow code { font-size: 13px; }
 </style>
 </head>
 <body>
@@ -356,124 +334,14 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
     <article class="article" id="article">
       
     </article>
-    <div class="page-nav"><a href="./memory-power.html"><span class="label">上一篇</span><span class="title">Memory 与功耗</span></a>
-<a class="next" href="./learning-path.html"><span class="label">下一篇</span><span class="title">学习路径</span></a></div>
+    <div class="page-nav"><a href="./script-dict.html"><span class="label">上一篇</span><span class="title">脚本字典</span></a></div>
     <div class="footer">Shared from team knowledge base</div>
   </div></div>
 
   <script type="text/template" id="md">
-# 八、常见问题与检查清单
+# 十二、TO SIGNOFF
 
-&gt; 最后整理一些综合与集成阶段容易踩坑的点，以及一份可复用的检查清单。
-
-## 1. 常见问题与注意事项
-
-### 1.1 UPF 相关
-- `lec_upf` 检查手写 UPF 是否正确；`genus_upf` 用于生成 `*_final.upf`。
-- `genus_upf` 引用网表时，若引用 RTL 则需打开全部编译步骤；引用网表可注释 generic 编译。
-- 综合时代码中的 output / inout 不能直接接常量，否则 `genus_upf` 可能报错。
-
-### 1.2 综合优化相关
-- 仅包含 input 的 module 会被工具优化掉，可设置 `set_dont_touch` 保留。
-- `set_ideal_network`：常用于 clock / reset，避免工具插 buffer。
-
-- `set_dont_touch`：常用于 analog cell，防止被优化。
-- `set_dont_touch_network`：作用与 `set_dont_touch` 类似，但范围更广，通常到 DFF。
-
-- `set_false_path`：常用于两个异步时钟之间。
-
-- 综合时代码中的 output / inout 不能直接接常量，否则 `genus_upf` 可能报错。
-
-### 1.3 工具链冲突
-- 综合环境 source 前，若 cshrc 中同时 source 了 Verdi / VCS 环境，建议先注释，避免 DC / PT 报错。
-
-<div class="pcard">
-<div class="prow"><span class="k">状态</span><span><span class="badge badge-fixed">🔵 已解决</span></span></div>
-<div class="prow"><span class="k">现象</span><span>DC / PT 报出很奇怪的错误。</span></div>
-<div class="prow"><span class="k">定位</span><span>当前 source 的工具版本不对——验证环境与 PT 环境需要的 Verdi / VCS 版本不同。</span></div>
-<div class="prow"><span class="k">解决</span><span>PT 环境的 Verdi / VCS 版本固定（如 <code>18.19</code>），不要随验证环境升级；DC / PT 报奇怪错误时，先检查 source 的工具版本是否正确。</span></div>
-</div>
-
-### 1.4 环境与 filelist
-- CKF 用 `bsub` 提交时必须带 batch 参数（`bsub -Ip run_ckf 1`），否则跑不起来。这是所有 `run_*` 入口脚本（run_dc / run_lec / run_genus / run_pt …）的统一约定：尾部带任意参数 = 跑完自动 exit（batch 模式）；不带参数 = 留在交互 shell 调试。
-- filelist 中配置指定的文件即使无内容，也必须放空文件占位，否则流程直接报错。
-
-<div class="pcard">
-<div class="prow"><span class="k">状态</span><span><span class="badge badge-rtl">⛔ 必须遵守</span></span></div>
-<div class="prow"><span class="k">现象</span><span>拿错版 filelist 做综合、再拿同一错版做 LEC，LEC 自洽通过，错误完全发现不了。</span></div>
-<div class="prow"><span class="k">定位</span><span>filelist 拿错版本最危险——综合和 LEC 都从同一份 filelist 读取，错版之间自洽。</span></div>
-<div class="prow"><span class="k">解决</span><span>务必与 HDL 侧 <code>.f</code> 保持一致（从 SVN 直接 link 获取）。</span></div>
-</div>
-
-- 综合报错找不到 cell → 检查 `common_db` 的 target library 是否加入了新 cell / APR module 对应的 lib。
-- 145 制程统一只用 LVT，SVT / LVT 混用 DRC 过不了（该工艺库特有问题）；代价是后端修 setup 只能 sizing，不能换 VT。
-
-### 1.5 综合与 LEC
-
-<div class="pcard">
-<div class="prow"><span class="k">状态</span><span><span class="badge badge-rtl">⛔ 必须遵守</span></span></div>
-<div class="prow"><span class="k">现象</span><span>RTL 断线，DC 综合却只报 warning、不报错。</span></div>
-<div class="prow"><span class="k">定位</span><span>DC 不是语法检查工具：断线在 DC 可能被优化掉，只报 warning。</span></div>
-<div class="prow"><span class="k">解决</span><span>必须先过 CKF + nLint 再综合。</span></div>
-</div>
-
-<div class="pcard">
-<div class="prow"><span class="k">状态</span><span><span class="badge badge-rtl">⛔ 必须遵守</span></span></div>
-<div class="prow"><span class="k">现象</span><span>LEC 跑完没弹窗，看似通过。</span></div>
-<div class="prow"><span class="k">定位</span><span>没弹窗 ≠ 通过——LEC 可能根本没跑起来。</span></div>
-<div class="prow"><span class="k">解决</span><span>必须看 log 最后一行确认真的 pass。</span></div>
-</div>
-
-<div class="pcard pending">
-<div class="prow"><span class="k">状态</span><span><span class="badge badge-pending">🟡 注意事项</span></span></div>
-<div class="prow"><span class="k">现象</span><span>ECO 后第一版 LEC 基本必不过。</span></div>
-<div class="prow"><span class="k">定位</span><span>不过 = 有地方没改对。</span></div>
-<div class="prow"><span class="k">解决</span><span>需逐一定位。</span></div>
-</div>
-
-- LEC 出现 unmapped 点必须追查原因（曾因此发现过真实 bug）。
-- DC 有未收敛 timing violation 时面积数据是假的，交付前必须清零。
-
-### 1.6 时序与交付
-
-<div class="pcard pending">
-<div class="prow"><span class="k">状态</span><span><span class="badge badge-pending">🟡 注意事项</span></span></div>
-<div class="prow"><span class="k">现象</span><span>postPT 某 corner 结果为空。</span></div>
-<div class="prow"><span class="k">定位</span><span>dump SDF 开关（<code>corner_set.tcl</code> 里的 <code>DUMP_SDF</code>）打开着没关。<code>DUMP_SDF==1</code> 的那趟 run 只执行 <code>write_sdf</code> 并跳过全部 report——两个分支互斥，PT 结果并非被删除，而是 <code>latest</code> 软链指向了这趟只产 SDF 的 run，run summary 自然抓到空。</span></div>
-<div class="prow"><span class="k">解决</span><span>检查 <code>corner_set.tcl</code> 是否 <code>DUMP_SDF</code> 打开着没关，关掉后重跑该 corner，latest 即指回正常 report 结果。</span></div>
-</div>
-
-- 长方形 die 在 Innovus（默认按正方形 floorplan）上 APR 容易绕不出来；DC 阶段没有框的概念、看不出来，需提前与 APR 对接工程师确认。
-- unconstrained（未约束）路径交付 = 重大 bug；constraint 下错（如过紧）还可改，未约束无法事后补救。
-- floating 信号在 APR 可能被优化剪掉、整路逻辑消失，交付前需确认是否有意保留。
-
----
-
-## 2. 检查清单
-
-| 步骤 | 检查项 | 状态 |
-|------|--------|------|
-| 环境 | `gensyn` 环境完整、模板最新 | TBD |
-| 环境 | source 的 Verdi / VCS 版本正确（PT 环境固定版本） | TBD |
-| 配置 | `design.set` 中库、corner、工具选择正确 | TBD |
-| 配置 | 新 cell / APR module 的 lib 已加入 `common_db` target library | TBD |
-| Filelist | Verilog / SV / DDC / dummy 文件分类完整 | TBD |
-| Filelist | 与 HDL 侧 `.f` 版本完全一致、空文件已占位 | TBD |
-| CKF | 无 Floating、black box 已确认 | TBD |
-| nLint | 可接受 error 已填入 waive list | TBD |
-| UPF | PG pin / analog / power port 定义合理 | TBD |
-| DC | `dc.log` 无 Error、slack ≥ 0 | TBD |
-| DC | unconstrained paths 清零、timing violation 清零（面积数据才可信） | TBD |
-| LEC | 0 abort / 0 non-equivalent / 0 unmapped | TBD |
-| Signoff | 版本一致、`signoff.rpt` 全部通过 | TBD |
-| PT | `pt.log` 无 Error、slack &gt; 0 | TBD |
-| 交付 | 无 unconstrained 路径、floating 信号已确认 | TBD |
-| 交付 | netlist / SDC / UPF（如有）/ don't touch 列表齐全；正式 release 已填 netlist release check Excel 并签字 | TBD |
-| 功耗 | VCD / SDF / SDC 路径正确、功耗收敛 | TBD |
-
----
-
-*本指南由项目综合/集成流程文档整理而成，已去除具体项目信息，仅保留通用工具使用方法和检查要点。*
+&gt; 本页内容待补充。
 
 </script>
 

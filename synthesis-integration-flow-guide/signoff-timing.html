@@ -362,9 +362,9 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
   <script type="text/template" id="md">
 # 五、Signoff、时序与流程依赖
 
-&gt; 综合和 LEC 通过后，进入 signoff、时序分析和最终交付阶段。
+&gt; 综合和 LEC 通过后，进入 signoff、时序分析和最终交付阶段。本章涉及两类 signoff，限定词需精准区分：**综合 signoff**（第 1 节，交付 APR 前的版本一致性检查与 release）和 **APR signoff**（第 2 节 postPT，基于 APR 后端网表的全 corner signoff 级 STA，是最终时序验收环节）。
 
-## 1. Signoff 与交付
+## 1. 综合 Signoff 与交付
 
 ### 1.1 Signoff 检查
 在自己的 IP 路径下运行 signoff 脚本（脚本本体在脚本包外）时，会自动：
@@ -388,14 +388,13 @@ WARNING:
 |--------|------|
 | netlist (`*.v` / `*.gv`) | 综合后的门级网表 |
 | SDC | 时序约束 |
-| UPF | 电源意图文件 |
 | `dont_touch.tcl` | 不被优化的单元列表 |
 | `signoff.rpt` | signoff 检查报告 |
 | release 目录 | 按版本归档的完整结果 |
 
 ![Signoff PASS 与 release 示例](./image_03.png)
 
-交付 APR 的内容：netlist、SDC、UPF（如有）、don't touch 列表。self report 放自己的路径；release 目录现统一放到公共 database 路径。
+交付 APR 的内容：netlist、SDC、don't touch 列表。self report 放自己的路径；release 目录现统一放到公共 database 路径。
 
 NOTE: <span class="badge badge-tx">必须</span> 正式 Silver / Golden netlist release 时，必须填写 netlist release check Excel 确认表，逐项检查并签字确认（纯人工流程）。
 
@@ -472,9 +471,9 @@ instance {chip_tb_top.u_<TOP>.u_<TOP>_digital_top.u_LOGIC_CENTER.LINK_LOGIC.U_SY
 
 注意：名单必须与 STA 报告逐条对应，漏加会被假 violation 淹没，错加会把真实时序问题掩盖掉——和 false path 一样需要人工逐条确认。
 
-### 2.3 Post-PT
+### 2.3 Post-PT（APR Signoff）
 
-基于 APR 后端输出进行 signoff 级时序分析：
+基于 APR 后端输出进行 **signoff 级**时序分析——这是 APR 阶段的最终时序验收（APR signoff），以全 corner 结果为准：
 
 ```bash
 cd sta/post/pt
@@ -585,7 +584,8 @@ const chapters = [
   ['powerpro', 'PowerPro 功耗评估'],
   ['faq', 'FAQ 与清单'],
   ['learning-path', '学习路径'],
-  ['script-dict', '脚本字典']
+  ['script-dict', '脚本字典'],
+  ['to-signoff', 'TO SIGNOFF']
 ];
 const currentPath = location.pathname.split('/').pop() || 'index.html';
 const linksContainer = document.getElementById('navbar-links');

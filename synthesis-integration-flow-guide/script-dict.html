@@ -354,7 +354,8 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
     <article class="article" id="article">
       
     </article>
-    <div class="page-nav"><a href="./learning-path.html"><span class="label">上一篇</span><span class="title">学习路径</span></a></div>
+    <div class="page-nav"><a href="./learning-path.html"><span class="label">上一篇</span><span class="title">学习路径</span></a>
+<a class="next" href="./to-signoff.html"><span class="label">下一篇</span><span class="title">TO SIGNOFF</span></a></div>
     <div class="footer">Shared from team knowledge base</div>
   </div></div>
 
@@ -749,7 +750,8 @@ const chapters = [
   ['powerpro', 'PowerPro 功耗评估'],
   ['faq', 'FAQ 与清单'],
   ['learning-path', '学习路径'],
-  ['script-dict', '脚本字典']
+  ['script-dict', '脚本字典'],
+  ['to-signoff', 'TO SIGNOFF']
 ];
 const currentPath = location.pathname.split('/').pop() || 'index.html';
 const linksContainer = document.getElementById('navbar-links');
