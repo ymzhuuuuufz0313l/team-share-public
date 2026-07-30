@@ -247,7 +247,7 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
   </p>
 </div>
 <blockquote>
-  <strong>⭐ 推荐阅读顺序：</strong>先读 <a href="./environment.html">环境与配置</a>，然后按顶部导航依次阅读 RTL 检查、综合与 UPF、LEC、Signoff 与时序、<a href="./pt-intro.html">PT 介绍</a>、Memory 与功耗、<a href="./powerpro.html">PowerPro 功耗评估</a>，最后查看 FAQ 与清单。
+  <strong>⭐ 推荐阅读顺序：</strong>先读 <a href="./environment.html">环境与配置</a>，然后按顶部导航依次阅读 RTL 检查、综合、LEC、Signoff 与时序、<a href="./pt-intro.html">PT 介绍</a>、Memory 与功耗、<a href="./powerpro.html">PowerPro 功耗评估</a>，最后查看 FAQ 与清单。
 </blockquote>
 <div class="section-title">整体流程</div>
 <img src="./script-flow-overview.svg" alt="脚本调用关系总图（综合 → LEC → 签核 → prePT/postPT → 汇总）">
@@ -255,7 +255,7 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
 <div class="chapter-grid">
   <a class="chapter-card" href="./environment.html"><div class="num">1</div><div class="title">环境与配置</div><div class="desc">环境准备、design.set、filelist</div></a>
 <a class="chapter-card" href="./rtl-check.html"><div class="num">2</div><div class="title">RTL 检查</div><div class="desc">CKF 与 nLint</div></a>
-<a class="chapter-card" href="./synthesis-upf.html"><div class="num">3</div><div class="title">综合与 UPF</div><div class="desc">UPF 检查、DC / Genus</div></a>
+<a class="chapter-card" href="./synthesis-upf.html"><div class="num">3</div><div class="title">综合</div><div class="desc">DC / Genus 综合（UPF 步骤当前 Driver 项目不做）</div></a>
 <a class="chapter-card" href="./lec.html"><div class="num">4</div><div class="title">LEC 验证</div><div class="desc">形式验证与一致性检查</div></a>
 <a class="chapter-card" href="./signoff-timing.html"><div class="num">5</div><div class="title">Signoff 与时序</div><div class="desc">Signoff、PrimeTime、流程依赖</div></a>
 <a class="chapter-card" href="./pt-intro.html"><div class="num">6</div><div class="title">PT 介绍</div><div class="desc">PrimeTime 流程、约束、skew 修调</div></a>
@@ -280,7 +280,7 @@ const chapters = [
   ['index', '首页'],
   ['environment', '环境与配置'],
   ['rtl-check', 'RTL 检查'],
-  ['synthesis-upf', '综合与 UPF'],
+  ['synthesis-upf', '综合'],
   ['lec', 'LEC 验证'],
   ['signoff-timing', 'Signoff 与时序'],
   ['pt-intro', 'PT 介绍'],

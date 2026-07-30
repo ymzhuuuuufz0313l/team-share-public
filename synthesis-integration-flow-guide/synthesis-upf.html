@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>综合与 UPF · ASIC IP Synthesis &amp; Integration Flow 工具使用指南</title>
+  <title>综合 · ASIC IP Synthesis &amp; Integration Flow 工具使用指南</title>
   <script src="https://cdn.jsdelivr.net/npm/marked@9.1.6/marked.min.js"></script>
   <script src="./glossary.js"></script>
   <style>
@@ -340,15 +340,15 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
   </div></div>
 
   <script type="text/template" id="md">
-# 三、UPF 准备与综合
+# 三、综合
 
-&gt; UPF 与综合是 RTL 到 netlist 转化的核心环节，包括 UPF 正确性检查、DC / Genus 综合以及 final UPF 的生成。
+&gt; 本章介绍 DC / Genus 综合。UPF 准备与检查仅作参考保留——**当前 Driver 项目不做该步骤**。
 
-## 1. UPF 准备与检查
+## 1. UPF 准备与检查（当前 Driver 项目不做该步骤）
 
-NOTE: UPF 用于定义电源域，只有做了电源域划分的大芯片才需要。当前 Driver 类项目均不使用 UPF、不做 UPF check；仅个别大型项目有 UPF 实例，需要时可参考。
+NOTE: UPF 用于定义电源域，只有做了电源域划分的大芯片才需要。**当前 Driver 类项目均不使用 UPF、不做该步骤**；仅个别大型项目有 UPF 实例，本节内容仅供需要时参考。
 
-### 1.1 lec_upf
+### 1.1 lec_upf（当前 Driver 项目不做该步骤）
 
 `lec_upf` 用于检查 UPF 文件本身的正确性。
 
@@ -359,9 +359,9 @@ NOTE: UPF 用于定义电源域，只有做了电源域划分的大芯片才需�
   - power port 电压定义是否合理
 - 即使 UPF 已修正，仍可能存在 Error / Warning，需与模拟设计同事确认。
 
-NOTE: `lec_upf` 与 CKF、nLint 一样，建议在综合前完成。
+NOTE: 对需要做 UPF 的项目，`lec_upf` 与 CKF、nLint 一样，建议在综合前完成。
 
-### 1.2 genus_upf（生成 final.upf）
+### 1.2 genus_upf 生成 final.upf（当前 Driver 项目不做该步骤）
 
 部分 flow 需要借助 Genus 生成最终的 `*_final.upf`：
 
@@ -451,7 +451,7 @@ const chapters = [
   ['index', '首页'],
   ['environment', '环境与配置'],
   ['rtl-check', 'RTL 检查'],
-  ['synthesis-upf', '综合与 UPF'],
+  ['synthesis-upf', '综合'],
   ['lec', 'LEC 验证'],
   ['signoff-timing', 'Signoff 与时序'],
   ['pt-intro', 'PT 介绍'],
