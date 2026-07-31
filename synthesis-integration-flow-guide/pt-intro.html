@@ -576,7 +576,7 @@ post PT 10 个 corner 全部跑完后，执行 <a href="./script-dict.html#run_s
 
 找到目标后到**对应 corner 目录**看具体报告定位路径。示例：总表里 `wc_cbest_125` 的 `CLK_L0_DTCTL_OD_DIV1P5` 组有 5 条 violation（biggest −0.0499），打开 `SYNTHESIS/top/sta/post/pt/wc_cbest_125/latest/setup/report_timing_setup.rpt`，按 slack 排序找到 VIOLATED 路径，看清 Startpoint / Endpoint / Path Group：
 
-![wc_cbest corner 出问题路径的定位示例](./image/ccbest_Corner出问题的路径 示例图.jpg)
+![wc_cbest corner 出问题路径的定位示例](./image/ccbest_Corner出问题的路径%20示例图.jpg)
 
 （上例：Startpoint `LC_CSPIF_L0/DIOH_DCLK_reg`（RX0_OD_CLK_DIV2）→ Endpoint `DTCTL_L0/EN1_L_reg`（CLK_L0_DTCTL_OD_DIV1P5），slack (VIOLATED) = −0.049949。每个 corner 的 `latest/` 下按 setup / hold / skew / trans 分目录，各 clock 组单独一份 report_timing 文件。）
 
@@ -795,6 +795,10 @@ skew 规格来自规格方 / 模拟方：目标 ±3.5 ns。
 </div>
 
 占空比不是 50% → 下降沿注定不在 data 中间 → 要把 clock 往左推（对齐到 data 窗口中间）。
+
+完整的 skew 规格推导如下图：15 ns 周期前后各留 4 ns，中间 7 ns 窗口即 ±3.5；clock 本身带 +2.5 偏移，所以最终 **skew 规格 = +2.5 ±3.5 = [-1, +6]**——左边界 +6（data 最迟）、右边界 −1（data 最早）。这就是 `merge_sd_busskew.pl` 输出的 margin 标注规格 **[-1:6]** 的出处（见 <a href="./script-dict.html#merge_pl" target="_blank">脚本字典</a>）。
+
+![SD BUS SKEW 时序规格推导](./image/SD%20BUS%20SKEW%20时序规格图.jpg)
 
 ### 4.2 修调策略：先 data 后 clock，推 clock 为主
 
