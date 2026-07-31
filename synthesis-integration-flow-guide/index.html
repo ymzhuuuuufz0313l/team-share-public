@@ -247,7 +247,7 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
   </p>
 </div>
 <blockquote>
-  <strong>⭐ 推荐阅读顺序：</strong>先读 <a href="./environment.html">环境与配置</a>，然后按顶部导航依次阅读 RTL 检查、综合、LEC、APR SIGNOFF、<a href="./pt-intro.html">PT 介绍</a>、Memory 与功耗、<a href="./powerpro.html">PowerPro 功耗评估</a>，最后查看 FAQ 与清单。
+  <strong>⭐ 推荐阅读顺序：</strong>先读 <a href="./environment.html">环境与配置</a>，然后按顶部导航依次阅读 RTL 检查、综合、LEC、APR SIGNOFF（含 prePT 操作）、<a href="./pt-intro.html">POSTPT</a>、Memory 与功耗、<a href="./powerpro.html">PowerPro 功耗评估</a>，最后查看 FAQ 与清单。
 </blockquote>
 <div class="section-title">整体流程</div>
 <img src="./script-flow-overview.svg" alt="脚本调用关系总图（综合 → LEC → 签核 → prePT/postPT → 汇总）">
@@ -258,7 +258,7 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
 <a class="chapter-card" href="./synthesis-upf.html"><div class="num">3</div><div class="title">综合</div><div class="desc">DC / Genus 综合（UPF 步骤当前 Driver 项目不做）</div></a>
 <a class="chapter-card" href="./lec.html"><div class="num">4</div><div class="title">LEC 验证</div><div class="desc">形式验证与一致性检查</div></a>
 <a class="chapter-card" href="./signoff-timing.html"><div class="num">5</div><div class="title">APR SIGNOFF</div><div class="desc">综合 signoff、APR signoff（postPT）、流程依赖</div></a>
-<a class="chapter-card" href="./pt-intro.html"><div class="num">6</div><div class="title">PT 介绍</div><div class="desc">PrimeTime 流程、约束、skew 修调</div></a>
+<a class="chapter-card" href="./pt-intro.html"><div class="num">6</div><div class="title">POSTPT</div><div class="desc">postPT 方法论、约束迭代、skew 修调</div></a>
 <a class="chapter-card" href="./memory-power.html"><div class="num">7</div><div class="title">Memory 与功耗</div><div class="desc">Memory 生成、mem_wrap、PTPX</div></a>
 <a class="chapter-card" href="./powerpro.html"><div class="num">8</div><div class="title">PowerPro 功耗评估</div><div class="desc">评估工具对比、环境搭建、report 检查</div></a>
 <a class="chapter-card" href="./faq.html"><div class="num">9</div><div class="title">FAQ 与清单</div><div class="desc">注意事项与检查清单</div></a>
@@ -283,7 +283,7 @@ const chapters = [
   ['synthesis-upf', '综合'],
   ['lec', 'LEC 验证'],
   ['signoff-timing', 'APR SIGNOFF'],
-  ['pt-intro', 'PT 介绍'],
+  ['pt-intro', 'POSTPT'],
   ['memory-power', 'Memory 与功耗'],
   ['powerpro', 'PowerPro 功耗评估'],
   ['faq', 'FAQ 与清单'],

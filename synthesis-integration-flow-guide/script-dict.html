@@ -586,7 +586,7 @@ source ../../common/pt_setup.tcl -echo
 <a id="skew_sd"></a>
 #### report_timing_skew_sd.tcl（172 行）—— SD data/clock skew（L/R × A/B）
 
-完整路径 `SYNTHESIS/top/sta/post/common/report_timing_skew_sd.tcl`；脚本内容截图与 `-max_path` 取舍经验见 <a href="./pt-intro.html" target="_blank">PT 介绍</a> skew 章节。
+完整路径 `SYNTHESIS/top/sta/post/common/report_timing_skew_sd.tcl`；脚本内容截图与 `-max_path` 取舍经验见 <a href="./pt-intro.html" target="_blank">POSTPT</a> skew 章节。
 
 - 数据组：from `DTCTL_L0|L1/{CH_CNT_pre*,DATA*_PRE*,...}` → to ports `DBL0/2/4*`（左 A）、`DBL1/3/5*`（左 B）、`DBR0/2/4*`（右 A）、`DBR1/3/5*`（右 B），`-max_path 2000 -nworst 1000`；输入信号 `SL_DLY*`→`SLIN_A/B`、`SR_DLY*`→`SRIN_A/B`；clock 组 from `CLKGEN_U0|U1` → to `CLKA_L/CLKB_L/CLKA_R/CLKB_R`。
 - 产出命名：`skew/report_timing_sd_{l,r}_1p_{a,b}.rpt`、`..._clk_{a,b}.rpt`。
@@ -745,7 +745,7 @@ const chapters = [
   ['synthesis-upf', '综合'],
   ['lec', 'LEC 验证'],
   ['signoff-timing', 'APR SIGNOFF'],
-  ['pt-intro', 'PT 介绍'],
+  ['pt-intro', 'POSTPT'],
   ['memory-power', 'Memory 与功耗'],
   ['powerpro', 'PowerPro 功耗评估'],
   ['faq', 'FAQ 与清单'],
