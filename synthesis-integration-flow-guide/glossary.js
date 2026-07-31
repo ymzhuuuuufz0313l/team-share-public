@@ -113,7 +113,7 @@
     '$dumpvars': 'Verilog 系统函数：把 testbench 里原来 dump fsdb 的函数换成 $dumpvars 即可直接 dump VCD 波形，供 PTPX 功耗仿真使用。',
     'analyze_abort': 'LEC 中分析 abort point 的命令；abort point 经 analyze_abort 全部解决后同样视为 PASS。',
     'run_power_opt': 'PowerPro 运行脚本。用法：source powerpro cshrc 后 cd powerpro && bsub -Ip run_power_opt；跑完用 python3 powerpro_script.py 汇总 report_info，再用 powerpro_chk.py 生成含指标占比的 report_info2。',
-    'fsdbextract': '截取 fsdb 波形的某一段用于功耗评估。用法：fsdbextract xxx.fsdb -bt xxxxns -et xxxxns -o xxx_cut.fsdb（-bt 开始时间、-et 结束时间、-o 输出文件）。',
+    'fsdbextract': '截取/拆分 fsdb 波形的某一段用于功耗评估。用法：fsdbextract xxx.fsdb -bt xxxtime -et xxxtime -o xxx.fsdb（-bt 开始时间、-et 结束时间、-o 输出文件名）。',
     'show_analyzer': 'PowerPro 图形化界面启动命令，run_power_opt 跑完后执行，用于查看 Efficiency / Dashboard 并对各项指标做 GUI 优化。'
   };
 
