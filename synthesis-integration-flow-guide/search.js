@@ -347,7 +347,7 @@
         if (el) {
           history.replaceState(null, '', hash);
           el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          flashHighlight(el);
+          flashHighlightWhenSettled(el);
         }
       }
     } else {
@@ -381,6 +381,28 @@
     }
   }
 
+  /* Start the breathing animation only after the smooth scroll has settled
+   * (target position stable for ~90ms), so the 5s window is not wasted
+   * while the page is still scrolling. Falls back to ~3s max wait. */
+  var settleToken = 0;
+  function flashHighlightWhenSettled(el) {
+    var token = ++settleToken;
+    var lastTop = null, stable = 0, polls = 0;
+    function check() {
+      if (token !== settleToken) return; // superseded by a newer jump
+      var top = el.getBoundingClientRect().top;
+      stable = (lastTop !== null && Math.abs(top - lastTop) < 1) ? stable + 1 : 0;
+      lastTop = top;
+      polls++;
+      if (stable >= 3 || polls > 100) {
+        flashHighlight(el);
+        return;
+      }
+      setTimeout(check, 30);
+    }
+    check();
+  }
+
   /* ---------------- Shortcuts ---------------- */
   document.addEventListener('keydown', function (e) {
     var tag = (e.target.tagName || '').toLowerCase();
@@ -401,7 +423,7 @@
   window.addEventListener('load', function () {
     if (location.hash) {
       var el = document.getElementById(location.hash.slice(1));
-      if (el) setTimeout(function () { flashHighlight(el); }, 400);
+      if (el) setTimeout(function () { flashHighlightWhenSettled(el); }, 400);
     }
   });
 
