@@ -378,7 +378,7 @@
     }
     breathNodes = nodes;
     nodes.forEach(function (node) { node.classList.add('search-breath'); });
-    breathTimer = setTimeout(clearBreath, 10100);
+    breathTimer = setTimeout(clearBreath, 8000);
   }
 
   function clearBreath() {
