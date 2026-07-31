@@ -87,7 +87,7 @@
   50% { background-color: rgba(244, 63, 94, 0.22); box-shadow: 0 0 18px 3px rgba(244, 63, 94, 0.38); }
 }
 .search-breath {
-  animation: searchBreath 1.25s ease-in-out 8;
+  animation: searchBreath 0.85s ease-in-out 9;
   border-radius: 8px;
 }
 @media (prefers-color-scheme: dark) {

@@ -63,7 +63,9 @@ def parse_sections(md):
             'id': 'sec-%d' % i,
             'level': s['level'],
             'title': s['title'],
-            'text': strip_md(' '.join(s['buf']))[:600],
+            # Keep the full section text so long chapters stay searchable;
+            # the frontend trims its own snippet for display.
+            'text': strip_md(' '.join(s['buf'])),
         })
     return out
 
