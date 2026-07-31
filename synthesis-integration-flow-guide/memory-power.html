@@ -321,6 +321,7 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
   }
 }
 </style>
+  <script src="./search.js" defer></script>
 </head>
 <body>
   <nav class="navbar">
@@ -396,7 +397,22 @@ NOTE: 当前 Driver 类项目均未使用 memory，flow 里 memory 相关配置�
 
    - 从 fsdb 截取 VCD，例如：`fsdb2vcd chip_tb_top_000.fsdb -bt 500ps -et 700ps -o verilog.dump`
 
-### 2.2 运行与查看
+### 2.2 实例：生成 four-line 波形并让 PTPX 指向它
+
+**① 在后仿 case 目录截取 four-line VCD**（`-bt` / `-et` 框出 4 条 line 的时间区间，输出 `.dump` 即 VCD 格式）：
+
+```bash
+cd /sim_dd/ymzhu/HV2M23/TOP_NETLIST_POST_TCON_C/t_8b2lane
+bsub -Ip fsdb2vcd chip_tb_top_000.fsdb -bt 452us -et 467us -o four_line.dump
+```
+
+**② 修改 PTPX 路径下 `px_cfg.tcl` 的 `ip0_vcd` 指向这个 dump 文件**（同时核对 `verilog_file` / `sdc_file` / `spef_dir` / `ip0_inst` / `ip0_strip` 均指向对应 release 路径）：
+
+![px_cfg.tcl 中 ip0_vcd 指向 four-line dump 文件](./image/fourlinedump之后需要在PTPX路径修改ptcfg的tcl文件指向这个文件.jpg)
+
+如图：`set ip0_vcd "/sim_dd/ymzhu/HV2M23/TOP_NETLIST_POST_TCON_C/four_line_fre1p8_2lane_tt_0729v0.dump"`；`power_mode` 用 `time_based`（按时间窗分析），`use_vcd_saif` 用 `vcd`。
+
+### 2.3 运行与查看
 
 ```bash
 run_ptpx

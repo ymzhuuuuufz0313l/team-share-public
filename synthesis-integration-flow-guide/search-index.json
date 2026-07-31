@@ -1,0 +1,955 @@
+[
+ {
+  "page": "environment.html",
+  "pageTitle": "环境与配置",
+  "sections": [
+   {
+    "id": "sec-0",
+    "level": 2,
+    "title": "1. 环境准备",
+    "text": ""
+   },
+   {
+    "id": "sec-1",
+    "level": 3,
+    "title": "1.1 目录结构",
+    "text": "典型的综合环境位于： $PROJECTPATH/SYNTHESIS/ip/ / 主要子目录说明： | 目录 | 用途 | |------|------| | ckf | RTL 连接性检查 | | nlint | Lint 检查 | | lecupf | UPF 正确性检查 | | dc | Design Compiler 综合 | | genus / genusupf | Genus 综合 / UPF 生成 | | lec | 形式验证 | | pt / sta/post/pt | 时序分析 | | power | 功耗仿真 |"
+   },
+   {
+    "id": "sec-2",
+    "level": 3,
+    "title": "1.2 环境初始化",
+    "text": "进入 $PROJECTPATH/SYNTHESIS/ip/ 后执行： # 生成综合环境（默认会 check in 到版本管理） gensyn # 不自动 check in gensyn -noadd # 自定义目录名 gensyn -noadd ASSUMPTION: 本指南以项目内部封装脚本 gensyn （脚本包外，本页只有用法说明）为例；若使用其他 flow，需替换为对应的环境初始化命令。 其他常用选项： - 初次生成环境时，默认会 check in 到版本管理，以保持目录干净；不需要 check in 时用 -noadd。 - 生成的目录中通常包含 Readme，可再次阅读 synthesis flow 说明。 - 如果模板有更新，可再次运行 gensyn 自动 copy 新模板并备份原文件；filelist 与约束文件一般不会被覆盖。"
+   },
+   {
+    "id": "sec-3",
+    "level": 3,
+    "title": "1.3 环境 source 与工具配置",
+    "text": "综合前通常需要 source 项目特定的 cshrc 或 bashrc，以保证工具链版本与 verification 环境一致。 KEY: source cshrc 前先检查并注释掉其中 source 仿真工具（Verdi / VCS）的行，否则 run dc / run pt 会报错。更一般的纪律：DC / PT 与 Verdi / VCS 存在版本冲突——验证环境与 PT 环境需要的 Verdi / VCS 版本不同，PT 环境的 Verdi / VCS 版本长期固定（如 18.19，已沿用多年），不要随验证环境升级。若 source 错版本后跑 DC / PT，会报出很奇怪的错误；遇到莫名报错时，第一件事先检查当前 source 的工具版本是否正确。 ---"
+   },
+   {
+    "id": "sec-4",
+    "level": 2,
+    "title": "2. design.set 核心配置",
+    "text": "design.set 是综合环境的总控文件，被 compiledc.tcl、compilegenus.tcl、rtlgate.do、ptsetup.tcl 以 source ../design.set 读入。 top name「批量替换」的真实机制：top name 只写在 design.set 的 TOPNAME / SDCNAME 两行；各 run 入口脚本（如 rundc ）运行时 grep \"set TOPNAME\" ../design.set 动态提取顶层名，再由 genfilelist 生成 filelist。因此换项目只需要改这两行（不同项目的 design.set diff 实证只有这两行差异）。 复用惯例：制程不变时，直接从上一个已验证项目整包拷贝配置，只替换 top name 即可；最新版配置统一上传到公共路径，团队通过 SVN update 获取（上传前需核对是否为最新版本）。 关键字段如下： | 字段 | 说明 | 常用设置 | |------|------|---------| | TOPNAME / SDCNAME | 顶层模块名 / 约束名 | 换项目必改，只改这两行 | | USESAIF | 是否使用 SAIF 功耗引导 | 默认 0 | | SCANEN | 扫描链使能 | 综合阶段常设为 0 | | INCROPT / BONDOPT | 增量"
+   },
+   {
+    "id": "sec-5",
+    "level": 2,
+    "title": "3. commondb 与库配置",
+    "text": "commondb 集中存放 lib 库、target library、wireload 等配置，项目不做库变更时基本不需要改动。 必须修改的场景： - 项目新加自定义 cell / APR module 时，必须把对应的新 lib 加进 commondb 的 target library，否则 DC 找不到 cell 名会直接报错。 - 每个新项目都需要提前申请 library。"
+   },
+   {
+    "id": "sec-6",
+    "level": 3,
+    "title": "3.1 阈值电压库（VT 库）规则",
+    "text": "- 当前 145 制程项目统一只使用 LVT（低阈值库）并全部拉满。原因：排期紧张；且该工艺下 SVT / LVT 混用会导致 DRC 过不了（该工艺库特有的问题）。 - 代价：综合阶段已全部使用最快的 cell，后端修 setup 时无法再通过换 VT 解决，只能 sizing。 - 该制程已成熟，leakage 占比很小，全 LVT 方案可接受。 ---"
+   },
+   {
+    "id": "sec-7",
+    "level": 2,
+    "title": "4. Filelist 管理",
+    "text": ""
+   },
+   {
+    "id": "sec-8",
+    "level": 3,
+    "title": "4.1 文件分类",
+    "text": "综合 filelist 通常按文件类型拆分： | 文件 | 内容 | |------|------| | .f | Verilog RTL 文件列表 | | .sv.f | SystemVerilog 文件列表 | | .ddcdc.f | 引用 DDC 的 design（DDC 目前已不使用，环境保留配置） | | .dummylec.f | LEC 对比时需要的 dummy 文件 | | advanced/.vhdldc.f / .vhdllec.f | VHDL 相关处理 |"
+   },
+   {
+    "id": "sec-9",
+    "level": 3,
+    "title": "4.2 填写建议",
+    "text": "1. clkrst 中的 define 一般由环境自动加入，filelist 中无需重复。 2. memory / analog 模块在综合时引用 db / lib，filelist 中通常不需要加入 RTL；LEC 环境会自行使用相关 dummy 文件。 3. filelist 支持嵌套 .f。 4. 对于底层/中层模块、memwrap、bist、clkrst、stdip 相关文件，建议由 owner 明确填写，增强可控性。 5. 能直接复用 HDL/filelist/.f 时，优先复用，以保证仿真与综合的一致性。 6. 若不确定是否有遗漏，可通过 runckf 结果反向补充 filelist 中未添加的 .v。 7. filelist 必须与 HDL（RTL 开发侧）的 .f 完全一致，综合和 LEC 都从这里读取、统一管理，建议从 SVN 直接 link 获取。 8. 空文件占位规则：配置中指定的文件即使没有内容，也必须放空文件占位，否则流程会直接报错。 KEY: filelist 拿错版本的后果极隐蔽——拿错版 filelist 做综合、再拿同一错版做 LEC，LEC 会自洽通过，逻辑错误完全发现不了（\"拿错 = 白综合\"）。务必确认 filelist 版本与 HDL 侧一致。"
+   }
+  ]
+ },
+ {
+  "page": "faq.html",
+  "pageTitle": "FAQ 与清单",
+  "sections": [
+   {
+    "id": "sec-0",
+    "level": 2,
+    "title": "1. 常见问题与注意事项",
+    "text": ""
+   },
+   {
+    "id": "sec-1",
+    "level": 3,
+    "title": "1.1 UPF 相关",
+    "text": "- lecupf 检查手写 UPF 是否正确；genusupf 用于生成 final.upf。 - genusupf 引用网表时，若引用 RTL 则需打开全部编译步骤；引用网表可注释 generic 编译。 - 综合时代码中的 output / inout 不能直接接常量，否则 genusupf 可能报错。"
+   },
+   {
+    "id": "sec-2",
+    "level": 3,
+    "title": "1.2 综合优化相关",
+    "text": "- 仅包含 input 的 module 会被工具优化掉，可设置 setdonttouch 保留。 - setidealnetwork：常用于 clock / reset，避免工具插 buffer。 - setdonttouch：常用于 analog cell，防止被优化。 - setdonttouchnetwork：作用与 setdonttouch 类似，但范围更广，通常到 DFF。 - setfalsepath：常用于两个异步时钟之间。 - 综合时代码中的 output / inout 不能直接接常量，否则 genusupf 可能报错。"
+   },
+   {
+    "id": "sec-3",
+    "level": 3,
+    "title": "1.3 工具链冲突",
+    "text": "- 综合环境 source 前，若 cshrc 中同时 source 了 Verdi / VCS 环境，建议先注释，避免 DC / PT 报错。 状态 🔵 已解决 现象 DC / PT 报出很奇怪的错误。 定位 当前 source 的工具版本不对——验证环境与 PT 环境需要的 Verdi / VCS 版本不同。 解决 PT 环境的 Verdi / VCS 版本固定（如 18.19 ），不要随验证环境升级；DC / PT 报奇怪错误时，先检查 source 的工具版本是否正确。"
+   },
+   {
+    "id": "sec-4",
+    "level": 3,
+    "title": "1.4 环境与 filelist",
+    "text": "- CKF 用 bsub 提交时必须带 batch 参数（bsub -Ip runckf 1），否则跑不起来。这是所有 run 入口脚本（rundc / runlec / rungenus / runpt …）的统一约定：尾部带任意参数 = 跑完自动 exit（batch 模式）；不带参数 = 留在交互 shell 调试。 - filelist 中配置指定的文件即使无内容，也必须放空文件占位，否则流程直接报错。 状态 ⛔ 必须遵守 现象 拿错版 filelist 做综合、再拿同一错版做 LEC，LEC 自洽通过，错误完全发现不了。 定位 filelist 拿错版本最危险——综合和 LEC 都从同一份 filelist 读取，错版之间自洽。 解决 务必与 HDL 侧 .f 保持一致（从 SVN 直接 link 获取）。 - 综合报错找不到 cell → 检查 commondb 的 target library 是否加入了新 cell / APR module 对应的 lib。 - 145 制程统一只用 LVT，SVT / LVT 混用 DRC 过不了（该工艺库特有问题）；代价是后端修 setup 只能 sizing，不能换 VT。"
+   },
+   {
+    "id": "sec-5",
+    "level": 3,
+    "title": "1.5 综合与 LEC",
+    "text": "状态 ⛔ 必须遵守 现象 RTL 断线，DC 综合却只报 warning、不报错。 定位 DC 不是语法检查工具：断线在 DC 可能被优化掉，只报 warning。 解决 必须先过 CKF + nLint 再综合。 状态 ⛔ 必须遵守 现象 LEC 跑完没弹窗，看似通过。 定位 没弹窗 ≠ 通过——LEC 可能根本没跑起来。 解决 必须看 log 最后一行确认真的 pass。 状态 🟡 注意事项 现象 ECO 后第一版 LEC 基本必不过。 定位 不过 = 有地方没改对。 解决 需逐一定位。 - LEC 出现 unmapped 点必须追查原因（曾因此发现过真实 bug）。 - DC 有未收敛 timing violation 时面积数据是假的，交付前必须清零。"
+   },
+   {
+    "id": "sec-6",
+    "level": 3,
+    "title": "1.6 时序与交付",
+    "text": "状态 🟡 注意事项 现象 postPT 某 corner 结果为空。 定位 dump SDF 开关（ cornerset.tcl 里的 DUMPSDF ）打开着没关。 DUMPSDF==1 的那趟 run 只执行 writesdf 并跳过全部 report——两个分支互斥，PT 结果并非被删除，而是 latest 软链指向了这趟只产 SDF 的 run，run summary 自然抓到空。 解决 检查 cornerset.tcl 是否 DUMPSDF 打开着没关，关掉后重跑该 corner，latest 即指回正常 report 结果。 - 长方形 die 在 Innovus（默认按正方形 floorplan）上 APR 容易绕不出来；DC 阶段没有框的概念、看不出来，需提前与 APR 对接工程师确认。 - unconstrained（未约束）路径交付 = 重大 bug；constraint 下错（如过紧）还可改，未约束无法事后补救。 - floating 信号在 APR 可能被优化剪掉、整路逻辑消失，交付前需确认是否有意保留。 ---"
+   },
+   {
+    "id": "sec-7",
+    "level": 2,
+    "title": "2. 检查清单",
+    "text": "| 步骤 | 检查项 | 状态 | |------|--------|------| | 环境 | gensyn 环境完整、模板最新 | TBD | | 环境 | source 的 Verdi / VCS 版本正确（PT 环境固定版本） | TBD | | 配置 | design.set 中库、corner、工具选择正确 | TBD | | 配置 | 新 cell / APR module 的 lib 已加入 commondb target library | TBD | | Filelist | Verilog / SV / DDC / dummy 文件分类完整 | TBD | | Filelist | 与 HDL 侧 .f 版本完全一致、空文件已占位 | TBD | | CKF | 无 Floating、black box 已确认 | TBD | | nLint | 可接受 error 已填入 waive list | TBD | | UPF | PG pin / analog / power port 定义合理 | TBD | | DC | dc.log 无 Error、slack ≥ 0 | TBD | | DC | unconstrained paths 清零、timing violation 清零（面积数据才可信） | TBD | | LEC | 0 abort / 0"
+   }
+  ]
+ },
+ {
+  "page": "index.html",
+  "pageTitle": "ASIC IP Synthesis &amp; Integration Flow 工具使用指南",
+  "sections": []
+ },
+ {
+  "page": "learning-path.html",
+  "pageTitle": "学习路径与实操练习",
+  "sections": [
+   {
+    "id": "sec-0",
+    "level": 2,
+    "title": "1. 环境配置（对照 「环境与配置」 页）",
+    "text": "- [ ] 跑：design.set 传入 top name；确认 source 的工具版本（Verdi / VCS 固定 18.19） - [ ] 截图 ①：初始化后的目录结构 - [ ] 截图 ②：工具版本输出 - 核对点： 常见坑 版本是否 source 对（跑 PT / DC 报奇怪错误的第一嫌疑）"
+   },
+   {
+    "id": "sec-1",
+    "level": 2,
+    "title": "2. RTL 检查（对照 「RTL 检查」 页）",
+    "text": "- [ ] 跑：bsub -Ip runckf 1（batch 参数，所有 run 入口同一约定：带参数 = 跑完自动 exit）、nLint - [ ] 截图 ③：CKF 结果尾部 - [ ] 截图 ④：nLint error / warning 汇总（有 error 截前几条） - 核对点： 必查 哪些 error 必须修、哪些 warning 可以进 waive list"
+   },
+   {
+    "id": "sec-2",
+    "level": 2,
+    "title": "3. DC 综合（对照 「综合」 页）",
+    "text": "- [ ] 跑：compile 脚本 - [ ] 截图 ⑤：DC 结束的 timing / area summary - [ ] 截图 ⑥：unconstrained paths report（prePT 里对应 ptrpt/${TOPNAME}cons.rpt） - 核对点： 必查 有无未收敛 violation（有的话面积数据是假的，不能交付）"
+   },
+   {
+    "id": "sec-3",
+    "level": 2,
+    "title": "4. LEC（对照 「LEC 验证」 页）",
+    "text": "- [ ] 跑：LEC - [ ] 截图 ⑦：log 最后一行的 pass 字样（不是\"没弹窗\"就算过） - 核对点： 常见坑 是真 pass 还是根本没跑起来；有 unmapped 点要追原因"
+   },
+   {
+    "id": "sec-4",
+    "level": 2,
+    "title": "5. prePT + signoff（对照 「APR SIGNOFF」 页）",
+    "text": "- [ ] 跑：prePT（cd pt && runpt），然后 signoff - [ ] 截图 ⑧：pt.log 无 error + rpt 里 slack &gt; 0 - [ ] 截图 ⑨：prePT 的 DFF per clock（reportdffnum.rpt）/ floating 列表（ptinputfloat.log） - [ ] 截图 ⑩：signoff pass 界面 - 核对点： 必查 unconstrained / floating 有无风险项（这两类交付出去是重大 bug）"
+   },
+   {
+    "id": "sec-5",
+    "level": 2,
+    "title": "6. PT 深入（对照 「POSTPT」 页，重点）",
+    "text": "- [ ] 跑：批量脚本跑全 corner PT → run summary；再开一个 live PT 练手 - [ ] 截图 ⑪：summary latest 全 corner setup / hold / transition 汇总 - [ ] 截图 ⑫：live PT 里一条 reporttiming -inputpins 完整路径报告 - [ ] 截图 ⑬：自动生成的汇总报表（实际产物是 CSV，如 reportsdbusskew.csv，导入 Excel 后上半 latency / 下半 skew） - 核对点： 必查 会不会看 latency 判断 clock tree 有没有做歪、能不能认出假路径（经过准静态 mux 的那种）、skew 分组是否合理 --- 每步的图贴回后，按「结果判读 + 问题指出 + 下一步建议」给反馈。"
+   }
+  ]
+ },
+ {
+  "page": "lec.html",
+  "pageTitle": "LEC 验证",
+  "sections": [
+   {
+    "id": "sec-0",
+    "level": 2,
+    "title": "1. LEC 基本流程",
+    "text": "cd lec runlec - runlec 和 rtlgate.do 一般无需修改；ECO 场景下才需调整。 - 如果 LEC 不通过，工具可能自动弹出 GUI 窗口用于分析。 KEY: 不能以\"没弹窗\"作为 LEC 通过的依据——没弹窗可能只是 LEC 根本没跑起来。必须逐个打开 log，确认最后一行是真的 pass。 通过标准： - lec.log 无 Error - abort.rpt = 0 个 abort point - noneq.rpt（下划线）= 0 个 non-equivalent point - unmapped.rpt = 0 个 unmapped point；小芯片一般没有 unmapped 点，出现不一定代表不过，但必须追查原因（曾因此发现过真实 bug），可结合 mapped / unreachable report 对比定位 即使 abort 全部解决，也视为 PASS。"
+   },
+   {
+    "id": "sec-1",
+    "level": 3,
+    "title": "1.1 使用 Genus 综合时的加速选项",
+    "text": "若使用 Genus 综合，可优先在 design.set 中设置 ECR2VEN=1，以节约 LEC 运行时间。 若存在无法解决的 abort point，再将 ECR2VEN 设为 0，分两步进行 LEC。 ---"
+   },
+   {
+    "id": "sec-2",
+    "level": 2,
+    "title": "2. 必须做 LEC 的三个节点",
+    "text": "| 节点 | 说明 | |------|------| | 综合完成后（交付 APR 前） | 此阶段常规通过率接近 100% | | APR 布局布线返回后 | APR 阶段的摆弄有时会把 LEC 搞不过，总体通过率较高 | | ECO 修改完成后 | 第一版基本都会不过；不过代表有地方没改对，需逐一定位 | APR 阶段 LEC PASS 的报告实例：Verification Report 中 Compare Results 为 PASS，NON-EQ / Aborted / Uncompared 全为 0，最后输出 pass："
+   }
+  ]
+ },
+ {
+  "page": "memory-power.html",
+  "pageTitle": "Memory 与功耗",
+  "sections": [
+   {
+    "id": "sec-0",
+    "level": 2,
+    "title": "1. Memory 与 memwrap 生成",
+    "text": "NOTE: 当前 Driver 类项目均未使用 memory，flow 里 memory 相关配置不用改动；有 memory 的项目需把 memory 库加进 commondb。Memory Compiler 流程由专业团队长期维护，带存储需求的项目（涉及 MBIST、CP test）可直接复用其成熟流程。"
+   },
+   {
+    "id": "sec-1",
+    "level": 3,
+    "title": "1.1 生成 memory",
+    "text": "利用 memory compiler 工具，按工艺要求填写： - word / bit / byte（byte 通常写 1） - ring layer（决定 memory 方向）：例如 2233 为横向，3322 为竖向 - bus format 选 YES，保证总线信号打包 - feature 选择 Generic"
+   },
+   {
+    "id": "sec-2",
+    "level": 3,
+    "title": "1.2 整理 lib / DB",
+    "text": "1. 修改 sram.list、corner.list、gentcl.pl 2. 执行 gentcl.pl，生成 cplib 和 gendbtcl 3. 创建 cfg cir db ds dummy gds lef lib lvlib sim pglib 等目录 4. 执行 cplib 5. 执行 runlc 生成 db（可跳过，直接执行 merge） 6. merge lib 和 db：执行 domergedb 与 domergeback 7. 将 memdb 复制到 database 下（只复制 corner 目录，不复制 merged 目录）"
+   },
+   {
+    "id": "sec-3",
+    "level": 3,
+    "title": "1.3 生成 memwrap",
+    "text": "1. 修改 memory wrapper config，常见字段： - wrappername：按命名规则填写，如 memwrap1p208640x2 - msize：memory depth - mwide：memory width（若 bytenum 不为 1，需按实际位宽填写） - memnum：memory 个数 - 添加 pgen、repair 列，默认 0 2. source run.tcl 生成 wrapper.v 与 faultinfo 文件 3. 将生成的 .v 复制到 HDL/memwrap/ ---"
+   },
+   {
+    "id": "sec-4",
+    "level": 2,
+    "title": "2. 功耗仿真",
+    "text": "功耗仿真通常在 SYNTHESIS/top/power/0.pxtemplate/ 下运行。"
+   },
+   {
+    "id": "sec-5",
+    "level": 3,
+    "title": "2.1 配置要点",
+    "text": "1. design.set 中 TOPNAME 改为实际顶层。 2. pxcfg.tcl 中修改： - verilogfile：PR release 的网表路径 - sdcfile：post-PT release 的 SDC（注意 sdcversion 需改为 2.0） - specdir：PR release 的 timing 目录 - ip0inst / ip0strip / ip0vcd：对应顶层实例与 VCD 路径 3. 生成 VCD 前，需在 post-PT 对应 corner 生成 SDF，并在 post-sim case 中读取。 4. VCD 获取方式： - 将原来 dump fsdb 的函数换成 $dumpvars 直接 dump VCD；或 - 从 fsdb 截取 VCD，例如：fsdb2vcd chiptbtop000.fsdb -bt 500ps -et 700ps -o verilog.dump"
+   },
+   {
+    "id": "sec-6",
+    "level": 3,
+    "title": "2.2 实例：生成 four-line 波形并让 PTPX 指向它",
+    "text": "① 在后仿 case 目录截取 four-line VCD（-bt / -et 框出 4 条 line 的时间区间，输出 .dump 即 VCD 格式）： cd /simdd/ymzhu/HV2M23/TOPNETLISTPOSTTCONC/t8b2lane bsub -Ip fsdb2vcd chiptbtop000.fsdb -bt 452us -et 467us -o fourline.dump ② 修改 PTPX 路径下 pxcfg.tcl 的 ip0vcd 指向这个 dump 文件（同时核对 verilogfile / sdcfile / spefdir / ip0inst / ip0strip 均指向对应 release 路径）： 如图：set ip0vcd \"/simdd/ymzhu/HV2M23/TOPNETLISTPOSTTCONC/fourlinefre1p82lanett0729v0.dump\"；powermode 用 timebased（按时间窗分析），usevcdsaif 用 vcd。"
+   },
+   {
+    "id": "sec-7",
+    "level": 3,
+    "title": "2.3 运行与查看",
+    "text": "runptpx 结果： - toggleratedetail.rpt：toggle rate - power.rpt：功耗结果 - 上层目录生成 fsdb，可用 Verdi 打开查看功耗波形"
+   }
+  ]
+ },
+ {
+  "page": "powerpro.html",
+  "pageTitle": "PowerPro 功耗评估",
+  "sections": [
+   {
+    "id": "sec-0",
+    "level": 2,
+    "title": "1. 功耗基础与评估工具",
+    "text": ""
+   },
+   {
+    "id": "sec-1",
+    "level": 3,
+    "title": "1.1 功耗构成",
+    "text": "- 静态功耗（leakage power）：漏电流功耗，与工艺库、电压、温度相关。漏电关系 LVT &gt; SVT &gt; HVT；与电压成正比，与温度成指数关系。 - 动态功耗（dynamic power）：晶体管跳变产生的功耗，包含两部分： - switching power：P = C · Vdd² · Fclock——与频率、关断时的负载电容、电压平方成正比； - internal power：P = tsc · Vdd · Ipeak · Fclock——与频率、电流、电压成正比。"
+   },
+   {
+    "id": "sec-2",
+    "level": 3,
+    "title": "1.2 评估工具对比",
+    "text": "| 工具 | 评估阶段 | 级别 / 负责人 | 读取文件 | 目标 | |------|----------|---------------|----------|------| | RedHawk | 设计后端 | whole chip，APR 同事 | APR 后 post-netlist + 带 SDF 后仿 VCD | 评估功耗对 IR drop 的影响，功耗值相对偏大 | | PTPX | 设计后端 | whole chip，综合同事 | 同 RedHawk | 评估 whole-chip 功耗，与实际回片功耗对比 | | PowerPro（RTL level） | IP RTL 设计阶段 | IP level 由 IP owner；chip level 由专人 | RTL code、sdc、前仿波形 | 初步评估功耗并进行低功耗设计优化；与回片实测有一定差距 | | PowerPro（Gate level） | 设计后端 | whole chip，专人 | 同 PTPX | whole-chip 功耗，与 RTL level 及回片功耗对比 |"
+   },
+   {
+    "id": "sec-3",
+    "level": 3,
+    "title": "1.3 评估条件",
+    "text": "1. 工作模式：Idle mode 做漏电流分析与优化；Function mode 做最大功耗评估与优化。采用 1 个 idle mode + N 个 function mode 进行评估。 2. 工作条件：TT corner、typical voltage、normal temperature 85°C（lib 中无 85°C 时可选 125°C）。 KEY: 务必确保实测功耗时的条件与评估功耗时的条件一致，否则对比无意义。 ---"
+   },
+   {
+    "id": "sec-4",
+    "level": 2,
+    "title": "2. PowerPro 环境搭建与运行",
+    "text": "PowerPro 已集成到 IP 综合环境，gensyn 生成环境时自动创建 powerpro 目录： | 目录 / 文件 | 用途 | |-------------|------| | fsdb/ | 存放仿真波形 | | sdc/ | 存放约束文件 | | WORK/ | powerpro report 目录 | | script/ | 存放 vector 脚本 | | runpoweropt | powerpro 运行脚本 |"
+   },
+   {
+    "id": "sec-5",
+    "level": 3,
+    "title": "2.1 搭建步骤",
+    "text": "1. RTL filelist：维护 syn /filelist/ 下的 .f 与 .sv.f。 2. link 波形：将仿真波形 link 到 fsdb/ 目录。 3. design.set 指定波形与层次： set FSDBFILE \"fsdb/xxx.fsdb\" # 指定波形文件 set FSDBHIER \"tb.wdut.uip\" # IPTOP 在仿真波形中的层次 可截取波形某一段做评估：fsdbextract xxx.fsdb -bt xxxtime -et xxxtime -o xxx.fsdb（-bt begin time、-et end time、-o 输出文件名）。 4. design.set 指定约束： set CLOCKMCPCASESDC \"./sdc/ .sdc\" # IP 约束文件 set CORNER \"tttypical85setup\" # lib 无 85 度则用 125 度 5. 时钟约束（在 sdc/ .sdc 中增加）： set CLKNAMEPERIOD [expr 1000.0/720] createclock -name clkname -period $CLKNAMEPERIOD clk # clk 为输入 input createclock -name clkname -period $CLKNAMEPERIOD [getpins"
+   },
+   {
+    "id": "sec-6",
+    "level": 3,
+    "title": "2.2 运行",
+    "text": "source /eda/env/NEXT/powerpro2024.2.1.cshrc # ① license / 环境 cd powerpro bsub -Ip runpoweropt # ② 运行 python3 powerproscript.py # ③ 生成 reportinfo（重要信息汇总，逐项 check） python3 powerprochk.py reportinfo reportinfo2 # 生成 reportinfo2（末 3 行为指标占比） showanalyzer # ④ 启动图形化界面"
+   },
+   {
+    "id": "sec-7",
+    "level": 3,
+    "title": "2.3 report 检查",
+    "text": "- 打开 powerpro.log，反标率需 100%； - 打开 sa.log，查看未反标的信号并清理； - 打开 sa.log，查看 X 态信号并清理。 - 查看 IP Efficiency：重点关注 Memory Gating Efficiency、CG Efficiency 与 Power Summary 各分组占比。 - observability 优化后的 efficiency：关注 CG Efficiency 提升与 Register Power Saved。 - Dashboard：总览 Design Statistics（Flop / Memory / CG Efficiency）、Design Power、Early Design Checks 与各类 Redundancy 计数。 - GUI 中还可以直接下钻：如 Dashboard → Memory Info 逐个看 memory 的 Leakage Power，左下角可 Export as PowerPro Command Line 把当前视图导出为命令行复现。"
+   },
+   {
+    "id": "sec-8",
+    "level": 3,
+    "title": "2.4 常见问题",
+    "text": "1. 读取 VHDL 文件：VHDL 与 Verilog 需分开读取，不同 library 分别读取，且不能读取无法综合的文件：readdesign –library grlib –vhdl –f xxx/xxx.vhd.f。 2. filelist 同时含 VHDL 和 Verilog：仅 verilog 时 builddesign –sv –top ${moduletop} –f $RTLFILELIST $DEFINE；混合时分步 build：source $VHDLFILELIST → readdesign –sv –f $RTLFILELIST $DEFINE → linkdesign –top ${moduletop} → builddb。 3. 退出命令行后快速恢复：首次运行时各阶段可用 writedb xxx.db 保存 database；重启后 readdb xxx.db 直接调入继续。 4. builddesign 出错：PowerPro 读取的 RTL 必须是可综合代码，无法综合会 internal ERROR 退出。查看 WORK/builddesign.log，如出现 $display 等，可在 design.set 中设定 set NETDEFINE [list \"SYNTHESIS\"]。 5. Missing definitions：查看 WORK/c"
+   }
+  ]
+ },
+ {
+  "page": "pt-intro.html",
+  "pageTitle": "POSTPT（PrimeTime 时序分析）",
+  "sections": [
+   {
+    "id": "sec-0",
+    "level": 2,
+    "title": "1. STA 基础概念",
+    "text": ""
+   },
+   {
+    "id": "sec-1",
+    "level": 3,
+    "title": "1.1 corner 全量校验",
+    "text": "当前工艺共 10 个 corner，corner 定义由 foundry 提供，不是项目自己建的。 - 每个 corner 下 setup、hold、transition 全部都要 check，不做取舍。 - 历史规律已经失效：以前是 wc corner 下 setup 更差、lt corner 下 hold 更差；现在因为修 skew 把延迟垫乱，各 corner 的表现不再符合老规律，所以必须所有 corner 全量校验。 WARNING: \"按经验只跑最差的 corner\" 在当前项目已不成立。skew 修调会打乱延迟分布，任何 corner 都可能冒出最差值，全量跑是唯一安全的做法。"
+   },
+   {
+    "id": "sec-2",
+    "level": 3,
+    "title": "1.2 uncertainty 与放宽纪律",
+    "text": "uncertainty 来源于历史经验值：hold uncertainty 全表统一 150 ps；setup uncertainty 按时钟不同为 0.4 2 ns 不等，只有高速 lane 时钟是 400 ps（脚本包 sdcpr 展开产物实证）。 400 ps setup uncertainty 仅高速 lane 时钟；其余 0.42 ns 不等 150 ps hold uncertainty 放宽需高层签字，不跨项目继承 使用策略： - 新项目不主动放宽，一直按公版值卡；只有最后一版实在修不下去时，才找高层签字放一点。 - 工程上它有点像 false path——不会主动先写，出问题了才放。 - 新项目不会沿用上一版放宽后的值，继续用 0.4 ns 起步。 WARNING: 必须 uncertainty 放宽是\"最后手段\"纪律——必须有高层签字；放宽值不跨项目继承，每个新项目从公版值重新卡。"
+   },
+   {
+    "id": "sec-3",
+    "level": 3,
+    "title": "1.3 SI / noise 常开",
+    "text": "当前环境 SI check 默认全部打开。 - 背景：某历史项目 SI 影响很大导致 corner 结果很差，想关但没敢关；脚本留有开关可做中间实验，但最终关不关必须多方共同决定，一直保持最保守（打开）执行。 - 机理：SI 分析 noise；摆线太近 noise 很大；PT 会看走线的宽度和高度；SI 大时 cell delay 会非常大。 - 有些工艺厂商文档写 SI 不用考虑，但团队不采信，仍以最保守方式执行。"
+   },
+   {
+    "id": "sec-4",
+    "level": 3,
+    "title": "1.4 占空比与 minpulsewidth",
+    "text": "当前项目输出 clock 占空比不是 50%。 - PT 报的 minpulsewidth 类数值不是真实占空比：它报的是从 clock 源头上升沿到该点与下降沿到该点的差值（rise/fall latency 差），工具并不知道实际高电平宽度，所以报那个没意义。 - 验证占空比的正确方法：后仿，把该 clock 在波形里拉出来看；模拟方也会拉这条 clock 看有没有对到中心点。 - 分频器经验：1.5 分频处两边的组合逻辑 delay 最好保持一致（理想情况），这是占空比恶化的来源之一。 - 历史教训：双方对该参数理解不一致踩过坑（tapeout 前才发现），规格必须与规格方书面确认。 - 周期越慢该参数越不可能超，速度越快 / 周期越短才紧张。 WARNING: 严禁 把 PT 的 minpulsewidth 报告当占空比证据。占空比规格必须书面确认，并用后仿波形验证。"
+   },
+   {
+    "id": "sec-5",
+    "level": 3,
+    "title": "1.5 准静态信号（quasi-static）",
+    "text": "一帧才变一次的信号、寄存器配出的控制信号属于准静态信号，不用 check，可设 false path。"
+   },
+   {
+    "id": "sec-6",
+    "level": 3,
+    "title": "1.6 clock latency 判断经验",
+    "text": "报表上半部分是原始 latency 数据（clock / data latency，未做运算）；下半部分是脚本算好的 skew。 - clock 之间做过 clock tree balance，相互 latency 不应差很多；clock 与 data 差得多是正常的。 - clock 的 max 与 min 差很多，说明 clock tree 做歪了。 - max 路径和 min 路径通常不是同一条，两条都要 check。 - 实例：某版 CLK 最慢 10.56、最快 3，而 skew 余量只有 7——10.56 那条是假路径（mux 特别多、trace 起点没选好导致），真实 clock latency 约 3 点多。 ---"
+   },
+   {
+    "id": "sec-7",
+    "level": 2,
+    "title": "2. PT 环境与自动化脚本",
+    "text": ""
+   },
+   {
+    "id": "sec-8",
+    "level": 3,
+    "title": "2.1 批量跑 corner",
+    "text": "痛点：以前每个 corner 开一个窗口，10 个 corner 开 10 个 terminal 逐个丢 job。 自研批量脚本 pararrelrunpt.py （原文拼写 pararrel）：run 一次把全部 corner 用 xterm + bsub 并发批量提交，跑完自动结束；log 各自分开，与手动跑结果一模一样。注意脚本有已知 bug：内部 errorfound / runsummary 变量未定义，「跑完自动接 run summary」实际不工作，批量跑完需手工再执行 run summary。 | 项目 | 效果 | |------|------| | 多 corner 运行 | 一键批量提交，效率提升约 90% | | 日志管理 | 自动分类存储 | | 时序指标 | 自动全量抓取 | | 报表 | 自动生成标准化 CSV（再导入 Excel 查看） | 当前项目跑一次全量 PT 约 10 分钟（项目小；大项目更慢）。 10 个 corner 全量校验 10 min 全量 PT 时长 +90 % 批量脚本效率提升"
+   },
+   {
+    "id": "sec-9",
+    "level": 3,
+    "title": "2.2 run summary 与结果汇总",
+    "text": "批量跑完执行 runsummary ：summary 目录下放 latest，集中查看所有 corner 的最新结果。 汇总 report 包含：transition、hold、setup、clock skew、data skew；skew report 由 get.pl 自动抓取、再由 merge.pl 合并各 corner——实际产物是 CSV（如 reportsdbusskew.csv，行 = 72 个分组指标、列 = corner），再导入 Excel 查看。"
+   },
+   {
+    "id": "sec-10",
+    "level": 3,
+    "title": "2.3 save session 策略",
+    "text": "PT 的 save / restore session 可把某版存回来做版本间 compare。 - 跑得快（&lt;1 小时）的项目无需存 session，仅做记录 / 对比即可。 - 跑半天以上的大项目才有省时意义。"
+   },
+   {
+    "id": "sec-11",
+    "level": 3,
+    "title": "2.4 环境目录结构",
+    "text": "| 目录 / 文件 | 作用 | |-------------|------| | design.set | 环境配置入口，外层最关键的文件 | | corner set 文件 | 内层每个 corner 各有一份 | | common 目录 | 自动化脚本集中地，含 commondb（定制 lib 配置） | | IP constraint 目录 | 项目 constraint 存放位置；其下 script 子目录多为历史脚本，基本不再使用 | | Tcl 脚本目录 | 分模块存放；报错时按模块排查（如 prePT 报错看对应目录脚本） | | database 目录 | 存放 prePT 生成的正式 constraint | - dump SDF 的 option 是给后仿用的，其他 option 基本不动。 - 有一组直抛 clock path 的 Tcl（ reportclockpath.tcl ），每版项目刚开始都要改一次，位置固定在 Tcl 文件最下方。注意它不会被 ptsetup.tcl 自动 source，需要手工 / 单独调用。"
+   },
+   {
+    "id": "sec-12",
+    "level": 3,
+    "title": "2.5 复用环境要改的 7 项",
+    "text": "同一项目重新跑一版（重新综合迭代）：什么都不用改，直接 run，全自动。 全新项目 / 新架构复用，要改： 1. design.set（必改）； 2. pt setup 相关配置； 3. data skew 抓取的三个脚本全部要重改（分组分类不同）； 4. create clock 周期定义所在文件； 5. 直抛 clock path 的 Tcl（项目初期必改）； 6. 新增定制 lib 时改 commondb 及 .v / .lib 路径； 7. Excel merge 脚本（手写分组对应关系，极易对错，需一一对应）。 分组层级经验（沿用上一项目脚本）：L/R → 1P/2P → A/B → clock/data 四层分类，落地到报告文件名即 sd{l,r}{1p,2pl0,2pl1}{clk,}{a,b} 共 24 组（2P 版报告脚本在包中缺失，perl 抓取层仍期待 sd2p 文件）。"
+   },
+   {
+    "id": "sec-13",
+    "level": 3,
+    "title": "2.6 环境搭建检查项",
+    "text": "- 第一版搭环境时，必须确保所有 log 和 report 目录下没有任何 error。 - 环境通用，全组共用。 ---"
+   },
+   {
+    "id": "sec-14",
+    "level": 2,
+    "title": "3. 约束（constraint / SDC）管理",
+    "text": ""
+   },
+   {
+    "id": "sec-15",
+    "level": 3,
+    "title": "3.1 dco → prePT → SDC 工作流（核心工作流）",
+    "text": "false path / multicycle 等约束统一写在指定的 dco 文件里；不直接改 SDC（批量展开式修改很复杂）。 流程： flowchart LR E[\"先在 live PT 试一版\"] -.->|\"验证后再写入\"| A[\"改 dco\"] A --> B[\"重新跑 prePT\"] B --> C[\"自动生成展开后的 SDC\"] C --> D[\"放入 database 目录\"] - 改 dco 前的验证习惯：先在 live PT（手工打开的交互式 session）里把路径直接指过去试一版，确认效果再正式写入。 - 纪律： 严禁 直接修改 SDC 文件、提前乱写 false path，需确认路径为假后再配置。"
+   },
+   {
+    "id": "sec-16",
+    "level": 3,
+    "title": "3.2 约束迭代闭环：看 summary 总表 → 定性 → 改 dco → 重跑",
+    "text": "post PT 10 个 corner 全部跑完后，执行 runsummary ，产物在 SYNTHESIS/top/sta/post/pt/summary/latest/ 下： - 每 corner 单表： setup.csv / hold.csv / trans.csv / phybusskew.txt / sdbusskew.txt - merge 总表：reportsetup.csv / reporthold.csv / reporttrans.csv / reportphybusskew.csv / reportsdbusskew.csv - 总表结构：行 = clock 组，列 = 每个 corner 各两列（violation number、biggest violation），一眼看全 10 个 corner 第一步·找目标：在 merge 总表里扫 violation number ≠ 0 或 biggest violation 为负 的 clock 组（如上图中 RX0CLK、RX0CLKDIV1P5 在某些 corner 有负 slack），这些就是要处理的违例。 找到目标后到对应 corner 目录看具体报告定位路径。示例：总表里 wccbest125 的 CLKL0DTCTLODDIV1P5 组有 5 条 violation（biggest −0.0499"
+   },
+   {
+    "id": "sec-17",
+    "level": 3,
+    "title": "3.3 input / output delay 约束文件（ipcons/inputdelay.tcl）",
+    "text": "input delay 约束有专门文件，与 dco 同目录、随约束一起被 source（配套还有 outputdelay.tcl）： SYNTHESIS/common/ipcons/inputdelay.tcl 文件头的编写方法（三条，照做即可）： 1. 从顶层实际 input port 出发（以 .v 的 port 为准）； 2. 每个 port 往里 trace 到第一个有效时序捕获域（用哪个 clock 就挂哪个 clock）； 3. 数值沿用 legacy Tcl 中仍然匹配的值——不随意收紧，避免相对旧版 under-constrain。 文件组织纪律（图上半部分注释）： - 假定 base clock 已由 dco（HV2M23digitaltop.tcl）创建，本文件只管 input delay； - 专用 clock / reset port 只写注释说明，不给 setinputdelay； - FPGA-only 的输入以注释形式列出，留待单独 review。 代码实例（图下半部分）： # I2C 串行输入：max/min 成对 setinputdelay -clock I2CCLK 1 [getports CSCLI] setinputdelay -clock I2CCLK -min -1 [getports CSCLI] #setinputdelay -clo"
+   },
+   {
+    "id": "sec-18",
+    "level": 3,
+    "title": "3.3 false path / multicycle 设置经验",
+    "text": "- 无继承机制：每版综合后 cell 流水号（自动命名）全变，false path 要全部重新报、重新加；做法是不删旧的、往文件后面叠加（叠加式维护）。 - 跨项目经验可继承：架构没有大改时按信号功能 / 类别识别，同一类信号成组设置。 - 准静态信号（一帧变一次）可大胆设 false path。 - 修 skew 的副产物：往后推 data / clock 垫 delay 时会推出假 hold（只推最后一级、后面没有 DFF 承接，推超过一个周期就报 hold violation）——这种是假的，持续补 multicycle / false path 即可。 - 修 skew 引入的真实问题多为 clock gating 的 hold。 - 另一种造\"假路径\"手段：output delay（有时值设得比 max 还大）。 - 多种 mode 合成一路输出、只有一个可 check 点时，按最严的标准卡；条数多难修但对签核安全。 NOTE: \"最严标准原则\"——多个 mode 共用一个 check 点时按最严的规格卡。修起来条数多、辛苦，但漏报的代价比难修大得多。"
+   },
+   {
+    "id": "sec-19",
+    "level": 3,
+    "title": "3.3 clock 定义与频率目标",
+    "text": "- create clock 周期在专用文件中修改；当前项目主频 1.8 GHz，带 1.05% 展频（spread spectrum）（会议经验值，脚本包中未见对应设置——包内最快时钟周期 4.75 ns ≈ 210 MHz）。 - 相比其他项目（有要求 4 GHz 的），当前项目约束偏保守（over constraint）。 - 另有一条慢 clock（教学示例，端口名 CLKAL，会议记录误写作 clockAL）周期约 15 ns（会议经验值；包内最接近的慢时钟是 RX1CLK，周期 17.1 ns）。 1.8 GHz 主频 会议经验值，脚本包未见对应设置 1.05 % 展频（spread spectrum） 15 ns 慢 clock 周期 教学示例 CLKAL（会议经验值）"
+   },
+   {
+    "id": "sec-20",
+    "level": 3,
+    "title": "3.4 定制 lib（commondb）连环坑",
+    "text": "新加定制 lib 时在 common 下的 commondb 里加；可拿新 lib 与现有配置 diff 参考。 连环坑： - 多个调用位置都要跟着改，漏改会一直报错； - 后仿对应位置没加 lib 会编译出错； - .v 和 .lib 都要给到对应位置，否则报 lib 找不到。"
+   },
+   {
+    "id": "sec-21",
+    "level": 3,
+    "title": "3.5 pin 名称的坑（通配符穷举法）",
+    "text": "某输出 cell 有 I0 / I1 / O 三个 pin：直接写 O 设约束设不上（live PT 里 getpins 能找到，但写进 constraint 跑 prePT 报找不到）；三个 pin 名都写上也不行。 解决：用通配符 穷举代替，写星号后全部 pin 都会设上。两个项目都踩过这个坑。 WARNING: live PT 里能 getpins 到的名字，不代表 prePT 展开约束时能找到。pin 名设不上时，优先试通配符穷举。 ---"
+   },
+   {
+    "id": "sec-22",
+    "level": 2,
+    "title": "4. Skew 修调方法（技术核心）",
+    "text": ""
+   },
+   {
+    "id": "sec-23",
+    "level": 3,
+    "title": "4.1 规格与目标推导",
+    "text": "skew 规格来自规格方 / 模拟方：目标 ±3.5 ns。 推导（以周期约 15 ns 的慢 clock 为例）： 一周期 15 ns 前后各留 4 ns 给 setup / hold margin 中间允许 data 相对 clock 偏移：15 - 4 - 4 = 7 ns 以正中间为零点 → skew = ±3.5 ns ±3.5 ns skew 目标 7 ns 可偏移窗口 15 − 4 − 4 4 ns 前后 setup / hold margin 占空比不是 50% → 下降沿注定不在 data 中间 → 要把 clock 往左推（对齐到 data 窗口中间）。 完整的 skew 规格推导如下图：15 ns 周期前后各留 4 ns，中间 7 ns 窗口即 ±3.5；clock 本身带 +2.5 偏移，所以最终 skew 规格 = +2.5 ±3.5 = [-1, +6]——左边界 +6（data 最迟）、右边界 −1（data 最早）。这就是 mergesdbusskew.pl 输出的 margin 标注规格 [-1:6] 的出处（见 脚本字典 ）。"
+   },
+   {
+    "id": "sec-24",
+    "level": 3,
+    "title": "4.2 修调策略：先 data 后 clock，推 clock 为主",
+    "text": "理想步骤： 1. 先把 data 之间推到等长（相互偏移尽量小）； 2. 再由 clock 推到中间位置。 实际执行：大部分推 clock 不推 data——data 条数太多（一组 8 bit，多 lane 每路多路来源，每个 DFF 出来起码 6 路）；只有 clock 没法弄时才动 data。 - 方向性：往后推（垫 delay）容易，往前拉（拆 delay）难；风险是垫太多绕线绕不过去，需提前预留绕线余量。 - data skew 都是针对 clock 去设的，不单独要求 data 间 skew；clock 间因 clock tree 不会差很多，data 间差很多正常。"
+   },
+   {
+    "id": "sec-25",
+    "level": 3,
+    "title": "4.3 修调分工与 Excel 交接",
+    "text": "- skew 修调由 APR 工程师全权负责；他自行搭建 PT 环境（link 到 PT 环境 owner 的目录），自己跑 PT、按 Excel 报表自行修调，遇修不下去的（如 setup 互卡）主动反馈。 - 交接物：自动化环境 + Excel 报表。 - 修不下去时先看组分得够不够细（按 lane / mode 细化 check 分组）；分到最细还修不下去，说明 skew 标准本身需要谈判。"
+   },
+   {
+    "id": "sec-26",
+    "level": 3,
+    "title": "4.4 check 路径取舍（trace 教学）",
+    "text": "check 对象：所有 data bus、全部 clock、以及指定的输入信号。 trace 方法：从输出端往里走，逐级看每个控制信号要不要 check、是不是 multicycle、gating 信号如何处理。 - 不要偷懒合并报点：本想\"A 包含 B / C 就只报 A\"，结果 A 内部还有准静态 mux 把假路径带进来，特别难修——必须一直往前看，把来源都抓出来。 - 历史案例：某条一帧变一次的 CK 路径连续三四个项目都修不下去，后来干脆不加进 check 列表（多打一条 path 没坏处，但明知修不下去的不加）。 - 两路来源的路径中，一路和其他路长度差很多的，加进来必修不下去，宁可不 check。"
+   },
+   {
+    "id": "sec-27",
+    "level": 3,
+    "title": "4.5 skew 报告脚本实例（reporttimingskewsd.tcl）",
+    "text": "修 skew 用的批量报告脚本，完整路径与文件名（与 ptsetup.tcl、get.pl / merge.pl 抓取合并层同目录，脚本条目见 脚本字典 ）： SYNTHESIS/top/sta/post/common/reporttimingskewsd.tcl 内容结构（对照截图）： - data 组：reporttiming -from uLOGICCENTER/CENTER1/TOTALDTCTL/DTCTLL/SLDLY、DATAPRE 等 -to [getports DBL/DBR/SLINB] -maxpath 2000 -nworst 1000 >> ${rptdir}/skew/reporttimingsd{l,r}1p{a,b}.rpt - clock 组：from CLKGENU0/U1 各 DCLK 到 CLKAL/CLKBL 等 port，在 -maxpath 2000 -nworst 1000 基础上再加 -slacklesserthan 50 - 输出写到 ${rptdir}/skew/reporttimingsd.rpt（每组第一条 > 新建、其余 >> 追加），供 getsdbusskew.pl 抓取、merge 进 Excel - 换 lane / 换分组的旧写法用注释保留（截图 77-79、84-85 行），不删除，方便回退对照 选项取舍（重要"
+   },
+   {
+    "id": "sec-28",
+    "level": 2,
+    "title": "5. 报告解读与报表生成",
+    "text": ""
+   },
+   {
+    "id": "sec-29",
+    "level": 3,
+    "title": "5.1 reporttiming 实战",
+    "text": "基本报法：from DFF 的 Q 端，to 输出 port。 - 推荐 option：-inputpins（列出每级 input pin，看清路径穿过哪个 cell / pin；用 reporttiming -help 查 option）。 - 报全原则：路径报全；起点选错会夹带假路径。 - 每条 path 报 1000 条；工具上限报不了 1 万条。主 report 定义集中在 reporttimingprj.tcl：reporttiming -pbamode path -delaytype max -pathtype fullclockexpanded -crosstalkdelta -derate -slacklesserthan 0.5 -maxpaths 1000（每个 clock 单独一份时 slack 阈值收紧到 0.2）。 - 规模：10 corner × L/R × A/B × 每组 6 条 × 每条 1000 ≈ 10 万条级 report，全靠脚本处理。"
+   },
+   {
+    "id": "sec-30",
+    "level": 3,
+    "title": "5.2 假路径识别（肉眼判断要点）",
+    "text": "典型特征：路径中经过不该经过的寄存器 / 准静态 mux（\"经过寄存器就觉得不妙\"）。 - 起点选错后果：报出的点 latency 异常大（别人 3 点多它 10 点多，没做 balance），merge 进 Excel 后修不动。 - 处理：换起点——从最前面的点报，不要从夹带准静态寄存器的 DFF 报。"
+   },
+   {
+    "id": "sec-31",
+    "level": 3,
+    "title": "5.3 自动化抓取与 Excel 报表",
+    "text": "流程：PT report 按设计好的 from/to 点批量报 → 脚本按 keyword 抓数打印 → merge 脚本合成 CSV / Excel。 Excel 结构： - 上半部分：原始 clock / data latency； - 下半部分：自动算好的 skew（标准列在脚本里）； - clock 组、data 组分别抓 max / min 并排序，方便后端直接抓最大最小来推。 merge 脚本是手写分组对应关系，照猫画虎改，一定要一一对应，很容易整错。 NOTE: 选点必须人工——看代码、看波形或问设计方，AI 做不了。"
+   },
+   {
+    "id": "sec-32",
+    "level": 3,
+    "title": "5.4 当前项目时序现状",
+    "text": "- 第一版综合后 setup 违例极少：最大仅 0.1 0.2 ns（周期富裕）。 - 核心矛盾在 clock skew 收敛：clock 路径最快最慢差值曾达 7，接近余量上限；报表中 10 以上的异常值均为假路径，已清完。 - 修 skew 过程会不断引入新的假 hold，需持续清。 ---"
+   },
+   {
+    "id": "sec-33",
+    "level": 2,
+    "title": "6. 签核准则与仿真关系",
+    "text": "- 数字签核（signoff）以 PT 结果为准，不以 co-sim 为准——PT 覆盖率远高于仿真（PT 是所有检查）。 - 跑 co-sim 的两个目的： 1. 确认 constraint 有没有错； 2. 给模拟方看（他们 spec 描述不一定 OK，完整联仿更有效）。 ---"
+   },
+   {
+    "id": "sec-34",
+    "level": 2,
+    "title": "7. AI 辅助的边界与使用原则",
+    "text": "当前 AI 无法做到： - 识别准静态信号 / 特殊节点（真假路径判定）； - 自主判断最佳抓取节点； - 自动适配新项目特殊规则； - 基础 PT 命令可生成但存在随机参数错误，直接运行会报错。 使用原则（会议共识）： - \"寄存器出来的就是假路径\"不能作为通用规则； - 宁可多报不可漏报（漏报一条 skew 没掉很可怕）；人工做完也要反复检查三四遍； - AI 可做中间引导 + 人工 review 的辅助；产出固化为 script 且不再改才可信，但生成 script 过程要充分评估； - 落地前需至少 3 轮全流程验证、准确率 100%；固化后每版仍人工抽查至少 10%； - 优先探索 AI 生成标准化文档、整理配置说明等低风险场景。 WARNING: 真假路径判定不能交给 AI。constraint 漏报的代价是硅后才发现时序问题，远大于人工 review 的成本。 ---"
+   },
+   {
+    "id": "sec-35",
+    "level": 2,
+    "title": "8. 常见问题与经验清单",
+    "text": "1. 流水号坑：每版综合后 cell 自动命名全变，针对具体 cell 名的约束每版要重加（叠加式，不删旧）。可在关键路径预埋 buffer，或用 DC / PT 脚本做 ECO 塞 buffer。 2. 路径抓取节点选择错误会产生大量无效报表数据——严格按规范选节点，从最前端节点开始抓，避开准静态寄存器。 3. 宁可多报不可漏报。 4. 修不下去的路径连续几个项目都修不下去，就别再加进 check 列表。 5. margin（给 DC 的加严量）一般 0.8，曾试 0.6（会议经验值，脚本包中未见对应设置）；压紧 constraint → DC 难做但走线余量长；DC 可能拆逻辑、换 cell 结构（AOI / OAI），曾有案例 APR 绕不出来，发现一大串 AOI 需拆掉。 6. report 文件太大打不开需要 license（大项目 SOC 经验）；以前看几万条 report 靠先分类、先设 false path、再迭代。 7. 环境版本固定，报错先查 source 版本。 8. 分组（lane / mode）先分细再修，修不下去再谈标准。"
+   }
+  ]
+ },
+ {
+  "page": "rtl-check.html",
+  "pageTitle": "RTL 检查",
+  "sections": [
+   {
+    "id": "sec-0",
+    "level": 2,
+    "title": "1. CKF（连接性检查）",
+    "text": "cd ckf runckf KEY: 通过 bsub 提交时必须带 batch 参数，即 bsub -Ip runckf 1。这是所有 run 入口脚本的统一约定：尾部带任意参数 = 跑完自动 exit（batch 模式，bsub 必须加，否则 job 挂在交互 shell）；不带参数 = 跑完留在交互 shell 里调试。runckf 脚本本体不在脚本包内（ 本包未包含 ），但该约定在 rundc / runlec / rungenus / runpt 中均有实证。 前置条件：CKF 建议在 rundc 之前完成，以提前发现 RTL 连接性问题。 ckfrtl.do 一般不需要修改。 检查项： - ckf/repdir/ckf.rpt 无 Error（流程 Readme 记录的产物路径） - ckf.rpt 中 Floating 必须清零 - black box 需逐一确认，通常为 analog、memory、digital macro，确保都是真实的 black box - Latch 只允许来自统一库（如 gclk、iolatch）或配合 analog design 直接调用的 latch，其余需检查 RTL 结果处理规则：所有 Error 必须清零；Warning 需逐条人工确认，仅确认无逻辑风险的正常告警才可放行。"
+   },
+   {
+    "id": "sec-1",
+    "level": 2,
+    "title": "2. nLint",
+    "text": "cd nlint runnlint 入口脚本 runnlint 逐条调用 nLint 并接外部过滤脚本，产物在 repdir/ 下。 前置条件：nLint 建议在 rundc 之前完成，以显著减少后续综合阶段的 RTL 问题。 检查项： - nlint.log / nlint.rpt - nocheckmodule.f 可排除不需要检查的模块 - 确认可接受的 error 后，填入公共 waive list：$PROJECT/SYNTHESIS/common/tcldir/nlint/nlintwaive.list - 加入 waive list（白名单）前必须逐条确认确实无风险；两个工具重复报的已知非风险问题可加入 waive 文件，下次不再报 NOTE: nLint 和 CKF 建议在综合前完成，以显著减少后续综合阶段的 RTL 问题。正确顺序：CKF + nLint 一起跑 → 确认无语法错误 → 才能跑综合。 KEY: DC 不是语法检查工具，其 error / warning 数量多且不具针对性——断线在 nLint 中是 error，在 DC 中可能直接被优化掉、只报一条 warning。不要指望用 DC 替代 CKF / nLint 做 RTL 检查。"
+   }
+  ]
+ },
+ {
+  "page": "script-dict.html",
+  "pageTitle": "脚本字典",
+  "sections": [
+   {
+    "id": "sec-0",
+    "level": 2,
+    "title": "1. 主流程环境（综合 / LEC / Lint）",
+    "text": ""
+   },
+   {
+    "id": "sec-1",
+    "level": 3,
+    "title": "design.set（综合主控，106 行）",
+    "text": "综合环境总控 tcl 配置。被 compiledc.tcl、compilegenus.tcl、rtlgate.do、ptsetup.tcl 以 source ../design.set 读入；各 run csh 用 grep \"set TOPNAME\" ../design.set | sed ... 动态提取 top name，再由 genfilelist 生成 filelist——「批量替换」的真实机制：top name 只写一处，运行时抓取。 关键变量： | 变量 | 实例值 / 说明 | |------|---------------| | TOPNAME / SDCNAME | 换项目必改，只改这两行（不同项目 design.set 的 diff 实证） | | SYNDIR / TCLDIR / IPCONSDIR / TOPCONSDIR / UPFDIR / HDLDIR | 各目录路径 | | SCANEN 0、INCROPT 1、BONDOPT 1、USESAIF 0、USEUPF 0 | 流程开关 | | LINKLIB / TARLIB | 实例 nexchip1459t，注释列各工艺候选 | | NETDEFINE | 实例 [list \"NETLIST\" \"nexchip1459t\"] | | ANAEN 0、MEMEN 0、LVTEN 1、SVTEN 0"
+   },
+   {
+    "id": "sec-2",
+    "level": 3,
+    "title": "rundc（csh，35 行）",
+    "text": "DC 综合入口：cd dc && rundc [参数]。 - 流程：建 repdir；grep TOPNAME；genfilelist ${topname}.f ./advanced；写 repdir/svn.info（日期 + svn info $PROJECTPATH/HDL）；source /eda/env/syn1709.cshrc（备选 syn1603）。 - 无参数 → dcshell-t -64bit -f compiledc.tcl -x \"set exitflag 0\"，跑完留在交互 shell 调试；有任意参数（如 1）→ exitflag 1，跑完自动 exit（batch 模式，bsub 必须加，否则 job 挂在交互 shell）。runlec / rungenus / runpt 同一机制。 - log tee 到 repdir/dc.log。"
+   },
+   {
+    "id": "sec-3",
+    "level": 3,
+    "title": "compiledc.tcl（215 行）",
+    "text": "流程：source design.set → $TCLDIR/dc/dcuserproc.tcl、basicsetupall.tcl → readfilelistall $FILELISTDIR $NETDEFINE（checkerror 保护，缺文件直接 quit）→ link → checkdesign -multipledesigns → designrule / dontuse → clkperiod.tcl、kvclkio.tcl → source $IPCONSDIR/$TOPNAME.tcl（项目约束源文件） + input/outputdelay.tcl → commoncons.tcl → pre report → kvcompileunltra $INCROPT $USESAIF $BONDOPT（原文拼写 unltra）→ kvchangenames → 写出 .gvorg / .ddc / .gv / onlytop.v + writesdc → post report（area / power / clockgating / timing / qor / vtcellusage、kvreportdffnum、kvreportalllatch）。 - donttouch.tcl 自动生成：按约 50 个 cell 名通配 pattern（DTCLKINV1P"
+   },
+   {
+    "id": "sec-4",
+    "level": 3,
+    "title": "rungenus",
+    "text": "同 rundc 骨架；source /eda/env/genus1723.cshrc；genus -nogui -64 -execute \"set exitflag 0|1\" -files compilegenus.tcl。"
+   },
+   {
+    "id": "sec-5",
+    "level": 3,
+    "title": "compilegenus.tcl（238 行）",
+    "text": "与 DC 版同构；readsdc $IPCONSDIR/${TOPNAME}.tcl + echo $::dc::sdcfailedcommands；kvupfpower $$USEUPF（原文双 $ 笔误）；kviogroups；kvgenuscompile \"generic\"/\"map\"/\"opt\"；报告含 reporttiming -unconstrained、allmemoryfinal.rpt、macro cell 面积 / leakage；writedesign -innovus；writeparasitics > $SPEFFILE。"
+   },
+   {
+    "id": "sec-6",
+    "level": 3,
+    "title": "runlec",
+    "text": "source /eda/env/confrml17.cshrc；清 repdir；genfilelist / svn.info 同骨架；bsub -Ip \"lec -xl -64 -do rtlgate.do -nogui | tee ./repdir/lec.log &\"；有参数时 lecexitflag=1。变体目录：lecapr/、lecaprA1/、lecrtleco/、lecupf/。"
+   },
+   {
+    "id": "sec-7",
+    "level": 3,
+    "title": "rtlgate.do（157 行）",
+    "text": "- golden = RTL（dc 流程先读 ddclec.f 再 .sv.f / .f）；revised：dc → ../dc/repdir/${TOPNAME}.gvorg；genus → fv/fvmap.v.gz（ECR2VEN=0，之后再做 fvmap vs .gv 第二趟）或直接 .gv（=1）。 - compare -NONEQstop 999 -NONEQPrint → 输出 unmapped.rpt / unreach.rpt / abort.rpt / noneq.rpt（下划线！尾部 \"No of diff points = N\"） / r2gbbox.rpt → analyzeabort -compare -threads 8。 - noneq ≠ 0 且 lecexitflag==0 时 setgui on（弹 GUI），否则 exit——「没弹窗 ≠ 通过」的脚本依据。 - 变体：lecapr revised 改读 APR 返回网表（APR 工程师 release 路径）；lecrtleco 读 ECO 目录网表；各 runlec 变体相同。 - lecupf：runleclp（perl）按时间戳建 repdir/ 并 link latest；lec -verify -64 -LP -NOGui -tclmode -dofile dofilelpchec"
+   },
+   {
+    "id": "sec-8",
+    "level": 3,
+    "title": "runnlint（csh，58 行）",
+    "text": "nLint -f ../filelist/$topname.f -f .../memdummy.f -f macro.f -f ./nlintdummy.f \\ -rs ${tcldir}/nlint/nlintrules.rs -bf×4 -logfile ./repdir/nlint.log \\ -top $topname -lint -lintTop $topname -out ./repdir/nlintorg.rpt \\ -maxcompileerror 100000 -syntaxerrormax 100000 之后接 nlintfilter.pl → /eda/utility/lint/nlint.pl（两个外部 perl 均在包外）。"
+   },
+   {
+    "id": "sec-9",
+    "level": 3,
+    "title": "filelist 规则",
+    "text": "- filelist/${TOPNAME}.f 仅一行 -f $PROJECTPATH/HDL/filelist/${TOPNAME}.f（嵌套引用 HDL 侧 filelist）。 - advanced/ 下 14 个文件含 0 字节占位（ddclec.f、gen.sv.f 等）——配置中指定的文件即使无内容也必须放空文件占位，否则流程直接报错。"
+   },
+   {
+    "id": "sec-10",
+    "level": 3,
+    "title": "工具版本对照表",
+    "text": "| 环节 | 版本（cshrc） | |------|---------------| | DC 综合 | syn1709（备选 syn1603） | | LEC | confrml17 | | Genus | genus1723 | | IP 级 prePT | pt1706 | | TOP 级 prePT | pt1806 | | postPT | pt1706 |"
+   },
+   {
+    "id": "sec-11",
+    "level": 3,
+    "title": "pt/（IP 级 prePT，附）",
+    "text": "- runpt：source /eda/env/pt1706.cshrc；ptshell -f ptsetup.tcl -x \"set exitflag 0|1\" | tee repdir/pt.log。 - ptsetup.tcl（32 行）：CKFLTEN 0 / CKTIMEN 1 / CKPWREN 0 / PTHOLD 0；verilog 取 ../${SYNTOOL}/repdir/${TOPNAME}.gvorg；sdc 取 $IPCONSDIR/$TOPNAME.tcl + commoncons.tcl；source commondbpvt.tcl、commonpt.tcl、commonpwr.tcl（均在 $TCLDIR，包外）。CKPWREN==1 时 CORNER 强制 ttcbest 并开 power 分析。"
+   },
+   {
+    "id": "sec-12",
+    "level": 2,
+    "title": "2. prePT（TOP 级，sta/pre）",
+    "text": ""
+   },
+   {
+    "id": "sec-13",
+    "level": 3,
+    "title": "runpt（prePT，13 行）",
+    "text": "source /eda/env/pt1806.cshrc；ptshell -f ../common/ptsetup.tcl -x \"set exitflag 0\" | tee ./ptrpt/pt.log。"
+   },
+   {
+    "id": "sec-14",
+    "level": 3,
+    "title": "ptsetup.tcl（prePT 主脚本，137 行）",
+    "text": "- sethostoptions -maxcores 4；CKFLTEN / CKTIMEN 先置 1/0，随后 source ./design.set 又置 1/1——执行顺序陷阱，生效的是 1/1。 - PT 变量：CRPR normal、timingcrprthresholdps 1、caseanalysislogfile、linkcreateblackboxes false（pre-layout 专用）等。 - 流程：commondb.tcl → readdesign.tcl → linkdesign → clkperiod / kvclkio → source ${IPCONSDIR}/${SDCNAME}.tcl（手工维护的约束源 = 会议说的 \"dco\" 本体，包外）+ input/outputdelay.tcl（有一段 if{0} 包着的 sd skew 约束实验残留）→ commoncons.tcl → updatetiming → source $TCLDIR/pt/ptreport.tcl → reporttiming（max / min）→ writesdc ../sdcpr/${SDCNAME}.tcl -nosplit（展开后 SDC 落点） → kvreportdffnum > ptrpt/reportdffnum.rpt。 - CKFLTEN 分支："
+   },
+   {
+    "id": "sec-15",
+    "level": 3,
+    "title": "readdesign.tcl",
+    "text": "readverilog .../ip/syn${TOPNAME}/dc/repdir/${TOPNAME}.gv——prePT 读的是 DC 综合吐出的 .gv。"
+   },
+   {
+    "id": "sec-16",
+    "level": 3,
+    "title": "design.set（prePT 版，91 行）",
+    "text": "与综合主 design.set 同族；VOLTAGE 0p9、topconsen 1、CKFLTEN 1 / CKTIMEN 1、LVTEN 0 / SVTEN 1、CORNER \"wccworst\"。"
+   },
+   {
+    "id": "sec-17",
+    "level": 3,
+    "title": "sdcpr 展开产物",
+    "text": "sdcpr/ .tcl（实例 1321 行）：文件头 \"Created by PrimeTime writesdc\"，sdcversion 2.1，单位 ns——prePT 展开产物，供 APR 使用。 实测时钟表（校对依据）： | clock | 周期 (ns) | uncertainty setup / hold (ns) | |-------|-----------|-------------------------------| | RX0CLK | 9.5 | 0.475 / 0.15 | | RX1CLK | 17.1 | 0.855 / 0.15 | | RX0ODCLK | 4.75 | 0.4 / 0.15 | | RX1ODCLK | 8.55 | 0.4275 / 0.15 | | STBCLK | 6.43 | 0.4 / 0.15 | | VS / LS / POWERONCLK | 100 | 2 / 0.15 | | OSCCLKIN | 20 | 1 / 0.15 | | I2CCLK | 500 | 2 / 0.15 | | RX0CLKDIV1P51P | — | 0.95 / 0.15 | generated clock：DIV2（-edges {2 4 6}）、DIV1P5（-edges {1 3 4}）等。 结论：hold uncertai"
+   },
+   {
+    "id": "sec-18",
+    "level": 3,
+    "title": "ptrpt 产出文件清单",
+    "text": "| 文件名 | 内容 | 什么时候看 | |--------|------|-----------| | pt.log | 主 log | 先查 error | | readverilog.log / linkdesign.log / readsdc.log / readtcl.log | 各阶段 log | 报错时按阶段排查 | | caseanalysis.log | case analysis 记录 | 约束排查 | | updatetiming.log | 时序更新记录 | 时序异常时 | | ${TOPNAME}cons.rpt | 约束检查，unconstrained 在这 | 交付前必查 | | ${TOPNAME}coverage.rpt | 分析覆盖率 | 约束完整性 | | ${TOPNAME}timing.rpt / reporttiming.rpt / reporttimingmin.rpt / reporttiming.log | setup / hold 时序报告 | 看 slack | | reportdffnum.rpt | \"report the DFF number of \\ : N\" | 查每个 clock 域的 DFF 数 | | ptinputfloat.log | floating 输入列表 | 交付前 / APR 对接工程师需要 | |"
+   },
+   {
+    "id": "sec-19",
+    "level": 2,
+    "title": "3. postPT（sta/post）",
+    "text": ""
+   },
+   {
+    "id": "sec-20",
+    "level": 3,
+    "title": "design.set（postPT 版，66 行）",
+    "text": "- SDCPATH \".../DataBase/Digital/Release/${TOPNAME}toAPR/latest\"（APR release 公共库路径）；PRPATH \".../AD/ /release/${TOPNAME}/timing/latest\"。 - PARAMDESIGN 1（注意真实拼写，非 PARADESIGN；它和 UPPERCASE 0 只存在于 postPT 版 design.set）。 - Tfastestclockperiod 2.2；ANAEN 1、LVTEN 1、POWEROPTIMIZATION 1、POSTPTEN 1、PTHOLD 0。 - 头部注释保留多 die 拼接模板。"
+   },
+   {
+    "id": "sec-21",
+    "level": 3,
+    "title": "cornerset.tcl（每 corner 一份，14 行）",
+    "text": "set CONSCHECK 1 # SICHECK 1 / EARLYDERATING 1 / LATEDERATING 0 set CORNER \"ltcbest\" # 注释 \"#wc, wcl, lt, ml\" set DUMPSDF 0 # ← dump SDF 开关真实变量名 set QUIT 0 # DEBUG0 0 / DEBUG1 0 / DEBUG2 0 source ../../common/ptsetup.tcl -echo DUMPSDF==1 分支：writesdf -context verilog ../../sdf/${SDCNAME}${RCFILE}.sdf，然后跳过全部 report——「corner 结果为空」真相：不是结果被删除，是该趟 run 与 report 分支互斥只产 SDF，且 latest 软链指向这趟，runsummary 抓到空。用完关掉并重跑该 corner。 坑——corner 目录命名：实际目录叫 ltcbestm40（无第二下划线），而 runsummary / pararrelrunpt.py 期望 ltcbestm40。"
+   },
+   {
+    "id": "sec-22",
+    "level": 3,
+    "title": "runpt（postPT，每 corner 一份，8 行）",
+    "text": "source /eda/env/pt1706.cshrc；ptshell -f ./cornerset.tcl | tee pt.log。"
+   },
+   {
+    "id": "sec-23",
+    "level": 3,
+    "title": "ptsetup.tcl（postPT 核心，345 行）",
+    "text": "- 按 $pwd 分 scanatspeed / scanstuck / func；自动编号建 logDATEN、rptDATEN（下设 summary/setup/hold/skew/trans/analog）、wholesessionDATEN，并 ln -s rpt... latest。 - CRPR 开启（threshold 10ps）；SICHECK==1：sienableanalysis true、compositeaggr statistical、doubleswitching clocknetwork、allpathedges 等（注释留备选 SI 配置）。 - readverilog APR 网表 .v.gz（硬编码 APR release 路径）；CORNER→RCFILE→operatingconditions 映射（wc / lt / ml / tt × cworst / cbest / typ，wcl 整段注释掉）。 - readparasitic -keepcapacitivecoupling ${PRPATH}/${TOPNAME}${RCFILE}.spef.gz → updatetiming → reportannotatedparasitics。 - 约束：clkperiod.tcl + kvclkiopostpt.tcl + source ${"
+   },
+   {
+    "id": "sec-24",
+    "level": 3,
+    "title": "reporttimingprj.tcl（41 行，主 report 定义）",
+    "text": "- setup：reporttiming -pbamode path -delaytype max -pathtype fullclockexpanded -crosstalkdelta -derate -slacklesserthan 0.5 -maxpaths 1000 > setup/reporttimingsetup.rpt；每 clock 单独一份（slack < 0.2）；async / clockgating 组。hold 同构。 - trans：reportconstraint -allviolators -verbose 全量 + maxtransition / maxcapacitance / minpulsewidth / minperiod → trans/ 5 份；另写 ${PROJECT}.sum.rpt、.drv.rpt、.clk.sum.rpt。"
+   },
+   {
+    "id": "sec-25",
+    "level": 3,
+    "title": "skew 报告四件套",
+    "text": "#### reporttimingskewsd.tcl（172 行）—— SD data/clock skew（L/R × A/B） 完整路径 SYNTHESIS/top/sta/post/common/reporttimingskewsd.tcl；脚本内容截图与 -maxpath 取舍经验见 POSTPT skew 章节。 - 数据组：from DTCTLL0|L1/{CHCNTpre,DATAPRE,...} → to ports DBL0/2/4（左 A）、DBL1/3/5（左 B）、DBR0/2/4（右 A）、DBR1/3/5（右 B），-maxpath 2000 -nworst 1000；输入信号 SLDLY→SLINA/B、SRDLY→SRINA/B；clock 组 from CLKGENU0|U1 → to CLKAL/CLKBL/CLKAR/CLKBR。 - 产出命名：skew/reporttimingsd{l,r}1p{a,b}.rpt、...clk{a,b}.rpt。 - bug：SL/SR 报告用 > 重定向到与 DBL/DBR 同名文件会覆盖；第 100 行层次分隔符误用 .；2P 版报告脚本包中缺失，但 perl 抓取层期待 sd2p 文件。 #### reporttimingskewisprx.tcl（17 行） L0 / L1 两组 -group RX"
+   },
+   {
+    "id": "sec-26",
+    "level": 3,
+    "title": "reportclockpath.tcl（41 行）",
+    "text": "「直抛 clock path 的 Tcl」：clkstartpoints（13 个）× clkgenendpoint（8 个）双重循环 reporttiming → clockpath.rpt。注意：ptsetup.tcl 并不 source 它，需手工 / 单独调用；grepcell.do 依赖它检查 clock path VT 构成。"
+   },
+   {
+    "id": "sec-27",
+    "level": 3,
+    "title": "reporttimingtrans.tcl（2 行）",
+    "text": "greptranspath.pl 从 cons.rpt 抽 maxtransition 违规 pin，生成逐点 reporttiming。"
+   },
+   {
+    "id": "sec-28",
+    "level": 3,
+    "title": "grepcell.do（4 行全注释模板）",
+    "text": "grep 'LMX|RMX|HMX' .../clockpath.rpt | grep -v 'CK\\|(QD' > ckcell{lvt,svt,hvt}.rpt 检查 clock path 的 VT 构成（runsummary 尾部调用，注释 \"in order to insure LVT in clock path\"）。"
+   },
+   {
+    "id": "sec-29",
+    "level": 3,
+    "title": "sortclkpulse.pl（119 行）",
+    "text": "- 用法：sortclkpulse xxx.csv xxxresult.csv corner。 - 内置项目时钟表 @golclkname / @golperiod / @goldutymin——换项目必改。 - pulsewidth 按 slack = value - perioddutymin + uncertainty（uncertainty = max(period5%, 0.1)）重算。 - 有 $$clockgroup 双 $ 笔误。"
+   },
+   {
+    "id": "sec-30",
+    "level": 2,
+    "title": "4. 批量与汇总",
+    "text": ""
+   },
+   {
+    "id": "sec-31",
+    "level": 3,
+    "title": "runall（csh，60 行）—— 串行批量（旧版 6 corner）",
+    "text": "set PROJECT = \"CLKSWITCH\"（旧项目残留！环境沿袭自 CLKSWITCH）；setenv DUMPSDF 0；顺序 cd 进 wccworst125 / wclcworstm40 / bccbestm40 / mlcbest125 / wcrcworst125max / min 各跑 runpt；拷 cons.rpt 按 corner 命名。bc 是旧命名，只出现在这里。"
+   },
+   {
+    "id": "sec-32",
+    "level": 3,
+    "title": "pararrelrunpt.py（40 行，原文拼写 pararrel）—— 并行批量",
+    "text": "对 10 个 corner 各起 xterm -hold -e 'cd $PROJECTPATH && source cshrc. pt && cd && bsub -Ip ./runpt' & 并发。 - bug：errorfound 和 runsummary 变量未定义——「跑完自动接 runsummary」实际不工作，批量跑完需手工执行 runsummary；grepcmd 定义了未使用。 - cshrc. pt 在包外。"
+   },
+   {
+    "id": "sec-33",
+    "level": 3,
+    "title": "runsummary（sh，100 行）—— 汇总",
+    "text": "- cornerarray = 10 个 corner：wccworst125 wccbest125 wctypical125 ltcworstm40 ltcbestm40 lttypicalm40 mlcbest125 ttcworst25 ttcbest25 tttypical25（wc×3 + lt×3 + ml×1 + tt×3，无 wcl、无 bc；bc 只在旧 runall 出现）。 - summary/${DATE}i 建目录并 link latest；每 corner 跑 getviolate（setup 取 latest/setup/，hold 取 latest/hold/）、getviolatetrans、getphybusskew、getsdbusskew；再 merge 合成总表；末尾 grepcell.do。"
+   },
+   {
+    "id": "sec-34",
+    "level": 3,
+    "title": "get.pl（perl 抓取层，runsummary 调用）",
+    "text": "| 脚本 | 输入 → 输出 | |------|-------------| | getviolate.pl | 扫 .rpt 抓 slack ≤ -0.001 → CSV clock名,violation数,最大违规 | | getviolatetrans.pl | 扫 reportconstraint.rpt 抓违规 Pin + Slack → CSV | | getphybusskew.pl | skew 报告里所有 slack 行原样打印 | | getsdbusskew.pl | 只处理 sd 报告；clk 文件取 data arrival max / min；硬编码 24 组 sd{l,r}{1p,2pl0,2pl1}{clk,}{a,b}{max,min} 并算 24 组 margin（datamax − clkmin / datamin − clkmax），单行 72 列 CSV |"
+   },
+   {
+    "id": "sec-35",
+    "level": 3,
+    "title": "merge.pl（perl 合并层）",
+    "text": "| 脚本 | 产物 | |------|------| | mergeviolate.pl | 各 corner csv 横向合并 → reportsetup.csv / reporthold.csv / reporttrans.csv | | mergesdbusskew.pl | → reportsdbusskew.csv（行 = 72 个分组指标，含 margin 标注规格 [-1:6]；列 = corner）——「Excel 上半 latency 下半 skew/margin」的真实形态，实际产物是 CSV | | mergephybusskew.pl | → reportphybusskew.csv | | greptranspath.pl | 从 cons.rpt maxtransition 段抽违规 pin 生成 reporttiming 行 | 共同坑：shebang 指向 Vera 自带 perl 的绝版路径；close (INFLE) 拼写错误（应为 INFILE）。"
+   },
+   {
+    "id": "sec-36",
+    "level": 2,
+    "title": "5. 寄存器与其他 perl 工具",
+    "text": ""
+   },
+   {
+    "id": "sec-37",
+    "level": 3,
+    "title": "mergexls 流程（寄存器 Excel 合并）",
+    "text": "- readme 三步：perl copy.pl CDR.xls CDR1.xls → perl mergexls.pl . .xls → perl sort.pl .xls 1.xls；实际 runmerge 用的是 mergexls1.pl（2 参数，跳 5 行表头）——readme 与 runmerge 用的合并脚本不同。 - copy.pl：ParseExcel → WriteExcel 整表复制 + 第一列向下填充；mergexls1.pl：dir 下所有 .xls 纵向合并；sort.pl：按第 0 列地址排序。 - 依赖 CPAN Spreadsheet::ParseExcel / WriteExcel（只支持 .xls 老格式）。"
+   },
+   {
+    "id": "sec-38",
+    "level": 3,
+    "title": "reg8bit32bit（8bit 寄存器表合并成 32bit）",
+    "text": "readme 提到的 regmerge.pl 实际文件名是 regchange.pl；regchange.pl 按地址低位 0/4/8/c 把 4 个 8bit 寄存器合并为一个 32bit。"
+   },
+   {
+    "id": "sec-39",
+    "level": 3,
+    "title": "afifo skew 三件套（另一项目，24 corner 命名体系）",
+    "text": "getafifoskew.pl 抓 data arrival time；mergeafifoskew.pl 横向拼 csv；mergeafifodiff.pl 求 max − min 差值；count0.pl 把不足 6 行的 txt 补空行对齐。"
+   },
+   {
+    "id": "sec-40",
+    "level": 3,
+    "title": "其他单文件工具",
+    "text": "addressmerge.pl、copy.pl、sort.pl（根目录版有 $0 / @sortedvalue 笔误跑不过）、keywords.pl（扫 reserved 行）、regaddressmerge.pl、print3.pl。"
+   },
+   {
+    "id": "sec-41",
+    "level": 2,
+    "title": "6. 调用关系总图",
+    "text": ""
+   },
+   {
+    "id": "sec-42",
+    "level": 2,
+    "title": "7. 已知 bug 与坑清单",
+    "text": "| 位置 | 问题 | 影响 / 处理 | |------|------|-------------| | reporttimingskewsd.tcl | SL/SR 报告用 > 重定向到与 DBL/DBR 同名文件 | 同名文件互相覆盖，报告丢失 | | reporttimingskewsd.tcl 第 100 行 | 层次分隔符误用 . | 层次匹配失败 | | skew 报告系列 | 2P 版报告脚本包中缺失 | getsdbusskew.pl 期待的 sd2p 文件不存在 | | pararrelrunpt.py | errorfound / runsummary 变量未定义 | 跑完自动接 runsummary 不工作 | | pararrelrunpt.py | grepcmd 定义未用 | 死代码 | | sortclkpulse.pl | $$clockgroup 双 $ 笔误 | 运行报错 | | compilegenus.tcl | kvupfpower $$USEUPF 双 $ 笔误 | 运行报错 | | 根目录 sort.pl | $0 / @sortedvalue 笔误 | 跑不过 | | postPT corner 目录 | 实际目录 ltcbestm40（无第二下划线） vs 脚本期望 ltcbestm40 | runsummary / pararr"
+   },
+   {
+    "id": "sec-43",
+    "level": 2,
+    "title": "8. 本包未包含",
+    "text": "以下只有用法、没有脚本本体，避免按图索骥： - runckf：CKF 入口脚本（ckf/ 目录为空，只有 Readme 记录的产物 ckf/repdir/ckf.rpt）。 - gensyn：环境初始化封装脚本（含 -noadd 等选项）。 - signoff / signoff fake：signoff 脚本本体（包内只有 signoff.rpt 样本）。 - ipcons 约束源文件本体（$IPCONSDIR/$TOPNAME.tcl，即会议说的 \"dco\"）。 - $TCLDIR 公共 tcl（dcuserproc.tcl、basicsetupall.tcl、commondbpvt.tcl、commonpt.tcl、commonpwr.tcl、ptreport.tcl 等）。 - 其余：netlistreform.pl、nlintfilter.pl、nlintwaive.list、cshrc. pt、1.8 GHz / 展频约束、2P 版 skew 报告脚本。"
+   }
+  ]
+ },
+ {
+  "page": "signoff-timing.html",
+  "pageTitle": "APR SIGNOFF",
+  "sections": [
+   {
+    "id": "sec-0",
+    "level": 2,
+    "title": "1. Signoff 检查与交付",
+    "text": ""
+   },
+   {
+    "id": "sec-1",
+    "level": 3,
+    "title": "1.1 Signoff 检查",
+    "text": "在自己的 IP 路径下运行 signoff 脚本（脚本本体在脚本包外）时，会自动： - 收集 CKF、nLint、DC、LEC 等各环节的 log / report（signoff.rpt 样本中 LEC 环节写作 EC，并收集 Top name / 路径 / Project path 及各环节的 SVN Version 与 run Date） - check 综合相关目录对应的版本号，确保 CKF / nLint / DC / LEC 等步骤基于同一 RTL 版本 - 输出 signoff.rpt，汇总所有 error 与 check 信息；每一项报错都需要修掉 - 界面逐项显示 check 结果，全部通过显示 signoff pass；有 error 会明确指出具体环节 - 把当前版本全部 log / report 自动备份，可追溯上一版结果 - 全部通过后，自动 release 到指定目录并指向 latest WARNING: - signoff fake 仅限中间调试版本使用——明知有 error 暂不想修时，仅做备份保存。 - 严禁 最终交付版本使用 signoff fake，必须走全量校验；silver netlist 后通常不允许 signoff fake，紧急情况需单独申请。"
+   },
+   {
+    "id": "sec-2",
+    "level": 3,
+    "title": "1.2 交付物示例",
+    "text": "| 交付物 | 说明 | |--------|------| | netlist (.v / .gv) | 综合后的门级网表 | | SDC | 时序约束 | | donttouch.tcl | 不被优化的单元列表 | | signoff.rpt | signoff 检查报告 | | release 目录 | 按版本归档的完整结果 | 交付 APR 的内容：netlist、SDC、don't touch 列表。self report 放自己的路径；release 目录现统一放到公共 database 路径。 WARNING: 必须 正式 Silver / Golden netlist release 时，必须填写 netlist release check Excel 确认表，逐项检查并签字确认（纯人工流程）。"
+   },
+   {
+    "id": "sec-3",
+    "level": 3,
+    "title": "1.3 交付前检查要点",
+    "text": "跨部门交付 APR 前，pre-delivery check 一定要做好——APR 开工后发现问题会直接找回来。 KEY: unconstrained（未约束）路径交付 = 重大 bug；constraint 下错（如过紧）还可以改，未约束路径无法事后补救。交付前必须确认 unconstrained paths 清零（在 prePT 的 ${TOPNAME}cons.rpt 中查）。 - floating 信号在 APR 可能被优化剪掉、整路逻辑消失，需确认是否有意保留。 - 必须 确保 DC 和 PT 均无 violation 才能交付。"
+   },
+   {
+    "id": "sec-4",
+    "level": 3,
+    "title": "1.4 交付落盘：DataBase 目录与 updatelatest",
+    "text": "signoff 通过、全部 run 完成后，交付物要到 DataBase 公共目录落盘确认： ① 开通目录权限：DataBase 目录默认无写权限，联系 DataBase 管理员（顾老师）开通；开通后用 newgrp 提权切换到项目管理员组： newgrp HV2M23adm ② 进入交付目录（注意是 Release，每项目一个 toAPR 目录）： cd /HV2M23/DataBase/Digital/Release/HV2M23digitaltoptoAPR ③ 运行 updatelatest：刷新 latest 指向最新交付版本。跑完后 latest/ 下应看到完整交付文件清单： | 文件 | 说明 | |------|------| | .gv | 综合后门级网表 | | .sdc / postcts.sdc | 时序约束（postcts 为 APR 返回版本） | | donttouch.tcl | 不被优化的单元列表 | | addon.tcl / addonnomulti.tcl | 附加约束脚本 | 清单与 §1.2 交付物一一对应，缺任何一样都说明 release 流程没走完，回上一步排查。 ---"
+   },
+   {
+    "id": "sec-5",
+    "level": 2,
+    "title": "2. 时序分析（PrimeTime）",
+    "text": "&gt; 本节讲 prePT / postPT 的运行与配置（操作步骤）；约束管理、skew 修调、报告解读等 postPT 方法论见 「POSTPT」 章。"
+   },
+   {
+    "id": "sec-6",
+    "level": 3,
+    "title": "2.1 Pre-PT",
+    "text": "cd pt runpt prePT 的作用：把 constraint 展开成完整形式、检查 SDC 语法、做简单的 timing check。 - ptsetup.tcl 一般无需修改；其中 set autowireloadselection false 是刻意关掉的——开着时 prept 的 timing 会比 DC 的 timing 差得多。IP 级环境下 ptsetup.tcl 对应的是 commonpt.tcl。 - commondbpvt.tcl 选择与实际综合一致的 corner（如 wccworst）。 - 注意 memory / analog 的 PVT 可能与标准单元不同。 检查项： - pt.log 无 Error - .rpt 中 timing slack &gt; 0 运行路径：IP 路径和 TOP 路径下都有 prePT 脚本（两套环境的工具版本不同：IP 级用 pt1706，TOP 级用 pt1806），当前一般使用 TOP 路径下的版本；IP 路径下的脚本目前跑不过、待排查（在 IP 下跑的好处是 signoff 时 PT log / report 可以一起 signoff）。 prePT 产物中还可以查到（真实文件名）： - unconstrained（未约束）路径列表——在 ptrpt/${TOPNAME}cons.rpt - SDC 语法错误——"
+   },
+   {
+    "id": "sec-7",
+    "level": 3,
+    "title": "2.2 prePT 报告的下游应用：后仿 notimingcheck 配置",
+    "text": "prePT 报告除了看时序，还有一个重要下游用途：给 gate-level 后仿生成 notimingcheck 名单。 配置文件（真实路径）： HV2M23/DVTCONC/script/notimingcheckDIG.cfg 格式为逐行列 instance 的完整仿真层次： instance {chiptbtop.u .u digitaltop.uLOGICCENTER.LINKLOGIC.USYNCL0L1. reg} {noTiming}; 为什么在 prePT 之后做（而不是 DC 之后）： - 这个 cfg 是后仿（带 SDF 的 gate-level 仿真）用的，noTiming 让仿真工具不对这些 instance 做 setup / hold 等 timing check。 - 「哪些 instance 不需要 check」必须由完整约束下的 STA 报告判定——prePT 是第一个拿综合网表 + 完整展开 SDC 做全量 STA 的节点，异步跨域、同步器、准静态路径只有在 prePT 报告里才看得全。 - DC 阶段的 timing 只是 wireload 估计、约束未完整展开，不能作为「这条路径不用 check」的依据。 - 图中实例名单自己也证明了来源：USYNCL0L1（同步器）、UL0CIRCDELAYBUF（环形 delay buffer）、BLAN"
+   },
+   {
+    "id": "sec-8",
+    "level": 3,
+    "title": "2.3 Post-PT",
+    "text": "基于 APR 后端输出进行 signoff 级时序分析——这是 APR 阶段的最终时序验收，以全 corner 结果为准： cd sta/post/pt runpt 每个 corner 目录下各有一份入口脚本 runpt （只跑当前 corner）。 需修改： - cornerset.tcl ：每个 corner 下各有一份；corner 配置基本不动，换库时需照 foundry 提供的 PVT 文档（含 OCV）逐项更换。当前 runsummary 实际跑 10 个 corner：wccworst125 / wccbest125 / wctypical125 / ltcworstm40 / ltcbestm40 / lttypicalm40 / mlcbest125 / ttcworst25 / ttcbest25 / tttypical25——无 wcl（脚本中已整段注释掉）、无 bc（bc 是旧命名，只出现在旧版串行脚本 runall 中） - wc：ss 低压高温（LVHT） - wcl：ss 低压低温（LVLT） - lt：ff 高压低温（HVLT） - ml：ff 高压高温（HVHT） - tt：典型温压 - ptsetup.tcl ：最核心的脚本，内含大量需要 check 的 report 定义（slack、clock path 等）；读取 APR 吐出的网表（.v "
+   },
+   {
+    "id": "sec-9",
+    "level": 3,
+    "title": "2.4 后仿 SDF 生成与仿真侧配置（完整流程）",
+    "text": "后仿（带 SDF 的 gate-level 仿真）前要先生成 SDF，完整流程如下： ① 开 DUMPSDF（PT 侧）：到对应 corner 目录改 cornerset.tcl，把 set DUMPSDF 0 改为 1： 文件路径：SYNTHESIS/top/sta/post/pt/ /cornerset.tcl。一般只跑三个 corner：tttypical25、wccbest125、ltcbestm40。 ② 跑 postPT 生成 SDF：在该 corner 目录执行 runpt。注意这趟 run 只执行 writesdf、不产任何 timing report（分支互斥，见上条 WARNING）；SDF 落在 SYNTHESIS/top/sta/post/sdf/ 下，如 HV2M23digitaltoptypical25c.sdf / cbest125c.sdf / cbestm40c.sdf。 ③ 改回 0：SDF 下载/取回后，必须把 DUMPSDF 改回 0——不改的话 latest 软链一直指向这趟只产 SDF 的 run，runsummary 抓到的就是空结果。 ④ 仿真侧 case 定义：在 case 的 userdefine（userdef.sv）里按 corner 分别定义宏：SDFTT / SDFWC / SDFBC，决定本 case 反标哪个 corn"
+   },
+   {
+    "id": "sec-10",
+    "level": 2,
+    "title": "3. 流程依赖关系",
+    "text": "各步骤的并行与串行关系如下： - CKF、nLint、lecupf、DC/Genus 原则上可并行。 - 为保证 signoff 的版本一致性检查，DC/Genus 需在 CKF、nLint 之后运行。 - Pre-PT 与 LEC 可并行。 整体执行顺序：CKF + nLint（语法通过）→ DC → LEC 和 prePT → 逐个查看 report 确认无 error → DC / PT 均无 violation → 交付。 flowchart TD CKF[\"CKF 连接检查\"] -->|\"需先通过\"| SYN[\"DC/Genus 综合\"] LINT[\"nLint 语法检查\"] -->|\"需先通过\"| SYN SYN --> LEC[\"LEC\"] SYN --> PRE[\"prePT\"] LEC --> RPT[\"逐个看 report 确认无 error\"] PRE --> RPT RPT --> SO[\"signoff\"] SO --> APR[\"交付 APR\"] APR --> POST[\"postPT\"]"
+   }
+  ]
+ },
+ {
+  "page": "synthesis-upf.html",
+  "pageTitle": "综合",
+  "sections": [
+   {
+    "id": "sec-0",
+    "level": 2,
+    "title": "1. UPF 准备与检查（当前 Driver 项目不做该步骤）",
+    "text": "NOTE: UPF 用于定义电源域，只有做了电源域划分的大芯片才需要。当前 Driver 类项目均不使用 UPF、不做该步骤；仅个别大型项目有 UPF 实例，本节内容仅供需要时参考。"
+   },
+   {
+    "id": "sec-1",
+    "level": 3,
+    "title": "1.1 lecupf（当前 Driver 项目不做该步骤）",
+    "text": "lecupf 用于检查 UPF 文件本身的正确性。 - UPF 文件通常放在 SYNTHESIS/common/upf/ 下。 - 输入 reporttop.txt 需逐行检查： - library PG pin 定义是否正确 - analog 电源域是否缺失 - power port 电压定义是否合理 - 即使 UPF 已修正，仍可能存在 Error / Warning，需与模拟设计同事确认。 NOTE: 对需要做 UPF 的项目，lecupf 与 CKF、nLint 一样，建议在综合前完成。"
+   },
+   {
+    "id": "sec-2",
+    "level": 3,
+    "title": "1.2 genusupf 生成 final.upf（当前 Driver 项目不做该步骤）",
+    "text": "部分 flow 需要借助 Genus 生成最终的 final.upf： 1. 从 genus 目录复制并新建 genusupf 目录。 2. 修改 compilegenus.tcl： - 注释掉 kvgenuscompile &quot;generic&quot; - 增加 read UPF 相关命令 3. filelist 引用网表（.gv）而非 RTL。 4. 顶层约束 .tcl 中的层级分隔符需与工具要求一致。 5. settings.upf（lecupf 自动生成的文件名带 s）一般无需修改。 6. 运行 rungenus，检查 genus.log 与报告。 WARNING: 综合时代码中的 output / inout 不能直接接常量，否则 genusupf 可能报错。 ---"
+   },
+   {
+    "id": "sec-3",
+    "level": 2,
+    "title": "2. 综合（DC / Genus）",
+    "text": ""
+   },
+   {
+    "id": "sec-4",
+    "level": 3,
+    "title": "2.1 Design Compiler",
+    "text": "cd dc rundc 前置条件：CKF、nLint、lecupf 问题已清理。 rundc 与 compiledc.tcl 一般无需修改；Top synthesis 场景下可能需要修改 compiledc.tcl 以生成 donttouch.tcl，配合 APR 使用。 约束文件（通常位于 SYNTHESIS/common/ipcons/）应包括： - kvclock / kvvclock：clock 点需为 macro 或 standard cell pin - kvreset - kvinout - kv2clklistgrouppath - setmulticyclepath - setfalsepath - setdonttouch：analog macro、standard cell、IO 等，防止被 DC 优化掉 部分项目还会有统一的公共 cons（如对 MEM scanmode 等的 setting），可放在公共 tcl 中，也可放在 IP constraint 中。 下约束前必须非常了解 clock gen 的设计意图——约束只有下对地方，路径才能被全部 consume（覆盖）；下错地方会留下大量 unconstrained paths。 主要检查项： - dc.log：无 Error、无 unresolved - .chkdesign：无 undrive - ."
+   },
+   {
+    "id": "sec-5",
+    "level": 3,
+    "title": "2.2 don't touch 使用纪律",
+    "text": "compile 时必须加 don't touch，防止关键 cell（buffer、时钟生成单元等）被优化掉导致节点消失；但不能乱加——加错会导致后面 clock tree 出问题。 - 仅对需要保留的时钟生成单元、关键 buffer 加 don't touch；约束范围过大会让后续 timing 修调没有优化空间。 - don't touch 限制较大，实际需要的往往只是 setsizeonly（sizing only）——更自由，允许 DC 调整 size。 - 手塞（hand-instantiated）cell：input 会被强制插 buffer、output 按与 APR 的沟通也强制加 output buffer，理论上代码里不必手塞；但有些手塞 delay 带有时序考虑（如错开 base），不能乱动。"
+   },
+   {
+    "id": "sec-6",
+    "level": 3,
+    "title": "2.3 Genus",
+    "text": "cd genus rungenus 若使用 DC，通常不需要运行 Genus。若项目指定使用 Genus，则需配置 design.set 中 SYNTOOL=genus。 Genus 是与 DC 不同家的综合工具，目前基本不用，但脚本保留。历史用途：大芯片上 DC 综合后 LEC 一直过不了时，换 Genus 重新综合可以规避（不同家工具，避免\"球员兼裁判\"）。使用 Genus 时仍用 LEC 验证一致性（flow 未引入 formal）。 TIP: RTL 不要写得太复杂（如复杂组合回环），否则容易导致 LEC 不过。 主要检查项： - genus.log 无 Error - .rpt 中 area、timing 符合预期"
+   }
+  ]
+ },
+ {
+  "page": "to-signoff.html",
+  "pageTitle": "TO SIGNOFF",
+  "sections": [
+   {
+    "id": "sec-0",
+    "level": 2,
+    "title": "1. 最终确认流程",
+    "text": "约束迭代收敛（见 POSTPT 页 §3.2 ）之后，APR 工程师完成全部修调与 ECO。此时必须最后完整跑一轮确认： flowchart LR A[\"APR 修改全部完成 (修调 / ECO)\"] --> B[\"重跑 postPT 10 个 corner\"] B --> C[\"runsummary\"] C --> D[\"逐个看 5 个 merge csv\"] D --> E{\"全部 ready?\"} E -->|\"是\"| F[\"✅ TO SIGNOFF 进入最终签核\"] E -->|\"否\"| G[\"回到约束迭代闭环 或继续修调\"] 1. APR 修改全部完成（修调 / ECO 全部落定）； 2. 重跑 postPT 全部 10 个 corner（pararrelrunpt.py 批量提交）； 3. 执行 runsummary 生成 summary/latest/ 下的 merge 总表； 4. 逐个打开 5 个 csv 确认（下图）； 5. 全部 ready → 进入最终签核（TO SIGNOFF）；任何一项不 ready → 回 约束迭代闭环 或继续修调。"
+   },
+   {
+    "id": "sec-1",
+    "level": 2,
+    "title": "2. 五个 csv 各看什么",
+    "text": "| 文件 | 看什么 | ready 标准 | |------|--------|-----------| | reportsetup.csv | 每 clock 组 × 每 corner 的 violation number / biggest violation | violation number 全 0（或仅剩已确认并豁免的假路径），biggest violation ≥ 0 | | reporthold.csv | 同上，hold（min）路径 | 同上 | | reporttrans.csv | maxtransition / maxcapacitance 等违规 | 无 violator | | reportphybusskew.csv | PHY bus skew 分组 slack | 各组 skew 在规格内 | | reportsdbusskew.csv | SD data/clock skew 分组（含 margin） | margin 落在规格区间（如 [-1:6]） | 注意： - 这 5 个文件由 runsummary 调用 get.pl / merge.pl 自动生成（脚本条目见 脚本字典 ），列 = corner、行 = 分组指标； - 残留违例必须逐条能说清来历：已豁免的假路径要能对上 dco 里的 setfalsepath / setmultic"
+   }
+  ]
+ }
+]
