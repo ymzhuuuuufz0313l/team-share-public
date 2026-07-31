@@ -326,12 +326,16 @@
       }
       const div = document.createElement('div');
       const empty = !p.textContent.trim();
-      div.className = 'callout callout-' + conf.cls + (empty ? ' callout-head' : '');
+      // 空标记段（如 "WARNING:" 单独一行）：把紧随的列表并入块内，避免空横幅
+      const next = empty ? p.nextElementSibling : null;
+      const absorbList = next && (next.tagName === 'UL' || next.tagName === 'OL');
+      div.className = 'callout callout-' + conf.cls + (empty && !absorbList ? ' callout-head' : '');
       const tag = document.createElement('span');
       tag.className = 'callout-tag';
       tag.textContent = conf.label;
       div.appendChild(tag);
       while (p.firstChild) div.appendChild(p.firstChild);
+      if (absorbList) div.appendChild(next);
       p.replaceWith(div);
     });
   }
