@@ -80,7 +80,7 @@
     'live PT': '手工打开的交互式 PrimeTime session，用于临时报路径、验证约束效果，确认后再写回 dco。',
     'report_timing': 'PrimeTime 报时序路径的命令，常用 -input_pins 列出每级 pin；起点选错会夹带假路径。',
     'clock latency': 'clock 从源头到寄存器 clock 端的实际延迟；clock 间做过 balance 不应差很多，与 data 差得多是正常的。',
-    'margin': '时序裕量，本流程有三种用法：① 综合加严量——下给 DC 的约束比频率目标再收紧的经验值（约 0.8 ns，曾试 0.6），"对自己紧一点、对后端松一点"（会议经验值，脚本中无对应设置）；② skew margin——skew 报表中 data 相对 clock 的裕量，由 merge_sd_busskew.pl 按 data_max−clk_min、data_min−clk_max 逐组计算，规格区间如 [-1:6]；③ setup/hold margin——接口时序推导中前后各预留的窗口（如 15 ns 周期前后各留 4 ns，中间 7 ns 即 skew ±3.5 ns 的来源）。',
+    'margin': 'margin（裕量/余量）= 要求值与实际值之间的"安全距离"。裕量为正表示有余量、安全；为负表示不满足。通俗理解：考试 60 分及格你考了 80，margin 就是 20 分——它不是目标本身，而是为防止意外留出的缓冲。芯片里处处要留 margin，因为工艺、电压、温度变化都会侵蚀理论值。\n\n本流程中 margin 有三种具体用法：① 综合加严量——下给 DC 的约束比频率目标再收紧的经验值（约 0.8 ns，曾试 0.6），"对自己紧一点、对后端松一点"（会议经验值，脚本中无对应设置）；② skew margin——skew 报表中 data 相对 clock 的裕量，由 merge_sd_busskew.pl 按 data_max−clk_min、data_min−clk_max 逐组计算，规格区间如 [-1:6]；③ setup/hold margin——接口时序推导中前后各预留的窗口（如 15 ns 周期前后各留 4 ns，中间 7 ns 即 skew ±3.5 ns 的来源）。',
     'min_pulse_width': '最小时钟脉冲宽度检查；PT 报的是 rise/fall latency 差而非真实占空比，占空比需靠后仿波形确认。',
     'spread spectrum': '展频，让 clock 频率在小范围内抖动以分散 EMI 峰值，约束需把展频比例计入周期定义。',
     'duty cycle': '占空比，clock 高电平时间占周期的比例；非 50% 时下降沿不在窗口中间，修 skew 需相应推 clock。',
@@ -195,6 +195,9 @@
 }
 .callout-key .callout-tag { background: var(--accent); }
 .callout-head { padding: 7px 14px; }
+
+/* 悬浮窗内允许换行（词条解释中的 \n） */
+.term-tooltip { white-space: pre-line; }
 `;
   document.head.appendChild(cmdStyle);
 
