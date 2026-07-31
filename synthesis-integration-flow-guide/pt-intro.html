@@ -397,7 +397,7 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
 - 每个 corner 下 setup、hold、transition 全部都要 check，不做取舍。
 - 历史规律已经失效：以前是 wc corner 下 setup 更差、lt corner 下 hold 更差；现在因为修 skew 把延迟垫乱，各 corner 的表现不再符合老规律，所以必须所有 corner 全量校验。
 
-NOTE: "按经验只跑最差的 corner" 在当前项目已不成立。skew 修调会打乱延迟分布，任何 corner 都可能冒出最差值，全量跑是唯一安全的做法。
+WARNING: "按经验只跑最差的 corner" 在当前项目已不成立。skew 修调会打乱延迟分布，任何 corner 都可能冒出最差值，全量跑是唯一安全的做法。
 
 ### 1.2 uncertainty 与放宽纪律
 
@@ -844,7 +844,7 @@ SYNTHESIS/top/sta/post/common/report_timing_skew_sd.tcl
 - `-max_path 2000 -nworst 1000` 是**固定写法**：修 skew 要拿到每组足够多路径的 latency 分布，merge 脚本才能算出 max / min 和 margin；路径太少，推 skew 的数据基础就失真。
 - `-slack_lesser_than 50` **可加可不加、需要灵活考虑**：加上可以过滤掉 slack 明显为正的路径、控制报告体积（图中 clock 组带了 50，data 组没带）；但如果当前要看完整的 latency 分布（比如 data 组要推 skew），就不要加、或把阈值放宽，否则长 latency 路径被滤掉、merge 出来的数据就失真。阈值取多少（图中为 50）按当前要分析的内容定。
 
-WARNING: <span class="badge badge-rtl">强调</span> `-slack_lesser_than` 加不加、阈值取多少，**很需要经验、很需要迭代**才能下结论——不是抄一组参数就万事大吉。**每一条** `report_timing` 都要单独综合考虑：这条报告的目的是什么（推 skew 抓分布 / 只看违例 / 点对点附近）、滤掉的路径会不会正是要用的数据、阈值卡多紧合适。下不了结论时就迭代：先不加跑一次看数据量，再加上对比，反复几轮才能定下每一条的写法。
+KEY: <span class="badge badge-rtl">强调</span> `-slack_lesser_than` 加不加、阈值取多少，**很需要经验、很需要迭代**才能下结论——不是抄一组参数就万事大吉。**每一条** `report_timing` 都要单独综合考虑：这条报告的目的是什么（推 skew 抓分布 / 只看违例 / 点对点附近）、滤掉的路径会不会正是要用的数据、阈值卡多紧合适。下不了结论时就迭代：先不加跑一次看数据量，再加上对比，反复几轮才能定下每一条的写法。
 - 输出重定向按分组区分：每组第一条用 `>` 新建（覆盖旧结果），后续条目用 `>>` 追加——注意 script-dict 里记录过 `>` 误用于同组文件导致报告互相覆盖的坑。
 - 只做点对点跨域检查时不需要这套大 `-max_path`：如 1P5 分频跨域、isprx、io 报告，用 `-slack_lesser_than` 过滤或少量 `-max_paths 100` 即可。
 

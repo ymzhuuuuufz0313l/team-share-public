@@ -396,13 +396,14 @@ WARNING:
 
 交付 APR 的内容：netlist、SDC、don't touch 列表。self report 放自己的路径；release 目录现统一放到公共 database 路径。
 
-NOTE: <span class="badge badge-tx">必须</span> 正式 Silver / Golden netlist release 时，必须填写 netlist release check Excel 确认表，逐项检查并签字确认（纯人工流程）。
+WARNING: <span class="badge badge-tx">必须</span> 正式 Silver / Golden netlist release 时，必须填写 netlist release check Excel 确认表，逐项检查并签字确认（纯人工流程）。
 
 ### 1.3 交付前检查要点
 
 跨部门交付 APR 前，pre-delivery check 一定要做好——APR 开工后发现问题会直接找回来。
 
-- unconstrained（未约束）路径交付 = 重大 bug；constraint 下错（如过紧）还可以改，未约束路径无法事后补救。
+KEY: unconstrained（未约束）路径交付 = 重大 bug；constraint 下错（如过紧）还可以改，未约束路径无法事后补救。交付前必须确认 unconstrained paths 清零（在 prePT 的 `${TOP_NAME}_cons.rpt` 中查）。
+
 - floating 信号在 APR 可能被优化剪掉、整路逻辑消失，需确认是否有意保留。
 - <span class="badge badge-tx">必须</span> 确保 DC 和 PT 均无 violation 才能交付。
 
@@ -507,7 +508,7 @@ run_pt
 该文件同时是 CORNER → RC_FILE → operating_conditions 的映射表（图中 `wc_cworst` / `wc_cbest` / `lt_cbest` / `lt_cworst` 各分支，`wcl_*` 整段注释保留），换库时按 foundry PVT 文档逐项更换，且 `set_operating_conditions` 必须与 `DataBase/Analog/DB` 下对应 `.lib` 一致（见前述注意事项）。
 - 附加自研脚本：抓 worst slack、批量跑 PT、跑完后 merge 结果。
 
-WARNING: corner 配置里有 dump SDF 开关（真实变量名是 corner_set.tcl 里的 <a href="./script-dict.html#dump_sdf" target="_blank">DUMP_SDF</a>，打开则专门生成 SDF，供后仿使用）。真实机理：`DUMP_SDF==1` 的那趟 run 只执行 `write_sdf` 并跳过全部 report——两个分支互斥，结果并非被删除，而是 `latest` 软链指向了这趟只产 SDF 的 run，run summary 自然抓到空。run summary 里发现某 corner 结果为空，基本就是这个原因；关掉后重跑该 corner 即可恢复。
+KEY: corner 配置里有 dump SDF 开关（真实变量名是 corner_set.tcl 里的 <a href="./script-dict.html#dump_sdf" target="_blank">DUMP_SDF</a>，打开则专门生成 SDF，供后仿使用）。真实机理：`DUMP_SDF==1` 的那趟 run 只执行 `write_sdf` 并跳过全部 report——两个分支互斥，结果并非被删除，而是 `latest` 软链指向了这趟只产 SDF 的 run，run summary 自然抓到空。run summary 里发现某 corner 结果为空，基本就是这个原因；关掉后重跑该 corner 即可恢复。
 
 ### 2.4 后仿 SDF 生成与仿真侧配置（完整流程）
 
