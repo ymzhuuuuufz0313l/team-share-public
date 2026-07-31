@@ -79,19 +79,21 @@
 @media (prefers-color-scheme: dark) {
   .search-item mark { background: #854d0e; color: #fde68a; }
 }
-/* Breathing highlight for the jump target section (~5s). */
+/* Breathing highlight for the jump target section (~10s).
+ * Rose (#f43f5e) is the complementary opposite of the teal theme color,
+ * so the pulse stands out against the page. Glow ring added for emphasis. */
 @keyframes searchBreath {
-  0%, 100% { background-color: rgba(13, 148, 136, 0); }
-  50% { background-color: rgba(13, 148, 136, 0.16); }
+  0%, 100% { background-color: rgba(244, 63, 94, 0); box-shadow: 0 0 0 0 rgba(244, 63, 94, 0); }
+  50% { background-color: rgba(244, 63, 94, 0.22); box-shadow: 0 0 18px 3px rgba(244, 63, 94, 0.38); }
 }
 .search-breath {
-  animation: searchBreath 1s ease-in-out 5;
+  animation: searchBreath 1.25s ease-in-out 8;
   border-radius: 8px;
 }
 @media (prefers-color-scheme: dark) {
   @keyframes searchBreath {
-    0%, 100% { background-color: rgba(45, 212, 191, 0); }
-    50% { background-color: rgba(45, 212, 191, 0.18); }
+    0%, 100% { background-color: rgba(251, 113, 133, 0); box-shadow: 0 0 0 0 rgba(251, 113, 133, 0); }
+    50% { background-color: rgba(251, 113, 133, 0.26); box-shadow: 0 0 20px 4px rgba(251, 113, 133, 0.45); }
   }
 }
 .search-footer {
@@ -363,7 +365,7 @@
 
   /* Breathing highlight: cover the whole section under the target heading
    * (the heading itself plus every sibling until the next same-or-higher
-   * level heading), pulsing for ~5 seconds. */
+   * level heading), pulsing for ~10 seconds. */
   function flashHighlight(el) {
     clearBreath();
     var stopLevel = parseInt(el.tagName.slice(1), 10) || 2;
@@ -376,7 +378,7 @@
     }
     breathNodes = nodes;
     nodes.forEach(function (node) { node.classList.add('search-breath'); });
-    breathTimer = setTimeout(clearBreath, 5100);
+    breathTimer = setTimeout(clearBreath, 10100);
   }
 
   function clearBreath() {
