@@ -407,6 +407,35 @@ KEY: unconstrained（未约束）路径交付 = 重大 bug；constraint 下错�
 - floating 信号在 APR 可能被优化剪掉、整路逻辑消失，需确认是否有意保留。
 - <span class="badge badge-tx">必须</span> 确保 DC 和 PT 均无 violation 才能交付。
 
+### 1.4 交付落盘：DataBase 目录与 update_latest
+
+综合 signoff 通过、全部 run 完成后，交付物要到 DataBase 公共目录落盘确认：
+
+**① 开通目录权限**：DataBase 目录默认无写权限，联系 DataBase 管理员（顾老师）开通；开通后用 `newgrp` 提权切换到项目管理员组：
+
+```bash
+newgrp HV2M23_adm
+```
+
+**② 进入交付目录**（注意是 `Release`，每项目一个 `<TOP>_to_APR` 目录）：
+
+```bash
+cd /HV2M23/DataBase/Digital/Release/HV2M23_digital_top_to_APR
+```
+
+**③ 运行 `update_latest`**：刷新 `latest` 指向最新交付版本。跑完后 `latest/` 下应看到完整交付文件清单：
+
+![update_latest 跑完后 latest 目录下的文件清单](./image/database路径下 run完updatelatest脚本后 会出现的文件清单.jpg)
+
+| 文件 | 说明 |
+|------|------|
+| `<TOP>.gv` | 综合后门级网表 |
+| `<TOP>.sdc` / `<TOP>_postcts.sdc` | 时序约束（postcts 为 APR 返回版本） |
+| `dont_touch.tcl` | 不被优化的单元列表 |
+| `add_on.tcl` / `add_on_nomulti.tcl` | 附加约束脚本 |
+
+清单与 §1.2 交付物一一对应，缺任何一样都说明 release 流程没走完，回上一步排查。
+
 ---
 
 ## 2. 时序分析（PrimeTime）
