@@ -383,7 +383,20 @@ flowchart LR
 
 - 这 5 个文件由 `run_summary` 调用 `get_*.pl` / `merge_*.pl` 自动生成（脚本条目见 <a href="./script-dict.html#run_summary" target="_blank">脚本字典</a>），列 = corner、行 = 分组指标；
 - 残留违例必须逐条能说清来历：已豁免的假路径要能对上 dco 里的 `set_false_path` / `set_multicycle_path` 条目，说不清的不能放行；
-- 某 corner 结果为空先查 `DUMP_SDF` 是否忘关（见 <a href="./signoff-timing.html" target="_blank">APR SIGNOFF 页 §2.3</a>），不要当成"无违例"放过。
+- 某 corner 结果为空先查 `DUMP_SDF` 是否忘关（见 <a href="./pt-intro.html" target="_blank">POSTPT 页 SDF 生成一节</a>），不要当成"无违例"放过。
+
+## 3. 确认 IO buf type
+
+5 个 csv 全部 ready 之后，还要确认 **IO 末级 buffer type** 是否符合预期——APR 修调 / ECO 后，输入输出路径的末级 buffer 可能被换成非预期的 buf type，时序过不代表 buf 用对。
+
+确认脚本（真实路径 `SYNTHESIS/top/sta/post/common/`）：
+
+| 脚本 | 用途 |
+|------|------|
+| `report_input_last_buf.tcl` | 列出输入路径的末级 buffer 及其 type |
+| `report_output_last_buf.tcl` | 列出输出路径的末级 buffer 及其 type |
+
+逐个核对报告中的 buf type 与本项目 IO 设计要求一致后，才算完成 TO SIGNOFF 的全部确认。
 
 </script>
 
