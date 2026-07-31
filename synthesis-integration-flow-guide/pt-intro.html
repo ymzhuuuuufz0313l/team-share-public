@@ -387,9 +387,180 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
   <script type="text/template" id="md">
 # 六、POSTPT：PrimeTime 时序分析方法论
 
-&gt; 本篇基于一次 PT（PrimeTime）培训会议的完整内容整理，覆盖 STA 基础概念、PT 环境与自动化脚本、约束管理、skew 修调方法、报告解读、签核准则与常见坑。人名与项目信息已泛化，所有数值与规则按原始记录保留。
+&gt; 本篇覆盖 prePT / postPT 的**运行与配置**（什么时候做、怎么跑、产物给谁用），以及一次 PT（PrimeTime）培训会议整理的 **postPT 时序方法论**（STA 基础、环境与脚本、约束管理、skew 修调、报告解读、签核准则与常见坑）。人名与项目信息已泛化，所有数值与规则按原始记录保留。
 &gt;
-&gt; 章节分工：本篇聚焦 **postPT** 阶段的时序方法论（批量 corner、run_summary、约束迭代闭环、skew 修调）；**prePT** 的定位与操作（含 postPT 的 corner 跑法入口）见 <a href="./signoff-timing.html" target="_blank">「APR SIGNOFF」</a>章。
+&gt; 章节分工：§1~§5 讲 prePT / postPT 的定位、跑法与产物（含 notimingcheck、SDF 生成）；§6 起为 postPT 方法论。signoff 检查与交付见 <a href="./signoff-timing.html" target="_blank">「APR SIGNOFF」</a>章。
+
+## 1. prePT / postPT 在流程中的位置
+
+### 1.1 prePT：DC 之后、交付 APR 之前的第一次全量 STA
+
+prePT 的时机：**DC 综合完成之后、交付 APR 之前**，与 LEC 可并行（两者都只吃综合网表，互不依赖）。
+
+为什么在这个节点做：prePT 是流程中第一个拿「综合网表 + 完整展开 SDC」做全量 STA 的节点。DC 阶段的 timing 只是 wireload 估计、约束未完整展开，不能作为时序结论；异步跨域、同步器、准静态路径只有在 prePT 报告里才看得全。
+
+交付纪律：交付 APR 前必须在 prePT 报告中确认 unconstrained 清零、`pt.log` 无 Error、timing slack > 0（见 <a href="./signoff-timing.html" target="_blank">APR SIGNOFF</a> 章「交付前检查要点」）。
+
+### 1.2 postPT：APR 返回之后的 signoff 级时序验收
+
+postPT 的时机：**APR 后端输出网表 + spef + postcts SDC 之后**，是 APR 阶段的最终时序验收，以全 corner 结果为准。
+
+### 1.3 prePT vs postPT 对比
+
+| 维度 | prePT | postPT |
+|------|-------|--------|
+| 时机 | DC 之后、交付 APR 前 | APR 返回之后 |
+| 输入 | 综合网表 + ip_cons 约束 | APR 网表 + spef + postcts SDC |
+| 目的 | 约束展开与语法检查、简单 timing check、产出下游配置 | signoff 级全 corner 时序验收 |
+| 主要产物 | sdc_pr 展开产物、cons.rpt（unconstrained）、notimingcheck 名单依据 | 各 corner timing 报告、SDF（供后仿） |
+| 工具版本 | TOP 级 pt1806 / IP 级 pt1706 | 同左 |
+
+---
+
+## 2. prePT 运行与配置
+```bash
+cd pt
+run_pt
+```
+
+prePT 的作用：把 constraint 展开成完整形式、检查 SDC 语法、做简单的 timing check。
+
+- <a href="./script-dict.html#pt_setup_pre" target="_blank">pt_setup.tcl</a> 一般无需修改；其中 `set auto_wire_load_selection false` 是刻意关掉的——开着时 pre_pt 的 timing 会比 DC 的 timing 差得多。IP 级环境下 pt_setup.tcl 对应的是 `common_pt.tcl`。
+- `common_db_pvt.tcl` 选择与实际综合一致的 corner（如 `wc_cworst`）。
+- 注意 memory / analog 的 PVT 可能与标准单元不同。
+
+检查项：
+- `pt.log` 无 Error
+- `*.rpt` 中 timing slack &gt; 0
+
+运行路径：IP 路径和 TOP 路径下都有 prePT 脚本（两套环境的工具版本不同：IP 级用 pt1706，TOP 级用 pt1806），当前一般使用 TOP 路径下的版本；IP 路径下的脚本目前跑不过、待排查（在 IP 下跑的好处是 signoff 时 PT log / report 可以一起 signoff）。
+
+prePT 产物中还可以查到（真实文件名）：
+- unconstrained（未约束）路径列表——在 `pt_rpt/${TOP_NAME}_cons.rpt`
+- SDC 语法错误——`read_sdc.log`
+- 每个 clock 域下挂的 DFF 数量——`report_dff_num.rpt`
+- floating 信号列表（APR 对接工程师有时需要）——`pt_input_float.log`
+
+---
+
+## 3. prePT 产物：后仿 notimingcheck 配置
+prePT 报告除了看时序，还有一个重要下游用途：**给 gate-level 后仿生成 notimingcheck 名单**。
+
+![notimingcheck_DIG.cfg 实例](./image/06_notimingcheck_cfg.jpg)
+
+配置文件（真实路径）：
+
+```text
+HV2M23/DV_TCON_C/script/notimingcheck_DIG.cfg
+```
+
+格式为逐行列 instance 的完整仿真层次：
+
+```text
+instance {chip_tb_top.u_<TOP>.u_<TOP>_digital_top.u_LOGIC_CENTER.LINK_LOGIC.U_SYNC_L0L1.<...>_reg} {noTiming};
+```
+
+**为什么在 prePT 之后做（而不是 DC 之后）：**
+
+- 这个 cfg 是后仿（带 SDF 的 gate-level 仿真）用的，`noTiming` 让仿真工具不对这些 instance 做 setup / hold 等 timing check。
+- 「哪些 instance 不需要 check」必须由**完整约束下的 STA 报告**判定——prePT 是第一个拿综合网表 + 完整展开 SDC 做全量 STA 的节点，异步跨域、同步器、准静态路径只有在 prePT 报告里才看得全。
+- DC 阶段的 timing 只是 wireload 估计、约束未完整展开，不能作为「这条路径不用 check」的依据。
+- 图中实例名单自己也证明了来源：`U_SYNC_L0L1`（同步器）、`U_L0_CIRC_DELAY_BUF`（环形 delay buffer）、`BLANK_EN_ASYNC`、`CSPI_CMD_ALIGN` 等，全是 STA 报告里「刻意不做时序检查」的异步 / 延时链寄存器。
+
+**为什么需要它：** 后仿带 SDF 时，这些异步 / 延时 instance 会刷出大量假的 setup / hold violation 甚至 X 传播，把真实问题淹没；用 `noTiming` 屏蔽后仿真 log 才干净，真实 violation 才看得见。
+
+**操作步骤：**
+
+1. 跑完 prePT，看报告中的异步跨域 / unconstrained / 准静态路径；
+2. 确认属于「不 check」的 instance（同步器、delay buffer、async 控制信号）；
+3. 按仿真层次写进 `notimingcheck_DIG.cfg`；
+4. 后仿环境读取该 cfg，仿真时这些 instance 不做 timing check。
+
+注意：名单必须与 STA 报告逐条对应，漏加会被假 violation 淹没，错加会把真实时序问题掩盖掉——和 false path 一样需要人工逐条确认。
+
+**修改 notimingcheck 后的重跑纪律：**
+
+| 改动 | 重跑 DC | 重跑 prePT | 重跑后仿 |
+|------|---------|-----------|---------|
+| 只改 `notimingcheck_DIG.cfg`（名单增删） | ❌ 不需要——cfg 是仿真侧屏蔽名单，与综合网表无关 | ❌ 不需要——cfg 不影响 prePT 运行 | ✅ 需要——仿真重新读 cfg 才生效 |
+| prePT 重跑了（网表 / 约束变化） | — | — | ⚠️ 名单必须按新报告重新核对，不能直接沿用 |
+
+
+---
+
+## 4. postPT 运行与配置
+基于 APR 后端输出进行 **signoff 级**时序分析——这是 APR 阶段的最终时序验收，以全 corner 结果为准：
+
+```bash
+cd sta/post/pt
+run_pt
+```
+
+每个 corner 目录下各有一份入口脚本 <a href="./script-dict.html#run_pt_post" target="_blank">run_pt</a>（只跑当前 corner）。
+
+需修改：
+- <a href="./script-dict.html#corner_set_tcl" target="_blank">corner_set.tcl</a>：每个 corner 下各有一份；corner 配置基本不动，换库时需照 foundry 提供的 PVT 文档（含 OCV）逐项更换。当前 <a href="./script-dict.html#run_summary" target="_blank">run_summary</a> 实际跑 10 个 corner：`wc_cworst_125` / `wc_cbest_125` / `wc_typical_125` / `lt_cworst_m40` / `lt_cbest_m40` / `lt_typical_m40` / `ml_cbest_125` / `tt_cworst_25` / `tt_cbest_25` / `tt_typical_25`——无 wcl（脚本中已整段注释掉）、无 bc（bc 是旧命名，只出现在旧版串行脚本 `run_all` 中）
+
+  - `wc`：ss 低压高温（LVHT）
+  - `wcl`：ss 低压低温（LVLT）
+  - `lt`：ff 高压低温（HVLT）
+  - `ml`：ff 高压高温（HVHT）
+  - `tt`：典型温压
+- <a href="./script-dict.html#pt_setup_post" target="_blank">pt_setup.tcl</a>：最核心的脚本，内含大量需要 check 的 report 定义（slack、clock path 等）；读取 APR 吐出的网表（`.v` / `.gv`）与 spef；`set_operating_conditions` 必须与 `DataBase/Analog/DB` 下对应 `.lib` 中的 operating_conditions 保持一致；约束读的是 APR 返回的 postcts SDC（`${SDC_PATH}/${SDC_NAME}_postcts.sdc`），不是 prePT `sdc_pr/` 的展开产物直接喂入
+- `pt/design.set`：路径、LINK_LIB、TAR_LIB、NET_DEFINE、POSTPT_EN=1 等
+  - `POSTPT_EN` 必须为 1
+  - `PT_HOLD` 仅针对特定工艺（如 22nm）
+- `common_db_pvt.tcl`
+
+注意 memory / analog 的 PVT 可能与标准单元不同。
+
+使用经验：
+- 打开 postPT 环境第一件事先改 top name；SDC / 网表路径可在配置中搜索 APR 对接工程师的标识快速定位（APR 网表路径固定），并确认路径为最新。
+- **分析中间版本（非 latest）时必须改 `pt_setup.tcl`**：`read_verilog` 默认指向 APR release 目录下的 `.../timing/latest/<TOP>.v.gz`——`latest` 是软链，永远指向最新一版；要复查某个历史/中间版本的时序，需要把路径从 `latest` 改成具体版本目录（spef 路径同理），否则会误分析到最新版。
+
+![分析中间版本时需修改 pt_setup.tcl 的 read_verilog 路径](./image/07_mid_version_pt_setup.jpg)
+
+该文件同时是 CORNER → RC_FILE → operating_conditions 的映射表（图中 `wc_cworst` / `wc_cbest` / `lt_cbest` / `lt_cworst` 各分支，`wcl_*` 整段注释保留），换库时按 foundry PVT 文档逐项更换，且 `set_operating_conditions` 必须与 `DataBase/Analog/DB` 下对应 `.lib` 一致（见前述注意事项）。
+- 附加自研脚本：抓 worst slack、批量跑 PT、跑完后 merge 结果。
+
+KEY: corner 配置里有 dump SDF 开关（真实变量名是 corner_set.tcl 里的 <a href="./script-dict.html#dump_sdf" target="_blank">DUMP_SDF</a>，打开则专门生成 SDF，供后仿使用）。真实机理：`DUMP_SDF==1` 的那趟 run 只执行 `write_sdf` 并跳过全部 report——两个分支互斥，结果并非被删除，而是 `latest` 软链指向了这趟只产 SDF 的 run，run summary 自然抓到空。run summary 里发现某 corner 结果为空，基本就是这个原因；关掉后重跑该 corner 即可恢复。
+
+---
+
+## 5. 后仿 SDF 生成与仿真侧配置
+后仿（带 SDF 的 gate-level 仿真）前要先生成 SDF，完整流程如下：
+
+**① 开 DUMP_SDF（PT 侧）**：到对应 corner 目录改 `corner_set.tcl`，把 `set DUMP_SDF 0` 改为 `1`：
+
+![corner_set.tcl 中需要设置 DUMP_SDF 为 1 的位置](./image/08_corner_set_dump_sdf.jpg)
+
+文件路径：`SYNTHESIS/top/sta/post/pt/<corner>/corner_set.tcl`。一般只跑三个 corner：`tt_typical_25`、`wc_cbest_125`、`lt_cbest_m40`。
+
+**② 跑 postPT 生成 SDF**：在该 corner 目录执行 `run_pt`。注意这趟 run 只执行 `write_sdf`、不产任何 timing report（分支互斥，见上条 WARNING）；SDF 落在 `SYNTHESIS/top/sta/post/sdf/` 下，如 `HV2M23_digital_top_typical_25c.sdf` / `_cbest_125c.sdf` / `_cbest_m40c.sdf`。
+
+**③ 改回 0**：SDF 下载/取回后，**必须把 `DUMP_SDF` 改回 `0`**——不改的话 `latest` 软链一直指向这趟只产 SDF 的 run，run_summary 抓到的就是空结果。
+
+**④ 仿真侧 case 定义**：在 case 的 userdefine（`user_def.sv`）里按 corner 分别定义宏：`SDF_TT` / `SDF_WC` / `SDF_BC`，决定本 case 反标哪个 corner 的 SDF。
+
+**⑤ waves_dumper.sv 的 SDF 路径**：`DV_TCON_C/top/tests_netlist_post/<case>/waves_dumper.sv` 中，`ifdef SDF_TT / SDF_WC / SDF_BC` 三段各有一条 `$sdf_annotate`，SDF 路径写死在这里：
+
+![waves_dumper.sv 中修改 SDF 存放路径的位置](./image/09_wavedump_sdf_path.jpg)
+
+WARNING: SDF 存放路径一旦变化（换目录、换项目、换 top name），`waves_dumper.sv` 里三处 `$sdf_annotate` 路径必须同步修改，否则后仿反标不到 SDF、timing check 全失效。
+
+```mermaid
+flowchart LR
+  A["corner_set.tcl<br/>DUMP_SDF=1"] --> B["跑 postPT<br/>(只产 SDF)"]
+  B --> C["SDF 落盘<br/>sta/post/sdf/"]
+  C --> D["DUMP_SDF 改回 0"]
+  D --> E["user_def.sv 定义<br/>SDF_TT/WC/BC"]
+  E --> F["waves_dumper.sv<br/>$sdf_annotate 反标"]
+  F --> G["跑后仿"]
+```
+
+---
+
+---
 
 ## 1. STA 基础概念
 

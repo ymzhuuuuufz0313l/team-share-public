@@ -311,215 +311,263 @@
    {
     "id": "sec-0",
     "level": 2,
-    "title": "1. STA 基础概念",
+    "title": "1. prePT / postPT 在流程中的位置",
     "text": ""
    },
    {
     "id": "sec-1",
     "level": 3,
+    "title": "1.1 prePT：DC 之后、交付 APR 之前的第一次全量 STA",
+    "text": "prePT 的时机：DC 综合完成之后、交付 APR 之前，与 LEC 可并行（两者都只吃综合网表，互不依赖）。 为什么在这个节点做：prePT 是流程中第一个拿「综合网表 + 完整展开 SDC」做全量 STA 的节点。DC 阶段的 timing 只是 wireload 估计、约束未完整展开，不能作为时序结论；异步跨域、同步器、准静态路径只有在 prePT 报告里才看得全。 交付纪律：交付 APR 前必须在 prePT 报告中确认 unconstrained 清零、pt.log 无 Error、timing slack > 0（见 APR SIGNOFF 章「交付前检查要点」）。"
+   },
+   {
+    "id": "sec-2",
+    "level": 3,
+    "title": "1.2 postPT：APR 返回之后的 signoff 级时序验收",
+    "text": "postPT 的时机：APR 后端输出网表 + spef + postcts SDC 之后，是 APR 阶段的最终时序验收，以全 corner 结果为准。"
+   },
+   {
+    "id": "sec-3",
+    "level": 3,
+    "title": "1.3 prePT vs postPT 对比",
+    "text": "| 维度 | prePT | postPT | |------|-------|--------| | 时机 | DC 之后、交付 APR 前 | APR 返回之后 | | 输入 | 综合网表 + ipcons 约束 | APR 网表 + spef + postcts SDC | | 目的 | 约束展开与语法检查、简单 timing check、产出下游配置 | signoff 级全 corner 时序验收 | | 主要产物 | sdcpr 展开产物、cons.rpt（unconstrained）、notimingcheck 名单依据 | 各 corner timing 报告、SDF（供后仿） | | 工具版本 | TOP 级 pt1806 / IP 级 pt1706 | 同左 | ---"
+   },
+   {
+    "id": "sec-4",
+    "level": 2,
+    "title": "2. prePT 运行与配置",
+    "text": "cd pt runpt prePT 的作用：把 constraint 展开成完整形式、检查 SDC 语法、做简单的 timing check。 - ptsetup.tcl 一般无需修改；其中 set autowireloadselection false 是刻意关掉的——开着时 prept 的 timing 会比 DC 的 timing 差得多。IP 级环境下 ptsetup.tcl 对应的是 commonpt.tcl。 - commondbpvt.tcl 选择与实际综合一致的 corner（如 wccworst）。 - 注意 memory / analog 的 PVT 可能与标准单元不同。 检查项： - pt.log 无 Error - .rpt 中 timing slack &gt; 0 运行路径：IP 路径和 TOP 路径下都有 prePT 脚本（两套环境的工具版本不同：IP 级用 pt1706，TOP 级用 pt1806），当前一般使用 TOP 路径下的版本；IP 路径下的脚本目前跑不过、待排查（在 IP 下跑的好处是 signoff 时 PT log / report 可以一起 signoff）。 prePT 产物中还可以查到（真实文件名）： - unconstrained（未约束）路径列表——在 ptrpt/${TOPNAME}cons.rpt - SDC 语法错误——readsdc.log - 每个 clock 域下挂的 DFF 数量——reportdffnum.rpt - floating 信号列表（APR 对接工程师有时需要）——ptinputfloat.log ---"
+   },
+   {
+    "id": "sec-5",
+    "level": 2,
+    "title": "3. prePT 产物：后仿 notimingcheck 配置",
+    "text": "prePT 报告除了看时序，还有一个重要下游用途：给 gate-level 后仿生成 notimingcheck 名单。 配置文件（真实路径）： HV2M23/DVTCONC/script/notimingcheckDIG.cfg 格式为逐行列 instance 的完整仿真层次： instance {chiptbtop.u .u digitaltop.uLOGICCENTER.LINKLOGIC.USYNCL0L1. reg} {noTiming}; 为什么在 prePT 之后做（而不是 DC 之后）： - 这个 cfg 是后仿（带 SDF 的 gate-level 仿真）用的，noTiming 让仿真工具不对这些 instance 做 setup / hold 等 timing check。 - 「哪些 instance 不需要 check」必须由完整约束下的 STA 报告判定——prePT 是第一个拿综合网表 + 完整展开 SDC 做全量 STA 的节点，异步跨域、同步器、准静态路径只有在 prePT 报告里才看得全。 - DC 阶段的 timing 只是 wireload 估计、约束未完整展开，不能作为「这条路径不用 check」的依据。 - 图中实例名单自己也证明了来源：USYNCL0L1（同步器）、UL0CIRCDELAYBUF（环形 delay buffer）、BLANKENASYNC、CSPICMDALIGN 等，全是 STA 报告里「刻意不做时序检查」的异步 / 延时链寄存器。 为什么需要它： 后仿带 SDF 时，这些异步 / 延时 instance 会刷出大量假的 setup / hold violation 甚至 X 传播，把真实问题淹没；用 noTiming 屏蔽后仿真 log 才干净，真实 violation 才看得见。 操作步骤： 1. 跑完 prePT，看报告中的异步跨域 / unconstrained / 准静态路径； 2. 确认属于「不 check」的 instance（同步器、delay buffer、async 控制信号）； 3. 按仿真层次写进 notimingcheckDIG.cfg； 4. 后仿环境读取该 cfg，仿真时这些 instance 不做 timing check。 注意：名单必须与 STA 报告逐条对应，漏加会被假 violation 淹没，错加会把真实时序问题掩盖掉——和 false path 一样需要人工逐条确认。 修改 notimingcheck 后的重跑纪律： | 改动 | 重跑 DC | 重跑 prePT | 重跑后仿 | |------|---------|-----------|---------| | 只改 notimingcheckDIG.cfg（名单增删） | ❌ 不需要——cfg 是仿真侧屏蔽名单，与综合网表无关 | ❌ 不需要——cfg 不影响 prePT 运行 | ✅ 需要——仿真重新读 cfg 才生效 | | prePT 重跑了（网表 / 约束变化） | — | — | ⚠️ 名单必须按新报告重新核对，不能直接沿用 | ---"
+   },
+   {
+    "id": "sec-6",
+    "level": 2,
+    "title": "4. postPT 运行与配置",
+    "text": "基于 APR 后端输出进行 signoff 级时序分析——这是 APR 阶段的最终时序验收，以全 corner 结果为准： cd sta/post/pt runpt 每个 corner 目录下各有一份入口脚本 runpt （只跑当前 corner）。 需修改： - cornerset.tcl ：每个 corner 下各有一份；corner 配置基本不动，换库时需照 foundry 提供的 PVT 文档（含 OCV）逐项更换。当前 runsummary 实际跑 10 个 corner：wccworst125 / wccbest125 / wctypical125 / ltcworstm40 / ltcbestm40 / lttypicalm40 / mlcbest125 / ttcworst25 / ttcbest25 / tttypical25——无 wcl（脚本中已整段注释掉）、无 bc（bc 是旧命名，只出现在旧版串行脚本 runall 中） - wc：ss 低压高温（LVHT） - wcl：ss 低压低温（LVLT） - lt：ff 高压低温（HVLT） - ml：ff 高压高温（HVHT） - tt：典型温压 - ptsetup.tcl ：最核心的脚本，内含大量需要 check 的 report 定义（slack、clock path 等）；读取 APR 吐出的网表（.v / .gv）与 spef；setoperatingconditions 必须与 DataBase/Analog/DB 下对应 .lib 中的 operatingconditions 保持一致；约束读的是 APR 返回的 postcts SDC（${SDCPATH}/${SDCNAME}postcts.sdc），不是 prePT sdcpr/ 的展开产物直接喂入 - pt/design.set：路径、LINKLIB、TARLIB、NETDEFINE、POSTPTEN=1 等 - POSTPTEN 必须为 1 - PTHOLD 仅针对特定工艺（如 22nm） - commondbpvt.tcl 注意 memory / analog 的 PVT 可能与标准单元不同。 使用经验： - 打开 postPT 环境第一件事先改 top name；SDC / 网表路径可在配置中搜索 APR 对接工程师的标识快速定位（APR 网表路径固定），并确认路径为最新。 - 分析中间版本（非 latest）时必须改 ptsetup.tcl：readverilog 默认指向 APR release 目录下的 .../timing/latest/ .v.gz——latest 是软链，永远指向最新一版；要复查某个历史/中间版本的时序，需要把路径从 latest 改成具体版本目录（spef 路径同理），否则会误分析到最新版。 该文件同时是 CORNER → RCFILE → operatingconditions 的映射表（图中 wccworst / wccbest / ltcbest / ltcworst 各分支，wcl 整段注释保留），换库时按 foundry PVT 文档逐项更换，且 setoperatingconditions 必须与 DataBase/Analog/DB 下对应 .lib 一致（见前述注意事项）。 - 附加自研脚本：抓 worst slack、批量跑 PT、跑完后 merge 结果。 KEY: corner 配置里有 dump SDF 开关（真实变量名是 cornerset.tcl 里的 DUMPSDF ，打开则专门生成 SDF，供后仿使用）。真实机理：DUMPSDF==1 的那趟 run 只执行 writesdf 并跳过全部 report——两个分支互斥，结果并非被删除，而是 latest 软链指向了这趟只产 SDF 的 run，run summary 自然抓到空。run summary 里发现某 corner 结果为空，基本就是这个原因；关掉后重跑该 corner 即可恢复。 ---"
+   },
+   {
+    "id": "sec-7",
+    "level": 2,
+    "title": "5. 后仿 SDF 生成与仿真侧配置",
+    "text": "后仿（带 SDF 的 gate-level 仿真）前要先生成 SDF，完整流程如下： ① 开 DUMPSDF（PT 侧）：到对应 corner 目录改 cornerset.tcl，把 set DUMPSDF 0 改为 1： 文件路径：SYNTHESIS/top/sta/post/pt/ /cornerset.tcl。一般只跑三个 corner：tttypical25、wccbest125、ltcbestm40。 ② 跑 postPT 生成 SDF：在该 corner 目录执行 runpt。注意这趟 run 只执行 writesdf、不产任何 timing report（分支互斥，见上条 WARNING）；SDF 落在 SYNTHESIS/top/sta/post/sdf/ 下，如 HV2M23digitaltoptypical25c.sdf / cbest125c.sdf / cbestm40c.sdf。 ③ 改回 0：SDF 下载/取回后，必须把 DUMPSDF 改回 0——不改的话 latest 软链一直指向这趟只产 SDF 的 run，runsummary 抓到的就是空结果。 ④ 仿真侧 case 定义：在 case 的 userdefine（userdef.sv）里按 corner 分别定义宏：SDFTT / SDFWC / SDFBC，决定本 case 反标哪个 corner 的 SDF。 ⑤ wavesdumper.sv 的 SDF 路径：DVTCONC/top/testsnetlistpost/ /wavesdumper.sv 中，ifdef SDFTT / SDFWC / SDFBC 三段各有一条 $sdfannotate，SDF 路径写死在这里： WARNING: SDF 存放路径一旦变化（换目录、换项目、换 top name），wavesdumper.sv 里三处 $sdfannotate 路径必须同步修改，否则后仿反标不到 SDF、timing check 全失效。 flowchart LR A[\"cornerset.tcl DUMPSDF=1\"] --> B[\"跑 postPT (只产 SDF)\"] B --> C[\"SDF 落盘 sta/post/sdf/\"] C --> D[\"DUMPSDF 改回 0\"] D --> E[\"userdef.sv 定义 SDFTT/WC/BC\"] E --> F[\"wavesdumper.sv $sdfannotate 反标\"] F --> G[\"跑后仿\"] --- ---"
+   },
+   {
+    "id": "sec-8",
+    "level": 2,
+    "title": "1. STA 基础概念",
+    "text": ""
+   },
+   {
+    "id": "sec-9",
+    "level": 3,
     "title": "1.1 corner 全量校验",
     "text": "当前工艺共 10 个 corner，corner 定义由 foundry 提供，不是项目自己建的。 - 每个 corner 下 setup、hold、transition 全部都要 check，不做取舍。 - 历史规律已经失效：以前是 wc corner 下 setup 更差、lt corner 下 hold 更差；现在因为修 skew 把延迟垫乱，各 corner 的表现不再符合老规律，所以必须所有 corner 全量校验。 WARNING: \"按经验只跑最差的 corner\" 在当前项目已不成立。skew 修调会打乱延迟分布，任何 corner 都可能冒出最差值，全量跑是唯一安全的做法。"
    },
    {
-    "id": "sec-2",
+    "id": "sec-10",
     "level": 3,
     "title": "1.2 uncertainty 与放宽纪律",
     "text": "uncertainty 来源于历史经验值：hold uncertainty 全表统一 150 ps；setup uncertainty 按时钟不同为 0.4 2 ns 不等，只有高速 lane 时钟是 400 ps（脚本包 sdcpr 展开产物实证）。 400 ps setup uncertainty 仅高速 lane 时钟；其余 0.42 ns 不等 150 ps hold uncertainty 放宽需高层签字，不跨项目继承 使用策略： - 新项目不主动放宽，一直按公版值卡；只有最后一版实在修不下去时，才找高层签字放一点。 - 工程上它有点像 false path——不会主动先写，出问题了才放。 - 新项目不会沿用上一版放宽后的值，继续用 0.4 ns 起步。 WARNING: 必须 uncertainty 放宽是\"最后手段\"纪律——必须有高层签字；放宽值不跨项目继承，每个新项目从公版值重新卡。"
    },
    {
-    "id": "sec-3",
+    "id": "sec-11",
     "level": 3,
     "title": "1.3 SI / noise 常开",
     "text": "当前环境 SI check 默认全部打开。 - 背景：某历史项目 SI 影响很大导致 corner 结果很差，想关但没敢关；脚本留有开关可做中间实验，但最终关不关必须多方共同决定，一直保持最保守（打开）执行。 - 机理：SI 分析 noise；摆线太近 noise 很大；PT 会看走线的宽度和高度；SI 大时 cell delay 会非常大。 - 有些工艺厂商文档写 SI 不用考虑，但团队不采信，仍以最保守方式执行。"
    },
    {
-    "id": "sec-4",
+    "id": "sec-12",
     "level": 3,
     "title": "1.4 占空比与 minpulsewidth",
     "text": "当前项目输出 clock 占空比不是 50%。 - PT 报的 minpulsewidth 类数值不是真实占空比：它报的是从 clock 源头上升沿到该点与下降沿到该点的差值（rise/fall latency 差），工具并不知道实际高电平宽度，所以报那个没意义。 - 验证占空比的正确方法：后仿，把该 clock 在波形里拉出来看；模拟方也会拉这条 clock 看有没有对到中心点。 - 分频器经验：1.5 分频处两边的组合逻辑 delay 最好保持一致（理想情况），这是占空比恶化的来源之一。 - 历史教训：双方对该参数理解不一致踩过坑（tapeout 前才发现），规格必须与规格方书面确认。 - 周期越慢该参数越不可能超，速度越快 / 周期越短才紧张。 WARNING: 严禁 把 PT 的 minpulsewidth 报告当占空比证据。占空比规格必须书面确认，并用后仿波形验证。"
    },
    {
-    "id": "sec-5",
+    "id": "sec-13",
     "level": 3,
     "title": "1.5 准静态信号（quasi-static）",
     "text": "一帧才变一次的信号、寄存器配出的控制信号属于准静态信号，不用 check，可设 false path。"
    },
    {
-    "id": "sec-6",
+    "id": "sec-14",
     "level": 3,
     "title": "1.6 clock latency 判断经验",
     "text": "报表上半部分是原始 latency 数据（clock / data latency，未做运算）；下半部分是脚本算好的 skew。 - clock 之间做过 clock tree balance，相互 latency 不应差很多；clock 与 data 差得多是正常的。 - clock 的 max 与 min 差很多，说明 clock tree 做歪了。 - max 路径和 min 路径通常不是同一条，两条都要 check。 - 实例：某版 CLK 最慢 10.56、最快 3，而 skew 余量只有 7——10.56 那条是假路径（mux 特别多、trace 起点没选好导致），真实 clock latency 约 3 点多。 ---"
    },
    {
-    "id": "sec-7",
+    "id": "sec-15",
     "level": 2,
     "title": "2. PT 环境与自动化脚本",
     "text": ""
    },
    {
-    "id": "sec-8",
+    "id": "sec-16",
     "level": 3,
     "title": "2.1 批量跑 corner",
     "text": "痛点：以前每个 corner 开一个窗口，10 个 corner 开 10 个 terminal 逐个丢 job。 自研批量脚本 pararrelrunpt.py （原文拼写 pararrel）：run 一次把全部 corner 用 xterm + bsub 并发批量提交，跑完自动结束；log 各自分开，与手动跑结果一模一样。注意脚本有已知 bug：内部 errorfound / runsummary 变量未定义，「跑完自动接 run summary」实际不工作，批量跑完需手工再执行 run summary。 | 项目 | 效果 | |------|------| | 多 corner 运行 | 一键批量提交，效率提升约 90% | | 日志管理 | 自动分类存储 | | 时序指标 | 自动全量抓取 | | 报表 | 自动生成标准化 CSV（再导入 Excel 查看） | 当前项目跑一次全量 PT 约 10 分钟（项目小；大项目更慢）。 10 个 corner 全量校验 10 min 全量 PT 时长 +90 % 批量脚本效率提升"
    },
    {
-    "id": "sec-9",
+    "id": "sec-17",
     "level": 3,
     "title": "2.2 run summary 与结果汇总",
     "text": "批量跑完执行 runsummary ：summary 目录下放 latest，集中查看所有 corner 的最新结果。 汇总 report 包含：transition、hold、setup、clock skew、data skew；skew report 由 get.pl 自动抓取、再由 merge.pl 合并各 corner——实际产物是 CSV（如 reportsdbusskew.csv，行 = 72 个分组指标、列 = corner），再导入 Excel 查看。"
    },
    {
-    "id": "sec-10",
+    "id": "sec-18",
     "level": 3,
     "title": "2.3 save session 策略",
     "text": "PT 的 save / restore session 可把某版存回来做版本间 compare。 - 跑得快（&lt;1 小时）的项目无需存 session，仅做记录 / 对比即可。 - 跑半天以上的大项目才有省时意义。"
    },
    {
-    "id": "sec-11",
+    "id": "sec-19",
     "level": 3,
     "title": "2.4 环境目录结构",
     "text": "| 目录 / 文件 | 作用 | |-------------|------| | design.set | 环境配置入口，外层最关键的文件 | | corner set 文件 | 内层每个 corner 各有一份 | | common 目录 | 自动化脚本集中地，含 commondb（定制 lib 配置） | | IP constraint 目录 | 项目 constraint 存放位置；其下 script 子目录多为历史脚本，基本不再使用 | | Tcl 脚本目录 | 分模块存放；报错时按模块排查（如 prePT 报错看对应目录脚本） | | database 目录 | 存放 prePT 生成的正式 constraint | - dump SDF 的 option 是给后仿用的，其他 option 基本不动。 - 有一组直抛 clock path 的 Tcl（ reportclockpath.tcl ），每版项目刚开始都要改一次，位置固定在 Tcl 文件最下方。注意它不会被 ptsetup.tcl 自动 source，需要手工 / 单独调用。"
    },
    {
-    "id": "sec-12",
+    "id": "sec-20",
     "level": 3,
     "title": "2.5 复用环境要改的 7 项",
     "text": "同一项目重新跑一版（重新综合迭代）：什么都不用改，直接 run，全自动。 全新项目 / 新架构复用，要改： 1. design.set（必改）； 2. pt setup 相关配置； 3. data skew 抓取的三个脚本全部要重改（分组分类不同）； 4. create clock 周期定义所在文件； 5. 直抛 clock path 的 Tcl（项目初期必改）； 6. 新增定制 lib 时改 commondb 及 .v / .lib 路径； 7. Excel merge 脚本（手写分组对应关系，极易对错，需一一对应）。 分组层级经验（沿用上一项目脚本）：L/R → 1P/2P → A/B → clock/data 四层分类，落地到报告文件名即 sd{l,r}{1p,2pl0,2pl1}{clk,}{a,b} 共 24 组（2P 版报告脚本在包中缺失，perl 抓取层仍期待 sd2p 文件）。"
    },
    {
-    "id": "sec-13",
+    "id": "sec-21",
     "level": 3,
     "title": "2.6 环境搭建检查项",
     "text": "- 第一版搭环境时，必须确保所有 log 和 report 目录下没有任何 error。 - 环境通用，全组共用。 ---"
    },
    {
-    "id": "sec-14",
+    "id": "sec-22",
     "level": 2,
     "title": "3. 约束（constraint / SDC）管理",
     "text": ""
    },
    {
-    "id": "sec-15",
+    "id": "sec-23",
     "level": 3,
     "title": "3.1 dco → prePT → SDC 工作流（核心工作流）",
     "text": "false path / multicycle 等约束统一写在指定的 dco 文件里；不直接改 SDC（批量展开式修改很复杂）。 流程： flowchart LR E[\"先在 live PT 试一版\"] -.->|\"验证后再写入\"| A[\"改 dco\"] A --> B[\"重新跑 prePT\"] B --> C[\"自动生成展开后的 SDC\"] C --> D[\"放入 database 目录\"] - 改 dco 前的验证习惯：先在 live PT（手工打开的交互式 session）里把路径直接指过去试一版，确认效果再正式写入。 - 纪律： 严禁 直接修改 SDC 文件、提前乱写 false path，需确认路径为假后再配置。"
    },
    {
-    "id": "sec-16",
+    "id": "sec-24",
     "level": 3,
     "title": "3.2 约束迭代闭环：看 summary 总表 → 定性 → 改 dco → 重跑",
     "text": "post PT 10 个 corner 全部跑完后，执行 runsummary ，产物在 SYNTHESIS/top/sta/post/pt/summary/latest/ 下： - 每 corner 单表： setup.csv / hold.csv / trans.csv / phybusskew.txt / sdbusskew.txt - merge 总表：reportsetup.csv / reporthold.csv / reporttrans.csv / reportphybusskew.csv / reportsdbusskew.csv - 总表结构：行 = clock 组，列 = 每个 corner 各两列（violation number、biggest violation），一眼看全 10 个 corner 第一步·找目标：在 merge 总表里扫 violation number ≠ 0 或 biggest violation 为负 的 clock 组（如上图中 RX0CLK、RX0CLKDIV1P5 在某些 corner 有负 slack），这些就是要处理的违例。 找到目标后到对应 corner 目录看具体报告定位路径。示例：总表里 wccbest125 的 CLKL0DTCTLODDIV1P5 组有 5 条 violation（biggest −0.0499），打开 SYNTHESIS/top/sta/post/pt/wccbest125/latest/setup/reporttimingsetup.rpt，按 slack 排序找到 VIOLATED 路径，看清 Startpoint / Endpoint / Path Group： （上例：Startpoint LCCSPIFL0/DIOHDCLKreg（RX0ODCLKDIV2）→ Endpoint DTCTLL0/EN1Lreg（CLKL0DTCTLODDIV1P5），slack (VIOLATED) = −0.049949。每个 corner 的 latest/ 下按 setup / hold / skew / trans 分目录，各 clock 组单独一份 reporttiming 文件。） 第二步·定性（关键判断）：逐条看违例路径，判断它后端修不修得掉： - 修得掉的（skew 类，垫 delay / 换 size 能收敛）→ 不动约束，留给 APR 修调； - 修不掉的 → 判断该下什么约束： - 准静态信号、异步跨时钟域 → setfalsepath - 数据允许跨多个周期到达的慢速路径 → setmulticyclepath - 下约束前先在 live PT 里 reporttiming -inputpins 把这条路径报出来看明白：穿过哪些 cell、起点终点对不对、是不是夹带准静态 mux 的假路径——确认是假路径才写，判错会把真实路径漏报。 - 报告只能告诉你「违例在哪」，信号到底准不准静态要看波形：把起点信号（如 SETTINGDET）在仿真波形里拉出来，确认它是一帧变一次的配置类信号、或与终点时钟确实异步，才能落 setfalsepath。只看 report 不看波形就下约束，是把真实路径漏报的常见原因。 第三步·落地重跑（一轮完整循环）： flowchart LR A[\"违例写进 dco (false path / multicycle)\"] --> B[\"重跑 prePT 展开生成新 SDC\"] B --> C[\"新 SDC 放入 database 目录\"] C --> D[\"重跑 post PT 10 个 corner\"] D --> E[\"runsummary 看新 merge 总表\"] E -->|\"该组 violation 清零 且无误伤\"| F[\"✅ 收敛\"] E -->|\"仍有修不掉的\"| A F --> G[\"APR 修调全部完成\"] G --> H[\"最终再跑一次 postPT + runsummary\"] H --> I{\"5 个 csv 全部 ready?\"} I -->|\"是\"| J[\"TO SIGNOFF (最终签核)\"] I -->|\"否\"| A 最终确认环节（TO SIGNOFF）的详细操作见 TO SIGNOFF 页。 - 每轮重跑后必须确认两件事：目标违例已清；没有误伤真实路径（violation number 异常减少、或别的组冒出新违例都要警惕）。 - false path / multicycle 采用叠加式维护：不删旧的，往 dco 后面追加（cell 流水号每版都变，旧条目自然失效但无害）。 dco 落点实例（真实文件）：SYNTHESIS/common/ipcons/HV2M23digitaltop.tcl——上一节说的「改 dco」改的就是它（prePT 时由 ptsetup.tcl source 进来）。 图中可以看到 merge 总表里那批修不掉的违例，最终都落成这个文件里的一条条 setfalsepath： - 配置/寄存器写类：LCCPUWRHV2M23/R、VGMA/RREG 的 CK 与数据端，整组 from 豁免； - 异步复位类输出：-to [getports XRSTAR]； - 跨域配置信号（与 merge 总表 RX0ODCLKDIV2 → CLKLDTCTLODDIV1P5 的负 slack 对应）：LCCSPIFL0/SETTINGDETreg → DTCTLL0/L1 的 DBR0N/DBL0N/STARTR/STARTL/L5/EN1R/EN1Lreg，L0、L1 两侧逐条列出；POLDETreg → DTCTLL0/L1/DATA 用 getcells 通配一整组。 写法经验（对照图）： - 起点能整组通配就通配（R、DATA），终点是寄存器时逐列 L0/L1 两侧，避免误伤同组真实路径； - 每条 false path 都对应一次「报告定位 + 波形确认」，追加在文件末尾，不删旧条目。 #### live PT 验证工作流（约束生效确认） 约束写好后、正式重跑之前，先在 live PT 里快速验证——session 不退出，随改随报： 1. 开 live PT：直接 ptshell 起交互 session（或 restore 之前 savesession 存的 session，省掉重新 link / readparasitic 的时间）； 2. 在 session 里输入新约束：把刚写进 dco 的 setfalsepath / setmulticyclepath 直接敲进去（或 source 对应片段），即时生效； 3. 用 reporttiming 报目标路径确认效果，常用完整选项组合（setup 检查一般 -delaytype max，hold 检查换 -delaytype min）： reporttiming \\ -pathtype fullclockexpanded \\ -delaytype max \\ -inputpins \\ -nworst 20 \\ -slacklesserthan 20 \\ -maxpaths 100 \\ -group RX0ODCLKDIV2 \\ -transitiontime \\ -capacitance \\ -derate \\ -sortby slack 选项含义与取舍： | 选项 | 作用 | 备注 | |------|------|------| | -delaytype max | 报 setup（max）路径 | 最常用；查 hold 改 min | | -pathtype fullclockexpanded | 展开完整 clock 路径 | 看 clock latency 必备 | | -inputpins | 列出路径经过的每级 pin | 判断有没有夹带准静态 mux / 假路径 | | -group RX0ODCLKDIV2 | 只看指定 clock 组 | 与 merge 总表里的违例组对应 | | -slacklesserthan 20 | 只报 slack < 20 的 | 过滤掉大量无意义正 slack | | -nworst 20 / -maxpaths 100 | 每终点 20 条、共 100 条 | 验证用足够；修 skew 抓数据才放大到 2000/1000 | | -transitiontime / -capacitance / -derate | 附带 trans / cap / derate 信息 | 排查时一并看 | | -sortby slack | 按 slack 排序 | 最差的排最前 | 4. 确认两件事：被豁免的路径不再出现在报告里（false path 生效）；同组该 check 的真实路径还在（没误伤）； 5. 验证 OK → 约束已写回 dco，走「重跑 prePT → database → 10 corner」正式循环；验证不对 → 在 session 里调整约束重新报，直到对了再落 dco。 这套「live PT 先试、对了再写 dco」的习惯，对应的就是 §3.1 的纪律：不直接改 SDC、不提前乱写 false path。"
    },
    {
-    "id": "sec-17",
+    "id": "sec-25",
     "level": 3,
     "title": "3.3 input / output delay 约束文件（ipcons/inputdelay.tcl）",
     "text": "input delay 约束有专门文件，与 dco 同目录、随约束一起被 source（配套还有 outputdelay.tcl）： SYNTHESIS/common/ipcons/inputdelay.tcl 文件头的编写方法（三条，照做即可）： 1. 从顶层实际 input port 出发（以 .v 的 port 为准）； 2. 每个 port 往里 trace 到第一个有效时序捕获域（用哪个 clock 就挂哪个 clock）； 3. 数值沿用 legacy Tcl 中仍然匹配的值——不随意收紧，避免相对旧版 under-constrain。 文件组织纪律（图上半部分注释）： - 假定 base clock 已由 dco（HV2M23digitaltop.tcl）创建，本文件只管 input delay； - 专用 clock / reset port 只写注释说明，不给 setinputdelay； - FPGA-only 的输入以注释形式列出，留待单独 review。 代码实例（图下半部分）： # I2C 串行输入：max/min 成对 setinputdelay -clock I2CCLK 1 [getports CSCLI] setinputdelay -clock I2CCLK -min -1 [getports CSCLI] #setinputdelay -clock OSCCLKIN 5 [getports CSCLI] -adddelay # 旧版第二捕获域，注释保留 # RX lane 数据：整组通配，挂 OD /2 分频时钟 setinputdelay -clock RX0ODCLKDIV2 0 [getports doutlaneL0] setinputdelay -clock RX0ODCLKDIV2 -min 0 [getports doutlaneL0] 写法经验（对照图）： - max / min 成对写（1 / -min -1、0 / -min 0），只写一个等于只卡了半边； - lane 类信号用通配符整组设置（doutlaneL0），clock 挂实际捕获域（OD 模式用 ODCLKDIV2）； - 换 clock 域、换数值时旧行注释保留不删除（图中 #setinputdelay -clock RX0CLK ... 一片），方便回退和 review diff。"
    },
    {
-    "id": "sec-18",
+    "id": "sec-26",
     "level": 3,
     "title": "3.3 false path / multicycle 设置经验",
     "text": "- 无继承机制：每版综合后 cell 流水号（自动命名）全变，false path 要全部重新报、重新加；做法是不删旧的、往文件后面叠加（叠加式维护）。 - 跨项目经验可继承：架构没有大改时按信号功能 / 类别识别，同一类信号成组设置。 - 准静态信号（一帧变一次）可大胆设 false path。 - 修 skew 的副产物：往后推 data / clock 垫 delay 时会推出假 hold（只推最后一级、后面没有 DFF 承接，推超过一个周期就报 hold violation）——这种是假的，持续补 multicycle / false path 即可。 - 修 skew 引入的真实问题多为 clock gating 的 hold。 - 另一种造\"假路径\"手段：output delay（有时值设得比 max 还大）。 - 多种 mode 合成一路输出、只有一个可 check 点时，按最严的标准卡；条数多难修但对签核安全。 NOTE: \"最严标准原则\"——多个 mode 共用一个 check 点时按最严的规格卡。修起来条数多、辛苦，但漏报的代价比难修大得多。"
    },
    {
-    "id": "sec-19",
+    "id": "sec-27",
     "level": 3,
     "title": "3.3 clock 定义与频率目标",
     "text": "- create clock 周期在专用文件中修改；当前项目主频 1.8 GHz，带 1.05% 展频（spread spectrum）（会议经验值，脚本包中未见对应设置——包内最快时钟周期 4.75 ns ≈ 210 MHz）。 - 相比其他项目（有要求 4 GHz 的），当前项目约束偏保守（over constraint）。 - 另有一条慢 clock（教学示例，端口名 CLKAL，会议记录误写作 clockAL）周期约 15 ns（会议经验值；包内最接近的慢时钟是 RX1CLK，周期 17.1 ns）。 1.8 GHz 主频 会议经验值，脚本包未见对应设置 1.05 % 展频（spread spectrum） 15 ns 慢 clock 周期 教学示例 CLKAL（会议经验值）"
    },
    {
-    "id": "sec-20",
+    "id": "sec-28",
     "level": 3,
     "title": "3.4 定制 lib（commondb）连环坑",
     "text": "新加定制 lib 时在 common 下的 commondb 里加；可拿新 lib 与现有配置 diff 参考。 连环坑： - 多个调用位置都要跟着改，漏改会一直报错； - 后仿对应位置没加 lib 会编译出错； - .v 和 .lib 都要给到对应位置，否则报 lib 找不到。"
    },
    {
-    "id": "sec-21",
+    "id": "sec-29",
     "level": 3,
     "title": "3.5 pin 名称的坑（通配符穷举法）",
     "text": "某输出 cell 有 I0 / I1 / O 三个 pin：直接写 O 设约束设不上（live PT 里 getpins 能找到，但写进 constraint 跑 prePT 报找不到）；三个 pin 名都写上也不行。 解决：用通配符 穷举代替，写星号后全部 pin 都会设上。两个项目都踩过这个坑。 WARNING: live PT 里能 getpins 到的名字，不代表 prePT 展开约束时能找到。pin 名设不上时，优先试通配符穷举。 ---"
    },
    {
-    "id": "sec-22",
+    "id": "sec-30",
     "level": 2,
     "title": "4. Skew 修调方法（技术核心）",
     "text": ""
    },
    {
-    "id": "sec-23",
+    "id": "sec-31",
     "level": 3,
     "title": "4.1 规格与目标推导",
     "text": "skew 规格来自规格方 / 模拟方：目标 ±3.5 ns。 推导（以周期约 15 ns 的慢 clock 为例）： 一周期 15 ns 前后各留 4 ns 给 setup / hold margin 中间允许 data 相对 clock 偏移：15 - 4 - 4 = 7 ns 以正中间为零点 → skew = ±3.5 ns ±3.5 ns skew 目标 7 ns 可偏移窗口 15 − 4 − 4 4 ns 前后 setup / hold margin 占空比不是 50% → 下降沿注定不在 data 中间 → 要把 clock 往左推（对齐到 data 窗口中间）。 完整的 skew 规格推导如下图：15 ns 周期前后各留 4 ns，中间 7 ns 窗口即 ±3.5；clock 本身带 +2.5 偏移，所以最终 skew 规格 = +2.5 ±3.5 = [-1, +6]——左边界 +6（data 最迟）、右边界 −1（data 最早）。这就是 mergesdbusskew.pl 输出的 margin 标注规格 [-1:6] 的出处（见 脚本字典 ）。"
    },
    {
-    "id": "sec-24",
+    "id": "sec-32",
     "level": 3,
     "title": "4.2 修调策略：先 data 后 clock，推 clock 为主",
     "text": "理想步骤： 1. 先把 data 之间推到等长（相互偏移尽量小）； 2. 再由 clock 推到中间位置。 实际执行：大部分推 clock 不推 data——data 条数太多（一组 8 bit，多 lane 每路多路来源，每个 DFF 出来起码 6 路）；只有 clock 没法弄时才动 data。 - 方向性：往后推（垫 delay）容易，往前拉（拆 delay）难；风险是垫太多绕线绕不过去，需提前预留绕线余量。 - data skew 都是针对 clock 去设的，不单独要求 data 间 skew；clock 间因 clock tree 不会差很多，data 间差很多正常。"
    },
    {
-    "id": "sec-25",
+    "id": "sec-33",
     "level": 3,
     "title": "4.3 修调分工与 Excel 交接",
     "text": "- skew 修调由 APR 工程师全权负责；他自行搭建 PT 环境（link 到 PT 环境 owner 的目录），自己跑 PT、按 Excel 报表自行修调，遇修不下去的（如 setup 互卡）主动反馈。 - 交接物：自动化环境 + Excel 报表。 - 修不下去时先看组分得够不够细（按 lane / mode 细化 check 分组）；分到最细还修不下去，说明 skew 标准本身需要谈判。"
    },
    {
-    "id": "sec-26",
+    "id": "sec-34",
     "level": 3,
     "title": "4.4 check 路径取舍（trace 教学）",
     "text": "check 对象：所有 data bus、全部 clock、以及指定的输入信号。 trace 方法：从输出端往里走，逐级看每个控制信号要不要 check、是不是 multicycle、gating 信号如何处理。 - 不要偷懒合并报点：本想\"A 包含 B / C 就只报 A\"，结果 A 内部还有准静态 mux 把假路径带进来，特别难修——必须一直往前看，把来源都抓出来。 - 历史案例：某条一帧变一次的 CK 路径连续三四个项目都修不下去，后来干脆不加进 check 列表（多打一条 path 没坏处，但明知修不下去的不加）。 - 两路来源的路径中，一路和其他路长度差很多的，加进来必修不下去，宁可不 check。"
    },
    {
-    "id": "sec-27",
+    "id": "sec-35",
     "level": 3,
     "title": "4.5 skew 报告脚本实例（reporttimingskewsd.tcl）",
     "text": "修 skew 用的批量报告脚本，完整路径与文件名（与 ptsetup.tcl、get.pl / merge.pl 抓取合并层同目录，脚本条目见 脚本字典 ）： SYNTHESIS/top/sta/post/common/reporttimingskewsd.tcl 内容结构（对照截图）： - data 组：reporttiming -from uLOGICCENTER/CENTER1/TOTALDTCTL/DTCTLL/SLDLY、DATAPRE 等 -to [getports DBL/DBR/SLINB] -maxpath 2000 -nworst 1000 >> ${rptdir}/skew/reporttimingsd{l,r}1p{a,b}.rpt - clock 组：from CLKGENU0/U1 各 DCLK 到 CLKAL/CLKBL 等 port，在 -maxpath 2000 -nworst 1000 基础上再加 -slacklesserthan 50 - 输出写到 ${rptdir}/skew/reporttimingsd.rpt（每组第一条 > 新建、其余 >> 追加），供 getsdbusskew.pl 抓取、merge 进 Excel - 换 lane / 换分组的旧写法用注释保留（截图 77-79、84-85 行），不删除，方便回退对照 选项取舍（重要经验）： - -maxpath 2000 -nworst 1000 是固定写法：修 skew 要拿到每组足够多路径的 latency 分布，merge 脚本才能算出 max / min 和 margin；路径太少，推 skew 的数据基础就失真。 - -slacklesserthan 50 可加可不加、需要灵活考虑：加上可以过滤掉 slack 明显为正的路径、控制报告体积（图中 clock 组带了 50，data 组没带）；但如果当前要看完整的 latency 分布（比如 data 组要推 skew），就不要加、或把阈值放宽，否则长 latency 路径被滤掉、merge 出来的数据就失真。阈值取多少（图中为 50）按当前要分析的内容定。 KEY: 强调 -slacklesserthan 加不加、阈值取多少，很需要经验、很需要迭代才能下结论——不是抄一组参数就万事大吉。每一条 reporttiming 都要单独综合考虑：这条报告的目的是什么（推 skew 抓分布 / 只看违例 / 点对点附近）、滤掉的路径会不会正是要用的数据、阈值卡多紧合适。下不了结论时就迭代：先不加跑一次看数据量，再加上对比，反复几轮才能定下每一条的写法。 - 输出重定向按分组区分：每组第一条用 > 新建（覆盖旧结果），后续条目用 >> 追加——注意 script-dict 里记录过 > 误用于同组文件导致报告互相覆盖的坑。 - 只做点对点跨域检查时不需要这套大 -maxpath：如 1P5 分频跨域、isprx、io 报告，用 -slacklesserthan 过滤或少量 -maxpaths 100 即可。 ---"
    },
    {
-    "id": "sec-28",
+    "id": "sec-36",
     "level": 2,
     "title": "5. 报告解读与报表生成",
     "text": ""
    },
    {
-    "id": "sec-29",
+    "id": "sec-37",
     "level": 3,
     "title": "5.1 reporttiming 实战",
     "text": "基本报法：from DFF 的 Q 端，to 输出 port。 - 推荐 option：-inputpins（列出每级 input pin，看清路径穿过哪个 cell / pin；用 reporttiming -help 查 option）。 - 报全原则：路径报全；起点选错会夹带假路径。 - 每条 path 报 1000 条；工具上限报不了 1 万条。主 report 定义集中在 reporttimingprj.tcl：reporttiming -pbamode path -delaytype max -pathtype fullclockexpanded -crosstalkdelta -derate -slacklesserthan 0.5 -maxpaths 1000（每个 clock 单独一份时 slack 阈值收紧到 0.2）。 - 规模：10 corner × L/R × A/B × 每组 6 条 × 每条 1000 ≈ 10 万条级 report，全靠脚本处理。"
    },
    {
-    "id": "sec-30",
+    "id": "sec-38",
     "level": 3,
     "title": "5.2 假路径识别（肉眼判断要点）",
     "text": "典型特征：路径中经过不该经过的寄存器 / 准静态 mux（\"经过寄存器就觉得不妙\"）。 - 起点选错后果：报出的点 latency 异常大（别人 3 点多它 10 点多，没做 balance），merge 进 Excel 后修不动。 - 处理：换起点——从最前面的点报，不要从夹带准静态寄存器的 DFF 报。"
    },
    {
-    "id": "sec-31",
+    "id": "sec-39",
     "level": 3,
     "title": "5.3 自动化抓取与 Excel 报表",
     "text": "流程：PT report 按设计好的 from/to 点批量报 → 脚本按 keyword 抓数打印 → merge 脚本合成 CSV / Excel。 Excel 结构： - 上半部分：原始 clock / data latency； - 下半部分：自动算好的 skew（标准列在脚本里）； - clock 组、data 组分别抓 max / min 并排序，方便后端直接抓最大最小来推。 merge 脚本是手写分组对应关系，照猫画虎改，一定要一一对应，很容易整错。 NOTE: 选点必须人工——看代码、看波形或问设计方，AI 做不了。"
    },
    {
-    "id": "sec-32",
+    "id": "sec-40",
     "level": 3,
     "title": "5.4 当前项目时序现状",
     "text": "- 第一版综合后 setup 违例极少：最大仅 0.1 0.2 ns（周期富裕）。 - 核心矛盾在 clock skew 收敛：clock 路径最快最慢差值曾达 7，接近余量上限；报表中 10 以上的异常值均为假路径，已清完。 - 修 skew 过程会不断引入新的假 hold，需持续清。 ---"
    },
    {
-    "id": "sec-33",
+    "id": "sec-41",
     "level": 2,
     "title": "6. 签核准则与仿真关系",
     "text": "- 数字签核（signoff）以 PT 结果为准，不以 co-sim 为准——PT 覆盖率远高于仿真（PT 是所有检查）。 - 跑 co-sim 的两个目的： 1. 确认 constraint 有没有错； 2. 给模拟方看（他们 spec 描述不一定 OK，完整联仿更有效）。 ---"
    },
    {
-    "id": "sec-34",
+    "id": "sec-42",
     "level": 2,
     "title": "7. AI 辅助的边界与使用原则",
     "text": "当前 AI 无法做到： - 识别准静态信号 / 特殊节点（真假路径判定）； - 自主判断最佳抓取节点； - 自动适配新项目特殊规则； - 基础 PT 命令可生成但存在随机参数错误，直接运行会报错。 使用原则（会议共识）： - \"寄存器出来的就是假路径\"不能作为通用规则； - 宁可多报不可漏报（漏报一条 skew 没掉很可怕）；人工做完也要反复检查三四遍； - AI 可做中间引导 + 人工 review 的辅助；产出固化为 script 且不再改才可信，但生成 script 过程要充分评估； - 落地前需至少 3 轮全流程验证、准确率 100%；固化后每版仍人工抽查至少 10%； - 优先探索 AI 生成标准化文档、整理配置说明等低风险场景。 WARNING: 真假路径判定不能交给 AI。constraint 漏报的代价是硅后才发现时序问题，远大于人工 review 的成本。 ---"
    },
    {
-    "id": "sec-35",
+    "id": "sec-43",
     "level": 2,
     "title": "8. 常见问题与经验清单",
     "text": "1. 流水号坑：每版综合后 cell 自动命名全变，针对具体 cell 名的约束每版要重加（叠加式，不删旧）。可在关键路径预埋 buffer，或用 DC / PT 脚本做 ECO 塞 buffer。 2. 路径抓取节点选择错误会产生大量无效报表数据——严格按规范选节点，从最前端节点开始抓，避开准静态寄存器。 3. 宁可多报不可漏报。 4. 修不下去的路径连续几个项目都修不下去，就别再加进 check 列表。 5. margin（给 DC 的加严量）一般 0.8，曾试 0.6（会议经验值，脚本包中未见对应设置）；压紧 constraint → DC 难做但走线余量长；DC 可能拆逻辑、换 cell 结构（AOI / OAI），曾有案例 APR 绕不出来，发现一大串 AOI 需拆掉。 6. report 文件太大打不开需要 license（大项目 SOC 经验）；以前看几万条 report 靠先分类、先设 false path、再迭代。 7. 环境版本固定，报错先查 source 版本。 8. 分组（lane / mode）先分细再修，修不下去再谈标准。"
@@ -852,34 +900,10 @@
     "id": "sec-5",
     "level": 2,
     "title": "2. 时序分析（PrimeTime）",
-    "text": "&gt; 本节讲 prePT / postPT 的运行与配置（操作步骤）；约束管理、skew 修调、报告解读等 postPT 方法论见 「POSTPT」 章。"
+    "text": "&gt; prePT / postPT 的运行与配置（什么时候做、怎么跑、corner 配置、notimingcheck、SDF 生成）以及 postPT 方法论（约束、skew、报告解读）均见 「POSTPT」 章。 与本章强相关的时序交付纪律（保留备查）： - 交付 APR 前必须确认 unconstrained 清零——在 prePT 的 ${TOPNAME}cons.rpt 中查（见 §1.3）。 - DC 和 PT 均无 violation 才能交付。"
    },
    {
     "id": "sec-6",
-    "level": 3,
-    "title": "2.1 Pre-PT",
-    "text": "cd pt runpt prePT 的作用：把 constraint 展开成完整形式、检查 SDC 语法、做简单的 timing check。 - ptsetup.tcl 一般无需修改；其中 set autowireloadselection false 是刻意关掉的——开着时 prept 的 timing 会比 DC 的 timing 差得多。IP 级环境下 ptsetup.tcl 对应的是 commonpt.tcl。 - commondbpvt.tcl 选择与实际综合一致的 corner（如 wccworst）。 - 注意 memory / analog 的 PVT 可能与标准单元不同。 检查项： - pt.log 无 Error - .rpt 中 timing slack &gt; 0 运行路径：IP 路径和 TOP 路径下都有 prePT 脚本（两套环境的工具版本不同：IP 级用 pt1706，TOP 级用 pt1806），当前一般使用 TOP 路径下的版本；IP 路径下的脚本目前跑不过、待排查（在 IP 下跑的好处是 signoff 时 PT log / report 可以一起 signoff）。 prePT 产物中还可以查到（真实文件名）： - unconstrained（未约束）路径列表——在 ptrpt/${TOPNAME}cons.rpt - SDC 语法错误——readsdc.log - 每个 clock 域下挂的 DFF 数量——reportdffnum.rpt - floating 信号列表（APR 对接工程师有时需要）——ptinputfloat.log"
-   },
-   {
-    "id": "sec-7",
-    "level": 3,
-    "title": "2.2 prePT 报告的下游应用：后仿 notimingcheck 配置",
-    "text": "prePT 报告除了看时序，还有一个重要下游用途：给 gate-level 后仿生成 notimingcheck 名单。 配置文件（真实路径）： HV2M23/DVTCONC/script/notimingcheckDIG.cfg 格式为逐行列 instance 的完整仿真层次： instance {chiptbtop.u .u digitaltop.uLOGICCENTER.LINKLOGIC.USYNCL0L1. reg} {noTiming}; 为什么在 prePT 之后做（而不是 DC 之后）： - 这个 cfg 是后仿（带 SDF 的 gate-level 仿真）用的，noTiming 让仿真工具不对这些 instance 做 setup / hold 等 timing check。 - 「哪些 instance 不需要 check」必须由完整约束下的 STA 报告判定——prePT 是第一个拿综合网表 + 完整展开 SDC 做全量 STA 的节点，异步跨域、同步器、准静态路径只有在 prePT 报告里才看得全。 - DC 阶段的 timing 只是 wireload 估计、约束未完整展开，不能作为「这条路径不用 check」的依据。 - 图中实例名单自己也证明了来源：USYNCL0L1（同步器）、UL0CIRCDELAYBUF（环形 delay buffer）、BLANKENASYNC、CSPICMDALIGN 等，全是 STA 报告里「刻意不做时序检查」的异步 / 延时链寄存器。 为什么需要它： 后仿带 SDF 时，这些异步 / 延时 instance 会刷出大量假的 setup / hold violation 甚至 X 传播，把真实问题淹没；用 noTiming 屏蔽后仿真 log 才干净，真实 violation 才看得见。 操作步骤： 1. 跑完 prePT，看报告中的异步跨域 / unconstrained / 准静态路径； 2. 确认属于「不 check」的 instance（同步器、delay buffer、async 控制信号）； 3. 按仿真层次写进 notimingcheckDIG.cfg； 4. 后仿环境读取该 cfg，仿真时这些 instance 不做 timing check。 注意：名单必须与 STA 报告逐条对应，漏加会被假 violation 淹没，错加会把真实时序问题掩盖掉——和 false path 一样需要人工逐条确认。"
-   },
-   {
-    "id": "sec-8",
-    "level": 3,
-    "title": "2.3 Post-PT",
-    "text": "基于 APR 后端输出进行 signoff 级时序分析——这是 APR 阶段的最终时序验收，以全 corner 结果为准： cd sta/post/pt runpt 每个 corner 目录下各有一份入口脚本 runpt （只跑当前 corner）。 需修改： - cornerset.tcl ：每个 corner 下各有一份；corner 配置基本不动，换库时需照 foundry 提供的 PVT 文档（含 OCV）逐项更换。当前 runsummary 实际跑 10 个 corner：wccworst125 / wccbest125 / wctypical125 / ltcworstm40 / ltcbestm40 / lttypicalm40 / mlcbest125 / ttcworst25 / ttcbest25 / tttypical25——无 wcl（脚本中已整段注释掉）、无 bc（bc 是旧命名，只出现在旧版串行脚本 runall 中） - wc：ss 低压高温（LVHT） - wcl：ss 低压低温（LVLT） - lt：ff 高压低温（HVLT） - ml：ff 高压高温（HVHT） - tt：典型温压 - ptsetup.tcl ：最核心的脚本，内含大量需要 check 的 report 定义（slack、clock path 等）；读取 APR 吐出的网表（.v / .gv）与 spef；setoperatingconditions 必须与 DataBase/Analog/DB 下对应 .lib 中的 operatingconditions 保持一致；约束读的是 APR 返回的 postcts SDC（${SDCPATH}/${SDCNAME}postcts.sdc），不是 prePT sdcpr/ 的展开产物直接喂入 - pt/design.set：路径、LINKLIB、TARLIB、NETDEFINE、POSTPTEN=1 等 - POSTPTEN 必须为 1 - PTHOLD 仅针对特定工艺（如 22nm） - commondbpvt.tcl 注意 memory / analog 的 PVT 可能与标准单元不同。 使用经验： - 打开 postPT 环境第一件事先改 top name；SDC / 网表路径可在配置中搜索 APR 对接工程师的标识快速定位（APR 网表路径固定），并确认路径为最新。 - 分析中间版本（非 latest）时必须改 ptsetup.tcl：readverilog 默认指向 APR release 目录下的 .../timing/latest/ .v.gz——latest 是软链，永远指向最新一版；要复查某个历史/中间版本的时序，需要把路径从 latest 改成具体版本目录（spef 路径同理），否则会误分析到最新版。 该文件同时是 CORNER → RCFILE → operatingconditions 的映射表（图中 wccworst / wccbest / ltcbest / ltcworst 各分支，wcl 整段注释保留），换库时按 foundry PVT 文档逐项更换，且 setoperatingconditions 必须与 DataBase/Analog/DB 下对应 .lib 一致（见前述注意事项）。 - 附加自研脚本：抓 worst slack、批量跑 PT、跑完后 merge 结果。 KEY: corner 配置里有 dump SDF 开关（真实变量名是 cornerset.tcl 里的 DUMPSDF ，打开则专门生成 SDF，供后仿使用）。真实机理：DUMPSDF==1 的那趟 run 只执行 writesdf 并跳过全部 report——两个分支互斥，结果并非被删除，而是 latest 软链指向了这趟只产 SDF 的 run，run summary 自然抓到空。run summary 里发现某 corner 结果为空，基本就是这个原因；关掉后重跑该 corner 即可恢复。"
-   },
-   {
-    "id": "sec-9",
-    "level": 3,
-    "title": "2.4 后仿 SDF 生成与仿真侧配置（完整流程）",
-    "text": "后仿（带 SDF 的 gate-level 仿真）前要先生成 SDF，完整流程如下： ① 开 DUMPSDF（PT 侧）：到对应 corner 目录改 cornerset.tcl，把 set DUMPSDF 0 改为 1： 文件路径：SYNTHESIS/top/sta/post/pt/ /cornerset.tcl。一般只跑三个 corner：tttypical25、wccbest125、ltcbestm40。 ② 跑 postPT 生成 SDF：在该 corner 目录执行 runpt。注意这趟 run 只执行 writesdf、不产任何 timing report（分支互斥，见上条 WARNING）；SDF 落在 SYNTHESIS/top/sta/post/sdf/ 下，如 HV2M23digitaltoptypical25c.sdf / cbest125c.sdf / cbestm40c.sdf。 ③ 改回 0：SDF 下载/取回后，必须把 DUMPSDF 改回 0——不改的话 latest 软链一直指向这趟只产 SDF 的 run，runsummary 抓到的就是空结果。 ④ 仿真侧 case 定义：在 case 的 userdefine（userdef.sv）里按 corner 分别定义宏：SDFTT / SDFWC / SDFBC，决定本 case 反标哪个 corner 的 SDF。 ⑤ wavesdumper.sv 的 SDF 路径：DVTCONC/top/testsnetlistpost/ /wavesdumper.sv 中，ifdef SDFTT / SDFWC / SDFBC 三段各有一条 $sdfannotate，SDF 路径写死在这里： WARNING: SDF 存放路径一旦变化（换目录、换项目、换 top name），wavesdumper.sv 里三处 $sdfannotate 路径必须同步修改，否则后仿反标不到 SDF、timing check 全失效。 flowchart LR A[\"cornerset.tcl DUMPSDF=1\"] --> B[\"跑 postPT (只产 SDF)\"] B --> C[\"SDF 落盘 sta/post/sdf/\"] C --> D[\"DUMPSDF 改回 0\"] D --> E[\"userdef.sv 定义 SDFTT/WC/BC\"] E --> F[\"wavesdumper.sv $sdfannotate 反标\"] F --> G[\"跑后仿\"] ---"
-   },
-   {
-    "id": "sec-10",
     "level": 2,
     "title": "3. 流程依赖关系",
     "text": "各步骤的并行与串行关系如下： - CKF、nLint、lecupf、DC/Genus 原则上可并行。 - 为保证 signoff 的版本一致性检查，DC/Genus 需在 CKF、nLint 之后运行。 - Pre-PT 与 LEC 可并行。 整体执行顺序：CKF + nLint（语法通过）→ DC → LEC 和 prePT → 逐个查看 report 确认无 error → DC / PT 均无 violation → 交付。 flowchart TD CKF[\"CKF 连接检查\"] -->|\"需先通过\"| SYN[\"DC/Genus 综合\"] LINT[\"nLint 语法检查\"] -->|\"需先通过\"| SYN SYN --> LEC[\"LEC\"] SYN --> PRE[\"prePT\"] LEC --> RPT[\"逐个看 report 确认无 error\"] PRE --> RPT RPT --> SO[\"signoff\"] SO --> APR[\"交付 APR\"] APR --> POST[\"postPT\"]"
