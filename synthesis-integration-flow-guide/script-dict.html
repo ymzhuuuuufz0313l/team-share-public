@@ -598,6 +598,8 @@ source ../../common/pt_setup.tcl -echo
 
 L0 / L1 两组 `-group RX0_OD_CLK_DIV2 -rise_through dout_lane_L0[*] ... -slack_lesser_than 20 -max_paths 100` + `report_clock_timing` latency → `skew/report_timing_rx{0,1}_00_${delay_type}.rpt`。
 
+- **找路径端点名字的入口**：clk 和 data 从 RX 出来、到 APR 里 DFF 的名字，就写在这个脚本的 `-group`（clk 组）与 `-rise_through`（data 起点）定义里；修 skew 需要确认端点对象时，先来这个脚本查。
+
 <a id="skew_io"></a>
 #### report_timing_skew_io.tcl（19 行）
 
