@@ -362,9 +362,9 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
   <script type="text/template" id="md">
 # 五、APR SIGNOFF（Signoff、时序与流程依赖）
 
-&gt; 综合和 LEC 通过后，进入 signoff、时序分析和最终交付阶段。本章涉及两类 signoff，限定词需精准区分：**综合 signoff**（第 1 节，交付 APR 前的版本一致性检查与 release）和 **APR signoff**（第 2 节 postPT，基于 APR 后端网表的全 corner signoff 级 STA，是最终时序验收环节）。
+&gt; 综合和 LEC 通过后，进入 signoff、时序分析和最终交付阶段。整个流程有**两个阶段的 signoff**：第一阶段 **APR SIGNOFF**（本章：交付 APR 前的版本一致性检查与 release、postPT 全 corner 时序验收）；第二阶段 **TO SIGNOFF**（APR 修改全部完成后的最终确认，见 <a href="./to-signoff.html" target="_blank">TO SIGNOFF</a> 章）。
 
-## 1. 综合 Signoff 与交付
+## 1. Signoff 检查与交付
 
 ### 1.1 Signoff 检查
 在自己的 IP 路径下运行 signoff 脚本（脚本本体在脚本包外）时，会自动：
@@ -409,7 +409,7 @@ KEY: unconstrained（未约束）路径交付 = 重大 bug；constraint 下错�
 
 ### 1.4 交付落盘：DataBase 目录与 update_latest
 
-综合 signoff 通过、全部 run 完成后，交付物要到 DataBase 公共目录落盘确认：
+signoff 通过、全部 run 完成后，交付物要到 DataBase 公共目录落盘确认：
 
 **① 开通目录权限**：DataBase 目录默认无写权限，联系 DataBase 管理员（顾老师）开通；开通后用 `newgrp` 提权切换到项目管理员组：
 
@@ -503,9 +503,9 @@ instance {chip_tb_top.u_<TOP>.u_<TOP>_digital_top.u_LOGIC_CENTER.LINK_LOGIC.U_SY
 
 注意：名单必须与 STA 报告逐条对应，漏加会被假 violation 淹没，错加会把真实时序问题掩盖掉——和 false path 一样需要人工逐条确认。
 
-### 2.3 Post-PT（APR Signoff）
+### 2.3 Post-PT
 
-基于 APR 后端输出进行 **signoff 级**时序分析——这是 APR 阶段的最终时序验收（APR signoff），以全 corner 结果为准：
+基于 APR 后端输出进行 **signoff 级**时序分析——这是 APR 阶段的最终时序验收，以全 corner 结果为准：
 
 ```bash
 cd sta/post/pt
