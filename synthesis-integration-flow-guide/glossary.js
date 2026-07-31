@@ -159,6 +159,42 @@
 .cmd-legend .lg { display: inline-flex; align-items: center; gap: 5px; }
 .cmd-legend .swatch-term { color: var(--accent); border-bottom: 1px dashed var(--accent); }
 .cmd-legend .swatch-cmd { color: #2563eb; border-bottom: 1px dashed #2563eb; }
+
+/* 重点高亮块 callout：md 中以 WARNING:/NOTE:/TIP:/ASSUMPTION:/KEY: 开头的段落自动渲染 */
+.callout {
+  border-left: 4px solid;
+  border-radius: 0 10px 10px 0;
+  padding: 12px 18px;
+  margin: 18px 0;
+  font-size: 15px;
+  line-height: 1.7;
+}
+.callout .callout-tag {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 1px 10px;
+  border-radius: 999px;
+  margin-right: 8px;
+  color: #fff;
+  vertical-align: 1px;
+}
+.callout-warn  { border-color: #dc2626; background: rgba(220, 38, 38, 0.07); }
+.callout-warn  .callout-tag { background: #dc2626; }
+.callout-note  { border-color: #2563eb; background: rgba(37, 99, 235, 0.07); }
+.callout-note  .callout-tag { background: #2563eb; }
+.callout-tip   { border-color: #16a34a; background: rgba(22, 163, 74, 0.08); }
+.callout-tip   .callout-tag { background: #16a34a; }
+.callout-assume { border-color: #9333ea; background: rgba(147, 51, 234, 0.07); }
+.callout-assume .callout-tag { background: #9333ea; }
+.callout-key {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+  box-shadow: 0 4px 18px rgba(13, 148, 136, 0.15);
+  font-weight: 500;
+}
+.callout-key .callout-tag { background: var(--accent); }
+.callout-head { padding: 7px 14px; }
 `;
   document.head.appendChild(cmdStyle);
 
@@ -265,6 +301,38 @@
     }
   }
 
+  // 高亮块转换：把以 WARNING:/NOTE:/TIP:/ASSUMPTION:/KEY: 开头的 <p> 渲染为彩色 callout
+  const calloutMap = {
+    'WARNING':    { cls: 'warn',   label: '警告' },
+    'NOTE':       { cls: 'note',   label: '注意' },
+    'TIP':        { cls: 'tip',    label: '贴士' },
+    'ASSUMPTION': { cls: 'assume', label: '假设' },
+    'KEY':        { cls: 'key',    label: '⭐ 重点' }
+  };
+
+  function applyCallouts(root) {
+    if (!root) return;
+    root.querySelectorAll('p').forEach(p => {
+      const m = p.textContent.trim().match(/^(WARNING|NOTE|TIP|ASSUMPTION|KEY)\s*[:：]\s*/);
+      if (!m) return;
+      const conf = calloutMap[m[1]];
+      // 从首个文本节点中剥掉标记前缀
+      const first = p.firstChild;
+      if (first && first.nodeType === 3) {
+        first.nodeValue = first.nodeValue.replace(/^\s*(WARNING|NOTE|TIP|ASSUMPTION|KEY)\s*[:：]\s*/, '');
+      }
+      const div = document.createElement('div');
+      const empty = !p.textContent.trim();
+      div.className = 'callout callout-' + conf.cls + (empty ? ' callout-head' : '');
+      const tag = document.createElement('span');
+      tag.className = 'callout-tag';
+      tag.textContent = conf.label;
+      div.appendChild(tag);
+      while (p.firstChild) div.appendChild(p.firstChild);
+      p.replaceWith(div);
+    });
+  }
+
   let activeTooltip = null;
 
   function showTooltip(term) {
@@ -315,12 +383,14 @@
 
   window.applyGlossary = applyGlossary;
   window.applyCmdGlossary = applyCmdGlossary;
+  window.applyCallouts = applyCallouts;
 
   document.addEventListener('DOMContentLoaded', () => {
     const article = document.getElementById('article');
     if (article && article.children.length > 0) {
       applyGlossary(article);
       applyCmdGlossary(article);
+      applyCallouts(article);
     }
   });
 })();
