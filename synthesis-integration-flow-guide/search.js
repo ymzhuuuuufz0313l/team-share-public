@@ -81,12 +81,18 @@
 }
 /* Breathing highlight for the jump target section (~5s). */
 @keyframes searchBreath {
-  0%, 100% { background-color: rgba(219, 39, 119, 0); }
-  50% { background-color: rgba(219, 39, 119, 0.16); }
+  0%, 100% { background-color: rgba(13, 148, 136, 0); }
+  50% { background-color: rgba(13, 148, 136, 0.16); }
 }
 .search-breath {
   animation: searchBreath 1s ease-in-out 5;
   border-radius: 8px;
+}
+@media (prefers-color-scheme: dark) {
+  @keyframes searchBreath {
+    0%, 100% { background-color: rgba(45, 212, 191, 0); }
+    50% { background-color: rgba(45, 212, 191, 0.18); }
+  }
 }
 .search-footer {
   padding: 8px 16px; border-top: 1px solid var(--line);
