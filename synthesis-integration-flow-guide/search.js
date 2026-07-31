@@ -79,7 +79,7 @@
 @media (prefers-color-scheme: dark) {
   .search-item mark { background: #854d0e; color: #fde68a; }
 }
-/* Breathing highlight for the jump target section (~10s).
+/* Breathing highlight for the jump target section (~8s).
  * Rose (#f43f5e) is the complementary opposite of the teal theme color,
  * so the pulse stands out against the page. Glow ring added for emphasis. */
 @keyframes searchBreath {
@@ -365,7 +365,7 @@
 
   /* Breathing highlight: cover the whole section under the target heading
    * (the heading itself plus every sibling until the next same-or-higher
-   * level heading), pulsing for ~10 seconds. */
+   * level heading), pulsing for ~8 seconds. */
   function flashHighlight(el) {
     clearBreath();
     var stopLevel = parseInt(el.tagName.slice(1), 10) || 2;
