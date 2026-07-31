@@ -571,13 +571,13 @@ post PT 10 个 corner 全部跑完后，执行 <a href="./script-dict.html#run_s
 - merge 总表：`report_setup.csv` / `report_hold.csv` / `report_trans.csv` / `report_phy_busskew.csv` / `report_sd_busskew.csv`
 - 总表结构：行 = clock 组，列 = 每个 corner 各两列（violation number、biggest violation），一眼看全 10 个 corner
 
-![POST PT run_summary 后的 merge 总表 report_setup.csv](./image/POST_PT_SUMMARY_REPORT.jpg)
+![POST PT run_summary 后的 merge 总表 report_setup.csv](./image/11_postpt_summary_report.jpg)
 
 第一步·找目标：在 merge 总表里扫 **violation number ≠ 0 或 biggest violation 为负** 的 clock 组（如上图中 `RX0_CLK`、`RX0_CLK_DIV1P5` 在某些 corner 有负 slack），这些就是要处理的违例。
 
 找到目标后到**对应 corner 目录**看具体报告定位路径。示例：总表里 `wc_cbest_125` 的 `CLK_L0_DTCTL_OD_DIV1P5` 组有 5 条 violation（biggest −0.0499），打开 `SYNTHESIS/top/sta/post/pt/wc_cbest_125/latest/setup/report_timing_setup.rpt`，按 slack 排序找到 VIOLATED 路径，看清 Startpoint / Endpoint / Path Group：
 
-![wc_cbest corner 出问题路径的定位示例](./image/ccbest_Corner出问题的路径%20示例图.jpg)
+![wc_cbest corner 出问题路径的定位示例](./image/12_ccbest_corner_path.jpg)
 
 （上例：Startpoint `LC_CSPIF_L0/DIOH_DCLK_reg`（RX0_OD_CLK_DIV2）→ Endpoint `DTCTL_L0/EN1_L_reg`（CLK_L0_DTCTL_OD_DIV1P5），slack (VIOLATED) = −0.049949。每个 corner 的 `latest/` 下按 setup / hold / skew / trans 分目录，各 clock 组单独一份 report_timing 文件。）
 
@@ -614,7 +614,7 @@ flowchart LR
 
 dco 落点实例（真实文件）：`SYNTHESIS/common/ip_cons/HV2M23_digital_top.tcl`——上一节说的「改 dco」改的就是它（prePT 时由 `pt_setup.tcl` source 进来）。
 
-![dco 文件 ip_cons/HV2M23_digital_top.tcl 中的 set_false_path 实例](./image/digtal_Top.tcl文件修改.jpg)
+![dco 文件 ip_cons/HV2M23_digital_top.tcl 中的 set_false_path 实例](./image/13_digital_top_tcl.jpg)
 
 图中可以看到 merge 总表里那批修不掉的违例，最终都落成这个文件里的一条条 `set_false_path`：
 
@@ -676,7 +676,7 @@ input delay 约束有专门文件，与 dco 同目录、随约束一起被 sourc
 SYNTHESIS/common/ip_cons/input_delay.tcl
 ```
 
-![input_delay.tcl 位置与内容实例](./image/input_delay设置及位置图.jpg)
+![input_delay.tcl 位置与内容实例](./image/14_input_delay.jpg)
 
 文件头的编写方法（三条，照做即可）：
 
@@ -799,7 +799,7 @@ skew 规格来自规格方 / 模拟方：目标 ±3.5 ns。
 
 完整的 skew 规格推导如下图：15 ns 周期前后各留 4 ns，中间 7 ns 窗口即 ±3.5；clock 本身带 +2.5 偏移，所以最终 **skew 规格 = +2.5 ±3.5 = [-1, +6]**——左边界 +6（data 最迟）、右边界 −1（data 最早）。这就是 `merge_sd_busskew.pl` 输出的 margin 标注规格 **[-1:6]** 的出处（见 <a href="./script-dict.html#merge_pl" target="_blank">脚本字典</a>）。
 
-![SD BUS SKEW 时序规格推导](./image/SD%20BUS%20SKEW%20时序规格图.jpg)
+![SD BUS SKEW 时序规格推导](./image/15_sd_bus_skew_spec.jpg)
 
 ### 4.2 修调策略：先 data 后 clock，推 clock 为主
 
@@ -837,7 +837,7 @@ trace 方法：从输出端往里走，逐级看每个控制信号要不要 chec
 SYNTHESIS/top/sta/post/common/report_timing_skew_sd.tcl
 ```
 
-![SD skew 报告脚本 report_timing_skew_sd.tcl 实例](./image/timing_skew_sd.jpg)
+![SD skew 报告脚本 report_timing_skew_sd.tcl 实例](./image/16_timing_skew_sd.jpg)
 
 内容结构（对照截图）：
 

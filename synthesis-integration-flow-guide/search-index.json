@@ -240,7 +240,7 @@
     "id": "sec-7",
     "level": 3,
     "title": "2.3 运行与查看",
-    "text": "runptpx 结果： - toggleratedetail.rpt：toggle rate - power.rpt：功耗结果 - 上层目录生成 fsdb，可用 Verdi 打开查看功耗波形"
+    "text": "runptpx 结果： - toggleratedetail.rpt：toggle rate - power.rpt：功耗结果 - 上层目录生成 fsdb，可用 Verdi 打开查看功耗波形 功耗报告实例：左侧 repdir / 下生成 power.rpt、toggleratedetail.rpt 及各项日志；右侧 power.rpt 的 Hierarchy 表中，顶层（如 HV2M23digitaltop）一行的 Total Power 列即为全芯片总功耗（图中 1.50e-02 W，占比 100%），其下各行为子模块/实例的功耗拆分。"
    }
   ]
  },
