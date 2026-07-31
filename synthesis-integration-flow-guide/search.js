@@ -79,6 +79,15 @@
 @media (prefers-color-scheme: dark) {
   .search-item mark { background: #854d0e; color: #fde68a; }
 }
+/* Breathing highlight for the jump target section (~5s). */
+@keyframes searchBreath {
+  0%, 100% { background-color: rgba(219, 39, 119, 0); }
+  50% { background-color: rgba(219, 39, 119, 0.16); }
+}
+.search-breath {
+  animation: searchBreath 1s ease-in-out 5;
+  border-radius: 8px;
+}
 .search-footer {
   padding: 8px 16px; border-top: 1px solid var(--line);
   font-size: 11.5px; color: var(--muted);
@@ -130,6 +139,29 @@
   var overlayEl, inputEl, resultsEl;
   var items = [];
   var selected = -1;
+  var breathNodes = null;
+  var breathTimer = null;
+
+  /* ---------------- Last search memory (localStorage) ---------------- */
+  var STORE_KEY = 'guide-search-state';
+
+  function saveState() {
+    try {
+      var it = (selected >= 0 && items[selected]) ? items[selected] : null;
+      localStorage.setItem(STORE_KEY, JSON.stringify({
+        keyword: inputEl ? inputEl.value : '',
+        page: it ? it.page : '',
+        id: it ? it.id : ''
+      }));
+    } catch (e) { /* storage unavailable */ }
+  }
+
+  function loadState() {
+    try {
+      var raw = localStorage.getItem(STORE_KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch (e) { return null; }
+  }
 
   function loadIndex() {
     if (INDEX) return Promise.resolve(INDEX);
@@ -145,8 +177,25 @@
     resultsEl = overlayEl.querySelector('#search-results');
     overlayEl.classList.add('active');
     document.body.style.overflow = 'hidden';
-    loadIndex().then(function () { render(inputEl.value); });
-    setTimeout(function () { inputEl.focus(); }, 30);
+    // Restore last keyword so the user can continue where they left off.
+    var state = loadState();
+    if (state && state.keyword && !inputEl.value) {
+      inputEl.value = state.keyword;
+    }
+    loadIndex().then(function () {
+      render(inputEl.value);
+      // Restore last selected item by page + section id (robust to index changes).
+      if (state && state.keyword === inputEl.value && (state.page || state.id)) {
+        for (var i = 0; i < items.length; i++) {
+          if (items[i].page === state.page && items[i].id === state.id) {
+            selectItem(i);
+            scrollSelectedIntoView();
+            break;
+          }
+        }
+      }
+    });
+    setTimeout(function () { inputEl.focus(); inputEl.select(); }, 30);
   }
 
   function closeSearch() {
@@ -254,6 +303,7 @@
       el.addEventListener('mousemove', function () { selectItem(parseInt(el.getAttribute('data-i'), 10)); });
     });
     resultsEl.scrollTop = 0;
+    saveState();
   }
 
   function selectItem(i) {
@@ -262,6 +312,7 @@
     Array.prototype.forEach.call(resultsEl.querySelectorAll('.search-item'), function (el, j) {
       el.classList.toggle('selected', j === i);
     });
+    saveState();
   }
 
   function scrollSelectedIntoView() {
@@ -285,6 +336,7 @@
   function go(i) {
     var it = items[i];
     if (!it) return;
+    saveState();
     var current = location.pathname.split('/').pop() || 'index.html';
     var target = it.page;
     var hash = it.id ? '#' + it.id : '';
@@ -303,14 +355,30 @@
     }
   }
 
+  /* Breathing highlight: cover the whole section under the target heading
+   * (the heading itself plus every sibling until the next same-or-higher
+   * level heading), pulsing for ~5 seconds. */
   function flashHighlight(el) {
-    var prev = el.style.transition;
-    el.style.transition = 'background-color .3s';
-    el.style.backgroundColor = 'rgba(219, 39, 119, 0.15)';
-    setTimeout(function () {
-      el.style.backgroundColor = '';
-      setTimeout(function () { el.style.transition = prev; }, 350);
-    }, 900);
+    clearBreath();
+    var stopLevel = parseInt(el.tagName.slice(1), 10) || 2;
+    var nodes = [el];
+    var n = el.nextElementSibling;
+    while (n) {
+      if (/^H[1-6]$/.test(n.tagName) && parseInt(n.tagName.slice(1), 10) <= stopLevel) break;
+      nodes.push(n);
+      n = n.nextElementSibling;
+    }
+    breathNodes = nodes;
+    nodes.forEach(function (node) { node.classList.add('search-breath'); });
+    breathTimer = setTimeout(clearBreath, 5100);
+  }
+
+  function clearBreath() {
+    if (breathTimer) { clearTimeout(breathTimer); breathTimer = null; }
+    if (breathNodes) {
+      breathNodes.forEach(function (node) { node.classList.remove('search-breath'); });
+      breathNodes = null;
+    }
   }
 
   /* ---------------- Shortcuts ---------------- */
