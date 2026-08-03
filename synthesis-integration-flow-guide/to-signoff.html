@@ -364,10 +364,8 @@ flowchart LR
 1. APR 修改全部完成（修调 / ECO 全部落定）；
 2. 重跑 postPT 全部 10 个 corner（`pararrel_run_pt.py` 批量提交）；
 3. 执行 `run_summary` 生成 `summary/latest/` 下的 merge 总表；
-4. **逐个打开 5 个 csv 确认**（下图）；
+4. **逐个打开 5 个 csv 确认**（各 csv 报告实例见下节）；
 5. 全部 ready → 进入最终签核（TO SIGNOFF）；任何一项不 ready → 回 <a href="./pt-intro.html" target="_blank">约束迭代闭环</a> 或继续修调。
-
-![run_summary 之后需要看的 5 个 csv 报告](./image/19_runsummary_5csv.jpg)
 
 ## 2. 五个 csv 各看什么
 
@@ -378,6 +376,28 @@ flowchart LR
 | `report_trans.csv` | max_transition / max_capacitance 等违规 | 无 violator |
 | `report_phy_busskew.csv` | PHY bus skew 分组 slack | 各组 skew 在规格内 |
 | `report_sd_busskew.csv` | SD data/clock skew 分组（含 margin） | margin 落在规格区间（如 [-1:6]） |
+
+各 csv 报告实例：
+
+**`report_setup.csv`**（setup / max 路径违例总表）：
+
+![report_setup.csv 实例](./image/19_postpt_setup.jpg)
+
+**`report_hold.csv`**（hold / min 路径违例总表）：
+
+![report_hold.csv 实例](./image/20_postpt_hold.jpg)
+
+**`report_trans.csv`**（max_transition / max_capacitance 违规）：
+
+![report_trans.csv 实例](./image/21_postpt_trans.jpg)
+
+**`report_phy_busskew.csv`**（PHY bus skew 分组 slack）：
+
+![report_phy_busskew.csv 实例](./image/22_postpt_physkew.jpg)
+
+**`report_sd_busskew.csv`**（SD data/clock skew 分组 margin）：
+
+![report_sd_busskew.csv 实例](./image/23_postpt_sdskew.jpg)
 
 注意：
 

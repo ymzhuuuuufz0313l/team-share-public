@@ -966,13 +966,13 @@
     "id": "sec-0",
     "level": 2,
     "title": "1. 最终确认流程",
-    "text": "约束迭代收敛（见 POSTPT 页 §3.2 ）之后，APR 工程师完成全部修调与 ECO。此时必须最后完整跑一轮确认： flowchart LR A[\"APR 修改全部完成 (修调 / ECO)\"] --> B[\"重跑 postPT 10 个 corner\"] B --> C[\"runsummary\"] C --> D[\"逐个看 5 个 merge csv\"] D --> E{\"全部 ready?\"} E -->|\"是\"| F[\"✅ TO SIGNOFF 进入最终签核\"] E -->|\"否\"| G[\"回到约束迭代闭环 或继续修调\"] 1. APR 修改全部完成（修调 / ECO 全部落定）； 2. 重跑 postPT 全部 10 个 corner（pararrelrunpt.py 批量提交）； 3. 执行 runsummary 生成 summary/latest/ 下的 merge 总表； 4. 逐个打开 5 个 csv 确认（下图）； 5. 全部 ready → 进入最终签核（TO SIGNOFF）；任何一项不 ready → 回 约束迭代闭环 或继续修调。"
+    "text": "约束迭代收敛（见 POSTPT 页 §3.2 ）之后，APR 工程师完成全部修调与 ECO。此时必须最后完整跑一轮确认： flowchart LR A[\"APR 修改全部完成 (修调 / ECO)\"] --> B[\"重跑 postPT 10 个 corner\"] B --> C[\"runsummary\"] C --> D[\"逐个看 5 个 merge csv\"] D --> E{\"全部 ready?\"} E -->|\"是\"| F[\"✅ TO SIGNOFF 进入最终签核\"] E -->|\"否\"| G[\"回到约束迭代闭环 或继续修调\"] 1. APR 修改全部完成（修调 / ECO 全部落定）； 2. 重跑 postPT 全部 10 个 corner（pararrelrunpt.py 批量提交）； 3. 执行 runsummary 生成 summary/latest/ 下的 merge 总表； 4. 逐个打开 5 个 csv 确认（各 csv 报告实例见下节）； 5. 全部 ready → 进入最终签核（TO SIGNOFF）；任何一项不 ready → 回 约束迭代闭环 或继续修调。"
    },
    {
     "id": "sec-1",
     "level": 2,
     "title": "2. 五个 csv 各看什么",
-    "text": "| 文件 | 看什么 | ready 标准 | |------|--------|-----------| | reportsetup.csv | 每 clock 组 × 每 corner 的 violation number / biggest violation | violation number 全 0（或仅剩已确认并豁免的假路径），biggest violation ≥ 0 | | reporthold.csv | 同上，hold（min）路径 | 同上 | | reporttrans.csv | maxtransition / maxcapacitance 等违规 | 无 violator | | reportphybusskew.csv | PHY bus skew 分组 slack | 各组 skew 在规格内 | | reportsdbusskew.csv | SD data/clock skew 分组（含 margin） | margin 落在规格区间（如 [-1:6]） | 注意： - 这 5 个文件由 runsummary 调用 get.pl / merge.pl 自动生成（脚本条目见 脚本字典 ），列 = corner、行 = 分组指标； - 残留违例必须逐条能说清来历：已豁免的假路径要能对上 dco 里的 setfalsepath / setmulticyclepath 条目，说不清的不能放行； - 某 corner 结果为空先查 DUMPSDF 是否忘关（见 POSTPT 页 SDF 生成一节 ），不要当成\"无违例\"放过。"
+    "text": "| 文件 | 看什么 | ready 标准 | |------|--------|-----------| | reportsetup.csv | 每 clock 组 × 每 corner 的 violation number / biggest violation | violation number 全 0（或仅剩已确认并豁免的假路径），biggest violation ≥ 0 | | reporthold.csv | 同上，hold（min）路径 | 同上 | | reporttrans.csv | maxtransition / maxcapacitance 等违规 | 无 violator | | reportphybusskew.csv | PHY bus skew 分组 slack | 各组 skew 在规格内 | | reportsdbusskew.csv | SD data/clock skew 分组（含 margin） | margin 落在规格区间（如 [-1:6]） | 各 csv 报告实例： reportsetup.csv（setup / max 路径违例总表）： reporthold.csv（hold / min 路径违例总表）： reporttrans.csv（maxtransition / maxcapacitance 违规）： reportphybusskew.csv（PHY bus skew 分组 slack）： reportsdbusskew.csv（SD data/clock skew 分组 margin）： 注意： - 这 5 个文件由 runsummary 调用 get.pl / merge.pl 自动生成（脚本条目见 脚本字典 ），列 = corner、行 = 分组指标； - 残留违例必须逐条能说清来历：已豁免的假路径要能对上 dco 里的 setfalsepath / setmulticyclepath 条目，说不清的不能放行； - 某 corner 结果为空先查 DUMPSDF 是否忘关（见 POSTPT 页 SDF 生成一节 ），不要当成\"无违例\"放过。"
    },
    {
     "id": "sec-2",
