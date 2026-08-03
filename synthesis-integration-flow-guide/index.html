@@ -254,19 +254,20 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
 <img src="./script-flow-overview.svg" alt="脚本调用关系总图（综合 → LEC → 签核 → prePT/postPT → 汇总）">
 <div class="section-title">章节索引</div>
 <div class="chapter-grid">
-  <a class="chapter-card" href="./environment.html"><div class="num">1</div><div class="title">环境与配置</div><div class="desc">环境准备、design.set、filelist</div></a>
+<a class="chapter-card" href="./environment.html"><div class="num">1</div><div class="title">环境与配置</div><div class="desc">环境准备、design.set、filelist</div></a>
 <a class="chapter-card" href="./rtl-check.html"><div class="num">2</div><div class="title">RTL 检查</div><div class="desc">CKF 与 nLint</div></a>
 <a class="chapter-card" href="./synthesis-upf.html"><div class="num">3</div><div class="title">综合</div><div class="desc">DC / Genus 综合（UPF 步骤当前 Driver 项目不做）</div></a>
 <a class="chapter-card" href="./lec.html"><div class="num">4</div><div class="title">LEC 验证</div><div class="desc">形式验证与一致性检查</div></a>
-<a class="chapter-card" href="./signoff-timing.html"><div class="num">5</div><div class="title">APR SIGNOFF</div><div class="desc">Signoff 检查与交付、prePT / postPT、流程依赖</div></a>
-<a class="chapter-card" href="./pt-intro.html"><div class="num">6</div><div class="title">POSTPT</div><div class="desc">postPT 方法论、约束迭代、skew 修调</div></a>
+<a class="chapter-card" href="./signoff-timing.html"><div class="num">5</div><div class="title">APR SIGNOFF</div><div class="desc">Signoff 检查与交付、流程依赖</div></a>
+<a class="chapter-card" href="./pt-intro.html"><div class="num">6</div><div class="title">POSTPT</div><div class="desc">prePT / postPT 运行配置与方法论</div></a>
 <a class="chapter-card" href="./memory-power.html"><div class="num">7</div><div class="title">Memory 与功耗</div><div class="desc">Memory 生成、mem_wrap、PTPX</div></a>
 <a class="chapter-card" href="./powerpro.html"><div class="num">8</div><div class="title">PowerPro 功耗评估</div><div class="desc">评估工具对比、环境搭建、report 检查</div></a>
-<a class="chapter-card" href="./faq.html"><div class="num">9</div><div class="title">FAQ 与清单</div><div class="desc">注意事项与检查清单</div></a>
-<a class="chapter-card" href="./learning-path.html"><div class="num">10</div><div class="title">学习路径</div><div class="desc">实操练习与截图反馈清单</div></a>
-<a class="chapter-card" href="./script-dict.html"><div class="num">11</div><div class="title">脚本字典</div><div class="desc">脚本用途、变量与坑的对照表</div></a>
-<a class="chapter-card" href="./to-signoff.html"><div class="num">12</div><div class="title">TO SIGNOFF</div><div class="desc">APR 完成后最终时序确认</div></a>
+<a class="chapter-card" href="./to-signoff.html"><div class="num">9</div><div class="title">TO SIGNOFF</div><div class="desc">APR 完成后最终时序确认</div></a>
+<a class="chapter-card" href="./faq.html"><div class="num">10</div><div class="title">FAQ 与清单</div><div class="desc">注意事项与检查清单</div></a>
+<a class="chapter-card" href="./learning-path.html"><div class="title">学习路径</div><div class="desc">实操练习与截图反馈清单</div></a>
+<a class="chapter-card" href="./script-dict.html"><div class="title">脚本字典</div><div class="desc">脚本用途、变量与坑的对照表</div></a>
 </div>
+
 
     </article>
     
@@ -287,9 +288,9 @@ const chapters = [
   ['pt-intro', 'POSTPT'],
   ['memory-power', 'Memory 与功耗'],
   ['powerpro', 'PowerPro 功耗评估'],
+  ['to-signoff', 'TO SIGNOFF'],
   ['faq', 'FAQ 与清单'],
-  ['script-dict', '脚本字典'],
-  ['to-signoff', 'TO SIGNOFF']
+  ['script-dict', '脚本字典']
 ];
 const currentPath = location.pathname.split('/').pop() || 'index.html';
 const linksContainer = document.getElementById('navbar-links');
