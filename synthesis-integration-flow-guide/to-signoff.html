@@ -383,187 +383,31 @@ flowchart LR
 
 ![report_setup.csv 实例](./image/19_postpt_setup.jpg)
 
-文本版（可复制 / 可搜索；原始文件：<a href="./server-reports/postpt_summary/POST_PT/report_setup.csv" target="_blank">report_setup.csv</a>，逐 corner 原始报告见 <a href="./server-reports/postpt_summary/POST_PT/" target="_blank">POST_PT 目录</a>）：
-
-```csv
-,,wc_cworst_125,,wc_cbest_125,,wc_typical_125,,lt_cworst_m40,,lt_cbest_m40,,lt_typical_m40,,ml_cbest_125,,tt_cworst_25,,tt_cbest_25,,tt_typical_25
-report file,violation number,biggest violation,violation number,biggest violation,violation number,biggest violation,violation number,biggest violation,violation number,biggest violation,violation number,biggest violation,violation number,biggest violation,violation number,biggest violation,violation number,biggest violation,violation number,biggest violation
-CLK_L0_DTCTL_OD_DIV1P5,0,0.374380,0,0.058841,0,0.277962,0,1.635311,0,1.406652,0,1.475647,0,1.013559,0,1.314915,0,1.050893,0,1.212160
-CLK_L1_ADJ_DTCTL_OD_DIV1P5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-CLK_L1_DTCTL_OD_DIV1P5,0,0.158202,0,0.097812,0,0.151709,0,1.562460,0,1.420462,0,1.440513,0,1.049336,0,1.217620,0,1.066165,0,1.162557
-I2C_CLK,0,240.296066,0,240.702286,0,240.484512,0,244.788757,0,244.996277,0,244.884613,0,244.212051,0,243.695084,0,243.957703,0,243.814224
-LS_CLK,0,96.666824,0,96.694885,0,96.683632,0,97.534904,0,97.546478,0,97.541656,0,97.402992,0,97.317650,0,97.333771,0,97.328072
-OSC_CLK_IN,0,6.473801,0,6.299752,0,6.530822,0,8.104542,0,7.661842,0,7.998724,0,7.148800,0,7.683464,0,7.282191,0,7.648023
-POWERON_CLK,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-RX0_CLK_DIV1P5_1P,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-RX0_CLK_DIV1P5,0,1.429812,0,1.232241,0,1.358366,0,3.543672,0,3.375470,0,3.423368,0,2.821777,0,2.985835,0,2.810191,0,2.910392
-RX0_CLK,0,0.398984,0,0.138959,0,0.350628,0,4.543875,0,4.125391,0,4.390312,0,3.088823,0,3.415048,0,3.043118,0,3.337865
-RX0_OD_CLK_DIV2,0,0.804953,0,0.735003,0,0.806367,0,0.776957,0,1.040128,0,0.868701,0,1.415975,0,1.103831,0,1.399569,0,1.208190
-RX0_OD_CLK,0,0.222898,0,0.176198,0,0.220477,0,0.999451,0,0.978412,0,0.989038,0,0.956752,0,1.008377,0,0.973146,0,0.995596
-RX1_CLK_DIV1P5_ADJ,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-RX1_CLK_DIV1P5,0,2.572981,0,2.377372,0,2.534665,0,3.951782,0,3.692791,0,3.795793,0,3.253743,0,3.618622,0,3.334105,0,3.507311
-RX1_CLK,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-RX1_OD_CLK_DIV2,0,0.061305,0,0.219241,0,0.137353,0,0.076567,0,0.157616,0,0.115583,0,0.227515,0,0.095746,0,0.197951,0,0.144998
-RX1_OD_CLK,0,2.852169,0,2.851805,0,2.851882,0,2.867232,0,2.867192,0,2.867140,0,2.856846,0,2.866758,0,2.866631,0,2.866609
-STB_CLK,0,3.958722,0,3.973158,0,3.970209,0,4.661125,0,4.666559,0,4.662576,0,4.554146,0,4.484426,0,4.492635,0,4.490686
-VS_CLK,0,96.690704,0,96.722809,0,96.708687,0,97.515381,0,97.528847,0,97.521286,0,97.401001,0,97.303688,0,97.322807,0,97.314079
-WCLK1_A_DCLK,0,9.483404,0,9.665233,0,9.628297,0,12.385640,0,12.367012,0,12.383476,0,11.812580,0,11.601663,0,11.652720,0,11.660713
-WCLK1_A_I2C,0,246.406418,0,246.267380,0,246.378174,0,248.645264,0,248.462967,0,248.562622,0,247.945984,0,248.053604,0,247.887726,0,248.003250
-async,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-gating,0,0.128033,0,0.136340,0,0.140765,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-setup.rpt,0,0.061305,0,0.058841,0,0.137353,0,0.076567,0,0.157616,0,0.115583,0,0.227515,0,0.095746,0,0.197951,0,0.144998
-```
+原始文件：<a href="./server-reports/postpt_summary/POST_PT/report_setup.csv" target="_blank">report_setup.csv</a>（逐 corner 原始报告见 <a href="./server-reports/postpt_summary/POST_PT/" target="_blank">POST_PT 目录</a>）
 
 **`report_hold.csv`**（hold / min 路径违例总表）：
 
 ![report_hold.csv 实例](./image/20_postpt_hold.jpg)
 
-文本版（可复制 / 可搜索；原始文件：<a href="./server-reports/postpt_summary/POST_PT/report_hold.csv" target="_blank">report_hold.csv</a>，逐 corner 原始报告见 <a href="./server-reports/postpt_summary/POST_PT/" target="_blank">POST_PT 目录</a>）：
-
-```csv
-,,wc_cworst_125,,wc_cbest_125,,wc_typical_125,,lt_cworst_m40,,lt_cbest_m40,,lt_typical_m40,,ml_cbest_125,,tt_cworst_25,,tt_cbest_25,,tt_typical_25
-report file,violation number,biggest violation,violation number,biggest violation,violation number,biggest violation,violation number,biggest violation,violation number,biggest violation,violation number,biggest violation,violation number,biggest violation,violation number,biggest violation,violation number,biggest violation,violation number,biggest violation
-CLK_L0_DTCTL_OD_DIV1P5,0,0,0,0,0,0,0,0.137974,0,0.174464,0,0.123008,0,0,0,0,0,0,0,0
-CLK_L1_ADJ_DTCTL_OD_DIV1P5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-CLK_L1_DTCTL_OD_DIV1P5,0,0,0,0,0,0,0,0.081765,0,0.084488,0,0.081975,0,0.099550,0,0.145488,0,0.148259,0,0.146370
-I2C_CLK,0,0,0,0,0,0,0,0.029886,0,0.029450,0,0.032159,0,0.076664,0,0.124837,0,0.123294,0,0.122751
-LS_CLK,0,0,0,0,0,0,0,0.011718,0,0.010485,0,0.010096,0,0.052868,0,0.109922,0,0.107988,0,0.108836
-OSC_CLK_IN,0,0,0,0,0,0,0,0.008210,0,0.009459,0,0.005468,0,0.038472,0,0.094227,0,0.095188,0,0.094550
-POWERON_CLK,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-RX0_CLK_DIV1P5_1P,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-RX0_CLK_DIV1P5,0,0,0,0,0,0,0,0.029802,0,0.033164,0,0.028698,0,0.036915,0,0.082267,0,0.087023,0,0.082262
-RX0_CLK,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-RX0_OD_CLK_DIV2,0,0,0,0,0,0,0,0.069163,0,0.068282,0,0.069913,0,0.079034,0,0.127164,0,0.126409,0,0.126879
-RX0_OD_CLK,0,0,0,0,0,0,0,0.020825,0,0.033012,0,0.027076,0,0.076150,0,0.122647,0,0.131759,0,0.133843
-RX1_CLK_DIV1P5_ADJ,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-RX1_CLK_DIV1P5,0,0,0,0,0,0,0,0.081764,0,0.084488,0,0.081975,0,0.099550,0,0.145488,0,0.148259,0,0.146370
-RX1_CLK,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-RX1_OD_CLK_DIV2,0,0,0,0,0,0,0,0.069163,0,0.068282,0,0.069913,0,0.079034,0,0.127164,0,0.126409,0,0.126878
-RX1_OD_CLK,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-STB_CLK,0,0,0,0,0,0,0,0.017470,0,0.015624,0,0.013679,0,0.046713,0,0.119035,0,0.115195,0,0.116650
-VS_CLK,0,0,0,0,0,0,0,0.018656,0,0.016256,0,0.017092,0,0.046956,0,0.117192,0,0.113711,0,0.115163
-WCLK1_A_DCLK,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-WCLK1_A_I2C,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-async,0,0,0,0,0,0,0,0.131820,0,0.133844,0,0.119816,0,0.208822,0,0.255016,0,0.251648,0,0.247271
-gating,0,0,0,0,0,0,0,0.084289,0,0.092463,0,0.078350,0,0.159398,0,0.201763,0,0.208172,0,0.201297
-hold.rpt,0,0.219306,0,0.228419,0,0.220919,0,0.008210,0,0.009459,0,0.005468,0,0.036915,0,0.082267,0,0.087023,0,0.082262
-```
+原始文件：<a href="./server-reports/postpt_summary/POST_PT/report_hold.csv" target="_blank">report_hold.csv</a>（逐 corner 原始报告见 <a href="./server-reports/postpt_summary/POST_PT/" target="_blank">POST_PT 目录</a>）
 
 **`report_trans.csv`**（max_transition / max_capacitance 违规）：
 
 ![report_trans.csv 实例](./image/21_postpt_trans.jpg)
 
-文本版（可复制 / 可搜索；原始文件：<a href="./server-reports/postpt_summary/POST_PT/report_trans.csv" target="_blank">report_trans.csv</a>，逐 corner 原始报告见 <a href="./server-reports/postpt_summary/POST_PT/" target="_blank">POST_PT 目录</a>）：
-
-```csv
-,,wc_cworst_125,,wc_cbest_125,,wc_typical_125,,lt_cworst_m40,,lt_cbest_m40,,lt_typical_m40,,ml_cbest_125,,tt_cworst_25,,tt_cbest_25,,tt_typical_25
-report file,violation number,biggest violation,violation number,biggest violation,violation number,biggest violation,violation number,biggest violation,violation number,biggest violation,violation number,biggest violation,violation number,biggest violation,violation number,biggest violation,violation number,biggest violation,violation number,biggest violation
-capacitance,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-clock_period,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-pulse_width,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-transition,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-```
+原始文件：<a href="./server-reports/postpt_summary/POST_PT/report_trans.csv" target="_blank">report_trans.csv</a>（逐 corner 原始报告见 <a href="./server-reports/postpt_summary/POST_PT/" target="_blank">POST_PT 目录</a>）
 
 **`report_phy_busskew.csv`**（PHY bus skew 分组 slack）：
 
 ![report_phy_busskew.csv 实例](./image/22_postpt_physkew.jpg)
 
-文本版（可复制 / 可搜索；原始文件：<a href="./server-reports/postpt_summary/POST_PT/report_phy_busskew.csv" target="_blank">report_phy_busskew.csv</a>，逐 corner 原始报告见 <a href="./server-reports/postpt_summary/POST_PT/" target="_blank">POST_PT 目录</a>）：
-
-```csv
-report_files,wc_cworst_125,wc_cbest_125,wc_typical_125,lt_cworst_m40,lt_cbest_m40,lt_typical_m40,ml_cbest_125,tt_cworst_25,tt_cbest_25,tt_typical_25
-report_timing_io_max.rpt,243.075455,242.912186,243.019836,245.533890,245.374496,245.449188,244.830002,244.859573,244.704681,244.796265
-report_timing_io_min.rpt,251.191284,251.323792,251.232132,249.735001,249.848236,249.777100,250.158585,250.138016,250.259293,250.180588
-report_timing_rx0_00_max.rpt,1.885235,2.264082,2.016596,0.776845,1.038741,0.868023,1.413935,1.103714,1.397928,1.207420
-report_timing_rx0_00_min.rpt,7.226826,6.770715,7.047553,8.570858,8.257418,8.394151,7.776056,8.190110,7.836975,8.055873
-report_timing_rx1_00_max.rpt,0.060658,0.218743,0.136698,0.076226,0.157280,0.115263,0.227087,0.095341,0.197591,0.144598
-report_timing_rx1_00_min.rpt,16.391243,16.254261,16.329821,16.808699,16.721596,16.749001,16.568754,16.688948,16.588314,16.645193
-```
+原始文件：<a href="./server-reports/postpt_summary/POST_PT/report_phy_busskew.csv" target="_blank">report_phy_busskew.csv</a>（逐 corner 原始报告见 <a href="./server-reports/postpt_summary/POST_PT/" target="_blank">POST_PT 目录</a>）
 
 **`report_sd_busskew.csv`**（SD data/clock skew 分组 margin）：
 
 ![report_sd_busskew.csv 实例](./image/23_postpt_sdskew.jpg)
 
-文本版（可复制 / 可搜索；原始文件：<a href="./server-reports/postpt_summary/POST_PT/report_sd_busskew.csv" target="_blank">report_sd_busskew.csv</a>，逐 corner 原始报告见 <a href="./server-reports/postpt_summary/POST_PT/" target="_blank">POST_PT 目录</a>）：
-
-```csv
-report_files,wc_cworst_125,wc_cbest_125,wc_typical_125,lt_cworst_m40,lt_cbest_m40,lt_typical_m40,ml_cbest_125,tt_cworst_25,tt_cbest_25,tt_typical_25
-sd_l_1p_clk_a_max,4.514510,4.472995,4.479735,1.651743,1.647627,1.721926,2.104526,2.407311,2.393489,2.388759
-sd_l_1p_clk_a_min,3.894563,3.898119,3.870635,1.454727,1.462976,1.528972,1.881228,2.117080,2.143815,2.115601
-sd_l_1p_a_max,6.101325,6.091087,6.064208,2.161074,2.214247,2.226528,2.867852,3.191442,3.220776,3.178618
-sd_l_1p_a_min,4.863974,5.042684,4.912886,1.848721,1.95244,1.971166,2.50311,2.673421,2.801392,2.727686
-sd_l_2p_l0_clk_a_max,,,,,,,,,,
-sd_l_2p_l0_clk_a_min,,,,,,,,,,
-sd_l_2p_l0_a_max,,,,,,,,,,
-sd_l_2p_l0_a_min,,,,,,,,,,
-sd_l_2p_l1_clk_a_max,,,,,,,,,,
-sd_l_2p_l1_clk_a_min,,,,,,,,,,
-sd_l_2p_l1_a_max,,,,,,,,,,
-sd_l_2p_l1_a_min,,,,,,,,,,
-sd_r_1p_clk_a_max,5.667236,5.616708,5.626363,2.020266,2.013967,2.107378,2.648857,2.969756,2.952912,2.949040
-sd_r_1p_clk_a_min,5.052448,5.052488,5.026742,1.804368,1.810928,1.895615,2.407406,2.664369,2.689031,2.661984
-sd_r_1p_a_max,8.055982,8.106762,8.03227,2.775269,2.907675,2.863074,3.790466,4.134375,4.242243,4.145918
-sd_r_1p_a_min,6.671776,6.723289,6.658615,2.431336,2.569332,2.521776,3.354563,3.55118,3.667122,3.565282
-sd_r_2p_l0_clk_a_max,,,,,,,,,,
-sd_r_2p_l0_clk_a_min,,,,,,,,,,
-sd_r_2p_l0_a_max,,,,,,,,,,
-sd_r_2p_l0_a_min,,,,,,,,,,
-sd_r_2p_l1_clk_a_max,,,,,,,,,,
-sd_r_2p_l1_clk_a_min,,,,,,,,,,
-sd_r_2p_l1_a_max,,,,,,,,,,
-sd_r_2p_l1_a_min,,,,,,,,,,
-
-sd_l_1p_clk_b_max,4.550269,4.507264,4.514064,1.661898,1.657838,1.733034,2.118224,2.425332,2.411353,2.406785
-sd_l_1p_clk_b_min,3.931686,3.930544,3.908077,1.449880,1.448832,1.515589,1.858582,2.126151,2.120543,2.117159
-sd_l_1p_b_max,6.528622,6.476075,6.470176,2.341829,2.3757,2.399895,3.067926,3.42828,3.430598,3.403157
-sd_l_1p_b_min,5.288159,5.432268,5.323325,2.007124,2.080784,2.119499,2.666612,2.903321,3.001595,2.947353
-sd_l_2p_l0_clk_b_max,,,,,,,,,,
-sd_l_2p_l0_clk_b_min,,,,,,,,,,
-sd_l_2p_l0_b_max,,,,,,,,,,
-sd_l_2p_l0_b_min,,,,,,,,,,
-sd_l_2p_l1_clk_b_max,,,,,,,,,,
-sd_l_2p_l1_clk_b_min,,,,,,,,,,
-sd_l_2p_l1_b_max,,,,,,,,,,
-sd_l_2p_l1_b_min,,,,,,,,,,
-sd_r_1p_clk_b_max,4.807572,4.889005,4.831007,1.758724,1.829409,1.869527,2.368105,2.566872,2.640802,2.589059
-sd_r_1p_clk_b_min,4.180883,4.325475,4.228012,1.547488,1.635857,1.660998,2.128707,2.266428,2.366817,2.308011
-sd_r_1p_b_max,7.155765,7.23547,7.156963,2.546993,2.674402,2.636621,3.480371,3.762294,3.876544,3.780782
-sd_r_1p_b_min,5.824573,5.998084,5.858013,2.188784,2.425631,2.312189,3.130231,3.162704,3.376593,3.213748
-sd_r_2p_l0_clk_b_max,,,,,,,,,,
-sd_r_2p_l0_clk_b_min,,,,,,,,,,
-sd_r_2p_l0_b_max,,,,,,,,,,
-sd_r_2p_l0_b_min,,,,,,,,,,
-sd_r_2p_l1_clk_b_max,,,,,,,,,,
-sd_r_2p_l1_clk_b_min,,,,,,,,,,
-sd_r_2p_l1_b_max,,,,,,,,,,
-sd_r_2p_l1_b_min,,,,,,,,,,
-
-sd_l_1p_margin_a_max : [-1:6] ,2.206762,2.192968,2.193573,0.706347,0.751271,0.697556,0.986624,1.074362,1.076961,1.063017
-sd_l_1p_margin_a_min : [-1:6] ,0.349464,0.569689,0.433151000000001,0.196978,0.304813,0.24924,0.398584,0.26611,0.407903,0.338927
-sd_l_2p_l0_margin_a_max : [-1:6] ,0,0,0,0,0,0,0,0,0,0
-sd_l_2p_l0_margin_a_min : [-1:6] ,0,0,0,0,0,0,0,0,0,0
-sd_l_2p_l1_margin_a_max : [-1:6] ,0,0,0,0,0,0,0,0,0,0
-sd_l_2p_l1_margin_a_min : [-1:6] ,0,0,0,0,0,0,0,0,0,0
-sd_r_1p_margin_a_max : [-1:6] ,3.003534,3.054274,3.005528,0.970901,1.096747,0.967459,1.38306,1.470006,1.553212,1.483934
-sd_r_1p_margin_a_min : [-1:6] ,1.00454,1.106581,1.032252,0.41107,0.555365,0.414398,0.705706,0.581424,0.71421,0.616242
-sd_r_2p_l0_margin_a_max : [-1:6] ,0,0,0,0,0,0,0,0,0,0
-sd_r_2p_l0_margin_a_min : [-1:6] ,0,0,0,0,0,0,0,0,0,0
-sd_r_2p_l1_margin_a_max : [-1:6] ,0,0,0,0,0,0,0,0,0,0
-sd_r_2p_l1_margin_a_min : [-1:6] ,0,0,0,0,0,0,0,0,0,0
-
-sd_l_1p_margin_b_max : [-1:6] ,2.596936,2.545531,2.562099,0.891949,0.926868,0.884306,1.209344,1.302129,1.310055,1.285998
-sd_l_1p_margin_b_min : [-1:6] ,0.73789,0.925003999999999,0.809260999999999,0.345226,0.422946,0.386465,0.548388,0.477989,0.590242,0.540568
-sd_l_2p_l0_margin_b_max : [-1:6] ,0,0,0,0,0,0,0,0,0,0
-sd_l_2p_l0_margin_b_min : [-1:6] ,0,0,0,0,0,0,0,0,0,0
-sd_l_2p_l1_margin_b_max : [-1:6] ,0,0,0,0,0,0,0,0,0,0
-sd_l_2p_l1_margin_b_min : [-1:6] ,0,0,0,0,0,0,0,0,0,0
-sd_r_1p_margin_b_max : [-1:6] ,2.974882,2.909995,2.928951,0.999505,1.038545,0.975623,1.351664,1.495866,1.509727,1.472771
-sd_r_1p_margin_b_min : [-1:6] ,1.017001,1.109079,1.027006,0.43006,0.596222,0.442662,0.762126,0.595832,0.735791,0.624689
-sd_r_2p_l0_margin_b_max : [-1:6] ,0,0,0,0,0,0,0,0,0,0
-sd_r_2p_l0_margin_b_min : [-1:6] ,0,0,0,0,0,0,0,0,0,0
-sd_r_2p_l1_margin_b_max : [-1:6] ,0,0,0,0,0,0,0,0,0,0
-sd_r_2p_l1_margin_b_min : [-1:6] ,0,0,0,0,0,0,0,0,0,0
-```
+原始文件：<a href="./server-reports/postpt_summary/POST_PT/report_sd_busskew.csv" target="_blank">report_sd_busskew.csv</a>（逐 corner 原始报告见 <a href="./server-reports/postpt_summary/POST_PT/" target="_blank">POST_PT 目录</a>）
 
 注意：
 
