@@ -1,0 +1,6 @@
+,,wc_cworst_125,,wc_cbest_125,,wc_typical_125,,lt_cworst_m40,,lt_cbest_m40,,lt_typical_m40,,ml_cbest_125,,tt_cworst_25,,tt_cbest_25,,tt_typical_25
+report file,violation number,biggest violation,violation number,biggest violation,violation number,biggest violation,violation number,biggest violation,violation number,biggest violation,violation number,biggest violation,violation number,biggest violation,violation number,biggest violation,violation number,biggest violation,violation number,biggest violation
+capacitance,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+clock_period,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+pulse_width,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
+transition,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0

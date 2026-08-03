@@ -1,0 +1,10 @@
+#!/bin/csh -f
+#source /eda/env/pt13.cshrc
+#source /eda/env/pt1406.cshrc
+source /eda/env/pt1706.cshrc
+#source /eda/env/pt1806.cshrc
+#pt_shell -64bit -f ./pt_setup.tcl | tee pt.log
+mkdir -p rep_dir
+
+pt_shell -f ./px_setup.tcl | tee ./rep_dir/pt_x.log
+

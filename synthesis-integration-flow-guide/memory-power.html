@@ -428,6 +428,22 @@ run_ptpx
 
 ![PTPX 功耗报告实例：TOTAL POWER 位置](./image/18_ptpx_power_rpt_total.jpg)
 
+功耗结果文本摘要（完整报告：<a href="./server-reports/HV2M23_digital_top.rpt" target="_blank">HV2M23_digital_top.rpt</a>；逐配置版本见 <a href="./server-reports/power/px_85c_random/" target="_blank">power/px_85c_random</a> 下各 rep_dir）：
+
+```text
+Cell Internal Power  =  21.4218 mW   (84%)
+Net Switching Power  =   4.1134 mW   (16%)
+                       ---------
+Total Dynamic Power  =  25.5352 mW  (100%)
+Cell Leakage Power   =  92.5199 uW
+
+Power Group     Total Power   占比
+register        16.0698 mW    62.70%
+clock_network    5.2986 mW    20.68%
+combinational    4.2593 mW    16.62%
+Total           25.6278 mW
+```
+
 </script>
 
   <script>

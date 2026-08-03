@@ -1,0 +1,82 @@
+# vim: ft=tcl
+
+set TOP_NAME HV2M23_digital_top
+
+set PROJECT_PATH $env(PROJECT_PATH)
+#set PROJECT_NAME env(PROJECT_NAME)
+
+set SYN_DIR              "."
+set TCL_DIR              [format "%s%s" $PROJECT_PATH "/SYNTHESIS/common/tcl_dir/"]
+set IP_CONS_DIR          [format "%s%s" $PROJECT_PATH "/SYNTHESIS/common/ip_cons/"]
+set TOP_CONS_DIR         [format "%s%s" $PROJECT_PATH "/SYNTHESIS/common/top_cons/"]
+set HDL_DIR              [format "%s%s" $PROJECT_PATH "/HDL/"]
+set UPF_DIR              [format "%s%s" $PROJECT_PATH "/SYNTHESIS/common/upf/"]
+
+set UPPER_CASE           0
+set PARA_DESIGN          1 
+set USE_SAIF             0
+set USE_UPF              0
+# cell_lib you can sel   
+
+# hlmc_55_snps_7t
+# hlmc_55_snps_9t
+
+# umc_55_snps_7t
+# umc_55_snps_8t
+# umc_55_fara_7t
+# umc_55_fara_8t
+
+
+# umc_40_fara_7t
+# umc_40_snps_7t
+# umc_40_fara_9t
+# umc_40_snps_9t
+
+#umc_28_arm_9t_hpc_c30
+
+
+
+set LINK_LIB             "nexchip_145_9t"
+set TAR_LIB              "nexchip_145_9t"
+
+#set NET_DEFINE          ["XX" "XX=0"]
+set NET_DEFINE0          "NETLIST"
+set NET_DEFINE1          "nexchip_145_9t"
+set NET_DEFINE           [list "NETLIST" "nexchip_145_9t"]
+
+
+set ANA_EN               0
+set MEM_EN               0
+set POSTPT_EN            1
+set MEM_SNPS_EN          0
+set MEM_FARA_EN          0
+set MEM_ARM_EN           0
+
+set HVT_EN               0
+set LVT_EN               1 
+set SCAN_EN              0
+set CCS_EN               1
+
+set POWER_OPTIMIZATION   1 
+
+set INCR_OPT             1 
+set PT_HOLD              0 
+
+set CORNER               "tt_typ"
+#???
+#set CORNER               "wc_cworst"
+
+
+#CORNER            PVT                 PVTM              RC_FILE
+#"wc_cworst"       "ss0p99v125c"       "ss0p99v125c"     "cworst_125" 
+#"wc_rcworst_max"  "ss0p99v125c"       "ss0p99v125c"     "rcworst_125" 
+#"wc_rcworst_min"  "ss0p99v125c"       "ss0p99v125c"     "rcworst_125"
+#"wcl_cworst"      "ss0p99vn40c"       "ss0p99vm40c"     "cworst_m40"
+#"lt_cbest"        "ff1p21vn40c"       "ff1p21vm40c"     "cbest_m40"
+#"ml_cbest"        "ff1p21v125c"       "ff1p21v125c"     "cbest_125"
+
+set SLACK_EN             0
+
+#version add
+#
+
