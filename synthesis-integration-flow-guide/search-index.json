@@ -240,7 +240,7 @@
     "id": "sec-7",
     "level": 3,
     "title": "2.3 运行与查看",
-    "text": "runptpx 结果： - toggleratedetail.rpt：toggle rate - power.rpt：功耗结果 - 上层目录生成 fsdb，可用 Verdi 打开查看功耗波形 功耗报告实例：左侧 repdir / 下生成 power.rpt、toggleratedetail.rpt 及各项日志；右侧 power.rpt 的 Hierarchy 表中，顶层（如 HV2M23digitaltop）一行的 Total Power 列即为全芯片总功耗（图中 1.50e-02 W，占比 100%），其下各行为子模块/实例的功耗拆分。 功耗报告判读重点（完整报告： HV2M23digitaltop.rpt ；逐配置版本见 power/px85crandom 下各 repdir）——看 Hierarchy 表顶层行的 Leak Power： Int Switch Leak Total Hierarchy Power Power Power Power % ------------------------------------------------------------------------ HV2M23digitaltop 1.14e-02 2.30e-03 1.61e-04 1.38e-02 100.0 - 判读时先看 Leak Power（静态功耗，上例 1.61e-04 W ≈ 0.161 mW），再看 Int / Switch / Total； - 三个 repdir 对应不同 lane / 频率配置（1lanefre1p8 / 2lanefre1p8 / 2lanefre0p9），Leak 基本在 1.6e-04 W 量级，Total 随配置不同在 7.6e-03 1.5e-02 W 之间。"
+    "text": "runptpx 结果： - toggleratedetail.rpt：toggle rate - power.rpt：功耗结果 - 上层目录生成 fsdb，可用 Verdi 打开查看功耗波形 功耗报告实例：左侧 repdir / 下生成 power.rpt、toggleratedetail.rpt 及各项日志；右侧 power.rpt 的 Hierarchy 表中，顶层（如 HV2M23digitaltop）一行的 Total Power 列即为全芯片总功耗（图中 1.50e-02 W，占比 100%），其下各行为子模块/实例的功耗拆分。 功耗报告判读重点（完整报告： HV2M23digitaltop.rpt ；逐配置版本见 power/px85crandom 下各 repdir）——看 Hierarchy 表顶层行的 Total Power： Int Switch Leak Total Hierarchy Power Power Power Power % ------------------------------------------------------------------------ HV2M23digitaltop 1.14e-02 2.30e-03 1.61e-04 1.38e-02 100.0 - 判读时先看 Total Power（总功耗，上例 1.38e-02 W ≈ 13.8 mW），Int / Switch / Leak 为其拆分项； - 三个 repdir 对应不同 lane / 频率配置（1lanefre1p8 / 2lanefre1p8 / 2lanefre0p9），Total 随配置不同在 7.6e-03 1.5e-02 W（约 7.6 15 mW）之间。"
    }
   ]
  },

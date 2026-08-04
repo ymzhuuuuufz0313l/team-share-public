@@ -428,7 +428,7 @@ run_ptpx
 
 ![PTPX 功耗报告实例：TOTAL POWER 位置](./image/18_ptpx_power_rpt_total.jpg)
 
-功耗报告判读重点（完整报告：<a href="./server-reports/HV2M23_digital_top.rpt" target="_blank">HV2M23_digital_top.rpt</a>；逐配置版本见 <a href="./server-reports/power/px_85c_random/" target="_blank">power/px_85c_random</a> 下各 rep_dir）——看 Hierarchy 表顶层行的 **Leak Power**：
+功耗报告判读重点（完整报告：<a href="./server-reports/HV2M23_digital_top.rpt" target="_blank">HV2M23_digital_top.rpt</a>；逐配置版本见 <a href="./server-reports/power/px_85c_random/" target="_blank">power/px_85c_random</a> 下各 rep_dir）——看 Hierarchy 表顶层行的 **Total Power**：
 
 ```text
                           Int       Switch    Leak      Total
@@ -437,8 +437,8 @@ Hierarchy                 Power     Power     Power     Power    %
 HV2M23_digital_top        1.14e-02  2.30e-03  1.61e-04  1.38e-02  100.0
 ```
 
-- 判读时先看 **Leak Power**（静态功耗，上例 1.61e-04 W ≈ 0.161 mW），再看 Int / Switch / Total；
-- 三个 rep_dir 对应不同 lane / 频率配置（1lane_fre1p8 / 2lane_fre1p8 / 2lane_fre0p9），Leak 基本在 1.6e-04 W 量级，Total 随配置不同在 7.6e-03 ~ 1.5e-02 W 之间。
+- 判读时先看 **Total Power**（总功耗，上例 1.38e-02 W ≈ 13.8 mW），Int / Switch / Leak 为其拆分项；
+- 三个 rep_dir 对应不同 lane / 频率配置（1lane_fre1p8 / 2lane_fre1p8 / 2lane_fre0p9），Total 随配置不同在 7.6e-03 ~ 1.5e-02 W（约 7.6 ~ 15 mW）之间。
 
 </script>
 
