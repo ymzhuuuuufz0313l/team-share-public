@@ -173,10 +173,24 @@
 
   function loadIndex() {
     if (INDEX) return Promise.resolve(INDEX);
-    return fetch('./search-index.json')
-      .then(function (r) { return r.json(); })
-      .then(function (data) { INDEX = data; return data; })
-      .catch(function () { INDEX = []; return []; });
+    if (window.SEARCH_INDEX) { INDEX = window.SEARCH_INDEX; return Promise.resolve(INDEX); }
+    // Offline (file://): fetch of JSON is blocked, but a <script> tag works.
+    // Try loading the inlined index first, fall back to fetch when served over http.
+    return new Promise(function (resolve) {
+      var s = document.createElement('script');
+      s.src = './search-index.js';
+      s.onload = function () {
+        INDEX = window.SEARCH_INDEX || [];
+        resolve(INDEX);
+      };
+      s.onerror = function () {
+        fetch('./search-index.json')
+          .then(function (r) { return r.json(); })
+          .then(function (data) { INDEX = data; resolve(INDEX); })
+          .catch(function () { INDEX = []; resolve(INDEX); });
+      };
+      document.head.appendChild(s);
+    });
   }
 
   function openSearch() {

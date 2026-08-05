@@ -987,5 +987,10 @@
     "text": "当前实例统计（原始文件随报告归档）： | 报告 | 行数 | buf type 分布 | STATUS 分布 | |------|------|---------------|-------------| | inputportfirstbuftype.tsv | 104（52 端口 × 2 行） | 每端口 APRCDM + CLKBUFX8AL9 各一行 | 全部 MULTILOAD(2)，需逐条确认多负载是否预期 | | outputportlastbuftype.tsv | 476 | 全部 CLKBUFX8AL9 | 全部 OK | 原始文件： - inputportfirstbuftype.tsv - outputportlastbuftype.tsv 格式示例（input，TSV 四列：PORT / FIRSTCELLTYPE / FIRSTCELLINSTANCE / STATUS）： PORT FIRSTCELLTYPE FIRSTCELLINSTANCE STATUS BWMODEI APRCDM APRCDM0 MULTILOAD(2) BWMODEI CLKBUFX8AL9 C0IOBUF MULTILOAD(2) CSCLI APRCDM APRCDM3 MULTILOAD(2) CSCLI CLKBUFX8AL9 C3IOBUF MULTILOAD(2)"
    }
   ]
+ },
+ {
+  "page": "点击阅读.html",
+  "pageTitle": "BE Integration Flow 工具使用指南",
+  "sections": []
  }
 ]
