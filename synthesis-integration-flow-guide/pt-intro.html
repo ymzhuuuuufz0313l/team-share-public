@@ -880,6 +880,17 @@ set_input_delay -clock RX0_OD_CLK_DIV2 -min 0 [get_ports dout_lane_L0*]
 - lane 类信号用通配符整组设置（`dout_lane_L0*`），clock 挂实际捕获域（OD 模式用 `*_OD_CLK_DIV2`）；
 - 换 clock 域、换数值时旧行**注释保留不删除**（图中 `#set_input_delay -clock RX0_CLK ...` 一片），方便回退和 review diff。
 
+WARNING: `set_max_delay` 与 `set_output_delay` **不要加在同一个端口上**。两者角色不同：`set_output_delay` 定义外部环境（基于参考时钟建立完整的同步接口检查），`set_max_delay` 是一刀切的路径延迟上限（不参考时钟关系）。同一端口混用时，max_delay 会覆盖 output_delay 建立的时钟检查机制，导致路径报不出来或直接变成 unconstrained path。
+
+正确做法：需要单独 `set_max_delay` 的端口，先从 `all_outputs` 集合中排除，再对剩余端口统一 `set_output_delay`：
+
+```tcl
+set exceptions [get_ports "sig_a sig_b sig_c"]   ;# 替换成要排除的信号名
+set output_without_exceptions [remove_from_collection [all_outputs] $exceptions]
+
+set_output_delay -clock oscclkin 5 $output_without_exceptions
+```
+
 ### 3.3 false path / multicycle 设置经验
 
 - 无继承机制：每版综合后 cell 流水号（自动命名）全变，false path 要全部重新报、重新加；做法是不删旧的、往文件后面叠加（叠加式维护）。
