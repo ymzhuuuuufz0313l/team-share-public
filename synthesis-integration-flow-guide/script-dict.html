@@ -379,7 +379,8 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
 | 跑 DC / PT 前 source 环境 | `xxx_digital.cshrc`（项目环境 cshrc，如 `HV2M23_digital.cshrc`） | **source 前先注释掉其中 source 仿真工具（Verdi / VCS）的两行**，否则版本冲突会让 run dc / run pt 报莫名错误；PT 环境工具版本长期固定（如 18.19），勿随验证环境升级 |
 | 时钟周期（clk period） | `SYNTHESIS/common/ip_cons/HV2M23_digital_top.tcl`（dco） | 改 `create_clock -period`；分频 / 衍生时钟（如 RX0_OD_CLK 半周期）同步改；改后重跑 prePT 验证 |
 | false path / multicycle | 同上（dco） | 叠加式维护，旧条目不删；改后重跑 prePT 确认没误伤 |
-| 准静态 / MUX 选择端固定 | 同上（dco） | `set_case_analysis 0/1 [get_pins .../S]`，值必须与实际工作模式一致 |
+| MUX S 口路径违例 | `SYNTHESIS/common/ip_cons/output_delay.tcl` | 实例：路径合法只是卡太紧时，放宽 output delay（到 12ns）修掉，不动路径约束 |
+| 2port / 1port 双模式约束 | `SYNTHESIS/common/ip_cons/HV2M23_digital_top.tcl`（dco） | `set_case_analysis 0/1` 固定模式选择信号，同一套约束覆盖两种 port 配置，按模式各跑一份 |
 | input / output delay | `SYNTHESIS/common/ip_cons/input_delay.tcl`、`output_delay.tcl` | max/min 成对写；单独 `set_max_delay` 的端口先从集合排除 |
 | corner 配置 / DUMP_SDF 开关 | `SYNTHESIS/top/sta/post/pt/<corner>/corner_set.tcl` | 每 corner 一份；DUMP_SDF=1 出完 SDF 必须改回 0 |
 | postPT 读哪个网表 / spef / SDC | `SYNTHESIS/top/sta/post/common/pt_setup.tcl` | `read_verilog` 默认指 `latest`；分析中间版本改成具体版本目录，用完改回 |

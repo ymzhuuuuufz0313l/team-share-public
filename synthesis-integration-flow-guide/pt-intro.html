@@ -893,11 +893,14 @@ set output_without_exceptions [remove_from_collection [all_outputs] $exceptions]
 set_output_delay -clock oscclkin 5 $output_without_exceptions
 ```
 
+实例：setup 报告中某条路径穿过 MUX 的 S（选择）口导致违例，最终修法是把该端口的 **output delay 放宽到 12 ns**——路径本身合法、只是 output delay 卡得太紧时，直接放宽 output delay 比给 S 口下路径约束更干净。
+
 ### 3.3 false path / multicycle 设置经验
 
 - 无继承机制：每版综合后 cell 流水号（自动命名）全变，false path 要全部重新报、重新加；做法是不删旧的、往文件后面叠加（叠加式维护）。
 - 跨项目经验可继承：架构没有大改时按信号功能 / 类别识别，同一类信号成组设置。
 - 准静态信号（一帧变一次）可大胆设 false path。
+- `set_case_analysis` 的实际用途：**2port / 1port 双模式设计**的模式约束——用它把模式选择信号固定为对应值（如 `set_case_analysis 1 [get_ports MODE_SEL]`），让 PT 只按当前模式做时序分析；同一套约束文件覆盖两种 port 配置，按模式各跑一份报告。
 - 修 skew 的副产物：往后推 data / clock 垫 delay 时会推出假 hold（只推最后一级、后面没有 DFF 承接，推超过一个周期就报 hold violation）——这种是假的，持续补 multicycle / false path 即可。
 - 修 skew 引入的真实问题多为 clock gating 的 hold。
 - 另一种造"假路径"手段：output delay（有时值设得比 max 还大）。
