@@ -368,6 +368,37 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
 - 每个条目前的锚点 id 供跨页跳转使用（如 `./script-dict.html#run_dc`）。
 - 查找脚本可用右侧 TOC 或浏览器页内搜索。
 
+## 0. 常用文件速查（我要改什么 → 去哪个文件）
+
+改约束 / 改配置时不知道去哪改，先查这张表：
+
+| 我要改什么 | 去哪个文件 | 注意 |
+|-----------|-----------|------|
+| 时钟周期（clk period） | `SYNTHESIS/common/ip_cons/HV2M23_digital_top.tcl`（dco） | 改 `create_clock -period`；分频 / 衍生时钟（如 RX0_OD_CLK 半周期）同步改；改后重跑 prePT 验证 |
+| false path / multicycle | 同上（dco） | 叠加式维护，旧条目不删；改后重跑 prePT 确认没误伤 |
+| 准静态 / MUX 选择端固定 | 同上（dco） | `set_case_analysis 0/1 [get_pins .../S]`，值必须与实际工作模式一致 |
+| input / output delay | `SYNTHESIS/common/ip_cons/input_delay.tcl`、`output_delay.tcl` | max/min 成对写；单独 `set_max_delay` 的端口先从集合排除 |
+| corner 配置 / DUMP_SDF 开关 | `SYNTHESIS/top/sta/post/pt/<corner>/corner_set.tcl` | 每 corner 一份；DUMP_SDF=1 出完 SDF 必须改回 0 |
+| postPT 读哪个网表 / spef / SDC | `SYNTHESIS/top/sta/post/common/pt_setup.tcl` | `read_verilog` 默认指 `latest`；分析中间版本改成具体版本目录，用完改回 |
+| 换库（LVT / SVT） | `design.set`（`LINK_LIB` / `TAR_LIB`）+ `common_db_pvt.tcl` | `set_operating_conditions` 必须与 DataBase/Analog/DB 下 .lib 一致 |
+| skew 报告分组（-group） | `SYNTHESIS/top/sta/post/common/report_timing_skew_sd.tcl`（及 isprx / io） | 修不下去时先按 lane / mode 细化分组 |
+| IO buf type 确认 | `SYNTHESIS/top/sta/post/common/report_input_last_buf.tcl`、`report_output_last_buf.tcl` | TO SIGNOFF 第五项确认 |
+| 后仿 timing 屏蔽名单 | `HV2M23/DV_TCON_C/script/notimingcheck_DIG.cfg` | 改后只需重跑后仿，不用重跑 DC / prePT |
+| 后仿 SDF 反标路径 | `DV_TCON_C/top/tests_netlist_post/<case>/waves_dumper.sv` | 三处 `$sdf_annotate` 路径同步改；SDF_TT/WC/BC 宏在 user_def.sv |
+| PTPX 输入指向（VCD / 网表 / SDC） | `power/0.px_template/px_85c_random/px_cfg.tcl` | `ip0_vcd` / `verilog_file` / `sdc_file` / `spef_dir` / `ip0_inst` / `ip0_strip` 逐项核对 |
+| 交付 latest 刷新 | `update_latest`（`DataBase/Digital/Release/<TOP>_to_APR/`） | 跑完检查 latest/ 下完整交付清单 |
+
+常用文件内容一句话速览：
+
+| 文件 | 里面有什么 |
+|------|-----------|
+| dco（`ip_cons/HV2M23_digital_top.tcl`） | 约束唯一源头：create_clock 周期、false path、multicycle、case_analysis |
+| `design.set` | 总控配置：TOP_NAME / SDC_NAME、库、PVT corner、流程开关、各目录路径（综合与 postPT 各一份） |
+| `corner_set.tcl` | 单个 corner 的配置与 DUMP_SDF 开关（每 corner 一份） |
+| `pt_setup.tcl` | postPT 核心：读网表 + spef + postcts SDC、report 定义、skew 脚本按 delay_type max/min 各跑一遍、write_sdf 分支 |
+| `notimingcheck_DIG.cfg` | 后仿不查时序的 instance 名单（同步器 / 延时链 / 异步信号），依据 prePT 报告逐条人工确认 |
+| `px_cfg.tcl` | PTPX 输入文件指向与功耗分析模式（time_based + vcd） |
+
 ## 1. 主流程环境（综合 / LEC / Lint）
 
 <a id="design_set"></a>

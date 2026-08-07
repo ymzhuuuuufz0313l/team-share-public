@@ -599,263 +599,269 @@
    {
     "id": "sec-0",
     "level": 2,
+    "title": "0. 常用文件速查（我要改什么 → 去哪个文件）",
+    "text": "改约束 / 改配置时不知道去哪改，先查这张表： | 我要改什么 | 去哪个文件 | 注意 | |-----------|-----------|------| | 时钟周期（clk period） | SYNTHESIS/common/ipcons/HV2M23digitaltop.tcl（dco） | 改 createclock -period；分频 / 衍生时钟（如 RX0ODCLK 半周期）同步改；改后重跑 prePT 验证 | | false path / multicycle | 同上（dco） | 叠加式维护，旧条目不删；改后重跑 prePT 确认没误伤 | | 准静态 / MUX 选择端固定 | 同上（dco） | setcaseanalysis 0/1 [getpins .../S]，值必须与实际工作模式一致 | | input / output delay | SYNTHESIS/common/ipcons/inputdelay.tcl、outputdelay.tcl | max/min 成对写；单独 setmaxdelay 的端口先从集合排除 | | corner 配置 / DUMPSDF 开关 | SYNTHESIS/top/sta/post/pt/ /cornerset.tcl | 每 corner 一份；DUMPSDF=1 出完 SDF 必须改回 0 | | postPT 读哪个网表 / spef / SDC | SYNTHESIS/top/sta/post/common/ptsetup.tcl | readverilog 默认指 latest；分析中间版本改成具体版本目录，用完改回 | | 换库（LVT / SVT） | design.set（LINKLIB / TARLIB）+ commondbpvt.tcl | setoperatingconditions 必须与 DataBase/Analog/DB 下 .lib 一致 | | skew 报告分组（-group） | SYNTHESIS/top/sta/post/common/reporttimingskewsd.tcl（及 isprx / io） | 修不下去时先按 lane / mode 细化分组 | | IO buf type 确认 | SYNTHESIS/top/sta/post/common/reportinputlastbuf.tcl、reportoutputlastbuf.tcl | TO SIGNOFF 第五项确认 | | 后仿 timing 屏蔽名单 | HV2M23/DVTCONC/script/notimingcheckDIG.cfg | 改后只需重跑后仿，不用重跑 DC / prePT | | 后仿 SDF 反标路径 | DVTCONC/top/testsnetlistpost/ /wavesdumper.sv | 三处 $sdfannotate 路径同步改；SDFTT/WC/BC 宏在 userdef.sv | | PTPX 输入指向（VCD / 网表 / SDC） | power/0.pxtemplate/px85crandom/pxcfg.tcl | ip0vcd / verilogfile / sdcfile / spefdir / ip0inst / ip0strip 逐项核对 | | 交付 latest 刷新 | updatelatest（DataBase/Digital/Release/ toAPR/） | 跑完检查 latest/ 下完整交付清单 | 常用文件内容一句话速览： | 文件 | 里面有什么 | |------|-----------| | dco（ipcons/HV2M23digitaltop.tcl） | 约束唯一源头：createclock 周期、false path、multicycle、caseanalysis | | design.set | 总控配置：TOPNAME / SDCNAME、库、PVT corner、流程开关、各目录路径（综合与 postPT 各一份） | | cornerset.tcl | 单个 corner 的配置与 DUMPSDF 开关（每 corner 一份） | | ptsetup.tcl | postPT 核心：读网表 + spef + postcts SDC、report 定义、skew 脚本按 delaytype max/min 各跑一遍、writesdf 分支 | | notimingcheckDIG.cfg | 后仿不查时序的 instance 名单（同步器 / 延时链 / 异步信号），依据 prePT 报告逐条人工确认 | | pxcfg.tcl | PTPX 输入文件指向与功耗分析模式（timebased + vcd） |"
+   },
+   {
+    "id": "sec-1",
+    "level": 2,
     "title": "1. 主流程环境（综合 / LEC / Lint）",
     "text": ""
    },
    {
-    "id": "sec-1",
+    "id": "sec-2",
     "level": 3,
     "title": "design.set（综合主控，106 行）",
     "text": "综合环境总控 tcl 配置。被 compiledc.tcl、compilegenus.tcl、rtlgate.do、ptsetup.tcl 以 source ../design.set 读入；各 run csh 用 grep \"set TOPNAME\" ../design.set | sed ... 动态提取 top name，再由 genfilelist 生成 filelist——「批量替换」的真实机制：top name 只写一处，运行时抓取。 关键变量： | 变量 | 实例值 / 说明 | |------|---------------| | TOPNAME / SDCNAME | 换项目必改，只改这两行（不同项目 design.set 的 diff 实证） | | SYNDIR / TCLDIR / IPCONSDIR / TOPCONSDIR / UPFDIR / HDLDIR | 各目录路径 | | SCANEN 0、INCROPT 1、BONDOPT 1、USESAIF 0、USEUPF 0 | 流程开关 | | LINKLIB / TARLIB | 实例 nexchip1459t，注释列各工艺候选 | | NETDEFINE | 实例 [list \"NETLIST\" \"nexchip1459t\"] | | ANAEN 0、MEMEN 0、LVTEN 1、SVTEN 0 | db / VT 开关 | | SYNTOOL | \"dc\"，可切 genus | | CORNER | 实例 \"wclcmaxm40setup\" | | SLACKEN 0、DERATEVAL 1.07、CORENUM 1、ECR2VEN 0、POSTPTEN 0 | 其余开关 | CORNER ↔ PVT ↔ RCFILE 对照（注释）：wccworst=ss0p99v125c/cworst125；wclcworst=ss0p99vn40c/cworstm40；ltcbest=ff1p21vn40c/cbestm40；mlcbest=ff1p21v125c/cbest125；ttcbest=tt1p1v25c/typical。 lane / mode 变体（design.set1lane / 2lane / dplc / drd）：与主文件唯一 diff 是 FSDBFILE 的 powerpro 目录名——是 PowerPro 功耗分析的 FSDB 配置变体，与时序 skew 分组无关。手工复制改一行即可。"
    },
    {
-    "id": "sec-2",
+    "id": "sec-3",
     "level": 3,
     "title": "rundc（csh，35 行）",
     "text": "DC 综合入口：cd dc && rundc [参数]。 - 流程：建 repdir；grep TOPNAME；genfilelist ${topname}.f ./advanced；写 repdir/svn.info（日期 + svn info $PROJECTPATH/HDL）；source /eda/env/syn1709.cshrc（备选 syn1603）。 - 无参数 → dcshell-t -64bit -f compiledc.tcl -x \"set exitflag 0\"，跑完留在交互 shell 调试；有任意参数（如 1）→ exitflag 1，跑完自动 exit（batch 模式，bsub 必须加，否则 job 挂在交互 shell）。runlec / rungenus / runpt 同一机制。 - log tee 到 repdir/dc.log。"
    },
    {
-    "id": "sec-3",
+    "id": "sec-4",
     "level": 3,
     "title": "compiledc.tcl（215 行）",
     "text": "流程：source design.set → $TCLDIR/dc/dcuserproc.tcl、basicsetupall.tcl → readfilelistall $FILELISTDIR $NETDEFINE（checkerror 保护，缺文件直接 quit）→ link → checkdesign -multipledesigns → designrule / dontuse → clkperiod.tcl、kvclkio.tcl → source $IPCONSDIR/$TOPNAME.tcl（项目约束源文件） + input/outputdelay.tcl → commoncons.tcl → pre report → kvcompileunltra $INCROPT $USESAIF $BONDOPT（原文拼写 unltra）→ kvchangenames → 写出 .gvorg / .ddc / .gv / onlytop.v + writesdc → post report（area / power / clockgating / timing / qor / vtcellusage、kvreportdffnum、kvreportalllatch）。 - donttouch.tcl 自动生成：按约 50 个 cell 名通配 pattern（DTCLKINV1PBUF、CGCELL、CLKINVBUF、BUFNRST、IDLY、SCLBUF、BUFPOWERONCLK 等）把匹配实例写进 repdir/donttouch.tcl（实例 147 行）。 - 末尾 exec netlistreform.pl（包外脚本）；if {$exitflag == 1} { exit }；alias rpt / rptpt / rpth / rpthpt / h。"
    },
    {
-    "id": "sec-4",
+    "id": "sec-5",
     "level": 3,
     "title": "rungenus",
     "text": "同 rundc 骨架；source /eda/env/genus1723.cshrc；genus -nogui -64 -execute \"set exitflag 0|1\" -files compilegenus.tcl。"
    },
    {
-    "id": "sec-5",
+    "id": "sec-6",
     "level": 3,
     "title": "compilegenus.tcl（238 行）",
     "text": "与 DC 版同构；readsdc $IPCONSDIR/${TOPNAME}.tcl + echo $::dc::sdcfailedcommands；kvupfpower $$USEUPF（原文双 $ 笔误）；kviogroups；kvgenuscompile \"generic\"/\"map\"/\"opt\"；报告含 reporttiming -unconstrained、allmemoryfinal.rpt、macro cell 面积 / leakage；writedesign -innovus；writeparasitics > $SPEFFILE。"
    },
    {
-    "id": "sec-6",
+    "id": "sec-7",
     "level": 3,
     "title": "runlec",
     "text": "source /eda/env/confrml17.cshrc；清 repdir；genfilelist / svn.info 同骨架；bsub -Ip \"lec -xl -64 -do rtlgate.do -nogui | tee ./repdir/lec.log &\"；有参数时 lecexitflag=1。变体目录：lecapr/、lecaprA1/、lecrtleco/、lecupf/。"
    },
    {
-    "id": "sec-7",
+    "id": "sec-8",
     "level": 3,
     "title": "rtlgate.do（157 行）",
     "text": "- golden = RTL（dc 流程先读 ddclec.f 再 .sv.f / .f）；revised：dc → ../dc/repdir/${TOPNAME}.gvorg；genus → fv/fvmap.v.gz（ECR2VEN=0，之后再做 fvmap vs .gv 第二趟）或直接 .gv（=1）。 - compare -NONEQstop 999 -NONEQPrint → 输出 unmapped.rpt / unreach.rpt / abort.rpt / noneq.rpt（下划线！尾部 \"No of diff points = N\"） / r2gbbox.rpt → analyzeabort -compare -threads 8。 - noneq ≠ 0 且 lecexitflag==0 时 setgui on（弹 GUI），否则 exit——「没弹窗 ≠ 通过」的脚本依据。 - 变体：lecapr revised 改读 APR 返回网表（APR 工程师 release 路径）；lecrtleco 读 ECO 目录网表；各 runlec 变体相同。 - lecupf：runleclp（perl）按时间戳建 repdir/ 并 link latest；lec -verify -64 -LP -NOGui -tclmode -dofile dofilelpcheck.tcl；dofile 里 setlowpoweroption -native1801 -analysisstyle presyn，读 .f + common/upf/${TOPNAME}.upf；自动生成文件叫 settings.upf（有 s）。"
    },
    {
-    "id": "sec-8",
+    "id": "sec-9",
     "level": 3,
     "title": "runnlint（csh，58 行）",
     "text": "nLint -f ../filelist/$topname.f -f .../memdummy.f -f macro.f -f ./nlintdummy.f \\ -rs ${tcldir}/nlint/nlintrules.rs -bf×4 -logfile ./repdir/nlint.log \\ -top $topname -lint -lintTop $topname -out ./repdir/nlintorg.rpt \\ -maxcompileerror 100000 -syntaxerrormax 100000 之后接 nlintfilter.pl → /eda/utility/lint/nlint.pl（两个外部 perl 均在包外）。"
    },
    {
-    "id": "sec-9",
+    "id": "sec-10",
     "level": 3,
     "title": "filelist 规则",
     "text": "- filelist/${TOPNAME}.f 仅一行 -f $PROJECTPATH/HDL/filelist/${TOPNAME}.f（嵌套引用 HDL 侧 filelist）。 - advanced/ 下 14 个文件含 0 字节占位（ddclec.f、gen.sv.f 等）——配置中指定的文件即使无内容也必须放空文件占位，否则流程直接报错。"
    },
    {
-    "id": "sec-10",
+    "id": "sec-11",
     "level": 3,
     "title": "工具版本对照表",
     "text": "| 环节 | 版本（cshrc） | |------|---------------| | DC 综合 | syn1709（备选 syn1603） | | LEC | confrml17 | | Genus | genus1723 | | IP 级 prePT | pt1706 | | TOP 级 prePT | pt1806 | | postPT | pt1706 |"
    },
    {
-    "id": "sec-11",
+    "id": "sec-12",
     "level": 3,
     "title": "pt/（IP 级 prePT，附）",
     "text": "- runpt：source /eda/env/pt1706.cshrc；ptshell -f ptsetup.tcl -x \"set exitflag 0|1\" | tee repdir/pt.log。 - ptsetup.tcl（32 行）：CKFLTEN 0 / CKTIMEN 1 / CKPWREN 0 / PTHOLD 0；verilog 取 ../${SYNTOOL}/repdir/${TOPNAME}.gvorg；sdc 取 $IPCONSDIR/$TOPNAME.tcl + commoncons.tcl；source commondbpvt.tcl、commonpt.tcl、commonpwr.tcl（均在 $TCLDIR，包外）。CKPWREN==1 时 CORNER 强制 ttcbest 并开 power 分析。"
    },
    {
-    "id": "sec-12",
+    "id": "sec-13",
     "level": 2,
     "title": "2. prePT（TOP 级，sta/pre）",
     "text": ""
    },
    {
-    "id": "sec-13",
+    "id": "sec-14",
     "level": 3,
     "title": "runpt（prePT，13 行）",
     "text": "source /eda/env/pt1806.cshrc；ptshell -f ../common/ptsetup.tcl -x \"set exitflag 0\" | tee ./ptrpt/pt.log。"
    },
    {
-    "id": "sec-14",
+    "id": "sec-15",
     "level": 3,
     "title": "ptsetup.tcl（prePT 主脚本，137 行）",
     "text": "- sethostoptions -maxcores 4；CKFLTEN / CKTIMEN 先置 1/0，随后 source ./design.set 又置 1/1——执行顺序陷阱，生效的是 1/1。 - PT 变量：CRPR normal、timingcrprthresholdps 1、caseanalysislogfile、linkcreateblackboxes false（pre-layout 专用）等。 - 流程：commondb.tcl → readdesign.tcl → linkdesign → clkperiod / kvclkio → source ${IPCONSDIR}/${SDCNAME}.tcl（手工维护的约束源 = 会议说的 \"dco\" 本体，包外）+ input/outputdelay.tcl（有一段 if{0} 包着的 sd skew 约束实验残留）→ commoncons.tcl → updatetiming → source $TCLDIR/pt/ptreport.tcl → reporttiming（max / min）→ writesdc ../sdcpr/${SDCNAME}.tcl -nosplit（展开后 SDC 落点） → kvreportdffnum > ptrpt/reportdffnum.rpt。 - CKFLTEN 分支：ptcheckdesign -type inputfloat > ptrpt/ptinputfloat.log；-type outputshort > ptrpt/ptoutputshort.log。"
    },
    {
-    "id": "sec-15",
+    "id": "sec-16",
     "level": 3,
     "title": "readdesign.tcl",
     "text": "readverilog .../ip/syn${TOPNAME}/dc/repdir/${TOPNAME}.gv——prePT 读的是 DC 综合吐出的 .gv。"
    },
    {
-    "id": "sec-16",
+    "id": "sec-17",
     "level": 3,
     "title": "design.set（prePT 版，91 行）",
     "text": "与综合主 design.set 同族；VOLTAGE 0p9、topconsen 1、CKFLTEN 1 / CKTIMEN 1、LVTEN 0 / SVTEN 1、CORNER \"wccworst\"。"
    },
    {
-    "id": "sec-17",
+    "id": "sec-18",
     "level": 3,
     "title": "sdcpr 展开产物",
     "text": "sdcpr/ .tcl（实例 1321 行）：文件头 \"Created by PrimeTime writesdc\"，sdcversion 2.1，单位 ns——prePT 展开产物，供 APR 使用。 实测时钟表（校对依据）： | clock | 周期 (ns) | uncertainty setup / hold (ns) | |-------|-----------|-------------------------------| | RX0CLK | 9.5 | 0.475 / 0.15 | | RX1CLK | 17.1 | 0.855 / 0.15 | | RX0ODCLK | 4.75 | 0.4 / 0.15 | | RX1ODCLK | 8.55 | 0.4275 / 0.15 | | STBCLK | 6.43 | 0.4 / 0.15 | | VS / LS / POWERONCLK | 100 | 2 / 0.15 | | OSCCLKIN | 20 | 1 / 0.15 | | I2CCLK | 500 | 2 / 0.15 | | RX0CLKDIV1P51P | — | 0.95 / 0.15 | generated clock：DIV2（-edges {2 4 6}）、DIV1P5（-edges {1 3 4}）等。 结论：hold uncertainty 全部 0.15 ns = 150 ps 统一；setup 400 ps 只对高速 lane 时钟成立，其余 0.4275 2 ns 不等。全包 grep 无 1.8 GHz、无 spread / 展频写法；包内最快时钟 4.75 ns ≈ 210 MHz。"
    },
    {
-    "id": "sec-18",
+    "id": "sec-19",
     "level": 3,
     "title": "ptrpt 产出文件清单",
     "text": "| 文件名 | 内容 | 什么时候看 | |--------|------|-----------| | pt.log | 主 log | 先查 error | | readverilog.log / linkdesign.log / readsdc.log / readtcl.log | 各阶段 log | 报错时按阶段排查 | | caseanalysis.log | case analysis 记录 | 约束排查 | | updatetiming.log | 时序更新记录 | 时序异常时 | | ${TOPNAME}cons.rpt | 约束检查，unconstrained 在这 | 交付前必查 | | ${TOPNAME}coverage.rpt | 分析覆盖率 | 约束完整性 | | ${TOPNAME}timing.rpt / reporttiming.rpt / reporttimingmin.rpt / reporttiming.log | setup / hold 时序报告 | 看 slack | | reportdffnum.rpt | \"report the DFF number of \\ : N\" | 查每个 clock 域的 DFF 数 | | ptinputfloat.log | floating 输入列表 | 交付前 / APR 对接工程师需要 | | ptoutputshort.log | output short 检查 | 约束排查 | | svn.info | 版本记录 | 版本追溯 |"
    },
    {
-    "id": "sec-19",
+    "id": "sec-20",
     "level": 2,
     "title": "3. postPT（sta/post）",
     "text": ""
    },
    {
-    "id": "sec-20",
+    "id": "sec-21",
     "level": 3,
     "title": "design.set（postPT 版，66 行）",
     "text": "- SDCPATH \".../DataBase/Digital/Release/${TOPNAME}toAPR/latest\"（APR release 公共库路径）；PRPATH \".../AD/ /release/${TOPNAME}/timing/latest\"。 - PARAMDESIGN 1（注意真实拼写，非 PARADESIGN；它和 UPPERCASE 0 只存在于 postPT 版 design.set）。 - Tfastestclockperiod 2.2；ANAEN 1、LVTEN 1、POWEROPTIMIZATION 1、POSTPTEN 1、PTHOLD 0。 - 头部注释保留多 die 拼接模板。"
    },
    {
-    "id": "sec-21",
+    "id": "sec-22",
     "level": 3,
     "title": "cornerset.tcl（每 corner 一份，14 行）",
     "text": "set CONSCHECK 1 # SICHECK 1 / EARLYDERATING 1 / LATEDERATING 0 set CORNER \"ltcbest\" # 注释 \"#wc, wcl, lt, ml\" set DUMPSDF 0 # ← dump SDF 开关真实变量名 set QUIT 0 # DEBUG0 0 / DEBUG1 0 / DEBUG2 0 source ../../common/ptsetup.tcl -echo DUMPSDF==1 分支：writesdf -context verilog ../../sdf/${SDCNAME}${RCFILE}.sdf，然后跳过全部 report——「corner 结果为空」真相：不是结果被删除，是该趟 run 与 report 分支互斥只产 SDF，且 latest 软链指向这趟，runsummary 抓到空。用完关掉并重跑该 corner。 坑——corner 目录命名：实际目录叫 ltcbestm40（无第二下划线），而 runsummary / pararrelrunpt.py 期望 ltcbestm40。"
    },
    {
-    "id": "sec-22",
+    "id": "sec-23",
     "level": 3,
     "title": "runpt（postPT，每 corner 一份，8 行）",
     "text": "source /eda/env/pt1706.cshrc；ptshell -f ./cornerset.tcl | tee pt.log。"
    },
    {
-    "id": "sec-23",
+    "id": "sec-24",
     "level": 3,
     "title": "ptsetup.tcl（postPT 核心，345 行）",
     "text": "- 按 $pwd 分 scanatspeed / scanstuck / func；自动编号建 logDATEN、rptDATEN（下设 summary/setup/hold/skew/trans/analog）、wholesessionDATEN，并 ln -s rpt... latest。 - CRPR 开启（threshold 10ps）；SICHECK==1：sienableanalysis true、compositeaggr statistical、doubleswitching clocknetwork、allpathedges 等（注释留备选 SI 配置）。 - readverilog APR 网表 .v.gz（硬编码 APR release 路径）；CORNER→RCFILE→operatingconditions 映射（wc / lt / ml / tt × cworst / cbest / typ，wcl 整段注释掉）。 - readparasitic -keepcapacitivecoupling ${PRPATH}/${TOPNAME}${RCFILE}.spef.gz → updatetiming → reportannotatedparasitics。 - 约束：clkperiod.tcl + kvclkiopostpt.tcl + source ${SDCPATH}/${SDCNAME}postcts.sdc（APR 返回的 postcts SDC，非 prePT sdcpr 产物直接喂入） → setpropagatedclock。 - CONSCHECK==1：checktiming、reportdisabletiming、reportexceptions、reportanalysiscoverage 等 + ptreport.tcl + reporttimingprj.tcl → 非 scan 时 reporttimingtrans.tcl → max 跑 skewisprx / skewsd / skewio / 1P5 → min 再跑 isprx / sd / io（1P5 只跑 max）→ savesession。QUIT==1 跑完直接 quit。"
    },
    {
-    "id": "sec-24",
+    "id": "sec-25",
     "level": 3,
     "title": "reporttimingprj.tcl（41 行，主 report 定义）",
     "text": "- setup：reporttiming -pbamode path -delaytype max -pathtype fullclockexpanded -crosstalkdelta -derate -slacklesserthan 0.5 -maxpaths 1000 > setup/reporttimingsetup.rpt；每 clock 单独一份（slack < 0.2）；async / clockgating 组。hold 同构。 - trans：reportconstraint -allviolators -verbose 全量 + maxtransition / maxcapacitance / minpulsewidth / minperiod → trans/ 5 份；另写 ${PROJECT}.sum.rpt、.drv.rpt、.clk.sum.rpt。"
    },
    {
-    "id": "sec-25",
+    "id": "sec-26",
     "level": 3,
     "title": "skew 报告四件套",
     "text": "#### reporttimingskewsd.tcl（172 行）—— SD data/clock skew（L/R × A/B） 完整路径 SYNTHESIS/top/sta/post/common/reporttimingskewsd.tcl；脚本内容截图与 -maxpath 取舍经验见 POSTPT skew 章节。 - 数据组：from DTCTLL0|L1/{CHCNTpre,DATAPRE,...} → to ports DBL0/2/4（左 A）、DBL1/3/5（左 B）、DBR0/2/4（右 A）、DBR1/3/5（右 B），-maxpath 2000 -nworst 1000；输入信号 SLDLY→SLINA/B、SRDLY→SRINA/B；clock 组 from CLKGENU0|U1 → to CLKAL/CLKBL/CLKAR/CLKBR。 - 产出命名：skew/reporttimingsd{l,r}1p{a,b}.rpt、...clk{a,b}.rpt。 - bug：SL/SR 报告用 > 重定向到与 DBL/DBR 同名文件会覆盖；第 100 行层次分隔符误用 .；2P 版报告脚本包中缺失，但 perl 抓取层期待 sd2p 文件。 #### reporttimingskewisprx.tcl（17 行） L0 / L1 两组 -group RX0ODCLKDIV2 -risethrough doutlaneL0[] ... -slacklesserthan 20 -maxpaths 100 + reportclocktiming latency → skew/reporttimingrx{0,1}00${delaytype}.rpt。 - 找路径端点名字的入口：clk 和 data 从 RX 出来、到 APR 里 DFF 的名字，就写在这个脚本的 -group（clk 组）与 -risethrough（data 起点）定义里；修 skew 需要确认端点对象时，先来这个脚本查。 #### reporttimingskewio.tcl（19 行） I2C 路径 → skew/reporttimingio${delaytype}.rpt。 #### reporttiming1P5.tcl（17 行） 1.5 分频跨域检查（RX0CLKDIV1P5 ↔ 1P 等，双向 max + min）→ 写到当前目录 reporttiming1P5.rpt。"
    },
    {
-    "id": "sec-26",
+    "id": "sec-27",
     "level": 3,
     "title": "reportclockpath.tcl（41 行）",
     "text": "「直抛 clock path 的 Tcl」：clkstartpoints（13 个）× clkgenendpoint（8 个）双重循环 reporttiming → clockpath.rpt。注意：ptsetup.tcl 并不 source 它，需手工 / 单独调用；grepcell.do 依赖它检查 clock path VT 构成。"
    },
    {
-    "id": "sec-27",
+    "id": "sec-28",
     "level": 3,
     "title": "reporttimingtrans.tcl（2 行）",
     "text": "greptranspath.pl 从 cons.rpt 抽 maxtransition 违规 pin，生成逐点 reporttiming。"
    },
    {
-    "id": "sec-28",
+    "id": "sec-29",
     "level": 3,
     "title": "grepcell.do（4 行全注释模板）",
     "text": "grep 'LMX|RMX|HMX' .../clockpath.rpt | grep -v 'CK\\|(QD' > ckcell{lvt,svt,hvt}.rpt 检查 clock path 的 VT 构成（runsummary 尾部调用，注释 \"in order to insure LVT in clock path\"）。"
    },
    {
-    "id": "sec-29",
+    "id": "sec-30",
     "level": 3,
     "title": "sortclkpulse.pl（119 行）",
     "text": "- 用法：sortclkpulse xxx.csv xxxresult.csv corner。 - 内置项目时钟表 @golclkname / @golperiod / @goldutymin——换项目必改。 - pulsewidth 按 slack = value - perioddutymin + uncertainty（uncertainty = max(period5%, 0.1)）重算。 - 有 $$clockgroup 双 $ 笔误。"
    },
    {
-    "id": "sec-30",
+    "id": "sec-31",
     "level": 2,
     "title": "4. 批量与汇总",
     "text": ""
    },
    {
-    "id": "sec-31",
+    "id": "sec-32",
     "level": 3,
     "title": "runall（csh，60 行）—— 串行批量（旧版 6 corner）",
     "text": "set PROJECT = \"CLKSWITCH\"（旧项目残留！环境沿袭自 CLKSWITCH）；setenv DUMPSDF 0；顺序 cd 进 wccworst125 / wclcworstm40 / bccbestm40 / mlcbest125 / wcrcworst125max / min 各跑 runpt；拷 cons.rpt 按 corner 命名。bc 是旧命名，只出现在这里。"
    },
    {
-    "id": "sec-32",
+    "id": "sec-33",
     "level": 3,
     "title": "pararrelrunpt.py（40 行，原文拼写 pararrel）—— 并行批量",
     "text": "对 10 个 corner 各起 xterm -hold -e 'cd $PROJECTPATH && source cshrc. pt && cd && bsub -Ip ./runpt' & 并发。 - bug：errorfound 和 runsummary 变量未定义——「跑完自动接 runsummary」实际不工作，批量跑完需手工执行 runsummary；grepcmd 定义了未使用。 - cshrc. pt 在包外。"
    },
    {
-    "id": "sec-33",
+    "id": "sec-34",
     "level": 3,
     "title": "runsummary（sh，100 行）—— 汇总",
     "text": "- cornerarray = 10 个 corner：wccworst125 wccbest125 wctypical125 ltcworstm40 ltcbestm40 lttypicalm40 mlcbest125 ttcworst25 ttcbest25 tttypical25（wc×3 + lt×3 + ml×1 + tt×3，无 wcl、无 bc；bc 只在旧 runall 出现）。 - summary/${DATE}i 建目录并 link latest；每 corner 跑 getviolate（setup 取 latest/setup/，hold 取 latest/hold/）、getviolatetrans、getphybusskew、getsdbusskew；再 merge 合成总表；末尾 grepcell.do。"
    },
    {
-    "id": "sec-34",
+    "id": "sec-35",
     "level": 3,
     "title": "get.pl（perl 抓取层，runsummary 调用）",
     "text": "| 脚本 | 输入 → 输出 | |------|-------------| | getviolate.pl | 扫 .rpt 抓 slack ≤ -0.001 → CSV clock名,violation数,最大违规 | | getviolatetrans.pl | 扫 reportconstraint.rpt 抓违规 Pin + Slack → CSV | | getphybusskew.pl | skew 报告里所有 slack 行原样打印 | | getsdbusskew.pl | 只处理 sd 报告；clk 文件取 data arrival max / min；硬编码 24 组 sd{l,r}{1p,2pl0,2pl1}{clk,}{a,b}{max,min} 并算 24 组 margin（datamax − clkmin / datamin − clkmax），单行 72 列 CSV |"
    },
    {
-    "id": "sec-35",
+    "id": "sec-36",
     "level": 3,
     "title": "merge.pl（perl 合并层）",
     "text": "| 脚本 | 产物 | |------|------| | mergeviolate.pl | 各 corner csv 横向合并 → reportsetup.csv / reporthold.csv / reporttrans.csv | | mergesdbusskew.pl | → reportsdbusskew.csv（行 = 72 个分组指标，含 margin 标注规格 [-1:6]；列 = corner）——「Excel 上半 latency 下半 skew/margin」的真实形态，实际产物是 CSV | | mergephybusskew.pl | → reportphybusskew.csv | | greptranspath.pl | 从 cons.rpt maxtransition 段抽违规 pin 生成 reporttiming 行 | 共同坑：shebang 指向 Vera 自带 perl 的绝版路径；close (INFLE) 拼写错误（应为 INFILE）。"
    },
    {
-    "id": "sec-36",
+    "id": "sec-37",
     "level": 2,
     "title": "5. 寄存器与其他 perl 工具",
     "text": ""
    },
    {
-    "id": "sec-37",
+    "id": "sec-38",
     "level": 3,
     "title": "mergexls 流程（寄存器 Excel 合并）",
     "text": "- readme 三步：perl copy.pl CDR.xls CDR1.xls → perl mergexls.pl . .xls → perl sort.pl .xls 1.xls；实际 runmerge 用的是 mergexls1.pl（2 参数，跳 5 行表头）——readme 与 runmerge 用的合并脚本不同。 - copy.pl：ParseExcel → WriteExcel 整表复制 + 第一列向下填充；mergexls1.pl：dir 下所有 .xls 纵向合并；sort.pl：按第 0 列地址排序。 - 依赖 CPAN Spreadsheet::ParseExcel / WriteExcel（只支持 .xls 老格式）。"
    },
    {
-    "id": "sec-38",
+    "id": "sec-39",
     "level": 3,
     "title": "reg8bit32bit（8bit 寄存器表合并成 32bit）",
     "text": "readme 提到的 regmerge.pl 实际文件名是 regchange.pl；regchange.pl 按地址低位 0/4/8/c 把 4 个 8bit 寄存器合并为一个 32bit。"
    },
    {
-    "id": "sec-39",
+    "id": "sec-40",
     "level": 3,
     "title": "afifo skew 三件套（另一项目，24 corner 命名体系）",
     "text": "getafifoskew.pl 抓 data arrival time；mergeafifoskew.pl 横向拼 csv；mergeafifodiff.pl 求 max − min 差值；count0.pl 把不足 6 行的 txt 补空行对齐。"
    },
    {
-    "id": "sec-40",
+    "id": "sec-41",
     "level": 3,
     "title": "其他单文件工具",
     "text": "addressmerge.pl、copy.pl、sort.pl（根目录版有 $0 / @sortedvalue 笔误跑不过）、keywords.pl（扫 reserved 行）、regaddressmerge.pl、print3.pl。"
    },
    {
-    "id": "sec-41",
+    "id": "sec-42",
     "level": 2,
     "title": "6. 调用关系总图",
     "text": ""
    },
    {
-    "id": "sec-42",
+    "id": "sec-43",
     "level": 2,
     "title": "7. 已知 bug 与坑清单",
     "text": "| 位置 | 问题 | 影响 / 处理 | |------|------|-------------| | reporttimingskewsd.tcl | SL/SR 报告用 > 重定向到与 DBL/DBR 同名文件 | 同名文件互相覆盖，报告丢失 | | reporttimingskewsd.tcl 第 100 行 | 层次分隔符误用 . | 层次匹配失败 | | skew 报告系列 | 2P 版报告脚本包中缺失 | getsdbusskew.pl 期待的 sd2p 文件不存在 | | pararrelrunpt.py | errorfound / runsummary 变量未定义 | 跑完自动接 runsummary 不工作 | | pararrelrunpt.py | grepcmd 定义未用 | 死代码 | | sortclkpulse.pl | $$clockgroup 双 $ 笔误 | 运行报错 | | compilegenus.tcl | kvupfpower $$USEUPF 双 $ 笔误 | 运行报错 | | 根目录 sort.pl | $0 / @sortedvalue 笔误 | 跑不过 | | postPT corner 目录 | 实际目录 ltcbestm40（无第二下划线） vs 脚本期望 ltcbestm40 | runsummary / pararrel 找不到该 corner | | get.pl / merge.pl | shebang 指向 Vera 自带 perl 的绝版路径 | 需改 shebang 或用 perl xxx.pl 调用 | | get.pl / merge.pl | close (INFLE) 拼写错误 | 文件句柄未正常关闭 | | prePT ptsetup.tcl | CKFLTEN / CKTIMEN 先置 1/0，随后被 design.set 覆盖为 1/1 | 执行顺序陷阱，生效 1/1 | | runall | set PROJECT = \"CLKSWITCH\" 旧项目残留 | 换项目必须改 |"
    },
    {
-    "id": "sec-43",
+    "id": "sec-44",
     "level": 2,
     "title": "8. 本包未包含",
     "text": "以下只有用法、没有脚本本体，避免按图索骥： - runckf：CKF 入口脚本（ckf/ 目录为空，只有 Readme 记录的产物 ckf/repdir/ckf.rpt）。 - gensyn：环境初始化封装脚本（含 -noadd 等选项）。 - signoff / signoff fake：signoff 脚本本体（包内只有 signoff.rpt 样本）。 - ipcons 约束源文件本体（$IPCONSDIR/$TOPNAME.tcl，即会议说的 \"dco\"）。 - $TCLDIR 公共 tcl（dcuserproc.tcl、basicsetupall.tcl、commondbpvt.tcl、commonpt.tcl、commonpwr.tcl、ptreport.tcl 等）。 - 其余：netlistreform.pl、nlintfilter.pl、nlintwaive.list、cshrc. pt、1.8 GHz / 展频约束、2P 版 skew 报告脚本。"
