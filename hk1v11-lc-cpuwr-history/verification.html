@@ -359,6 +359,8 @@ one-shot unlock 实现后，checker 出现误判：
 - 0708：SMART_CS[3:0] 在 chip_sel=1 下的行为验证
 - 0714：chip_sel=1 默认值确认后的回归验证
 - 0721：CONFIG_DATA 24bit 拍重组后回归——因 XOR 总量不变，预期无行为退化；前提是上游 `CHPI_CONFIG_L0` 升 24bit（每拍 3 字节采样）后联调。DV env 已升 0721v1，TX 打包无需改动（字节顺序不变，拍分组由 DUT 上游采样决定）
+- 0807：新架构（LINK_CONFIG_CTRL）整体替换 HDL/DV_TCON_C 后的环境基线确认
+- 0810：寄存器表同步（FSEL 移位/EOL/BCC/字段错位/LSI 保护）后验收——iverilog + rtl-code-review + rtl-signal-trace 三关通过
 
 ## 6. 项目约定：cfg_frame 解析一致性
 
@@ -369,6 +371,18 @@ one-shot unlock 实现后，checker 出现误判：
 - **禁止用 `%d` 解析**，因为 1-3bit 字段低几位在十进制/二进制下可能相同，但 ≥4bit 字段（如 `SMART_CS`）会错位
 
 该规则已写入项目 `AGENTS.md`。
+
+## 7. DV env 与 0810v1 RTL 的待同步项
+
+0807 整体替换后，DV_TCON_C env 与 0810v1 RTL 存在以下不一致（用户暂缓同步，回归前需处理）：
+
+- `env_cfg.sv` reg51 打包位偏移：env 用 `[6:2]`、RTL 0810v1 为 `[5:1]`（`sw_reg_lane_ctrl`）
+- `env_cfg.sv` 缺 reg56 EOL 字段打包（`reg_pin_eol_det`/`reg_eol_det`）
+- `env_cfg.sv` 缺 CDR/BCC 寄存器打包（reg144~161 不在 `reg_ctrlF` 流程中）
+- `reg_model.sv` 为旧模板（如 ADDRESS_35 是 `reg_gamma_sel`，与实际字段不符）
+- `reg_define.csv` 缺 BCC 寄存器字段
+
+> 待用户确认后统一同步；0810v1 RTL 已通过验收三关，不受 DV 同步进度影响。
 
   </script>
   <script>

@@ -443,6 +443,29 @@
 - 0716v1 备份为 `0716_v1_work`；DV env 升 0721v1 并补齐服务器 0716 同步遗漏的 FSEL 更新
 - 对照图见「图解」章第 6 节：`config_data_beat_regroup_0721.svg`
 
+### 4.9 0807 新架构：LINK_CONFIG_CTRL 承载寄存器通路
+
+服务器 0807 导出整体替换 HDL 与 DV_TCON_C，架构发生重大变化：
+
+- **寄存器通路迁移**：旧版 `LINK_LOGIC` 承担 CLKGEN / LC_CPUWR / LC_REG_MAPPING / LINK_MISC 实例化；新版 `LINK_LOGIC` 变为**纯数据通路顶层**（672 行，无子模块实例化）
+- **新模块 `LINK_CONFIG_CTRL`**：实例化 `LC_CPUWR` + `LC_REG_MAPPING`（518 行，含写标志/回拼字节/171 端口连接），成为寄存器通路实际承载者
+- **新增一批模块**：`LC_CLK_RST_GEN`、`RSTNGEN`、`LC_CHPI_DECODE`、`LINK_IO_CTRL`、`CHPI_WATCHDOG`、`CHPI_FAULT_FLAG`、`LINK_FAULT_CTRL`、`LINK_PANEL_CTRL`、`SHORT_ENCODING`、`LONG_ENCODING` 等
+- **LC_CPUWR 变化**：输出端口新增 `R_REG00_L`~`R_REG04_L`（行配置），复位推导 `N_RST_NLOCK_NORMAL`/`RSTN_SCR_EN_NORMAL` 移至 `RSTNGEN`；24bit CONFIG_DATA 保留
+- **归档**：0807v1 三件套（`LC_CPUWR` / `LC_REG_MAPPING` / `LINK_CONFIG_CTRL`）入库
+
+### 4.10 0810 寄存器表同步（HK1V11_Register_20260807.xlsm）
+
+依据最新寄存器表完成 0810v1 变更：
+
+- **FSEL 移位**：`FSEL` 从 reg53[1:0] 移到 **reg146[4:3]**（频率 `00:10MHz 01:12MHz 10:14MHz 11:16MHz`）
+- **reg53 字段变更**：`[1:0]` 由 FSEL 改为 **`reg_fbdiv_clk_sel`**（`00:ck<5> 01:ck<4> 10:ck<10> 11:ck<11>`）
+- **reg56 新增 EOL**：`[4]` `reg_pin_eol_det`（默认 1）、`[5]` `reg_eol_det`（默认 0）；默认值 `0x05 → 0x15`
+- **新增 BCC 寄存器**（I2C-only 占位，BCC 协议未接入）：`BCC_M[3:0]` @ reg147、`SDID[4:0]` @ reg160、`AEQ_reg_lane_ctrl[3:0]` + 只读 `regr_AEQ/BCC_FF/PASS` @ reg161
+- **修正 reg50/51/53 字段错位**：`sw_reg_lane_ctrl`→reg51[5:1]、`reg_pin_eq`→reg51[7]、`reg_fbdiv_clk_sel`→reg53[1:0]、reg50 恢复 Reserved
+- **LSI 保护修正**：reg48（TEST_PRTCT）/ reg160 / reg161 读回去掩码（表保护列空白）；reg147 保留保护
+- **验收三关**：iverilog + rtl-code-review + rtl-signal-trace 全部通过
+- **接口归属**：0810v1 新增信号（EOL/BCC 等）在 `LINK_CONFIG_CTRL` 中 `.xx()` 空接，不定义端口（由 bcc_ctrl 等模块接入）
+
   </script>
   <script>
     document.getElementById('article').innerHTML = marked.parse(document.getElementById('md').textContent.trim());

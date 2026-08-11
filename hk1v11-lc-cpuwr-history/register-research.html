@@ -317,6 +317,25 @@
 | `0x00-0x3F` | `00_CTRL_F.md` |
 | `0x40-0x44` | `40_CTRL_L.md` |
 | `0x90-0x92` | `90_CDR.md` |
+
+## 5. 0810 核对更新（HK1V11_Register_20260807.xlsm）
+
+0807v1 起寄存器基线更新为 LC_CPUWR_0810_v1，并依据 HK1V11_Register_20260807.xlsm 完成三方核对：
+
+| 地址(dec) | 地址(hex) | 变更 | 状态 |
+|------|------|------|------|
+| 53 | 0x35 | FSEL 移位至 reg146[4:3]；[1:0] 改 reg_fbdiv_clk_sel | RTL/文档一致 |
+| 50 | 0x32 | 恢复全 Reserved（原字段错位已修正） | RTL/文档一致 |
+| 51 | 0x33 | sw_reg_lane_ctrl@[5:1]、reg_pin_eq@[7] 迁入 | RTL/文档一致 |
+| 56 | 0x38 | 新增 reg_pin_eol_det@[4]、reg_eol_det@[5]；默认 0x15 | RTL/文档一致 |
+| 146 | 0x92 | 新增 FSEL@[4:3]；默认仍 0x02 | RTL/文档一致 |
+| 147 | 0x93 | 新增 BCC_M[3:0]（I2C-only 占位） | RTL/文档一致 |
+| 160 | 0xA0 | 新增 SDID[4:0]（I2C-only 占位） | RTL/文档一致 |
+| 161 | 0xA1 | 新增 AEQ_reg_lane_ctrl[3:0] + 只读 regr_* | RTL/文档一致 |
+| 48 | 0x30 | TEST_PRTCT 读回去 LSI 掩码 | RTL/文档一致 |
+
+> 核对结论：0810v1 RTL 与 HK1V11_Register_20260807.xlsm 一致；chip_sel0/1 地址表已同步。
+
 | `0xF0-0xF1` | `F0_I2C_PASSWORD.md` |
 | 保留地址 | `reserved_addresses.md` |
 

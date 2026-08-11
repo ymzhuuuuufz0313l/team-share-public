@@ -280,11 +280,11 @@
   <script type="text/template" id="md">
 # 二、寄存器图解 Sheet（推荐先看）
 
-> ⭐ **本章优先级最高**：建议在读完后文之前，先浏览本章五张全景图，建立 LC_CPUWR 寄存器空间的整体印象，再深入各个变更细节。
+> ⭐ **本章优先级最高**：建议在读完后文之前，先浏览本章六张全景图，建立 LC_CPUWR 寄存器空间的整体印象，再深入各个变更细节。
 
 ## 1. chip_sel = 0 默认字节映射
 
-这张图展示 0716v1 在 chip_sel=0 模式下 POR 后的寄存器默认值布局，与 `LC_CPUWR_history/chip_sel0_register_address_map.md` 及 RTL 中复位默认值完全一致，用于建立寄存器空间基线并支撑后续 chip_sel=1 回拼差异分析。
+这张图展示 0810v1 在 chip_sel=0 模式下 POR 后的寄存器默认值布局，与 `LC_CPUWR_history/chip_sel0_register_address_map.md` 及 RTL 中复位默认值完全一致，用于建立寄存器空间基线并支撑后续 chip_sel=1 回拼差异分析。0810v1 已同步：reg50/51/53 字段修正、reg56 EOL、reg146 FSEL、reg147/160/161 新增。
 
 chip_sel=0 模式下 POR 后寄存器默认值全景；绿色为控制、黄色为电源、蓝紫为模拟相关字段。
 
@@ -292,7 +292,7 @@ chip_sel=0 模式下 POR 后寄存器默认值全景；绿色为控制、黄色�
 
 ## 2. chip_sel = 1 默认字节映射
 
-这张图展示 0716v1 在 chip_sel=1 模式下 POR 后的寄存器默认值布局，与 `LC_CPUWR_history/chip_sel1_register_address_map.md` 及 `LC_REG_MAPPING_20260714_v1_decimal.v` 回拼机制一致，用于定位 chip_sel=1 相对于 chip_sel=0 发生默认值变化的字段。
+这张图展示 0810v1 在 chip_sel=1 模式下 POR 后的寄存器默认值布局，与 `LC_CPUWR_history/chip_sel1_register_address_map.md` 及 `LC_REG_MAPPING.v`（0810v1）回拼机制一致，用于定位 chip_sel=1 相对于 chip_sel=0 发生默认值变化的字段。
 
 所谓「回拼」是因为 LC_CPUWR 模块内部的默认值逻辑只针对 chip_sel=0 场景实现；当 chip_sel=1 时，部分地址（如 0x09 / 0x0A / 0x1F）需要通过 LC_REG_MAPPING 额外写标志并把对应字节回写到寄存器影子值，才能让 I2C 读出的内容与 chip_sel=1 期望的默认值一致。
 
@@ -302,7 +302,7 @@ chip_sel=1 模式下 POR 后默认值；红色标出与 chip_sel=0 不同、由 
 
 ## 3. Checksum 地址覆盖
 
-这张图基于 `LC_CPUWR_20260714_v1_decimal.v` Part 18 的 checksum 逻辑，标出参与 XOR 累加的地址范围，帮助确认 0x07 控制寄存器、0x27 frame end 边界以及 Seg1/Seg2 的 checksum 覆盖范围。
+这张图基于 `LC_CPUWR.v`（0810v1）Part 18 的 checksum 逻辑，标出参与 XOR 累加的地址范围，帮助确认 0x07 控制寄存器、0x27 frame end 边界以及 Seg1/Seg2 的 checksum 覆盖范围。
 
 标出参与 checksum XOR 累加的地址；同一地址在两种 chip_sel 下字段不同时拆成双行展示。
 
@@ -310,13 +310,13 @@ chip_sel=1 模式下 POR 后默认值；红色标出与 chip_sel=0 不同、由 
 
 ## 4. LSI 保护范围
 
-这张图展示各地址在 LSI_PRTECT 下的保护状态（红色=输出/读回经保护掩码，绿色=不受保护，紫色=密码寄存器 0x30），用于理解密码解锁前后的寄存器可见性差异。0721v1 重排版：字段全部显示全名（含 `regr_lane_*` 状态位与 `reg_fast_lock_*` 等长名），不再截断；0721v1 与 0714/0716 的 LSI 保护逻辑一致。
+这张图展示各地址在 LSI_PRTECT 下的保护状态（红色=输出/读回经保护掩码，绿色=不受保护，紫色=密码寄存器 0x30），用于理解密码解锁前后的寄存器可见性差异。0810v1 重排版：字段全部显示全名，不再截断；0810v1 LSI 保护同步寄存器表（reg48/reg160/reg161 无掩码、reg147 保留保护）。
 
 ![LSI 保护范围](./images/lsi_unprotected_address_map.svg)
 
 ## 5. 复位域分类
 
-这张图基于 `LC_CPUWR_20260714_v1_decimal.v` 寄存器声明中的复位域属性，用于判断全局复位或局部复位后哪些配置会被清零、哪些会保持。
+这张图基于 `LC_CPUWR.v`（0810v1）寄存器声明中的复位域属性，用于判断全局复位或局部复位后哪些配置会被清零、哪些会保持。
 
 标出各寄存器所属的复位域；紫色为 N_RST、青色为 RSTN_SCR_EN，其余多为 N_RST_NLOCK。
 

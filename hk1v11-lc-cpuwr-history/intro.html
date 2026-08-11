@@ -244,14 +244,16 @@
   <script type="text/template" id="md">
 # 一、引言与归档体系
 
-> ⭐ **建议阅读顺序**：引言之后，请先看 **[二、寄存器图解 Sheet](./diagrams.html)**，通过五张全景图建立对 LC_CPUWR 寄存器默认字节映射、checksum 覆盖、LSI 保护与复位域的直观认识，再回来看后续详细变更分析。
+> ⭐ **建议阅读顺序**：引言之后，请先看 **[二、寄存器图解 Sheet](./diagrams.html)**，通过六张全景图建立对 LC_CPUWR 寄存器默认字节映射、checksum 覆盖、LSI 保护与复位域的直观认识，再回来看后续详细变更分析。
 
 ## 1. 模块定位
 
 **LC_CPUWR** 是 HK1V11 芯片 TCON 模块中负责 **CPU 写寄存器接口** 的核心 RTL 模块。
-它接收 CPU 通过 I2C/SPI 等总线下发的配置，维护一组片内寄存器，并向后续链路（如 `LC_REG_MAPPING`、`LINK_LOGIC`）输出控制信号。
+它接收 CPU 通过 I2C/SPI 等总线下发的配置，维护一组片内寄存器，并向后续链路（`LC_REG_MAPPING`，以及 0807v1 起的 `LINK_CONFIG_CTRL`）输出控制信号。
 
-在 2026-04 至 2026-07 的开发周期中，LC_CPUWR 经历了大量迭代：校验和机制从双段演变为单段、NG Unlock 方案从 PlanA/PlanB 最终收敛为 one-shot、寄存器命名从十六进制后缀全面十进制化、并按 `chip_sel0/1` 重构了默认值体系。
+在 2026-04 至 2026-08 的开发周期中，LC_CPUWR 经历了大量迭代：校验和机制从双段演变为单段、NG Unlock 方案从 PlanA/PlanB 最终收敛为 one-shot、寄存器命名从十六进制后缀全面十进制化、并按 `chip_sel0/1` 重构了默认值体系。
+
+**0807v1 起架构变化**：寄存器通路实例化从 `LINK_LOGIC` 迁至新模块 `LINK_CONFIG_CTRL`，`LINK_LOGIC` 变为纯数据通路顶层；**0810v1** 依据 `HK1V11_Register_20260807.xlsm` 完成寄存器表同步（FSEL 移位、EOL、BCC 寄存器占位、字段错位修正）。
 
 为了管理这些密集变更，项目于 2026-06-15 建立了 `LC_CPUWR_history` 归档目录，集中保存 RTL 快照、changelist、modify plan、compliance report 及验证同步资料。
 
@@ -270,18 +272,20 @@
 
 ### 3.1 根目录（当前版本）
 
+> 根级文件使用**固定文件名**（版本号写文件头，如 `LC_CPUWR.v` = 0810v1）；历史快照按需备份到 `verilog_hdl/<版本>/`。
+
 | 文件 | 用途 |
 |------|------|
-| `LC_CPUWR_0721_v1_decimal.v` | 当前 LC_CPUWR RTL（0721v1：CONFIG_DATA 24bit） |
-| `LC_REG_MAPPING_0721_v1_decimal.v` | 寄存器映射模块 |
-| `LINK_LOGIC_0721_v1_decimal.v` | 上层 LINK_LOGIC 实例化同步 |
-| `LC_CPUWR_0721_v1_changelist.md` | 当前版本变更清单 |
+| `LC_CPUWR.v` | 当前 LC_CPUWR RTL（文件头 0810v1：寄存器表同步后版本） |
+| `LC_REG_MAPPING.v` | 寄存器映射模块 |
+| `LINK_CONFIG_CTRL.v` | 寄存器通路承载模块（0807v1 起实例化 LC_CPUWR + LC_REG_MAPPING） |
+| `CHANGES.md` | 目录内全版本变更总览 |
 | `README.md` | 归档说明与历史版本索引 |
 | `chip_sel0/1_register_address_map.md` | chip_sel 区分寄存器位字段表 |
 
 ### 3.2 verilog_hdl（历史 RTL）
 
-按日期/版本保存了 LC_CPUWR、LC_REG_MAPPING、LINK_LOGIC、LINK_MISC、LOGIC_CENTER 等模块的历史快照，从 2026-05-07 的备份一直到 0716_v1_work（0721v1 的基线）。
+按日期/版本保存了 LC_CPUWR、LC_REG_MAPPING、LINK_LOGIC、LINK_CONFIG_CTRL 等模块的历史快照，从 2026-05-07 的备份一直到 0807v1（0810v1 的基线）。0810v1 起按"固定文件名 + 按需备份"策略，仅用户明确要求"备份一下"时才生成带版本名的快照。
 
 ### 3.3 markdownfile（变更文档）
 

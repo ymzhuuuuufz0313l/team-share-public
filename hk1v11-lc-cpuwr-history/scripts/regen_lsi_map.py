@@ -114,8 +114,8 @@ height = TOP + n_rows * ROW_H + 130
 out.append(f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{height}" viewBox="0 0 {width} {height}" style="background:#ffffff">')
 out.append(f'<rect width="{width}" height="{height}" fill="#ffffff"/>')
 cx = width / 2
-out.append(f'<text x="{cx}" y="38" text-anchor="middle" font-size="22" font-weight="bold" fill="#1e293b">LC_CPUWR 0721v1 寄存器 LSI_PRTECT 保护状态</text>')
-out.append(f'<text x="{cx}" y="62" text-anchor="middle" font-size="12" fill="#64748b">红色=受 LSI_PRTECT 保护（输出/读回经掩码）；绿色=不受保护；紫色=密码寄存器 0x30；0721v1 与 0714/0716 保护逻辑一致</text>')
+out.append(f'<text x="{cx}" y="38" text-anchor="middle" font-size="22" font-weight="bold" fill="#1e293b">LC_CPUWR 0810v1 寄存器 LSI_PRTECT 保护状态</text>')
+out.append(f'<text x="{cx}" y="62" text-anchor="middle" font-size="12" fill="#64748b">红色=受 LSI_PRTECT 保护（输出/读回经掩码）；绿色=不受保护；紫色=密码寄存器 0x30；0810v1 同步寄存器表（reg48/reg160/reg161 无掩码、reg147 保留保护）</text>')
 
 # bit headers
 for i in range(8):

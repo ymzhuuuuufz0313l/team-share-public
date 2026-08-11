@@ -494,6 +494,49 @@ assign R_REG31_F_RECON = {PWRC_NB, PWRC_NA, PWRC_PB, PWRC_PA};  // 8'hAA
 - [四、校验和 §7 三字节拍重组与 XOR 不变性](./checksum.html)
 - [二、寄存器图解 §6 配置拍重组对照图](./diagrams.html)
 
+## 14.5 0807 新架构下的寄存器通路
+
+0807v1 架构变化不影响寄存器地址映射，但实例化层级变化：
+
+- `LINK_CONFIG_CTRL` 取代 `LINK_LOGIC` 实例化 `LC_CPUWR` + `LC_REG_MAPPING`
+- LC_CPUWR 新增 `R_REG00_L`~`R_REG04_L` **行配置寄存器输出**（与 `R_REGxx_F` 帧配置并存）
+- 复位推导 `N_RST_NLOCK_NORMAL`/`RSTN_SCR_EN_NORMAL` 移至 `RSTNGEN`
+- 寄存器地址映射表（chip_sel0/1）本身不变
+
+## 14.6 0810 寄存器表同步（重要）
+
+依据 `HK1V11_Register_20260807.xlsm` 完成 0810v1 寄存器同步，含字段位置修正：
+
+| 信号 | 旧位置 | 新位置 | 说明 |
+|------|--------|--------|------|
+| `FSEL[1:0]` | reg53[1:0] (`0x35`) | **reg146[4:3]** (`0x92`) | 频率改 `00:10M/01:12M/10:14M/11:16M` |
+| `reg_fbdiv_clk_sel[1:0]` | reg50[6:5]（错位） | **reg53[1:0]** (`0x35`) | 修正错位 |
+| `sw_reg_lane_ctrl[4:0]` | reg50[4:0]（错位） | **reg51[5:1]** (`0x33`) | 修正错位 |
+| `reg_pin_eq` | reg50[7]（错位） | **reg51[7]** (`0x33`) | 修正错位 |
+| `reg_pin_eol_det` | - | **reg56[4]** (`0x38`) | 新增，默认 1 |
+| `reg_eol_det` | - | **reg56[5]** (`0x38`) | 新增，默认 0 |
+| `BCC_M[3:0]` | - | **reg147[3:0]** (`0x93`) | 新增，默认 `4'b0010`（I2C-only 占位） |
+| `SDID[4:0]` | - | **reg160[4:0]** (`0xA0`) | 新增，默认 `5'b00000` |
+| `AEQ_reg_lane_ctrl[3:0]` | - | **reg161[3:0]** (`0xA1`) | 新增，默认 `4'b0000` |
+| `regr_AEQ` / `regr_BCC_FF` / `regr_PASS` | - | **reg161[4]/[5]/[6]** (`0xA1`) | 新增，只读（外部输入，空接） |
+
+**默认值变化**：
+
+- reg56 (`0x38`)：`0x05 → 0x15`（新增 `reg_pin_eol_det` bit4=1）
+- reg50 (`0x32`)：恢复全 Reserved，默认 `0x00`
+- reg146 (`0x92`)：默认仍 `0x02`（FSEL[4:3]=00 不影响 [2:0]）
+- reg53 (`0x35`)：默认仍 `0x00`（reg_fbdiv_clk_sel=00）
+
+**LSI_PRTECT 保护修正**：
+
+| 寄存器 | 保护 | 说明 |
+|--------|------|------|
+| reg48 (`0x30`) | **无** | TEST_PRTCT 密码寄存器，读回不再被自身掩码 |
+| reg160/161 | **无** | SDID/AEQ，表保护列空白 |
+| reg147 | 有 | BCC_M，表有 LSI_PRTECT 列 |
+
+**接口归属**：上述 0810v1 新增信号（EOL/BCC/regr_*）在 `LINK_CONFIG_CTRL` 中 `.xx()` 空接，不定义顶层端口（由 bcc_ctrl 等模块将来接入）；LC_CPUWR 侧保留端口。
+
 ## 15. 寄存器可视化大图
 
 chip_sel=0/1 默认字节映射、checksum 地址覆盖、LSI 保护范围、复位域分类、0721v1 拍重组对照等 SVG 大图已集中到独立的 **寄存器图解 Sheet**：

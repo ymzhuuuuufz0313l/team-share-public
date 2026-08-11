@@ -404,6 +404,16 @@ frame_end = 0x27
 - 新（3B/拍）：0x27 在 `5'h0E` 拍 C 位置，`xdata = DATA_C`
 - `frame_start_a` 仍在 `ADDR00_F`（`5'h01` 拍 C 位置），首拍直存语义不变
 
+## 8. 0807 / 0810 后 checksum 范围不变
+
+**0807v1 新架构**（LINK_CONFIG_CTRL 承载寄存器通路）与 **0810v1 寄存器表同步**均**不改变 checksum 机制**：
+
+- 参与 XOR 累加的地址仍是 0x00~0x08 & 0x1F（除 0x07 控制寄存器），frame_end 仍为 0x27
+- 0810v1 新增/变更的寄存器（FSEL@reg146、EOL@reg56、BCC@reg147/160/161、reg50/51/53 字段修正）都不在 checksum 参与范围（0x00~0x1F 之外）
+- Seg2（0x20~0x38）仍为直写、不做 checksum
+- checker 期望、DV 环境、回归行为不因此改变
+
+
   </script>
   <script>
     document.getElementById('article').innerHTML = marked.parse(document.getElementById('md').textContent.trim());

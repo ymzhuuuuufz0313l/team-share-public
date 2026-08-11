@@ -246,29 +246,31 @@
 
 ## 1. 当前版本
 
-当前最新候选版本为 **0721v1**（`LC_CPUWR_0721_v1_decimal.v`，进行中）：
+当前最新版本为 **0810v1**（根级固定名 `LC_CPUWR.v`，文件头标注 0810v1）：
 
 | 版本 | 主要状态 |
 |------|----------|
 | 0714v1 | chip_sel=0 默认值 + `LC_REG_MAPPING` 回拼 chip_sel=1 默认值；回归通过 ✅ |
 | 0716v1 | 新增 `FSEL[1:0]` @ `0x35`；已归档为 `0716_v1_work` ✅ |
-| **0721v1** | **`LCONFIG_DATA`/`FCONFIG_DATA` 16bit→24bit（每步 3 寄存器）；checksum XOR 总量不变；DV env 升版；待上游 `CHPI_CONFIG_L0` 升 24bit 联调** 🔄 |
+| 0721v1 | `LCONFIG_DATA`/`FCONFIG_DATA` 16bit→24bit（每步 3 寄存器）；checksum XOR 总量不变 ✅ |
+| 0807v1 | 新架构：`LINK_CONFIG_CTRL` 取代 `LINK_LOGIC` 承载寄存器通路；已归档 ✅ |
+| **0810v1** | **寄存器表同步（HK1V11_Register_20260807.xlsm）：FSEL→reg146、reg53 改 reg_fbdiv_clk_sel、reg56 EOL、BCC 寄存器占位、reg50/51/53 错位修正、LSI 保护修正** ✅ |
 
-0721v1 交付物：
+0810v1 交付物：
 
-- 三份 RTL：`LC_CPUWR_0721_v1_decimal.v` / `LC_REG_MAPPING_0721_v1_decimal.v` / `LINK_LOGIC_0721_v1_decimal.v`
-- `LC_CPUWR_0721_v1_changelist.md` 变更清单；0716v1 备份至 `verilog_hdl/*_0716_v1_work_decimal.v`
-- `current_env/` 0721v1 版本（env_cfg / checker / i2c_scoreboard / reg_model / reg_define）
-- DV env 同步，并补齐服务器 0716 同步遗漏的 FSEL 更新
-- `iverilog -g2005-sv -DFF_DLY=0` 语法检查通过（三件套 + HDL 工作树）
+- 三份 RTL（根级固定名）：`LC_CPUWR.v` / `LC_REG_MAPPING.v` / `LINK_CONFIG_CTRL.v`（文件头 0810v1）
+- `markdownfile/0810v1/LC_CPUWR_0810_v1_changelist.md` 变更清单
+- chip_sel0/1 寄存器地址表已同步 0810v1；Register Change Excel 已记录
+- `iverilog -g2005-sv -DFF_DLY=0` 语法检查通过；rtl-code-review / rtl-signal-trace 通过
 
 ## 2. 已完成工作
 
 - 校验和机制收敛为 Seg1 单段 + 三帧一致更新 + NG Unlock
-- `CHIP_SEL` 命名统一、`SMART_CS[3:0]` 新增、`FSEL[1:0]` @ `0x35` 新增
+- `CHIP_SEL` 命名统一、`SMART_CS[3:0]` 新增、`FSEL` 从 `0x35` 移位至 `0x92[4:3]`
 - chip_sel=1 默认值通过 `LC_REG_MAPPING` 回拼机制实现；chip_sel=0/1 回归通过
 - **0721v1 拍重组**：端口 24bit、`DATA_E`/`DATA_F` 新增、译码表 3 字节循环重排、127 行写数据源更新
-- **0721v1 checksum 重构**：按字节有效性折叠；XOR 总量与 0716_v1_work 完全相同（checker/DV 行为不变）
+- **0807v1 新架构**：寄存器通路迁至 `LINK_CONFIG_CTRL`，新增 `R_REGxx_L` 行配置输出，复位推导移至 `RSTNGEN`
+- **0810v1 寄存器同步**：FSEL 移位、reg56 EOL、BCC 寄存器（I2C-only 占位）、reg50/51/53 字段错位修正、reg48/160/161 去 LSI 保护
 
 ## 3. 待确认项
 
@@ -277,15 +279,17 @@
 | chip_sel=0 的 checksum / I2C 读回 case | **已通过** | `0x09`/`0x0A`/`0x1F` 读回为 `8'h00` ✅ |
 | chip_sel=1 的 I2C 读回 case | **已通过** | 复位后读回为 `8'hFF`/`8'hA5`/`8'hAA` ✅ |
 | chip_sel=1 的 checksum case | **已通过** | `cfg_frame` 写入后 R_REG 与回拼字节一致 ✅ |
-| 上游 `CHPI_CONFIG_L0` 升 24bit | **外部依赖** | 每拍 3 字节采样 + `FCONFIG_END=5'd20` / `LCONFIG_END=3'd3`；全芯片 FCONFIG 流仿真联调前提 |
-| `LINK_LOGIC` `[23:16]` tie-off 删除 | 待上游升版 | 过渡期防 X 传播，上游 24bit 输出到位后删除两条 assign |
-| 0721v1 全量回归（checksum / I2C / reset） | 待联调 | 上游升版后执行；预期 XOR 总量不变、行为不退化 |
+| BCC 协议接入 | **待 SPEC** | reg147/160/161 按 I2C-only 占位；regr_* 空接，待 bcc_ctrl 接入 |
+| DV env 同步 | **用户暂缓** | env_cfg reg51 位偏移、reg56 EOL 打包、CDR/BCC 打包、reg_model 旧模板，待确认后同步 |
+| 上游 `CHPI_CONFIG_L0` 升 24bit | **外部依赖** | 每拍 3 字节采样；全芯片 FCONFIG 流仿真联调前提 |
+| `LINK_LOGIC` `[23:16]` tie-off 删除 | 待上游升版 | 过渡期防 X 传播，上游 24bit 输出到位后删除
 
 ## 4. 后续建议
 
-1. **跟进上游 `CHPI_CONFIG_L0` 24bit 升版**（owner/时间节点待定），这是 0721v1 全芯片仿真唯一阻塞项。
-2. 上游升版后：删除 `LINK_LOGIC` tie-off → 跑 checksum 全量 + I2C 读回 + reset（chip_sel=0/1）回归 → 0716_v1_work 正式归档、0721v1 转 DONE。
-3. 若需提前单测 LC_CPUWR，可在 testbench 层次 force `FCONFIG_DATA`/`LCONFIG_DATA`/`FCONFIG_ADD`/`LCONFIG_ADD` 直接驱动 LC_CPUWR 引脚做定向验证。
+1. **BCC SPEC 确认后接入 bcc_ctrl**：`regr_AEQ/BCC_FF/PASS` 由 decoder 驱动，`SDID`/`AEQ_reg_lane_ctrl` 由 decoder 写回，`BCC_M` 作 manual 参数；同时把 `bcc_ctrl` 接入编译链。
+2. **DV env 同步**：确认后统一更新 `env_cfg.sv`（reg51 位偏移、reg56 EOL 打包、CDR/BCC 打包）、`reg_model.sv`（替换旧模板）、`reg_define.csv`。
+3. **跟进上游 `CHPI_CONFIG_L0` 24bit 升版**（owner/时间节点待定），全芯片 FCONFIG 流仿真联调前提；上游升版后删除 `LINK_LOGIC` tie-off。
+4. 回归：checksum 全量 + I2C 读回 + reset（chip_sel=0/1）。
 
   </script>
   <script>

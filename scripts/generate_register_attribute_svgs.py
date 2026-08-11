@@ -144,6 +144,11 @@ def lsi_status(dec, msb=None, lsb=None):
         return "lsi_prot"
     if 0x40 <= dec <= 0x44:
         return "lsi_open"
+    # 0810v1: reg147 (0x93 BCC_M) protected; reg160/161 (0xA0/0xA1 SDID/AEQ) NOT protected
+    if dec == 0x93:
+        return "lsi_prot"
+    if dec == 0xA0 or dec == 0xA1:
+        return "lsi_open"
     if 0x90 <= dec <= 0x92:
         return "lsi_prot"
     return "lsi_open"
@@ -169,7 +174,7 @@ def reset_domain(dec, name):
     if dec == 0x30:
         return "rst_n"
     # Default for most addresses
-    if 0x00 <= dec <= 0x44 or 0x90 <= dec <= 0x92:
+    if 0x00 <= dec <= 0x44 or 0x90 <= dec <= 0x92 or dec in (0x93, 0xA0, 0xA1):
         return "rst_nlock"
     return "rst_other"
 
@@ -451,7 +456,7 @@ def main():
 
     # 1. Checksum participation (dual chip_sel view)
     svg_chk = generate_checksum_dual_svg(
-        "LC_CPUWR 0714v1 参与 checksum 的地址（chip_sel=0 / chip_sel=1 对照）",
+        "LC_CPUWR 0810v1 参与 checksum 的地址（chip_sel=0 / chip_sel=1 对照）",
         map0,
         map1,
     )
@@ -459,7 +464,7 @@ def main():
 
     # 2. LSI protection
     svg_lsi = generate_attr_svg(
-        "LC_CPUWR 0714v1 不受 LSI_PRTECT 保护的地址",
+        "LC_CPUWR 0810v1 不受 LSI_PRTECT 保护的地址",
         map1,
         lambda dec, name: lsi_status(dec),
         [
@@ -467,13 +472,13 @@ def main():
             ("不受保护", "lsi_open"),
             ("密码寄存器 (0x30)", "lsi_pwd"),
         ],
-        "0x00~0x1F、0x27、0x40~0x44 读回/输出不经过 LSI_PRTECT 掩码"
+        "0x00~0x1F、0x27、0x40~0x44、0xA0~0xA1 读回/输出不经过 LSI_PRTECT 掩码"
     )
     (out_dir / "lsi_unprotected_address_map.svg").write_text(svg_lsi, encoding="utf-8")
 
     # 3. Reset domain
     svg_rst = generate_attr_svg(
-        "LC_CPUWR 0714v1 复位域分类",
+        "LC_CPUWR 0810v1 复位域分类",
         map1,
         lambda dec, name: reset_domain(dec, name),
         [
