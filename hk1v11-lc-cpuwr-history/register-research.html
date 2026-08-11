@@ -320,7 +320,7 @@
 
 ## 5. 0810 核对更新（HK1V11_Register_20260807.xlsm）
 
-0807v1 起寄存器基线更新为 LC_CPUWR_0810_v1，并依据 HK1V11_Register_20260807.xlsm 完成三方核对：
+0807v1 起寄存器基线更新为 `LC_CPUWR_0810_v1`，并依据 `HK1V11_Register_20260807.xlsm` 完成三方核对：
 
 | 地址(dec) | 地址(hex) | 变更 | 状态 |
 |------|------|------|------|
@@ -334,12 +334,12 @@
 | 161 | 0xA1 | 新增 AEQ_reg_lane_ctrl[3:0] + 只读 regr_* | RTL/文档一致 |
 | 48 | 0x30 | TEST_PRTCT 读回去 LSI 掩码 | RTL/文档一致 |
 
-> 核对结论：0810v1 RTL 与 HK1V11_Register_20260807.xlsm 一致；chip_sel0/1 地址表已同步。
+> 核对结论：0810v1 RTL 与 `HK1V11_Register_20260807.xlsm` 一致；`chip_sel0/1_register_address_map.md` 已同步。
 
 | `0xF0-0xF1` | `F0_I2C_PASSWORD.md` |
 | 保留地址 | `reserved_addresses.md` |
 
-## 5. 待确认项
+## 6. 待确认项
 
 来自 `delta_report.md` 的遗留问题：
 
