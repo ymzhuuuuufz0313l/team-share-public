@@ -408,7 +408,7 @@
 <path fill="white" stroke="#0d9488" stroke-width="1.5" d="M776.55,-532C776.55,-532 627.45,-532 627.45,-532 621.45,-532 615.45,-526 615.45,-520 615.45,-520 615.45,-480.1 615.45,-480.1 615.45,-474.1 621.45,-468.1 627.45,-468.1 627.45,-468.1 776.55,-468.1 776.55,-468.1 782.55,-468.1 788.55,-474.1 788.55,-480.1 788.55,-480.1 788.55,-520 788.55,-520 788.55,-526 782.55,-532 776.55,-532"/>
 <text xml:space="preserve" text-anchor="middle" x="702" y="-513.4" font-family="Microsoft YaHei" font-size="12.00">PTPX（run_ptpx）</text>
 <text xml:space="preserve" text-anchor="middle" x="702" y="-496.9" font-family="Microsoft YaHei" font-size="12.00">four&#45;line VCD → power.rpt</text>
-<text xml:space="preserve" text-anchor="middle" x="702" y="-480.4" font-family="Microsoft YaHei" font-size="12.00">看 Leak Power</text>
+<text xml:space="preserve" text-anchor="middle" x="702" y="-480.4" font-family="Microsoft YaHei" font-size="12.00">看 Total Power</text>
 </g>
 <!-- write_sdf&#45;&gt;ptpx -->
 <g id="edge31" class="edge">

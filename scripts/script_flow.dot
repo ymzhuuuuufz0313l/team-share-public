@@ -57,7 +57,7 @@ digraph script_flow {
   }
   subgraph cluster_L9 {
     label="L9 功耗评估（旁支）"; style="rounded,dashed"; color="#0d9488"; bgcolor="#f0fdfa";
-    ptpx [label="PTPX（run_ptpx）\nfour-line VCD → power.rpt\n看 Leak Power", color="#0d9488"];
+    ptpx [label="PTPX（run_ptpx）\nfour-line VCD → power.rpt\n看 Total Power", color="#0d9488"];
     powerpro [label="PowerPro 功耗评估\nRTL / Gate level", color="#0d9488"];
   }
 

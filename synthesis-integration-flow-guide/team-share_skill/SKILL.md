@@ -57,10 +57,12 @@ Each article gets its own directory so multiple shared articles can coexist.
 
    当绘制流程图、调用关系图、层次结构图时，优先使用 Graphviz 自动布局。
 
-   1. **安装**：`winget install graphviz`
+   1. **安装**：`winget install graphviz`（本机已装：`C:\Program Files\Graphviz\bin\dot.exe`，不在 PATH 时用全路径调用）
    2. **编写 DOT 文件**：定义节点、边、分组（cluster），如 `scripts/script_flow.dot`
    3. **生成 SVG**：`dot -Tsvg input.dot -o output.svg`
    4. **引用**：`./output.svg`
+
+   **修改规则（强制）**：Graphviz 生成的 SVG 是产物，**不要手改 SVG**。改图一律改 `.dot` 源文件（如 `scripts/script_flow.dot`），再重新运行 `dot -Tsvg` 生成；直接手改 SVG 会在下次重新生成时被覆盖回退。
 
    优点：自动布局，箭头、节点、标签规整，不需要手写坐标。
 
