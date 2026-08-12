@@ -466,6 +466,17 @@
 - **验收三关**：iverilog + rtl-code-review + rtl-signal-trace 全部通过
 - **接口归属**：0810v1 新增信号（EOL/BCC 等）在 `LINK_CONFIG_CTRL` 中 `.xx()` 空接，不定义端口（由 bcc_ctrl 等模块接入）
 
+### 4.11 0811 VPS_EN 新增/恢复（HK1V11_Register_20260811.xlsm）
+
+依据 20260811 寄存器表新增/恢复 VPS_EN 字段：
+
+- **新增 `VPS_EN[1]` @ reg3[7]（0x03）**：`VPS_EN[1]=1` → Sout short to vcom & DRA_OP OFF（vertical blanking power saving），默认 0
+- **恢复 `VPS_EN[0]` @ reg40[6]（0x28）**：`VPS_EN[0]=1` → low power mode，默认 0（0512 曾删除，现恢复）
+- **解析位置约定**：地址 ≤31 的寄存器字段统一在 `LC_REG_MAPPING` 解析；**VPS_EN 例外**——因横跨 reg3（≤31）与 reg40（>31）两地址，统一在 **LC_CPUWR** 解析输出
+- **R_DBC_WIDTH_OPT 描述更新**：编码 00/01/10/11 = LD_W(92) + 36/64/70/134 packets（位置/默认不变，无代码改动）
+- **LINK_CONFIG_CTRL**：`.VPS_EN_0()` / `.VPS_EN_1()` 空接
+- **验收三关**：iverilog + rtl-code-review + rtl-signal-trace 通过
+
   </script>
   <script>
     document.getElementById('article').innerHTML = marked.parse(document.getElementById('md').textContent.trim());

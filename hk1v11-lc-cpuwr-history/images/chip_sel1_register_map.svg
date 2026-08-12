@@ -67,9 +67,16 @@
 <text x="743.5" y="263.0" text-anchor="middle" font-size="9" fill="#64748b">0</text>
 <circle cx="817" cy="236" r="5" fill="#ef4444"/>
 <text x="817" y="239" text-anchor="middle" font-size="8" fill="white" font-weight="bold">★</text>
-<text x="158" y="308.0" text-anchor="end" font-size="13" font-weight="600" fill="#64748b">0x03 ~ 0x03 (3 ~ 3)</text>
-<rect x="170" y="280" width="655" height="46" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1" stroke-dasharray="4,3" rx="4"/>
-<text x="497.5" y="307.0" text-anchor="middle" font-size="12" fill="#64748b">⋯ 全 Reserved ⋯</text>
+<text x="158" y="308.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x03 (3)</text>
+<rect x="842" y="290.0" width="64" height="26" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" rx="13"/>
+<circle cx="854" cy="303.0" r="3.5" fill="#22c55e"/>
+<text x="877.0" y="307.0" text-anchor="middle" font-size="12" font-weight="700" fill="#1e293b" font-family="Consolas, Monaco, monospace">0x00</text>
+<rect x="170" y="280" width="81" height="46" fill="#ccfbf1" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="210.5" y="301.0" text-anchor="middle" font-size="8" font-weight="500" fill="#1e293b">VPS_EN[1]</text>
+<text x="210.5" y="315.0" text-anchor="middle" font-size="7" fill="#64748b">1'b0</text>
+<rect x="252" y="280" width="573" height="46" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="538.5" y="301.0" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">Reserved</text>
+<text x="538.5" y="315.0" text-anchor="middle" font-size="9" fill="#64748b">0</text>
 <text x="158" y="360.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x04 (4)</text>
 <rect x="842" y="342.0" width="64" height="26" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" rx="13"/>
 <circle cx="854" cy="355.0" r="3.5" fill="#22c55e"/>
@@ -377,9 +384,9 @@
 <rect x="170" y="1320" width="81" height="46" fill="#ccfbf1" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="210.5" y="1341.0" text-anchor="middle" font-size="8" font-weight="500" fill="#1e293b">DBC_VBK_ON</text>
 <text x="210.5" y="1355.0" text-anchor="middle" font-size="7" fill="#64748b">1'b0</text>
-<rect x="252" y="1320" width="81" height="46" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="292.5" y="1341.0" text-anchor="middle" font-size="8" font-weight="500" fill="#1e293b">Reserved</text>
-<text x="292.5" y="1355.0" text-anchor="middle" font-size="7" fill="#64748b">0</text>
+<rect x="252" y="1320" width="81" height="46" fill="#ccfbf1" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="292.5" y="1341.0" text-anchor="middle" font-size="8" font-weight="500" fill="#1e293b">VPS_EN[0]</text>
+<text x="292.5" y="1355.0" text-anchor="middle" font-size="7" fill="#64748b">1'b0</text>
 <rect x="334" y="1320" width="163" height="46" fill="#ccfbf1" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="415.5" y="1341.0" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">DBCO_DRV[1:0]</text>
 <text x="415.5" y="1355.0" text-anchor="middle" font-size="9" fill="#64748b">2'b00</text>

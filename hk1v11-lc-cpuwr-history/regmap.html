@@ -537,6 +537,23 @@ assign R_REG31_F_RECON = {PWRC_NB, PWRC_NA, PWRC_PB, PWRC_PA};  // 8'hAA
 
 **接口归属**：上述 0810v1 新增信号（EOL/BCC/regr_*）在 `LINK_CONFIG_CTRL` 中 `.xx()` 空接，不定义顶层端口（由 bcc_ctrl 等模块将来接入）；LC_CPUWR 侧保留端口。
 
+## 14.7 0811 VPS_EN 新增/恢复
+
+依据 `HK1V11_Register_20260811.xlsm` 新增/恢复 VPS_EN：
+
+| 信号 | 位置 | 默认 | 说明 |
+|------|------|------|------|
+| `VPS_EN[1]` | **reg3[7]** (0x03) | 1'b0 | Sout short to vcom & DRA_OP OFF |
+| `VPS_EN[0]` | **reg40[6]** (0x28) | 1'b0 | low power mode（0512 删除后恢复） |
+
+**解析位置约定**：地址 ≤31 的寄存器字段统一在 `LC_REG_MAPPING` 解析（AVE/PORSD/SCREN/SDC/DPLC/STP/TP/rbc/VBK_EN 共 13 个）；**`VPS_EN` 例外**——因横跨 reg3（≤31）与 reg40（>31）两地址，统一在 `LC_CPUWR` 解析输出。
+
+- `VPS_EN_1` = `R_REG03_F[7]`（reg3 属 Checksum 保护，无 LSI 门控）
+- `VPS_EN_0` = `LSI_PRTECT ? R_REG40_F[6] : 1'b0`（reg40 属 LSI 保护）
+- `LINK_CONFIG_CTRL` 中 `.VPS_EN_0()` / `.VPS_EN_1()` 空接
+
+**R_DBC_WIDTH_OPT 描述更新**（reg41[2:1]，位置/默认不变）：`00`=LD_W(92)+36 packets、`01`=+64、`10`=+70、`11`=+134。
+
 ## 15. 寄存器可视化大图
 
 chip_sel=0/1 默认字节映射、checksum 地址覆盖、LSI 保护范围、复位域分类、0721v1 拍重组对照等 SVG 大图已集中到独立的 **寄存器图解 Sheet**：
