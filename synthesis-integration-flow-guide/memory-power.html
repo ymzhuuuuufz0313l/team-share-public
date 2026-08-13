@@ -426,7 +426,7 @@ run_ptpx
 - `*_power.rpt`：功耗结果
 - 上层目录生成 fsdb，可用 Verdi 打开查看功耗波形
 
-功耗报告实例：左侧 `rep_dir_<corner>/` 下生成 `*_power.rpt`、`*_toggle_rate_detail.rpt` 及各项日志；右侧 `*_power.rpt` 的 Hierarchy 表中，顶层（如 `HV2M23_digital_top`）一行的 **Total Power** 列即为全芯片总功耗（图中 `1.50e-02 W`，占比 100%），其下各行为子模块/实例的功耗拆分。
+功耗报告实例：左侧 `rep_dir_<corner>/` 下生成 `*_power.rpt`、`*_toggle_rate_detail.rpt` 及各项日志；右侧 `*_power.rpt` 的 Hierarchy 表中，顶层（如 `HV2M23_digital_top`）一行的 **Total Power** 列即为全芯片总功耗（图中 `1.43e-02 W`，占比 100%），其下各行为子模块/实例的功耗拆分。
 
 ![PTPX 功耗报告实例：TOTAL POWER 位置](./image/18_ptpx_power_rpt_total.jpg)
 
@@ -435,12 +435,23 @@ run_ptpx
 ```text
                           Int       Switch    Leak      Total
 Hierarchy                 Power     Power     Power     Power    %
-------------------------------------------------------------------------
-HV2M23_digital_top        1.14e-02  2.30e-03  1.61e-04  1.38e-02  100.0
+--------------------------------------------------------------------
+HV2M23_digital_top        1.17e-02  2.58e-03  1.76e-06  1.43e-02  100.0
 ```
 
-- 判读时先看 **Total Power**（总功耗，上例 1.38e-02 W ≈ 13.8 mW），Int / Switch / Leak 为其拆分项；
-- 三个 rep_dir 对应不同 lane / 频率配置（1lane_fre1p8 / 2lane_fre1p8 / 2lane_fre0p9），Total 随配置不同在 7.6e-03 ~ 1.5e-02 W（约 7.6 ~ 15 mW）之间。
+- 判读时先看 **Total Power**（总功耗，上例 1.43e-02 W ≈ 14.3 mW），Int / Switch / Leak 为其拆分项；
+- **HV2M23 各配置 0812 实测 Total Power**（`rep_dir_*_0812`，PTPX Time-Based Power）：
+
+| 配置 | Internal | Switching | Leakage | Total Power | 备注 |
+|------|----------|-----------|---------|-------------|------|
+| `1lane_fre1p8_tt_0812` | 11.7 mW | 2.58 mW | 1.76 µW | **14.3 mW** | 基准 |
+| `1lane_fre1p8_tt_0812_dplc` | 12.2 mW | 2.73 mW | 1.76 µW | **15.0 mW** | dplc 模式 |
+| `1lane_fre1p8_tt_0812_drdod` | 12.2 mW | 2.73 mW | 1.76 µW | **15.0 mW** | drdod 模式 |
+| `2lane_fre1p6_tt_0812` | 12.8 mW | 2.76 mW | 1.79 µW | **15.5 mW** | 基准 |
+| `2lane_fre1p6_tt_dplc_0812` | 13.2 mW | 2.96 mW | 1.79 µW | **16.1 mW** | dplc 模式 |
+| `2lane_fre1p6_tt_drdod_0812` | 14.6 mW | 3.31 mW | 1.80 µW | **17.9 mW** | drdod 模式 |
+
+> 完整报告目录：<a href="./server-reports/power/px_85c_random/rep_dir_1lane_fre1p8_tt_0812/" target="_blank">1lane_fre1p8_tt_0812</a>（其余 5 组同路径下 `rep_dir_*_0812*`）。配置差异体现在：1lane vs 2lane、频率 1.8G vs 1.6G、dplc/drdod 模式开关。
 
 </script>
 

@@ -409,7 +409,7 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
 </div>
 
 - 综合报错找不到 cell → 检查 `common_db` 的 target library 是否加入了新 cell / APR module 对应的 lib。
-- 145 制程统一只用 LVT，SVT / LVT 混用 DRC 过不了（该工艺库特有问题）；代价是后端修 setup 只能 sizing，不能换 VT。
+- **换库**：145 制程曾有「SVT / LVT 混用 DRC 过不了」的约束，早期项目统一只用 LVT；**HV2M23 已换 SVT**（`design.set` 的 `SVT_EN=1`，综合报告 `SVT 100%`）。换库后 IO buf 从 `CLKBUFX8AL9` 变 `CLKBUFX8AS9`。混合用 VT 需先确认该工艺库 DRC 限制。
 
 ### 1.5 综合与 LEC
 

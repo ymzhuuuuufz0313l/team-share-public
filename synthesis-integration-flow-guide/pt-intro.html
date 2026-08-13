@@ -500,6 +500,8 @@ run_pt
 
 每个 corner 目录下各有一份入口脚本 <a href="./script-dict.html#run_pt_post" target="_blank">run_pt</a>（只跑当前 corner）。
 
+NOTE: 每个 corner 下的报告目录已拆为 `latest_1p`（1P 模式）与 `latest_2p`（2P 模式）两份（详见附录 §9.4）。两种模式用 `set_case_analysis` 固定 `DPSEL_I` 切换，各跑一轮 postPT；报告路径、`run_summary` 取数、后仿 SDF 引用都按模式区分。
+
 需修改：
 - <a href="./script-dict.html#corner_set_tcl" target="_blank">corner_set.tcl</a>：每个 corner 下各有一份；corner 配置基本不动，换库时需照 foundry 提供的 PVT 文档（含 OCV）逐项更换。当前 <a href="./script-dict.html#run_summary" target="_blank">run_summary</a> 实际跑 10 个 corner：`wc_cworst_125` / `wc_cbest_125` / `wc_typical_125` / `lt_cworst_m40` / `lt_cbest_m40` / `lt_typical_m40` / `ml_cbest_125` / `tt_cworst_25` / `tt_cbest_25` / `tt_typical_25`——无 wcl（脚本中已整段注释掉）、无 bc（bc 是旧命名，只出现在旧版串行脚本 `run_all` 中）
 
@@ -738,7 +740,7 @@ flowchart LR
 
 ### 3.2 约束迭代闭环：看 summary 总表 → 定性 → 改 dco → 重跑
 
-post PT 10 个 corner 全部跑完后，执行 <a href="./script-dict.html#run_summary" target="_blank">run_summary</a>，产物在 `SYNTHESIS/top/sta/post/pt/summary/latest/` 下：
+post PT 10 个 corner 全部跑完后，执行 <a href="./script-dict.html#run_summary" target="_blank">run_summary</a>，产物在 `SYNTHESIS/top/sta/post/pt/summary/latest_2p/`（2P）与 `latest_1p/`（1P）下：
 
 - 每 corner 单表：`<corner>_setup.csv` / `_hold.csv` / `_trans.csv` / `_phy_busskew.txt` / `_sd_busskew.txt`
 - merge 总表：`report_setup.csv` / `report_hold.csv` / `report_trans.csv` / `report_phy_busskew.csv` / `report_sd_busskew.csv`
@@ -748,11 +750,11 @@ post PT 10 个 corner 全部跑完后，执行 <a href="./script-dict.html#run_s
 
 第一步·找目标：在 merge 总表里扫 **violation number ≠ 0 或 biggest violation 为负** 的 clock 组（如上图中 `RX0_CLK`、`RX0_CLK_DIV1P5` 在某些 corner 有负 slack），这些就是要处理的违例。
 
-找到目标后到**对应 corner 目录**看具体报告定位路径。示例：总表里 `wc_cbest_125` 的 `CLK_L0_DTCTL_OD_DIV1P5` 组有 5 条 violation（biggest −0.0499），打开 `SYNTHESIS/top/sta/post/pt/wc_cbest_125/latest/setup/report_timing_setup.rpt`，按 slack 排序找到 VIOLATED 路径，看清 Startpoint / Endpoint / Path Group：
+找到目标后到**对应 corner 目录**看具体报告定位路径。示例：总表里 `wc_cbest_125` 的 `CLK_L0_DTCTL_OD_DIV1P5` 组有 5 条 violation（biggest −0.0499），打开 `SYNTHESIS/top/sta/post/pt/wc_cbest_125/latest_2p/rpt/setup/report_timing_setup.rpt`，按 slack 排序找到 VIOLATED 路径，看清 Startpoint / Endpoint / Path Group：
 
 ![wc_cbest corner 出问题路径的定位示例](./image/12_ccbest_corner_path.jpg)
 
-（上例：Startpoint `LC_CSPIF_L0/DIOH_DCLK_reg`（RX0_OD_CLK_DIV2）→ Endpoint `DTCTL_L0/EN1_L_reg`（CLK_L0_DTCTL_OD_DIV1P5），slack (VIOLATED) = −0.049949。每个 corner 的 `latest/` 下按 setup / hold / skew / trans 分目录，各 clock 组单独一份 report_timing 文件。）
+（上例：Startpoint `LC_CSPIF_L0/DIOH_DCLK_reg`（RX0_OD_CLK_DIV2）→ Endpoint `DTCTL_L0/EN1_L_reg`（CLK_L0_DTCTL_OD_DIV1P5），slack (VIOLATED) = −0.049949。每个 corner 的 `latest_1p` / `latest_2p` 下按 `rpt/setup` / `rpt/hold` / `rpt/skew` / `rpt/trans` 分目录，各 clock 组单独一份 report_timing 文件。）
 
 第二步·定性（关键判断）：逐条看违例路径，判断它**后端修不修得掉**：
 
@@ -910,24 +912,29 @@ NOTE: "最严标准原则"——多个 mode 共用一个 check 点时按最严�
 
 ### 3.3 clock 定义与频率目标
 
-- create clock 周期在专用文件中修改；当前项目主频 1.8 GHz，带 1.05% 展频（spread spectrum）（会议经验值，脚本包中未见对应设置——包内最快时钟周期 4.75 ns ≈ 210 MHz）。
+- create clock 周期在 `common/tcl_dir/common/clk_period.tcl` 中定义（`clk_period.tcl:1-5`），所有周期乘 `$MARGIN`：综合 `MARGIN=0.80`（给 DC 加严）、PT `MARGIN=1.00`。
+- **当前生效（HV2M23，接近 TO）**：`set_case_analysis 1 [get_port DPSEL_I]`（2P 模式）+ `RX0_CLKP = RX1_CLKP = 10.71ns`（对应 1.7G SPEC：`1.7G×1.05/18 = 99.16M ≈ 10.08ns`，实际取 10.71ns 留余量）。一组可选周期：`9.5 / 10.08 / 10.71 / 11.42 ns`（对应 1.8G/1.7G 不同档位）。
+- 展频（spread spectrum）：**×1.05**（5%），体现在注释换算 `1.8G*1.05/18 = 105M = 9.5ns`、`1.7G*1.05/18 = 10.08ns`。
 - 相比其他项目（有要求 4 GHz 的），当前项目约束偏保守（over constraint）。
-- 另有一条慢 clock（教学示例，端口名 `CLKA_L`，会议记录误写作 clock_A_L）周期约 15 ns（会议经验值；包内最接近的慢时钟是 RX1_CLK，周期 17.1 ns）。
+- 另有一条慢 clock（教学示例，端口名 `CLKA_L`）周期约 15 ns（会议经验值；包内最接近的慢时钟是 RX1_CLK 备选 17.1ns，当前注释保留）。
+
+【📸 截图待补：`SYNTHESIS/common/tcl_dir/common/clk_period.tcl`，显示 `set_case_analysis 1 [get_port DPSEL_I]`、`RX0/RX1_CLKP 10.71*$MARGIN`、`MARGIN 0.80`、展频 1.05 注释】
 
 <div class="metric-grid">
   <div class="metric-card">
-    <div class="metric-value">1.8 GHz</div>
-    <div class="metric-label">主频</div>
-    <div class="metric-note">会议经验值，脚本包未见对应设置</div>
+    <div class="metric-value">10.71 ns</div>
+    <div class="metric-label">RX 时钟周期（当前生效）</div>
+    <div class="metric-note">clk_period.tcl 实际值；1.7G SPEC</div>
   </div>
   <div class="metric-card">
-    <div class="metric-value">1.05 %</div>
+    <div class="metric-value">×1.05</div>
     <div class="metric-label">展频（spread spectrum）</div>
+    <div class="metric-note">clk_period.tcl 注释换算系数</div>
   </div>
   <div class="metric-card">
-    <div class="metric-value">15 ns</div>
-    <div class="metric-label">慢 clock 周期</div>
-    <div class="metric-note">教学示例 CLKA_L（会议经验值）</div>
+    <div class="metric-value">0.80 / 1.00</div>
+    <div class="metric-label">MARGIN（综合 / PT）</div>
+    <div class="metric-note">clk_period.tcl 开头的 margin</div>
   </div>
 </div>
 
@@ -1158,6 +1165,49 @@ WARNING: 真假路径判定不能交给 AI。constraint 漏报的代价是硅后
 
 - 不用再逐个 corner 手改 `corner_set.tcl` 的 `DUMP_SDF=1`、跑完再手动改回 0——规避了上一节提到的「忘改回 0 → `latest` 指向只产 SDF 的空 run」这个坑；
 - 三个 corner 一键并行提交，SDF 版本自动编号，多次生成互不覆盖、可追溯。
+
+### 9.4 latest 拆分：`latest_1p` / `latest_2p`（1P / 2P 模式报告分开保留）
+
+**改了什么**：本项目存在 **1P（单 lane）与 2P（双 lane）两种时序模式**，约束用 `set_case_analysis` 固定 `DPSEL_I` 切换（`DPSEL_I=1` 为 2P）。两种模式各跑一轮 postPT 后，报告内容不同但都指向同一个 `latest`，会互相顶掉。现在拆成：
+
+```
+post/pt/<corner>/
+├── latest_1p/    ← 1P 模式报告（单 lane，多 RX0_CLK_DIV1P5_1P 等 1P 时钟）
+└── latest_2p/    ← 2P 模式报告（双 lane，含 RX0/RX1_OD_CLK 等 OD 时钟）
+```
+
+- 10 个 corner 全部拆分；`summary/` 同理拆成 `summary/latest_1p/`、`summary/latest_2p/`。
+- 每份包含 `pt.log` + `log/` + `rpt/`（setup / hold / skew / trans / summary 各 clock 分组报告 + `input_port_first_buf_type.tsv` / `output_port_last_buf_type.tsv`），**不含 `whole_session`**（PT session 恢复数据，本地查看报告用不到）。
+
+**好处**：1P / 2P 两组报告并存，互不覆盖，随时可分别查阅/对比，`run_summary` 与后仿取数路径按模式区分。
+
+### 9.5 通用打包脚本 `pack_tar.py`
+
+**改了什么**：新增通用打包脚本，把任意目录打包成带日期 + 版本号迭代的 tarball（取代之前手动 `cp` + 删大文件/历史报告）：
+
+```bash
+python pack_tar.py SYNTHESIS                 # -> PACK_TAR_MMDDV0.tar.gz
+python pack_tar.py SYNTHESIS hdl DV_TCON_C   # 多目录一起打包
+# 输出 PACK_TAR_0813V0.tar.gz，当天重复运行自动 V1、V2… 递增
+```
+
+- 自动排除 >10M 的**非 `.rpt`** 文件（重要 rpt 即使 >10M 也保留）；
+- 自动排除 `history/` 历史版本，只打包最新一份（`latest` 解引用为真实目录，跨机器 / Windows 解压不依赖软链）。
+
+### 9.6 LVT → SVT 换库（接近 TO）
+
+**改了什么**：本项目已完成 **LVT → SVT 换库**，`report_vt_cell_usage` 报告显示 **`SVT 100%`**：
+
+【📸 截图待补：`SYNTHESIS/ip/syn_HV2M23_digital_top/dc/rep_dir/HV2M23_digital_top.rpt` 中「Threshold Voltage Group Report」段落，显示 `SVT 7655 (100.00%)` 与 `SVT 167727.28 (100.00%)`】
+
+换库涉及的文件链：
+
+1. `design.set`：`LVT_EN` / `SVT_EN` 开关（`LVT_EN 0 / SVT_EN 1` = 用 SVT）；
+2. `common_db.tcl`：库名定义（`M31HSSC900EL150SL`=LVT / `M31HSSC900EL150SS`=SVT）；
+3. `dont_use_all.tcl`：`LVT_EN==0` 时 dont_use LVT cell、`SVT_EN==0` 时 dont_use SVT cell；
+4. **结果证据**：`report_vt_cell_usage` → SVT 100%。
+
+换库的连带影响：IO 末级 buf 从 `CLKBUFX8AL9`（LVT）变为 `CLKBUFX8AS9`（SVT），见 <a href="./to-signoff.html" target="_blank">TO SIGNOFF</a> 页「确认 IO buf type」一节。
 
 </script>
 

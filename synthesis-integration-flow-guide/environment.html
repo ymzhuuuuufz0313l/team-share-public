@@ -467,9 +467,18 @@ TIP: 同一项目下的不同 IP 应尽量使用相同的 `CORNER` 和库配置�
 - 每个新项目都需要提前申请 library。
 
 ### 3.1 阈值电压库（VT 库）规则
-- 当前 145 制程项目统一只使用 LVT（低阈值库）并全部拉满。原因：排期紧张；且该工艺下 SVT / LVT 混用会导致 DRC 过不了（该工艺库特有的问题）。
-- 代价：综合阶段已全部使用最快的 cell，后端修 setup 时无法再通过换 VT 解决，只能 sizing。
-- 该制程已成熟，leakage 占比很小，全 LVT 方案可接受。
+
+**历史背景（旧）**：145 制程项目曾统一只使用 LVT（低阈值库）并全部拉满。原因：排期紧张；且该工艺下 SVT / LVT 混用会导致 DRC 过不了（该工艺库特有的问题）。
+
+**当前状态（HV2M23，已换 SVT）**：本项目已从 **LVT 换到 SVT**（标准阈值库）。综合报告 `report_vt_cell_usage` 输出 **`SVT 100%`**（cell 数 7655、面积 167727.28 全部 100% SVT），证明换库成功。
+
+- 换库开关在 **`design.set`** 的 `LVT_EN` / `SVT_EN`：`LVT_EN 0 / SVT_EN 1` 表示用 SVT；`LVT_EN 1 / SVT_EN 0` 表示用 LVT。**prePT / 综合 / postPT 各环境各有一份 design.set，需保持口径一致。**
+- 库名在 **`common_db.tcl`** 定义，LVT/SVT 靠库名 **L/S 后缀**区分：`M31HSSC900EL150**SL**`（LVT）、`M31HSSC900EL150**SS**`（SVT）。
+- 生效逻辑在 **`dont_use_all.tcl`**：`if {$LVT_EN==0}` 时 dont_use 掉 LVT cell，`if {$SVT_EN==0}` 时 dont_use 掉 SVT cell，从而只允许使用选定 VT 的 cell。
+
+【📸 截图待补：`SYNTHESIS/top/sta/pre/pt/design.set` 的 L70-71，显示 `set LVT_EN 0` / `set SVT_EN 1`】
+
+【📸 截图待补：`SYNTHESIS/common/tcl_dir/common/common_db.tcl` 的 L744-750，显示 `M31HSSC900EL150SL`（LVT）/ `M31HSSC900EL150SS`（SVT）两行库定义】
 
 ---
 

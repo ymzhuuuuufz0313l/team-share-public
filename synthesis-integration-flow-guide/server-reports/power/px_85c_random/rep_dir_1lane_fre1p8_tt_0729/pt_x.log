@@ -1,1587 +1,0 @@
-
-                                 PrimeTime (R)
-
-              Version M-2017.06-SP3-3 for linux64 - Jul 27, 2018 
-
-                    Copyright (c) 1988 - 2018 Synopsys, Inc.
-   This software and the associated documentation are proprietary to Synopsys,
- Inc. This software may only be used in accordance with the terms and conditions
- of a written license agreement with Synopsys, Inc. All other use, reproduction,
-            or distribution of this software is strictly prohibited.
-
-source ./design.set -verbose -echo
-# vim: ft=tcl
-set TOP_NAME HV2M23_digital_top
-HV2M23_digital_top
-set PROJECT_PATH $env(PROJECT_PATH)
-/project/HV2M23/designer/DD/ymzhu/HV2M23
-#set PROJECT_NAME env(PROJECT_NAME)
-set SYN_DIR              "."
-.
-set TCL_DIR              [format "%s%s" $PROJECT_PATH "/SYNTHESIS/common/tcl_dir/"]
-/project/HV2M23/designer/DD/ymzhu/HV2M23/SYNTHESIS/common/tcl_dir/
-set IP_CONS_DIR          [format "%s%s" $PROJECT_PATH "/SYNTHESIS/common/ip_cons/"]
-/project/HV2M23/designer/DD/ymzhu/HV2M23/SYNTHESIS/common/ip_cons/
-set TOP_CONS_DIR         [format "%s%s" $PROJECT_PATH "/SYNTHESIS/common/top_cons/"]
-/project/HV2M23/designer/DD/ymzhu/HV2M23/SYNTHESIS/common/top_cons/
-set HDL_DIR              [format "%s%s" $PROJECT_PATH "/HDL/"]
-/project/HV2M23/designer/DD/ymzhu/HV2M23/HDL/
-set UPF_DIR              [format "%s%s" $PROJECT_PATH "/SYNTHESIS/common/upf/"]
-/project/HV2M23/designer/DD/ymzhu/HV2M23/SYNTHESIS/common/upf/
-set UPPER_CASE           0
-0
-set PARA_DESIGN          1 
-1
-set USE_SAIF             0
-0
-set USE_UPF              0
-0
-# cell_lib you can sel   
-# hlmc_55_snps_7t
-# hlmc_55_snps_9t
-# umc_55_snps_7t
-# umc_55_snps_8t
-# umc_55_fara_7t
-# umc_55_fara_8t
-# umc_40_fara_7t
-# umc_40_snps_7t
-# umc_40_fara_9t
-# umc_40_snps_9t
-#umc_28_arm_9t_hpc_c30
-set LINK_LIB             "nexchip_145_9t"
-nexchip_145_9t
-set TAR_LIB              "nexchip_145_9t"
-nexchip_145_9t
-#set NET_DEFINE          ["XX" "XX=0"]
-set NET_DEFINE0          "NETLIST"
-NETLIST
-set NET_DEFINE1          "nexchip_145_9t"
-nexchip_145_9t
-set NET_DEFINE           [list "NETLIST" "nexchip_145_9t"]
-NETLIST nexchip_145_9t
-set ANA_EN               0
-0
-set MEM_EN               0
-0
-set POSTPT_EN            1
-1
-set MEM_SNPS_EN          0
-0
-set MEM_FARA_EN          0
-0
-set MEM_ARM_EN           0
-0
-set HVT_EN               0
-0
-set LVT_EN               1 
-1
-set SCAN_EN              0
-0
-set CCS_EN               1
-1
-set POWER_OPTIMIZATION   1 
-1
-set INCR_OPT             1 
-1
-set PT_HOLD              0 
-0
-set CORNER               "tt_typ"
-tt_typ
-#???
-#set CORNER               "wc_cworst"
-#CORNER            PVT                 PVTM              RC_FILE
-#"wc_cworst"       "ss0p99v125c"       "ss0p99v125c"     "cworst_125" 
-#"wc_rcworst_max"  "ss0p99v125c"       "ss0p99v125c"     "rcworst_125" 
-#"wc_rcworst_min"  "ss0p99v125c"       "ss0p99v125c"     "rcworst_125"
-#"wcl_cworst"      "ss0p99vn40c"       "ss0p99vm40c"     "cworst_m40"
-#"lt_cbest"        "ff1p21vn40c"       "ff1p21vm40c"     "cbest_m40"
-#"ml_cbest"        "ff1p21v125c"       "ff1p21v125c"     "cbest_125"
-set SLACK_EN             0
-0
-#version add
-#
-source ./px_cfg.tcl
-if {[file exist "rep_dir"] == 0} { [sh mkdir rep_dir]}
-set CK_FLT_EN 0
-0
-set CK_TIM_EN 1
-1
-set CK_PWR_EN 1
-1
-set power_enable_analysis TRUE
-TRUE
-set power_analysis_mode $power_mode
-time_based
-#set_power_analysis_options -waveform_interval 1.666 
-#below is default
-#set power_analysis_mode averaged
-#source $TCL_DIR/common_pt.tcl -verbose -echo
-source ./common/common_ptpx.tcl -verbose -echo
-set svr_keep_unconnected_nets                       true
-true
-set timing_report_unconstrained_paths               true
-true
-set sh_enable_page_mode                             false
-false
-#for pre layout only
-set link_create_black_boxes                         true
-true
-set sh_continue_on_error                            false
-false
-set sh_source_uses_search_path                      true
-true
-set timing_disable_internal_inout_net_arcs          true
-true
-set timing_disable_clock_gating_checks              false
-false
-set timing_remove_clock_reconvergence_pessimism     true
-true
-set timing_report_always_use_valid_start_end_points false
-false
-set report_default_significant_digits               6
-6
-set timing_reduce_multi_drive_net_arcs              true
-true
-set timing_crpr_threshold_ps                        10
-Warning: Setting this variable to a lower value can cause a significant performance degradation during a timing update. (PTE-067)
-10
-set case_analysis_log_file                          rep_dir/case_analysis.log
-rep_dir/case_analysis.log
-set timing_clock_source_driver_pin_use_dirrver_arc_compatibility false
-false
-set CONS_CHECK 1
-1
-source /project/HK3671/designer/DD/ppchen/HK3671/SYNTHESIS/common/tcl_dir/common/common_db.tcl -verbose -echo
-source $TCL_DIR/common/common_db_pvt.tcl
-25CTT1P8_typ
-25CTT1P8_typ
-if {$synopsys_program_name == "genus" || $synopsys_program_name == "lec" || $synopsys_program_name == "spyglass"} {
-  set db_type "lib"
-  set CCS     "ccs"
-} else {
-  set db_type "db"
-  set CCS     "ccs_db"
-}
-ccs_db
-###############################################################
-## Memory setup
-###############################################################
-#set MEM_DIR   "/project/HK3671/DataBase/Digital/memory_library/nexchip"
-#set LIB_MEM_NAME  "mem_nexchip_${PVT_MEM}_lib"
-#set mem_link_library   [list ]
-#if { $MEM_EN == 1 } {
-#if {$synopsys_program_name == "genus" || $synopsys_program_name == "lec" || $synopsys_program_name == "spyglass"} {
-#  set lib_mem [list "${MEM_DIR}/lib/${PVT_MEM}/${LIB_MEM_NAME}.lib"]
-#} else {
-#  set lib_mem [list "${MEM_DIR}/lib/${PVT_MEM}/${LIB_MEM_NAME}.db"]
-#}
-#  set mem_link_library [concat $mem_link_library $lib_mem]
-#}
-#
-#set mem_lef_file [list ]
-#if { $MEM_EN == 1 } {
-#  foreach lef_mem [glob ${MEM_DIR}/lef/*.lef] {
-#    set mem_lef_file [concat $mem_lef_file $lef_mem]
-#  }
-#}
-###############################################################
-## Analog setup
-###############################################################
-if {$synopsys_program_name == "pt"} {
-  set wireload_type "post"
-} else {
-  set wireload_type "pre"
-}
-pre
-#set ANA_DIR   "/project/HK3671/DataBase/Analog"
-#set ana_link_library [list ]
-#if { $ANA_EN==1 } {
-#  foreach lib_ana [glob ${ANA_DIR}/DB/updated/*/*_${PVT_ANA}.${db_type}] {
-#  set cdm_logic_lib [glob ${ANA_DIR}/DB/updated/CDM_LOGIC/*_${PVT}_nldm.${db_type}]
-#    set ana_link_library [concat $ana_link_library $lib_ana $cdm_logic_lib]
-#  } 
-#} 
-#set ana_lef_file [list ]
-#if { $ANA_EN==1 } {
-#  foreach lef_ana [glob ${ANA_DIR}/LEF/updated/*.lef] {
-#    set ana_lef_file [concat $ana_lef_file $lef_ana]
-#  } 
-#}
-###############################################################
-## Lef setup
-###############################################################
-#set lef_file [list #  "/project/HK3671/cad/LEF_Techfile/header4m_V55.ori.lef" #]
-#
-#set qrc_tech_file  "/project/HK3671/cad/QRC/cmax/qrcTechFile"
-###############################################################
-## STD setup
-###############################################################
-#library_snps_gtech
-if {$db_type == "db"} {
-  set library_snps_gtech [list "/eda/synopsys/syn1603/libraries/syn/gtech.${db_type}"]
-} else {
-  set library_snps_gtech [list ]
-}
-/eda/synopsys/syn1603/libraries/syn/gtech.db
-set ckgate_snps_gtech  ""
-#library_hlmc_55_snps_7t
-set library_hlmc_55_snps_7t [list   "/eda/process/55/HLMC/standcell/synopsys/standcell_202a/v-logic_hu55npkhlogcasdut000f/DesignWare_logic_libs/huali55nlp/uhd/base/hvt/latest/liberty/ccs/hu55npkhdut_${PVT}.${db_type}"   "/eda/process/55/HLMC/standcell/synopsys/standcell_202a/v-logic_hu55npkslogcasdut000f/DesignWare_logic_libs/huali55nlp/uhd/base/svt/latest/liberty/ccs/hu55npksdut_${PVT}.${db_type}"   "/eda/process/55/HLMC/standcell/synopsys/standcell_202a/v-logic_hu55npkllogcasdut000f/DesignWare_logic_libs/huali55nlp/uhd/base/lvt/latest/liberty/ccs/hu55npkldut_${PVT}.${db_type}" ]
-/eda/process/55/HLMC/standcell/synopsys/standcell_202a/v-logic_hu55npkhlogcasdut000f/DesignWare_logic_libs/huali55nlp/uhd/base/hvt/latest/liberty/ccs/hu55npkhdut_25CTT1P8_typ.db /eda/process/55/HLMC/standcell/synopsys/standcell_202a/v-logic_hu55npkslogcasdut000f/DesignWare_logic_libs/huali55nlp/uhd/base/svt/latest/liberty/ccs/hu55npksdut_25CTT1P8_typ.db /eda/process/55/HLMC/standcell/synopsys/standcell_202a/v-logic_hu55npkllogcasdut000f/DesignWare_logic_libs/huali55nlp/uhd/base/lvt/latest/liberty/ccs/hu55npkldut_25CTT1P8_typ.db
-set hvt_hlmc_55_snps_7t                  "hu55npkhdut_${PVT}"
-hu55npkhdut_25CTT1P8_typ
-set svt_hlmc_55_snps_7t                  "hu55npksdut_${PVT}"
-hu55npksdut_25CTT1P8_typ
-set lvt_hlmc_55_snps_7t                  "hu55npkldut_${PVT}"
-hu55npkldut_25CTT1P8_typ
-set ckgate_hlmc_55_snps_7t               "SVL_CKGTPLT_8"
-SVL_CKGTPLT_8
-#library_hlmc_55_snps_9t
-set library_hlmc_55_snps_9t [list   "/eda/process/55/HLMC/standcell/synopsys/standcell_202a/v-logic_hu55npkhlogcasdst000f/DesignWare_logic_libs/huali55nlp/hd/base/hvt/latest/liberty/ccs/hu55npkhdst_${PVT}.${db_type}"   "/eda/process/55/HLMC/standcell/synopsys/standcell_202a/v-logic_hu55npkslogcasdst000f/DesignWare_logic_libs/huali55nlp/hd/base/svt/latest/liberty/ccs/hu55npksdst_${PVT}.${db_type}"   "/eda/process/55/HLMC/standcell/synopsys/standcell_202a/v-logic_hu55npkllogcasdst000f/DesignWare_logic_libs/huali55nlp/hd/base/lvt/latest/liberty/ccs/hu55npkldst_${PVT}.${db_type}" ]
-/eda/process/55/HLMC/standcell/synopsys/standcell_202a/v-logic_hu55npkhlogcasdst000f/DesignWare_logic_libs/huali55nlp/hd/base/hvt/latest/liberty/ccs/hu55npkhdst_25CTT1P8_typ.db /eda/process/55/HLMC/standcell/synopsys/standcell_202a/v-logic_hu55npkslogcasdst000f/DesignWare_logic_libs/huali55nlp/hd/base/svt/latest/liberty/ccs/hu55npksdst_25CTT1P8_typ.db /eda/process/55/HLMC/standcell/synopsys/standcell_202a/v-logic_hu55npkllogcasdst000f/DesignWare_logic_libs/huali55nlp/hd/base/lvt/latest/liberty/ccs/hu55npkldst_25CTT1P8_typ.db
-set hvt_hlmc_55_snps_9t                  "hu55npkhdst_${PVT}"
-hu55npkhdst_25CTT1P8_typ
-set svt_hlmc_55_snps_9t                  "hu55npksdst_${PVT}"
-hu55npksdst_25CTT1P8_typ
-set lvt_hlmc_55_snps_9t                  "hu55npkldst_${PVT}"
-hu55npkldst_25CTT1P8_typ
-set ckgate_hlmc_55_snps_9t               ""
-#library_umc_55_fara_7t
-set library_umc_55_fara_7t [list   "/eda/process/55/UMC_LP/standcell/Faraday/7t/2017Q1v2.0/fsf0l_ehs/2017Q1v2.0/GENERIC_CORE/FrontEnd/synopsys/synthesis/fsf0l_ehs_generic_core_${PVT}.${db_type}"   "/eda/process/55/UMC_LP/standcell/Faraday/7t/2017Q1v2.0/fsf0l_ers/2017Q1v2.0/GENERIC_CORE/FrontEnd/synopsys/synthesis/fsf0l_ers_generic_core_${PVT}.${db_type}"   "/eda/process/55/UMC_LP/standcell/Faraday/7t/2017Q1v2.0/fsf0l_els/2017Q1v2.0/GENERIC_CORE/FrontEnd/synopsys/synthesis/fsf0l_els_generic_core_${PVT}.${db_type}" ]
-/eda/process/55/UMC_LP/standcell/Faraday/7t/2017Q1v2.0/fsf0l_ehs/2017Q1v2.0/GENERIC_CORE/FrontEnd/synopsys/synthesis/fsf0l_ehs_generic_core_25CTT1P8_typ.db /eda/process/55/UMC_LP/standcell/Faraday/7t/2017Q1v2.0/fsf0l_ers/2017Q1v2.0/GENERIC_CORE/FrontEnd/synopsys/synthesis/fsf0l_ers_generic_core_25CTT1P8_typ.db /eda/process/55/UMC_LP/standcell/Faraday/7t/2017Q1v2.0/fsf0l_els/2017Q1v2.0/GENERIC_CORE/FrontEnd/synopsys/synthesis/fsf0l_els_generic_core_25CTT1P8_typ.db
-set hvt_umc_55_fara_7t                   "fsf0l_ehs_generic_core_${PVT}"
-fsf0l_ehs_generic_core_25CTT1P8_typ
-set svt_umc_55_fara_7t                   "fsf0l_ers_generic_core_${PVT}"
-fsf0l_ers_generic_core_25CTT1P8_typ
-set lvt_umc_55_fara_7t                   "fsf0l_els_generic_core_${PVT}"
-fsf0l_els_generic_core_25CTT1P8_typ
-set ckgate_umc_55_fara_7t                "GCKESFB8LERMX8"
-GCKESFB8LERMX8
-#library_umc_55_fara_8t
-set library_umc_55_fara_8t [list   "/eda/process/55/UMC_LP/standcell/Faraday/8t/2013Q1v1.0/fsf0l_drs/2013Q1v1.0/GENERIC_CORE/FrontEnd/synopsys/synthesis/fsf0l_drs_generic_core_${PVT}.${db_type}"   "/eda/process/55/UMC_LP/standcell/Faraday/8t/2013Q1v1.0/fsf0l_dls/2013Q1v1.0/GENERIC_CORE/FrontEnd/synopsys/synthesis/fsf0l_dls_generic_core_${PVT}.${db_type}" ]
-/eda/process/55/UMC_LP/standcell/Faraday/8t/2013Q1v1.0/fsf0l_drs/2013Q1v1.0/GENERIC_CORE/FrontEnd/synopsys/synthesis/fsf0l_drs_generic_core_25CTT1P8_typ.db /eda/process/55/UMC_LP/standcell/Faraday/8t/2013Q1v1.0/fsf0l_dls/2013Q1v1.0/GENERIC_CORE/FrontEnd/synopsys/synthesis/fsf0l_dls_generic_core_25CTT1P8_typ.db
-set hvt_umc_55_fara_8t                   ""
-set svt_umc_55_fara_8t                   "fsf0l_drs_generic_core_${PVT}"
-fsf0l_drs_generic_core_25CTT1P8_typ
-set lvt_umc_55_fara_8t                   "fsf0l_dls_generic_core_${PVT}"
-fsf0l_dls_generic_core_25CTT1P8_typ
-set ckgate_umc_55_fara_8t                ""
-#library_umc_55_snps_7t
-set library_umc_55_snps_7t [list   "/eda/process/55/UMC_LP/standcell/UMC/G-9LT-LOGIC_MIXED_MODE55N-LP_LOW_K_UM055LSCLPMVBDH-LIBRARY_TAPE_OUT_KIT-Ver.B01_P.B/synopsys/ccs/u055lsclpmvbdh_108c125_wc_ccs.${db_type}" ]
-/eda/process/55/UMC_LP/standcell/UMC/G-9LT-LOGIC_MIXED_MODE55N-LP_LOW_K_UM055LSCLPMVBDH-LIBRARY_TAPE_OUT_KIT-Ver.B01_P.B/synopsys/ccs/u055lsclpmvbdh_108c125_wc_ccs.db
-set hvt_umc_55_snps_7t                   ""
-set svt_umc_55_snps_7t                   "u055lsclpmvbdh_108c125_wc_ccs"
-u055lsclpmvbdh_108c125_wc_ccs
-set lvt_umc_55_snps_7t                   ""
-set ckgate_umc_55_snps_7t                ""
-#library_umc_55_snps_8t
-set library_umc_55_snps_8t [list ]
-set hvt_umc_55_snps_8t                   ""
-set svt_umc_55_snps_8t                   ""
-set lvt_umc_55_snps_8t                   ""
-set ckgate_umc_55_snps_8t                ""
-#library_umc_40_fara_7t
-#if {$db_type == "lib"} {
-# set db_type_sp "ccsnlib.gz"
-#} else {
-# set db_type_sp "ccsndb"    
-#}
-# library_nexchip_145
-# library_nexchip_110
-if { [regexp {_145_} $LINK_LIB] } {
-    if {$db_type == "lib"} {
-      set db_type_sp "ccs.lib.gz"
-      set CCS        "ccs"
-    } else {
-      set db_type_sp "ccs.db"
-      set CCS        "ccs_db"
-    }
-} else {
-    if {$db_type == "lib"} {
-      set db_type_sp "ccsnlib.gz"
-    } else {
-      set db_type_sp "ccsndb"    
-    }
-
-}
-ccs_db
-set library_umc_40_fara_7t [list   "/eda/process/40/UMC_LP/standcell/Faraday/7t/2018Q2v2.2/fsh0l_ehs/2018Q2v2.2/GENERIC_CORE/FrontEnd/synopsys/ccsn/fsh0l_ehs_generic_core_${PVT}.${db_type_sp}"   "/eda/process/40/UMC_LP/standcell/Faraday/7t/2018Q2v2.2/fsh0l_ers/2018Q2v2.2/GENERIC_CORE/FrontEnd/synopsys/ccsn/fsh0l_ers_generic_core_${PVT}.${db_type_sp}"   "/eda/process/40/UMC_LP/standcell/Faraday/7t/2018Q2v2.2/fsh0l_els/2018Q2v2.2/GENERIC_CORE/FrontEnd/synopsys/ccsn/fsh0l_els_generic_core_${PVT}.${db_type_sp}" ]
-/eda/process/40/UMC_LP/standcell/Faraday/7t/2018Q2v2.2/fsh0l_ehs/2018Q2v2.2/GENERIC_CORE/FrontEnd/synopsys/ccsn/fsh0l_ehs_generic_core_25CTT1P8_typ.ccs.db /eda/process/40/UMC_LP/standcell/Faraday/7t/2018Q2v2.2/fsh0l_ers/2018Q2v2.2/GENERIC_CORE/FrontEnd/synopsys/ccsn/fsh0l_ers_generic_core_25CTT1P8_typ.ccs.db /eda/process/40/UMC_LP/standcell/Faraday/7t/2018Q2v2.2/fsh0l_els/2018Q2v2.2/GENERIC_CORE/FrontEnd/synopsys/ccsn/fsh0l_els_generic_core_25CTT1P8_typ.ccs.db
-set hvt_umc_40_fara_7t                   "fsh0l_ehs_generic_core_${PVT}"
-fsh0l_ehs_generic_core_25CTT1P8_typ
-set svt_umc_40_fara_7t                   "fsh0l_ers_generic_core_${PVT}"
-fsh0l_ers_generic_core_25CTT1P8_typ
-set lvt_umc_40_fara_7t                   "fsh0l_els_generic_core_${PVT}"
-fsh0l_els_generic_core_25CTT1P8_typ
-set ckgate_umc_40_fara_7t                "GCKESLELMX8"
-GCKESLELMX8
-set lef_umc_40_fara_7t [list   "/eda/process/40/UMC_LP/standcell/Faraday/7t/2018Q2v2.2/fsh0l_ehs/2018Q2v2.2/GENERIC_CORE/BackEnd/lef/fsh0l_ehs_generic_core.msv.lef"   "/eda/process/40/UMC_LP/standcell/Faraday/7t/2018Q2v2.2/fsh0l_ers/2018Q2v2.2/GENERIC_CORE/BackEnd/lef/fsh0l_ers_generic_core.msv.lef"   "/eda/process/40/UMC_LP/standcell/Faraday/7t/2018Q2v2.2/fsh0l_els/2018Q2v2.2/GENERIC_CORE/BackEnd/lef/fsh0l_els_generic_core.msv.lef" ]
-/eda/process/40/UMC_LP/standcell/Faraday/7t/2018Q2v2.2/fsh0l_ehs/2018Q2v2.2/GENERIC_CORE/BackEnd/lef/fsh0l_ehs_generic_core.msv.lef /eda/process/40/UMC_LP/standcell/Faraday/7t/2018Q2v2.2/fsh0l_ers/2018Q2v2.2/GENERIC_CORE/BackEnd/lef/fsh0l_ers_generic_core.msv.lef /eda/process/40/UMC_LP/standcell/Faraday/7t/2018Q2v2.2/fsh0l_els/2018Q2v2.2/GENERIC_CORE/BackEnd/lef/fsh0l_els_generic_core.msv.lef
-#library_umc_40_fara_9t
-set library_umc_40_fara_9t [list   "/eda/process/40/UMC_LP/standcell/Faraday/9t/2017Q3v1.1/fsh0l_bhs/2017Q3v1.1/GENERIC_CORE/FrontEnd/synopsys/ccsn/fsh0l_bhs_generic_core_${PVT}.${db_type_sp}"   "/eda/process/40/UMC_LP/standcell/Faraday/9t/2018Q2v1.2/fsh0l_brs/2018Q2v1.2/GENERIC_CORE/FrontEnd/synopsys/ccsn/fsh0l_brs_generic_core_${PVT}.${db_type_sp}"   "/eda/process/40/UMC_LP/standcell/Faraday/9t/2018Q2v1.2/fsh0l_bls/2018Q2v1.2/GENERIC_CORE/FrontEnd/synopsys/ccsn/fsh0l_bls_generic_core_${PVT}.${db_type_sp}" ]
-/eda/process/40/UMC_LP/standcell/Faraday/9t/2017Q3v1.1/fsh0l_bhs/2017Q3v1.1/GENERIC_CORE/FrontEnd/synopsys/ccsn/fsh0l_bhs_generic_core_25CTT1P8_typ.ccs.db /eda/process/40/UMC_LP/standcell/Faraday/9t/2018Q2v1.2/fsh0l_brs/2018Q2v1.2/GENERIC_CORE/FrontEnd/synopsys/ccsn/fsh0l_brs_generic_core_25CTT1P8_typ.ccs.db /eda/process/40/UMC_LP/standcell/Faraday/9t/2018Q2v1.2/fsh0l_bls/2018Q2v1.2/GENERIC_CORE/FrontEnd/synopsys/ccsn/fsh0l_bls_generic_core_25CTT1P8_typ.ccs.db
-set hvt_umc_40_fara_9t                   "fsh0l_bhs_generic_core_${PVT}"
-fsh0l_bhs_generic_core_25CTT1P8_typ
-set svt_umc_40_fara_9t                   "fsh0l_brs_generic_core_${PVT}"
-fsh0l_brs_generic_core_25CTT1P8_typ
-set lvt_umc_40_fara_9t                   "fsh0l_bls_generic_core_${PVT}"
-fsh0l_bls_generic_core_25CTT1P8_typ
-set ckgate_umc_40_fara_9t                "GCKESLBLMX8"
-GCKESLBLMX8
-set lef_hvt_umc_40_fara_9t [list   "/eda/process/40/UMC_LP/standcell/Faraday/9t/2017Q3v1.1/fsh0l_bhs/2017Q3v1.1/GENERIC_CORE/BackEnd/lef/fsh0l_bhs_generic_core.msv.lef"   "/eda/process/40/UMC_LP/standcell/Faraday/9t/2018Q2v1.2/fsh0l_brs/2018Q2v1.2/GENERIC_CORE/BackEnd/lef/fsh0l_brs_generic_core.msv.lef"   "/eda/process/40/UMC_LP/standcell/Faraday/9t/2018Q2v1.2/fsh0l_bls/2018Q2v1.2/GENERIC_CORE/BackEnd/lef/fsh0l_bls_generic_core.msv.lef" ]
-/eda/process/40/UMC_LP/standcell/Faraday/9t/2017Q3v1.1/fsh0l_bhs/2017Q3v1.1/GENERIC_CORE/BackEnd/lef/fsh0l_bhs_generic_core.msv.lef /eda/process/40/UMC_LP/standcell/Faraday/9t/2018Q2v1.2/fsh0l_brs/2018Q2v1.2/GENERIC_CORE/BackEnd/lef/fsh0l_brs_generic_core.msv.lef /eda/process/40/UMC_LP/standcell/Faraday/9t/2018Q2v1.2/fsh0l_bls/2018Q2v1.2/GENERIC_CORE/BackEnd/lef/fsh0l_bls_generic_core.msv.lef
-#library_umc_40_fara_1p2_7t
-set library_umc_40_fara_1p2_7t [list   "/eda/process/40/UMC_LP/standcell/Faraday/7t/2018Q2v2.2/fsh0l_ehs/2018Q2v2.2/GENERIC_CORE/FrontEnd/synopsys/ccsn_1p2/fsh0l_ehs_${PVT}.ccsn${db_type}"   "/eda/process/40/UMC_LP/standcell/Faraday/7t/2018Q2v2.2/fsh0l_ers/2018Q2v2.2/GENERIC_CORE/FrontEnd/synopsys/ccsn_1p2/fsh0l_ers_${PVT}.ccsn${db_type}"   "/eda/process/40/UMC_LP/standcell/Faraday/7t/2018Q2v2.2/fsh0l_els/2018Q2v2.2/GENERIC_CORE/FrontEnd/synopsys/ccsn_1p2/fsh0l_els_${PVT}.ccsn${db_type}"]
-/eda/process/40/UMC_LP/standcell/Faraday/7t/2018Q2v2.2/fsh0l_ehs/2018Q2v2.2/GENERIC_CORE/FrontEnd/synopsys/ccsn_1p2/fsh0l_ehs_25CTT1P8_typ.ccsndb /eda/process/40/UMC_LP/standcell/Faraday/7t/2018Q2v2.2/fsh0l_ers/2018Q2v2.2/GENERIC_CORE/FrontEnd/synopsys/ccsn_1p2/fsh0l_ers_25CTT1P8_typ.ccsndb /eda/process/40/UMC_LP/standcell/Faraday/7t/2018Q2v2.2/fsh0l_els/2018Q2v2.2/GENERIC_CORE/FrontEnd/synopsys/ccsn_1p2/fsh0l_els_25CTT1P8_typ.ccsndb
-set hvt_umc_40_fara_1p2_7t                   "fsh0l_ehs_${PVT}"
-fsh0l_ehs_25CTT1P8_typ
-set svt_umc_40_fara_1p2_7t                   "fsh0l_ers_${PVT}"
-fsh0l_ers_25CTT1P8_typ
-set lvt_umc_40_fara_1p2_7t                   "fsh0l_els_${PVT}"
-fsh0l_els_25CTT1P8_typ
-set ckgate_umc_40_fara_7t                    "GCKESLELMX8"
-GCKESLELMX8
-set lef_hvt_umc_40_fara_1p2_7t [list   "/eda/process/40/UMC_LP/standcell/Faraday/7t/2018Q2v2.2/fsh0l_ehs/2018Q2v2.2/GENERIC_CORE/BackEnd/lef/fsh0l_ehs_generic_core.msv.lef"   "/eda/process/40/UMC_LP/standcell/Faraday/7t/2018Q2v2.2/fsh0l_ers/2018Q2v2.2/GENERIC_CORE/BackEnd/lef/fsh0l_ers_generic_core.msv.lef"   "/eda/process/40/UMC_LP/standcell/Faraday/7t/2018Q2v2.2/fsh0l_els/2018Q2v2.2/GENERIC_CORE/BackEnd/lef/fsh0l_els_generic_core.msv.lef" ]
-/eda/process/40/UMC_LP/standcell/Faraday/7t/2018Q2v2.2/fsh0l_ehs/2018Q2v2.2/GENERIC_CORE/BackEnd/lef/fsh0l_ehs_generic_core.msv.lef /eda/process/40/UMC_LP/standcell/Faraday/7t/2018Q2v2.2/fsh0l_ers/2018Q2v2.2/GENERIC_CORE/BackEnd/lef/fsh0l_ers_generic_core.msv.lef /eda/process/40/UMC_LP/standcell/Faraday/7t/2018Q2v2.2/fsh0l_els/2018Q2v2.2/GENERIC_CORE/BackEnd/lef/fsh0l_els_generic_core.msv.lef
-#library_umc_40_fara_1p2_9t
-set library_umc_40_fara_1p2_9t [list   "/eda/process/40/UMC_LP/standcell/Faraday/9t/2017Q3v1.1/fsh0l_bhs/2017Q3v1.1/GENERIC_CORE/FrontEnd/synopsys/ccsn_1p2/fsh0l_bhs_${PVT}.ccsn${db_type}"   "/eda/process/40/UMC_LP/standcell/Faraday/9t/2018Q2v1.2/fsh0l_brs/2018Q2v1.2/GENERIC_CORE/FrontEnd/synopsys/ccsn_1p2/fsh0l_brs_core_${PVT}.ccsn${db_type}"   "/eda/process/40/UMC_LP/standcell/Faraday/9t/2018Q2v1.2/fsh0l_bls/2018Q2v1.2/GENERIC_CORE/FrontEnd/synopsys/ccsn_1p2/fsh0l_bls_core_${PVT}.ccsn${db_type}"]
-/eda/process/40/UMC_LP/standcell/Faraday/9t/2017Q3v1.1/fsh0l_bhs/2017Q3v1.1/GENERIC_CORE/FrontEnd/synopsys/ccsn_1p2/fsh0l_bhs_25CTT1P8_typ.ccsndb /eda/process/40/UMC_LP/standcell/Faraday/9t/2018Q2v1.2/fsh0l_brs/2018Q2v1.2/GENERIC_CORE/FrontEnd/synopsys/ccsn_1p2/fsh0l_brs_core_25CTT1P8_typ.ccsndb /eda/process/40/UMC_LP/standcell/Faraday/9t/2018Q2v1.2/fsh0l_bls/2018Q2v1.2/GENERIC_CORE/FrontEnd/synopsys/ccsn_1p2/fsh0l_bls_core_25CTT1P8_typ.ccsndb
-set hvt_umc_40_fara_1p2_9t                   "fsh0l_bhs_${PVT}"
-fsh0l_bhs_25CTT1P8_typ
-set svt_umc_40_fara_1p2_9t                   "fsh0l_brs_core_${PVT}"
-fsh0l_brs_core_25CTT1P8_typ
-set lvt_umc_40_fara_1p2_9t                   "fsh0l_bls_core_${PVT}"
-fsh0l_bls_core_25CTT1P8_typ
-set ckgate_umc_40_fara_9t                    "GCKESLBLMX8"
-GCKESLBLMX8
-set lef_hvt_umc_40_fara_1p2_9t [list   "/eda/process/40/UMC_LP/standcell/Faraday/9t/2017Q3v1.1/fsh0l_bhs/2017Q3v1.1/GENERIC_CORE/BackEnd/lef/fsh0l_bhs_generic_core.msv.lef"   "/eda/process/40/UMC_LP/standcell/Faraday/9t/2018Q2v1.2/fsh0l_brs/2018Q2v1.2/GENERIC_CORE/BackEnd/lef/fsh0l_brs_generic_core.msv.lef"   "/eda/process/40/UMC_LP/standcell/Faraday/9t/2018Q2v1.2/fsh0l_bls/2018Q2v1.2/GENERIC_CORE/BackEnd/lef/fsh0l_bls_generic_core.msv.lef" ]
-/eda/process/40/UMC_LP/standcell/Faraday/9t/2017Q3v1.1/fsh0l_bhs/2017Q3v1.1/GENERIC_CORE/BackEnd/lef/fsh0l_bhs_generic_core.msv.lef /eda/process/40/UMC_LP/standcell/Faraday/9t/2018Q2v1.2/fsh0l_brs/2018Q2v1.2/GENERIC_CORE/BackEnd/lef/fsh0l_brs_generic_core.msv.lef /eda/process/40/UMC_LP/standcell/Faraday/9t/2018Q2v1.2/fsh0l_bls/2018Q2v1.2/GENERIC_CORE/BackEnd/lef/fsh0l_bls_generic_core.msv.lef
-#library_umc_40_snps_9t
-set library_umc_40_snps_9t [list   "/eda/process/40/UMC_LP/standcell/synopsys/V5.00A/v-logic_um40npkhlogcasdst000f/DesignWare_logic_libs/umc40nlp/hd/base/hvt/latest/liberty/ccs/um40npkhdst_${PVT}.db"   "/eda/process/40/UMC_LP/standcell/synopsys/V5.00A/v-logic_um40npkslogcasdst000f/DesignWare_logic_libs/umc40nlp/hd/base/svt/latest/liberty/ccs/um40npksdst_${PVT}.db"   "/eda/process/40/UMC_LP/standcell/synopsys/V5.00A/v-logic_um40npkllogcasdst000f/DesignWare_logic_libs/umc40nlp/hd/base/lvt/latest/liberty/ccs/um40npkldst_${PVT}.db"]
-/eda/process/40/UMC_LP/standcell/synopsys/V5.00A/v-logic_um40npkhlogcasdst000f/DesignWare_logic_libs/umc40nlp/hd/base/hvt/latest/liberty/ccs/um40npkhdst_25CTT1P8_typ.db /eda/process/40/UMC_LP/standcell/synopsys/V5.00A/v-logic_um40npkslogcasdst000f/DesignWare_logic_libs/umc40nlp/hd/base/svt/latest/liberty/ccs/um40npksdst_25CTT1P8_typ.db /eda/process/40/UMC_LP/standcell/synopsys/V5.00A/v-logic_um40npkllogcasdst000f/DesignWare_logic_libs/umc40nlp/hd/base/lvt/latest/liberty/ccs/um40npkldst_25CTT1P8_typ.db
-set hvt_umc_40_snps_9t                   "um40npkhdst_${PVT}"
-um40npkhdst_25CTT1P8_typ
-set svt_umc_40_snps_9t                   "um40npksdst_${PVT}"
-um40npksdst_25CTT1P8_typ
-set lvt_umc_40_snps_9t                   "um40npkldst_${PVT}"
-um40npkldst_25CTT1P8_typ
-set ckgate_umc_40_snps_9t                ""
-#library_umc_28_arm_9t_hpc_c30
-set library_umc_28_arm_9t_hpc_c30 [list   "/eda/process/28/UMC_HPC/standcell/UMC_L28HPC_SC9MCZ_FB/arm/umc/l28hpc/sc9mcpp140z_base_hvt_c30/r1p0/${db_type}/sc9mcpp140z_l28hpc_base_hvt_c30_${PVT}.${db_type}"   "/eda/process/28/UMC_HPC/standcell/UMC_L28HPC_SC9MCZ_FB/arm/umc/l28hpc/sc9mcpp140z_base_rvt_c30/r1p0/${db_type}/sc9mcpp140z_l28hpc_base_rvt_c30_${PVT}.${db_type}"   "/eda/process/28/UMC_HPC/standcell/UMC_L28HPC_SC9MCZ_FB/arm/umc/l28hpc/sc9mcpp140z_base_lvt_c30/r1p0/${db_type}/sc9mcpp140z_l28hpc_base_lvt_c30_${PVT}.${db_type}"]
-/eda/process/28/UMC_HPC/standcell/UMC_L28HPC_SC9MCZ_FB/arm/umc/l28hpc/sc9mcpp140z_base_hvt_c30/r1p0/db/sc9mcpp140z_l28hpc_base_hvt_c30_25CTT1P8_typ.db /eda/process/28/UMC_HPC/standcell/UMC_L28HPC_SC9MCZ_FB/arm/umc/l28hpc/sc9mcpp140z_base_rvt_c30/r1p0/db/sc9mcpp140z_l28hpc_base_rvt_c30_25CTT1P8_typ.db /eda/process/28/UMC_HPC/standcell/UMC_L28HPC_SC9MCZ_FB/arm/umc/l28hpc/sc9mcpp140z_base_lvt_c30/r1p0/db/sc9mcpp140z_l28hpc_base_lvt_c30_25CTT1P8_typ.db
-set hvt_umc_28_arm_9t_hpc_c30            "sc9mcpp140z_l28hpc_base_hvt_c30_${PVT}"
-sc9mcpp140z_l28hpc_base_hvt_c30_25CTT1P8_typ
-set rvt_umc_28_arm_9t_hpc_c30            "sc9mcpp140z_l28hpc_base_rvt_c30_${PVT}"
-sc9mcpp140z_l28hpc_base_rvt_c30_25CTT1P8_typ
-set lvt_umc_28_arm_9t_hpc_c30            "sc9mcpp140z_l28hpc_base_lvt_c30_${PVT}"
-sc9mcpp140z_l28hpc_base_lvt_c30_25CTT1P8_typ
-set ckgate_umc_28_arm_9t_hpc_c30         "PREICG_X9B_A9PP140ZTL_C30"
-PREICG_X9B_A9PP140ZTL_C30
-#library_umc_28p_arm_7t_hpc
-set library_umc_28p_arm_7t_hpc [list   "/eda/process/28/UMC_HPC_PLUS/standcell/Arm/7t/arm/umc/l28hpcp/sc7mcpp140z_base_hvt_c40/r0p1/${db_type}-ccs-tn-scm/sc7mcpp140z_l28hpcp_base_hvt_c40_${PVT}.${db_type}_ccs_tn_sh5cm"   "/eda/process/28/UMC_HPC_PLUS/standcell/Arm/7t/arm/umc/l28hpcp/sc7mcpp140z_base_hvt_c35/r0p1/${db_type}-ccs-tn-scm/sc7mcpp140z_l28hpcp_base_hvt_c35_${PVT}.${db_type}_ccs_tn_sh5cm"   "/eda/process/28/UMC_HPC_PLUS/standcell/Arm/7t/arm/umc/l28hpcp/sc7mcpp140z_base_hvt_c30/r0p1/${db_type}-ccs-tn-scm/sc7mcpp140z_l28hpcp_base_hvt_c30_${PVT}.${db_type}_ccs_tn_sh5cm"   "/eda/process/28/UMC_HPC_PLUS/standcell/Arm/7t/arm/umc/l28hpcp/sc7mcpp140z_base_svt_c40/r0p1/${db_type}-ccs-tn-scm/sc7mcpp140z_l28hpcp_base_svt_c40_${PVT}.${db_type}_ccs_tn_sh5cm"   "/eda/process/28/UMC_HPC_PLUS/standcell/Arm/7t/arm/umc/l28hpcp/sc7mcpp140z_base_svt_c35/r0p1/${db_type}-ccs-tn-scm/sc7mcpp140z_l28hpcp_base_svt_c35_${PVT}.${db_type}_ccs_tn_sh5cm"   "/eda/process/28/UMC_HPC_PLUS/standcell/Arm/7t/arm/umc/l28hpcp/sc7mcpp140z_base_svt_c30/r0p1/${db_type}-ccs-tn-scm/sc7mcpp140z_l28hpcp_base_svt_c30_${PVT}.${db_type}_ccs_tn_sh5cm"   "/eda/process/28/UMC_HPC_PLUS/standcell/Arm/7t/arm/umc/l28hpcp/sc7mcpp140z_base_lvt_c40/r0p1/${db_type}-ccs-tn-scm/sc7mcpp140z_l28hpcp_base_lvt_c40_${PVT}.${db_type}_ccs_tn_sh5cm"   "/eda/process/28/UMC_HPC_PLUS/standcell/Arm/7t/arm/umc/l28hpcp/sc7mcpp140z_base_lvt_c35/r0p1/${db_type}-ccs-tn-scm/sc7mcpp140z_l28hpcp_base_lvt_c35_${PVT}.${db_type}_ccs_tn_sh5cm"   "/eda/process/28/UMC_HPC_PLUS/standcell/Arm/7t/arm/umc/l28hpcp/sc7mcpp140z_base_lvt_c30/r0p1/${db_type}-ccs-tn-scm/sc7mcpp140z_l28hpcp_base_lvt_c30_${PVT}.${db_type}_ccs_tn_sh5cm" ]
-/eda/process/28/UMC_HPC_PLUS/standcell/Arm/7t/arm/umc/l28hpcp/sc7mcpp140z_base_hvt_c40/r0p1/db-ccs-tn-scm/sc7mcpp140z_l28hpcp_base_hvt_c40_25CTT1P8_typ.db_ccs_tn_sh5cm /eda/process/28/UMC_HPC_PLUS/standcell/Arm/7t/arm/umc/l28hpcp/sc7mcpp140z_base_hvt_c35/r0p1/db-ccs-tn-scm/sc7mcpp140z_l28hpcp_base_hvt_c35_25CTT1P8_typ.db_ccs_tn_sh5cm /eda/process/28/UMC_HPC_PLUS/standcell/Arm/7t/arm/umc/l28hpcp/sc7mcpp140z_base_hvt_c30/r0p1/db-ccs-tn-scm/sc7mcpp140z_l28hpcp_base_hvt_c30_25CTT1P8_typ.db_ccs_tn_sh5cm /eda/process/28/UMC_HPC_PLUS/standcell/Arm/7t/arm/umc/l28hpcp/sc7mcpp140z_base_svt_c40/r0p1/db-ccs-tn-scm/sc7mcpp140z_l28hpcp_base_svt_c40_25CTT1P8_typ.db_ccs_tn_sh5cm /eda/process/28/UMC_HPC_PLUS/standcell/Arm/7t/arm/umc/l28hpcp/sc7mcpp140z_base_svt_c35/r0p1/db-ccs-tn-scm/sc7mcpp140z_l28hpcp_base_svt_c35_25CTT1P8_typ.db_ccs_tn_sh5cm /eda/process/28/UMC_HPC_PLUS/standcell/Arm/7t/arm/umc/l28hpcp/sc7mcpp140z_base_svt_c30/r0p1/db-ccs-tn-scm/sc7mcpp140z_l28hpcp_base_svt_c30_25CTT1P8_typ.db_ccs_tn_sh5cm /eda/process/28/UMC_HPC_PLUS/standcell/Arm/7t/arm/umc/l28hpcp/sc7mcpp140z_base_lvt_c40/r0p1/db-ccs-tn-scm/sc7mcpp140z_l28hpcp_base_lvt_c40_25CTT1P8_typ.db_ccs_tn_sh5cm /eda/process/28/UMC_HPC_PLUS/standcell/Arm/7t/arm/umc/l28hpcp/sc7mcpp140z_base_lvt_c35/r0p1/db-ccs-tn-scm/sc7mcpp140z_l28hpcp_base_lvt_c35_25CTT1P8_typ.db_ccs_tn_sh5cm /eda/process/28/UMC_HPC_PLUS/standcell/Arm/7t/arm/umc/l28hpcp/sc7mcpp140z_base_lvt_c30/r0p1/db-ccs-tn-scm/sc7mcpp140z_l28hpcp_base_lvt_c30_25CTT1P8_typ.db_ccs_tn_sh5cm
-set hvt_umc_28p_arm_7t_hpc_c40            "sc7mcpp140z_l28hpcp_base_hvt_c40_${PVT}"
-sc7mcpp140z_l28hpcp_base_hvt_c40_25CTT1P8_typ
-set hvt_umc_28p_arm_7t_hpc_c35            "sc7mcpp140z_l28hpcp_base_hvt_c35_${PVT}"
-sc7mcpp140z_l28hpcp_base_hvt_c35_25CTT1P8_typ
-set hvt_umc_28p_arm_7t_hpc_c30            "sc7mcpp140z_l28hpcp_base_hvt_c30_${PVT}"
-sc7mcpp140z_l28hpcp_base_hvt_c30_25CTT1P8_typ
-set svt_umc_28p_arm_7t_hpc_c40            "sc7mcpp140z_l28hpcp_base_svt_c40_${PVT}"
-sc7mcpp140z_l28hpcp_base_svt_c40_25CTT1P8_typ
-set svt_umc_28p_arm_7t_hpc_c35            "sc7mcpp140z_l28hpcp_base_svt_c35_${PVT}"
-sc7mcpp140z_l28hpcp_base_svt_c35_25CTT1P8_typ
-set svt_umc_28p_arm_7t_hpc_c30            "sc7mcpp140z_l28hpcp_base_svt_c30_${PVT}"
-sc7mcpp140z_l28hpcp_base_svt_c30_25CTT1P8_typ
-set lvt_umc_28p_arm_7t_hpc_c40            "sc7mcpp140z_l28hpcp_base_lvt_c40_${PVT}"
-sc7mcpp140z_l28hpcp_base_lvt_c40_25CTT1P8_typ
-set lvt_umc_28p_arm_7t_hpc_c35            "sc7mcpp140z_l28hpcp_base_lvt_c35_${PVT}"
-sc7mcpp140z_l28hpcp_base_lvt_c35_25CTT1P8_typ
-set lvt_umc_28p_arm_7t_hpc_c30            "sc7mcpp140z_l28hpcp_base_lvt_c30_${PVT}"
-sc7mcpp140z_l28hpcp_base_lvt_c30_25CTT1P8_typ
-set ckgate_umc_28p_arm_7t_hpc             "PREICG_X9B_A7PP140ZTS_C30"
-PREICG_X9B_A7PP140ZTS_C30
-#library_umc_28p_arm_9t_hpc
-set library_umc_28p_arm_9t_hpc [list   "/eda/process/28/UMC_HPC_PLUS/standcell/Arm/9t/arm/umc/l28hpcp/sc9mcpp140z_base_hvt_c40/r0p1/${db_type}-ccs-tn-scm/sc9mcpp140z_l28hpcp_base_hvt_c40_${PVT}.${db_type}_ccs_tn_sh5cm"   "/eda/process/28/UMC_HPC_PLUS/standcell/Arm/9t/arm/umc/l28hpcp/sc9mcpp140z_base_hvt_c35/r0p1/${db_type}-ccs-tn-scm/sc9mcpp140z_l28hpcp_base_hvt_c35_${PVT}.${db_type}_ccs_tn_sh5cm"   "/eda/process/28/UMC_HPC_PLUS/standcell/Arm/9t/arm/umc/l28hpcp/sc9mcpp140z_base_hvt_c30/r0p1/${db_type}-ccs-tn-scm/sc9mcpp140z_l28hpcp_base_hvt_c30_${PVT}.${db_type}_ccs_tn_sh5cm"   "/eda/process/28/UMC_HPC_PLUS/standcell/Arm/9t/arm/umc/l28hpcp/sc9mcpp140z_base_svt_c40/r0p1/${db_type}-ccs-tn-scm/sc9mcpp140z_l28hpcp_base_svt_c40_${PVT}.${db_type}_ccs_tn_sh5cm"   "/eda/process/28/UMC_HPC_PLUS/standcell/Arm/9t/arm/umc/l28hpcp/sc9mcpp140z_base_svt_c35/r0p1/${db_type}-ccs-tn-scm/sc9mcpp140z_l28hpcp_base_svt_c35_${PVT}.${db_type}_ccs_tn_sh5cm"   "/eda/process/28/UMC_HPC_PLUS/standcell/Arm/9t/arm/umc/l28hpcp/sc9mcpp140z_base_svt_c30/r0p1/${db_type}-ccs-tn-scm/sc9mcpp140z_l28hpcp_base_svt_c30_${PVT}.${db_type}_ccs_tn_sh5cm"   "/eda/process/28/UMC_HPC_PLUS/standcell/Arm/9t/arm/umc/l28hpcp/sc9mcpp140z_base_lvt_c40/r0p1/${db_type}-ccs-tn-scm/sc9mcpp140z_l28hpcp_base_lvt_c40_${PVT}.${db_type}_ccs_tn_sh5cm"   "/eda/process/28/UMC_HPC_PLUS/standcell/Arm/9t/arm/umc/l28hpcp/sc9mcpp140z_base_lvt_c35/r0p1/${db_type}-ccs-tn-scm/sc9mcpp140z_l28hpcp_base_lvt_c35_${PVT}.${db_type}_ccs_tn_sh5cm"   "/eda/process/28/UMC_HPC_PLUS/standcell/Arm/9t/arm/umc/l28hpcp/sc9mcpp140z_base_lvt_c30/r0p1/${db_type}-ccs-tn-scm/sc9mcpp140z_l28hpcp_base_lvt_c30_${PVT}.${db_type}_ccs_tn_sh5cm" ]
-/eda/process/28/UMC_HPC_PLUS/standcell/Arm/9t/arm/umc/l28hpcp/sc9mcpp140z_base_hvt_c40/r0p1/db-ccs-tn-scm/sc9mcpp140z_l28hpcp_base_hvt_c40_25CTT1P8_typ.db_ccs_tn_sh5cm /eda/process/28/UMC_HPC_PLUS/standcell/Arm/9t/arm/umc/l28hpcp/sc9mcpp140z_base_hvt_c35/r0p1/db-ccs-tn-scm/sc9mcpp140z_l28hpcp_base_hvt_c35_25CTT1P8_typ.db_ccs_tn_sh5cm /eda/process/28/UMC_HPC_PLUS/standcell/Arm/9t/arm/umc/l28hpcp/sc9mcpp140z_base_hvt_c30/r0p1/db-ccs-tn-scm/sc9mcpp140z_l28hpcp_base_hvt_c30_25CTT1P8_typ.db_ccs_tn_sh5cm /eda/process/28/UMC_HPC_PLUS/standcell/Arm/9t/arm/umc/l28hpcp/sc9mcpp140z_base_svt_c40/r0p1/db-ccs-tn-scm/sc9mcpp140z_l28hpcp_base_svt_c40_25CTT1P8_typ.db_ccs_tn_sh5cm /eda/process/28/UMC_HPC_PLUS/standcell/Arm/9t/arm/umc/l28hpcp/sc9mcpp140z_base_svt_c35/r0p1/db-ccs-tn-scm/sc9mcpp140z_l28hpcp_base_svt_c35_25CTT1P8_typ.db_ccs_tn_sh5cm /eda/process/28/UMC_HPC_PLUS/standcell/Arm/9t/arm/umc/l28hpcp/sc9mcpp140z_base_svt_c30/r0p1/db-ccs-tn-scm/sc9mcpp140z_l28hpcp_base_svt_c30_25CTT1P8_typ.db_ccs_tn_sh5cm /eda/process/28/UMC_HPC_PLUS/standcell/Arm/9t/arm/umc/l28hpcp/sc9mcpp140z_base_lvt_c40/r0p1/db-ccs-tn-scm/sc9mcpp140z_l28hpcp_base_lvt_c40_25CTT1P8_typ.db_ccs_tn_sh5cm /eda/process/28/UMC_HPC_PLUS/standcell/Arm/9t/arm/umc/l28hpcp/sc9mcpp140z_base_lvt_c35/r0p1/db-ccs-tn-scm/sc9mcpp140z_l28hpcp_base_lvt_c35_25CTT1P8_typ.db_ccs_tn_sh5cm /eda/process/28/UMC_HPC_PLUS/standcell/Arm/9t/arm/umc/l28hpcp/sc9mcpp140z_base_lvt_c30/r0p1/db-ccs-tn-scm/sc9mcpp140z_l28hpcp_base_lvt_c30_25CTT1P8_typ.db_ccs_tn_sh5cm
-set hvt_umc_28p_arm_9t_hpc_c40            "sc9mcpp140z_l28hpcp_base_hvt_c40_${PVT}"
-sc9mcpp140z_l28hpcp_base_hvt_c40_25CTT1P8_typ
-set hvt_umc_28p_arm_9t_hpc_c35            "sc9mcpp140z_l28hpcp_base_hvt_c35_${PVT}"
-sc9mcpp140z_l28hpcp_base_hvt_c35_25CTT1P8_typ
-set hvt_umc_28p_arm_9t_hpc_c30            "sc9mcpp140z_l28hpcp_base_hvt_c30_${PVT}"
-sc9mcpp140z_l28hpcp_base_hvt_c30_25CTT1P8_typ
-set svt_umc_28p_arm_9t_hpc_c40            "sc9mcpp140z_l28hpcp_base_svt_c40_${PVT}"
-sc9mcpp140z_l28hpcp_base_svt_c40_25CTT1P8_typ
-set svt_umc_28p_arm_9t_hpc_c35            "sc9mcpp140z_l28hpcp_base_svt_c35_${PVT}"
-sc9mcpp140z_l28hpcp_base_svt_c35_25CTT1P8_typ
-set svt_umc_28p_arm_9t_hpc_c30            "sc9mcpp140z_l28hpcp_base_svt_c30_${PVT}"
-sc9mcpp140z_l28hpcp_base_svt_c30_25CTT1P8_typ
-set lvt_umc_28p_arm_9t_hpc_c40            "sc9mcpp140z_l28hpcp_base_lvt_c40_${PVT}"
-sc9mcpp140z_l28hpcp_base_lvt_c40_25CTT1P8_typ
-set lvt_umc_28p_arm_9t_hpc_c35            "sc9mcpp140z_l28hpcp_base_lvt_c35_${PVT}"
-sc9mcpp140z_l28hpcp_base_lvt_c35_25CTT1P8_typ
-set lvt_umc_28p_arm_9t_hpc_c30            "sc9mcpp140z_l28hpcp_base_lvt_c30_${PVT}"
-sc9mcpp140z_l28hpcp_base_lvt_c30_25CTT1P8_typ
-set ckgate_umc_28p_arm_9t_hpc             "PREICG_X9B_A9PP140ZTS_C30"
-PREICG_X9B_A9PP140ZTS_C30
-#library_umc_28p_arm_12t_hpc
-set library_umc_28p_arm_12t_hpc [list   "/eda/process/28/UMC_HPC_PLUS/standcell/Arm/12t/arm/umc/l28hpcp/sc12mcpp140z_base_hvt_c40/r0p1/${db_type}-ccs-tn-scm/sc12mcpp140z_l28hpcp_base_hvt_c40_${PVT}.${db_type}_ccs_tn_sh5cm"   "/eda/process/28/UMC_HPC_PLUS/standcell/Arm/12t/arm/umc/l28hpcp/sc12mcpp140z_base_hvt_c35/r0p1/${db_type}-ccs-tn-scm/sc12mcpp140z_l28hpcp_base_hvt_c35_${PVT}.${db_type}_ccs_tn_sh5cm"   "/eda/process/28/UMC_HPC_PLUS/standcell/Arm/12t/arm/umc/l28hpcp/sc12mcpp140z_base_hvt_c30/r0p1/${db_type}-ccs-tn-scm/sc12mcpp140z_l28hpcp_base_hvt_c30_${PVT}.${db_type}_ccs_tn_sh5cm"   "/eda/process/28/UMC_HPC_PLUS/standcell/Arm/12t/arm/umc/l28hpcp/sc12mcpp140z_base_svt_c40/r0p1/${db_type}-ccs-tn-scm/sc12mcpp140z_l28hpcp_base_svt_c40_${PVT}.${db_type}_ccs_tn_sh5cm"   "/eda/process/28/UMC_HPC_PLUS/standcell/Arm/12t/arm/umc/l28hpcp/sc12mcpp140z_base_svt_c35/r0p1/${db_type}-ccs-tn-scm/sc12mcpp140z_l28hpcp_base_svt_c35_${PVT}.${db_type}_ccs_tn_sh5cm"   "/eda/process/28/UMC_HPC_PLUS/standcell/Arm/12t/arm/umc/l28hpcp/sc12mcpp140z_base_svt_c30/r0p1/${db_type}-ccs-tn-scm/sc12mcpp140z_l28hpcp_base_svt_c30_${PVT}.${db_type}_ccs_tn_sh5cm"   "/eda/process/28/UMC_HPC_PLUS/standcell/Arm/12t/arm/umc/l28hpcp/sc12mcpp140z_base_lvt_c40/r0p1/${db_type}-ccs-tn-scm/sc12mcpp140z_l28hpcp_base_lvt_c40_${PVT}.${db_type}_ccs_tn_sh5cm"   "/eda/process/28/UMC_HPC_PLUS/standcell/Arm/12t/arm/umc/l28hpcp/sc12mcpp140z_base_lvt_c35/r0p1/${db_type}-ccs-tn-scm/sc12mcpp140z_l28hpcp_base_lvt_c35_${PVT}.${db_type}_ccs_tn_sh5cm"   "/eda/process/28/UMC_HPC_PLUS/standcell/Arm/12t/arm/umc/l28hpcp/sc12mcpp140z_base_lvt_c30/r0p1/${db_type}-ccs-tn-scm/sc12mcpp140z_l28hpcp_base_lvt_c30_${PVT}.${db_type}_ccs_tn_sh5cm" ]
-/eda/process/28/UMC_HPC_PLUS/standcell/Arm/12t/arm/umc/l28hpcp/sc12mcpp140z_base_hvt_c40/r0p1/db-ccs-tn-scm/sc12mcpp140z_l28hpcp_base_hvt_c40_25CTT1P8_typ.db_ccs_tn_sh5cm /eda/process/28/UMC_HPC_PLUS/standcell/Arm/12t/arm/umc/l28hpcp/sc12mcpp140z_base_hvt_c35/r0p1/db-ccs-tn-scm/sc12mcpp140z_l28hpcp_base_hvt_c35_25CTT1P8_typ.db_ccs_tn_sh5cm /eda/process/28/UMC_HPC_PLUS/standcell/Arm/12t/arm/umc/l28hpcp/sc12mcpp140z_base_hvt_c30/r0p1/db-ccs-tn-scm/sc12mcpp140z_l28hpcp_base_hvt_c30_25CTT1P8_typ.db_ccs_tn_sh5cm /eda/process/28/UMC_HPC_PLUS/standcell/Arm/12t/arm/umc/l28hpcp/sc12mcpp140z_base_svt_c40/r0p1/db-ccs-tn-scm/sc12mcpp140z_l28hpcp_base_svt_c40_25CTT1P8_typ.db_ccs_tn_sh5cm /eda/process/28/UMC_HPC_PLUS/standcell/Arm/12t/arm/umc/l28hpcp/sc12mcpp140z_base_svt_c35/r0p1/db-ccs-tn-scm/sc12mcpp140z_l28hpcp_base_svt_c35_25CTT1P8_typ.db_ccs_tn_sh5cm /eda/process/28/UMC_HPC_PLUS/standcell/Arm/12t/arm/umc/l28hpcp/sc12mcpp140z_base_svt_c30/r0p1/db-ccs-tn-scm/sc12mcpp140z_l28hpcp_base_svt_c30_25CTT1P8_typ.db_ccs_tn_sh5cm /eda/process/28/UMC_HPC_PLUS/standcell/Arm/12t/arm/umc/l28hpcp/sc12mcpp140z_base_lvt_c40/r0p1/db-ccs-tn-scm/sc12mcpp140z_l28hpcp_base_lvt_c40_25CTT1P8_typ.db_ccs_tn_sh5cm /eda/process/28/UMC_HPC_PLUS/standcell/Arm/12t/arm/umc/l28hpcp/sc12mcpp140z_base_lvt_c35/r0p1/db-ccs-tn-scm/sc12mcpp140z_l28hpcp_base_lvt_c35_25CTT1P8_typ.db_ccs_tn_sh5cm /eda/process/28/UMC_HPC_PLUS/standcell/Arm/12t/arm/umc/l28hpcp/sc12mcpp140z_base_lvt_c30/r0p1/db-ccs-tn-scm/sc12mcpp140z_l28hpcp_base_lvt_c30_25CTT1P8_typ.db_ccs_tn_sh5cm
-set hvt_umc_28p_arm_12t_hpc_c40           "sc12mcpp140z_l28hpcp_base_hvt_c40_${PVT}"
-sc12mcpp140z_l28hpcp_base_hvt_c40_25CTT1P8_typ
-set hvt_umc_28p_arm_12t_hpc_c35           "sc12mcpp140z_l28hpcp_base_hvt_c35_${PVT}"
-sc12mcpp140z_l28hpcp_base_hvt_c35_25CTT1P8_typ
-set hvt_umc_28p_arm_12t_hpc_c30           "sc12mcpp140z_l28hpcp_base_hvt_c30_${PVT}"
-sc12mcpp140z_l28hpcp_base_hvt_c30_25CTT1P8_typ
-set svt_umc_28p_arm_12t_hpc_c40           "sc12mcpp140z_l28hpcp_base_svt_c40_${PVT}"
-sc12mcpp140z_l28hpcp_base_svt_c40_25CTT1P8_typ
-set svt_umc_28p_arm_12t_hpc_c35           "sc12mcpp140z_l28hpcp_base_svt_c35_${PVT}"
-sc12mcpp140z_l28hpcp_base_svt_c35_25CTT1P8_typ
-set svt_umc_28p_arm_12t_hpc_c30           "sc12mcpp140z_l28hpcp_base_svt_c30_${PVT}"
-sc12mcpp140z_l28hpcp_base_svt_c30_25CTT1P8_typ
-set lvt_umc_28p_arm_12t_hpc_c40           "sc12mcpp140z_l28hpcp_base_lvt_c40_${PVT}"
-sc12mcpp140z_l28hpcp_base_lvt_c40_25CTT1P8_typ
-set lvt_umc_28p_arm_12t_hpc_c35           "sc12mcpp140z_l28hpcp_base_lvt_c35_${PVT}"
-sc12mcpp140z_l28hpcp_base_lvt_c35_25CTT1P8_typ
-set lvt_umc_28p_arm_12t_hpc_c30           "sc12mcpp140z_l28hpcp_base_lvt_c30_${PVT}"
-sc12mcpp140z_l28hpcp_base_lvt_c30_25CTT1P8_typ
-set ckgate_umc_28p_arm_12t_hpc            "PREICG_X9B_A12PP140ZTS_C30"
-PREICG_X9B_A12PP140ZTS_C30
-#yyren 20210315 add u22 arm
-#library_umc_22_arm_7t
-set library_umc_22_arm_7t [list   "/eda/process/22/UMC_ULP/standcell/arm/arm/umc/l22ulpull/sc7mcpp140z_base_hvt_c30/r0p0/${db_type}-ccs-tn-scm/sc7mcpp140z_l22ulpull_base_hvt_c30_${PVT}.${db_type}_ccs_tn_sh5cm"   "/eda/process/22/UMC_ULP/standcell/arm/arm/umc/l22ulpull/sc7mcpp140z_base_hvt_c35/r0p0/${db_type}-ccs-tn-scm/sc7mcpp140z_l22ulpull_base_hvt_c35_${PVT}.${db_type}_ccs_tn_sh5cm"   "/eda/process/22/UMC_ULP/standcell/arm/arm/umc/l22ulpull/sc7mcpp140z_base_hvt_c40/r0p0/${db_type}-ccs-tn-scm/sc7mcpp140z_l22ulpull_base_hvt_c40_${PVT}.${db_type}_ccs_tn_sh5cm"   "/eda/process/22/UMC_ULP/standcell/arm/arm/umc/l22ulpull/sc7mcpp140z_base_svt_c30/r0p0/${db_type}-ccs-tn-scm/sc7mcpp140z_l22ulpull_base_svt_c30_${PVT}.${db_type}_ccs_tn_sh5cm"   "/eda/process/22/UMC_ULP/standcell/arm/arm/umc/l22ulpull/sc7mcpp140z_base_svt_c35/r0p0/${db_type}-ccs-tn-scm/sc7mcpp140z_l22ulpull_base_svt_c35_${PVT}.${db_type}_ccs_tn_sh5cm"   "/eda/process/22/UMC_ULP/standcell/arm/arm/umc/l22ulpull/sc7mcpp140z_base_svt_c40/r0p0/${db_type}-ccs-tn-scm/sc7mcpp140z_l22ulpull_base_svt_c40_${PVT}.${db_type}_ccs_tn_sh5cm"   "/eda/process/22/UMC_ULP/standcell/arm/arm/umc/l22ulpull/sc7mcpp140z_hpk_hvt_c30/r0p0/${db_type}-ccs-tn-scm/sc7mcpp140z_l22ulpull_hpk_hvt_c30_${PVT}.${db_type}_ccs_tn_sh5cm"   "/eda/process/22/UMC_ULP/standcell/arm/arm/umc/l22ulpull/sc7mcpp140z_hpk_hvt_c35/r0p0/${db_type}-ccs-tn-scm/sc7mcpp140z_l22ulpull_hpk_hvt_c35_${PVT}.${db_type}_ccs_tn_sh5cm"   "/eda/process/22/UMC_ULP/standcell/arm/arm/umc/l22ulpull/sc7mcpp140z_hpk_hvt_c40/r0p0/${db_type}-ccs-tn-scm/sc7mcpp140z_l22ulpull_hpk_hvt_c40_${PVT}.${db_type}_ccs_tn_sh5cm"   "/eda/process/22/UMC_ULP/standcell/arm/arm/umc/l22ulpull/sc7mcpp140z_hpk_svt_c30/r0p0/${db_type}-ccs-tn-scm/sc7mcpp140z_l22ulpull_hpk_svt_c30_${PVT}.${db_type}_ccs_tn_sh5cm"   "/eda/process/22/UMC_ULP/standcell/arm/arm/umc/l22ulpull/sc7mcpp140z_hpk_svt_c35/r0p0/${db_type}-ccs-tn-scm/sc7mcpp140z_l22ulpull_hpk_svt_c35_${PVT}.${db_type}_ccs_tn_sh5cm"   "/eda/process/22/UMC_ULP/standcell/arm/arm/umc/l22ulpull/sc7mcpp140z_hpk_svt_c40/r0p0/${db_type}-ccs-tn-scm/sc7mcpp140z_l22ulpull_hpk_svt_c40_${PVT}.${db_type}_ccs_tn_sh5cm"   "/eda/process/22/UMC_ULP/standcell/arm/arm/umc/l22ulpull/sc7mcpp140z_pmk_hvt_c30/r0p0/${db_type}-ccs-tn-scm/sc7mcpp140z_l22ulpull_pmk_hvt_c30_${PVT}.${db_type}_ccs_tn_sh5cm"   "/eda/process/22/UMC_ULP/standcell/arm/arm/umc/l22ulpull/sc7mcpp140z_pmk_hvt_c35/r0p0/${db_type}-ccs-tn-scm/sc7mcpp140z_l22ulpull_pmk_hvt_c35_${PVT}.${db_type}_ccs_tn_sh5cm"   "/eda/process/22/UMC_ULP/standcell/arm/arm/umc/l22ulpull/sc7mcpp140z_pmk_hvt_c40/r0p0/${db_type}-ccs-tn-scm/sc7mcpp140z_l22ulpull_pmk_hvt_c40_${PVT}.${db_type}_ccs_tn_sh5cm"   "/eda/process/22/UMC_ULP/standcell/arm/arm/umc/l22ulpull/sc7mcpp140z_pmk_svt_c30/r0p0/${db_type}-ccs-tn-scm/sc7mcpp140z_l22ulpull_pmk_svt_c30_${PVT}.${db_type}_ccs_tn_sh5cm"   "/eda/process/22/UMC_ULP/standcell/arm/arm/umc/l22ulpull/sc7mcpp140z_pmk_svt_c35/r0p0/${db_type}-ccs-tn-scm/sc7mcpp140z_l22ulpull_pmk_svt_c35_${PVT}.${db_type}_ccs_tn_sh5cm"   "/eda/process/22/UMC_ULP/standcell/arm/arm/umc/l22ulpull/sc7mcpp140z_pmk_svt_c40/r0p0/${db_type}-ccs-tn-scm/sc7mcpp140z_l22ulpull_pmk_svt_c40_${PVT}.${db_type}_ccs_tn_sh5cm" ]
-/eda/process/22/UMC_ULP/standcell/arm/arm/umc/l22ulpull/sc7mcpp140z_base_hvt_c30/r0p0/db-ccs-tn-scm/sc7mcpp140z_l22ulpull_base_hvt_c30_25CTT1P8_typ.db_ccs_tn_sh5cm /eda/process/22/UMC_ULP/standcell/arm/arm/umc/l22ulpull/sc7mcpp140z_base_hvt_c35/r0p0/db-ccs-tn-scm/sc7mcpp140z_l22ulpull_base_hvt_c35_25CTT1P8_typ.db_ccs_tn_sh5cm /eda/process/22/UMC_ULP/standcell/arm/arm/umc/l22ulpull/sc7mcpp140z_base_hvt_c40/r0p0/db-ccs-tn-scm/sc7mcpp140z_l22ulpull_base_hvt_c40_25CTT1P8_typ.db_ccs_tn_sh5cm /eda/process/22/UMC_ULP/standcell/arm/arm/umc/l22ulpull/sc7mcpp140z_base_svt_c30/r0p0/db-ccs-tn-scm/sc7mcpp140z_l22ulpull_base_svt_c30_25CTT1P8_typ.db_ccs_tn_sh5cm /eda/process/22/UMC_ULP/standcell/arm/arm/umc/l22ulpull/sc7mcpp140z_base_svt_c35/r0p0/db-ccs-tn-scm/sc7mcpp140z_l22ulpull_base_svt_c35_25CTT1P8_typ.db_ccs_tn_sh5cm /eda/process/22/UMC_ULP/standcell/arm/arm/umc/l22ulpull/sc7mcpp140z_base_svt_c40/r0p0/db-ccs-tn-scm/sc7mcpp140z_l22ulpull_base_svt_c40_25CTT1P8_typ.db_ccs_tn_sh5cm /eda/process/22/UMC_ULP/standcell/arm/arm/umc/l22ulpull/sc7mcpp140z_hpk_hvt_c30/r0p0/db-ccs-tn-scm/sc7mcpp140z_l22ulpull_hpk_hvt_c30_25CTT1P8_typ.db_ccs_tn_sh5cm /eda/process/22/UMC_ULP/standcell/arm/arm/umc/l22ulpull/sc7mcpp140z_hpk_hvt_c35/r0p0/db-ccs-tn-scm/sc7mcpp140z_l22ulpull_hpk_hvt_c35_25CTT1P8_typ.db_ccs_tn_sh5cm /eda/process/22/UMC_ULP/standcell/arm/arm/umc/l22ulpull/sc7mcpp140z_hpk_hvt_c40/r0p0/db-ccs-tn-scm/sc7mcpp140z_l22ulpull_hpk_hvt_c40_25CTT1P8_typ.db_ccs_tn_sh5cm /eda/process/22/UMC_ULP/standcell/arm/arm/umc/l22ulpull/sc7mcpp140z_hpk_svt_c30/r0p0/db-ccs-tn-scm/sc7mcpp140z_l22ulpull_hpk_svt_c30_25CTT1P8_typ.db_ccs_tn_sh5cm /eda/process/22/UMC_ULP/standcell/arm/arm/umc/l22ulpull/sc7mcpp140z_hpk_svt_c35/r0p0/db-ccs-tn-scm/sc7mcpp140z_l22ulpull_hpk_svt_c35_25CTT1P8_typ.db_ccs_tn_sh5cm /eda/process/22/UMC_ULP/standcell/arm/arm/umc/l22ulpull/sc7mcpp140z_hpk_svt_c40/r0p0/db-ccs-tn-scm/sc7mcpp140z_l22ulpull_hpk_svt_c40_25CTT1P8_typ.db_ccs_tn_sh5cm /eda/process/22/UMC_ULP/standcell/arm/arm/umc/l22ulpull/sc7mcpp140z_pmk_hvt_c30/r0p0/db-ccs-tn-scm/sc7mcpp140z_l22ulpull_pmk_hvt_c30_25CTT1P8_typ.db_ccs_tn_sh5cm /eda/process/22/UMC_ULP/standcell/arm/arm/umc/l22ulpull/sc7mcpp140z_pmk_hvt_c35/r0p0/db-ccs-tn-scm/sc7mcpp140z_l22ulpull_pmk_hvt_c35_25CTT1P8_typ.db_ccs_tn_sh5cm /eda/process/22/UMC_ULP/standcell/arm/arm/umc/l22ulpull/sc7mcpp140z_pmk_hvt_c40/r0p0/db-ccs-tn-scm/sc7mcpp140z_l22ulpull_pmk_hvt_c40_25CTT1P8_typ.db_ccs_tn_sh5cm /eda/process/22/UMC_ULP/standcell/arm/arm/umc/l22ulpull/sc7mcpp140z_pmk_svt_c30/r0p0/db-ccs-tn-scm/sc7mcpp140z_l22ulpull_pmk_svt_c30_25CTT1P8_typ.db_ccs_tn_sh5cm /eda/process/22/UMC_ULP/standcell/arm/arm/umc/l22ulpull/sc7mcpp140z_pmk_svt_c35/r0p0/db-ccs-tn-scm/sc7mcpp140z_l22ulpull_pmk_svt_c35_25CTT1P8_typ.db_ccs_tn_sh5cm /eda/process/22/UMC_ULP/standcell/arm/arm/umc/l22ulpull/sc7mcpp140z_pmk_svt_c40/r0p0/db-ccs-tn-scm/sc7mcpp140z_l22ulpull_pmk_svt_c40_25CTT1P8_typ.db_ccs_tn_sh5cm
-set hvt_umc_22_arm_7t_base_c30            "sc7mcpp140z_l22ulpull_base_hvt_c30_${PVT}"
-sc7mcpp140z_l22ulpull_base_hvt_c30_25CTT1P8_typ
-set hvt_umc_22_arm_7t_base_c35            "sc7mcpp140z_l22ulpull_base_hvt_c35_${PVT}"
-sc7mcpp140z_l22ulpull_base_hvt_c35_25CTT1P8_typ
-set hvt_umc_22_arm_7t_base_c40            "sc7mcpp140z_l22ulpull_base_hvt_c40_${PVT}"
-sc7mcpp140z_l22ulpull_base_hvt_c40_25CTT1P8_typ
-set svt_umc_22_arm_7t_base_c30            "sc7mcpp140z_l22ulpull_base_svt_c30_${PVT}"
-sc7mcpp140z_l22ulpull_base_svt_c30_25CTT1P8_typ
-set svt_umc_22_arm_7t_base_c35            "sc7mcpp140z_l22ulpull_base_svt_c35_${PVT}"
-sc7mcpp140z_l22ulpull_base_svt_c35_25CTT1P8_typ
-set svt_umc_22_arm_7t_base_c40            "sc7mcpp140z_l22ulpull_base_svt_c40_${PVT}"
-sc7mcpp140z_l22ulpull_base_svt_c40_25CTT1P8_typ
-set hvt_umc_22_arm_7t_hpk_c30             "sc7mcpp140z_l22ulpull_hpk_hvt_c30_${PVT}"
-sc7mcpp140z_l22ulpull_hpk_hvt_c30_25CTT1P8_typ
-set hvt_umc_22_arm_7t_hpk_c35             "sc7mcpp140z_l22ulpull_hpk_hvt_c35_${PVT}"
-sc7mcpp140z_l22ulpull_hpk_hvt_c35_25CTT1P8_typ
-set hvt_umc_22_arm_7t_hpk_c40             "sc7mcpp140z_l22ulpull_hpk_hvt_c40_${PVT}"
-sc7mcpp140z_l22ulpull_hpk_hvt_c40_25CTT1P8_typ
-set svt_umc_22_arm_7t_hpk_c30             "sc7mcpp140z_l22ulpull_hpk_svt_c30_${PVT}"
-sc7mcpp140z_l22ulpull_hpk_svt_c30_25CTT1P8_typ
-set svt_umc_22_arm_7t_hpk_c35             "sc7mcpp140z_l22ulpull_hpk_svt_c35_${PVT}"
-sc7mcpp140z_l22ulpull_hpk_svt_c35_25CTT1P8_typ
-set svt_umc_22_arm_7t_hpk_c40             "sc7mcpp140z_l22ulpull_hpk_svt_c40_${PVT}"
-sc7mcpp140z_l22ulpull_hpk_svt_c40_25CTT1P8_typ
-set hvt_umc_22_arm_7t_pmk_c30             "sc7mcpp140z_l22ulpull_pmk_hvt_c30_${PVT}"
-sc7mcpp140z_l22ulpull_pmk_hvt_c30_25CTT1P8_typ
-set hvt_umc_22_arm_7t_pmk_c35             "sc7mcpp140z_l22ulpull_pmk_hvt_c35_${PVT}"
-sc7mcpp140z_l22ulpull_pmk_hvt_c35_25CTT1P8_typ
-set hvt_umc_22_arm_7t_pmk_c40             "sc7mcpp140z_l22ulpull_pmk_hvt_c40_${PVT}"
-sc7mcpp140z_l22ulpull_pmk_hvt_c40_25CTT1P8_typ
-set svt_umc_22_arm_7t_pmk_c30             "sc7mcpp140z_l22ulpull_pmk_svt_c30_${PVT}"
-sc7mcpp140z_l22ulpull_pmk_svt_c30_25CTT1P8_typ
-set svt_umc_22_arm_7t_pmk_c35             "sc7mcpp140z_l22ulpull_pmk_svt_c35_${PVT}"
-sc7mcpp140z_l22ulpull_pmk_svt_c35_25CTT1P8_typ
-set svt_umc_22_arm_7t_pmk_c40             "sc7mcpp140z_l22ulpull_pmk_svt_c40_${PVT}"
-sc7mcpp140z_l22ulpull_pmk_svt_c40_25CTT1P8_typ
-set ckgate_umc_22_arm_7t                  "PREICG_X9B_A7PP140ZTS_C35"
-PREICG_X9B_A7PP140ZTS_C35
-#library_umc_22_arm_9t
-set library_umc_22_arm_9t [list   "/eda/process/22/UMC_ULP/standcell/arm/arm/umc/l22ulpull/sc9mcpp140z_base_hvt_c30/r0p0/${db_type}-ccs-tn-scm/sc9mcpp140z_l22ulpull_base_hvt_c30_${PVT}.${db_type}_ccs_tn_sh5cm"   "/eda/process/22/UMC_ULP/standcell/arm/arm/umc/l22ulpull/sc9mcpp140z_base_hvt_c35/r0p0/${db_type}-ccs-tn-scm/sc9mcpp140z_l22ulpull_base_hvt_c35_${PVT}.${db_type}_ccs_tn_sh5cm"   "/eda/process/22/UMC_ULP/standcell/arm/arm/umc/l22ulpull/sc9mcpp140z_base_hvt_c40/r0p0/${db_type}-ccs-tn-scm/sc9mcpp140z_l22ulpull_base_hvt_c40_${PVT}.${db_type}_ccs_tn_sh5cm"   "/eda/process/22/UMC_ULP/standcell/arm/arm/umc/l22ulpull/sc9mcpp140z_base_svt_c30/r0p0/${db_type}-ccs-tn-scm/sc9mcpp140z_l22ulpull_base_svt_c30_${PVT}.${db_type}_ccs_tn_sh5cm"   "/eda/process/22/UMC_ULP/standcell/arm/arm/umc/l22ulpull/sc9mcpp140z_base_svt_c35/r0p0/${db_type}-ccs-tn-scm/sc9mcpp140z_l22ulpull_base_svt_c35_${PVT}.${db_type}_ccs_tn_sh5cm"   "/eda/process/22/UMC_ULP/standcell/arm/arm/umc/l22ulpull/sc9mcpp140z_base_svt_c40/r0p0/${db_type}-ccs-tn-scm/sc9mcpp140z_l22ulpull_base_svt_c40_${PVT}.${db_type}_ccs_tn_sh5cm"   "/eda/process/22/UMC_ULP/standcell/arm/arm/umc/l22ulpull/sc9mcpp140z_hpk_hvt_c30/r0p0/${db_type}-ccs-tn-scm/sc9mcpp140z_l22ulpull_hpk_hvt_c30_${PVT}.${db_type}_ccs_tn_sh5cm"   "/eda/process/22/UMC_ULP/standcell/arm/arm/umc/l22ulpull/sc9mcpp140z_hpk_hvt_c35/r0p0/${db_type}-ccs-tn-scm/sc9mcpp140z_l22ulpull_hpk_hvt_c35_${PVT}.${db_type}_ccs_tn_sh5cm"   "/eda/process/22/UMC_ULP/standcell/arm/arm/umc/l22ulpull/sc9mcpp140z_hpk_hvt_c40/r0p0/${db_type}-ccs-tn-scm/sc9mcpp140z_l22ulpull_hpk_hvt_c40_${PVT}.${db_type}_ccs_tn_sh5cm"   "/eda/process/22/UMC_ULP/standcell/arm/arm/umc/l22ulpull/sc9mcpp140z_hpk_svt_c30/r0p0/${db_type}-ccs-tn-scm/sc9mcpp140z_l22ulpull_hpk_svt_c30_${PVT}.${db_type}_ccs_tn_sh5cm"   "/eda/process/22/UMC_ULP/standcell/arm/arm/umc/l22ulpull/sc9mcpp140z_hpk_svt_c35/r0p0/${db_type}-ccs-tn-scm/sc9mcpp140z_l22ulpull_hpk_svt_c35_${PVT}.${db_type}_ccs_tn_sh5cm"   "/eda/process/22/UMC_ULP/standcell/arm/arm/umc/l22ulpull/sc9mcpp140z_hpk_svt_c40/r0p0/${db_type}-ccs-tn-scm/sc9mcpp140z_l22ulpull_hpk_svt_c40_${PVT}.${db_type}_ccs_tn_sh5cm"   "/eda/process/22/UMC_ULP/standcell/arm/arm/umc/l22ulpull/sc9mcpp140z_pmk_hvt_c30/r0p0/${db_type}-ccs-tn-scm/sc9mcpp140z_l22ulpull_pmk_hvt_c30_${PVT}.${db_type}_ccs_tn_sh5cm"   "/eda/process/22/UMC_ULP/standcell/arm/arm/umc/l22ulpull/sc9mcpp140z_pmk_hvt_c35/r0p0/${db_type}-ccs-tn-scm/sc9mcpp140z_l22ulpull_pmk_hvt_c35_${PVT}.${db_type}_ccs_tn_sh5cm"   "/eda/process/22/UMC_ULP/standcell/arm/arm/umc/l22ulpull/sc9mcpp140z_pmk_hvt_c40/r0p0/${db_type}-ccs-tn-scm/sc9mcpp140z_l22ulpull_pmk_hvt_c40_${PVT}.${db_type}_ccs_tn_sh5cm"   "/eda/process/22/UMC_ULP/standcell/arm/arm/umc/l22ulpull/sc9mcpp140z_pmk_svt_c30/r0p0/${db_type}-ccs-tn-scm/sc9mcpp140z_l22ulpull_pmk_svt_c30_${PVT}.${db_type}_ccs_tn_sh5cm"   "/eda/process/22/UMC_ULP/standcell/arm/arm/umc/l22ulpull/sc9mcpp140z_pmk_svt_c35/r0p0/${db_type}-ccs-tn-scm/sc9mcpp140z_l22ulpull_pmk_svt_c35_${PVT}.${db_type}_ccs_tn_sh5cm"   "/eda/process/22/UMC_ULP/standcell/arm/arm/umc/l22ulpull/sc9mcpp140z_pmk_svt_c40/r0p0/${db_type}-ccs-tn-scm/sc9mcpp140z_l22ulpull_pmk_svt_c40_${PVT}.${db_type}_ccs_tn_sh5cm" ]
-/eda/process/22/UMC_ULP/standcell/arm/arm/umc/l22ulpull/sc9mcpp140z_base_hvt_c30/r0p0/db-ccs-tn-scm/sc9mcpp140z_l22ulpull_base_hvt_c30_25CTT1P8_typ.db_ccs_tn_sh5cm /eda/process/22/UMC_ULP/standcell/arm/arm/umc/l22ulpull/sc9mcpp140z_base_hvt_c35/r0p0/db-ccs-tn-scm/sc9mcpp140z_l22ulpull_base_hvt_c35_25CTT1P8_typ.db_ccs_tn_sh5cm /eda/process/22/UMC_ULP/standcell/arm/arm/umc/l22ulpull/sc9mcpp140z_base_hvt_c40/r0p0/db-ccs-tn-scm/sc9mcpp140z_l22ulpull_base_hvt_c40_25CTT1P8_typ.db_ccs_tn_sh5cm /eda/process/22/UMC_ULP/standcell/arm/arm/umc/l22ulpull/sc9mcpp140z_base_svt_c30/r0p0/db-ccs-tn-scm/sc9mcpp140z_l22ulpull_base_svt_c30_25CTT1P8_typ.db_ccs_tn_sh5cm /eda/process/22/UMC_ULP/standcell/arm/arm/umc/l22ulpull/sc9mcpp140z_base_svt_c35/r0p0/db-ccs-tn-scm/sc9mcpp140z_l22ulpull_base_svt_c35_25CTT1P8_typ.db_ccs_tn_sh5cm /eda/process/22/UMC_ULP/standcell/arm/arm/umc/l22ulpull/sc9mcpp140z_base_svt_c40/r0p0/db-ccs-tn-scm/sc9mcpp140z_l22ulpull_base_svt_c40_25CTT1P8_typ.db_ccs_tn_sh5cm /eda/process/22/UMC_ULP/standcell/arm/arm/umc/l22ulpull/sc9mcpp140z_hpk_hvt_c30/r0p0/db-ccs-tn-scm/sc9mcpp140z_l22ulpull_hpk_hvt_c30_25CTT1P8_typ.db_ccs_tn_sh5cm /eda/process/22/UMC_ULP/standcell/arm/arm/umc/l22ulpull/sc9mcpp140z_hpk_hvt_c35/r0p0/db-ccs-tn-scm/sc9mcpp140z_l22ulpull_hpk_hvt_c35_25CTT1P8_typ.db_ccs_tn_sh5cm /eda/process/22/UMC_ULP/standcell/arm/arm/umc/l22ulpull/sc9mcpp140z_hpk_hvt_c40/r0p0/db-ccs-tn-scm/sc9mcpp140z_l22ulpull_hpk_hvt_c40_25CTT1P8_typ.db_ccs_tn_sh5cm /eda/process/22/UMC_ULP/standcell/arm/arm/umc/l22ulpull/sc9mcpp140z_hpk_svt_c30/r0p0/db-ccs-tn-scm/sc9mcpp140z_l22ulpull_hpk_svt_c30_25CTT1P8_typ.db_ccs_tn_sh5cm /eda/process/22/UMC_ULP/standcell/arm/arm/umc/l22ulpull/sc9mcpp140z_hpk_svt_c35/r0p0/db-ccs-tn-scm/sc9mcpp140z_l22ulpull_hpk_svt_c35_25CTT1P8_typ.db_ccs_tn_sh5cm /eda/process/22/UMC_ULP/standcell/arm/arm/umc/l22ulpull/sc9mcpp140z_hpk_svt_c40/r0p0/db-ccs-tn-scm/sc9mcpp140z_l22ulpull_hpk_svt_c40_25CTT1P8_typ.db_ccs_tn_sh5cm /eda/process/22/UMC_ULP/standcell/arm/arm/umc/l22ulpull/sc9mcpp140z_pmk_hvt_c30/r0p0/db-ccs-tn-scm/sc9mcpp140z_l22ulpull_pmk_hvt_c30_25CTT1P8_typ.db_ccs_tn_sh5cm /eda/process/22/UMC_ULP/standcell/arm/arm/umc/l22ulpull/sc9mcpp140z_pmk_hvt_c35/r0p0/db-ccs-tn-scm/sc9mcpp140z_l22ulpull_pmk_hvt_c35_25CTT1P8_typ.db_ccs_tn_sh5cm /eda/process/22/UMC_ULP/standcell/arm/arm/umc/l22ulpull/sc9mcpp140z_pmk_hvt_c40/r0p0/db-ccs-tn-scm/sc9mcpp140z_l22ulpull_pmk_hvt_c40_25CTT1P8_typ.db_ccs_tn_sh5cm /eda/process/22/UMC_ULP/standcell/arm/arm/umc/l22ulpull/sc9mcpp140z_pmk_svt_c30/r0p0/db-ccs-tn-scm/sc9mcpp140z_l22ulpull_pmk_svt_c30_25CTT1P8_typ.db_ccs_tn_sh5cm /eda/process/22/UMC_ULP/standcell/arm/arm/umc/l22ulpull/sc9mcpp140z_pmk_svt_c35/r0p0/db-ccs-tn-scm/sc9mcpp140z_l22ulpull_pmk_svt_c35_25CTT1P8_typ.db_ccs_tn_sh5cm /eda/process/22/UMC_ULP/standcell/arm/arm/umc/l22ulpull/sc9mcpp140z_pmk_svt_c40/r0p0/db-ccs-tn-scm/sc9mcpp140z_l22ulpull_pmk_svt_c40_25CTT1P8_typ.db_ccs_tn_sh5cm
-set hvt_umc_22_arm_9t_base_c30            "sc9mcpp140z_l22ulpull_base_hvt_c30_${PVT}"
-sc9mcpp140z_l22ulpull_base_hvt_c30_25CTT1P8_typ
-set hvt_umc_22_arm_9t_base_c35            "sc9mcpp140z_l22ulpull_base_hvt_c35_${PVT}"
-sc9mcpp140z_l22ulpull_base_hvt_c35_25CTT1P8_typ
-set hvt_umc_22_arm_9t_base_c40            "sc9mcpp140z_l22ulpull_base_hvt_c40_${PVT}"
-sc9mcpp140z_l22ulpull_base_hvt_c40_25CTT1P8_typ
-set svt_umc_22_arm_9t_base_c30            "sc9mcpp140z_l22ulpull_base_svt_c30_${PVT}"
-sc9mcpp140z_l22ulpull_base_svt_c30_25CTT1P8_typ
-set svt_umc_22_arm_9t_base_c35            "sc9mcpp140z_l22ulpull_base_svt_c35_${PVT}"
-sc9mcpp140z_l22ulpull_base_svt_c35_25CTT1P8_typ
-set svt_umc_22_arm_9t_base_c40            "sc9mcpp140z_l22ulpull_base_svt_c40_${PVT}"
-sc9mcpp140z_l22ulpull_base_svt_c40_25CTT1P8_typ
-set hvt_umc_22_arm_9t_hpk_c30             "sc9mcpp140z_l22ulpull_hpk_hvt_c30_${PVT}"
-sc9mcpp140z_l22ulpull_hpk_hvt_c30_25CTT1P8_typ
-set hvt_umc_22_arm_9t_hpk_c35             "sc9mcpp140z_l22ulpull_hpk_hvt_c35_${PVT}"
-sc9mcpp140z_l22ulpull_hpk_hvt_c35_25CTT1P8_typ
-set hvt_umc_22_arm_9t_hpk_c40             "sc9mcpp140z_l22ulpull_hpk_hvt_c40_${PVT}"
-sc9mcpp140z_l22ulpull_hpk_hvt_c40_25CTT1P8_typ
-set svt_umc_22_arm_9t_hpk_c30             "sc9mcpp140z_l22ulpull_hpk_svt_c30_${PVT}"
-sc9mcpp140z_l22ulpull_hpk_svt_c30_25CTT1P8_typ
-set svt_umc_22_arm_9t_hpk_c35             "sc9mcpp140z_l22ulpull_hpk_svt_c35_${PVT}"
-sc9mcpp140z_l22ulpull_hpk_svt_c35_25CTT1P8_typ
-set svt_umc_22_arm_9t_hpk_c40             "sc9mcpp140z_l22ulpull_hpk_svt_c40_${PVT}"
-sc9mcpp140z_l22ulpull_hpk_svt_c40_25CTT1P8_typ
-set hvt_umc_22_arm_9t_pmk_c30             "sc9mcpp140z_l22ulpull_pmk_hvt_c30_${PVT}"
-sc9mcpp140z_l22ulpull_pmk_hvt_c30_25CTT1P8_typ
-set hvt_umc_22_arm_9t_pmk_c35             "sc9mcpp140z_l22ulpull_pmk_hvt_c35_${PVT}"
-sc9mcpp140z_l22ulpull_pmk_hvt_c35_25CTT1P8_typ
-set hvt_umc_22_arm_9t_pmk_c40             "sc9mcpp140z_l22ulpull_pmk_hvt_c40_${PVT}"
-sc9mcpp140z_l22ulpull_pmk_hvt_c40_25CTT1P8_typ
-set svt_umc_22_arm_9t_pmk_c30             "sc9mcpp140z_l22ulpull_pmk_svt_c30_${PVT}"
-sc9mcpp140z_l22ulpull_pmk_svt_c30_25CTT1P8_typ
-set svt_umc_22_arm_9t_pmk_c35             "sc9mcpp140z_l22ulpull_pmk_svt_c35_${PVT}"
-sc9mcpp140z_l22ulpull_pmk_svt_c35_25CTT1P8_typ
-set svt_umc_22_arm_9t_pmk_c40             "sc9mcpp140z_l22ulpull_pmk_svt_c40_${PVT}"
-sc9mcpp140z_l22ulpull_pmk_svt_c40_25CTT1P8_typ
-set ckgate_umc_22_arm_9t                  "PREICG_X9B_A9PP140ZTS_C35"
-PREICG_X9B_A9PP140ZTS_C35
-#library_umc_28p_snps_ud
-set library_umc_28p_snps_ud [list     "/eda/process/28/UMC_HPC_PLUS/standcell/synopsys/hvt/v-logic_um28nphhlogl30udh140f/DesignWare_logic_libs/umc28nlph/30uhd/udh/hvt/latest/liberty/ccs/um28nphhlogl30udh140f_${PVT}.${db_type}"     "/eda/process/28/UMC_HPC_PLUS/standcell/synopsys/hvt/v-logic_um28nphhlogl30udl140f/DesignWare_logic_libs/umc28nlph/30uhd/udl/hvt/latest/liberty/ccs/um28nphhlogl30udl140f_${PVT}.${db_type}"     "/eda/process/28/UMC_HPC_PLUS/standcell/synopsys/hvt/v-logic_um28nphhlogl30udp140f/DesignWare_logic_libs/umc28nlph/30uhd/udp/hvt/latest/liberty/ccs/um28nphhlogl30udp140f_${PVT}.${db_type}"     "/eda/process/28/UMC_HPC_PLUS/standcell/synopsys/hvt/v-logic_um28nphhlogl35udh140f/DesignWare_logic_libs/umc28nlph/35uhd/udh/hvt/latest/liberty/ccs/um28nphhlogl35udh140f_${PVT}.${db_type}"     "/eda/process/28/UMC_HPC_PLUS/standcell/synopsys/hvt/v-logic_um28nphhlogl35udl140f/DesignWare_logic_libs/umc28nlph/35uhd/udl/hvt/latest/liberty/ccs/um28nphhlogl35udl140f_${PVT}.${db_type}"     "/eda/process/28/UMC_HPC_PLUS/standcell/synopsys/hvt/v-logic_um28nphhlogl35udp140f/DesignWare_logic_libs/umc28nlph/35uhd/udp/hvt/latest/liberty/ccs/um28nphhlogl35udp140f_${PVT}.${db_type}"     "/eda/process/28/UMC_HPC_PLUS/standcell/synopsys/hvt/v-logic_um28nphhlogl40udh140f/DesignWare_logic_libs/umc28nlph/40uhd/udh/hvt/latest/liberty/ccs/um28nphhlogl40udh140f_${PVT}.${db_type}"     "/eda/process/28/UMC_HPC_PLUS/standcell/synopsys/hvt/v-logic_um28nphhlogl40udl140f/DesignWare_logic_libs/umc28nlph/40uhd/udl/hvt/latest/liberty/ccs/um28nphhlogl40udl140f_${PVT}.${db_type}"     "/eda/process/28/UMC_HPC_PLUS/standcell/synopsys/hvt/v-logic_um28nphhlogl40udp140f/DesignWare_logic_libs/umc28nlph/40uhd/udp/hvt/latest/liberty/ccs/um28nphhlogl40udp140f_${PVT}.${db_type}"     "/eda/process/28/UMC_HPC_PLUS/standcell/synopsys/svt/v-logic_um28nphslogl30udl140f/DesignWare_logic_libs/umc28nlph/30uhd/udl/svt/latest/liberty/ccs/um28nphslogl30udh140f_${PVT}.${db_type}"     "/eda/process/28/UMC_HPC_PLUS/standcell/synopsys/svt/v-logic_um28nphslogl30udh140f/DesignWare_logic_libs/umc28nlph/30uhd/udh/svt/latest/liberty/ccs/um28nphslogl30udl140f_${PVT}.${db_type}"     "/eda/process/28/UMC_HPC_PLUS/standcell/synopsys/svt/v-logic_um28nphslogl30udp140f/DesignWare_logic_libs/umc28nlph/30uhd/udp/svt/latest/liberty/ccs/um28nphslogl30udp140f_${PVT}.${db_type}"     "/eda/process/28/UMC_HPC_PLUS/standcell/synopsys/svt/v-logic_um28nphslogl35udh140f/DesignWare_logic_libs/umc28nlph/35uhd/udh/svt/latest/liberty/ccs/um28nphslogl35udh140f_${PVT}.${db_type}"     "/eda/process/28/UMC_HPC_PLUS/standcell/synopsys/svt/v-logic_um28nphslogl35udl140f/DesignWare_logic_libs/umc28nlph/35uhd/udl/svt/latest/liberty/ccsum28nphslogl35udl140f_${PVT}.${db_type}"     "/eda/process/28/UMC_HPC_PLUS/standcell/synopsys/svt/v-logic_um28nphslogl35udp140f/DesignWare_logic_libs/umc28nlph/35uhd/udp/svt/latest/liberty/ccs/um28nphslogl35udp140f_${PVT}.${db_type}"     "/eda/process/28/UMC_HPC_PLUS/standcell/synopsys/svt/v-logic_um28nphslogl40udh140f/DesignWare_logic_libs/umc28nlph/40uhd/udh/svt/latest/liberty/ccs/um28nphslogl40udh140f_${PVT}.${db_type}"     "/eda/process/28/UMC_HPC_PLUS/standcell/synopsys/svt/v-logic_um28nphslogl40udl140f/DesignWare_logic_libs/umc28nlph/40uhd/udl/svt/latest/liberty/ccs/um28nphslogl40udl140f_${PVT}.${db_type}"     "/eda/process/28/UMC_HPC_PLUS/standcell/synopsys/svt/v-logic_um28nphslogl40udp140f/DesignWare_logic_libs/umc28nlph/40uhd/udp/svt/latest/liberty/ccsum28nphslogl40udp140f_${PVT}.${db_type}" ]
-/eda/process/28/UMC_HPC_PLUS/standcell/synopsys/hvt/v-logic_um28nphhlogl30udh140f/DesignWare_logic_libs/umc28nlph/30uhd/udh/hvt/latest/liberty/ccs/um28nphhlogl30udh140f_25CTT1P8_typ.db /eda/process/28/UMC_HPC_PLUS/standcell/synopsys/hvt/v-logic_um28nphhlogl30udl140f/DesignWare_logic_libs/umc28nlph/30uhd/udl/hvt/latest/liberty/ccs/um28nphhlogl30udl140f_25CTT1P8_typ.db /eda/process/28/UMC_HPC_PLUS/standcell/synopsys/hvt/v-logic_um28nphhlogl30udp140f/DesignWare_logic_libs/umc28nlph/30uhd/udp/hvt/latest/liberty/ccs/um28nphhlogl30udp140f_25CTT1P8_typ.db /eda/process/28/UMC_HPC_PLUS/standcell/synopsys/hvt/v-logic_um28nphhlogl35udh140f/DesignWare_logic_libs/umc28nlph/35uhd/udh/hvt/latest/liberty/ccs/um28nphhlogl35udh140f_25CTT1P8_typ.db /eda/process/28/UMC_HPC_PLUS/standcell/synopsys/hvt/v-logic_um28nphhlogl35udl140f/DesignWare_logic_libs/umc28nlph/35uhd/udl/hvt/latest/liberty/ccs/um28nphhlogl35udl140f_25CTT1P8_typ.db /eda/process/28/UMC_HPC_PLUS/standcell/synopsys/hvt/v-logic_um28nphhlogl35udp140f/DesignWare_logic_libs/umc28nlph/35uhd/udp/hvt/latest/liberty/ccs/um28nphhlogl35udp140f_25CTT1P8_typ.db /eda/process/28/UMC_HPC_PLUS/standcell/synopsys/hvt/v-logic_um28nphhlogl40udh140f/DesignWare_logic_libs/umc28nlph/40uhd/udh/hvt/latest/liberty/ccs/um28nphhlogl40udh140f_25CTT1P8_typ.db /eda/process/28/UMC_HPC_PLUS/standcell/synopsys/hvt/v-logic_um28nphhlogl40udl140f/DesignWare_logic_libs/umc28nlph/40uhd/udl/hvt/latest/liberty/ccs/um28nphhlogl40udl140f_25CTT1P8_typ.db /eda/process/28/UMC_HPC_PLUS/standcell/synopsys/hvt/v-logic_um28nphhlogl40udp140f/DesignWare_logic_libs/umc28nlph/40uhd/udp/hvt/latest/liberty/ccs/um28nphhlogl40udp140f_25CTT1P8_typ.db /eda/process/28/UMC_HPC_PLUS/standcell/synopsys/svt/v-logic_um28nphslogl30udl140f/DesignWare_logic_libs/umc28nlph/30uhd/udl/svt/latest/liberty/ccs/um28nphslogl30udh140f_25CTT1P8_typ.db /eda/process/28/UMC_HPC_PLUS/standcell/synopsys/svt/v-logic_um28nphslogl30udh140f/DesignWare_logic_libs/umc28nlph/30uhd/udh/svt/latest/liberty/ccs/um28nphslogl30udl140f_25CTT1P8_typ.db /eda/process/28/UMC_HPC_PLUS/standcell/synopsys/svt/v-logic_um28nphslogl30udp140f/DesignWare_logic_libs/umc28nlph/30uhd/udp/svt/latest/liberty/ccs/um28nphslogl30udp140f_25CTT1P8_typ.db /eda/process/28/UMC_HPC_PLUS/standcell/synopsys/svt/v-logic_um28nphslogl35udh140f/DesignWare_logic_libs/umc28nlph/35uhd/udh/svt/latest/liberty/ccs/um28nphslogl35udh140f_25CTT1P8_typ.db /eda/process/28/UMC_HPC_PLUS/standcell/synopsys/svt/v-logic_um28nphslogl35udl140f/DesignWare_logic_libs/umc28nlph/35uhd/udl/svt/latest/liberty/ccsum28nphslogl35udl140f_25CTT1P8_typ.db /eda/process/28/UMC_HPC_PLUS/standcell/synopsys/svt/v-logic_um28nphslogl35udp140f/DesignWare_logic_libs/umc28nlph/35uhd/udp/svt/latest/liberty/ccs/um28nphslogl35udp140f_25CTT1P8_typ.db /eda/process/28/UMC_HPC_PLUS/standcell/synopsys/svt/v-logic_um28nphslogl40udh140f/DesignWare_logic_libs/umc28nlph/40uhd/udh/svt/latest/liberty/ccs/um28nphslogl40udh140f_25CTT1P8_typ.db /eda/process/28/UMC_HPC_PLUS/standcell/synopsys/svt/v-logic_um28nphslogl40udl140f/DesignWare_logic_libs/umc28nlph/40uhd/udl/svt/latest/liberty/ccs/um28nphslogl40udl140f_25CTT1P8_typ.db /eda/process/28/UMC_HPC_PLUS/standcell/synopsys/svt/v-logic_um28nphslogl40udp140f/DesignWare_logic_libs/umc28nlph/40uhd/udp/svt/latest/liberty/ccsum28nphslogl40udp140f_25CTT1P8_typ.db
-set hvt_umc_28p_snps_30udh                "um28nphhlogl30udh140f_${PVT}"
-um28nphhlogl30udh140f_25CTT1P8_typ
-set hvt_umc_28p_snps_30udl                "um28nphhlogl30udl140f_${PVT}"
-um28nphhlogl30udl140f_25CTT1P8_typ
-set hvt_umc_28p_snps_30udp                "um28nphhlogl30udp140f_${PVT}"
-um28nphhlogl30udp140f_25CTT1P8_typ
-set hvt_umc_28p_snps_35udh                "um28nphhlogl35udh140f_${PVT}"
-um28nphhlogl35udh140f_25CTT1P8_typ
-set hvt_umc_28p_snps_35udl                "um28nphhlogl35udl140f_${PVT}"
-um28nphhlogl35udl140f_25CTT1P8_typ
-set hvt_umc_28p_snps_35udp                "um28nphhlogl35udp140f_${PVT}"
-um28nphhlogl35udp140f_25CTT1P8_typ
-set hvt_umc_28p_snps_40udh                "um28nphhlogl40udh140f_${PVT}"
-um28nphhlogl40udh140f_25CTT1P8_typ
-set hvt_umc_28p_snps_40udl                "um28nphhlogl40udl140f_${PVT}"
-um28nphhlogl40udl140f_25CTT1P8_typ
-set hvt_umc_28p_snps_40udp                "um28nphhlogl40udp140f_${PVT}"
-um28nphhlogl40udp140f_25CTT1P8_typ
-set svt_umc_28p_snps_30udh                "um28nphslogl30udh140f_${PVT}"
-um28nphslogl30udh140f_25CTT1P8_typ
-set svt_umc_28p_snps_30udl                "um28nphslogl30udl140f_${PVT}"
-um28nphslogl30udl140f_25CTT1P8_typ
-set svt_umc_28p_snps_30udp                "um28nphslogl30udp140f_${PVT}"
-um28nphslogl30udp140f_25CTT1P8_typ
-set svt_umc_28p_snps_35udh                "um28nphslogl35udh140f_${PVT}"
-um28nphslogl35udh140f_25CTT1P8_typ
-set svt_umc_28p_snps_35udl                "um28nphslogl35udl140f_${PVT}"
-um28nphslogl35udl140f_25CTT1P8_typ
-set svt_umc_28p_snps_35udp                "um28nphslogl35udp140f_${PVT}"
-um28nphslogl35udp140f_25CTT1P8_typ
-set svt_umc_28p_snps_40udh                "um28nphslogl40udh140f_${PVT}"
-um28nphslogl40udh140f_25CTT1P8_typ
-set svt_umc_28p_snps_40udl                "um28nphslogl40udl140f_${PVT}"
-um28nphslogl40udl140f_25CTT1P8_typ
-set svt_umc_28p_snps_40udp                "um28nphslogl40udp140f_${PVT}"
-um28nphslogl40udp140f_25CTT1P8_typ
-set ckgate_umc_28p_snps_ud                "SVP_CKGTPLT_V5_8"
-SVP_CKGTPLT_V5_8
-set lef_umc_28p_snps_ud_hvt [list   "/eda/process/28/UMC_HPC_PLUS/standcell/synopsys/hvt/v-logic_um28nphhlogl30udh140f/DesignWare_logic_libs/umc28nlph/30uhd/udh/hvt/latest/lef/5.6/um28nphhlogl30udh140f.lef"   "/eda/process/28/UMC_HPC_PLUS/standcell/synopsys/hvt/v-logic_um28nphhlogl30udl140f/DesignWare_logic_libs/umc28nlph/30uhd/udl/hvt/latest/lef/5.6/um28nphhlogl30udl140f.lef"   "/eda/process/28/UMC_HPC_PLUS/standcell/synopsys/hvt/v-logic_um28nphhlogl30udp140f/DesignWare_logic_libs/umc28nlph/30uhd/udp/hvt/latest/lef/5.6/um28nphhlogl30udp140f.lef"   "/eda/process/28/UMC_HPC_PLUS/standcell/synopsys/hvt/v-logic_um28nphhlogl35udh140f/DesignWare_logic_libs/umc28nlph/35uhd/udh/hvt/latest/lef/5.6/um28nphhlogl35udh140f.lef"   "/eda/process/28/UMC_HPC_PLUS/standcell/synopsys/hvt/v-logic_um28nphhlogl35udl140f/DesignWare_logic_libs/umc28nlph/35uhd/udl/hvt/latest/lef/5.6/um28nphhlogl35udl140f.lef"   "/eda/process/28/UMC_HPC_PLUS/standcell/synopsys/hvt/v-logic_um28nphhlogl35udp140f/DesignWare_logic_libs/umc28nlph/35uhd/udp/hvt/latest/lef/5.6/um28nphhlogl35udp140f.lef"   "/eda/process/28/UMC_HPC_PLUS/standcell/synopsys/hvt/v-logic_um28nphhlogl40udh140f/DesignWare_logic_libs/umc28nlph/40uhd/udh/hvt/latest/lef/5.6/um28nphhlogl40udh140f.lef"   "/eda/process/28/UMC_HPC_PLUS/standcell/synopsys/hvt/v-logic_um28nphhlogl40udl140f/DesignWare_logic_libs/umc28nlph/40uhd/udl/hvt/latest/lef/5.6/um28nphhlogl40udl140f.lef"   "/eda/process/28/UMC_HPC_PLUS/standcell/synopsys/hvt/v-logic_um28nphhlogl40udp140f/DesignWare_logic_libs/umc28nlph/40uhd/udp/hvt/latest/lef/5.6/um28nphhlogl40udp140f.lef" ]
-/eda/process/28/UMC_HPC_PLUS/standcell/synopsys/hvt/v-logic_um28nphhlogl30udh140f/DesignWare_logic_libs/umc28nlph/30uhd/udh/hvt/latest/lef/5.6/um28nphhlogl30udh140f.lef /eda/process/28/UMC_HPC_PLUS/standcell/synopsys/hvt/v-logic_um28nphhlogl30udl140f/DesignWare_logic_libs/umc28nlph/30uhd/udl/hvt/latest/lef/5.6/um28nphhlogl30udl140f.lef /eda/process/28/UMC_HPC_PLUS/standcell/synopsys/hvt/v-logic_um28nphhlogl30udp140f/DesignWare_logic_libs/umc28nlph/30uhd/udp/hvt/latest/lef/5.6/um28nphhlogl30udp140f.lef /eda/process/28/UMC_HPC_PLUS/standcell/synopsys/hvt/v-logic_um28nphhlogl35udh140f/DesignWare_logic_libs/umc28nlph/35uhd/udh/hvt/latest/lef/5.6/um28nphhlogl35udh140f.lef /eda/process/28/UMC_HPC_PLUS/standcell/synopsys/hvt/v-logic_um28nphhlogl35udl140f/DesignWare_logic_libs/umc28nlph/35uhd/udl/hvt/latest/lef/5.6/um28nphhlogl35udl140f.lef /eda/process/28/UMC_HPC_PLUS/standcell/synopsys/hvt/v-logic_um28nphhlogl35udp140f/DesignWare_logic_libs/umc28nlph/35uhd/udp/hvt/latest/lef/5.6/um28nphhlogl35udp140f.lef /eda/process/28/UMC_HPC_PLUS/standcell/synopsys/hvt/v-logic_um28nphhlogl40udh140f/DesignWare_logic_libs/umc28nlph/40uhd/udh/hvt/latest/lef/5.6/um28nphhlogl40udh140f.lef /eda/process/28/UMC_HPC_PLUS/standcell/synopsys/hvt/v-logic_um28nphhlogl40udl140f/DesignWare_logic_libs/umc28nlph/40uhd/udl/hvt/latest/lef/5.6/um28nphhlogl40udl140f.lef /eda/process/28/UMC_HPC_PLUS/standcell/synopsys/hvt/v-logic_um28nphhlogl40udp140f/DesignWare_logic_libs/umc28nlph/40uhd/udp/hvt/latest/lef/5.6/um28nphhlogl40udp140f.lef
-set lef_umc_28p_snps_ud_svt [list   "/eda/process/28/UMC_HPC_PLUS/standcell/synopsys/svt/v-logic_um28nphslogl30udh140f/DesignWare_logic_libs/umc28nlph/30uhd/udh/svt/latest/lef/5.6/um28nphslogl30udh140f.lef"   "/eda/process/28/UMC_HPC_PLUS/standcell/synopsys/svt/v-logic_um28nphslogl30udl140f/DesignWare_logic_libs/umc28nlph/30uhd/udl/svt/latest/lef/5.6/um28nphslogl30udl140f.lef"   "/eda/process/28/UMC_HPC_PLUS/standcell/synopsys/svt/v-logic_um28nphslogl30udp140f/DesignWare_logic_libs/umc28nlph/30uhd/udp/svt/latest/lef/5.6/um28nphslogl30udp140f.lef"   "/eda/process/28/UMC_HPC_PLUS/standcell/synopsys/svt/v-logic_um28nphslogl35udh140f/DesignWare_logic_libs/umc28nlph/35uhd/udh/svt/latest/lef/5.6/um28nphslogl35udh140f.lef"   "/eda/process/28/UMC_HPC_PLUS/standcell/synopsys/svt/v-logic_um28nphslogl35udl140f/DesignWare_logic_libs/umc28nlph/35uhd/udl/svt/latest/lef/5.6/um28nphslogl35udl140f.lef"   "/eda/process/28/UMC_HPC_PLUS/standcell/synopsys/svt/v-logic_um28nphslogl35udp140f/DesignWare_logic_libs/umc28nlph/35uhd/udp/svt/latest/lef/5.6/um28nphslogl35udp140f.lef"   "/eda/process/28/UMC_HPC_PLUS/standcell/synopsys/svt/v-logic_um28nphslogl40udh140f/DesignWare_logic_libs/umc28nlph/40uhd/udh/svt/latest/lef/5.6/um28nphslogl40udh140f.lef"   "/eda/process/28/UMC_HPC_PLUS/standcell/synopsys/svt/v-logic_um28nphslogl40udl140f/DesignWare_logic_libs/umc28nlph/40uhd/udl/svt/latest/lef/5.6/um28nphslogl40udl140f.lef"   "/eda/process/28/UMC_HPC_PLUS/standcell/synopsys/svt/v-logic_um28nphslogl40udp140f/DesignWare_logic_libs/umc28nlph/40uhd/udp/svt/latest/lef/5.6/um28nphslogl40udp140f.lef" ]
-/eda/process/28/UMC_HPC_PLUS/standcell/synopsys/svt/v-logic_um28nphslogl30udh140f/DesignWare_logic_libs/umc28nlph/30uhd/udh/svt/latest/lef/5.6/um28nphslogl30udh140f.lef /eda/process/28/UMC_HPC_PLUS/standcell/synopsys/svt/v-logic_um28nphslogl30udl140f/DesignWare_logic_libs/umc28nlph/30uhd/udl/svt/latest/lef/5.6/um28nphslogl30udl140f.lef /eda/process/28/UMC_HPC_PLUS/standcell/synopsys/svt/v-logic_um28nphslogl30udp140f/DesignWare_logic_libs/umc28nlph/30uhd/udp/svt/latest/lef/5.6/um28nphslogl30udp140f.lef /eda/process/28/UMC_HPC_PLUS/standcell/synopsys/svt/v-logic_um28nphslogl35udh140f/DesignWare_logic_libs/umc28nlph/35uhd/udh/svt/latest/lef/5.6/um28nphslogl35udh140f.lef /eda/process/28/UMC_HPC_PLUS/standcell/synopsys/svt/v-logic_um28nphslogl35udl140f/DesignWare_logic_libs/umc28nlph/35uhd/udl/svt/latest/lef/5.6/um28nphslogl35udl140f.lef /eda/process/28/UMC_HPC_PLUS/standcell/synopsys/svt/v-logic_um28nphslogl35udp140f/DesignWare_logic_libs/umc28nlph/35uhd/udp/svt/latest/lef/5.6/um28nphslogl35udp140f.lef /eda/process/28/UMC_HPC_PLUS/standcell/synopsys/svt/v-logic_um28nphslogl40udh140f/DesignWare_logic_libs/umc28nlph/40uhd/udh/svt/latest/lef/5.6/um28nphslogl40udh140f.lef /eda/process/28/UMC_HPC_PLUS/standcell/synopsys/svt/v-logic_um28nphslogl40udl140f/DesignWare_logic_libs/umc28nlph/40uhd/udl/svt/latest/lef/5.6/um28nphslogl40udl140f.lef /eda/process/28/UMC_HPC_PLUS/standcell/synopsys/svt/v-logic_um28nphslogl40udp140f/DesignWare_logic_libs/umc28nlph/40uhd/udp/svt/latest/lef/5.6/um28nphslogl40udp140f.lef
-set lef_umc_28p_snps_ud_lvt [list   "/eda/process/28/UMC_HPC_PLUS/standcell/synopsys/lvt/v-logic_um28nphllogl30udh140f/DesignWare_logic_libs/umc28nlph/30uhd/udh/lvt/latest/lef/5.6/um28nphllogl30udh140f.lef"   "/eda/process/28/UMC_HPC_PLUS/standcell/synopsys/lvt/v-logic_um28nphllogl30udl140f/DesignWare_logic_libs/umc28nlph/30uhd/udl/lvt/latest/lef/5.6/um28nphllogl30udl140f.lef"   "/eda/process/28/UMC_HPC_PLUS/standcell/synopsys/lvt/v-logic_um28nphllogl30udp140f/DesignWare_logic_libs/umc28nlph/30uhd/udp/lvt/latest/lef/5.6/um28nphllogl30udp140f.lef"   "/eda/process/28/UMC_HPC_PLUS/standcell/synopsys/lvt/v-logic_um28nphllogl35udh140f/DesignWare_logic_libs/umc28nlph/35uhd/udh/lvt/latest/lef/5.6/um28nphllogl35udh140f.lef"   "/eda/process/28/UMC_HPC_PLUS/standcell/synopsys/lvt/v-logic_um28nphllogl35udl140f/DesignWare_logic_libs/umc28nlph/35uhd/udl/lvt/latest/lef/5.6/um28nphllogl35udl140f.lef"   "/eda/process/28/UMC_HPC_PLUS/standcell/synopsys/lvt/v-logic_um28nphllogl35udp140f/DesignWare_logic_libs/umc28nlph/35uhd/udp/lvt/latest/lef/5.6/um28nphllogl35udp140f.lef"   "/eda/process/28/UMC_HPC_PLUS/standcell/synopsys/lvt/v-logic_um28nphllogl40udh140f/DesignWare_logic_libs/umc28nlph/40uhd/udh/lvt/latest/lef/5.6/um28nphllogl40udh140f.lef"   "/eda/process/28/UMC_HPC_PLUS/standcell/synopsys/lvt/v-logic_um28nphllogl40udl140f/DesignWare_logic_libs/umc28nlph/40uhd/udl/lvt/latest/lef/5.6/um28nphllogl40udl140f.lef"   "/eda/process/28/UMC_HPC_PLUS/standcell/synopsys/lvt/v-logic_um28nphllogl40udp140f/DesignWare_logic_libs/umc28nlph/40uhd/udp/lvt/latest/lef/5.6/um28nphllogl40udp140f.lef" ]
-/eda/process/28/UMC_HPC_PLUS/standcell/synopsys/lvt/v-logic_um28nphllogl30udh140f/DesignWare_logic_libs/umc28nlph/30uhd/udh/lvt/latest/lef/5.6/um28nphllogl30udh140f.lef /eda/process/28/UMC_HPC_PLUS/standcell/synopsys/lvt/v-logic_um28nphllogl30udl140f/DesignWare_logic_libs/umc28nlph/30uhd/udl/lvt/latest/lef/5.6/um28nphllogl30udl140f.lef /eda/process/28/UMC_HPC_PLUS/standcell/synopsys/lvt/v-logic_um28nphllogl30udp140f/DesignWare_logic_libs/umc28nlph/30uhd/udp/lvt/latest/lef/5.6/um28nphllogl30udp140f.lef /eda/process/28/UMC_HPC_PLUS/standcell/synopsys/lvt/v-logic_um28nphllogl35udh140f/DesignWare_logic_libs/umc28nlph/35uhd/udh/lvt/latest/lef/5.6/um28nphllogl35udh140f.lef /eda/process/28/UMC_HPC_PLUS/standcell/synopsys/lvt/v-logic_um28nphllogl35udl140f/DesignWare_logic_libs/umc28nlph/35uhd/udl/lvt/latest/lef/5.6/um28nphllogl35udl140f.lef /eda/process/28/UMC_HPC_PLUS/standcell/synopsys/lvt/v-logic_um28nphllogl35udp140f/DesignWare_logic_libs/umc28nlph/35uhd/udp/lvt/latest/lef/5.6/um28nphllogl35udp140f.lef /eda/process/28/UMC_HPC_PLUS/standcell/synopsys/lvt/v-logic_um28nphllogl40udh140f/DesignWare_logic_libs/umc28nlph/40uhd/udh/lvt/latest/lef/5.6/um28nphllogl40udh140f.lef /eda/process/28/UMC_HPC_PLUS/standcell/synopsys/lvt/v-logic_um28nphllogl40udl140f/DesignWare_logic_libs/umc28nlph/40uhd/udl/lvt/latest/lef/5.6/um28nphllogl40udl140f.lef /eda/process/28/UMC_HPC_PLUS/standcell/synopsys/lvt/v-logic_um28nphllogl40udp140f/DesignWare_logic_libs/umc28nlph/40uhd/udp/lvt/latest/lef/5.6/um28nphllogl40udp140f.lef
-#library_tsmc_22ulp_tsmc_7t
-if { $synopsys_program_name != "pt_shell"} {
-  set PT_HOLD 0
-}
-if { $PT_HOLD == 1 } {
-set library_tsmc_22ulp_tsmc_7t_hvt [list   "/project/HK4U61/cad/STD/7t/db/${PVT_HOLD}/tcbn22ulpbwp7t30p140hvt${PVTM}_ccs_hold_margin_inserted.${db_type}"   "/project/HK4U61/cad/STD/7t/db/${PVT_HOLD}/tcbn22ulpbwp7t35p140hvt${PVTM}_ccs_hold_margin_inserted.${db_type}"   "/project/HK4U61/cad/STD/7t/db/${PVT_HOLD}/tcbn22ulpbwp7t40p140hvt${PVTM}_ccs_hold_margin_inserted.${db_type}" ]
-set library_tsmc_22ulp_tsmc_7t_svt [list   "/project/HK4U61/cad/STD/7t/db/${PVT_HOLD}/tcbn22ulpbwp7t30p140${PVTM}_ccs_hold_margin_inserted.${db_type}"   "/project/HK4U61/cad/STD/7t/db/${PVT_HOLD}/tcbn22ulpbwp7t35p140${PVTM}_ccs_hold_margin_inserted.${db_type}"   "/project/HK4U61/cad/STD/7t/db/${PVT_HOLD}/tcbn22ulpbwp7t40p140${PVTM}_ccs_hold_margin_inserted.${db_type}" ]
-set library_tsmc_22ulp_tsmc_7t_lvt [list   "/project/HK4U61/cad/STD/7t/db/${PVT_HOLD}/tcbn22ulpbwp7t30p140lvt${PVTM}_ccs_hold_margin_inserted.${db_type}"   "/project/HK4U61/cad/STD/7t/db/${PVT_HOLD}/tcbn22ulpbwp7t35p140lvt${PVTM}_ccs_hold_margin_inserted.${db_type}"   "/project/HK4U61/cad/STD/7t/db/${PVT_HOLD}/tcbn22ulpbwp7t40p140lvt${PVTM}_ccs_hold_margin_inserted.${db_type}" ]
-
-} else {
-set library_tsmc_22ulp_tsmc_7t_hvt [list   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t30p140hvt_100d/AN61001_20190412/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp7t30p140hvt_100d/tcbn22ulpbwp7t30p140hvt${PVTM}_ccs.${db_type}"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t35p140hvt_100d/AN61001_20190412/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp7t35p140hvt_100d/tcbn22ulpbwp7t35p140hvt${PVTM}_ccs.${db_type}"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t40p140hvt_100d/AN61001_20190412/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp7t40p140hvt_100d/tcbn22ulpbwp7t40p140hvt${PVTM}_ccs.${db_type}"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t30p140mbhvt_100d/0K56002_20200703/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp7t30p140mbhvt_100d/tcbn22ulpbwp7t30p140mbhvt${PVTM}_ccs.${db_type}"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t35p140mbhvt_100d/0K56002_20200703/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp7t35p140mbhvt_100d/tcbn22ulpbwp7t35p140mbhvt${PVTM}_ccs.${db_type}"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t40p140mbhvt_100d/0K56002_20200703/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp7t40p140mbhvt_100d/tcbn22ulpbwp7t40p140mbhvt${PVTM}_ccs.${db_type}"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t30p140pmhvt_100d/AN61001_20190412/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp7t30p140pmhvt_100d/tcbn22ulpbwp7t30p140pmhvt${PVTM}_ccs.${db_type}"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t35p140pmhvt_100d/AN61001_20190412/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp7t35p140pmhvt_100d/tcbn22ulpbwp7t35p140pmhvt${PVTM}_ccs.${db_type}"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t40p140pmhvt_100d/AN61001_20190412/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp7t40p140pmhvt_100d/tcbn22ulpbwp7t40p140pmhvt${PVTM}_ccs.${db_type}" ]
-set library_tsmc_22ulp_tsmc_7t_svt [list   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t30p140_100d/AN61001_20190412/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp7t30p140_100d/tcbn22ulpbwp7t30p140${PVTM}_ccs.${db_type}"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t35p140_100d/AN61001_20190412/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp7t35p140_100d/tcbn22ulpbwp7t35p140${PVTM}_ccs.${db_type}"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t40p140_100d/AN61001_20190412/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp7t40p140_100d/tcbn22ulpbwp7t40p140${PVTM}_ccs.${db_type}"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t30p140mb_100d/0K56002_20200703/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp7t30p140mb_100d/tcbn22ulpbwp7t30p140mb${PVTM}_ccs.${db_type}"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t35p140mb_100d/0K56002_20200703/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp7t35p140mb_100d/tcbn22ulpbwp7t35p140mb${PVTM}_ccs.${db_type}"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t40p140mb_100d/0K56002_20200703/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp7t40p140mb_100d/tcbn22ulpbwp7t40p140mb${PVTM}_ccs.${db_type}"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t30p140pm_100d/AN61001_20190412/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp7t30p140pm_100d/tcbn22ulpbwp7t30p140pm${PVTM}_ccs.${db_type}"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t35p140pm_100d/AN61001_20190412/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp7t35p140pm_100d/tcbn22ulpbwp7t35p140pm${PVTM}_ccs.${db_type}"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t40p140pm_100d/AN61001_20190412/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp7t40p140pm_100d/tcbn22ulpbwp7t40p140pm${PVTM}_ccs.${db_type}" ]
-set library_tsmc_22ulp_tsmc_7t_lvt [list   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t30p140lvt_100d/AN61001_20190412/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp7t30p140lvt_100d/tcbn22ulpbwp7t30p140lvt${PVTM}_ccs.${db_type}"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t35p140lvt_100d/AN61001_20190412/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp7t35p140lvt_100d/tcbn22ulpbwp7t35p140lvt${PVTM}_ccs.${db_type}"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t40p140lvt_100d/AN61001_20190412/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp7t40p140lvt_100d/tcbn22ulpbwp7t40p140lvt${PVTM}_ccs.${db_type}"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t30p140pmlvt_100d/AN61001_20190412/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp7t30p140pmlvt_100d/tcbn22ulpbwp7t30p140pmlvt${PVTM}_ccs.${db_type}"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t35p140pmlvt_100d/AN61001_20190412/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp7t35p140pmlvt_100d/tcbn22ulpbwp7t35p140pmlvt${PVTM}_ccs.${db_type}"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t40p140pmlvt_100d/AN61001_20190412/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp7t40p140pmlvt_100d/tcbn22ulpbwp7t40p140pmlvt${PVTM}_ccs.${db_type}" ]
-}
-/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t30p140lvt_100d/AN61001_20190412/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp7t30p140lvt_100d/tcbn22ulpbwp7t30p140lvt25CTT1P8_typ_ccs.db /eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t35p140lvt_100d/AN61001_20190412/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp7t35p140lvt_100d/tcbn22ulpbwp7t35p140lvt25CTT1P8_typ_ccs.db /eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t40p140lvt_100d/AN61001_20190412/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp7t40p140lvt_100d/tcbn22ulpbwp7t40p140lvt25CTT1P8_typ_ccs.db /eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t30p140pmlvt_100d/AN61001_20190412/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp7t30p140pmlvt_100d/tcbn22ulpbwp7t30p140pmlvt25CTT1P8_typ_ccs.db /eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t35p140pmlvt_100d/AN61001_20190412/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp7t35p140pmlvt_100d/tcbn22ulpbwp7t35p140pmlvt25CTT1P8_typ_ccs.db /eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t40p140pmlvt_100d/AN61001_20190412/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp7t40p140pmlvt_100d/tcbn22ulpbwp7t40p140pmlvt25CTT1P8_typ_ccs.db
-set svt_tsmc_22ulp_tsmc_7t_c30                 "tcbn22ulpbwp7t30p140${PVTM}_ccs"
-tcbn22ulpbwp7t30p14025CTT1P8_typ_ccs
-set svt_tsmc_22ulp_tsmc_7t_c35                 "tcbn22ulpbwp7t35p140${PVTM}_ccs"
-tcbn22ulpbwp7t35p14025CTT1P8_typ_ccs
-set svt_tsmc_22ulp_tsmc_7t_c40                 "tcbn22ulpbwp7t40p140${PVTM}_ccs"
-tcbn22ulpbwp7t40p14025CTT1P8_typ_ccs
-set hvt_tsmc_22ulp_tsmc_7t_c30                 "tcbn22ulpbwp7t30p140hvt${PVTM}_ccs"
-tcbn22ulpbwp7t30p140hvt25CTT1P8_typ_ccs
-set hvt_tsmc_22ulp_tsmc_7t_c35                 "tcbn22ulpbwp7t35p140hvt${PVTM}_ccs"
-tcbn22ulpbwp7t35p140hvt25CTT1P8_typ_ccs
-set hvt_tsmc_22ulp_tsmc_7t_c40                 "tcbn22ulpbwp7t40p140hvt${PVTM}_ccs"
-tcbn22ulpbwp7t40p140hvt25CTT1P8_typ_ccs
-set lvt_tsmc_22ulp_tsmc_7t_c30                 "tcbn22ulpbwp7t30p140lvt${PVTM}_ccs"
-tcbn22ulpbwp7t30p140lvt25CTT1P8_typ_ccs
-set lvt_tsmc_22ulp_tsmc_7t_c35                 "tcbn22ulpbwp7t35p140lvt${PVTM}_ccs"
-tcbn22ulpbwp7t35p140lvt25CTT1P8_typ_ccs
-set lvt_tsmc_22ulp_tsmc_7t_c40                 "tcbn22ulpbwp7t40p140lvt${PVTM}_ccs"
-tcbn22ulpbwp7t40p140lvt25CTT1P8_typ_ccs
-set hvt_tsmc_22ulp_tsmc_7t_c30mb              "tcbn22ulpbwp7t30p140mbhvt${PVTM}_ccs"
-tcbn22ulpbwp7t30p140mbhvt25CTT1P8_typ_ccs
-set hvt_tsmc_22ulp_tsmc_7t_c35mb              "tcbn22ulpbwp7t35p140mbhvt${PVTM}_ccs"
-tcbn22ulpbwp7t35p140mbhvt25CTT1P8_typ_ccs
-set hvt_tsmc_22ulp_tsmc_7t_c40mb              "tcbn22ulpbwp7t40p140mbhvt${PVTM}_ccs"
-tcbn22ulpbwp7t40p140mbhvt25CTT1P8_typ_ccs
-set svt_tsmc_22ulp_tsmc_7t_c30mb              "tcbn22ulpbwp7t30p140mb${PVTM}_ccs"
-tcbn22ulpbwp7t30p140mb25CTT1P8_typ_ccs
-set svt_tsmc_22ulp_tsmc_7t_c35mb              "tcbn22ulpbwp7t35p140mb${PVTM}_ccs"
-tcbn22ulpbwp7t35p140mb25CTT1P8_typ_ccs
-set svt_tsmc_22ulp_tsmc_7t_c40mb              "tcbn22ulpbwp7t40p140mb${PVTM}_ccs"
-tcbn22ulpbwp7t40p140mb25CTT1P8_typ_ccs
-set hvt_tsmc_22ulp_tsmc_7t_c30pm              "tcbn22ulpbwp7t30p140pmhvt${PVTM}_ccs"
-tcbn22ulpbwp7t30p140pmhvt25CTT1P8_typ_ccs
-set hvt_tsmc_22ulp_tsmc_7t_c35pm              "tcbn22ulpbwp7t35p140pmhvt${PVTM}_ccs"
-tcbn22ulpbwp7t35p140pmhvt25CTT1P8_typ_ccs
-set hvt_tsmc_22ulp_tsmc_7t_c40pm              "tcbn22ulpbwp7t40p140pmhvt${PVTM}_ccs"
-tcbn22ulpbwp7t40p140pmhvt25CTT1P8_typ_ccs
-set svt_tsmc_22ulp_tsmc_7t_c30pm              "tcbn22ulpbwp7t30p140pm${PVTM}_ccs"
-tcbn22ulpbwp7t30p140pm25CTT1P8_typ_ccs
-set svt_tsmc_22ulp_tsmc_7t_c35pm              "tcbn22ulpbwp7t35p140pm${PVTM}_ccs"
-tcbn22ulpbwp7t35p140pm25CTT1P8_typ_ccs
-set svt_tsmc_22ulp_tsmc_7t_c40pm              "tcbn22ulpbwp7t40p140pm${PVTM}_ccs"
-tcbn22ulpbwp7t40p140pm25CTT1P8_typ_ccs
-set lvt_tsmc_22ulp_tsmc_7t_c30pm              "tcbn22ulpbwp7t30p140pmlvt${PVTM}_ccs"
-tcbn22ulpbwp7t30p140pmlvt25CTT1P8_typ_ccs
-set lvt_tsmc_22ulp_tsmc_7t_c35pm              "tcbn22ulpbwp7t35p140pmlvt${PVTM}_ccs"
-tcbn22ulpbwp7t35p140pmlvt25CTT1P8_typ_ccs
-set lvt_tsmc_22ulp_tsmc_7t_c40pm              "tcbn22ulpbwp7t40p140pmlvt${PVTM}_ccs"
-tcbn22ulpbwp7t40p140pmlvt25CTT1P8_typ_ccs
-set ckgate_tsmc_22ulp_tsmc_7t                 "CKLNQD8BWP7T35P140"
-CKLNQD8BWP7T35P140
-set lef_tsmc_22ulp_tsmc_7t_hvt [list   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t30p140hvt_100d/AN61001_20190412/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp7t30p140hvt_100a/lef/tcbn22ulpbwp7t30p140hvt.lef"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t35p140hvt_100d/AN61001_20190412/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp7t35p140hvt_100a/lef/tcbn22ulpbwp7t35p140hvt.lef"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t40p140hvt_100d/AN61001_20190412/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp7t40p140hvt_100a/lef/tcbn22ulpbwp7t40p140hvt.lef"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t30p140mbhvt_100d/0K56002_20200703/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp7t30p140mbhvt_090a/lef/tcbn22ulpbwp7t30p140mbhvt.lef"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t35p140mbhvt_100d/0K56002_20200703/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp7t35p140mbhvt_090a/lef/tcbn22ulpbwp7t35p140mbhvt.lef"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t40p140mbhvt_100d/0K56002_20200703/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp7t40p140mbhvt_090a/lef/tcbn22ulpbwp7t40p140mbhvt.lef"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t30p140pmhvt_100d/AN61001_20190412/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp7t30p140pmhvt_090a/lef/tcbn22ulpbwp7t30p140pmhvt.lef"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t35p140pmhvt_100d/AN61001_20190412/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp7t35p140pmhvt_090a/lef/tcbn22ulpbwp7t35p140pmhvt.lef"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t40p140pmhvt_100d/AN61001_20190412/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp7t40p140pmhvt_090a/lef/tcbn22ulpbwp7t40p140pmhvt.lef" ]
-/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t30p140hvt_100d/AN61001_20190412/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp7t30p140hvt_100a/lef/tcbn22ulpbwp7t30p140hvt.lef /eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t35p140hvt_100d/AN61001_20190412/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp7t35p140hvt_100a/lef/tcbn22ulpbwp7t35p140hvt.lef /eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t40p140hvt_100d/AN61001_20190412/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp7t40p140hvt_100a/lef/tcbn22ulpbwp7t40p140hvt.lef /eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t30p140mbhvt_100d/0K56002_20200703/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp7t30p140mbhvt_090a/lef/tcbn22ulpbwp7t30p140mbhvt.lef /eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t35p140mbhvt_100d/0K56002_20200703/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp7t35p140mbhvt_090a/lef/tcbn22ulpbwp7t35p140mbhvt.lef /eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t40p140mbhvt_100d/0K56002_20200703/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp7t40p140mbhvt_090a/lef/tcbn22ulpbwp7t40p140mbhvt.lef /eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t30p140pmhvt_100d/AN61001_20190412/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp7t30p140pmhvt_090a/lef/tcbn22ulpbwp7t30p140pmhvt.lef /eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t35p140pmhvt_100d/AN61001_20190412/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp7t35p140pmhvt_090a/lef/tcbn22ulpbwp7t35p140pmhvt.lef /eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t40p140pmhvt_100d/AN61001_20190412/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp7t40p140pmhvt_090a/lef/tcbn22ulpbwp7t40p140pmhvt.lef
-set lef_tsmc_22ulp_tsmc_7t_svt [list   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t30p140_100d/AN61001_20190412/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp7t30p140_100a/lef/tcbn22ulpbwp7t30p140.lef"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t35p140_100d/AN61001_20190412/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp7t35p140_100a/lef/tcbn22ulpbwp7t35p140.lef"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t40p140_100d/AN61001_20190412/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp7t40p140_100a/lef/tcbn22ulpbwp7t40p140.lef"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t30p140mb_100d/0K56002_20200703/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp7t30p140mb_090a/lef/tcbn22ulpbwp7t30p140mb.lef"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t35p140mb_100d/0K56002_20200703/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp7t35p140mb_090a/lef/tcbn22ulpbwp7t35p140mb.lef"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t40p140mb_100d/0K56002_20200703/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp7t40p140mb_090a/lef/tcbn22ulpbwp7t40p140mb.lef"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t30p140pm_100d/AN61001_20190412/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp7t30p140pm_090a/lef/tcbn22ulpbwp7t30p140pm.lef"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t35p140pm_100d/AN61001_20190412/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp7t35p140pm_090a/lef/tcbn22ulpbwp7t35p140pm.lef"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t40p140pm_100d/AN61001_20190412/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp7t40p140pm_090a/lef/tcbn22ulpbwp7t40p140pm.lef" ]
-/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t30p140_100d/AN61001_20190412/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp7t30p140_100a/lef/tcbn22ulpbwp7t30p140.lef /eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t35p140_100d/AN61001_20190412/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp7t35p140_100a/lef/tcbn22ulpbwp7t35p140.lef /eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t40p140_100d/AN61001_20190412/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp7t40p140_100a/lef/tcbn22ulpbwp7t40p140.lef /eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t30p140mb_100d/0K56002_20200703/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp7t30p140mb_090a/lef/tcbn22ulpbwp7t30p140mb.lef /eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t35p140mb_100d/0K56002_20200703/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp7t35p140mb_090a/lef/tcbn22ulpbwp7t35p140mb.lef /eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t40p140mb_100d/0K56002_20200703/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp7t40p140mb_090a/lef/tcbn22ulpbwp7t40p140mb.lef /eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t30p140pm_100d/AN61001_20190412/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp7t30p140pm_090a/lef/tcbn22ulpbwp7t30p140pm.lef /eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t35p140pm_100d/AN61001_20190412/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp7t35p140pm_090a/lef/tcbn22ulpbwp7t35p140pm.lef /eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t40p140pm_100d/AN61001_20190412/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp7t40p140pm_090a/lef/tcbn22ulpbwp7t40p140pm.lef
-set lef_tsmc_22ulp_tsmc_7t_lvt [list   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t30p140lvt_100d/AN61001_20190412/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp7t30p140lvt_100a/lef/tcbn22ulpbwp7t30p140lvt.lef"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t35p140lvt_100d/AN61001_20190412/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp7t35p140lvt_100a/lef/tcbn22ulpbwp7t35p140lvt.lef"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t40p140lvt_100d/AN61001_20190412/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp7t40p140lvt_100a/lef/tcbn22ulpbwp7t40p140lvt.lef"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t30p140pmlvt_100d/AN61001_20190412/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp7t30p140pmlvt_090a/lef/tcbn22ulpbwp7t30p140pmlvt.lef"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t35p140pmlvt_100d/AN61001_20190412/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp7t35p140pmlvt_090a/lef/tcbn22ulpbwp7t35p140pmlvt.lef"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t40p140pmlvt_100d/AN61001_20190412/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp7t40p140pmlvt_090a/lef/tcbn22ulpbwp7t40p140pmlvt.lef" ]
-/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t30p140lvt_100d/AN61001_20190412/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp7t30p140lvt_100a/lef/tcbn22ulpbwp7t30p140lvt.lef /eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t35p140lvt_100d/AN61001_20190412/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp7t35p140lvt_100a/lef/tcbn22ulpbwp7t35p140lvt.lef /eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t40p140lvt_100d/AN61001_20190412/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp7t40p140lvt_100a/lef/tcbn22ulpbwp7t40p140lvt.lef /eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t30p140pmlvt_100d/AN61001_20190412/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp7t30p140pmlvt_090a/lef/tcbn22ulpbwp7t30p140pmlvt.lef /eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t35p140pmlvt_100d/AN61001_20190412/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp7t35p140pmlvt_090a/lef/tcbn22ulpbwp7t35p140pmlvt.lef /eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t40p140pmlvt_100d/AN61001_20190412/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp7t40p140pmlvt_090a/lef/tcbn22ulpbwp7t40p140pmlvt.lef
-#library_tsmc_22ulp_tsmc_9t
-set library_tsmc_22ulp_tsmc_9t_hvt [list   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp30p140hvt_100d/AN61001_20190412/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp30p140hvt_100d/tcbn22ulpbwp30p140hvt${PVTM}_ccs.${db_type}"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp35p140hvt_100d/AN61001_20190412/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp35p140hvt_100d/tcbn22ulpbwp35p140hvt${PVTM}_ccs.${db_type}"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp40p140hvt_100d/AN61001_20190412/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp40p140hvt_100d/tcbn22ulpbwp40p140hvt${PVTM}_ccs.${db_type}"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp30p140mbhvt_100d/0K56002_20200714/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp30p140mbhvt_100d/tcbn22ulpbwp30p140mbhvt${PVTM}_ccs.${db_type}"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp35p140mbhvt_100d/0K56002_20200714/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp35p140mbhvt_100d/tcbn22ulpbwp35p140mbhvt${PVTM}_ccs.${db_type}"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp40p140mbhvt_100d/0K56002_20200714/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp40p140mbhvt_100d/tcbn22ulpbwp40p140mbhvt${PVTM}_ccs.${db_type}"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp30p140pmhvt_100d/AN61001_20190412/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp30p140pmhvt_100d/tcbn22ulpbwp30p140pmhvt${PVTM}_ccs.${db_type}"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp35p140pmhvt_100d/AN61001_20190412/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp35p140pmhvt_100d/tcbn22ulpbwp35p140pmhvt${PVTM}_ccs.${db_type}"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp40p140pmhvt_100d/AN61001_20190412/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp40p140pmhvt_100d/tcbn22ulpbwp40p140pmhvt${PVTM}_ccs.${db_type}" ]
-/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp30p140hvt_100d/AN61001_20190412/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp30p140hvt_100d/tcbn22ulpbwp30p140hvt25CTT1P8_typ_ccs.db /eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp35p140hvt_100d/AN61001_20190412/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp35p140hvt_100d/tcbn22ulpbwp35p140hvt25CTT1P8_typ_ccs.db /eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp40p140hvt_100d/AN61001_20190412/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp40p140hvt_100d/tcbn22ulpbwp40p140hvt25CTT1P8_typ_ccs.db /eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp30p140mbhvt_100d/0K56002_20200714/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp30p140mbhvt_100d/tcbn22ulpbwp30p140mbhvt25CTT1P8_typ_ccs.db /eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp35p140mbhvt_100d/0K56002_20200714/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp35p140mbhvt_100d/tcbn22ulpbwp35p140mbhvt25CTT1P8_typ_ccs.db /eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp40p140mbhvt_100d/0K56002_20200714/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp40p140mbhvt_100d/tcbn22ulpbwp40p140mbhvt25CTT1P8_typ_ccs.db /eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp30p140pmhvt_100d/AN61001_20190412/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp30p140pmhvt_100d/tcbn22ulpbwp30p140pmhvt25CTT1P8_typ_ccs.db /eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp35p140pmhvt_100d/AN61001_20190412/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp35p140pmhvt_100d/tcbn22ulpbwp35p140pmhvt25CTT1P8_typ_ccs.db /eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp40p140pmhvt_100d/AN61001_20190412/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp40p140pmhvt_100d/tcbn22ulpbwp40p140pmhvt25CTT1P8_typ_ccs.db
-set library_tsmc_22ulp_tsmc_9t_svt [list   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp30p140_100d/AN61001_20190412/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp30p140_100d/tcbn22ulpbwp30p140${PVTM}_ccs.${db_type}"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp35p140_100d/AN61001_20190412/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp35p140_100d/tcbn22ulpbwp35p140${PVTM}_ccs.${db_type}"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp40p140_100d/AN61001_20190412/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp40p140_100d/tcbn22ulpbwp40p140${PVTM}_ccs.${db_type}"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp30p140mb_100d/0K56002_20200714/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp30p140mb_100d/tcbn22ulpbwp30p140mb${PVTM}_ccs.${db_type}"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp35p140mb_100d/0K56002_20200714/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp35p140mb_100d/tcbn22ulpbwp35p140mb${PVTM}_ccs.${db_type}"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp40p140mb_100d/0K56002_20200714/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp40p140mb_100d/tcbn22ulpbwp40p140mb${PVTM}_ccs.${db_type}"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp30p140pm_100d/AN61001_20190412/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp30p140pm_100d/tcbn22ulpbwp30p140pm${PVTM}_ccs.${db_type}"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp35p140pm_100d/AN61001_20190412/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp35p140pm_100d/tcbn22ulpbwp35p140pm${PVTM}_ccs.${db_type}"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp40p140pm_100d/AN61001_20190412/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp40p140pm_100d/tcbn22ulpbwp40p140pm${PVTM}_ccs.${db_type}" ]
-/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp30p140_100d/AN61001_20190412/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp30p140_100d/tcbn22ulpbwp30p14025CTT1P8_typ_ccs.db /eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp35p140_100d/AN61001_20190412/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp35p140_100d/tcbn22ulpbwp35p14025CTT1P8_typ_ccs.db /eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp40p140_100d/AN61001_20190412/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp40p140_100d/tcbn22ulpbwp40p14025CTT1P8_typ_ccs.db /eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp30p140mb_100d/0K56002_20200714/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp30p140mb_100d/tcbn22ulpbwp30p140mb25CTT1P8_typ_ccs.db /eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp35p140mb_100d/0K56002_20200714/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp35p140mb_100d/tcbn22ulpbwp35p140mb25CTT1P8_typ_ccs.db /eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp40p140mb_100d/0K56002_20200714/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp40p140mb_100d/tcbn22ulpbwp40p140mb25CTT1P8_typ_ccs.db /eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp30p140pm_100d/AN61001_20190412/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp30p140pm_100d/tcbn22ulpbwp30p140pm25CTT1P8_typ_ccs.db /eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp35p140pm_100d/AN61001_20190412/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp35p140pm_100d/tcbn22ulpbwp35p140pm25CTT1P8_typ_ccs.db /eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp40p140pm_100d/AN61001_20190412/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp40p140pm_100d/tcbn22ulpbwp40p140pm25CTT1P8_typ_ccs.db
-set library_tsmc_22ulp_tsmc_9t_lvt [list   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp30p140lvt_100d/AN61001_20190412/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp30p140lvt_100d/tcbn22ulpbwp30p140lvt${PVTM}_ccs.${db_type}"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp35p140lvt_100d/AN61001_20190412/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp35p140lvt_100d/tcbn22ulpbwp35p140lvt${PVTM}_ccs.${db_type}"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp40p140lvt_100d/AN61001_20190412/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp40p140lvt_100d/tcbn22ulpbwp40p140lvt${PVTM}_ccs.${db_type}"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp30p140pmlvt_100d/AN61001_20190412/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp30p140pmlvt_100d/tcbn22ulpbwp30p140pmlvt${PVTM}_ccs.${db_type}"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp35p140pmlvt_100d/AN61001_20190412/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp35p140pmlvt_100d/tcbn22ulpbwp35p140pmlvt${PVTM}_ccs.${db_type}"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp40p140pmlvt_100d/AN61001_20190412/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp40p140pmlvt_100d/tcbn22ulpbwp40p140pmlvt${PVTM}_ccs.${db_type}" ]
-/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp30p140lvt_100d/AN61001_20190412/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp30p140lvt_100d/tcbn22ulpbwp30p140lvt25CTT1P8_typ_ccs.db /eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp35p140lvt_100d/AN61001_20190412/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp35p140lvt_100d/tcbn22ulpbwp35p140lvt25CTT1P8_typ_ccs.db /eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp40p140lvt_100d/AN61001_20190412/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp40p140lvt_100d/tcbn22ulpbwp40p140lvt25CTT1P8_typ_ccs.db /eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp30p140pmlvt_100d/AN61001_20190412/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp30p140pmlvt_100d/tcbn22ulpbwp30p140pmlvt25CTT1P8_typ_ccs.db /eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp35p140pmlvt_100d/AN61001_20190412/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp35p140pmlvt_100d/tcbn22ulpbwp35p140pmlvt25CTT1P8_typ_ccs.db /eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp40p140pmlvt_100d/AN61001_20190412/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp40p140pmlvt_100d/tcbn22ulpbwp40p140pmlvt25CTT1P8_typ_ccs.db
-## lib_name
-set svt_tsmc_22ulp_tsmc_9t_c30                "tcbn22ulpbwp30p140${PVTM}_ccs"
-tcbn22ulpbwp30p14025CTT1P8_typ_ccs
-set svt_tsmc_22ulp_tsmc_9t_c35                "tcbn22ulpbwp35p140${PVTM}_ccs"
-tcbn22ulpbwp35p14025CTT1P8_typ_ccs
-set svt_tsmc_22ulp_tsmc_9t_c40                "tcbn22ulpbwp40p140${PVTM}_ccs"
-tcbn22ulpbwp40p14025CTT1P8_typ_ccs
-set hvt_tsmc_22ulp_tsmc_9t_c30                "tcbn22ulpbwp30p140hvt${PVTM}_ccs"
-tcbn22ulpbwp30p140hvt25CTT1P8_typ_ccs
-set hvt_tsmc_22ulp_tsmc_9t_c35                "tcbn22ulpbwp35p140hvt${PVTM}_ccs"
-tcbn22ulpbwp35p140hvt25CTT1P8_typ_ccs
-set hvt_tsmc_22ulp_tsmc_9t_c40                "tcbn22ulpbwp40p140hvt${PVTM}_ccs"
-tcbn22ulpbwp40p140hvt25CTT1P8_typ_ccs
-set lvt_tsmc_22ulp_tsmc_9t_c30                "tcbn22ulpbwp30p140lvt${PVTM}_ccs"
-tcbn22ulpbwp30p140lvt25CTT1P8_typ_ccs
-set lvt_tsmc_22ulp_tsmc_9t_c35                "tcbn22ulpbwp35p140lvt${PVTM}_ccs"
-tcbn22ulpbwp35p140lvt25CTT1P8_typ_ccs
-set lvt_tsmc_22ulp_tsmc_9t_c40                "tcbn22ulpbwp40p140lvt${PVTM}_ccs"
-tcbn22ulpbwp40p140lvt25CTT1P8_typ_ccs
-set hvt_tsmc_22ulp_tsmc_9t_c30mb              "tcbn22ulpbwp30p140mbhvt${PVTM}_ccs"
-tcbn22ulpbwp30p140mbhvt25CTT1P8_typ_ccs
-set hvt_tsmc_22ulp_tsmc_9t_c35mb              "tcbn22ulpbwp35p140mbhvt${PVTM}_ccs"
-tcbn22ulpbwp35p140mbhvt25CTT1P8_typ_ccs
-set hvt_tsmc_22ulp_tsmc_9t_c40mb              "tcbn22ulpbwp40p140mbhvt${PVTM}_ccs"
-tcbn22ulpbwp40p140mbhvt25CTT1P8_typ_ccs
-set svt_tsmc_22ulp_tsmc_9t_c30mb              "tcbn22ulpbwp30p140mb${PVTM}_ccs"
-tcbn22ulpbwp30p140mb25CTT1P8_typ_ccs
-set svt_tsmc_22ulp_tsmc_9t_c35mb              "tcbn22ulpbwp35p140mb${PVTM}_ccs"
-tcbn22ulpbwp35p140mb25CTT1P8_typ_ccs
-set svt_tsmc_22ulp_tsmc_9t_c40mb              "tcbn22ulpbwp40p140mb${PVTM}_ccs"
-tcbn22ulpbwp40p140mb25CTT1P8_typ_ccs
-set hvt_tsmc_22ulp_tsmc_9t_c30pm              "tcbn22ulpbwp30p140pmhvt${PVTM}_ccs"
-tcbn22ulpbwp30p140pmhvt25CTT1P8_typ_ccs
-set hvt_tsmc_22ulp_tsmc_9t_c35pm              "tcbn22ulpbwp35p140pmhvt${PVTM}_ccs"
-tcbn22ulpbwp35p140pmhvt25CTT1P8_typ_ccs
-set hvt_tsmc_22ulp_tsmc_9t_c40pm              "tcbn22ulpbwp40p140pmhvt${PVTM}_ccs"
-tcbn22ulpbwp40p140pmhvt25CTT1P8_typ_ccs
-set svt_tsmc_22ulp_tsmc_9t_c30pm              "tcbn22ulpbwp30p140pm${PVTM}_ccs"
-tcbn22ulpbwp30p140pm25CTT1P8_typ_ccs
-set svt_tsmc_22ulp_tsmc_9t_c35pm              "tcbn22ulpbwp35p140pm${PVTM}_ccs"
-tcbn22ulpbwp35p140pm25CTT1P8_typ_ccs
-set svt_tsmc_22ulp_tsmc_9t_c40pm              "tcbn22ulpbwp40p140pm${PVTM}_ccs"
-tcbn22ulpbwp40p140pm25CTT1P8_typ_ccs
-set lvt_tsmc_22ulp_tsmc_9t_c30pm              "tcbn22ulpbwp30p140pmlvt${PVTM}_ccs"
-tcbn22ulpbwp30p140pmlvt25CTT1P8_typ_ccs
-set lvt_tsmc_22ulp_tsmc_9t_c35pm              "tcbn22ulpbwp35p140pmlvt${PVTM}_ccs"
-tcbn22ulpbwp35p140pmlvt25CTT1P8_typ_ccs
-set lvt_tsmc_22ulp_tsmc_9t_c40pm              "tcbn22ulpbwp40p140pmlvt${PVTM}_ccs"
-tcbn22ulpbwp40p140pmlvt25CTT1P8_typ_ccs
-set ckgate_tsmc_22ulp_tsmc_9t                 "CKLNQD8BWP35P140"
-CKLNQD8BWP35P140
-set lef_tsmc_22ulp_tsmc_9t_hvt [list   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp30p140hvt_100d/AN61001_20190412/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp30p140hvt_100a/lef/tcbn22ulpbwp30p140hvt.lef"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp35p140hvt_100d/AN61001_20190412/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp35p140hvt_100a/lef/tcbn22ulpbwp35p140hvt.lef"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp40p140hvt_100d/AN61001_20190412/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp40p140hvt_100a/lef/tcbn22ulpbwp40p140hvt.lef"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp30p140pmhvt_100d/AN61001_20190412/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp30p140pmhvt_090a/lef/tcbn22ulpbwp30p140pmhvt.lef"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp35p140pmhvt_100d/AN61001_20190412/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp35p140pmhvt_090a/lef/tcbn22ulpbwp35p140pmhvt.lef"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp40p140pmhvt_100d/AN61001_20190412/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp40p140pmhvt_090a/lef/tcbn22ulpbwp40p140pmhvt.lef" ]
-/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp30p140hvt_100d/AN61001_20190412/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp30p140hvt_100a/lef/tcbn22ulpbwp30p140hvt.lef /eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp35p140hvt_100d/AN61001_20190412/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp35p140hvt_100a/lef/tcbn22ulpbwp35p140hvt.lef /eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp40p140hvt_100d/AN61001_20190412/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp40p140hvt_100a/lef/tcbn22ulpbwp40p140hvt.lef /eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp30p140pmhvt_100d/AN61001_20190412/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp30p140pmhvt_090a/lef/tcbn22ulpbwp30p140pmhvt.lef /eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp35p140pmhvt_100d/AN61001_20190412/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp35p140pmhvt_090a/lef/tcbn22ulpbwp35p140pmhvt.lef /eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp40p140pmhvt_100d/AN61001_20190412/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp40p140pmhvt_090a/lef/tcbn22ulpbwp40p140pmhvt.lef
-set lef_tsmc_22ulp_tsmc_9t_svt [list   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp30p140_100d/AN61001_20190412/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp30p140_100a/lef/tcbn22ulpbwp30p140.lef"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp35p140_100d/AN61001_20190412/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp35p140_100a/lef/tcbn22ulpbwp35p140.lef"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp40p140_100d/AN61001_20190412/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp40p140_100a/lef/tcbn22ulpbwp40p140.lef"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp30p140pm_100d/AN61001_20190412/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp30p140pm_090a/lef/tcbn22ulpbwp30p140pm.lef"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp35p140pm_100d/AN61001_20190412/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp35p140pm_090a/lef/tcbn22ulpbwp35p140pm.lef"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp40p140pm_100d/AN61001_20190412/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp40p140pm_090a/lef/tcbn22ulpbwp40p140pm.lef" ]
-/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp30p140_100d/AN61001_20190412/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp30p140_100a/lef/tcbn22ulpbwp30p140.lef /eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp35p140_100d/AN61001_20190412/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp35p140_100a/lef/tcbn22ulpbwp35p140.lef /eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp40p140_100d/AN61001_20190412/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp40p140_100a/lef/tcbn22ulpbwp40p140.lef /eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp30p140pm_100d/AN61001_20190412/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp30p140pm_090a/lef/tcbn22ulpbwp30p140pm.lef /eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp35p140pm_100d/AN61001_20190412/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp35p140pm_090a/lef/tcbn22ulpbwp35p140pm.lef /eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp40p140pm_100d/AN61001_20190412/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp40p140pm_090a/lef/tcbn22ulpbwp40p140pm.lef
-set lef_tsmc_22ulp_tsmc_9t_lvt [list   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp30p140lvt_100d/AN61001_20190412/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp30p140lvt_100a/lef/tcbn22ulpbwp30p140lvt.lef"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp35p140lvt_100d/AN61001_20190412/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp35p140lvt_100a/lef/tcbn22ulpbwp35p140lvt.lef"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp40p140lvt_100d/AN61001_20190412/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp40p140lvt_100a/lef/tcbn22ulpbwp40p140lvt.lef"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp30p140pmlvt_100d/AN61001_20190412/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp30p140pmlvt_090a/lef/tcbn22ulpbwp30p140pmlvt.lef"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp35p140pmlvt_100d/AN61001_20190412/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp35p140pmlvt_090a/lef/tcbn22ulpbwp35p140pmlvt.lef"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp40p140pmlvt_100d/AN61001_20190412/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp40p140pmlvt_090a/lef/tcbn22ulpbwp40p140pmlvt.lef" ]
-/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp30p140lvt_100d/AN61001_20190412/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp30p140lvt_100a/lef/tcbn22ulpbwp30p140lvt.lef /eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp35p140lvt_100d/AN61001_20190412/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp35p140lvt_100a/lef/tcbn22ulpbwp35p140lvt.lef /eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp40p140lvt_100d/AN61001_20190412/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp40p140lvt_100a/lef/tcbn22ulpbwp40p140lvt.lef /eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp30p140pmlvt_100d/AN61001_20190412/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp30p140pmlvt_090a/lef/tcbn22ulpbwp30p140pmlvt.lef /eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp35p140pmlvt_100d/AN61001_20190412/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp35p140pmlvt_090a/lef/tcbn22ulpbwp35p140pmlvt.lef /eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp40p140pmlvt_100d/AN61001_20190412/TSMCHOME/digital/Back_End/lef/tcbn22ulpbwp40p140pmlvt_090a/lef/tcbn22ulpbwp40p140pmlvt.lef
-#library_umc_55eflp_umc_7t
-set library_umc_55eflp_umc_7t [list   "/eda/process/55/UMC_EFLASH/standcell/UMC/UM055LSCEE12BDH-LIBRARY_TAPE_OUT_KIT-Ver.B02_PB/synopsys/ccs/u055lscee12bdh_${PVT}_ccs.${db_type}"   "/eda/process/55/UMC_EFLASH/standcell/UMC/UM055LSCEE12BDR-LIBRARY_TAPE_OUT_KIT-Ver.B02_PB/synopsys/ccs/u055lscee12bdr_${PVT}_ccs.${db_type}"   "/eda/process/55/UMC_EFLASH/standcell/UMC/UM055LSCEEMVL7BH-LIBRARY_TAPE_OUT_KIT-Ver.B02_PB/synopsys/ccs/u055lsceemvl7bh_${PVT}_ccs.${db_type}"   "/eda/process/55/UMC_EFLASH/standcell/UMC/UM055LSCEEMVL7BR-LIBRARY_TAPE_OUT_KIT-Ver.B02_PB/synopsys/ccs/u055lsceemvl7br_${PVT}_ccs.${db_type}" ]
-/eda/process/55/UMC_EFLASH/standcell/UMC/UM055LSCEE12BDH-LIBRARY_TAPE_OUT_KIT-Ver.B02_PB/synopsys/ccs/u055lscee12bdh_25CTT1P8_typ_ccs.db /eda/process/55/UMC_EFLASH/standcell/UMC/UM055LSCEE12BDR-LIBRARY_TAPE_OUT_KIT-Ver.B02_PB/synopsys/ccs/u055lscee12bdr_25CTT1P8_typ_ccs.db /eda/process/55/UMC_EFLASH/standcell/UMC/UM055LSCEEMVL7BH-LIBRARY_TAPE_OUT_KIT-Ver.B02_PB/synopsys/ccs/u055lsceemvl7bh_25CTT1P8_typ_ccs.db /eda/process/55/UMC_EFLASH/standcell/UMC/UM055LSCEEMVL7BR-LIBRARY_TAPE_OUT_KIT-Ver.B02_PB/synopsys/ccs/u055lsceemvl7br_25CTT1P8_typ_ccs.db
-set hvt_gen_umc_55eflp_umc_7t                   "u055lscee12bdh_${PVT}"
-u055lscee12bdh_25CTT1P8_typ
-set hvt_pwr_umc_55eflp_umc_7t                   "u055lsceemvl7bh_${PVT}"
-u055lsceemvl7bh_25CTT1P8_typ
-set svt_gen_umc_55eflp_umc_7t                   "u055lscee12bdr_${PVT}"
-u055lscee12bdr_25CTT1P8_typ
-set svt_pwr_umc_55eflp_umc_7t                   "u055lsceemvl7br_${PVT}"
-u055lsceemvl7br_25CTT1P8_typ
-set ckgate_gen_umc_55eflp_umc_7t                "LAGCESM8TM"
-LAGCESM8TM
-set lef_umc_55eflp_umc_7t [list   "/eda/process/55/UMC_EFLASH/standcell/UMC/UM055LSCEE12BDH-LIBRARY_TAPE_OUT_KIT-Ver.B02_PB/lef/u055lscee12bdh.lef"   "/eda/process/55/UMC_EFLASH/standcell/UMC/UM055LSCEE12BDR-LIBRARY_TAPE_OUT_KIT-Ver.B02_PB/lef/u055lscee12bdr.lef"   "/eda/process/55/UMC_EFLASH/standcell/UMC/UM055LSCEEMVL7BH-LIBRARY_TAPE_OUT_KIT-Ver.B02_PB/lef/u055lsceemvl7bh.lef"   "/eda/process/55/UMC_EFLASH/standcell/UMC/UM055LSCEEMVL7BR-LIBRARY_TAPE_OUT_KIT-Ver.B02_PB/lef/u055lsceemvl7br.lef"]
-/eda/process/55/UMC_EFLASH/standcell/UMC/UM055LSCEE12BDH-LIBRARY_TAPE_OUT_KIT-Ver.B02_PB/lef/u055lscee12bdh.lef /eda/process/55/UMC_EFLASH/standcell/UMC/UM055LSCEE12BDR-LIBRARY_TAPE_OUT_KIT-Ver.B02_PB/lef/u055lscee12bdr.lef /eda/process/55/UMC_EFLASH/standcell/UMC/UM055LSCEEMVL7BH-LIBRARY_TAPE_OUT_KIT-Ver.B02_PB/lef/u055lsceemvl7bh.lef /eda/process/55/UMC_EFLASH/standcell/UMC/UM055LSCEEMVL7BR-LIBRARY_TAPE_OUT_KIT-Ver.B02_PB/lef/u055lsceemvl7br.lef
-# library_nexchip_110_7t
-set library_nexchip_110_7t [list   "/eda/process/110/ENEXCHIP/standcell/innopower/isrgt_d/2023Q4v0.13/GENERIC_CORE/FrontEnd/synopsys/ccsn/isrgt_d_generic_core_${PVTM}.${db_type_sp}"   "/eda/process/110/ENEXCHIP/standcell/innopower/isrgu_d/2023Q3v0.12/GENERIC_CORE/FrontEnd/synopsys/ccsn/isrgu_d_generic_core_${PVTM}.${db_type_sp}" ]
-/eda/process/110/ENEXCHIP/standcell/innopower/isrgt_d/2023Q4v0.13/GENERIC_CORE/FrontEnd/synopsys/ccsn/isrgt_d_generic_core_25CTT1P8_typ.ccs.db /eda/process/110/ENEXCHIP/standcell/innopower/isrgu_d/2023Q3v0.12/GENERIC_CORE/FrontEnd/synopsys/ccsn/isrgu_d_generic_core_25CTT1P8_typ.ccs.db
-set hvt_nexchip_110_7t            ""
-set svt_nexchip_110_7t            "isrgt_d_generic_core_${PVTM}"
-isrgt_d_generic_core_25CTT1P8_typ
-set lvt_nexchip_110_7t            "isrgu_d_generic_core_${PVTM}"
-isrgu_d_generic_core_25CTT1P8_typ
-set ckgate_nexchip_110_7t         "GCKESTDX6"
-GCKESTDX6
-set lef_nexchip_110_7t [list   "/eda/process/110/ENEXCHIP/standcell/innopower/isrgt_d/2023Q4v0.13/GENERIC_CORE/BackEnd/lef/isrgt_d_generic_core.msv.lef"   "/eda/process/110/ENEXCHIP/standcell/innopower/isrgu_d/2023Q3v0.12/GENERIC_CORE/BackEnd/lef/isrgu_d_generic_core.msv.lef" ]
-/eda/process/110/ENEXCHIP/standcell/innopower/isrgt_d/2023Q4v0.13/GENERIC_CORE/BackEnd/lef/isrgt_d_generic_core.msv.lef /eda/process/110/ENEXCHIP/standcell/innopower/isrgu_d/2023Q3v0.12/GENERIC_CORE/BackEnd/lef/isrgu_d_generic_core.msv.lef
-# library_nexchip_110_9t
-set library_nexchip_110_9t [list   "/eda/process/110/ENEXCHIP/standcell/innopower/isrgt_a/2023Q4v0.12/GENERIC_CORE/FrontEnd/synopsys/ccsn/isrgt_a_generic_core_${PVTM}.${db_type_sp}"   "/eda/process/110/ENEXCHIP/standcell/innopower/isrgu_a/2023Q4v0.12/GENERIC_CORE/FrontEnd/synopsys/ccsn/isrgu_a_generic_core_${PVTM}.${db_type_sp}" ]
-/eda/process/110/ENEXCHIP/standcell/innopower/isrgt_a/2023Q4v0.12/GENERIC_CORE/FrontEnd/synopsys/ccsn/isrgt_a_generic_core_25CTT1P8_typ.ccs.db /eda/process/110/ENEXCHIP/standcell/innopower/isrgu_a/2023Q4v0.12/GENERIC_CORE/FrontEnd/synopsys/ccsn/isrgu_a_generic_core_25CTT1P8_typ.ccs.db
-set hvt_nexchip_110_9t            ""
-set svt_nexchip_110_9t            "isrgt_a_generic_core_${PVTM}"
-isrgt_a_generic_core_25CTT1P8_typ
-set lvt_nexchip_110_9t            "isrgu_a_generic_core_${PVTM}"
-isrgu_a_generic_core_25CTT1P8_typ
-set ckgate_nexchip_110_9t         "GCKESUAX6"
-GCKESUAX6
-set lef_nexchip_110_9t [list   "/eda/process/110/ENEXCHIP/standcell/innopower/isrgt_a/2023Q4v0.12/GENERIC_CORE/BackEnd/lef/isrgt_a_generic_core.msv.lef"   "/eda/process/110/ENEXCHIP/standcell/innopower/isrgu_a/2023Q4v0.12/GENERIC_CORE/BackEnd/lef/isrgu_a_generic_core.msv.lef" ]
-/eda/process/110/ENEXCHIP/standcell/innopower/isrgt_a/2023Q4v0.12/GENERIC_CORE/BackEnd/lef/isrgt_a_generic_core.msv.lef /eda/process/110/ENEXCHIP/standcell/innopower/isrgu_a/2023Q4v0.12/GENERIC_CORE/BackEnd/lef/isrgu_a_generic_core.msv.lef
-# nexchip_145_12t
-set library_nexchip_145_12t [list   "/eda/process/015/ENEXCHIP/standcell/M31HSSC1200EL150SL_00.01.000/${CCS}/M31HSSC1200EL150SL_${PVTM}_${db_type_sp}"   "/eda/process/015/ENEXCHIP/standcell/M31HSSC1200EL150SS_01.02.000/${CCS}/M31HSSC1200EL150SS_${PVTM}_${db_type_sp}" ]
-/eda/process/015/ENEXCHIP/standcell/M31HSSC1200EL150SL_00.01.000/ccs_db/M31HSSC1200EL150SL_25CTT1P8_typ_ccs.db /eda/process/015/ENEXCHIP/standcell/M31HSSC1200EL150SS_01.02.000/ccs_db/M31HSSC1200EL150SS_25CTT1P8_typ_ccs.db
-set lvt_nexchip_145_12t           "M31HSSC1200EL150SL_${PVTM}_ccs"
-M31HSSC1200EL150SL_25CTT1P8_typ_ccs
-set svt_nexchip_145_12t           "M31HSSC1200EL150SS_${PVTM}_ccs"
-M31HSSC1200EL150SS_25CTT1P8_typ_ccs
-set ckgate_nexchip_145_12t        "GCKHBQX8AL12"
-GCKHBQX8AL12
-set lef_nexchip_145_12t [list   "/eda/process/015/ENEXCHIP/standcell/M31HSSC1200EL150SL_00.01.000/lef/M31HSSC1200EL150SL.lef"   "/eda/process/015/ENEXCHIP/standcell/M31HSSC1200EL150SS_01.02.000/lef/M31HSSC1200EL150SS.lef" ]
-/eda/process/015/ENEXCHIP/standcell/M31HSSC1200EL150SL_00.01.000/lef/M31HSSC1200EL150SL.lef /eda/process/015/ENEXCHIP/standcell/M31HSSC1200EL150SS_01.02.000/lef/M31HSSC1200EL150SS.lef
-# nexchip_145_9t
-set library_nexchip_145_9t [list   "/eda/process/015/ENEXCHIP/standcell/M31HSSC900EL150SL_00.01.000/${CCS}/M31HSSC900EL150SL_${PVTM}_${db_type_sp}"   "/eda/process/015/ENEXCHIP/standcell/M31HSSC900EL150SS_01.05.000/${CCS}/M31HSSC900EL150SS_${PVTM}_${db_type_sp}" ]
-/eda/process/015/ENEXCHIP/standcell/M31HSSC900EL150SL_00.01.000/ccs_db/M31HSSC900EL150SL_25CTT1P8_typ_ccs.db /eda/process/015/ENEXCHIP/standcell/M31HSSC900EL150SS_01.05.000/ccs_db/M31HSSC900EL150SS_25CTT1P8_typ_ccs.db
-set lvt_nexchip_145_9t            "M31HSSC900EL150SL_${PVTM}_ccs"
-M31HSSC900EL150SL_25CTT1P8_typ_ccs
-set svt_nexchip_145_9t            "M31HSSC900EL150SS_${PVTM}_ccs"
-M31HSSC900EL150SS_25CTT1P8_typ_ccs
-set ckgate_nexchip_145_9t        "GCKHBQX8AL9"
-GCKHBQX8AL9
-set lef_nexchip_145_9t [list   "/eda/process/015/ENEXCHIP/standcell/M31HSSC900EL150SL_00.01.000/lef/M31HSSC900EL150SL.lef"   "/eda/process/015/ENEXCHIP/standcell/M31HSSC900EL150SS_01.05.000/lef/M31HSSC900EL150SS.lef" ]
-/eda/process/015/ENEXCHIP/standcell/M31HSSC900EL150SL_00.01.000/lef/M31HSSC900EL150SL.lef /eda/process/015/ENEXCHIP/standcell/M31HSSC900EL150SS_01.05.000/lef/M31HSSC900EL150SS.lef
-#link_library
-set link_library     [list ]
-if { [regexp {hlmc_55_snps_7t} $LINK_LIB] } {
-  set link_library [concat $link_library $library_hlmc_55_snps_7t]
-}
-if { [regexp {hlmc_55_snps_9t} $LINK_LIB] } {
-  set link_library [concat $link_library $library_hlmc_55_snps_9t]
-}
-if { [regexp {umc_55_fara_7t} $LINK_LIB]  } {
-  set link_library [concat $link_library $library_umc_55_fara_7t]
-
-}
-if { [regexp {umc_55_fara_8t} $LINK_LIB]  } {
-  set link_library [concat $link_library $library_umc_55_fara_8t]
-
-}
-if { [regexp {umc_55_snps_7t} $LINK_LIB]  } {
-  set link_library [concat $link_library $library_umc_55_snps_7t]
-
-}
-if { [regexp {umc_55_snps_8t} $LINK_LIB]  } {
-  set link_library [concat $link_library $library_umc_55_snps_8t]
-
-}
-if { [regexp {umc_40_fara_7t} $LINK_LIB]  } {
-  set link_library [concat $link_library $library_umc_40_fara_7t]
-
-}
-if { [regexp {umc_40_fara_9t} $LINK_LIB]  } {
-  set link_library [concat $link_library $library_umc_40_fara_9t]
-
-}
-if { [regexp {umc_40_fara_1p2_7t} $LINK_LIB]  } {
-  set link_library [concat $link_library $library_umc_40_fara_1p2_7t]
-
-}
-if { [regexp {umc_40_fara_1p2_9t} $LINK_LIB]  } {
-  set link_library [concat $link_library $library_umc_40_fara_1p2_9t]
-
-}
-if { [regexp {umc_40_snps_9t} $LINK_LIB]  } {
-  set link_library [concat $link_library $library_umc_40_snps_9t]
-
-}
-if { [regexp {umc_28_arm_9t_hpc} $LINK_LIB]  } {
-  set link_library [concat $link_library $library_umc_28_arm_9t_hpc]
-}
-if { [regexp {umc_28p_arm_7t_hpc} $LINK_LIB]  } {
-  set link_library [concat $link_library $library_umc_28p_arm_7t_hpc]
-}
-if { [regexp {umc_28p_arm_9t_hpc} $LINK_LIB]  } {
-  set link_library [concat $link_library $library_umc_28p_arm_9t_hpc]
-}
-if { [regexp {umc_28p_arm_12t_hpc} $LINK_LIB]  } {
-  set link_library [concat $link_library $library_umc_28p_arm_12t_hpc]
-}
-if { [regexp {umc_28p_snps_ud} $LINK_LIB]  } {
-  set link_library [concat $link_library $library_umc_28p_snps_ud]
-}
-if { [regexp {umc_22_arm_7t} $LINK_LIB]  } {
-  set link_library [concat $link_library $library_umc_22_arm_7t]
-}
-if { [regexp {umc_22_arm_9t} $LINK_LIB]  } {
-  set link_library [concat $link_library $library_umc_22_arm_9t]
-}
-if { [regexp {tsmc_22ulp_tsmc_7t} $TAR_LIB]  } {
-  set link_library [concat $link_library $library_tsmc_22ulp_tsmc_7t_hvt]
-  set link_library [concat $link_library $library_tsmc_22ulp_tsmc_7t_svt]
-  set link_library [concat $link_library $library_tsmc_22ulp_tsmc_7t_lvt]
-}
-if { [regexp {tsmc_22ulp_tsmc_9t} $TAR_LIB]  } {
-  set link_library [concat $link_library $library_tsmc_22ulp_tsmc_9t_hvt]
-  set link_library [concat $link_library $library_tsmc_22ulp_tsmc_9t_svt]
-  set link_library [concat $link_library $library_tsmc_22ulp_tsmc_9t_lvt]
-}
-if { [regexp {umc_55eflp_umc_7t} $TAR_LIB]  } {
-  set link_library [concat $link_library $library_umc_55eflp_umc_7t]
-}
-if { [regexp {nexchip_110_7t} $LINK_LIB]  } {
-  set link_library [concat $link_library $library_nexchip_110_7t]
-
-}
-if { [regexp {nexchip_110_9t} $LINK_LIB]  } {
-  set link_library [concat $link_library $library_nexchip_110_9t]
-
-}
-if { [regexp {nexchip_145_9t} $LINK_LIB]  } {  
-  set link_library [concat $link_library $library_nexchip_145_9t]
- 
-}
-/eda/process/015/ENEXCHIP/standcell/M31HSSC900EL150SL_00.01.000/ccs_db/M31HSSC900EL150SL_25CTT1P8_typ_ccs.db /eda/process/015/ENEXCHIP/standcell/M31HSSC900EL150SS_01.05.000/ccs_db/M31HSSC900EL150SS_25CTT1P8_typ_ccs.db
-if { [regexp {nexchip_145_12t} $LINK_LIB]  } {  
-  set link_library [concat $link_library $library_nexchip_145_12t]
- 
-}
-#target_library
-set target_library   [list ]
-set lib_svt_name     [list ]
-set lib_hvt_name     [list ]
-set lib_lvt_name     [list ]
-if { [regexp {snps_gtech} $TAR_LIB]  } {
-  set target_library [concat $target_library $library_snps_gtech]
-  set lib_svt_name [concat $lib_svt_name "gtech"]
-  set lib_hvt_name [concat $lib_hvt_name "gtech"]
-  set lib_lvt_name [concat $lib_lvt_name "gtech"]
-  set ckgate_name  $ckgate_snps_gtech
-}
-if { [regexp {hlmc_55_snps_7t} $TAR_LIB] } {
-  set target_library [concat $target_library $library_hlmc_55_snps_7t]
-  set lib_svt_name [concat $lib_svt_name $svt_hlmc_55_snps_7t]
-  set lib_hvt_name [concat $lib_hvt_name $hvt_hlmc_55_snps_7t]
-  set lib_lvt_name [concat $lib_lvt_name $lvt_hlmc_55_snps_7t]
-  set ckgate_name  $ckgate_hlmc_55_snps_7t
-}
-if { [regexp {hlmc_55_snps_9t} $TAR_LIB] } {
-  set target_library [concat $target_library $library_hlmc_55_snps_9t]
-  set lib_svt_name [concat $lib_svt_name $svt_hlmc_55_snps_9t]
-  set lib_hvt_name [concat $lib_hvt_name $hvt_hlmc_55_snps_9t]
-  set lib_lvt_name [concat $lib_lvt_name $lvt_hlmc_55_snps_9t]
-  set ckgate_name  $ckgate_hlmc_55_snps_9t
-}
-if { [regexp {umc_55_fara_7t} $TAR_LIB]  } {
-  set target_library [concat $target_library $library_umc_55_fara_7t]
-  set lib_svt_name [concat $lib_svt_name $svt_umc_55_fara_7t]
-  set lib_hvt_name [concat $lib_hvt_name $hvt_umc_55_fara_7t]
-  set lib_lvt_name [concat $lib_lvt_name $lvt_umc_55_fara_7t]
-  set ckgate_name  $ckgate_umc_55_fara_7t
-}
-if { [regexp {umc_55_fara_8t} $TAR_LIB]  } {
-  set target_library [concat $target_library $library_umc_55_fara_8t]
-  set lib_svt_name [concat $lib_svt_name $svt_umc_55_fara_8t]
-  set lib_hvt_name [concat $lib_hvt_name $hvt_umc_55_fara_8t]
-  set lib_lvt_name [concat $lib_lvt_name $lvt_umc_55_fara_8t]
-  set ckgate_name  $ckgate_umc_55_fara_8t
-}
-if { [regexp {umc_55_snps_7t} $TAR_LIB]  } {
-  set target_library [concat $target_library $library_umc_55_snps_7t]
-  set lib_svt_name [concat $lib_svt_name $svt_umc_55_snps_7t]
-  set lib_hvt_name [concat $lib_hvt_name $hvt_umc_55_snps_7t]
-  set lib_lvt_name [concat $lib_lvt_name $lvt_umc_55_snps_7t]
-  set ckgate_name  $ckgate_umc_55_snps_7t
-}
-if { [regexp {umc_55_snps_8t} $TAR_LIB]  } {
-  set target_library [concat $target_library $library_umc_55_snps_8t]
-  set lib_svt_name [concat $lib_svt_name $svt_umc_55_snps_8t]
-  set lib_hvt_name [concat $lib_hvt_name $hvt_umc_55_snps_8t]
-  set lib_lvt_name [concat $lib_lvt_name $lvt_umc_55_snps_8t]
-  set ckgate_name  $ckgate_umc_55_snps_8t
-}
-if { [regexp {umc_40_fara_7t} $TAR_LIB]  } {
-  set target_library [concat $target_library $library_umc_40_fara_7t]
-  set lib_svt_name [concat $lib_svt_name $svt_umc_40_fara_7t]
-  set lib_hvt_name [concat $lib_hvt_name $hvt_umc_40_fara_7t]
-  set lib_lvt_name [concat $lib_lvt_name $lvt_umc_40_fara_7t]
-  set lef_file     [concat $lef_file $lef_umc_40_fara_7t]
-  set ckgate_name  $ckgate_umc_40_fara_7t
-}
-if { [regexp {umc_40_fara_9t} $TAR_LIB]  } {
-  set target_library [concat $target_library $library_umc_40_fara_9t]
-  set lib_svt_name [concat $lib_svt_name $svt_umc_40_fara_9t]
-  set lib_hvt_name [concat $lib_hvt_name $hvt_umc_40_fara_9t]
-  set lib_lvt_name [concat $lib_lvt_name $lvt_umc_40_fara_9t]
-  set lef_file     [concat $lef_file $lef_umc_40_fara_9t]
-  set ckgate_name  $ckgate_umc_40_fara_9t
-}
-if { [regexp {umc_40_fara_1p2_7t} $TAR_LIB]  } {
-  set target_library [concat $target_library $library_umc_40_fara_1p2_7t]
-  set lib_svt_name [concat $lib_svt_name $svt_umc_40_fara_1p2_7t]
-  set lib_hvt_name [concat $lib_hvt_name $hvt_umc_40_fara_1p2_7t]
-  set lib_lvt_name [concat $lib_lvt_name $lvt_umc_40_fara_1p2_7t]
-  set lef_file     [concat $lef_file $umc_40_fara_1p2_7t]
-  set ckgate_name  $ckgate_umc_40_fara_1p2_7t
-}
-if { [regexp {umc_40_fara_1p2_9t} $TAR_LIB]  } {
-  set target_library [concat $target_library $library_umc_40_fara_1p2_9t]
-  set lib_svt_name [concat $lib_svt_name $svt_umc_40_fara_1p2_9t]
-  set lib_hvt_name [concat $lib_hvt_name $hvt_umc_40_fara_1p2_9t]
-  set lib_lvt_name [concat $lib_lvt_name $lvt_umc_40_fara_1p2_9t]
-  set lef_file     [concat $lef_file $umc_40_fara_1p2_7t]
-  set ckgate_name  $ckgate_umc_40_fara_1p2_9t
-}
-if { [regexp {umc_40_snps_9t} $TAR_LIB]  } {
-  set target_library [concat $target_library $library_umc_40_snps_9t]
-  set lib_svt_name [concat $lib_svt_name $svt_umc_40_snps_9t]
-  set lib_hvt_name [concat $lib_hvt_name $hvt_umc_40_snps_9t]
-  set lib_lvt_name [concat $lib_lvt_name $lvt_umc_40_snps_9t]
-  set ckgate_name  $ckgate_umc_40_snps_9t
-}
-if { [regexp {umc_28_arm_9t_hpc} $TAR_LIB]  } {
-  set target_library [concat $target_library $library_umc_28_arm_9t_hpc]
-  set lib_hvt_name [concat $lib_hvt_name $hvt_umc_28_arm_9t_hpc_c30]
-  set lib_svt_name [concat $lib_svt_name $rvt_umc_28_arm_9t_hpc_c30]
-  set lib_lvt_name [concat $lib_lvt_name $lvt_umc_28_arm_9t_hpc_c30]
-  set ckgate_name $ckgate_umc_28_arm_9t_hpc
-}
-if { [regexp {umc_28p_arm_7t_hpc} $TAR_LIB]  } {
-  set target_library [concat $target_library $library_umc_28p_arm_7t_hpc]
-  set lib_hvt_name [concat $lib_hvt_name $hvt_umc_28p_arm_7t_hpc_c40 $hvt_umc_28p_arm_7t_hpc_c35 $hvt_umc_28p_arm_7t_hpc_c30]
-  set lib_svt_name [concat $lib_svt_name $svt_umc_28p_arm_7t_hpc_c40 $svt_umc_28p_arm_7t_hpc_c35 $svt_umc_28p_arm_7t_hpc_c30]
-  set lib_lvt_name [concat $lib_lvt_name $lvt_umc_28p_arm_7t_hpc_c40 $lvt_umc_28p_arm_7t_hpc_c35 $lvt_umc_28p_arm_7t_hpc_c30]
-  set ckgate_name $ckgate_umc_28p_arm_7t_hpc
-}
-if { [regexp {umc_28p_arm_9t_hpc} $TAR_LIB]  } {
-  set target_library [concat $target_library $library_umc_28p_arm_9t_hpc]
-  set lib_hvt_name [concat $lib_hvt_name $hvt_umc_28p_arm_9t_hpc_c40 $hvt_umc_28p_arm_9t_hpc_c35 $hvt_umc_28p_arm_9t_hpc_c30]
-  set lib_svt_name [concat $lib_svt_name $svt_umc_28p_arm_9t_hpc_c40 $svt_umc_28p_arm_9t_hpc_c35 $svt_umc_28p_arm_9t_hpc_c30]
-  set lib_lvt_name [concat $lib_lvt_name $lvt_umc_28p_arm_9t_hpc_c40 $lvt_umc_28p_arm_9t_hpc_c35 $lvt_umc_28p_arm_9t_hpc_c30]
-  set ckgate_name $ckgate_umc_28p_arm_9t_hpc
-}
-if { [regexp {umc_28p_arm_12t_hpc} $TAR_LIB]  } {
-  set target_library [concat $target_library $library_umc_28p_arm_12t_hpc]
-  set lib_hvt_name [concat $lib_hvt_name $hvt_umc_28p_arm_12t_hpc_c40 $hvt_umc_28p_arm_12t_hpc_c35 $hvt_umc_28p_arm_12t_hpc_c30]
-  set lib_svt_name [concat $lib_svt_name $svt_umc_28p_arm_12t_hpc_c40 $svt_umc_28p_arm_12t_hpc_c35 $svt_umc_28p_arm_12t_hpc_c30]
-  set lib_lvt_name [concat $lib_lvt_name $lvt_umc_28p_arm_12t_hpc_c40 $lvt_umc_28p_arm_12t_hpc_c35 $lvt_umc_28p_arm_12t_hpc_c30]
-  set ckgate_name $ckgate_umc_28p_arm_12t_hpc
-}
-if { [regexp {umc_22_arm_7t} $TAR_LIB]  } {
-  set target_library [concat $target_library $library_umc_22_arm_7t]
-  set lib_hvt_name [concat $lib_hvt_name $hvt_umc_22_arm_7t_base_c40 $hvt_umc_22_arm_7t_base_c35 $hvt_umc_22_arm_7t_base_c30                                          $hvt_umc_22_arm_7t_hpk_c40  $hvt_umc_22_arm_7t_hpk_c35  $hvt_umc_22_arm_7t_hpk_c30                                          $hvt_umc_22_arm_7t_pmk_c40  $hvt_umc_22_arm_7t_pmk_c35  $hvt_umc_22_arm_7t_pmk_c30]
-  set lib_svt_name [concat $lib_svt_name $svt_umc_22_arm_7t_base_c40 $svt_umc_22_arm_7t_base_c35 $svt_umc_22_arm_7t_base_c30                                          $svt_umc_22_arm_7t_hpk_c40  $svt_umc_22_arm_7t_hpk_c35  $svt_umc_22_arm_7t_hpk_c30                                          $svt_umc_22_arm_7t_pmk_c40  $svt_umc_22_arm_7t_pmk_c35  $svt_umc_22_arm_7t_pmk_c30]
-  set ckgate_name $ckgate_umc_22_arm_7t
-}
-if { [regexp {umc_22_arm_9t} $TAR_LIB]  } {
-  set target_library [concat $target_library $library_umc_22_arm_9t]
-  set lib_hvt_name [concat $lib_hvt_name $hvt_umc_22_arm_9t_base_c40 $hvt_umc_22_arm_9t_base_c35 $hvt_umc_22_arm_9t_base_c30                                          $hvt_umc_22_arm_9t_hpk_c40  $hvt_umc_22_arm_9t_hpk_c35  $hvt_umc_22_arm_9t_hpk_c30                                          $hvt_umc_22_arm_9t_pmk_c40  $hvt_umc_22_arm_9t_pmk_c35  $hvt_umc_22_arm_9t_pmk_c30]
-  set lib_svt_name [concat $lib_svt_name $svt_umc_22_arm_9t_base_c40 $svt_umc_22_arm_9t_base_c35 $svt_umc_22_arm_9t_base_c30                                          $svt_umc_22_arm_9t_hpk_c40  $svt_umc_22_arm_9t_hpk_c35  $svt_umc_22_arm_9t_hpk_c30                                          $svt_umc_22_arm_9t_pmk_c40  $svt_umc_22_arm_9t_pmk_c35  $svt_umc_22_arm_9t_pmk_c30]
-  set ckgate_name $ckgate_umc_22_arm_9t
-}
-if { [regexp {umc_28p_snps_ud} $TAR_LIB]  } {
-  set target_library [concat $target_library $library_umc_28p_snps_ud]
-  set lib_hvt_name [concat $lib_hvt_name $hvt_umc_28p_snps_30udh $hvt_umc_28p_snps_30udl $hvt_umc_28p_snps_30udp                                          $hvt_umc_28p_snps_35udh $hvt_umc_28p_snps_35udl $hvt_umc_28p_snps_35udp                                          $hvt_umc_28p_snps_40udh $hvt_umc_28p_snps_40udl $hvt_umc_28p_snps_40udp]
-  set lib_svt_name [concat $lib_svt_name $svt_umc_28p_snps_30udh $svt_umc_28p_snps_30udl $svt_umc_28p_snps_30udp                                          $svt_umc_28p_snps_35udh $svt_umc_28p_snps_35udl $svt_umc_28p_snps_35udp                                          $svt_umc_28p_snps_40udh $svt_umc_28p_snps_40udl $svt_umc_28p_snps_40udp]
-  set lef_file     [concat $lef_file $lef_umc_28p_snps_ud_hvt $lef_umc_28p_snps_ud_svt $lef_umc_28p_snps_ud_lvt]
-  set ckgate_name $ckgate_umc_28p_snps_ud
-
-}
-if { [regexp {tsmc_22ulp_tsmc_7t} $TAR_LIB]  } {
-  set target_library [concat $target_library $library_tsmc_22ulp_tsmc_7t_hvt]
-  set target_library [concat $target_library $library_tsmc_22ulp_tsmc_7t_svt]
-  set target_library [concat $target_library $library_tsmc_22ulp_tsmc_7t_lvt]
-  set lib_hvt_name [concat $lib_hvt_name $hvt_tsmc_22ulp_tsmc_7t_c30 $hvt_tsmc_22ulp_tsmc_7t_c30mb $hvt_tsmc_22ulp_tsmc_7t_c30pm                                          $hvt_tsmc_22ulp_tsmc_7t_c35 $hvt_tsmc_22ulp_tsmc_7t_c35mb $hvt_tsmc_22ulp_tsmc_7t_c35pm                                          $hvt_tsmc_22ulp_tsmc_7t_c40 $hvt_tsmc_22ulp_tsmc_7t_c40mb $hvt_tsmc_22ulp_tsmc_7t_c40pm ]
-  set lib_svt_name [concat $lib_svt_name $svt_tsmc_22ulp_tsmc_7t_c30 $svt_tsmc_22ulp_tsmc_7t_c30mb $svt_tsmc_22ulp_tsmc_7t_c30pm                                          $svt_tsmc_22ulp_tsmc_7t_c35 $svt_tsmc_22ulp_tsmc_7t_c35mb $svt_tsmc_22ulp_tsmc_7t_c35pm                                          $svt_tsmc_22ulp_tsmc_7t_c40 $svt_tsmc_22ulp_tsmc_7t_c40mb $svt_tsmc_22ulp_tsmc_7t_c40pm ]
-  set lib_lvt_name [concat $lib_lvt_name $lvt_tsmc_22ulp_tsmc_7t_c30                               $lvt_tsmc_22ulp_tsmc_7t_c30pm                                          $lvt_tsmc_22ulp_tsmc_7t_c35                               $lvt_tsmc_22ulp_tsmc_7t_c35pm                                          $lvt_tsmc_22ulp_tsmc_7t_c40                               $lvt_tsmc_22ulp_tsmc_7t_c40pm ]
-  set lef_file  [concat $lef_file $lef_tsmc_22ulp_tsmc_7t_hvt $lef_tsmc_22ulp_tsmc_7t_svt $lef_tsmc_22ulp_tsmc_7t_lvt]
-  set ckgate_name $ckgate_tsmc_22ulp_tsmc_7t
-
-}
-if { [regexp {tsmc_22ulp_tsmc_9t} $TAR_LIB]  } {
-  set target_library [concat $target_library $library_tsmc_22ulp_tsmc_9t_hvt]
-  set target_library [concat $target_library $library_tsmc_22ulp_tsmc_9t_svt]
-  set target_library [concat $target_library $library_tsmc_22ulp_tsmc_9t_lvt]
-  set lib_hvt_name [concat $lib_hvt_name $hvt_tsmc_22ulp_tsmc_9t_c30 $hvt_tsmc_22ulp_tsmc_9t_c30mb $hvt_tsmc_22ulp_tsmc_9t_c30pm                                          $hvt_tsmc_22ulp_tsmc_9t_c35 $hvt_tsmc_22ulp_tsmc_9t_c35mb $hvt_tsmc_22ulp_tsmc_9t_c35pm                                          $hvt_tsmc_22ulp_tsmc_9t_c40 $hvt_tsmc_22ulp_tsmc_9t_c40mb $hvt_tsmc_22ulp_tsmc_9t_c40pm ]
-  set lib_svt_name [concat $lib_svt_name $svt_tsmc_22ulp_tsmc_9t_c30 $svt_tsmc_22ulp_tsmc_9t_c30mb $svt_tsmc_22ulp_tsmc_9t_c30pm                                          $svt_tsmc_22ulp_tsmc_9t_c35 $svt_tsmc_22ulp_tsmc_9t_c35mb $svt_tsmc_22ulp_tsmc_9t_c35pm                                          $svt_tsmc_22ulp_tsmc_9t_c40 $svt_tsmc_22ulp_tsmc_9t_c40mb $svt_tsmc_22ulp_tsmc_9t_c40pm ]
-  set lib_lvt_name [concat $lib_lvt_name $lvt_tsmc_22ulp_tsmc_9t_c30                               $lvt_tsmc_22ulp_tsmc_9t_c30pm                                          $lvt_tsmc_22ulp_tsmc_9t_c35                               $lvt_tsmc_22ulp_tsmc_9t_c35pm                                          $lvt_tsmc_22ulp_tsmc_9t_c40   
-  set lef_file  [concat $lef_file $lef_tsmc_22ulp_tsmc_9t_hvt $lef_tsmc_22ulp_tsmc_9t_svt $lef_tsmc_22ulp_tsmc_9t_lvt]
-  set ckgate_name $ckgate_tsmc_22ulp_tsmc_9t
-
-}
-if { [regexp {umc_55eflp_umc_7t} $TAR_LIB]  } {
-  set target_library [concat $target_library $library_umc_55eflp_umc_7t]
-  set lib_hvt_name [concat $lib_hvt_name  $hvt_gen_umc_55eflp_umc_7t $hvt_pwr_umc_55eflp_umc_7t]
-  set lib_svt_name [concat $lib_svt_name  $svt_gen_umc_55eflp_umc_7t $svt_pwr_umc_55eflp_umc_7t]
-  set lib_lvt_name [concat $lib_lvt_name  $lvt_gen_umc_55eflp_umc_7t $lvt_pwr_umc_55eflp_umc_7t]
-
-  set lef_file  [concat $lef_file $lef_umc_55eflp_umc_7t]
-  set ckgate_name $ckgate_umc_55eflp_umc_7t
-}
-if { [regexp {nexchip_110_7t} $TAR_LIB]  } {
-  set target_library [concat $target_library $library_nexchip_110_7t]
-  set lib_hvt_name [concat $lib_hvt_name $hvt_nexchip_110_7t]
-  set lib_svt_name [concat $lib_svt_name $svt_nexchip_110_7t]
-  set lib_lvt_name [concat $lib_lvt_name $lvt_nexchip_110_7t]
-#  set lef_file     [concat $lef_file $lef_nexchip_110_7t]
-  set ckgate_name  $ckgate_nexchip_110_7t
-}
-if { [regexp {nexchip_110_9t} $TAR_LIB]  } {  
-  set target_library [concat $target_library $library_nexchip_110_9t]
-  set lib_hvt_name [concat $lib_hvt_name $hvt_nexchip_110_9t]
-  set lib_svt_name [concat $lib_svt_name $svt_nexchip_110_9t]
-  set lib_lvt_name [concat $lib_lvt_name $lvt_nexchip_110_9t]
-#  set lef_file     [concat $lef_file $lef_nexchip_110_9t]
-  set ckgate_name  $ckgate_nexchip_110_9t
-}
-if { [regexp {nexchip_145_9t} $TAR_LIB]  } {
-  set target_library [concat $target_library $library_nexchip_145_9t]
-  set lib_svt_name [concat $lib_svt_name $svt_nexchip_145_9t]
-  set lib_lvt_name [concat $lib_lvt_name $lvt_nexchip_145_9t]
-#  set lef_file     [concat $lef_file $lef_nexchip_145_9t]
-  set ckgate_name  $ckgate_nexchip_145_9t
-}
-GCKHBQX8AL9
-if { [regexp {nexchip_145_12t} $TAR_LIB]  } {
-  set target_library [concat $target_library $library_nexchip_145_12t]
-  set lib_svt_name [concat $lib_svt_name $svt_nexchip_145_12t]
-  set lib_lvt_name [concat $lib_lvt_name $lvt_nexchip_145_12t]
-#  set lef_file     [concat $lef_file $lef_nexchip_145_12t]
-  set ckgate_name  $ckgate_nexchip_145_12t
-}
-#set link_library [concat $link_library $ana_link_library $mem_link_library]
-#set target_library [concat $target_library $ana_link_library $mem_link_library]
-#set lef_file  [concat $lef_file $mem_lef_file $ana_lef_file]
-set link_library [concat $link_library ]
-/eda/process/015/ENEXCHIP/standcell/M31HSSC900EL150SL_00.01.000/ccs_db/M31HSSC900EL150SL_25CTT1P8_typ_ccs.db /eda/process/015/ENEXCHIP/standcell/M31HSSC900EL150SS_01.05.000/ccs_db/M31HSSC900EL150SS_25CTT1P8_typ_ccs.db
-set target_library [concat $target_library ]
-/eda/process/015/ENEXCHIP/standcell/M31HSSC900EL150SL_00.01.000/ccs_db/M31HSSC900EL150SL_25CTT1P8_typ_ccs.db /eda/process/015/ENEXCHIP/standcell/M31HSSC900EL150SS_01.05.000/ccs_db/M31HSSC900EL150SS_25CTT1P8_typ_ccs.db
-#set lef_file  [concat $lef_file $ana_lef_file]
-#source $TCL_DIR/common/common_db_dig_macro.tcl
-#set link_library [concat $link_library $ana_link_library_dig_macro]
-#set target_library [concat $target_library $ana_link_library_dig_macro]
-set link_path [concat "*" $link_library]
-* /eda/process/015/ENEXCHIP/standcell/M31HSSC900EL150SL_00.01.000/ccs_db/M31HSSC900EL150SL_25CTT1P8_typ_ccs.db /eda/process/015/ENEXCHIP/standcell/M31HSSC900EL150SS_01.05.000/ccs_db/M31HSSC900EL150SS_25CTT1P8_typ_ccs.db
-## read_verilog
-set verilog_file_num [llength $verilog_file]
-1
-echo "" > rep_dir/read_verilog.log
-foreach vfile $verilog_file {
-  echo "read_verilog ${vfile}"
-  read_verilog $vfile  >> rep_dir/read_verilog.log
-}
-read_verilog /project/HV2M23/designer/AD/yzhao/release/HV2M23_digital_top/timing/latest/HV2M23_digital_top.v.gz
-current_design $TOP_NAME
-Information: current_design won't return any data before link (DES-071)
-link_design $TOP_NAME > rep_dir/link_design.log
-#source $TCL_DIR/design_rule.tcl -verbose -echo
-#set auto_wire_load_selection false
-##set_wire_load_mode enclosed
-#set_wire_load_mode top
-#set_wire_load_model -name G0K -library $lib_hvt_name
-#set_operating_conditions WCCOM -library $lib_hvt_name
-echo "" > ./rep_dir/sdc.log
-foreach sfile $sdc_file {
-  puts "source ${sfile}"
-  source $sfile -verbose -echo >> ./rep_dir/sdc.log
-}
-source /project/HV2M23/DataBase/Digital/Release/HV2M23_digital_top_to_APR/latest/HV2M23_digital_top_postcts.sdc
-#update_timing > ./rep_dir/update_timing.log
-set CONS_REPORT     ./rep_dir/${TOP_NAME}_cons.rpt
-./rep_dir/HV2M23_digital_top_cons.rpt
-set COVERAGE_REPORT ./rep_dir/${TOP_NAME}_coverage.rpt
-./rep_dir/HV2M23_digital_top_coverage.rpt
-set TIMING_REPORT   ./rep_dir/${TOP_NAME}_timing.rpt
-./rep_dir/HV2M23_digital_top_timing.rpt
-source ${TCL_DIR}dc/dc_user_proc.tcl
-##source $TCL_DIR/pt_report.tcl  -echo
-#
-##sh grep -v "/CDN" ./rep_dir/check_timing.log > a 
-##sh grep -v "/SDN" a  > b 
-##sh grep -v "/latch/E" b > ./rep_dir/uncons.rpt
-#
-#
-#report_timing > ./rep_dir/report_timing.log
-#
-#write_sdc -nosplit ./rep_dir/${TOP_NAME}.sdc
-#
-#alias rpt report_timing -nosplit -derate -net -cap -trans -path_type full_clock_ex
-#alias h   his
-#
-###report dff
-#kv_report_dff_num rep_dir/report_dff_num.rpt
-#
-#
-###ck floating
-#if {$CK_FLT_EN == 1} {
-#    source $TCL_DIR/pt_check_design.tcl
-#    PT_check_design -type input_float
-#    PT_check_design -type output_short
-#}
-# Power Px
-#set power_enable_analysis TRUE
-#set power_analysis_mode time_based
-set si_enable_analysis true
-true
-set power_limit_extrapolation_range false 
-false
-set power_use_ccsp_pin_capacitance false 
-false
-read_parasitics -keep_capacitive_coupling -complete_with zero -verbose /project/HV1V22/designer/AD/yzhao/release/HV1V22_digital_top/timing/latest/HV1V22_digital_top_typical_25c.spef.gz > ./rep_dir/read_parasitics_verbose.log
-report_annotated_parasitics -check > ./rep_dir/report_annotated_parasitics.log
-#set_operating_conditions tt0p9v85c -analysis_type on_chip_variation
-set_operating_conditions  -analysis_type on_chip_variation
-1
-set_propagated_clock [all_clocks]
-1
-#update_timing
-set i 0
-0
-#read_vcd "$vcd_file" -strip_path "bench_hv8107_top/u_hv8107_chp/u_cpu_sys"
-if {$use_vcd_saif == "vcd"} {
-     
-     foreach {inst strip vcd} $vcd_file {
-       incr i
-       if {$inst == $TOP_NAME} {
-         read_vcd "$vcd"  -strip_path "$strip"
-         echo "read_vcd $i inst:$inst strip:$strip vcd:$vcd"
-       } else {
-         read_vcd "$vcd" -path $inst  -strip_path "$strip"
-         echo "read_vcd $i inst:$inst strip:$strip vcd:$vcd"
-       }
-    }
-}
-Information: Checked out license 'PrimeTime-PX' (PT-019)
-
-======================================================================
-Summary:
-Total number of nets = 10201
-Number of annotated nets = 10201 (100.00%)
-Total number of leaf cells = 9149
-Number of fully annotated leaf cells = 9149 (100.00%)
-======================================================================
-
-read_vcd 1 inst:HV2M23_digital_top strip:chip_tb_top/u_HV2M23/u_HV2M23_digital_top vcd:/sim_dd/ymzhu/HV2M23/TOP_NETLIST_POST_TCON_C/four_line_fre1p8_1lane_tt_0729v0.dump
-if {$use_vcd_saif == "saif"} {
-     read_saif "$saif_file" -strip_path "$vcd_stribe_path"
-     echo "use $use_vcd_saif"
-     echo "saif_file is $saif_file"
-}
-if {$USE_UPF =="1"} {
-source -e -v ${upf_file} > load_upf.txt
-create_power_switch vdd1p2d_sw                               -domain PD_AON                               -output_supply_port {NSLEEPOUT DVDD}                               -input_supply_port {NSLEEPIN VDD1P2AON}                               -on_state {state1 NSLEEPIN {!CNTL}}                               -control_port { CNTL u_cgu_rgu_sd/u_sd_analog/pmu_ldo1p2d_pd } 							  -off_state {OFF {CNTL} }
-create_power_switch vdd1p2a_sw                               -domain PD_AON                               -output_supply_port {NSLEEPOUT VDD12_ANA}                               -input_supply_port {NSLEEPIN VDD1P2AON}                               -on_state {state1 NSLEEPIN {!CNTL}}                               -control_port { CNTL u_cgu_rgu_sd/u_sd_analog/pmu_ldo1p2a_pd } 							  -off_state {OFF {CNTL} }
-create_power_switch vdd2pd_sw                               -domain PD_AON                               -output_supply_port {NSLEEPOUT VDD25}                               -input_supply_port {NSLEEPIN VDD1P2AON}                               -on_state {state1 NSLEEPIN {!CNTL}}                               -control_port { CNTL u_cgu_rgu_sd/u_sd_analog/pmu_ldo2p5d_pd } 							  -off_state {OFF {CNTL} }
-
-
-
-set_voltage 5.0 -object_list VSSH_ANAL 
-set_voltage 5.0 -object_list VDDH_ANAB 
-set_voltage 0.0 -object_list DVSS 
-set_voltage 0.0 -object_list VSSH_ANAB 
-set_voltage 0.0 -object_list AVSS_ADC 
-set_voltage 5.0 -object_list VDDH_ANAL 
-set_voltage 5.0 -object_list AVDDH_ADC 
-set_voltage 5.0 -object_list VDDIO 
-set_voltage 1.2 -object_list DVDD 
-set_voltage 1.2 -object_list VDD1P2AON 
-set_voltage 1.2 -object_list VDD12_ANA 
-set_voltage 2.5 -object_list VDD25 
-}
-update_timing > update_timing.log
-Case-analysis propagation log written to file 'rep_dir/case_analysis.log'
-Note - message 'PTE-060' default limit (100) exceeded.  Remainder will be suppressed.
-#set power_scale_dynamic_power_at_power_off true
-##below power analysis begin
-#set power_enable_analysis TRUE
-#set power_analysis_mode time_based
-#below is default
-#set power_analysis_mode averaged
-set power_enable_multi_rail_analysis true 
-true
-#set_power_analysis_options -waveform_format fsdb -waveform_output ${TOP_NAME}  -waveform_interval 1.666  
-#read_vcd -rtl "./fsdb/wva_clkg_memg_deqf_20190110.fsdb" -strip_path "tb/u_kv_wva_top" -time {2597272 2787180}
-#report_switching_activity -list_not_annotated -include_only sequential > wva_switch.rpt
-#report_switching_activity -coverage -hierarchy >> wva_switch.rpt
-#####################################################################
-##       check/update/report power 
-######################################################################
-set pt_rpt "rep_dir"
-rep_dir
-check_power -verbose  > ./${pt_rpt}/check_power.log
-update_power > ./${pt_rpt}/update_power.log
- Last event time =   575086 ns  Last event time =   575175 ns  Last event time =   575268 ns  Last event time =   575384 ns  Last event time =   575561 ns  Last event time =   575696 ns  Last event time =   575786 ns  Last event time =   575871 ns  Last event time =   575957 ns  Last event time =   576045 ns  Last event time =   576132 ns  Last event time =   576219 ns  Last event time =   576306 ns  Last event time =   576393 ns  Last event time =   576480 ns  Last event time =   576570 ns  Last event time =   576654 ns  Last event time =   576741 ns  Last event time =   576825 ns  Last event time =   576901 ns  Last event time =   576977 ns  Last event time =   577062 ns  Last event time =   577148 ns  Last event time =   577235 ns  Last event time =   577322 ns  Last event time =   577410 ns  Last event time =   577500 ns  Last event time =   577582 ns  Last event time =   577671 ns  Last event time =   577756 ns  Last event time =   577844 ns  Last event time =   577929 ns  Last event time =   578019 ns  Last event time =   578098 ns  Last event time =   578175 ns  Last event time =   578252 ns  Last event time =   578338 ns  Last event time =   578426 ns  Last event time =   578510 ns  Last event time =   578598 ns  Last event time =   578687 ns  Last event time =   578773 ns  Last event time =   578858 ns  Last event time =   578949 ns  Last event time =   579033 ns  Last event time =   579123 ns  Last event time =   579206 ns  Last event time =   579293 ns  Last event time =   579367 ns  Last event time =   579439 ns  Last event time =   579526 ns  Last event time =   579613 ns  Last event time =   579700 ns  Last event time =   579787 ns  Last event time =   579879 ns  Last event time =   579966 ns  Last event time =   580053 ns  Last event time =   580140 ns  Last event time =   580228 ns  Last event time =   580318 ns  Last event time =   580402 ns  Last event time =   580489 ns  Last event time =   580572 ns  Last event time =   580648 ns  Last event time =   580731 ns  Last event time =   580818 ns  Last event time =   580905 ns  Last event time =   580993 ns  Last event time =   581080 ns  Last event time =   581167 ns  Last event time =   581254 ns  Last event time =   581341 ns  Last event time =   581429 ns  Last event time =   581516 ns  Last event time =   581603 ns  Last event time =   581691 ns  Last event time =   581777 ns  Last event time =   581855 ns  Last event time =   581932 ns  Last event time =   582014 ns  Last event time =   582106 ns  Last event time =   582193 ns  Last event time =   582277 ns  Last event time =   582368 ns  Last event time =   582459 ns  Last event time =   582546 ns  Last event time =   582630 ns  Last event time =   582726 ns  Last event time =   582885 ns  Last event time =   583059 ns  Last event time =   583155 ns  Last event time =   583240 ns  Last event time =   583327 ns  Last event time =   583414 ns  Last event time =   583500 ns  Last event time =   583591 ns  Last event time =   583676 ns  Last event time =   583763 ns  Last event time =   583849 ns  Last event time =   583937 ns  Last event time =   584024 ns  Last event time =   584107 ns  Last event time =   584197 ns  Last event time =   584276 ns  Last event time =   584349 ns  Last event time =   584431 ns  Last event time =   584518 ns  Last event time =   584605 ns  Last event time =   584692 ns  Last event time =   584778 ns  Last event time =   584867 ns  Last event time =   584954 ns  Last event time =   585036 ns  Last event time =   585123 ns  Last event time =   585215 ns  Last event time =   585301 ns  Last event time =   585389 ns  Last event time =   585468 ns  Last event time =   585545 ns  Last event time =   585622 ns  Last event time =   585707 ns  Last event time =   585795 ns  Last event time =   585882 ns  Last event time =   585962 ns  Last event time =   586053 ns  Last event time =   586145 ns  Last event time =   586230 ns  Last event time =   586318 ns  Last event time =   586400 ns  Last event time =   586492 ns  Last event time =   586574 ns  Last event time =   586658 ns  Last event time =   586740 ns  Last event time =   586818 ns  Last event time =   586891 ns  Last event time =   586978 ns  Last event time =   587068 ns  Last event time =   587155 ns  Last event time =   587245 ns  Last event time =   587332 ns  Last event time =   587423 ns  Last event time =   587509 ns  Last event time =   587597 ns  Last event time =   587685 ns  Last event time =   587776 ns  Last event time =   587859 ns  Last event time =   587946 ns  Last event time =   588023 ns  Last event time =   588096 ns  Last event time =   588183 ns  Last event time =   588270 ns  Last event time =   588357 ns  Last event time =   588445 ns  Last event time =   588532 ns  Last event time =   588623 ns  Last event time =   588706 ns  Last event time =   588794 ns  Last event time =   588881 ns  Last event time =   588971 ns  Last event time =   589057 ns  Last event time =   589147 ns  Last event time =   589228 ns  Last event time =   589302 ns  Last event time =   589384 ns  Last event time =   589471 ns  Last event time =   589561 ns  Last event time =   589645 ns  Last event time =   589734 ns  Last event time =   589824 ns  Last event time =   589911 ns  Last event time =   589999 ns  Last event time =   590086 ns  Last event time =   590210 ns  Last event time =   590387 ns  Last event time =   590520 ns  Last event time =   590609 ns  Last event time =   590696 ns  Last event time =   590782 ns  Last event time =   590869 ns  Last event time =   590957 ns  Last event time =   591043 ns  Last event time =   591131 ns  Last event time =   591218 ns  Last event time =   591305 ns  Last event time =   591393 ns  Last event time =   591477 ns  Last event time =   591563 ns  Last event time =   591646 ns  Last event time =   591723 ns  Last event time =   591800 ns  Last event time =   591886 ns  Last event time =   591969 ns  Last event time =   592058 ns  Last event time =   592144 ns  Last event time =   592234 ns  Last event time =   592323 ns  Last event time =   592405 ns  Last event time =   592492 ns  Last event time =   592579 ns  Last event time =   592666 ns  Last event time =   592752 ns  Last event time =   592841 ns  Last event time =   592919 ns  Last event time =   592992 ns  Last event time =   593077 ns  Last event time =   593161 ns  Last event time =   593248 ns  Last event time =   593332 ns  Last event time =   593420 ns  Last event time =   593509 ns  Last event time =   593594 ns  Last event time =   593682 ns  Last event time =   593770 ns  Last event time =   593857 ns  Last event time =   593945 ns  Last event time =   594027 ns  Last event time =   594112 ns  Last event time =   594191 ns  Last event time =   594260 ns  Last event time =   594347 ns  Last event time =   594434 ns  Last event time =   594521 ns  Last event time =   594608 ns  Last event time =   594700 ns  Last event time =   594789 ns  Last event time =   594877 ns  Last event time =   594963 ns  Last event time =   595053 ns  Last event time =   595141 ns  Last event time =   595223 ns  Last event time =   595315 ns  Last event time =   595393 ns  Last event time =   595470 ns  Last event time =   595548 ns  Last event time =   595635 ns  Last event time =   595722 ns  Last event time =   595810 ns  Last event time =   595897 ns  Last event time =   595989 ns  Last event time =   596076 ns  Last event time =   596159 ns  Last event time =   596248 ns  Last event time =   596341 ns  Last event time =   596428 ns  Last event time =   596516 ns  Last event time =   596598 ns  Last event time =   596676 ns  Last event time =   596753 ns  Last event time =   596838 ns  Last event time =   596927 ns  Last event time =   597015 ns  Last event time =   597100 ns  Last event time =   597189 ns  Last event time =   597277 ns  Last event time =   597364 ns  Last event time =   597451 ns  Last event time =   597551 ns  Last event time =   597711 ns  Last event time =   597882 ns  Last event time =   597974 ns  Last event time =   598061 ns  Last event time =   598148 ns  Last event time =   598235 ns  Last event time =   598322 ns  Last event time =   598409 ns  Last event time =   598497 ns  Last event time =   598584 ns  Last event time =   598671 ns  Last event time =   598758 ns  Last event time =   598845 ns  Last event time =   598931 ns  Last event time =   599019 ns  Last event time =   599093 ns  Last event time =   599170 ns  Last event time =   599252 ns  Last event time =   599339 ns  Last event time =   599426 ns  Last event time =   599513 ns  Last event time =   599600 ns  Last event time =   599688 ns  Last event time =   599775 ns  Last event time =   599858 ns  Last event time =   599948 ns  Last event time =   600036 ns  Last event time =   600123 ns  Last event time =   600210 ns  Last event time =   600293 ns  Last event time =   600370 ns  Last event time =   600443 ns  Last event time =   600529 ns  Last event time =   600617 ns  Last event time =   600704 ns  Last event time =   600787 ns  Last event time =   600877 ns  Last event time =   600966 ns  Last event time =   601052 ns  Last event time =   601139 ns  Last event time =   601223 ns  Last event time =   601313 ns  Last event time =   601397 ns  Last event time =   601483 ns  Last event time =   601562 ns  Last event time =   601639 ns  Last event time =   601716 ns  Last event time =   601803 ns  Last event time =   601891 ns  Last event time =   601978 ns  Last event time =   602066 ns  Last event time =   602156 ns  Last event time =   602244 ns  Last event time =   602331 ns  Last event time =   602418 ns  Last event time =   602506 ns  Last event time =   602593 ns  Last event time =   602680 ns  Last event time =   602767 ns  Last event time =   602840 ns  Last event time =   602917 ns  Last event time =   603002 ns  Last event time =   603088 ns  Last event time =   603177 ns  Last event time =   603266 ns  Last event time =   603353 ns  Last event time =   603445 ns  Last event time =   603528 ns  Last event time =   603615 ns  Last event time =   603705 ns  Last event time =   603793 ns  Last event time =   603880 ns  Last event time =   603972 ns  Last event time =   604046 ns  Last event time =   604124 ns  Last event time =   604205 ns  Last event time =   604292 ns  Last event time =   604380 ns  Last event time =   604467 ns  Last event time =   604554 ns  Last event time =   604641 ns  Last event time =   604729 ns  Last event time =   604816 ns  Last event time =   604911 ns  Last event time =   605034 ns  Last event time =   605213 ns  Last event time =   605339 ns  Last event time =   605426 ns  Last event time =   605513 ns  Last event time =   605600 ns  Last event time =   605687 ns  Last event time =   605774 ns  Last event time =   605861 ns  Last event time =   605949 ns report_power -leaf -hierarch -verbose > ./${pt_rpt}/${TOP_NAME}_power.rpt
-report_switching_activity -average_activity -hierarchy > ./${pt_rpt}/${TOP_NAME}_toggle_rate.rpt
-report_switching_activity -hierarchy > ./${pt_rpt}/${TOP_NAME}_toggle_rate_detail.rpt
-#set_power_analysis_options -waveform_format fsdb -waveform_output ./${pt_rpt}/${TOP_NAME}
-if {$USE_UPF == "1"} {
-  set all_power_ports "VDD1P2AON DVDD VDD12_ANA VDD25 VDDIO VDDH_ANAB VDDH_ANAL AVDDH_ADC"
-  foreach power_port $all_power_ports {
-  set_current_power_net $power_port
-  #update_power
-  report_power -hier -leaf -verbose > ./${pt_rpt}/${power_port}_power.rpt
-  }
-}
-return
-Information: Defining new variable 'lvt_tsmc_22ulp_tsmc_9t_c30'. (CMD-041)
-Information: Defining new variable 'lvt_tsmc_22ulp_tsmc_9t_c35'. (CMD-041)
-Information: Defining new variable 'lvt_tsmc_22ulp_tsmc_9t_c40'. (CMD-041)
-Information: Defining new variable 'lef_tsmc_22ulp_tsmc_9t_lvt'. (CMD-041)
-Information: Defining new variable 'PROJECT_PATH'. (CMD-041)
-Information: Defining new variable 'POWER_OPTIMIZATION'. (CMD-041)
-Information: Defining new variable 'SLACK_EN'. (CMD-041)
-Information: Defining new variable 'TOP_NAME'. (CMD-041)
-Information: Defining new variable 'USE_SAIF'. (CMD-041)
-Information: Defining new variable 'i'. (CMD-041)
-Information: Defining new variable 'library_umc_28p_snps_ud'. (CMD-041)
-Information: Defining new variable 'CCS_EN'. (CMD-041)
-Information: Defining new variable 'svt_umc_55_fara_7t'. (CMD-041)
-Information: Defining new variable 'svt_umc_55_fara_8t'. (CMD-041)
-Information: Defining new variable 'lvt_umc_55_snps_7t'. (CMD-041)
-Information: Defining new variable 'lvt_umc_55_snps_8t'. (CMD-041)
-Information: Defining new variable 'hvt_tsmc_22ulp_tsmc_9t_c30'. (CMD-041)
-Information: Defining new variable 'hvt_tsmc_22ulp_tsmc_9t_c35'. (CMD-041)
-Information: Defining new variable 'hvt_tsmc_22ulp_tsmc_9t_c40'. (CMD-041)
-Information: Defining new variable 'db_type_sp'. (CMD-041)
-Information: Defining new variable 'hvt_umc_40_fara_1p2_7t'. (CMD-041)
-Information: Defining new variable 'svt_umc_22_arm_9t_pmk_c30'. (CMD-041)
-Information: Defining new variable 'hvt_umc_40_snps_9t'. (CMD-041)
-Information: Defining new variable 'svt_umc_22_arm_9t_pmk_c35'. (CMD-041)
-Information: Defining new variable 'svt_umc_22_arm_9t_pmk_c40'. (CMD-041)
-Information: Defining new variable 'hvt_umc_40_fara_1p2_9t'. (CMD-041)
-Information: Defining new variable 'lvt_tsmc_22ulp_tsmc_7t_c35pm'. (CMD-041)
-Information: Defining new variable 'library_umc_28_arm_9t_hpc_c30'. (CMD-041)
-Information: Defining new variable 'lef_tsmc_22ulp_tsmc_7t_hvt'. (CMD-041)
-Information: Defining new variable 'svt_tsmc_22ulp_tsmc_7t_c30mb'. (CMD-041)
-Information: Defining new variable 'hvt_umc_22_arm_9t_pmk_c30'. (CMD-041)
-Information: Defining new variable 'svt_tsmc_22ulp_tsmc_7t_c30pm'. (CMD-041)
-Information: Defining new variable 'hvt_umc_22_arm_9t_pmk_c35'. (CMD-041)
-Information: Defining new variable 'hvt_umc_22_arm_9t_pmk_c40'. (CMD-041)
-Information: Defining new variable 'IP_CONS_DIR'. (CMD-041)
-Information: Defining new variable 'library_umc_28p_arm_9t_hpc'. (CMD-041)
-Information: Defining new variable 'PVTM'. (CMD-041)
-Information: Defining new variable 'lef_tsmc_22ulp_tsmc_9t_svt'. (CMD-041)
-Information: Defining new variable 'lef_umc_55eflp_umc_7t'. (CMD-041)
-Information: Defining new variable 'inst'. (CMD-041)
-Information: Defining new variable 'ckgate_umc_22_arm_7t'. (CMD-041)
-Information: Defining new variable 'timing_clock_source_driver_pin_use_dirrver_arc_compatibility'. (CMD-041)
-Information: Defining new variable 'ckgate_snps_gtech'. (CMD-041)
-Information: Defining new variable 'ckgate_umc_22_arm_9t'. (CMD-041)
-Information: Defining new variable 'lvt_tsmc_22ulp_tsmc_7t_c40pm'. (CMD-041)
-Information: Defining new variable 'svt_umc_55_snps_7t'. (CMD-041)
-Information: Defining new variable 'svt_umc_55_snps_8t'. (CMD-041)
-Information: Defining new variable 'LINK_LIB'. (CMD-041)
-Information: Defining new variable 'lvt_tsmc_22ulp_tsmc_7t_c30'. (CMD-041)
-Information: Defining new variable 'lvt_tsmc_22ulp_tsmc_7t_c35'. (CMD-041)
-Information: Defining new variable 'lvt_tsmc_22ulp_tsmc_7t_c40'. (CMD-041)
-Information: Defining new variable 'lef_tsmc_22ulp_tsmc_7t_lvt'. (CMD-041)
-Information: Defining new variable 'ip0_inst'. (CMD-041)
-Information: Defining new variable 'svt_umc_28p_snps_35udh'. (CMD-041)
-Information: Defining new variable 'svt_umc_28p_snps_35udl'. (CMD-041)
-Information: Defining new variable 'saif_file'. (CMD-041)
-Information: Defining new variable 'svt_umc_28p_snps_35udp'. (CMD-041)
-Information: Defining new variable 'svt_umc_22_arm_7t_hpk_c30'. (CMD-041)
-Information: Defining new variable 'svt_umc_22_arm_7t_hpk_c35'. (CMD-041)
-Information: Defining new variable 'svt_umc_22_arm_7t_hpk_c40'. (CMD-041)
-Information: Defining new variable 'svt_tsmc_22ulp_tsmc_7t_c35mb'. (CMD-041)
-Information: Defining new variable 'HDL_DIR'. (CMD-041)
-Information: Defining new variable 'svt_tsmc_22ulp_tsmc_7t_c35pm'. (CMD-041)
-Information: Defining new variable 'CONS_REPORT'. (CMD-041)
-Information: Defining new variable 'hvt_umc_22_arm_9t_base_c30'. (CMD-041)
-Information: Defining new variable 'hvt_umc_22_arm_9t_base_c35'. (CMD-041)
-Information: Defining new variable 'hvt_tsmc_22ulp_tsmc_7t_c30'. (CMD-041)
-Information: Defining new variable 'hvt_umc_22_arm_9t_base_c40'. (CMD-041)
-Information: Defining new variable 'hvt_tsmc_22ulp_tsmc_7t_c35'. (CMD-041)
-Information: Defining new variable 'hvt_tsmc_22ulp_tsmc_7t_c40'. (CMD-041)
-Information: Defining new variable 'ckgate_nexchip_145_12t'. (CMD-041)
-Information: Defining new variable 'svt_umc_28p_arm_12t_hpc_c30'. (CMD-041)
-Information: Defining new variable 'svt_umc_28p_arm_12t_hpc_c35'. (CMD-041)
-Information: Defining new variable 'svt_umc_28p_arm_12t_hpc_c40'. (CMD-041)
-Information: Defining new variable 'hvt_umc_22_arm_7t_hpk_c30'. (CMD-041)
-Information: Defining new variable 'lib_lvt_name'. (CMD-041)
-Information: Defining new variable 'hvt_umc_22_arm_7t_hpk_c35'. (CMD-041)
-Information: Defining new variable 'hvt_umc_22_arm_7t_hpk_c40'. (CMD-041)
-Information: Defining new variable 'hvt_nexchip_110_7t'. (CMD-041)
-Information: Defining new variable 'hvt_nexchip_110_9t'. (CMD-041)
-Information: Defining new variable 'PVT_HOLD'. (CMD-041)
-Information: Defining new variable 'lib_svt_name'. (CMD-041)
-Information: Defining new variable 'library_snps_gtech'. (CMD-041)
-Information: Defining new variable 'ckgate_gen_umc_55eflp_umc_7t'. (CMD-041)
-Information: Defining new variable 'hvt_hlmc_55_snps_7t'. (CMD-041)
-Information: Defining new variable 'hvt_hlmc_55_snps_9t'. (CMD-041)
-Information: Defining new variable 'ckgate_nexchip_145_9t'. (CMD-041)
-Information: Defining new variable 'svt_tsmc_22ulp_tsmc_7t_c40mb'. (CMD-041)
-Information: Defining new variable 'CONS_CHECK'. (CMD-041)
-Information: Defining new variable 'lvt_umc_28_arm_9t_hpc_c30'. (CMD-041)
-Information: Defining new variable 'svt_umc_28p_snps_30udh'. (CMD-041)
-Information: Defining new variable 'svt_umc_28p_snps_30udl'. (CMD-041)
-Information: Defining new variable 'svt_umc_28p_snps_30udp'. (CMD-041)
-Information: Defining new variable 'svt_tsmc_22ulp_tsmc_7t_c40pm'. (CMD-041)
-Information: Defining new variable 'ckgate_umc_40_fara_7t'. (CMD-041)
-Information: Defining new variable 'USE_UPF'. (CMD-041)
-Information: Defining new variable 'ckgate_umc_40_fara_9t'. (CMD-041)
-Information: Defining new variable 'library_umc_28p_arm_7t_hpc'. (CMD-041)
-Information: Defining new variable 'UPF_DIR'. (CMD-041)
-Information: Defining new variable 'hvt_umc_55_fara_7t'. (CMD-041)
-Information: Defining new variable 'svt_umc_28p_arm_7t_hpc_c30'. (CMD-041)
-Information: Defining new variable 'svt_umc_28p_arm_7t_hpc_c35'. (CMD-041)
-Information: Defining new variable 'hvt_umc_55_fara_8t'. (CMD-041)
-Information: Defining new variable 'svt_umc_28p_arm_7t_hpc_c40'. (CMD-041)
-Information: Defining new variable 'lef_tsmc_22ulp_tsmc_7t_svt'. (CMD-041)
-Information: Defining new variable 'verilog_file'. (CMD-041)
-Information: Defining new variable 'hvt_tsmc_22ulp_tsmc_7t_c30mb'. (CMD-041)
-Information: Defining new variable 'lvt_umc_28p_arm_12t_hpc_c30'. (CMD-041)
-Information: Defining new variable 'lvt_umc_28p_arm_12t_hpc_c35'. (CMD-041)
-Information: Defining new variable 'lvt_umc_28p_arm_12t_hpc_c40'. (CMD-041)
-Information: Defining new variable 'hvt_tsmc_22ulp_tsmc_7t_c30pm'. (CMD-041)
-Information: Defining new variable 'MEM_EN'. (CMD-041)
-Information: Defining new variable 'ckgate_hlmc_55_snps_7t'. (CMD-041)
-Information: Defining new variable 'ckgate_hlmc_55_snps_9t'. (CMD-041)
-Information: Defining new variable 'svt_umc_22_arm_9t_hpk_c30'. (CMD-041)
-Information: Defining new variable 'svt_umc_22_arm_9t_hpk_c35'. (CMD-041)
-Information: Defining new variable 'svt_umc_22_arm_9t_hpk_c40'. (CMD-041)
-Information: Defining new variable 'ip0_vcd'. (CMD-041)
-Information: Defining new variable 'CK_PWR_EN'. (CMD-041)
-Information: Defining new variable 'lvt_umc_40_fara_1p2_7t'. (CMD-041)
-Information: Defining new variable 'lvt_umc_40_fara_1p2_9t'. (CMD-041)
-Information: Defining new variable 'lib_hvt_name'. (CMD-041)
-Information: Defining new variable 'svt_umc_40_fara_1p2_7t'. (CMD-041)
-Information: Defining new variable 'strip'. (CMD-041)
-Information: Defining new variable 'SYN_DIR'. (CMD-041)
-Information: Defining new variable 'svt_umc_40_fara_1p2_9t'. (CMD-041)
-Information: Defining new variable 'pr_dir'. (CMD-041)
-Information: Defining new variable 'svt_umc_22_arm_7t_base_c30'. (CMD-041)
-Information: Defining new variable 'svt_umc_22_arm_7t_base_c35'. (CMD-041)
-Information: Defining new variable 'svt_umc_22_arm_7t_base_c40'. (CMD-041)
-Information: Defining new variable 'LVT_EN'. (CMD-041)
-Information: Defining new variable 'hvt_umc_22_arm_9t_hpk_c30'. (CMD-041)
-Information: Defining new variable 'hvt_umc_22_arm_9t_hpk_c35'. (CMD-041)
-Information: Defining new variable 'hvt_umc_22_arm_9t_hpk_c40'. (CMD-041)
-Information: Defining new variable 'PT_HOLD'. (CMD-041)
-Information: Defining new variable 'ckgate_umc_28p_arm_12t_hpc'. (CMD-041)
-Information: Defining new variable 'lvt_tsmc_22ulp_tsmc_9t_c30pm'. (CMD-041)
-Information: Defining new variable 'ckgate_umc_40_snps_9t'. (CMD-041)
-Information: Defining new variable 'hvt_umc_55_snps_7t'. (CMD-041)
-Information: Defining new variable 'hvt_umc_55_snps_8t'. (CMD-041)
-Information: Defining new variable 'library_tsmc_22ulp_tsmc_9t_hvt'. (CMD-041)
-Information: Defining new variable 'hvt_tsmc_22ulp_tsmc_7t_c35mb'. (CMD-041)
-Information: Defining new variable 'library_nexchip_145_9t'. (CMD-041)
-Information: Defining new variable 'hvt_tsmc_22ulp_tsmc_7t_c35pm'. (CMD-041)
-Information: Defining new variable 'NET_DEFINE0'. (CMD-041)
-Information: Defining new variable 'NET_DEFINE1'. (CMD-041)
-Information: Defining new variable 'ckgate_umc_28p_arm_9t_hpc'. (CMD-041)
-Information: Defining new variable 'PVT_ANA'. (CMD-041)
-Information: Defining new variable 'library_umc_40_fara_7t'. (CMD-041)
-Information: Defining new variable 'rvt_umc_28_arm_9t_hpc_c30'. (CMD-041)
-Information: Defining new variable 'library_umc_40_fara_9t'. (CMD-041)
-Information: Defining new variable 'svt_umc_28p_arm_9t_hpc_c30'. (CMD-041)
-Information: Defining new variable 'svt_umc_28p_arm_9t_hpc_c35'. (CMD-041)
-Information: Defining new variable 'svt_umc_28p_arm_9t_hpc_c40'. (CMD-041)
-Information: Defining new variable 'INCR_OPT'. (CMD-041)
-Information: Defining new variable 'use_vcd_saif'. (CMD-041)
-Information: Defining new variable 'lef_nexchip_145_12t'. (CMD-041)
-Information: Defining new variable 'library_umc_40_fara_1p2_7t'. (CMD-041)
-Information: Defining new variable 'library_umc_40_fara_1p2_9t'. (CMD-041)
-Information: Defining new variable 'power_mode'. (CMD-041)
-Information: Defining new variable 'CCS'. (CMD-041)
-Information: Defining new variable 'library_tsmc_22ulp_tsmc_9t_lvt'. (CMD-041)
-Information: Defining new variable 'hvt_tsmc_22ulp_tsmc_7t_c40mb'. (CMD-041)
-Information: Defining new variable 'MEM_FARA_EN'. (CMD-041)
-Information: Defining new variable 'svt_gen_umc_55eflp_umc_7t'. (CMD-041)
-Information: Defining new variable 'vfile'. (CMD-041)
-Information: Defining new variable 'hvt_tsmc_22ulp_tsmc_7t_c40pm'. (CMD-041)
-Information: Defining new variable 'lvt_tsmc_22ulp_tsmc_9t_c35pm'. (CMD-041)
-Information: Defining new variable 'lef_hvt_umc_40_fara_1p2_7t'. (CMD-041)
-Information: Defining new variable 'lef_hvt_umc_40_fara_1p2_9t'. (CMD-041)
-Information: Defining new variable 'lef_nexchip_145_9t'. (CMD-041)
-Information: Defining new variable 'svt_tsmc_22ulp_tsmc_9t_c30mb'. (CMD-041)
-Information: Defining new variable 'COVERAGE_REPORT'. (CMD-041)
-Information: Defining new variable 'lef_umc_40_fara_7t'. (CMD-041)
-Information: Defining new variable 'svt_tsmc_22ulp_tsmc_9t_c30pm'. (CMD-041)
-Information: Defining new variable 'hvt_gen_umc_55eflp_umc_7t'. (CMD-041)
-Information: Defining new variable 'ckgate_umc_28_arm_9t_hpc_c30'. (CMD-041)
-Information: Defining new variable 'library_nexchip_145_12t'. (CMD-041)
-Information: Defining new variable 'library_umc_40_snps_9t'. (CMD-041)
-Information: Defining new variable 'lvt_nexchip_145_9t'. (CMD-041)
-Information: Defining new variable 'vcd'. (CMD-041)
-Information: Defining new variable 'ckgate_nexchip_110_7t'. (CMD-041)
-Information: Defining new variable 'ckgate_nexchip_110_9t'. (CMD-041)
-Information: Defining new variable 'library_tsmc_22ulp_tsmc_7t_hvt'. (CMD-041)
-Information: Defining new variable 'lvt_umc_40_fara_7t'. (CMD-041)
-Information: Defining new variable 'lvt_tsmc_22ulp_tsmc_9t_c40pm'. (CMD-041)
-Information: Defining new variable 'lvt_umc_40_fara_9t'. (CMD-041)
-Information: Defining new variable 'hvt_umc_28p_snps_40udh'. (CMD-041)
-Information: Defining new variable 'hvt_umc_28p_snps_40udl'. (CMD-041)
-Information: Defining new variable 'hvt_umc_28p_snps_40udp'. (CMD-041)
-Information: Defining new variable 'NET_DEFINE'. (CMD-041)
-Information: Defining new variable 'ckgate_umc_28p_arm_7t_hpc'. (CMD-041)
-Information: Defining new variable 'MEM_SNPS_EN'. (CMD-041)
-Information: Defining new variable 'ANA_EN'. (CMD-041)
-Information: Defining new variable 'spef_dir'. (CMD-041)
-Information: Defining new variable 'library_tsmc_22ulp_tsmc_9t_svt'. (CMD-041)
-Information: Defining new variable 'svt_tsmc_22ulp_tsmc_9t_c35mb'. (CMD-041)
-Information: Defining new variable 'ckgate_umc_55_fara_7t'. (CMD-041)
-Information: Defining new variable 'ckgate_umc_55_fara_8t'. (CMD-041)
-Information: Defining new variable 'lvt_umc_28p_arm_7t_hpc_c30'. (CMD-041)
-Information: Defining new variable 'lvt_umc_28p_arm_7t_hpc_c35'. (CMD-041)
-Information: Defining new variable 'lvt_umc_28p_arm_7t_hpc_c40'. (CMD-041)
-Information: Defining new variable 'svt_tsmc_22ulp_tsmc_9t_c35pm'. (CMD-041)
-Information: Defining new variable 'ip0_strip'. (CMD-041)
-Information: Defining new variable 'svt_tsmc_22ulp_tsmc_9t_c30'. (CMD-041)
-Information: Defining new variable 'PVT_MEM'. (CMD-041)
-Information: Defining new variable 'svt_tsmc_22ulp_tsmc_9t_c35'. (CMD-041)
-Information: Defining new variable 'svt_tsmc_22ulp_tsmc_9t_c40'. (CMD-041)
-Information: Defining new variable 'lef_umc_28p_snps_ud_hvt'. (CMD-041)
-Information: Defining new variable 'library_umc_28p_arm_12t_hpc'. (CMD-041)
-Information: Defining new variable 'library_tsmc_22ulp_tsmc_7t_lvt'. (CMD-041)
-Information: Defining new variable 'lef_hvt_umc_40_fara_9t'. (CMD-041)
-Information: Defining new variable 'UPPER_CASE'. (CMD-041)
-Information: Defining new variable 'library_hlmc_55_snps_7t'. (CMD-041)
-Information: Defining new variable 'library_hlmc_55_snps_9t'. (CMD-041)
-Information: Defining new variable 'svt_nexchip_145_9t'. (CMD-041)
-Information: Defining new variable 'TAR_LIB'. (CMD-041)
-Information: Defining new variable 'svt_umc_40_fara_7t'. (CMD-041)
-Information: Defining new variable 'hvt_umc_28p_arm_7t_hpc_c30'. (CMD-041)
-Information: Defining new variable 'ckgate_umc_28p_snps_ud'. (CMD-041)
-Information: Defining new variable 'hvt_umc_28p_arm_7t_hpc_c35'. (CMD-041)
-Information: Defining new variable 'hvt_umc_28p_arm_7t_hpc_c40'. (CMD-041)
-Information: Defining new variable 'svt_umc_40_fara_9t'. (CMD-041)
-Information: Defining new variable 'sfile'. (CMD-041)
-Information: Defining new variable 'lvt_umc_40_snps_9t'. (CMD-041)
-Information: Defining new variable 'verilog_file_num'. (CMD-041)
-Information: Defining new variable 'CK_TIM_EN'. (CMD-041)
-Information: Defining new variable 'svt_tsmc_22ulp_tsmc_9t_c40mb'. (CMD-041)
-Information: Defining new variable 'HVT_EN'. (CMD-041)
-Information: Defining new variable 'svt_tsmc_22ulp_tsmc_9t_c40pm'. (CMD-041)
-Information: Defining new variable 'library_nexchip_110_7t'. (CMD-041)
-Information: Defining new variable 'library_nexchip_110_9t'. (CMD-041)
-Information: Defining new variable 'lef_umc_28p_snps_ud_lvt'. (CMD-041)
-Information: Defining new variable 'MEM_ARM_EN'. (CMD-041)
-Information: Defining new variable 'CORNER'. (CMD-041)
-Information: Defining new variable 'library_umc_55eflp_umc_7t'. (CMD-041)
-Information: Defining new variable 'TCL_DIR'. (CMD-041)
-Information: Defining new variable 'hvt_tsmc_22ulp_tsmc_9t_c30mb'. (CMD-041)
-Information: Defining new variable 'ckgate_umc_55_snps_7t'. (CMD-041)
-Information: Defining new variable 'ckgate_umc_55_snps_8t'. (CMD-041)
-Information: Defining new variable 'wireload_type'. (CMD-041)
-Information: Defining new variable 'hvt_tsmc_22ulp_tsmc_9t_c30pm'. (CMD-041)
-Information: Defining new variable 'hvt_umc_22_arm_7t_base_c30'. (CMD-041)
-Information: Defining new variable 'hvt_umc_22_arm_7t_base_c35'. (CMD-041)
-Information: Defining new variable 'hvt_umc_22_arm_7t_base_c40'. (CMD-041)
-Information: Defining new variable 'vcd_file'. (CMD-041)
-Information: Defining new variable 'library_umc_55_fara_7t'. (CMD-041)
-Information: Defining new variable 'library_umc_55_fara_8t'. (CMD-041)
-Information: Defining new variable 'PVT'. (CMD-041)
-Information: Defining new variable 'svt_pwr_umc_55eflp_umc_7t'. (CMD-041)
-Information: Defining new variable 'library_tsmc_22ulp_tsmc_7t_svt'. (CMD-041)
-Information: Defining new variable 'lvt_umc_28p_arm_9t_hpc_c30'. (CMD-041)
-Information: Defining new variable 'lvt_umc_28p_arm_9t_hpc_c35'. (CMD-041)
-Information: Defining new variable 'hvt_umc_28p_arm_12t_hpc_c30'. (CMD-041)
-Information: Defining new variable 'lvt_umc_28p_arm_9t_hpc_c40'. (CMD-041)
-Information: Defining new variable 'hvt_umc_28p_arm_12t_hpc_c35'. (CMD-041)
-Information: Defining new variable 'hvt_umc_28p_arm_12t_hpc_c40'. (CMD-041)
-Information: Defining new variable 'svt_umc_40_snps_9t'. (CMD-041)
-Information: Defining new variable 'svt_umc_22_arm_9t_base_c30'. (CMD-041)
-Information: Defining new variable 'svt_umc_22_arm_9t_base_c35'. (CMD-041)
-Information: Defining new variable 'svt_tsmc_22ulp_tsmc_7t_c30'. (CMD-041)
-Information: Defining new variable 'svt_umc_22_arm_9t_base_c40'. (CMD-041)
-Information: Defining new variable 'svt_tsmc_22ulp_tsmc_7t_c35'. (CMD-041)
-Information: Defining new variable 'svt_tsmc_22ulp_tsmc_7t_c40'. (CMD-041)
-Information: Defining new variable 'lef_nexchip_110_7t'. (CMD-041)
-Information: Defining new variable 'library_umc_22_arm_7t'. (CMD-041)
-Information: Defining new variable 'lef_nexchip_110_9t'. (CMD-041)
-Information: Defining new variable 'library_umc_22_arm_9t'. (CMD-041)
-Information: Defining new variable 'hvt_pwr_umc_55eflp_umc_7t'. (CMD-041)
-Information: Defining new variable 'svt_nexchip_145_12t'. (CMD-041)
-Information: Defining new variable 'hvt_umc_28_arm_9t_hpc_c30'. (CMD-041)
-Information: Defining new variable 'hvt_tsmc_22ulp_tsmc_9t_c35mb'. (CMD-041)
-Information: Defining new variable 'hvt_umc_28p_arm_9t_hpc_c30'. (CMD-041)
-Information: Defining new variable 'hvt_umc_28p_arm_9t_hpc_c35'. (CMD-041)
-Information: Defining new variable 'hvt_umc_28p_arm_9t_hpc_c40'. (CMD-041)
-Information: Defining new variable 'lvt_nexchip_145_12t'. (CMD-041)
-Information: Defining new variable 'hvt_tsmc_22ulp_tsmc_9t_c35pm'. (CMD-041)
-Information: Defining new variable 'ckgate_tsmc_22ulp_tsmc_7t'. (CMD-041)
-Information: Defining new variable 'pt_rpt'. (CMD-041)
-Information: Defining new variable 'ckgate_tsmc_22ulp_tsmc_9t'. (CMD-041)
-Information: Defining new variable 'lvt_nexchip_110_7t'. (CMD-041)
-Information: Defining new variable 'lvt_nexchip_110_9t'. (CMD-041)
-Information: Defining new variable 'lef_umc_28p_snps_ud_svt'. (CMD-041)
-Information: Defining new variable 'hvt_umc_28p_snps_35udh'. (CMD-041)
-Information: Defining new variable 'hvt_umc_28p_snps_35udl'. (CMD-041)
-Information: Defining new variable 'hvt_umc_28p_snps_35udp'. (CMD-041)
-Information: Defining new variable 'SCAN_EN'. (CMD-041)
-Information: Defining new variable 'svt_umc_28p_snps_40udh'. (CMD-041)
-Information: Defining new variable 'svt_umc_28p_snps_40udl'. (CMD-041)
-Information: Defining new variable 'svt_umc_28p_snps_40udp'. (CMD-041)
-Information: Defining new variable 'library_umc_55_snps_7t'. (CMD-041)
-Information: Defining new variable 'library_umc_55_snps_8t'. (CMD-041)
-Information: Defining new variable 'db_type'. (CMD-041)
-Information: Defining new variable 'svt_umc_22_arm_7t_pmk_c30'. (CMD-041)
-Information: Defining new variable 'svt_umc_22_arm_7t_pmk_c35'. (CMD-041)
-Information: Defining new variable 'svt_umc_22_arm_7t_pmk_c40'. (CMD-041)
-Information: Defining new variable 'TIMING_REPORT'. (CMD-041)
-Information: Defining new variable 'lef_tsmc_22ulp_tsmc_9t_hvt'. (CMD-041)
-Information: Defining new variable 'hvt_tsmc_22ulp_tsmc_9t_c40mb'. (CMD-041)
-Information: Defining new variable 'CK_FLT_EN'. (CMD-041)
-Information: Defining new variable 'lvt_umc_55_fara_7t'. (CMD-041)
-Information: Defining new variable 'lvt_umc_55_fara_8t'. (CMD-041)
-Information: Defining new variable 'hvt_tsmc_22ulp_tsmc_9t_c40pm'. (CMD-041)
-Information: Defining new variable 'hvt_umc_40_fara_7t'. (CMD-041)
-Information: Defining new variable 'hvt_umc_22_arm_7t_pmk_c30'. (CMD-041)
-Information: Defining new variable 'hvt_umc_22_arm_7t_pmk_c35'. (CMD-041)
-Information: Defining new variable 'hvt_umc_22_arm_7t_pmk_c40'. (CMD-041)
-Information: Defining new variable 'hvt_umc_40_fara_9t'. (CMD-041)
-Information: Defining new variable 'svt_hlmc_55_snps_7t'. (CMD-041)
-Information: Defining new variable 'PARA_DESIGN'. (CMD-041)
-Information: Defining new variable 'ckgate_name'. (CMD-041)
-Information: Defining new variable 'svt_hlmc_55_snps_9t'. (CMD-041)
-Information: Defining new variable 'sdc_file'. (CMD-041)
-Information: Defining new variable 'TOP_CONS_DIR'. (CMD-041)
-Information: Defining new variable 'POSTPT_EN'. (CMD-041)
-Information: Defining new variable 'lvt_hlmc_55_snps_7t'. (CMD-041)
-Information: Defining new variable 'lvt_tsmc_22ulp_tsmc_7t_c30pm'. (CMD-041)
-Information: Defining new variable 'svt_nexchip_110_7t'. (CMD-041)
-Information: Defining new variable 'lvt_hlmc_55_snps_9t'. (CMD-041)
-Information: Defining new variable 'svt_nexchip_110_9t'. (CMD-041)
-Information: Defining new variable 'hvt_umc_28p_snps_30udh'. (CMD-041)
-Information: Defining new variable 'hvt_umc_28p_snps_30udl'. (CMD-041)
-Information: Defining new variable 'hvt_umc_28p_snps_30udp'. (CMD-041)
-pt_shell> exit
-Suppressed Messages Summary:
-Id          Severity      Occurrences   Suppressed
--------------------------------------------------------------------------------
-PARA-124    Error              232277       232177
-PARA-044    Error                6178         6078
-PARA-162    Warning            137124       137025
-PARA-043    Warning             13738        13638
-PTE-060     Warning               202          102
-Total 5 types of messages are suppressed
-
-Timing updates: 1 (0 implicit, 1 explicit) (0 incremental, 1 full, 0 logical)
-Noise updates: 0 (0 implicit, 0 explicit) (0 incremental, 0 full)
-Maximum memory usage for this session: 1082.23 MB
-CPU usage for this session: 51 seconds 
-Elapsed time for this session: 61 seconds
-Diagnostics summary: 211 warnings, 410 informationals
-
-Thank you for using pt_shell!
