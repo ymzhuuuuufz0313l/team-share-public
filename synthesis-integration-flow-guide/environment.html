@@ -476,9 +476,9 @@ TIP: 同一项目下的不同 IP 应尽量使用相同的 `CORNER` 和库配置�
 - 库名在 **`common_db.tcl`** 定义，LVT/SVT 靠库名 **L/S 后缀**区分：`M31HSSC900EL150**SL**`（LVT）、`M31HSSC900EL150**SS**`（SVT）。
 - 生效逻辑在 **`dont_use_all.tcl`**：`if {$LVT_EN==0}` 时 dont_use 掉 LVT cell，`if {$SVT_EN==0}` 时 dont_use 掉 SVT cell，从而只允许使用选定 VT 的 cell。
 
-【📸 截图待补：`SYNTHESIS/top/sta/pre/pt/design.set` 的 L70-71，显示 `set LVT_EN 0` / `set SVT_EN 1`】
+![design.set 中 LVT_EN/SVT_EN 开关（LVT_EN 0 / SVT_EN 1，即用 SVT）](./image/24_design_set_vt.png)
 
-【📸 截图待补：`SYNTHESIS/common/tcl_dir/common/common_db.tcl` 的 L744-750，显示 `M31HSSC900EL150SL`（LVT）/ `M31HSSC900EL150SS`（SVT）两行库定义】
+![common_db.tcl 中 nexchip_145_9t 库定义（SL=LVT / SS=SVT）](./image/25_common_db_145.png)
 
 ---
 

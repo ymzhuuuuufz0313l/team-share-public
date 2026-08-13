@@ -442,9 +442,9 @@ flowchart LR
 
 WARNING: 换库前（LVT 时代）buf type 是 `CLKBUFX8AL9`，换 **SVT** 后变为 `CLKBUFX8AS9`（`AL9→AS9`，L=LVT / S=SVT 后缀）。看到 `AL9` 说明报告是换库前的旧版，需重新跑 postPT 确认。
 
-【📸 截图待补：`SYNTHESIS/top/sta/post/pt/tt_typical_25/latest_1p/rpt/input_port_first_buf_type.tsv`，表头 + 前几行：`BW_MODE_I APR_CDM / CLKBUFX8AS9 MULTI_LOAD(2)`】
+![input_port_first_buf_type.tsv：APR_CDM + CLKBUFX8AS9（SVT）](./image/28_input_buf.png)
 
-【📸 截图待补：`SYNTHESIS/top/sta/post/pt/tt_typical_25/latest_1p/rpt/output_port_last_buf_type.tsv`，表头 + 前几行：`BGR_SEL[0] CLKBUFX8AS9 ... OK`】
+![output_port_last_buf_type.tsv：CLKBUFX8AS9（SVT）](./image/29_output_buf.png)
 
 原始文件：
 
