@@ -746,15 +746,19 @@ post PT 10 个 corner 全部跑完后，执行 <a href="./script-dict.html#run_s
 - merge 总表：`report_setup.csv` / `report_hold.csv` / `report_trans.csv` / `report_phy_busskew.csv` / `report_sd_busskew.csv`
 - 总表结构：行 = clock 组，列 = 每个 corner 各两列（violation number、biggest violation），一眼看全 10 个 corner
 
-![POST PT run_summary 后的 merge 总表 report_setup.csv](./image/11_postpt_summary_report.jpg)
+![POST PT run_summary 后的 merge 总表 report_setup.csv（2P）](./image/30_postpt_setup_2p.png)
+
+![POST PT run_summary 后的 merge 总表 report_setup.csv（1P）](./image/31_postpt_setup_1p.png)
 
 第一步·找目标：在 merge 总表里扫 **violation number ≠ 0 或 biggest violation 为负** 的 clock 组（如上图中 `RX0_CLK`、`RX0_CLK_DIV1P5` 在某些 corner 有负 slack），这些就是要处理的违例。
 
 找到目标后到**对应 corner 目录**看具体报告定位路径。示例：总表里 `wc_cbest_125` 的 `CLK_L0_DTCTL_OD_DIV1P5` 组有 5 条 violation（biggest −0.0499），打开 `SYNTHESIS/top/sta/post/pt/wc_cbest_125/latest_2p/rpt/setup/report_timing_setup.rpt`，按 slack 排序找到 VIOLATED 路径，看清 Startpoint / Endpoint / Path Group：
 
-![wc_cbest corner 出问题路径的定位示例](./image/12_ccbest_corner_path.jpg)
+![wc_cbest corner 出问题路径的定位示例（历史版本演示方法）](./image/12_ccbest_corner_path.jpg)
 
 （上例：Startpoint `LC_CSPIF_L0/DIOH_DCLK_reg`（RX0_OD_CLK_DIV2）→ Endpoint `DTCTL_L0/EN1_L_reg`（CLK_L0_DTCTL_OD_DIV1P5），slack (VIOLATED) = −0.049949。每个 corner 的 `latest_1p` / `latest_2p` 下按 `rpt/setup` / `rpt/hold` / `rpt/skew` / `rpt/trans` 分目录，各 clock 组单独一份 report_timing 文件。）
+
+NOTE: 上图为**历史版本演示「如何定位违例路径」的方法示例**。当前 SVT 换库 + 约束收敛后的最新结果（8/13）setup / hold 违例数已全部为 0（见 <a href="./to-signoff.html" target="_blank">TO SIGNOFF</a> 页总表），定位方法仍适用于未来出现新违例时。
 
 第二步·定性（关键判断）：逐条看违例路径，判断它**后端修不修得掉**：
 
