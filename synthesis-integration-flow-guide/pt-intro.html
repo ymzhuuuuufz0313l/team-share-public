@@ -1125,6 +1125,40 @@ WARNING: 真假路径判定不能交给 AI。constraint 漏报的代价是硅后
 7. 环境版本固定，报错先查 source 版本。
 8. 分组（lane / mode）先分细再修，修不下去再谈标准。
 
+---
+
+## 9. 附录：目录结构与脚本的便捷改造（新增）
+
+> 本节是对 postPT 环境的一次**便捷性改造**，**不改动原有 PT 分析逻辑**——原始流程（corner_set.tcl 配置、pt_setup.tcl 分析、report 生成、SDF 反标）全部保持原样，只是把「多次运行堆积的产物」整理归类、并补了几个一键脚本，减少手改配置与手动改回开关的重复劳动。已有章节描述的所有步骤照常适用，本节仅作补充。
+
+### 9.1 目录结构收敛：`history/` + `latest`
+
+**改了什么**：原来每次 PT 运行会把 `log_*` / `rpt_*` / `whole_session_*` 平铺在 corner 目录下，多次运行后目录越堆越乱；现在所有产物收敛到 `corner/history/<run_id>/`（`run_id` 形如 `YYYYMMDD_N`，自动递增唯一），corner 下只保留一个 `latest` 软链指向最新一份。`summary/` 目录同理：改为 `summary/history/<date>_<n>/` + `latest`。
+
+**好处**：
+
+- 一次运行 = 一份独立目录，多次运行互不污染、不再平铺膨胀；
+- `latest` 永远指向最新一次结果，`run_summary` / 后仿取数路径稳定，不因历史堆积而混乱；
+- 历史结果完整保留、可追溯，需要复查旧版直接进 `history/` 对应 `run_id` 目录即可。
+
+### 9.2 一键归档脚本 `archive_pt_history.py`
+
+**改了什么**：新增一键归档脚本，把 corner 和 `summary/` 下已存在的平铺产物按 `run_id` 归入 `history/`，并重建 `latest` 链接；支持 `--apply`（实际执行）与 dry-run（默认只打印计划、不移动）两种模式。
+
+**好处**：老环境迁移零手工；脚本幂等、可重复执行，不会误删或重复移动已归档内容。
+
+### 9.3 SDF 生成并行化 `run_pt_sdf.py` + `DUMP_SDF` 环境变量化
+
+**改了什么**：
+
+- `corner_set.tcl` 的 `DUMP_SDF` 改读环境变量 `env(DUMP_SDF)`——未设置时默认 0，手动 `run_pt` 行为与原来完全一致；
+- 新增 `run_pt_sdf.py`：一键并行跑 `tt_typical_25` / `wc_cbest_125` / `lt_cbest_m40` 三个 corner 生成 SDF，SDF 文件名自动带日期 + 版本号（如 `HV2M23_digital_top_typical_25c_0813v1.sdf`，版本号自动递增、也可命令行指定）。
+
+**好处**：
+
+- 不用再逐个 corner 手改 `corner_set.tcl` 的 `DUMP_SDF=1`、跑完再手动改回 0——规避了上一节提到的「忘改回 0 → `latest` 指向只产 SDF 的空 run」这个坑；
+- 三个 corner 一键并行提交，SDF 版本自动编号，多次生成互不覆盖、可追溯。
+
 </script>
 
   <script>
