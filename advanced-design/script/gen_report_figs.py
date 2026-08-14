@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
-"""Render real PT timing report paths as dark terminal-style annotated images.
+"""Render real PT timing report paths as light annotated images.
 Highlights: startpoint / endpoint / clock / data-path / slack lines.
+Mixed-font rendering: ASCII in Consolas, CJK in msyh (no mojibake).
 """
 import os
 from PIL import Image, ImageDraw, ImageFont
@@ -9,65 +10,89 @@ BASE = os.path.dirname(os.path.abspath(__file__))
 OUT = os.path.join(BASE, '..', 'image')
 os.makedirs(OUT, exist_ok=True)
 
-FONT_MONO = 'C:/Windows/Fonts/consola.ttf'
-FONT_BOLD = 'C:/Windows/Fonts/consolab.ttf'
-FONT_CJK  = 'C:/Windows/Fonts/msyh.ttc'
+FONT_DIR = 'C:/Windows/Fonts'
 
-# palette
-BG      = (13, 15, 30)
-PANEL   = (22, 26, 48)
-FG      = (216, 222, 255)
-MUTED   = (148, 156, 190)
-ACCENT  = (124, 107, 255)
-CYAN    = (34, 211, 238)
-PINK    = (244, 114, 182)
-GREEN   = (110, 231, 183)
-YELLOW  = (252, 211, 77)
-RED     = (248, 113, 113)
-DIMLINE = (38, 44, 78)
+def _font(name, size):
+    return ImageFont.truetype(os.path.join(FONT_DIR, name), size)
 
-def font(sz, bold=False):
-    try:
-        return ImageFont.truetype(FONT_BOLD if bold else FONT_MONO, sz)
-    except Exception:
-        return ImageFont.truetype(FONT_MONO, sz)
+def f_mono(sz):   return _font('consola.ttf', sz)
+def f_mono_b(sz): return _font('consolab.ttf', sz)
+def f_cjk(sz):    return _font('msyh.ttc', sz)
+def f_cjk_b(sz):  return _font('msyhbd.ttc', sz)
 
-def cjkfont(sz):
-    try:
-        return ImageFont.truetype(FONT_CJK, sz)
-    except Exception:
-        return font(sz)
+# light palette
+BG      = (250, 251, 255)
+PANEL   = (255, 255, 255)
+FG      = (30, 34, 58)
+MUTED   = (110, 116, 150)
+ACCENT  = (109, 92, 255)
+CYAN    = (8, 145, 178)
+PINK    = (219, 39, 119)
+GREEN   = (4, 120, 87)
+YELLOW  = (180, 83, 9)
+RED     = (185, 28, 28)
+LINE    = (226, 229, 240)
+HILITE  = (238, 233, 255)
 
-def render(title, subtitle, lines, outfile, width=1500, highlight=None):
-    """lines: list of (text, color, bold). highlight: dict phase_label -> color for drawing."""
-    hfont = font(30, True)
-    sfont = cjkfont(16)
-    cell_h = 28
-    pad_x = 40
-    pad_top = 110
+def has_cjk(ch):
+    return ord(ch) >= 0x2E80 or ch in "≥≤±→⇒✓×÷·…—–‘’“”① ② ③ ④ ⑤ ⑥ ⑦ ⑧ ⑨ ⑩ ⚡"
 
-    # measure
-    mfont = font(18)
+def draw_mixed(draw, xy, text, mono_font, cjk_font, fill, mono_w):
+    x, y = xy
+    m_asc = mono_font.getmetrics()[0]
+    c_asc = cjk_font.getmetrics()[0]
+    dy = m_asc - c_asc
+    for ch in text:
+        if not has_cjk(ch):
+            draw.text((x, y), ch, font=mono_font, fill=fill)
+            x += mono_w
+        else:
+            draw.text((x, y + dy), ch, font=cjk_font, fill=fill)
+            x += cjk_font.getlength(ch)
+    return x
+
+def mixed_len(text, mono_font, cjk_font, mono_w):
+    w = 0
+    for ch in text:
+        w += cjk_font.getlength(ch) if has_cjk(ch) else mono_w
+    return w
+
+def render(title, subtitle, lines, outfile, width=1500):
+    """lines: list of (text, color, bold). Title/subtitle mixed-font, lines mostly mono."""
+    hfont_m = f_mono_b(22)
+    hfont_c = f_cjk_b(22)
+    sfont_c = f_cjk(15)
+    mfont = f_mono(17)
+    mfont_b = f_mono_b(17)
+    cfont = f_cjk(17)
+    cfont_b = f_cjk_b(17)
+
+    cell_h = 30
+    pad_x = 36
+    pad_top = 104
+
     maxw = 0
     for t, _, _ in lines:
-        maxw = max(maxw, mfont.getlength(t))
-    maxw = int(maxw)
-    W = max(width, maxw + pad_x * 2)
-    H = pad_top + cell_h * len(lines) + 40
+        maxw = max(maxw, mixed_len(t, mfont, cfont, mfont.getlength('M')))
+    W = max(width, int(maxw) + pad_x * 2)
+    H = pad_top + cell_h * len(lines) + 36
 
     img = Image.new('RGB', (W, H), BG)
     d = ImageDraw.Draw(img)
 
     # header panel
     d.rectangle([0, 0, W, pad_top], fill=PANEL)
-    d.line([0, pad_top, W, pad_top], fill=ACCENT, width=3)
-    d.text((pad_x, 22), title, font=hfont, fill=ACCENT)
-    d.text((pad_x, 66), subtitle, font=sfont, fill=MUTED)
+    d.line([0, pad_top - 3, W, pad_top - 3], fill=LINE, width=1)
+    d.rectangle([0, 0, 6, pad_top], fill=ACCENT)
+    draw_mixed(d, (pad_x, 20), title, hfont_m, hfont_c, ACCENT, hfont_m.getlength('M'))
+    draw_mixed(d, (pad_x, 60), subtitle, sfont_c, sfont_c, MUTED, sfont_c.getlength('M'))
 
     y = pad_top + 6
     for text, color, bold in lines:
-        f = font(18, bold)
-        d.text((pad_x, y + 2), text, font=f, fill=color)
+        if bold:
+            draw_mixed(d, (pad_x, y + 3), text, mfont_b, cfont_b, color, mfont_b.getlength('M'))
+        else:
+            draw_mixed(d, (pad_x, y + 3), text, mfont, cfont, color, mfont.getlength('M'))
         y += cell_h
 
     img.save(outfile)
