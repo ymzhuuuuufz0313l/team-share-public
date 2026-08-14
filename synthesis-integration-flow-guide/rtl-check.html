@@ -381,6 +381,8 @@ KEY: 通过 `bsub` 提交时必须带 batch 参数，即 `bsub -Ip run_ckf 1`。
 
 结果处理规则：所有 Error 必须清零；Warning 需逐条人工确认，仅确认无逻辑风险的正常告警才可放行。
 
+![ckf.rpt 实例（Floating / Latch 空 = 通过）](./image/36_ckf_rpt.png)
+
 ## 2. nLint
 
 ```bash
@@ -397,6 +399,10 @@ run_nlint
 - `no_check_module.f` 可排除不需要检查的模块
 - 确认可接受的 error 后，填入公共 waive list：`$PROJECT/SYNTHESIS/common/tcl_dir/nlint/nlint_waive.list`
 - 加入 waive list（白名单）前必须逐条确认确实无风险；两个工具重复报的已知非风险问题可加入 waive 文件，下次不再报
+
+![nlint.log 实例（Summary）](./image/37_nlint_rpt.png)
+
+NOTE: nLint 报出的 Error 多为缺少标准单元库（如 `CLKBUFX2AL9`）导致（Compilation & Elaboration 阶段），属于库文件缺失、与设计功能无关，不影响实际结果；确认非 RTL 逻辑问题后可 waive。
 
 NOTE: nLint 和 CKF 建议在综合前完成，以显著减少后续综合阶段的 RTL 问题。正确顺序：CKF + nLint 一起跑 → 确认无语法错误 → 才能跑综合。
 

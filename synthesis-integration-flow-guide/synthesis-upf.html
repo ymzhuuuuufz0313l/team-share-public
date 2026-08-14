@@ -417,6 +417,8 @@ run_dc
   - timing slack ≥ 0（signoff 版本必须 slack &gt; 0）
 - constraint coverage：必须查看 unconstrained paths report，确认哪些路径没有被约束到
 
+![DC QoR 综合报告实例（slack ≥ 0、violating paths = 0 = 综合通过）](./image/35_dc_qor.png)
+
 WARNING: DC 综合完成后必须确认没有未收敛的 timing violation——DC 修不下去时会自动放弃，此时面积数据是假的，给到 APR 的面积不准，交付前必须清零 violation。
 
 margin 经验值：综合时序 margin 一般按 0.8 把握（曾尝试过 0.6），原则是"对自己紧一点、对后端松一点"，留太多或太少都未必好。
