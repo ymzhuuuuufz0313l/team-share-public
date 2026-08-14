@@ -419,6 +419,8 @@ run_dc
 
 ![DC QoR 综合报告实例（slack ≥ 0、violating paths = 0 = 综合通过）](./image/35_dc_qor.png)
 
+HV2M23 实测结果（接近 TO 版本）：QoR 各 timing path group slack ≥ 0、violating paths = 0、hold violation = 0；Design Rules 共 **8663 nets**，仅少量 max_trans / max_cap 违规（留给 APR 阶段修）；Total cell area **167727**（宏/黑盒 0）。
+
 WARNING: DC 综合完成后必须确认没有未收敛的 timing violation——DC 修不下去时会自动放弃，此时面积数据是假的，给到 APR 的面积不准，交付前必须清零 violation。
 
 margin 经验值：综合时序 margin 一般按 0.8 把握（曾尝试过 0.6），原则是"对自己紧一点、对后端松一点"，留太多或太少都未必好。

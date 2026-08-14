@@ -1,0 +1,26 @@
+digraph driver_actual {
+  graph [fontname="Microsoft YaHei", fontsize=16, label="Driver 项目实际执行流程（备用图 · 未上报告）", labelloc=t, rankdir=TB, bgcolor=white, pad=0.5, nodesep=0.5, ranksep=0.7];
+  node [fontname="Microsoft YaHei", fontsize=13, shape=box, style="rounded,filled", fillcolor=white, penwidth=1.5, margin="0.18,0.12"];
+  edge [fontname="Microsoft YaHei", fontsize=11, penwidth=2, arrowsize=1.0, color="#334155"];
+
+  env     [label="环境\ndesign.set", color="#f43f5e"];
+  rtlchk  [label="RTL 检查\nCKF + nLint", color="#f59e0b"];
+  dc      [label="DC 综合\nrun_dc → compile_dc.tcl\n（无 UPF、无 Genus）", color="#3b82f6"];
+  lec     [label="LEC\nrun_lec / rtl_gate.do", color="#6366f1"];
+  prept   [label="prePT\n约束展开 + unconstrained 检查\n+ notimingcheck 依据", color="#a855f7"];
+  signoff [label="APR SIGNOFF\nsignoff 检查 + Release 交付", color="#22c55e"];
+  apr     [label="APR 布局布线\n后端", color="#22c55e"];
+  postpt  [label="postPT\n10 corner 全量\npararrel_run_pt.py", color="#8b5cf6"];
+  summary [label="run_summary\n5 个 csv 逐个确认", color="#64748b"];
+  toso    [label="TO SIGNOFF\ncsv ready + IO buf type 确认", color="#dc2626", penwidth=2.2];
+
+  ptpx     [label="PTPX 功耗\nfour-line VCD → power.rpt\n看 Leak Power", color="#0d9488"];
+  powerpro [label="PowerPro 功耗评估\nRTL / Gate level", color="#0d9488"];
+
+  env -> rtlchk -> dc -> lec -> prept -> signoff -> apr -> postpt -> summary -> toso;
+  lec -> prept [style=dashed, label="并行可"];
+  postpt -> ptpx [style=dashed, color="#0d9488", label="SDF/后仿 fsdb"];
+  env -> powerpro [style=dashed, color="#0d9488"];
+
+  { rank=same; ptpx; powerpro; }
+}

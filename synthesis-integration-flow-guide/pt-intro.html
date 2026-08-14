@@ -750,7 +750,7 @@ post PT 10 个 corner 全部跑完后，执行 <a href="./script-dict.html#run_s
 
 ![POST PT run_summary 后的 merge 总表 report_setup.csv（1P）](./image/31_postpt_setup_1p.png)
 
-第一步·找目标：在 merge 总表里扫 **violation number ≠ 0 或 biggest violation 为负** 的 clock 组（如上图中 `RX0_CLK`、`RX0_CLK_DIV1P5` 在某些 corner 有负 slack），这些就是要处理的违例。
+第一步·找目标：在 merge 总表里扫 **violation number ≠ 0 或 biggest violation 为负** 的 clock 组，这些就是要处理的违例。当前版本仅 1P 总表有 1 条：`RX0_CLK @ wc_cbest_125`（biggest −0.225507，图中红格），其终点为 **LENB_R**（RX0_CLK 域 output port），属 **output delay 未满足**而非内部逻辑路径，需模拟设计师后仿继续确认（判读详见 <a href="./to-signoff.html" target="_blank">TO SIGNOFF 页</a>）。
 
 找到目标后到**对应 corner 目录**看具体报告定位路径。示例：总表里 `wc_cbest_125` 的 `CLK_L0_DTCTL_OD_DIV1P5` 组有 5 条 violation（biggest −0.0499），打开 `SYNTHESIS/top/sta/post/pt/wc_cbest_125/latest_2p/rpt/setup/report_timing_setup.rpt`，按 slack 排序找到 VIOLATED 路径，看清 Startpoint / Endpoint / Path Group：
 

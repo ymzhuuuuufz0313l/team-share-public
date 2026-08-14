@@ -387,6 +387,8 @@ flowchart LR
 
 ![report_setup.csv 1P](./image/31_postpt_setup_1p.png)
 
+NOTE: 1P 唯一一条 setup 违例（`RX0_CLK @ wc_cbest_125`，biggest violation = -0.225507）终点是 **LENB_R**（RX0_CLK 域 output port），属 **output delay 未满足**（data arrival 10.30ns vs required 10.08ns，output external delay 0.5ns），不是内部逻辑路径。LENB_R 走模拟通路，**需模拟设计师后仿继续确认**。
+
 原始文件：<a href="./server-reports/postpt_summary/POST_PT_2P/report_setup.csv" target="_blank">report_setup.csv</a>（逐 corner 原始报告见 <a href="./server-reports/postpt_summary/POST_PT_2P/" target="_blank">POST_PT 目录</a>）
 
 **`report_hold.csv`**（hold / min 路径违例总表）：
@@ -415,9 +417,9 @@ flowchart LR
 
 **`report_sd_busskew.csv`**（SD data/clock skew 分组 margin）：
 
-![report_sd_busskew.csv 2P](./image/30_postpt_sdskew_2p.png)
+![report_sd_busskew.csv margin [-1:6] 2P](./image/33_postpt_sdskew_margin_2p.png)
 
-![report_sd_busskew.csv 1P](./image/31_postpt_sdskew_1p.png)
+![report_sd_busskew.csv margin [-1:6] 1P](./image/34_postpt_sdskew_margin_1p.png)
 
 原始文件：<a href="./server-reports/postpt_summary/POST_PT_2P/report_sd_busskew.csv" target="_blank">report_sd_busskew.csv</a>（逐 corner 原始报告见 <a href="./server-reports/postpt_summary/POST_PT_2P/" target="_blank">POST_PT 目录</a>）
 
@@ -447,12 +449,16 @@ flowchart LR
 
 | 报告 | 行数 | buf type 分布 | STATUS 分布 |
 |------|------|---------------|-------------|
-| `input_port_first_buf_type.tsv` | 104（52 端口 × 2 行） | 每端口 `APR_CDM` + `CLKBUFX8AS9` 各一行 | 全部 `MULTI_LOAD(2)`，需逐条确认多负载是否预期 |
-| `output_port_last_buf_type.tsv` | 476 | 全部 `CLKBUFX8AS9` | 全部 `OK` |
+| `input_port_first_buf_type.tsv` | 103（52 端口） | 51 端口各 `APR_CDM` + `CLKBUFX8AS9` 两行；例外 `DPSEL_I` 无首级 buf | 102 × `MULTI_LOAD(2)`；例外 `DPSEL_I — NO_LOAD_CELL` |
+| `output_port_last_buf_type.tsv` | 476 | 475 × `CLKBUFX8AS9`；例外 `reg_lane_pd_L1` 无末级 buf | 475 × `OK`；例外 `reg_lane_pd_L1 — NO_DRIVER_CELL` |
+
+两个例外端口（`DPSEL_I` 无负载、`reg_lane_pd_L1` 无驱动）需各自确认是否符合预期，不能只看统计分布。
+
+NOTE: `NO_LOAD_CELL` / `NO_DRIVER_CELL` 不是时序或连接错误，而是脚本 trace 不到 leaf cell 的标记——`NO_LOAD_CELL` = 输入端口在网表中没有扇出到任何 leaf cell；`NO_DRIVER_CELL` = 输出端口没有 leaf cell 驱动（被 tie 到常数）。本例两个例外同出一源：`DPSEL_I` 被 `set_case_analysis` 固定（2P 模式），综合/APR 常量传播后 `DPSEL_I` 的扇出全部被吸收（→ `NO_LOAD_CELL`），同时 `reg_lane_pd_L1` 的驱动门（DC 网表中为 `NAND2B1X1AS9 U12 (.B2(N_PD_PHY0), .I1(DP_SEL), .O(N_PD_PHY1))`）退化为常数输出（→ `NO_DRIVER_CELL`）。属 2P 固化的预期现象，确认无误即可。
 
 WARNING: 换库前（LVT 时代）buf type 是 `CLKBUFX8AL9`，换 **SVT** 后变为 `CLKBUFX8AS9`（`AL9→AS9`，L=LVT / S=SVT 后缀）。看到 `AL9` 说明报告是换库前的旧版，需重新跑 postPT 确认。
 
-![input / output buf type 报告（APR_CDM + CLKBUFX8AS9，SVT）](./image/inputbuf图.jpg)
+![input / output buf type 统计（APR_CDM + CLKBUFX8AS9，SVT；例外端口标红）](./image/38_buf_type.png)
 
 原始文件：
 
