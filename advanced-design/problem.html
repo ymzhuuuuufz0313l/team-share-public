@@ -106,6 +106,46 @@ false path 指向的是 <code>CLKGEN_U1 / U_DCLK1_OD_DIV1P5</code>（lane1）—
 > 2. 1P 下 lane1 的 DIV1P5 计数器**功能上不工作**，检查它本身就没有意义 —— 即使 MET 也是"白检查"，
 >    一旦其它 corner 报违例，工程师就要去"修一条根本不工作的路径"，纯浪费。
 
+### 1.2.1 逐段解读：这条被误报的路径长什么样
+
+下面这张图是 **1P 模式（wc_typical_125）下，真实 `report_timing_setup.rpt` 中
+SAMP_CNT 路径的逐段还原**——把时钟树、数据路径、slack 计算完整串起来：
+
+![1P 报告路径逐段还原](./image/rpt_1p_sampcnt.png)
+
+**按报告顺序逐段看（对应上图的①）**：
+
+| 段 | 报告内容 | 说明 |
+|:---|:---|:---|
+| **起点** | `LC_CSPIF_L0/KEY_RST_18UI_reg`（RX0_OD_CLK_DIV2 域） | 复位/键控寄存器，数据从它出发 |
+| **时钟树** | `clk_lane_od_L0 → IOBUF → 时钟树` | 起点时钟 `RX0_OD_CLK_DIV2` 从 lane0 OD 时钟分出来 |
+| **数据路径** | `KEY_RST_18UI_reg/Q → BUFX8 → INVX1 → BUFX2 → SAMP_CNT_reg_2_/D` | 只有 4 级组合逻辑，arrival = 5.538ns |
+| **终点** | `CLKGEN_U0/U_DCLK0_OD_DIV1P5/SAMP_CNT_reg_2_`（RX0_OD_CLK 域） | DIV1P5 分频器的采样计数器 |
+| **required** | `RX0_OD_CLK 捕获沿 - 树延迟 - uncertainty - setup` | = 5.753ns |
+| **slack** | `5.753 - 5.538 = +0.215ns` | <span class="badge badge-ok">MET 但只有 0.215ns 余量</span> |
+
+> 为什么值 5.040？注意这里是 **1P 模式**：起点时钟 `RX0_OD_CLK_DIV2` 的捕获沿取的是
+> **5.04ns**（而非 2P 的 5.355ns）——1P 下 OD 时钟按 10.08ns 周期算，分频后捕获沿更早，
+> 这是 1P 约束比 2P 更紧的直接体现。
+
+**这张图回答了一个关键问题**：如果只是"白检查"，在更差 corner 下它会怎样？
+我们把同一路径放到 **2P 模式** 下看——此时 lane1 真实工作，路径被正常检查：
+
+![2P 报告同一族路径真实检查](./image/rpt_2p_sampcnt.png)
+
+**2P 路径与 1P 的差异（对应上图②）**：
+
+| 维度 | 1P（误报） | 2P（真查） |
+|:---|:---|:---|
+| lane1 复位 | `N_RST_NLOCK1 = 0`（复位） | 正常复位释放，分频器运行 |
+| 时钟 | `RX0_OD_CLK` 按 10.08ns（紧） | `CLK_L1_DTCTL_OD_DIV1P5` 5.355ns 捕获 |
+| 路径跨域 | lane0 复位信号 → lane0 DIV1P5 | lane1 DIV1P5 → DTCTL_L1 → DTCTL_L0 完整链路 |
+| 功能语义 | 无（lane1 不工作） | 真实（lane1 处理双 lane 数据） |
+| 处理方式 | 应该 false path 或 max_delay | **必须真查，不能 false** |
+
+> 一张图把"同一族路径，两种模式两种语义"说清楚了：**1P 下它是不激活的分频器内部计数器，
+> 2P 下它是 lane1 数据链路的真实一环**。这就是方案 A（合并时钟）解不了、必须上方案 B/C 的原因。
+
 ## 1.3 根因证据链（三条）
 
 ### 证据 ①：RTL —— lane1 在 1P 下被复位、不工作
