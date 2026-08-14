@@ -51,7 +51,8 @@ Each article gets its own directory so multiple shared articles can coexist.
      - **简单图**（几步的线性流程、简单状态/进展、简单对比）：直接用下方「Rich Visualization Components」中的 flow / timeline / badge / statbar / pcard 等 HTML 组件表达，**不调用** `fireworks-tech-graph`。
      - **复杂技术图**（架构图、数据流图、时序图、寄存器/地址映射、多层级结构等）：根据图类型选择工具：
        - **流程图/调用关系图/层次结构图**：优先用 **Graphviz** 自动布局（见下方「Graphviz 使用方式」），避免手写 SVG 坐标错位。
-       - **架构图/数据流图/时序图/UML 图**：优先调用 `fireworks-tech-graph` skill 生成 SVG（见下方「fireworks-tech-graph 使用方式」），引用为 `./<name>.svg`。SVG 优先于 PNG。
+       - **数字波形图**（时钟/数据跳变、采样窗口、skew/setup/hold 标注等真实波形）：优先用 **WaveDrom**（见下方「WaveDrom 使用方式」），输出 SVG 优先。
+       - **架构图/数据流图/示意性时序图/UML 图**：优先调用 `fireworks-tech-graph` skill 生成 SVG（见下方「fireworks-tech-graph 使用方式」），引用为 `./<name>.svg`。SVG 优先于 PNG。
      - **数据结果图**（报告/日志/CSV 数据展示，没有截图或截图质量差时）：用 **Python + PIL 按真实数据绘制 PNG**（见下方「PIL 数据造图使用方式」），不贴模糊截图、不手打数据。
      - 无论哪种方式，图和组件都服务于读者体验：层次清晰、配色克制、重点突出，宁缺毋滥，不为配图而配图。
    **Graphviz 使用方式**
@@ -82,6 +83,18 @@ Each article gets its own directory so multiple shared articles can coexist.
    8. 视觉检查（读取 PNG 确认无重叠）
 
    优点：精细控制每个元素的位置和样式，支持 8 种视觉风格。
+
+   **WaveDrom 使用方式**
+
+   当画**数字波形图**（时钟/数据跳变、有效窗口、skew/setup/hold 标注）时，用 WaveDrom——JSON 声明式描述波形，每个跳变沿、每段数据值精确定义，比手画示意图规整且可版本管理。
+
+   1. **本机已装**：`D:\github\wavedrom-demo\`（npm 包 `wavedrom-cli`）；新环境则 `npm install wavedrom-cli`（需 Node.js）
+   2. **写 JSON 源文件**：`signal` 数组描述各信号——`wave` 字符串里 `p`=时钟、`0/1`=电平、`x`=未知/切换、`2-9`=数据段（配 `data` 数组填数值）、`.`=延续前一状态、`period` 控制拉伸
+   3. **标注箭头（关键规则）**：锚点用信号的 `node` 属性放（如 `node: "....a......b"`），再用 `edge: ["a<->b 说明文字"]` 画箭头；**不要把字母直接写进 `wave`**——会破坏波形渲染成未知态
+   4. **生成**：`npx wavedrom-cli -i in.json -s out.svg -p out.png`
+   5. **SVG 优先**：网页引用 SVG（中文显示正常）；PNG 转换缺中文字体，PNG 里标注一律用英文
+   6. **修改规则（强制）**：SVG/PNG 是产物，**不要手改**；改图一律改 JSON 源文件重新生成，JSON 与页面一起保存
+   7. **参考实例**：`D:\github\wavedrom-demo\sd_skew_spec.json`（SD bus skew 规格推导图，含窗口标注箭头）
 
    **PIL 数据造图使用方式**
 
@@ -186,7 +199,7 @@ Each article gets its own directory so multiple shared articles can coexist.
 - If the user only provides a topic without content, ask for the content before creating the file.
 - When an article grows too long for a single page, proactively propose the multi-page landing + chapters structure.
 - **标题编号（强制）**：正文标题必须带编号——h2 用 `## 1. xxx`、`## 2. xxx` 顺序编号，h3 用 `### 1.1 xxx`、`### 1.2 xxx`、`### 2.1 xxx` 跟随所属 h2 编号。TOC 直接取自标题文本，因此 TOC 里也必须能看到 `1.` / `1.1` 这样的编号。
-- 配图规则（两个 workflow 通用）：复杂技术图优先调用 `fireworks-tech-graph` skill 生成 SVG；简单图示直接用本文末尾的 Rich Visualization HTML 组件；数据结果图（报告/CSV/日志展示）用 PIL 按真实数据绘制 PNG（见「PIL 数据造图使用方式」）；能不画图就不画。一切以读者的阅读体验为先——层次清晰、配色克制、重点突出。
+- 配图规则（两个 workflow 通用）：复杂技术图优先调用 `fireworks-tech-graph` skill 生成 SVG；数字波形图（时钟/数据/时序标注）用 WaveDrom（见「WaveDrom 使用方式」）；简单图示直接用本文末尾的 Rich Visualization HTML 组件；数据结果图（报告/CSV/日志展示）用 PIL 按真实数据绘制 PNG（见「PIL 数据造图使用方式」）；能不画图就不画。一切以读者的阅读体验为先——层次清晰、配色克制、重点突出。
 - **图片交互规则（强制）**：任何包含图片的独立 HTML 页面（single-page、landing、chapter 都算）都必须实现文末「图片 Lightbox」的完整交互——点击放大、滚轮缩放、拖拽移动、Esc/点击关闭。缺了 lightbox 视为页面未完成；更新已有页面时如果发现没有，要顺手补上。
 
 ## Rich Visualization Components（推荐样式，用户确认 0717）
