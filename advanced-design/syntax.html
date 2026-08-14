@@ -14,7 +14,8 @@
   <nav class="navbar">
     <div class="navbar-inner">
       <a class="navbar-brand" href="./">⚡ Advanced Design Lab</a>
-      <div class="navbar-links" id="navbar-links"></div>
+      <div class="navbar-links" id="navbar-links"></div>      <button class="theme-toggle" id="theme-toggle" title="切换深浅主题">🌙</button>
+
     </div>
   </nav>
 
@@ -333,5 +334,25 @@ document.addEventListener('mousemove', (e) => { if (!isDragging) return; transla
 document.addEventListener('mouseup', () => { isDragging = false; lbImg.classList.remove('grabbing'); });
 document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && lightbox.classList.contains('active')) closeLightbox(); });
 </script>
+
+  <script>
+(function() {
+  const saved = localStorage.getItem('ad-theme');
+  document.documentElement.setAttribute('data-theme', saved === 'dark' ? 'dark' : 'light');
+  const btn = document.getElementById('theme-toggle');
+  function sync() {
+    const cur = document.documentElement.getAttribute('data-theme');
+    btn.textContent = cur === 'dark' ? '☀️' : '🌙';
+  }
+  btn.addEventListener('click', () => {
+    const cur = document.documentElement.getAttribute('data-theme');
+    const next = cur === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('ad-theme', next);
+    sync();
+  });
+  sync();
+})();
+  </script>
 </body>
 </html>

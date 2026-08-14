@@ -14,6 +14,7 @@
     <div class="navbar-inner">
       <a class="navbar-brand" href="./">⚡ Advanced Design Lab</a>
       <div class="navbar-links" id="navbar-links"></div>
+      <button class="theme-toggle" id="theme-toggle" title="切换深浅主题">🌙</button>
     </div>
   </nav>
 
@@ -126,6 +127,27 @@ chapters.forEach(([slug, label]) => {
   }
   linksContainer.appendChild(a);
 });
+  </script>
+
+  <script>
+(function() {
+  const saved = localStorage.getItem('ad-theme');
+  const initial = saved === 'dark' ? 'dark' : (saved === 'light' ? 'light' : 'light');
+  document.documentElement.setAttribute('data-theme', initial);
+  const btn = document.getElementById('theme-toggle');
+  function sync() {
+    const cur = document.documentElement.getAttribute('data-theme');
+    btn.textContent = cur === 'dark' ? '☀️' : '🌙';
+  }
+  btn.addEventListener('click', () => {
+    const cur = document.documentElement.getAttribute('data-theme');
+    const next = cur === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('ad-theme', next);
+    sync();
+  });
+  sync();
+})();
   </script>
 </body>
 </html>
