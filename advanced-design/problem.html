@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>问题是什么 · Advanced Design Lab</title>
+  <link rel="stylesheet" href="./assets/style.css">
+  <script src="./js/marked.min.js"></script>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a class="navbar-brand" href="./">⚡ Advanced Design Lab</a>
+      <div class="navbar-links" id="navbar-links"></div>
+    </div>
+  </nav>
+
+  <div class="container with-toc">
+    <aside class="toc-wrapper">
+      <div class="toc" id="toc"></div>
+    </aside>
+
+    <div class="content">
+      <article class="article" id="article"></article>
+      <div class="page-nav">
+        <a class="prev" href="./index.html"><span class="label">← 上一章</span><span class="title">返回首页</span></a>
+        <a class="next" href="./current-solution.html"><span class="label">下一章 →</span><span class="title">现有解决方案：拆分 1P/2P</span></a>
+      </div>
+    </div>
+  </div>
+
+  <div class="lightbox" id="lightbox">
+    <span class="close" id="lightbox-close">&times;</span>
+    <img id="lightbox-img" src="" alt="">
+    <div class="hint">滚轮缩放 · 拖拽移动 · Esc 或点击空白处关闭</div>
+  </div>
+
+<script type="text/template" id="md">
+# 1. 问题是什么
+
+> 从一个真实芯片（HV2M23）的 STA 实践出发，回答三件事：**1P/2P 是什么、误报现象长什么样、根因到底在哪**。
+
+## 1.1 背景：一颗芯片，两种工作模式
+
+HV2M23 是显示驱动 TCON 类芯片，接收端（isP RX）支持两种接收模式：
+
+| 模式 | lane 数 | 数据速率 | 含义 |
+|:---|:---|:---|:---|
+| **1P** | 单 lane（仅 L0） | 1.7G | 一根 lane 扛全部数据 |
+| **2P** | 双 lane（L0 + L1） | 1.6G | 数据分摊到两根 lane |
+
+两种模式由芯片输入端口 <code>DPSEL_I</code> 决定。`clk_period.tcl` 中通过 <code>set_case_analysis</code> 固定：
+
+```tcl
+# 1P 模式：DPSEL_I = 0（单 lane L0）
+set_case_analysis 0 [get_port DPSEL_I]
+
+# 2P 模式：DPSEL_I = 1（双 lane L0 + L1）
+set_case_analysis 1 [get_port DPSEL_I]
+```
+
+对应时钟周期（`clk_period.tcl`）：
+
+```tcl
+# 1.7G * 1.05 / 18 = 99.16M → 10.08ns（1P）
+# 1.6G * 1.05 / 18 = 93.33M → 10.71ns（2P）
+set RX0_CLKP [expr 10.08*$MARGIN]
+set RX1_CLKP [expr 10.71*$MARGIN]
+```
+
+> 注意：RTL 里实际的模式选择信号叫 <code>DP_SEL</code>（来自 `DPSEL_I` 端口缓冲），下文证据链都围绕它展开。
+
+## 1.2 现象：1P 模式下工具"误报" lane1 路径
+
+**现象描述**：跑 1P 约束时，工具报告了一批 setup 违例，终点指向
+<code>CLKGEN_U1 / U_DCLK1_OD_DIV1P5 / SAMP_CNT_reg_*</code> ——
+**lane1 的 1.5 分频采样计数器**。
+
+以 `wc_typical_125/latest_1p` 为例（1P 约束、single-lane），被报告的路径：
+
+```
+Startpoint: u_LOGIC_CENTER/LINK_LOGIC/LC_CSPIF_L0/KEY_RST_18UI_reg
+             (rising edge-triggered flip-flop clocked by RX0_OD_CLK_DIV2)
+Endpoint:   u_LOGIC_CENTER/CLKGEN_U0/U_DCLK0_OD_DIV1P5/SAMP_CNT_reg_2_
+             (rising edge-triggered flip-flop clocked by RX0_OD_CLK)
+Path Group: RX0_OD_CLK
+```
+
+**关键洞察**：这个终点在 <code>U_DCLK0</code>（lane0），而 `clk_period.tcl` 里被注释掉的
+false path 指向的是 <code>CLKGEN_U1 / U_DCLK1_OD_DIV1P5</code>（lane1）——两者是同一族
+「DIV1P5 分频器采样计数器」路径，lane0/lane1 各一份。
+
+真实 slack 数据（`wc_typical_125`，1P）：
+
+| Endpoint | slack | 状态 |
+|:---|:---|:---|
+| `CLKGEN_U0/.../SAMP_CNT_reg_2_` | +0.215ns | MET（但很紧） |
+| `CLKGEN_U0/.../SAMP_CNT_reg_1_` | +0.402ns | MET |
+| `CLKGEN_U0/.../SAMP_CNT_reg_0_`（同族） | +0.418ns | MET |
+
+> 为什么 slack 是正的（MET）却还要处理？因为：
+> 1. 在 **wc_cworst / lt_cworst** 等更差 corner 下，这条路径可能翻成 VIOLATED；
+> 2. 1P 下 lane1 的 DIV1P5 计数器**功能上不工作**，检查它本身就没有意义 —— 即使 MET 也是"白检查"，
+>    一旦其它 corner 报违例，工程师就要去"修一条根本不工作的路径"，纯浪费。
+
+## 1.3 根因证据链（三条）
+
+### 证据 ①：RTL —— lane1 在 1P 下被复位、不工作
+
+`CLKGEN_U1.v` 里，lane1 的复位信号直接与 DP_SEL 相关：
+
+```verilog
+// CLKGEN_U1.v
+AND2X2AL9 AND_N_RST_NLOCK1 (.I1(N_RST), .I2(LOCK_FREQ1_DEB & DP_SEL), .O(N_RST_NLOCK1));
+```
+
+- **DP_SEL = 1（2P）**：`N_RST_NLOCK1 = N_RST & LOCK_FREQ1_DEB` → lane1 正常复位与工作；
+- **DP_SEL = 0（1P）**：`N_RST_NLOCK1 = N_RST & 0 = 0` → **lane1 一直被复位**，DIV1P5 分频器、SAMP_CNT 计数器根本不跑。
+
+同样的模式选择逻辑遍布 RTL（`DTCTL_COMB.v`）：
+
+```verilog
+assign SRA = ~DP_SEL ? SRA_1P : SHL ? SR_2P_L0 : SR_L1;   // 1P 用单 lane 数据
+assign DB0[7:0] = ~DP_SEL ? DB0_1P[7:0] : DB0_2P[7:0];
+```
+
+### 证据 ②：SDC —— lane1 的 DIV1P5 时钟源却来自 lane0
+
+看 `HV2M23_digital_top.tcl`（`create_generated_clock`），**lane1 分频器吃的是 lane0 的 OD 时钟**：
+
+```tcl
+create_generated_clock -name CLK_L0_DTCTL_OD_DIV1P5 \
+    -source [get_ports {clk_lane_od_L0}] -edges { 1 3 4} \
+    -master_clock [get_clocks {RX0_OD_CLK}] \
+    [get_pins {u_LOGIC_CENTER/CLKGEN_U0/U_DCLK0_OD_DIV1P5/BUF_DCLK_DIV_ORG/O}]
+
+create_generated_clock -name CLK_L1_DTCTL_OD_DIV1P5 \
+    -source [get_ports {clk_lane_od_L0}] -edges { 1 3 4} \
+    -master_clock [get_clocks {RX0_OD_CLK}] \
+    [get_pins {u_LOGIC_CENTER/CLKGEN_U1/U_DCLK1_OD_DIV1P5/BUF_DCLK_DIV_ORG/O}]
+```
+
+**这就是根因的核心矛盾**：
+- 功能上，1P 时 lane1 被复位、DIV1P5 不工作（证据①）；
+- 但时序上，`CLK_L1_DTCTL_OD_DIV1P5` 由 lane0 的 `clk_lane_od_L0` 产生，**时钟在跑**（证据②）。
+
+工具只认证据②：时钟存在 → 终点寄存器必须检查 → 报路径。它不知道证据①里的功能语义。
+
+### 证据 ③：`clk_period.tcl` 中注释掉的 false path
+
+`clk_period.tcl` 里躺着一行注释掉的 false path，正是当年手工处理这条路径的痕迹：
+
+```tcl
+# 1P
+set_case_analysis 1 [get_port DPSEL_I]
+# set_false_path -to u_LOGIC_CENTER/CLKGEN_U1/U_DCLK1_OD_DIV1P5/SAMP_CNT_reg_*
+```
+
+> 注释 = 证据：它存在过，说明曾经（或本该）对这条路径设 false path；
+> 它被注释掉，说明当前 2P 约束下这些路径是真实工作的，不能一刀切 false。
+
+## 1.4 问题的本质：模式相关的时序例外（mode-dependent exception）
+
+把三条证据合起来，问题可以精确表述为：
+
+<div class="pcard danger">
+  <div class="prow"><span class="k">矛盾</span><span>同一条路径 <code>CLKGEN_U1/.../SAMP_CNT_reg_*</code></span></div>
+  <div class="prow"><span class="k">1P</span><span>功能上不激活（lane1 复位），工具却仍检查 → 假违例 → 应该 false path</span></div>
+  <div class="prow"><span class="k">2P</span><span>功能上真实工作，必须真查 → 不能 false path</span></div>
+  <div class="prow"><span class="k">结论</span><span>「同一路径，1P 下 false、2P 下真查」——<b>单份 SDC 表达不了这个模式相关语义</b>，这就是一切拆分的根源。</span></div>
+</div>
+
+这类问题的通用名字叫 <strong>mode-dependent exception（模式相关例外）</strong>，在支持多工作模式的
+SoC / TCON / 数模混合芯片里非常常见。凡是遇到「某些路径只在某个工作模式下才真实」的芯片，
+都会撞上同一个问题。
+
+## 1.5 为什么这个问题值得专门讲
+
+| 维度 | 说明 |
+|:---|:---|
+| **普遍性** | 多模式芯片（1P/2P、DP/SL、High/Low speed、Power mode）几乎必然出现 |
+| **隐蔽性** | 表面看是"报告里有违例"，实际是"约束语义表达力不足" |
+| **易踩坑** | 直接 false path → 另一模式漏检；强行合并 → over-constrain 白做工 |
+| **有标准解** | MMMC 就是为这个问题设计的，但很多项目没用上 |
+</script>
+
+<script>
+const chapters = [
+  ['index', '首页'],
+  ['problem', '问题是什么'],
+  ['current-solution', '现有方案'],
+  ['merge-clock', '方案A·合并时钟'],
+  ['maxdelay', '方案B·set_max_delay'],
+  ['mmmc', '方案C·MMMC'],
+  ['syntax', 'SDC语法库']
+];
+const currentPath = location.pathname.split('/').pop() || 'index.html';
+const linksContainer = document.getElementById('navbar-links');
+chapters.forEach(([slug, label]) => {
+  const href = slug === 'index' ? './' : `./${slug}.html`;
+  const filename = slug === 'index' ? 'index.html' : `${slug}.html`;
+  const a = document.createElement('a');
+  a.href = href;
+  a.textContent = label;
+  if (currentPath === filename || currentPath.endsWith('/' + filename)) a.classList.add('active');
+  linksContainer.appendChild(a);
+});
+</script>
+<script>
+const md = document.getElementById('md').textContent;
+document.getElementById('article').innerHTML = marked.parse(md);
+
+// TOC
+const toc = document.getElementById('toc');
+const headings = document.querySelectorAll('.article h2, .article h3');
+const tocLinks = [];
+headings.forEach(h => {
+  const id = h.textContent.trim().replace(/\s+/g, '-').replace(/[^\w\u4e00-\u9fa5-]/g, '');
+  h.id = id;
+  const cls = h.tagName === 'H2' ? 'toc-h2' : 'toc-h3';
+  const a = document.createElement('a');
+  a.href = '#' + id;
+  a.textContent = h.textContent;
+  a.className = cls;
+  toc.appendChild(a);
+  tocLinks.push(a);
+});
+
+// Collapsible TOC
+tocLinks.forEach((link, i) => {
+  if (!link.classList.contains('toc-h2')) return;
+  const children = [];
+  for (let j = i + 1; j < tocLinks.length && tocLinks[j].classList.contains('toc-h3'); j++) children.push(tocLinks[j]);
+  if (!children.length) return;
+  link.classList.add('toc-parent');
+  const arrow = document.createElement('span');
+  arrow.className = 'toc-arrow';
+  arrow.textContent = '▸';
+  link.prepend(arrow);
+  children.forEach(c => c.parentLink = link);
+  arrow.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const collapsed = link.classList.toggle('collapsed');
+    children.forEach(c => c.style.display = collapsed ? 'none' : '');
+  });
+});
+
+// Scroll spy
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      tocLinks.forEach(l => l.classList.remove('active'));
+      let active = tocLinks.find(a => a.getAttribute('href') === '#' + entry.target.id);
+      if (active && active.style.display === 'none' && active.parentLink) active = active.parentLink;
+      if (active) active.classList.add('active');
+    }
+  });
+}, { rootMargin: '-10% 0px -75% 0px' });
+headings.forEach(h => observer.observe(h));
+</script>
+<script>
+const lightbox = document.getElementById('lightbox');
+const lbImg = document.getElementById('lightbox-img');
+const lbClose = document.getElementById('lightbox-close');
+let scale = 1;
+let isDragging = false;
+let startX = 0, startY = 0, translateX = 0, translateY = 0;
+function openLightbox(src) { lbImg.src = src; scale = 1; translateX = 0; translateY = 0; updateTransform(); lightbox.classList.add('active'); document.body.style.overflow = 'hidden'; }
+function closeLightbox() { lightbox.classList.remove('active'); document.body.style.overflow = ''; }
+function updateTransform() { lbImg.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`; }
+document.addEventListener('click', (e) => { const img = e.target.closest('img'); if (!img || img.id === 'lightbox-img' || !img.closest('.article')) return; openLightbox(img.src); });
+lbClose.addEventListener('click', closeLightbox);
+lightbox.addEventListener('click', (e) => { if (e.target === lightbox) closeLightbox(); });
+lightbox.addEventListener('wheel', (e) => { e.preventDefault(); const d = e.deltaY > 0 ? -0.12 : 0.12; scale = Math.min(Math.max(0.5, scale + d), 5); updateTransform(); });
+lbImg.addEventListener('mousedown', (e) => { isDragging = true; startX = e.clientX - translateX; startY = e.clientY - translateY; lbImg.classList.add('grabbing'); e.preventDefault(); });
+document.addEventListener('mousemove', (e) => { if (!isDragging) return; translateX = e.clientX - startX; translateY = e.clientY - startY; updateTransform(); });
+document.addEventListener('mouseup', () => { isDragging = false; lbImg.classList.remove('grabbing'); });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && lightbox.classList.contains('active')) closeLightbox(); });
+</script>
+</body>
+</html>

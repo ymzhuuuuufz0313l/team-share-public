@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>进阶设计实验室 · Advanced Design Lab</title>
+  <link rel="stylesheet" href="./assets/style.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a class="navbar-brand" href="./">⚡ Advanced Design Lab</a>
+      <div class="navbar-links" id="navbar-links"></div>
+    </div>
+  </nav>
+
+  <div class="container">
+    <article class="article">
+
+      <div class="hero">
+        <span class="kicker">Advanced Design · Series 01</span>
+        <h1>模式相关时序约束的拆与合</h1>
+        <p class="lead">
+          从 HV2M23 的 1P/2P 双工作模式出发，推演「多工作模式芯片时序约束」的完整思路：
+          为什么必须拆分、拆分的代价、以及合并约束 / set_max_delay / MMMC 三条进阶路线，
+          每个方案都附带真实数据与可直接复制的 SDC 语法。
+        </p>
+        <div class="author">作者：ymzhuuuu · HV2M23 后端 STA 实践</div>
+        <div class="tagline">这个问题的推演过程，本身就是进阶设计的第一个案例</div>
+      </div>
+
+      <div class="statbar">
+        <div class="stat"><div class="num">2</div><div class="lbl">工作模式（1P / 2P）</div></div>
+        <div class="stat"><div class="num">3</div><div class="lbl">进阶方案对比</div></div>
+        <div class="stat"><div class="num">10</div><div class="lbl">signoff corner</div></div>
+        <div class="stat"><div class="num">1.7G</div><div class="lbl">lane0 最高速率</div></div>
+      </div>
+
+      <div class="section-title">核心问题</div>
+      <blockquote>
+        <strong>一句话：</strong>同一份网表同时支持 <code>1P（单 lane · 1.7G）</code> 和
+        <code>2P（双 lane · 1.6G）</code> 两种工作模式，但 lane1 相关路径在 1P 模式下
+        <strong>功能上不激活、时钟却在跑</strong>，导致工具误报 → 被迫拆成两套约束。
+        APR 又只接受一个网表，于是「拆 or 合」成了必答题。
+      </blockquote>
+
+      <div class="section-title">推演路径 · 章节导航</div>
+      <div class="chapter-grid">
+
+        <a class="chapter-card" href="./problem.html">
+          <div class="num">1</div>
+          <div class="title">问题是什么</div>
+          <div class="desc">1P/2P 背景、误报现象、根因深挖——用 RTL 源码、SDC 时钟定义、真实报告数据三条证据链定位「假路径」的诞生过程。</div>
+          <span class="tag">根因分析</span>
+        </a>
+
+        <a class="chapter-card" href="./current-solution.html">
+          <div class="num">2</div>
+          <div class="title">现有解决方案</div>
+          <div class="desc">拆成 1P / 2P 两套约束分别跑：怎么拆、报告怎么分、代价是什么（双份维护 / 双份跑 / 漏检风险）。</div>
+          <span class="tag">现状与代价</span>
+        </a>
+
+        <a class="chapter-card" href="./merge-clock.html">
+          <div class="num">3</div>
+          <div class="title">进阶方案 A · 合并时钟</div>
+          <div class="desc">lane0 设 1.7G、lane1 设 1.6G 一套约束同时覆盖两模式——可行，但为什么「车道合并」解不了「假路径」？</div>
+          <span class="tag">方案对比</span>
+        </a>
+
+        <a class="chapter-card" href="./maxdelay.html">
+          <div class="num">4</div>
+          <div class="title">进阶方案 B · set_max_delay</div>
+          <div class="desc">进阶思路：不设 false path，改用 set_max_delay 覆盖——原理、正确取值、精确匹配、与 false path 的优先级冲突。</div>
+          <span class="tag">进阶方案</span>
+        </a>
+
+        <a class="chapter-card" href="./mmmc.html">
+          <div class="num">5</div>
+          <div class="title">进阶方案 C · MMMC</div>
+          <div class="desc">多模式多角（Multi-Mode Multi-Corner）：一个网表 + 多套 mode 约束，APR 与 PT 原生支持——标准答案。</div>
+          <span class="tag">标准正解</span>
+        </a>
+
+        <a class="chapter-card" href="./syntax.html">
+          <div class="num">6</div>
+          <div class="title">SDC / TCL 语法库</div>
+          <div class="desc">set_max_delay / set_false_path / set_case_analysis / create_clock / set_clock_groups 全命令语法细节与陷阱对照。</div>
+          <span class="tag">语法参考</span>
+        </a>
+
+      </div>
+
+      <div class="section-title">一句话结论</div>
+      <div class="pcard">
+        <div class="prow"><span class="k">结论</span><span>「同一路径 1P 下 false、2P 下真查」单份 SDC 表达不了——<b>标准解是 MMMC</b>；若流程受限只能用单约束，<code>set_max_delay</code> 是可用的近似解，但必须精确取 2P 周期值并限定对象。</span></div>
+      </div>
+
+    </article>
+    <div class="footer">ADVANCED DESIGN LAB · knowledge reservoir</div>
+  </div>
+
+  <script>
+const chapters = [
+  ['index', '首页'],
+  ['problem', '问题是什么'],
+  ['current-solution', '现有方案'],
+  ['merge-clock', '方案A·合并时钟'],
+  ['maxdelay', '方案B·set_max_delay'],
+  ['mmmc', '方案C·MMMC'],
+  ['syntax', 'SDC语法库']
+];
+const currentPath = location.pathname.split('/').pop() || 'index.html';
+const linksContainer = document.getElementById('navbar-links');
+chapters.forEach(([slug, label]) => {
+  const href = slug === 'index' ? './' : `./${slug}.html`;
+  const filename = slug === 'index' ? 'index.html' : `${slug}.html`;
+  const a = document.createElement('a');
+  a.href = href;
+  a.textContent = label;
+  if (currentPath === filename || currentPath.endsWith('/' + filename) || (currentPath === '' && slug === 'index')) {
+    a.classList.add('active');
+  }
+  linksContainer.appendChild(a);
+});
+  </script>
+</body>
+</html>

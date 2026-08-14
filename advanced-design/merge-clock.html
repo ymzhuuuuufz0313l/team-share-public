@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>进阶方案 A · 合并时钟 · Advanced Design Lab</title>
+  <link rel="stylesheet" href="./assets/style.css">
+  <script src="./js/marked.min.js"></script>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a class="navbar-brand" href="./">⚡ Advanced Design Lab</a>
+      <div class="navbar-links" id="navbar-links"></div>
+    </div>
+  </nav>
+
+  <div class="container with-toc">
+    <aside class="toc-wrapper">
+      <div class="toc" id="toc"></div>
+    </aside>
+
+    <div class="content">
+      <article class="article" id="article"></article>
+      <div class="page-nav">
+        <a class="prev" href="./current-solution.html"><span class="label">← 上一章</span><span class="title">现有解决方案</span></a>
+        <a class="next" href="./maxdelay.html"><span class="label">下一章 →</span><span class="title">进阶方案 B · set_max_delay</span></a>
+      </div>
+    </div>
+  </div>
+
+  <div class="lightbox" id="lightbox">
+    <span class="close" id="lightbox-close">&times;</span>
+    <img id="lightbox-img" src="" alt="">
+    <div class="hint">滚轮缩放 · 拖拽移动 · Esc 或点击空白处关闭</div>
+  </div>
+
+<script type="text/template" id="md">
+# 3. 进阶方案 A：合并时钟约束（lane0=1.7G / lane1=1.6G）
+
+> 这是最开始冒出来的想法：既然 APR 只接受一个网表，那就把两套约束**合二为一**，
+> 用「每个 lane 取两种模式里最严的速率」一次覆盖。听起来很美，但坑也不少。
+
+## 3.1 想法：一份约束，覆盖两个模式
+
+1P 只用 lane0（1.7G），2P 用 lane0+lane1（各 1.6G）。那么合并约束取每个 lane 的**最严值**：
+
+| lane | 1P | 2P | 合并取值 | 理由 |
+|:---|:---|:---|:---|:---|
+| **lane0** | 1.7G → 10.08ns | 1.6G → 10.71ns | **10.08ns（1.7G）** | 取更严，1P/2P 都覆盖 |
+| **lane1** | 不工作 | 1.6G → 10.71ns | **10.71ns（1.6G）** | 只有 2P 用，按 2P 查 |
+
+对应 `clk_period.tcl` 写法：
+
+```tcl
+# 合并约束：lane0 按 1P 的 1.7G，lane1 按 2P 的 1.6G
+set RX0_CLKP [expr 10.08*$MARGIN]   # lane0 = 1.7G（覆盖 1P）
+set RX1_CLKP [expr 10.71*$MARGIN]   # lane1 = 1.6G（覆盖 2P）
+```
+
+好处直观：
+- **一份约束**，APR 认可，PT 只跑一遍；
+- **速率层面**确实做到了两模式覆盖——2P 下 lane0 实际 1.6G，按 1.7G 查更严，必然满足。
+
+## 3.2 致命的坑：解决不了「模式相关假路径」
+
+合并时钟只处理了「速率不同」，但**没处理「路径激活性不同」**。核心矛盾依然在：
+
+<div class="pcard danger">
+  <div class="prow"><span class="k">1P</span><span>lane1 的 DIV1P5/SAMP_CNT 路径：功能不激活，但合并后时钟仍在 → <b>照样被检查、照样报假违例</b></span></div>
+  <div class="prow"><span class="k">2P</span><span>同一条路径：真实工作 → <b>必须真查</b></span></div>
+  <div class="prow"><span class="k">结论</span><span>合并时钟后，这条路径还是得处理：要么 false（2P 漏检）要么真查（1P 假违例）——<b>原封不动的两难</b>。</span></div>
+</div>
+
+具体说，合并后 lane1 路径会按 lane0 的 OD 时钟（`RX0_OD_CLK` 域）被检查，而 1P 下这条路径
+的起点 `KEY_RST_18UI_reg` 在 `RX0_OD_CLK_DIV2` 域，跨域路径本来就紧——**合并不但没消掉问题，
+还可能因为把 lane0 拉到 1.7G（10.08ns）而让假违例更严重**。
+
+## 3.3 第二个坑：over-constrain（过度约束）
+
+合并后 2P 模式下 lane0 被按 1.7G（10.08ns）约束，但实际 2P 只要 1.6G（10.71ns）：
+
+| 项目 | 后果 |
+|:---|:---|
+| **面积/功耗** | 后端为满足更紧约束插更多 buffer、换更大 cell → 白亏 |
+| **假违例** | lane0 某些真实路径在 1.7G 下不过、1.6G 下能过 → 逼着你"修"实际不需要修的地方 |
+| **review 混乱** | 报告里的违例分不清「真实模式违例」还是「合并过度约束」 |
+
+> over-constrain 的本质：把「两种模式各自的真实需求」求了个「并集的上限」，
+> 而这个上限在任意单一模式下都不是真实需求。
+
+## 3.4 什么时候合并时钟反而合理
+
+合并时钟不是一无是处，它在**简化时钟定义**的场景里是对的：
+
+| 场景 | 是否适合合并 |
+|:---|:---|
+| 两种模式 lane 独立、速率不同、无模式相关假路径 | ✅ 适合，一份约束省心 |
+| 两模式速率差异小、over-constrain 可接受 | ✅ 适合（先量化代价） |
+| 存在模式相关假路径（lane1 复位、时钟在跑） | ❌ 不适合，方案 A 无效 |
+| APR 强约束收敛、对面积敏感 | ❌ 不适合 |
+
+## 3.5 结论
+
+<div class="pcard">
+  <div class="prow"><span class="k">判定</span><span><code>合并时钟</code> 只能解决「速率差异」，不能解决「路径激活性差异」。</span></div>
+  <div class="prow"><span class="k">在本案例</span><span>1P/2P 的痛点恰恰是后者 → <b>方案 A 单独用不成立</b>，必须配合其它手段（见方案 B / C）。</span></div>
+  <div class="prow"><span class="k">价值</span><span>它提醒我们：<b>合并前先分清「要合并的是什么」</b>——速率可以合并，激活性合并不了。</span></div>
+</div>
+</script>
+
+<script>
+const chapters = [
+  ['index', '首页'],
+  ['problem', '问题是什么'],
+  ['current-solution', '现有方案'],
+  ['merge-clock', '方案A·合并时钟'],
+  ['maxdelay', '方案B·set_max_delay'],
+  ['mmmc', '方案C·MMMC'],
+  ['syntax', 'SDC语法库']
+];
+const currentPath = location.pathname.split('/').pop() || 'index.html';
+const linksContainer = document.getElementById('navbar-links');
+chapters.forEach(([slug, label]) => {
+  const href = slug === 'index' ? './' : `./${slug}.html`;
+  const filename = slug === 'index' ? 'index.html' : `${slug}.html`;
+  const a = document.createElement('a');
+  a.href = href;
+  a.textContent = label;
+  if (currentPath === filename || currentPath.endsWith('/' + filename)) a.classList.add('active');
+  linksContainer.appendChild(a);
+});
+</script>
+<script>
+const md = document.getElementById('md').textContent;
+document.getElementById('article').innerHTML = marked.parse(md);
+
+const toc = document.getElementById('toc');
+const headings = document.querySelectorAll('.article h2, .article h3');
+const tocLinks = [];
+headings.forEach(h => {
+  const id = h.textContent.trim().replace(/\s+/g, '-').replace(/[^\w\u4e00-\u9fa5-]/g, '');
+  h.id = id;
+  const cls = h.tagName === 'H2' ? 'toc-h2' : 'toc-h3';
+  const a = document.createElement('a');
+  a.href = '#' + id;
+  a.textContent = h.textContent;
+  a.className = cls;
+  toc.appendChild(a);
+  tocLinks.push(a);
+});
+
+tocLinks.forEach((link, i) => {
+  if (!link.classList.contains('toc-h2')) return;
+  const children = [];
+  for (let j = i + 1; j < tocLinks.length && tocLinks[j].classList.contains('toc-h3'); j++) children.push(tocLinks[j]);
+  if (!children.length) return;
+  link.classList.add('toc-parent');
+  const arrow = document.createElement('span');
+  arrow.className = 'toc-arrow';
+  arrow.textContent = '▸';
+  link.prepend(arrow);
+  children.forEach(c => c.parentLink = link);
+  arrow.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const collapsed = link.classList.toggle('collapsed');
+    children.forEach(c => c.style.display = collapsed ? 'none' : '');
+  });
+});
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      tocLinks.forEach(l => l.classList.remove('active'));
+      let active = tocLinks.find(a => a.getAttribute('href') === '#' + entry.target.id);
+      if (active && active.style.display === 'none' && active.parentLink) active = active.parentLink;
+      if (active) active.classList.add('active');
+    }
+  });
+}, { rootMargin: '-10% 0px -75% 0px' });
+headings.forEach(h => observer.observe(h));
+</script>
+<script>
+const lightbox = document.getElementById('lightbox');
+const lbImg = document.getElementById('lightbox-img');
+const lbClose = document.getElementById('lightbox-close');
+let scale = 1;
+let isDragging = false;
+let startX = 0, startY = 0, translateX = 0, translateY = 0;
+function openLightbox(src) { lbImg.src = src; scale = 1; translateX = 0; translateY = 0; updateTransform(); lightbox.classList.add('active'); document.body.style.overflow = 'hidden'; }
+function closeLightbox() { lightbox.classList.remove('active'); document.body.style.overflow = ''; }
+function updateTransform() { lbImg.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`; }
+document.addEventListener('click', (e) => { const img = e.target.closest('img'); if (!img || img.id === 'lightbox-img' || !img.closest('.article')) return; openLightbox(img.src); });
+lbClose.addEventListener('click', closeLightbox);
+lightbox.addEventListener('click', (e) => { if (e.target === lightbox) closeLightbox(); });
+lightbox.addEventListener('wheel', (e) => { e.preventDefault(); const d = e.deltaY > 0 ? -0.12 : 0.12; scale = Math.min(Math.max(0.5, scale + d), 5); updateTransform(); });
+lbImg.addEventListener('mousedown', (e) => { isDragging = true; startX = e.clientX - translateX; startY = e.clientY - translateY; lbImg.classList.add('grabbing'); e.preventDefault(); });
+document.addEventListener('mousemove', (e) => { if (!isDragging) return; translateX = e.clientX - startX; translateY = e.clientY - translateY; updateTransform(); });
+document.addEventListener('mouseup', () => { isDragging = false; lbImg.classList.remove('grabbing'); });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && lightbox.classList.contains('active')) closeLightbox(); });
+</script>
+</body>
+</html>

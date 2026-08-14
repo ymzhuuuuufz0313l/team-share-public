@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>进阶方案 C · MMMC · Advanced Design Lab</title>
+  <link rel="stylesheet" href="./assets/style.css">
+  <script src="./js/marked.min.js"></script>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a class="navbar-brand" href="./">⚡ Advanced Design Lab</a>
+      <div class="navbar-links" id="navbar-links"></div>
+    </div>
+  </nav>
+
+  <div class="container with-toc">
+    <aside class="toc-wrapper">
+      <div class="toc" id="toc"></div>
+    </aside>
+
+    <div class="content">
+      <article class="article" id="article"></article>
+      <div class="page-nav">
+        <a class="prev" href="./maxdelay.html"><span class="label">← 上一章</span><span class="title">进阶方案 B · set_max_delay</span></a>
+        <a class="next" href="./syntax.html"><span class="label">下一章 →</span><span class="title">SDC / TCL 语法库</span></a>
+      </div>
+    </div>
+  </div>
+
+  <div class="lightbox" id="lightbox">
+    <span class="close" id="lightbox-close">&times;</span>
+    <img id="lightbox-img" src="" alt="">
+    <div class="hint">滚轮缩放 · 拖拽移动 · Esc 或点击空白处关闭</div>
+  </div>
+
+<script type="text/template" id="md">
+# 5. 进阶方案 C：MMMC（多模式多角）——标准正解
+
+> 前面所有纠结，本质是「想在一份约束里塞两种模式」。MMMC 的答案很简单：
+> <b>不塞，让工具原生支持多个 mode。</b>
+
+## 5.1 MMMC 是什么
+
+**MMMC = Multi-Mode Multi-Corner**（多模式多角），是 ICC2 / Innovus / PT 等工具的**原生能力**：
+
+- **Mode（模式）**：同一网表下不同的**功能配置**（1P mode / 2P mode），各自有独立的时钟、例外、约束；
+- **Corner（角）**：不同的 PVT / RC（10 个 corner 照跑）；
+- **MMMC 组合**：所有 mode × 所有 corner 统一调度，工具一次读入、一次收敛。
+
+对应到本案例：
+
+```
+网表（唯一，APR 认这一份）
+  └─ mode_1P  → DPSEL_I=0 · lane1 相关路径 false path · RX0=10.08ns
+  └─ mode_2P  → DPSEL_I=1 · lane1 相关路径正常检查 · RX0=RX1=10.71ns
+         ↓ 每个 mode × 10 corner
+```
+
+## 5.2 为什么 MMMC 是标准答案
+
+| 维度 | 现状（手拆） | MMMC |
+|:---|:---|:---|
+| 网表 | 1 份 | 1 份（不变） |
+| 约束组织 | 2 套手工 SDC，人肉同步 | 每个 mode 一份，工具统一 |
+| mode 相关 false path | 手工切换，易漏 | 放进对应 mode，天然隔离 |
+| APR | 只认网表（不认模式） | 原生支持多 mode 时序收敛 |
+| PT 签核 | 20 次手工跑 | 一次 MMMC 调度跑完 |
+| 可维护性 | 低 | 高 |
+
+**核心收益**：mode 相关的例外（如 lane1 假路径 false path）放进**各自 mode**，
+工具绝不会把它泄漏到其它模式——「1P false、2P 真查」这个语义，MMMC 用结构表达，而不是用人力。
+
+## 5.3 落地方式（以 Synopsys 工具为例）
+
+### 阶段 1：定义 mode
+
+在 PT / ICC2 里分别定义两个 mode，各自 source 一套约束：
+
+```tcl
+# ---- 1P mode ----
+set_case_analysis 0 [get_port DPSEL_I]
+# 1P 下 lane1 不工作，假路径在 1P mode 内声明，不会泄漏到 2P
+set_false_path -to [get_pins {u_LOGIC_CENTER/CLKGEN_U1/U_DCLK1_OD_DIV1P5/SAMP_CNT_reg_*/D}]
+# lane0 按 1P 的 1.7G
+create_clock -name RX0_CLK -period 10.08 [get_ports clk_lane_L0]
+
+# ---- 2P mode ----
+set_case_analysis 1 [get_port DPSEL_I]
+# 不设 lane1 false path（2P 下真实检查）
+create_clock -name RX0_CLK -period 10.71 [get_ports clk_lane_L0]
+create_clock -name RX1_CLK -period 10.71 [get_ports clk_lane_L1]
+```
+
+> 实际工程中建议把「模式相关」的例外单独抽到一个文件（如 `mode_1p.tcl` / `mode_2p.tcl`），
+> 由 MMMC 配置按 mode 加载，公共约束（IO delay、uncertainty、跨域 false path）放公共文件。
+
+### 阶段 2：APR 侧使用 MMMC（ICC2 概念）
+
+```
+create_scenario -name sc_1p_wc_cworst   -mode mode_1P -corner wc_cworst
+create_scenario -name sc_2p_tt_typical  -mode mode_2P -corner tt_typical
+...（1P/2P × 10 corner = 20 个 scenario，全量覆盖）
+set_analysis_view ...
+optimize_clock_tree / place_opt  ← 同时满足所有 scenario
+```
+
+### 阶段 3：PT 签核
+
+PT 支持多 scenario / 多 mode 联合分析，一份 session 同时签核 1P 与 2P 的所有 corner，
+报告按 scenario 分别输出——对应回现有的 `latest_1p` / `latest_2p` 归档结构，只是不再手动切换。
+
+## 5.4 常见误解澄清
+
+<div class="pcard">
+  <div class="prow"><span class="k">误解 1</span><span>「APR 只接受一个版本」→ 对，但接受的是 <b>一个网表 + 多套 mode 约束</b>，MMMC 正是这么设计的，不冲突。</span></div>
+  <div class="prow"><span class="k">误解 2</span><span>「MMMC 会很慢」→ 比 20 次手工跑更快：工具共享读库/网表加载，只对 mode×corner 差异部分重复计算。</span></div>
+  <div class="prow"><span class="k">误解 3</span><span>「模式少没必要」→ 模式再多，MMMC 的组织成本是 O(mode)，手拆是 O(mode²) 的维护负担。</span></div>
+</div>
+
+## 5.5 与方案 A/B 的关系
+
+| 方案 | 本质 | 适用 |
+|:---|:---|:---|
+| A · 合并时钟 | 用 over-constrain 换简化 | 速率差异小、无假路径 |
+| B · set_max_delay | 用软约束换单 SDC | APR 强制单 SDC 的过渡期 |
+| C · MMMC | 用工具原生结构表达模式 | **标准、长期、推荐** |
+
+> 方案 B 与 C 不是对立关系：如果项目短期内上不了 MMMC 流程，方案 B 是 C 的「最小可行替代」；
+> 一旦 MMMC 就绪，方案 B 的 max_delay 应该被 mode 化的约束取代。
+
+## 5.6 结论
+
+<div class="pcard">
+  <div class="prow"><span class="k">判定</span><span><b>MMMC 是模式相关时序问题的标准答案</b>——用工具原生结构表达「同一路径不同模式语义」，APR 与 PT 都支持。</span></div>
+  <div class="prow"><span class="k">落地成本</span><span>需要建 MMMC 流程（scenario / mode 配置），前期一次性投入，后期维护成本远低于手拆。</span></div>
+  <div class="prow"><span class="k">建议</span><span>新项目直接按 MMMC 搭；存量项目以方案 B 过渡，择机迁移。</span></div>
+</div>
+</script>
+
+<script>
+const chapters = [
+  ['index', '首页'],
+  ['problem', '问题是什么'],
+  ['current-solution', '现有方案'],
+  ['merge-clock', '方案A·合并时钟'],
+  ['maxdelay', '方案B·set_max_delay'],
+  ['mmmc', '方案C·MMMC'],
+  ['syntax', 'SDC语法库']
+];
+const currentPath = location.pathname.split('/').pop() || 'index.html';
+const linksContainer = document.getElementById('navbar-links');
+chapters.forEach(([slug, label]) => {
+  const href = slug === 'index' ? './' : `./${slug}.html`;
+  const filename = slug === 'index' ? 'index.html' : `${slug}.html`;
+  const a = document.createElement('a');
+  a.href = href;
+  a.textContent = label;
+  if (currentPath === filename || currentPath.endsWith('/' + filename)) a.classList.add('active');
+  linksContainer.appendChild(a);
+});
+</script>
+<script>
+const md = document.getElementById('md').textContent;
+document.getElementById('article').innerHTML = marked.parse(md);
+
+const toc = document.getElementById('toc');
+const headings = document.querySelectorAll('.article h2, .article h3');
+const tocLinks = [];
+headings.forEach(h => {
+  const id = h.textContent.trim().replace(/\s+/g, '-').replace(/[^\w\u4e00-\u9fa5-]/g, '');
+  h.id = id;
+  const cls = h.tagName === 'H2' ? 'toc-h2' : 'toc-h3';
+  const a = document.createElement('a');
+  a.href = '#' + id;
+  a.textContent = h.textContent;
+  a.className = cls;
+  toc.appendChild(a);
+  tocLinks.push(a);
+});
+
+tocLinks.forEach((link, i) => {
+  if (!link.classList.contains('toc-h2')) return;
+  const children = [];
+  for (let j = i + 1; j < tocLinks.length && tocLinks[j].classList.contains('toc-h3'); j++) children.push(tocLinks[j]);
+  if (!children.length) return;
+  link.classList.add('toc-parent');
+  const arrow = document.createElement('span');
+  arrow.className = 'toc-arrow';
+  arrow.textContent = '▸';
+  link.prepend(arrow);
+  children.forEach(c => c.parentLink = link);
+  arrow.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const collapsed = link.classList.toggle('collapsed');
+    children.forEach(c => c.style.display = collapsed ? 'none' : '');
+  });
+});
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      tocLinks.forEach(l => l.classList.remove('active'));
+      let active = tocLinks.find(a => a.getAttribute('href') === '#' + entry.target.id);
+      if (active && active.style.display === 'none' && active.parentLink) active = active.parentLink;
+      if (active) active.classList.add('active');
+    }
+  });
+}, { rootMargin: '-10% 0px -75% 0px' });
+headings.forEach(h => observer.observe(h));
+</script>
+<script>
+const lightbox = document.getElementById('lightbox');
+const lbImg = document.getElementById('lightbox-img');
+const lbClose = document.getElementById('lightbox-close');
+let scale = 1;
+let isDragging = false;
+let startX = 0, startY = 0, translateX = 0, translateY = 0;
+function openLightbox(src) { lbImg.src = src; scale = 1; translateX = 0; translateY = 0; updateTransform(); lightbox.classList.add('active'); document.body.style.overflow = 'hidden'; }
+function closeLightbox() { lightbox.classList.remove('active'); document.body.style.overflow = ''; }
+function updateTransform() { lbImg.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`; }
+document.addEventListener('click', (e) => { const img = e.target.closest('img'); if (!img || img.id === 'lightbox-img' || !img.closest('.article')) return; openLightbox(img.src); });
+lbClose.addEventListener('click', closeLightbox);
+lightbox.addEventListener('click', (e) => { if (e.target === lightbox) closeLightbox(); });
+lightbox.addEventListener('wheel', (e) => { e.preventDefault(); const d = e.deltaY > 0 ? -0.12 : 0.12; scale = Math.min(Math.max(0.5, scale + d), 5); updateTransform(); });
+lbImg.addEventListener('mousedown', (e) => { isDragging = true; startX = e.clientX - translateX; startY = e.clientY - translateY; lbImg.classList.add('grabbing'); e.preventDefault(); });
+document.addEventListener('mousemove', (e) => { if (!isDragging) return; translateX = e.clientX - startX; translateY = e.clientY - translateY; updateTransform(); });
+document.addEventListener('mouseup', () => { isDragging = false; lbImg.classList.remove('grabbing'); });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && lightbox.classList.contains('active')) closeLightbox(); });
+</script>
+</body>
+</html>

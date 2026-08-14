@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>SDC / TCL 语法库 · Advanced Design Lab</title>
+  <link rel="stylesheet" href="./assets/style.css">
+  <script src="./js/marked.min.js"></script>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a class="navbar-brand" href="./">⚡ Advanced Design Lab</a>
+      <div class="navbar-links" id="navbar-links"></div>
+    </div>
+  </nav>
+
+  <div class="container with-toc">
+    <aside class="toc-wrapper">
+      <div class="toc" id="toc"></div>
+    </aside>
+
+    <div class="content">
+      <article class="article" id="article"></article>
+      <div class="page-nav">
+        <a class="prev" href="./mmmc.html"><span class="label">← 上一章</span><span class="title">进阶方案 C · MMMC</span></a>
+        <a class="next" href="./index.html"><span class="label">返回 →</span><span class="title">回到首页</span></a>
+      </div>
+    </div>
+  </div>
+
+  <div class="lightbox" id="lightbox">
+    <span class="close" id="lightbox-close">&times;</span>
+    <img id="lightbox-img" src="" alt="">
+    <div class="hint">滚轮缩放 · 拖拽移动 · Esc 或点击空白处关闭</div>
+  </div>
+
+<script type="text/template" id="md">
+# 6. SDC / TCL 语法库
+
+> 把本案例涉及的全部时序约束命令整理成可查可复制的语法参考。
+> 覆盖 <code>set_max_delay</code>、<code>set_false_path</code>、<code>set_case_analysis</code>、
+> <code>create_clock</code>、<code>set_clock_groups</code>、<code>create_generated_clock</code>。
+
+## 6.1 set_max_delay —— 覆盖默认时钟约束
+
+```tcl
+set_max_delay <value> [-from <list>] [-through <list>] [-to <list>]
+```
+
+| 选项 | 说明 |
+|:---|:---|
+| `<value>` | 最大延迟值（ns / ps，按 `set_units`） |
+| `-from` | 起点：clock / port / pin / cell |
+| `-through` | 途经点：pin / net（可多个，构成路径集） |
+| `-to` | 终点：clock / port / pin / cell |
+
+**关键语义**：
+- 约束的是 **data path 最大延迟（setup 视角）**；
+- 优先级**高于** `create_clock` 的默认周期约束；
+- 默认对指定路径上的 **max analysis（setup）** 生效，**不影响 min（hold）**；
+- 加 `-rise/-fall` 可只约束沿向。
+
+### 本案例推荐写法（精确限定）
+
+```tcl
+set_max_delay 10.71 \
+  -through [get_pins {u_LOGIC_CENTER/LINK_LOGIC/LC_CSPIF_L0/KEY_RST_18UI_reg/Q}] \
+  -to     [get_pins {u_LOGIC_CENTER/CLKGEN_U1/U_DCLK1_OD_DIV1P5/SAMP_CNT_reg_*/D}]
+```
+
+### 反例（作用域过宽，会误伤）
+
+```tcl
+# ❌ 覆盖整个模块所有 D pin —— 可能放水真实路径
+set_max_delay 10.71 -to [get_pins {u_LOGIC_CENTER/CLKGEN_U1/*/D}]
+```
+
+### 查询已设置的值
+
+```tcl
+report_exceptions -type max_delay -nosplit
+```
+
+## 6.2 set_false_path —— 完全跳过时序检查
+
+```tcl
+set_false_path [-from <list>] [-through <list>] [-to <list>]
+```
+
+- 优先级**最高**，指定路径完全不检查；
+- **两个模式都失效**——这是它在模式相关场景下的致命伤；
+- 若与 `set_max_delay` 同路径混用，false path 生效、max_delay 被忽略。
+
+```tcl
+# 典型（本案例 clk_period.tcl 中被注释的写法）
+set_false_path -to [get_pins {u_LOGIC_CENTER/CLKGEN_U1/U_DCLK1_OD_DIV1P5/SAMP_CNT_reg_*/D}]
+```
+
+### 查询已设置的例外
+
+```tcl
+report_exceptions -type false_path -nosplit      # 只列 false path
+report_exceptions -nosplit                        # 全部例外
+report_exceptions -ignored -nosplit               # 被忽略/未生效的例外
+```
+
+## 6.3 set_case_analysis —— 固定常量，让工具传播
+
+```tcl
+set_case_analysis <0|1|rising|falling> <port|pin>
+```
+
+**关键语义**：
+- 把某个端口/pin 固定为常量，工具沿逻辑**自动传播**；
+- 传播后，被常量锁定的逻辑路径会从时序分析中移除（如 MUX 被固定后不工作的分支）；
+- 一次只能固定一个值 → 1P/2P 需要两次运行（或两个 mode）。
+
+```tcl
+# HV2M23 实际写法
+set_case_analysis 0 [get_port DPSEL_I]   # 1P 模式
+set_case_analysis 1 [get_port DPSEL_I]   # 2P 模式
+```
+
+> 如果 RTL 里 lane1 时钟能被 DP_SEL 真正 gate，`set_case_analysis` 之后工具会**自动**
+> 推导 lane1 相关路径不激活，无需手动 false path —— 这是比 max_delay 更干净的路子，
+> 前提是要改 RTL + 重跑 DC。
+
+### 查询已设置的 case analysis
+
+```tcl
+report_case_analysis
+report_timing -case_analysis  # 时序报告带 case analysis 信息
+```
+
+## 6.4 create_clock —— 定义主时钟
+
+```tcl
+create_clock -name <name> -period <period> [-waveform {<rise> <fall>}] <source>
+```
+
+| 选项 | 说明 |
+|:---|:---|
+| `-name` | 时钟名（后续 get_clocks 使用） |
+| `-period` | 周期（ns） |
+| `-waveform` | 上升/下降沿时刻，默认 `{0 period/2}` |
+| `<source>` | 端口或 pin |
+
+```tcl
+# HV2M23 实际写法（2P）
+create_clock -name RX0_CLK -period 10.71 -waveform { 0 5.355 } [get_ports {clk_lane_L0}]
+create_clock -name RX1_CLK -period 10.71 -waveform { 0 5.355 } [get_ports {clk_lane_L1}]
+```
+
+## 6.5 create_generated_clock —— 定义派生时钟
+
+```tcl
+create_generated_clock -name <name> -source <pin|port> \
+  [-edges {<edge1> <edge2> <edge3>}] [-divide_by <n>] [-multiply_by <n>] \
+  [-add] [-master_clock <clock>] <divider_pin>
+```
+
+| 选项 | 说明 |
+|:---|:---|
+| `-source` | 源时钟 pin/port |
+| `-edges` | 相对源时钟的第几个沿（分频/倍频的通用表达） |
+| `-divide_by / -multiply_by` | 整数分频/倍频快捷写法 |
+| `-add` | 在已有主时钟上叠加（多时钟挂同一节点必备） |
+| `-master_clock` | 明确关联的主时钟 |
+
+```tcl
+# HV2M23 实际写法：1.5 分频（edges {1 3 4}）
+create_generated_clock -name CLK_L1_DTCTL_OD_DIV1P5 \
+    -source [get_ports {clk_lane_od_L0}] -edges { 1 3 4} \
+    -add -master_clock [get_clocks {RX0_OD_CLK}] \
+    [get_pins {u_LOGIC_CENTER/CLKGEN_U1/U_DCLK1_OD_DIV1P5/BUF_DCLK_DIV_ORG/O}]
+```
+
+> 注意：本案例的关键证据之一 —— lane1 的 DIV1P5 时钟 source 是 <code>clk_lane_od_L0</code>（lane0），
+> 这就是「1P 下 lane1 时钟还在跑」的来源。
+
+## 6.6 set_clock_groups —— 声明时钟关系
+
+```tcl
+set_clock_groups -name <name> \
+  [-asynchronous|-logically_exclusive|-physically_exclusive] \
+  -group [get_clocks {...}] -group [get_clocks {...}] ...
+```
+
+| 选项 | 语义 |
+|:---|:---|
+| `-asynchronous` | 时钟间无相位关系 → 跨域路径默认不查 |
+| `-logically_exclusive` | 逻辑互斥（MUX 选择）→ 不查未选路径 |
+| `-physically_exclusive` | 物理互斥（同 pin 不同源）→ 不查 |
+
+```tcl
+# HV2M23 实际写法（片段）
+set_clock_groups -asynchronous -name RX0_CLK_1 \
+  -group [get_clocks {RX0_CLK RX0_OD_CLK ...}] \
+  -group [get_clocks {RX1_CLK RX1_OD_CLK ...}] \
+  -group [get_clocks {OSC_CLK_IN}] ...
+```
+
+> 跨时钟域 false path 用 `set_clock_groups -asynchronous` 一次性表达，比逐条 `set_false_path -from/-to`
+> 更清晰、更不易漏。
+
+## 6.7 优先级总表（PT 例外规则）
+
+从高到低：
+
+1. `set_false_path`
+2. `set_multicycle_path` / `set_max_delay` / `set_min_delay` / `set_disable_timing`
+3. `create_clock` 的默认周期约束（最低）
+
+> 设计例外（exception）时记住这条优先级，是避免「写了但不生效」的关键。
+
+## 6.8 通用调试命令速查
+
+```tcl
+report_clocks -attributes                  # 所有时钟定义
+report_clock_timing -type skew             # 时钟 skew
+report_analysis_coverage                   # 覆盖率（哪些路径查了/没查）
+report_exceptions -ignored                 # 被忽略的例外（检查是否误声明）
+check_timing                               # 约束完整性检查（推荐每轮必跑）
+report_timing -from <pin> -to <pin>        # 单路径详细时序
+```
+
+## 6.9 本案例对应的「检查清单」
+
+<div class="pcard">
+  <div class="prow"><span class="k">①</span><span><code>report_exceptions -ignored</code>：确认无「写了却没生效」的例外</span></div>
+  <div class="prow"><span class="k">②</span><span><code>check_timing</code>：确认无 missing/多个时钟、无 case analysis 冲突</span></div>
+  <div class="prow"><span class="k">③</span><span><code>report_analysis_coverage</code>：确认 lane1 路径在 2P 下「已覆盖」、未被 false 吞掉</span></div>
+  <div class="prow"><span class="k">④</span><span>全局 grep：<code>set_false_path</code> 与 <code>set_max_delay</code> 是否撞在同一条路径上</span></div>
+  <div class="prow"><span class="k">⑤</span><span>1P/2P 各跑一遍，对比关键路径 slack 与未设约束时一致（证明没放水）</span></div>
+</div>
+</script>
+
+<script>
+const chapters = [
+  ['index', '首页'],
+  ['problem', '问题是什么'],
+  ['current-solution', '现有方案'],
+  ['merge-clock', '方案A·合并时钟'],
+  ['maxdelay', '方案B·set_max_delay'],
+  ['mmmc', '方案C·MMMC'],
+  ['syntax', 'SDC语法库']
+];
+const currentPath = location.pathname.split('/').pop() || 'index.html';
+const linksContainer = document.getElementById('navbar-links');
+chapters.forEach(([slug, label]) => {
+  const href = slug === 'index' ? './' : `./${slug}.html`;
+  const filename = slug === 'index' ? 'index.html' : `${slug}.html`;
+  const a = document.createElement('a');
+  a.href = href;
+  a.textContent = label;
+  if (currentPath === filename || currentPath.endsWith('/' + filename)) a.classList.add('active');
+  linksContainer.appendChild(a);
+});
+</script>
+<script>
+const md = document.getElementById('md').textContent;
+document.getElementById('article').innerHTML = marked.parse(md);
+
+const toc = document.getElementById('toc');
+const headings = document.querySelectorAll('.article h2, .article h3');
+const tocLinks = [];
+headings.forEach(h => {
+  const id = h.textContent.trim().replace(/\s+/g, '-').replace(/[^\w\u4e00-\u9fa5-]/g, '');
+  h.id = id;
+  const cls = h.tagName === 'H2' ? 'toc-h2' : 'toc-h3';
+  const a = document.createElement('a');
+  a.href = '#' + id;
+  a.textContent = h.textContent;
+  a.className = cls;
+  toc.appendChild(a);
+  tocLinks.push(a);
+});
+
+tocLinks.forEach((link, i) => {
+  if (!link.classList.contains('toc-h2')) return;
+  const children = [];
+  for (let j = i + 1; j < tocLinks.length && tocLinks[j].classList.contains('toc-h3'); j++) children.push(tocLinks[j]);
+  if (!children.length) return;
+  link.classList.add('toc-parent');
+  const arrow = document.createElement('span');
+  arrow.className = 'toc-arrow';
+  arrow.textContent = '▸';
+  link.prepend(arrow);
+  children.forEach(c => c.parentLink = link);
+  arrow.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const collapsed = link.classList.toggle('collapsed');
+    children.forEach(c => c.style.display = collapsed ? 'none' : '');
+  });
+});
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      tocLinks.forEach(l => l.classList.remove('active'));
+      let active = tocLinks.find(a => a.getAttribute('href') === '#' + entry.target.id);
+      if (active && active.style.display === 'none' && active.parentLink) active = active.parentLink;
+      if (active) active.classList.add('active');
+    }
+  });
+}, { rootMargin: '-10% 0px -75% 0px' });
+headings.forEach(h => observer.observe(h));
+</script>
+<script>
+const lightbox = document.getElementById('lightbox');
+const lbImg = document.getElementById('lightbox-img');
+const lbClose = document.getElementById('lightbox-close');
+let scale = 1;
+let isDragging = false;
+let startX = 0, startY = 0, translateX = 0, translateY = 0;
+function openLightbox(src) { lbImg.src = src; scale = 1; translateX = 0; translateY = 0; updateTransform(); lightbox.classList.add('active'); document.body.style.overflow = 'hidden'; }
+function closeLightbox() { lightbox.classList.remove('active'); document.body.style.overflow = ''; }
+function updateTransform() { lbImg.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`; }
+document.addEventListener('click', (e) => { const img = e.target.closest('img'); if (!img || img.id === 'lightbox-img' || !img.closest('.article')) return; openLightbox(img.src); });
+lbClose.addEventListener('click', closeLightbox);
+lightbox.addEventListener('click', (e) => { if (e.target === lightbox) closeLightbox(); });
+lightbox.addEventListener('wheel', (e) => { e.preventDefault(); const d = e.deltaY > 0 ? -0.12 : 0.12; scale = Math.min(Math.max(0.5, scale + d), 5); updateTransform(); });
+lbImg.addEventListener('mousedown', (e) => { isDragging = true; startX = e.clientX - translateX; startY = e.clientY - translateY; lbImg.classList.add('grabbing'); e.preventDefault(); });
+document.addEventListener('mousemove', (e) => { if (!isDragging) return; translateX = e.clientX - startX; translateY = e.clientY - translateY; updateTransform(); });
+document.addEventListener('mouseup', () => { isDragging = false; lbImg.classList.remove('grabbing'); });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && lightbox.classList.contains('active')) closeLightbox(); });
+</script>
+</body>
+</html>

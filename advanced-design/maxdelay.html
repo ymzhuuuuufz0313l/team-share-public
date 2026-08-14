@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>进阶方案 B · set_max_delay · Advanced Design Lab</title>
+  <link rel="stylesheet" href="./assets/style.css">
+  <script src="./js/marked.min.js"></script>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a class="navbar-brand" href="./">⚡ Advanced Design Lab</a>
+      <div class="navbar-links" id="navbar-links"></div>
+    </div>
+  </nav>
+
+  <div class="container with-toc">
+    <aside class="toc-wrapper">
+      <div class="toc" id="toc"></div>
+    </aside>
+
+    <div class="content">
+      <article class="article" id="article"></article>
+      <div class="page-nav">
+        <a class="prev" href="./merge-clock.html"><span class="label">← 上一章</span><span class="title">进阶方案 A · 合并时钟</span></a>
+        <a class="next" href="./mmmc.html"><span class="label">下一章 →</span><span class="title">进阶方案 C · MMMC</span></a>
+      </div>
+    </div>
+  </div>
+
+  <div class="lightbox" id="lightbox">
+    <span class="close" id="lightbox-close">&times;</span>
+    <img id="lightbox-img" src="" alt="">
+    <div class="hint">滚轮缩放 · 拖拽移动 · Esc 或点击空白处关闭</div>
+  </div>
+
+<script type="text/template" id="md">
+# 4. 进阶方案 B：不设 false path，用 set_max_delay 覆盖
+
+> 这是进阶方案：合并成一套约束后，**不设 false path**，对模式相关假路径改用
+> <code>set_max_delay</code> 来"软约束"。思路有道理，但正确性取决于几个关键前提。
+
+## 4.1 方案原理：让"假路径"也能查，但用 2P 的真实周期去查
+
+核心逻辑：`set_max_delay` 的**优先级高于时钟周期约束**，会对指定路径用你给的值替代默认时钟约束。
+
+对「1P 下假、2P 下真」的路径，设 <code>set_max_delay = 2P 模式的真实周期</code>：
+
+| 模式 | 默认时钟约束 | set_max_delay 后 | 结果 |
+|:---|:---|:---|:---|
+| **1P** | lane1 时钟（假路径被按紧周期查） | 按 2P 周期查（放宽） | <span class="badge badge-ok">不假违例</span> |
+| **2P** | lane1 时钟（10.71ns） | 按同一值查（等效） | <span class="badge badge-ok">正常检查</span> |
+
+这样一条命令同时满足两个模式，且**没有漏检**——这正是 false path 做不到的（false 会连 2P 一起跳过）。
+
+```tcl
+# 方案 B 核心：对 lane1 的 DIV1P5 采样计数器设 max_delay = 2P 周期（10.71ns）
+set_max_delay 10.71 -to [get_pins {u_LOGIC_CENTER/CLKGEN_U1/U_DCLK1_OD_DIV1P5/SAMP_CNT_reg_*/D}]
+```
+
+> 为什么是 <code>-to .../D</code>（数据端 pin）？因为 `set_max_delay` 约束的是**数据到达时间**，
+> 用寄存器数据端 D pin 作为约束终点，语义最准确。也可以配合 `-from/-through` 进一步收窄。
+
+## 4.2 关键前提 ①：max_delay 的值必须取"2P 真实需求"，不能随意设大
+
+这是整个方案正确性的命门：
+
+<div class="pcard danger">
+  <div class="prow"><span class="k">设太小</span><span>1P 下假路径仍按很紧的约束查 → 依然假违例，方案失效</span></div>
+  <div class="prow"><span class="k">设太大</span><span>2P 下真实路径被放得太松 → <b>漏检真实违例</b>，比不约束更危险（假收敛）</span></div>
+  <div class="prow"><span class="k">正确值</span><span>取「该路径在 2P 模式下的真实时钟周期」——不多不少，两个模式都自洽</span></div>
+</div>
+
+以 HV2M23 为例，2P 下这条路径终点在 `RX0_OD_CLK` 域，其周期受 OD 时钟约束。合理取值应参考
+2P 报告中该路径的 required time / slack，反推出真实周期再设，而不是拍脑袋。
+
+> 判据：设完 max_delay 后，**2P 报告里这条路径的 slack 应与未设约束时几乎一致**
+> （证明没有过度放松）；1P 报告里它不再假违例（证明方案生效）。两条同时满足才算对。
+
+## 4.3 关键前提 ②：必须精确匹配对象，否则误伤真实路径
+
+`set_max_delay` 会**覆盖**作用域内所有路径的时钟约束。匹配太宽会误伤：
+
+```tcl
+# ❌ 危险：to 到整个 CLKGEN_U1 模块的 D pin，可能把真实工作的路径也放水了
+set_max_delay 10.71 -to [get_pins {u_LOGIC_CENTER/CLKGEN_U1/*/D}]
+
+# ✅ 推荐：精确到具体寄存器族，并用 -through 限定来源
+set_max_delay 10.71 \
+  -through [get_pins {u_LOGIC_CENTER/LINK_LOGIC/LC_CSPIF_L0/KEY_RST_18UI_reg/Q}] \
+  -to     [get_pins {u_LOGIC_CENTER/CLKGEN_U1/U_DCLK1_OD_DIV1P5/SAMP_CNT_reg_*/D}]
+```
+
+| 写法 | 作用域 | 风险 |
+|:---|:---|:---|
+| `-to [模块/*/D]` | 整个模块 | <span class="badge badge-bad">高（误伤真实路径）</span> |
+| `-to [具体寄存器]` | 单个寄存器族 | <span class="badge badge-warn">中</span> |
+| `-through [起点] -to [终点]` | 精确路径集 | <span class="badge badge-ok">低（推荐）</span> |
+
+## 4.4 关键前提 ③：set_max_delay 只管 setup，hold 不受影响
+
+- `set_max_delay` 只约束 **data path max（setup）**；
+- **hold 检查**基于最短路径（min delay），与周期无关，也不受 max_delay 影响；
+- 模式相关路径的 hold 一般不需要特殊处理——1P 下 lane1 不翻转，2P 下按正常 hold 约束即可。
+
+> 因此方案 B 只改 setup 语义，不会意外放松 hold——这是它比 false path 更"局部"的一个优点。
+
+## 4.5 与 false path 的关系：优先级冲突，不能混用
+
+同一个对象上，`set_false_path` 和 `set_max_delay` 都是 timing exception，**会冲突**：
+
+| 优先级（PT 规则） | 约束 |
+|:---|:---|
+| 最高 | `set_false_path` |
+| 次高 | `set_max_delay` / `set_min_delay` |
+| 默认 | 时钟周期约束 |
+
+如果一条路径上**同时**有 false path 和 max_delay，PT 按更高优先级（false path）生效，
+max_delay 被忽略。所以：
+
+```tcl
+# ❌ 混用：false path 会吞掉 max_delay，2P 下照样漏检
+set_false_path -to [get_pins {…/SAMP_CNT_reg_*/D}]
+set_max_delay 10.71 -to [get_pins {…/SAMP_CNT_reg_*/D}]
+
+# ✅ 正确：全路径统一用 max_delay，不残留 false path
+set_max_delay 10.71 -to [get_pins {…/SAMP_CNT_reg_*/D}]
+```
+
+> 用方案 B 前，务必全局检查：是否有旧的 false path 覆盖同一条路径（例如 `clk_period.tcl`
+> 里被注释掉的那行 SAMP_CNT false path）。残留的 false path 会让方案 B 静默失效。
+
+## 4.6 方案 B 的验证清单
+
+<div class="pcard">
+  <div class="prow"><span class="k">①</span><span>确认这些路径在 <b>2P 下 slack MET</b>（有真实余量），才值得用 max_delay 兜底</span></div>
+  <div class="prow"><span class="k">②</span><span>max_delay 值 = 2P 真实周期，设完对比 2P 报告 slack 无异常变化</span></div>
+  <div class="prow"><span class="k">③</span><span>用 <code>-through</code> + <code>-to</code> 精确限定，避免误伤真实路径</span></div>
+  <div class="prow"><span class="k">④</span><span>全局搜索确认无同路径残留 false path（优先级冲突）</span></div>
+  <div class="prow"><span class="k">⑤</span><span>hold 检查照常跑，确认方案 B 未改变 hold 语义</span></div>
+</div>
+
+## 4.7 结论：可行，但它是"近似解"
+
+<div class="pcard">
+  <div class="prow"><span class="k">判定</span><span>方案 B <b>原理可行</b>，是「模式相关假路径」的有效工程技巧，业界有先例。</span></div>
+  <div class="prow"><span class="k">定位</span><span>它是<b>单 SDC 限制下的最优近似</b>——牺牲一点"模式语义表达"，换取一份约束跑到底。</span></div>
+  <div class="prow"><span class="k">对比</span><span>如果工具/流程支持 MMMC（下一章），用 mode 表达比手动 max_delay 更标准、更可维护。</span></div>
+  <div class="prow"><span class="k">适用</span><span>APR 强制单 SDC、或 MMMC 流程尚未建立时，方案 B 是推荐的落地方案。</span></div>
+</div>
+</script>
+
+<script>
+const chapters = [
+  ['index', '首页'],
+  ['problem', '问题是什么'],
+  ['current-solution', '现有方案'],
+  ['merge-clock', '方案A·合并时钟'],
+  ['maxdelay', '方案B·set_max_delay'],
+  ['mmmc', '方案C·MMMC'],
+  ['syntax', 'SDC语法库']
+];
+const currentPath = location.pathname.split('/').pop() || 'index.html';
+const linksContainer = document.getElementById('navbar-links');
+chapters.forEach(([slug, label]) => {
+  const href = slug === 'index' ? './' : `./${slug}.html`;
+  const filename = slug === 'index' ? 'index.html' : `${slug}.html`;
+  const a = document.createElement('a');
+  a.href = href;
+  a.textContent = label;
+  if (currentPath === filename || currentPath.endsWith('/' + filename)) a.classList.add('active');
+  linksContainer.appendChild(a);
+});
+</script>
+<script>
+const md = document.getElementById('md').textContent;
+document.getElementById('article').innerHTML = marked.parse(md);
+
+const toc = document.getElementById('toc');
+const headings = document.querySelectorAll('.article h2, .article h3');
+const tocLinks = [];
+headings.forEach(h => {
+  const id = h.textContent.trim().replace(/\s+/g, '-').replace(/[^\w\u4e00-\u9fa5-]/g, '');
+  h.id = id;
+  const cls = h.tagName === 'H2' ? 'toc-h2' : 'toc-h3';
+  const a = document.createElement('a');
+  a.href = '#' + id;
+  a.textContent = h.textContent;
+  a.className = cls;
+  toc.appendChild(a);
+  tocLinks.push(a);
+});
+
+tocLinks.forEach((link, i) => {
+  if (!link.classList.contains('toc-h2')) return;
+  const children = [];
+  for (let j = i + 1; j < tocLinks.length && tocLinks[j].classList.contains('toc-h3'); j++) children.push(tocLinks[j]);
+  if (!children.length) return;
+  link.classList.add('toc-parent');
+  const arrow = document.createElement('span');
+  arrow.className = 'toc-arrow';
+  arrow.textContent = '▸';
+  link.prepend(arrow);
+  children.forEach(c => c.parentLink = link);
+  arrow.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const collapsed = link.classList.toggle('collapsed');
+    children.forEach(c => c.style.display = collapsed ? 'none' : '');
+  });
+});
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      tocLinks.forEach(l => l.classList.remove('active'));
+      let active = tocLinks.find(a => a.getAttribute('href') === '#' + entry.target.id);
+      if (active && active.style.display === 'none' && active.parentLink) active = active.parentLink;
+      if (active) active.classList.add('active');
+    }
+  });
+}, { rootMargin: '-10% 0px -75% 0px' });
+headings.forEach(h => observer.observe(h));
+</script>
+<script>
+const lightbox = document.getElementById('lightbox');
+const lbImg = document.getElementById('lightbox-img');
+const lbClose = document.getElementById('lightbox-close');
+let scale = 1;
+let isDragging = false;
+let startX = 0, startY = 0, translateX = 0, translateY = 0;
+function openLightbox(src) { lbImg.src = src; scale = 1; translateX = 0; translateY = 0; updateTransform(); lightbox.classList.add('active'); document.body.style.overflow = 'hidden'; }
+function closeLightbox() { lightbox.classList.remove('active'); document.body.style.overflow = ''; }
+function updateTransform() { lbImg.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`; }
+document.addEventListener('click', (e) => { const img = e.target.closest('img'); if (!img || img.id === 'lightbox-img' || !img.closest('.article')) return; openLightbox(img.src); });
+lbClose.addEventListener('click', closeLightbox);
+lightbox.addEventListener('click', (e) => { if (e.target === lightbox) closeLightbox(); });
+lightbox.addEventListener('wheel', (e) => { e.preventDefault(); const d = e.deltaY > 0 ? -0.12 : 0.12; scale = Math.min(Math.max(0.5, scale + d), 5); updateTransform(); });
+lbImg.addEventListener('mousedown', (e) => { isDragging = true; startX = e.clientX - translateX; startY = e.clientY - translateY; lbImg.classList.add('grabbing'); e.preventDefault(); });
+document.addEventListener('mousemove', (e) => { if (!isDragging) return; translateX = e.clientX - startX; translateY = e.clientY - translateY; updateTransform(); });
+document.addEventListener('mouseup', () => { isDragging = false; lbImg.classList.remove('grabbing'); });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && lightbox.classList.contains('active')) closeLightbox(); });
+</script>
+</body>
+</html>
