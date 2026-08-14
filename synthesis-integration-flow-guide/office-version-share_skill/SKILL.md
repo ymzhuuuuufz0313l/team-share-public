@@ -15,8 +15,8 @@ description: Agent 创建/修改 Office 文件（PPT / Word / Excel）时的版�
 
 - Agent 创建的 Office 文件**必须带版本号**：`<名称>_v<N>.<ext>`，N 从 1 开始、每次修改递增。
   例：`BE_Review_HV2M23_20260813_v21.pptx`
-- 同时维护一个 **share 副本**：`<名称>_share.<ext>`，内容 = 最新编号版本的完整拷贝。
-  例：`BE_Review_HV2M23_20260813_share.pptx`
+- 同时维护一个 **share 副本**：`share_<名称>.<ext>`（share 前缀放最前，目录里排最前、一眼可见），内容 = 最新编号版本的完整拷贝。
+  例：`share_BE_Review_HV2M23_20260813.pptx`
 - 用户只分享 / 打开 share 副本；编号版本不对外。
 
 ## Agent 工作流
