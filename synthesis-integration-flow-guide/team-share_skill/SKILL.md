@@ -52,6 +52,7 @@ Each article gets its own directory so multiple shared articles can coexist.
      - **复杂技术图**（架构图、数据流图、时序图、寄存器/地址映射、多层级结构等）：根据图类型选择工具：
        - **流程图/调用关系图/层次结构图**：优先用 **Graphviz** 自动布局（见下方「Graphviz 使用方式」），避免手写 SVG 坐标错位。
        - **架构图/数据流图/时序图/UML 图**：优先调用 `fireworks-tech-graph` skill 生成 SVG（见下方「fireworks-tech-graph 使用方式」），引用为 `./<name>.svg`。SVG 优先于 PNG。
+     - **数据结果图**（报告/日志/CSV 数据展示，没有截图或截图质量差时）：用 **Python + PIL 按真实数据绘制 PNG**（见下方「PIL 数据造图使用方式」），不贴模糊截图、不手打数据。
      - 无论哪种方式，图和组件都服务于读者体验：层次清晰、配色克制、重点突出，宁缺毋滥，不为配图而配图。
    **Graphviz 使用方式**
 
@@ -81,6 +82,25 @@ Each article gets its own directory so multiple shared articles can coexist.
    8. 视觉检查（读取 PNG 确认无重叠）
 
    优点：精细控制每个元素的位置和样式，支持 8 种视觉风格。
+
+   **PIL 数据造图使用方式**
+
+   当需要展示报告结果（CSV 汇总表、rpt/log/tcl 片段、配置/统计表）且没有现成截图、或截图模糊/带敏感信息时，优先「读真实数据 → PIL 绘制 → PNG」，而不是截屏或手打数据。
+
+   参考实现：`synthesis-integration-flow-guide/script/_gen_be_review_images.py`（BE Review PPT 全套结果图，含代码片段图与表格图两类渲染器）。
+
+   1. **数据源必须真实**：直接读报告文件（csv / tsv / rpt / log / tcl），图中内容只做真实数据的选取与排版，不手打数字。数据更新后重跑脚本即可再生成。
+   2. **2x 超采样**：所有尺寸、字号 ×2 绘制，PPT 或网页里缩放后仍清晰。
+   3. **字体与乱码防护**（踩过的坑，必须遵守）：
+      - 代码/数字用 Consolas（`C:/Windows/Fonts/consola.ttf`、`consolab.ttf`），中文用微软雅黑（`msyh.ttc`、`msyhbd.ttc`）。
+      - **逐字符回退**：`ord(ch) >= 0x2E80` 或 `→≥±·` 等符号用中文字体，其余用等宽字体（等宽字体的固定步进保证代码列对齐）。标题栏、表头等**所有**文本都要走回退——任何一处直接用 Consolas 画中文都会出豆腐块（□）。
+      - **TAB 必须先 `expandtabs(4)`**，否则画成豆腐块且列错位。
+   4. **两类图的版式**：
+      - **代码/报告片段图**：teal 标题栏（左侧文件名 + 右侧一句中文说明；说明与标题会重叠时省略说明）→ 浅灰行号栏（用真实文件行号，右对齐）→ 等宽正文；关键行浅 teal 底高亮；全图 1px 浅灰边框。
+      - **表格图**：teal 表头白字、斑马纹、细网格；首列左对齐、数据列右对齐；数字统一格式化（≤6 位小数去尾零，如 `0.693497000000001` → `0.693497`）；按语义着色——负值/违例红底红字加粗、0 或「通过」绿色、无数据灰色。
+   5. **配色约定**：主色 teal `#0E7C6B`，关键行高亮底 `#D9F2EC`，红字/红底 `#C00000` / `#FDE2E2`，绿 `#1E8449`，斑马纹 `#F4F8F7`，网格 `#D0D8D6`，边框 `#C0C6C6`。
+   6. **修改规则（强制）**：PNG 是产物，**不要手改 PNG**；改图一律改脚本再重跑。脚本随文章/项目一起保存，数据文件用绝对路径或相对脚本位置定位。
+   7. **生成后自查**：用图片读取工具抽查每张产出图——标题不裁剪、无豆腐块、数字无浮点噪声、着色符合语义、长表不错位。
 
    - Add cache-control meta tags to reduce browser caching:
      ```html
@@ -166,7 +186,7 @@ Each article gets its own directory so multiple shared articles can coexist.
 - If the user only provides a topic without content, ask for the content before creating the file.
 - When an article grows too long for a single page, proactively propose the multi-page landing + chapters structure.
 - **标题编号（强制）**：正文标题必须带编号——h2 用 `## 1. xxx`、`## 2. xxx` 顺序编号，h3 用 `### 1.1 xxx`、`### 1.2 xxx`、`### 2.1 xxx` 跟随所属 h2 编号。TOC 直接取自标题文本，因此 TOC 里也必须能看到 `1.` / `1.1` 这样的编号。
-- 配图规则（两个 workflow 通用）：复杂技术图优先调用 `fireworks-tech-graph` skill 生成 SVG；简单图示直接用本文末尾的 Rich Visualization HTML 组件；能不画图就不画。一切以读者的阅读体验为先——层次清晰、配色克制、重点突出。
+- 配图规则（两个 workflow 通用）：复杂技术图优先调用 `fireworks-tech-graph` skill 生成 SVG；简单图示直接用本文末尾的 Rich Visualization HTML 组件；数据结果图（报告/CSV/日志展示）用 PIL 按真实数据绘制 PNG（见「PIL 数据造图使用方式」）；能不画图就不画。一切以读者的阅读体验为先——层次清晰、配色克制、重点突出。
 - **图片交互规则（强制）**：任何包含图片的独立 HTML 页面（single-page、landing、chapter 都算）都必须实现文末「图片 Lightbox」的完整交互——点击放大、滚轮缩放、拖拽移动、Esc/点击关闭。缺了 lightbox 视为页面未完成；更新已有页面时如果发现没有，要顺手补上。
 
 ## Rich Visualization Components（推荐样式，用户确认 0717）
