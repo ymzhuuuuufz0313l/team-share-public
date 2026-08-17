@@ -524,16 +524,13 @@
 <text x="158" y="1868.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x33 (51)</text>
 <rect x="842" y="1850.0" width="64" height="26" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" rx="13"/>
 <circle cx="854" cy="1863.0" r="3.5" fill="#f59e0b"/>
-<text x="877.0" y="1867.0" text-anchor="middle" font-size="12" font-weight="700" fill="#1e293b" font-family="Consolas, Monaco, monospace">0x04</text>
+<text x="877.0" y="1867.0" text-anchor="middle" font-size="12" font-weight="700" fill="#1e293b" font-family="Consolas, Monaco, monospace">0x08</text>
 <rect x="170" y="1840" width="81" height="46" fill="#ccfbf1" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="210.5" y="1861.0" text-anchor="middle" font-size="8" font-weight="500" fill="#1e293b">reg_pin_eq</text>
 <text x="210.5" y="1875.0" text-anchor="middle" font-size="7" fill="#64748b">1'b0</text>
-<rect x="252" y="1840" width="81" height="46" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="292.5" y="1861.0" text-anchor="middle" font-size="8" font-weight="500" fill="#1e293b">Reserved</text>
-<text x="292.5" y="1875.0" text-anchor="middle" font-size="7" fill="#64748b">0</text>
-<rect x="334" y="1840" width="409" height="46" fill="#ccfbf1" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="538.5" y="1861.0" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">sw_reg_lane_ctrl…</text>
-<text x="538.5" y="1875.0" text-anchor="middle" font-size="9" fill="#64748b">5'b00010</text>
+<rect x="252" y="1840" width="409" height="46" fill="#ccfbf1" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="456.5" y="1861.0" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">sw_reg_lane_ctrl…</text>
+<text x="456.5" y="1875.0" text-anchor="middle" font-size="9" fill="#64748b">5'b00010</text>
 <rect x="662" y="1840" width="81" height="46" fill="#ccfbf1" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="702.5" y="1861.0" text-anchor="middle" font-size="8" font-weight="500" fill="#1e293b">reg_lane_ck_inv_…</text>
 <text x="702.5" y="1875.0" text-anchor="middle" font-size="7" fill="#64748b">1'b0</text>
@@ -658,7 +655,7 @@
 <circle cx="854" cy="2331.0" r="3.5" fill="#f59e0b"/>
 <text x="877.0" y="2335.0" text-anchor="middle" font-size="12" font-weight="700" fill="#1e293b" font-family="Consolas, Monaco, monospace">0x16</text>
 <rect x="170" y="2308" width="655" height="46" fill="#ccfbf1" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="497.5" y="2329.0" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">LD_F[7:0]</text>
+<text x="497.5" y="2329.0" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">LD_W[7:0]</text>
 <text x="497.5" y="2343.0" text-anchor="middle" font-size="9" fill="#64748b">8'b00010110</text>
 <text x="158" y="2388.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x43 (67)</text>
 <rect x="842" y="2370.0" width="64" height="26" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" rx="13"/>

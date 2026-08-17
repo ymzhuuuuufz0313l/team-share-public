@@ -376,7 +376,7 @@ one-shot unlock 实现后，checker 出现误判：
 
 0807 整体替换后，DV_TCON_C env 与 0810v1 RTL 存在以下不一致（用户暂缓同步，回归前需处理）：
 
-- `env_cfg.sv` reg51 打包位偏移：env 用 `[6:2]`、RTL 0810v1 为 `[5:1]`（`sw_reg_lane_ctrl`）
+- `env_cfg.sv` reg51 打包位偏移：env 用 `[6:2]`、RTL 0811v1 为 `[6:2]`（`sw_reg_lane_ctrl`）——env 需按 `[6:2]` 核对
 - `env_cfg.sv` 缺 reg56 EOL 字段打包（`reg_pin_eol_det`/`reg_eol_det`）
 - `env_cfg.sv` 缺 CDR/BCC 寄存器打包（reg144~161 不在 `reg_ctrlF` 流程中）
 - `reg_model.sv` 为旧模板（如 ADDRESS_35 是 `reg_gamma_sel`，与实际字段不符）

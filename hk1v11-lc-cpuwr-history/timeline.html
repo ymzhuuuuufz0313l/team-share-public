@@ -461,7 +461,7 @@
 - **reg53 字段变更**：`[1:0]` 由 FSEL 改为 **`reg_fbdiv_clk_sel`**（`00:ck<5> 01:ck<4> 10:ck<10> 11:ck<11>`）
 - **reg56 新增 EOL**：`[4]` `reg_pin_eol_det`（默认 1）、`[5]` `reg_eol_det`（默认 0）；默认值 `0x05 → 0x15`
 - **新增 BCC 寄存器**（I2C-only 占位，BCC 协议未接入）：`BCC_M[3:0]` @ reg147、`SDID[4:0]` @ reg160、`AEQ_reg_lane_ctrl[3:0]` + 只读 `regr_AEQ/BCC_FF/PASS` @ reg161
-- **修正 reg50/51/53 字段错位**：`sw_reg_lane_ctrl`→reg51[5:1]、`reg_pin_eq`→reg51[7]、`reg_fbdiv_clk_sel`→reg53[1:0]、reg50 恢复 Reserved
+- **修正 reg50/51/53 字段错位**：`sw_reg_lane_ctrl`→reg51[6:2]、`reg_pin_eq`→reg51[7]、`reg_fbdiv_clk_sel`→reg53[1:0]、reg50 恢复 Reserved
 - **LSI 保护修正**：reg48（TEST_PRTCT）/ reg160 / reg161 读回去掩码（表保护列空白）；reg147 保留保护
 - **验收三关**：iverilog + rtl-code-review + rtl-signal-trace 全部通过
 - **接口归属**：0810v1 新增信号（EOL/BCC 等）在 `LINK_CONFIG_CTRL` 中 `.xx()` 空接，不定义端口（由 bcc_ctrl 等模块接入）
