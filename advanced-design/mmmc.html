@@ -52,12 +52,12 @@
 - **Corner（角）**：不同的 PVT / RC（10 个 corner 照跑）；
 - **MMMC 组合**：所有 mode × 所有 corner 统一调度，工具一次读入、一次收敛。
 
-对应到本案例：
+对应到本案例（HV2M23 的 1P/2P 双模式，时钟沿用 `clk_period.tcl`）：
 
 ```
 网表（唯一，APR 认这一份）
-  └─ mode_1P  → DPSEL_I=0 · lane1 相关路径 false path · RX0=10.08ns
-  └─ mode_2P  → DPSEL_I=1 · lane1 相关路径正常检查 · RX0=RX1=10.71ns
+  └─ mode_1P → DPSEL_I=0 · lane1 SAMP_CNT false path · RX0=10.08ns / RX1=17.1ns
+  └─ mode_2P → DPSEL_I=1 · lane1 正常检查 · RX0=RX1=10.71ns
          ↓ 每个 mode × 10 corner
 ```
 
@@ -79,25 +79,27 @@
 
 ### 阶段 1：定义 mode
 
-在 PT / ICC2 里分别定义两个 mode，各自 source 一套约束：
+在 PT / ICC2 里分别定义两个 mode，各自 source 一套约束（沿用项目 `clk_period.tcl` 的风格，`MARGIN` 为时序余量系数）：
 
 ```tcl
-# ---- 1P mode ----
+# ============ mode_1P（单 lane L0，1.7G）============
 set_case_analysis 0 [get_port DPSEL_I]
 # 1P 下 lane1 不工作，假路径在 1P mode 内声明，不会泄漏到 2P
-set_false_path -to [get_pins {u_LOGIC_CENTER/CLKGEN_U1/U_DCLK1_OD_DIV1P5/SAMP_CNT_reg_*/D}]
-# lane0 按 1P 的 1.7G
-create_clock -name RX0_CLK -period 10.08 [get_ports clk_lane_L0]
+set_false_path -to u_LOGIC_CENTER/CLKGEN_U1/U_DCLK1_OD_DIV1P5/SAMP_CNT_reg_*
+# 1.7G*1.05/18 = 99.16M → 10.08ns
+set RX0_CLKP [expr 10.08*$MARGIN]
+#  1G*1.05/18 =  58M → 17.1ns（lane1 慢时钟，1P 不用但时钟保留）
+set RX1_CLKP [expr 17.1*$MARGIN]
 
-# ---- 2P mode ----
+# ============ mode_2P（双 lane L0+L1，1.6G）============
 set_case_analysis 1 [get_port DPSEL_I]
 # 不设 lane1 false path（2P 下真实检查）
-create_clock -name RX0_CLK -period 10.71 [get_ports clk_lane_L0]
-create_clock -name RX1_CLK -period 10.71 [get_ports clk_lane_L1]
+# 1.6G*1.05/18 = 93.33M → 10.71ns
+set RX0_CLKP [expr 10.71*$MARGIN]
+set RX1_CLKP [expr 10.71*$MARGIN]
 ```
 
-> 实际工程中建议把「模式相关」的例外单独抽到一个文件（如 `mode_1p.tcl` / `mode_2p.tcl`），
-> 由 MMMC 配置按 mode 加载，公共约束（IO delay、uncertainty、跨域 false path）放公共文件。
+> 两个 mode 共用一份 `clk_period.tcl` 时，用 `if {$MODE == "1P"} {...} else {...}` 或由 MMMC 按 mode 加载不同配置。真正的 MMMC 是把「case_analysis + 时钟 + 例外」整体放进各自 mode，工具按 mode×corner 统一调度。
 
 ### 阶段 2：APR 侧使用 MMMC（ICC2 概念）
 
