@@ -387,7 +387,7 @@ flowchart LR
 
 ![report_setup.csv 1P](./image/31_postpt_setup_1p.png)
 
-NOTE: 1P 唯一一条 setup 违例（`RX0_CLK @ wc_cbest_125`，biggest violation = -0.225507）终点是 **LENB_R**（RX0_CLK 域 output port），属 **output delay 未满足**（data arrival 10.30ns vs required 10.08ns，output external delay 0.5ns），不是内部逻辑路径。LENB_R 走模拟通路，**需模拟设计师后仿继续确认**。
+NOTE: 最新版本（8/17）1P 的 setup 违例已全部消除——`RX0_CLK` 组在 10 个 corner 下 violation number 全 0、biggest violation 全部为正（此前 1P 曾有 `LENB_R` output delay 违例 `−0.225507`，经 setcase 修复后已不再出现）。1P / 2P 两套 setup 总表现在均无负 slack。
 
 原始文件：<a href="./server-reports/postpt_summary/POST_PT_2P/report_setup.csv" target="_blank">report_setup.csv</a>（逐 corner 原始报告见 <a href="./server-reports/postpt_summary/POST_PT_2P/" target="_blank">POST_PT 目录</a>）
 
