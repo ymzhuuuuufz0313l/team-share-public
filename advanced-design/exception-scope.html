@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>例外约束的作用范围与 -through 判断 · Advanced Design Lab</title>
+  <link rel="stylesheet" href="./assets/style.css">
+  <script src="./js/marked.min.js"></script>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a class="navbar-brand" href="./">⚡ Advanced Design Lab</a>
+      <div class="navbar-links" id="navbar-links"></div>
+    </div>
+  </nav>
+
+  <div class="container with-toc">
+    <aside class="toc-wrapper">
+      <div class="toc" id="toc"></div>
+    </aside>
+
+    <div class="content">
+      <article class="article" id="article"></article>
+      <div class="page-nav">
+        <a class="prev" href="./syntax.html"><span class="label">← 上一章</span><span class="title">SDC / TCL 语法库</span></a>
+        <a class="next" href="./index.html"><span class="label">返回 →</span><span class="title">回到首页</span></a>
+      </div>
+    </div>
+  </div>
+
+  <div class="lightbox" id="lightbox">
+    <span class="close" id="lightbox-close">&times;</span>
+    <img id="lightbox-img" src="" alt="">
+    <div class="hint">滚轮缩放 · 拖拽移动 · Esc 或点击空白处关闭</div>
+  </div>
+
+<script type="text/template" id="md">
+# 7. 例外约束的作用范围：-through 什么时候必须加
+
+> 来源：HV2M23 STA 实践（2026-08-18）。把输出端口的 false path 换成 multicycle 时遇到的通用问题：
+> **只写 `-to` 的例外会罩住到该端点的全部路径**——按报告里"最差的一条"配的参数，
+> 会不会让其他路径出错？什么时候必须加 `-through` 收窄？
+
+## 7.1 例外的默认作用范围比直觉大
+
+`set_multicycle_path` / `set_false_path` / `set_max_delay` 这类 timing exception，
+匹配范围由 `-from / -through / -to` 的**交集**决定。只写 `-to` 时：
+
+```tcl
+set_multicycle_path 2 -setup -end -to [get_ports XRSTB_R]
+```
+
+生效范围 = 到该端点的**所有路径**（所有 startpoint、所有 launch 时钟域），一条不漏。
+你按报告里 slack 最差的那条路径选的参数（N 值 / delay 值），会**无差别作用于其它每一条**。
+
+## 7.2 blanket -to 的两种非预期后果
+
+<div class="pcard danger">
+  <div class="prow"><span class="k">放松过度<br>（主要风险）</span><span>本身 slack 为正的路径也被放松 → <b>掩盖未来的真实违例</b>：明天有人改逻辑把延迟拉大 5ns，原本会报警，现在被例外静默吃掉。例外的本质是"放弃检查"，范围越大放弃越多。</span></div>
+  <div class="prow"><span class="k">放松不足</span><span>其它起点的 launch 时钟更慢、窗口结构不同，按最差一条配的 N=2 可能盖不住 → 违例还在，你却以为"这个端口已处理完"。</span></div>
+  <div class="prow"><span class="k">hold 侧<br>（无风险）</span><span><code>hold N−1 -end</code> 按 <b>capture 时钟周期</b>回拉检查沿，与起点无关——同 capture 时钟下对所有起点都正确，不会引入新 hold 违例。这点是统一的。</span></div>
+</div>
+
+## 7.3 判断标准：起点是否同质
+
+| 起点情况 | 结论 | 做法 |
+|:---|:---|:---|
+| **同质**（到端点的所有起点是同类信号，如 XRST 全是复位逻辑输出） | blanket `-to` 可接受 | 不加 `-through`，粒度与原 false path 相同，无精度损失 |
+| **异质**（混着功能信号与配置信号，如 POL 端口混 CSPIF 低频 strobe + DTCTL 行频逻辑） | 必须拆分 | 按 `-from` / `-through` 分开约束，否则功能路径被误放松 |
+| 只想放松特定来源（如"只罩穿过 reg7 的门控检查"） | 必须收窄 | `-through <reg>/Q -to <cell>/EN_pin` |
+
+> **关键认知**：把 false path 换成 blanket `-to` 的 multicycle，**粒度并没有变细**——
+> 只是从"完全不查"变成"放松 N 拍"。精度的提升只能靠 `-from` / `-through` 收窄对象来实现，
+> 光换命令类型没有收窄效果。
+
+## 7.4 通用安全流程（配约束前两步）
+
+```tcl
+# 第一步：枚举该端点的所有起点（把正 slack 的也列出来），检查是否同质
+report_timing -to [get_ports <port>] -max_paths 200 -slack_lesser_than 20 \
+  -path_type full_clock_expanded > all_paths.rpt
+
+# 第二步：加完例外后，验证匹配范围 + 确认无新 hold 违例
+report_exceptions -to [get_ports <port>]
+report_timing -to [get_ports <port>] -delay_type min -max_paths 50 -slack_lesser_than 0
+```
+
+- 第一步看 startpoint 列表：全同一类逻辑 → blanket 安全；发现异质起点 → 拆分
+- 没枚举过起点之前，**默认怀疑它异质**
+
+## 7.5 实战对照（HV2M23，2026-08-18）
+
+| 端口组 | 起点性质 | 最终约束 | 是否需要 through |
+|:---|:---|:---|:---|
+| `XRSTA/B_L/R` | 同质（全是复位逻辑输出） | `multicycle 2/1 -end -to <ports>` | 否（blanket 可接受） |
+| `POL1A/1B/2A/B_L/R` | 待枚举复核（CSPIF strobe + DTCTL 行频逻辑都可能驱动） | `multicycle 2/1 -end -to <ports>` | 先跑 §7.4 第一步，异质则拆 |
+| `R_REG_0_reg_7_ → C258~C261` 门控 | 明确只放松 reg7 来源 | `false_path -through reg7/Q -to <cell>/I1` | **是**（正确示范） |
+
+当天两条真实违例数据（打开 false path 后）：
+
+| 路径 | 时钟对 | 窗口 | slack |
+|:---|:---|:---|:---|
+| `STB_A_reg → POL2A_L` | RX0_OD_CLK_DIV2(10.08) → RX0_CLK(10.08)，同频相位差 2.52ns | 7.56ns | **−1.194ns** |
+| `DIOH_DCLK_reg → XRSTB_R` | RX0_OD_CLK_DIV2(10.08) → RX0_CLK_DIV1P5(15.12)，快→慢 | 5.04ns | **−0.928ns** |
+
+根因共性：launch 时钟树 ~5ns vs 输出端口 capture 名义 0 延迟的结构性 skew。
+
+## 7.6 关联经验：门控时钟检查（clock gating check）不吃 multicycle
+
+同一天踩的另一个坑，值得一起记：对 ICG/门控 AND 的 EN pin 检查，三种约束方法两维死活不同——
+
+| 命令 | 机制上能关门控检查？ | 能过 write_sdc 导出？ | 结论 |
+|:---|:---|:---|:---|
+| `set_multicycle_path` | ✗ 检查沿由门控时钟波形推导，无 capture 寄存器/沿可搬（三次实测 slack 逐位不变） | ✓ | 机制性死亡 |
+| `set_disable_clock_gating_check` | ✓（pt_shell 直接设立即生效） | ✗ 是 design 属性，write_sdc 不导出 → postPT 读不到 | 流程性死亡 |
+| `set_clock_gating_check -hold` | 只能改 hold 时间量（案例里仅 1.0ns），救不了沿位置问题（slack −13.35ns） | ✓ | 剂量不够 |
+| `set_false_path -through -to EN pin` | ✓ 门控检查 = endpoint 为 EN pin 的路径对象，按端点可匹配 | ✓ 标准 SDC 约束 | **唯一两维都活** |
+
+> 教训：评估一条约束"有没有效"，要同时问两个问题——**PT 机制上碰不碰得到这个检查**（维度一），
+> 以及**它能不能活着穿过你的约束生成流程到达 signoff**（维度二：write_sdc / release 链路）。
+> 只验证 pt_shell 里有效，不代表流程里有效。
+
+## 7.7 结论
+
+<div class="pcard">
+  <div class="prow"><span class="k">一句话</span><span><b>-through 不是防"出错"的，是防"误伤异质路径"和"放弃过多检查"的。</b></span></div>
+  <div class="prow"><span class="k">流程</span><span>配例外前先枚举起点（report_timing 大 max_paths）→ 同质才 blanket，异质必须拆 → 加完用 report_exceptions + min 报告双向验证。</span></div>
+  <div class="prow"><span class="k">延伸</span><span>约束有效性 = 机制维度 × 流程维度，两个维度都要验证才算数（门控检查案例）。</span></div>
+</div>
+</script>
+
+<script>
+const chapters = [
+  ['index', '首页'],
+  ['problem', '问题是什么'],
+  ['current-solution', '现有方案'],
+  ['merge-clock', '方案A·合并时钟'],
+  ['maxdelay', '方案B·set_max_delay'],
+  ['mmmc', '方案C·MMMC'],
+  ['syntax', 'SDC语法库'],
+  ['exception-scope', '例外约束作用范围']
+];
+const currentPath = location.pathname.split('/').pop() || 'index.html';
+const linksContainer = document.getElementById('navbar-links');
+chapters.forEach(([slug, label]) => {
+  const href = slug === 'index' ? './' : `./${slug}.html`;
+  const filename = slug === 'index' ? 'index.html' : `${slug}.html`;
+  const a = document.createElement('a');
+  a.href = href;
+  a.textContent = label;
+  if (currentPath === filename || currentPath.endsWith('/' + filename)) a.classList.add('active');
+  linksContainer.appendChild(a);
+});
+</script>
+<script>
+const md = document.getElementById('md').textContent;
+document.getElementById('article').innerHTML = marked.parse(md);
+
+const toc = document.getElementById('toc');
+const headings = document.querySelectorAll('.article h2, .article h3');
+const tocLinks = [];
+headings.forEach(h => {
+  const id = h.textContent.trim().replace(/\s+/g, '-').replace(/[^\w一-龥-]/g, '');
+  h.id = id;
+  const cls = h.tagName === 'H2' ? 'toc-h2' : 'toc-h3';
+  const a = document.createElement('a');
+  a.href = '#' + id;
+  a.textContent = h.textContent;
+  a.className = cls;
+  toc.appendChild(a);
+  tocLinks.push(a);
+});
+
+tocLinks.forEach((link, i) => {
+  if (!link.classList.contains('toc-h2')) return;
+  const children = [];
+  for (let j = i + 1; j < tocLinks.length && tocLinks[j].classList.contains('toc-h3'); j++) children.push(tocLinks[j]);
+  if (!children.length) return;
+  link.classList.add('toc-parent');
+  const arrow = document.createElement('span');
+  arrow.className = 'toc-arrow';
+  arrow.textContent = '▸';
+  link.prepend(arrow);
+  children.forEach(c => c.parentLink = link);
+  arrow.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const collapsed = link.classList.toggle('collapsed');
+    children.forEach(c => c.style.display = collapsed ? 'none' : '');
+  });
+});
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      tocLinks.forEach(l => l.classList.remove('active'));
+      let active = tocLinks.find(a => a.getAttribute('href') === '#' + entry.target.id);
+      if (active && active.style.display === 'none' && active.parentLink) active = active.parentLink;
+      if (active) active.classList.add('active');
+    }
+  });
+}, { rootMargin: '-10% 0px -75% 0px' });
+headings.forEach(h => observer.observe(h));
+</script>
+<script>
+const lightbox = document.getElementById('lightbox');
+const lbImg = document.getElementById('lightbox-img');
+const lbClose = document.getElementById('lightbox-close');
+let scale = 1;
+let isDragging = false;
+let startX = 0, startY = 0, translateX = 0, translateY = 0;
+function openLightbox(src) { lbImg.src = src; scale = 1; translateX = 0; translateY = 0; updateTransform(); lightbox.classList.add('active'); document.body.style.overflow = 'hidden'; }
+function closeLightbox() { lightbox.classList.remove('active'); document.body.style.overflow = ''; }
+function updateTransform() { lbImg.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`; }
+document.addEventListener('click', (e) => { const img = e.target.closest('img'); if (!img || img.id === 'lightbox-img' || !img.closest('.article')) return; openLightbox(img.src); });
+lbClose.addEventListener('click', closeLightbox);
+lightbox.addEventListener('click', (e) => { if (e.target === lightbox) closeLightbox(); });
+lightbox.addEventListener('wheel', (e) => { e.preventDefault(); const d = e.deltaY > 0 ? -0.12 : 0.12; scale = Math.min(Math.max(0.5, scale + d), 5); updateTransform(); });
+lbImg.addEventListener('mousedown', (e) => { isDragging = true; startX = e.clientX - translateX; startY = e.clientY - translateY; lbImg.classList.add('grabbing'); e.preventDefault(); });
+document.addEventListener('mousemove', (e) => { if (!isDragging) return; translateX = e.clientX - startX; translateY = e.clientY - translateY; updateTransform(); });
+document.addEventListener('mouseup', () => { isDragging = false; lbImg.classList.remove('grabbing'); });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && lightbox.classList.contains('active')) closeLightbox(); });
+</script>
+
+</body>
+</html>

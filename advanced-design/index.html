@@ -92,6 +92,13 @@
           <span class="tag">语法参考</span>
         </a>
 
+        <a class="chapter-card" href="./exception-scope.html">
+          <div class="num">7</div>
+          <div class="title">例外约束的作用范围</div>
+          <div class="desc">只写 -to 的例外会罩住全部起点：放松过度/放松不足两种误伤、起点同质性判断、-through 收窄时机与验证流程；附门控检查三法死活矩阵。</div>
+          <span class="tag">实战经验</span>
+        </a>
+
       </div>
 
       <div class="section-title">一句话结论</div>
@@ -111,7 +118,8 @@ const chapters = [
   ['merge-clock', '方案A·合并时钟'],
   ['maxdelay', '方案B·set_max_delay'],
   ['mmmc', '方案C·MMMC'],
-  ['syntax', 'SDC语法库']
+  ['syntax', 'SDC语法库'],
+  ['exception-scope', '例外约束作用范围']
 ];
 const currentPath = location.pathname.split('/').pop() || 'index.html';
 const linksContainer = document.getElementById('navbar-links');
