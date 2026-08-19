@@ -443,6 +443,34 @@ prePT 产物中还可以查到（真实文件名）：
 - 每个 clock 域下挂的 DFF 数量——`report_dff_num.rpt`
 - floating 信号列表（APR 对接工程师有时需要）——`pt_input_float.log`
 
+### 2.1 prePT 约束覆盖率（coverage）
+
+prePT 阶段除了看时序违例，还要看**约束覆盖率**——报告 `pt_rpt/HV2M23_digital_top_coverage.rpt`（`report_analysis_coverage`，pt_report.tcl 自动生成）。
+
+**判读口径：只看 Untested 列（必须 = 0）**；Violated 并入"已检查"看待——违例修调由 APR 负责，constraint 侧的职责是保证每条路径都被约束覆盖到。
+
+2026-08-19 版报告（1P/2P 双模式，报告分存 `pt_rpt_1p/` / `pt_rpt_2p/`）：
+
+| 检查类型 | 1P Total | 1P Untested | 2P Total | 2P Untested |
+|---|---|---|---|---|
+| setup | 4342 | 0 | 4736 | 0 |
+| hold | 4342 | 0 | 4736 | 0 |
+| recovery / removal | 418 / 418 | 0 | 418 / 418 | 0 |
+| clock_gating setup/hold | 176 / 176 | 0 | 187 / 187 | 0 |
+| out_setup | 647 | 0 | 648 | 0 |
+| out_hold | 647 | 0 | 648 | 0 |
+| **All Checks** | **11166** | **0** | **11978** | **0** |
+
+Untested 归零的三类典型根因与处置（08/19 案例）：
+
+- **通配符误挂**：`reg_*` output_delay 通配符罩住了纯透传端口 reg_lane_osr（输入 BW_MODE_I 直出、无寄存器）→ 从通配符与兜底条款两处摘除
+- **约束缺半边**：PTAT_EN 只有 -min 缺 -max → 补齐成对（只写半边等于只卡半边）
+- **异步复位起点无时钟**：BWDAL_rst 链 SB 由 XPONRST_I 直驱 → 补名义 input_delay（注释写明语义）后转 tested
+
+配套机制：`SYNTHESIS/COVERAGE_ANALYSIS.md` 追踪基线 + waiver 清单；每次重跑后残量必须与 waiver 清单一致，**多一条查一条**。
+
+> 1P/2P 拆分（08/19 起，TO 阶段手动维护）：prePT 报告分 `pt_rpt_1p/` / `pt_rpt_2p/`，sdc_pr 分 `*_1p.tcl` / `*_2p.tcl`（write_sdc 输出是模式相关的，单文件会被后跑的模式覆盖）。
+
 ---
 
 ## 3. prePT 产物：后仿 notimingcheck 配置
