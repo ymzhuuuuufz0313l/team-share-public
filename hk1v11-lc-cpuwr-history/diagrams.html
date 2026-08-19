@@ -300,6 +300,12 @@ chip_sel=1 模式下 POR 后默认值；红色标出与 chip_sel=0 不同、由 
 
 ![chip_sel=1 寄存器默认字节映射](./images/chip_sel1_register_map.svg)
 
+> **0819v2 变更**：上两图中 `reg_cdr_icp`（0x25[7:4]）与 `reg_kvco_ctrl`（0x26[7:4]）的**默认值不再固定**，改由新增输入 `Loop_sel[2:0]` 选择：
+> - `reg_kvco_ctrl`：`Loop_sel[2]=0` → `4'b1010(A)`；`Loop_sel[2]=1` → `4'b1000(8)`
+> - `reg_cdr_icp`：`Loop_sel[1:0]` → `00:4'b0100(4)`、`01:4'b0110(6)`、`10:4'b1000(8)`、`11:4'b1100(C)`
+> - `reg_cdr_rlpf`（0x25[3:0]）：恒为 `4'b1100(C)`，不随 Loop_sel 变化
+> - 图内对应字段值标注为 `Loop_sel:4/6/8/C`、`Loop_sel:A/8`；LINK_CONFIG_CTRL `.Loop_sel()` 空接（实际 3 个 PIN 待 projectleader 定）
+
 ## 3. Checksum 地址覆盖
 
 这张图基于 `LC_CPUWR.v`（0810v1）Part 18 的 checksum 逻辑，标出参与 XOR 累加的地址范围，帮助确认 0x07 控制寄存器、0x27 frame end 边界以及 Seg1/Seg2 的 checksum 覆盖范围。
