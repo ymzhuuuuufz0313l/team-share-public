@@ -477,6 +477,32 @@
 - **LINK_CONFIG_CTRL**：`.VPS_EN_0()` / `.VPS_EN_1()` 空接
 - **验收三关**：iverilog + rtl-code-review + rtl-signal-trace 通过
 
+### 4.12 0819 复位改名 N_RST → RSTN
+
+复位信号命名统一（异步复位）改名：
+
+- **改名范围**：`LC_CPUWR` / `LC_REG_MAPPING` / `LINK_CONFIG_CTRL` / `LINK_LOGIC`（代码 + 注释）
+- **边界**：止步于 `LINK_CONFIG_CTRL` 端口——`LOGIC_CENTER` / `LINK_LOGIC` 已有独立芯片复位 `RSTN`（来自 `I2C_CTL.XPOR`），延伸改名会撞名
+- **保持不变**：`N_RST_NLOCK` / `N_RST_NLOCK_NORMAL` / `RSTN_SCR_EN_NORMAL`
+- **R_LOAD**：确认保持内部 wire（不作为 output），撤销临时端口提升
+- **验收三关**：iverilog + rtl-code-review + rtl-signal-trace 通过
+
+### 4.13 0819v2 新增 Loop_sel[2:0] 选择 CDR/KVCO 默认值
+
+新增接口输入 `Loop_sel[2:0]`，按应用场景（长编码长0/长1、高低速）选择 CDR/KVCO 默认值：
+
+| Loop_sel[2:0] | reg_kvco_ctrl | reg_cdr_icp | reg_cdr_rlpf |
+|---|---|---|---|
+| 0xx | A | 4/6/8/C | C |
+| 1xx | 8 | 4/6/8/C | C |
+
+- **reg_kvco_ctrl**：`Loop_sel[2] ? 8(1000) : A(1010)`
+- **reg_cdr_icp**：`Loop_sel[1:0] → {00:4, 01:6, 10:8, 11:C}`
+- **reg_cdr_rlpf**：恒 `C(1100)`（表格各值均为 C）
+- **生效位置**：assign 未解锁分支（LSI_PRTECT 无效时）+ 复位块（N_RST_NLOCK_NORMAL 域）两处按 Loop_sel
+- **LINK_CONFIG_CTRL**：LC_CPUWR 实例化 `.Loop_sel()` 空接（实际 3 个 PIN 引入待 projectleader 定）
+- **验收三关**：iverilog + rtl-code-review + rtl-signal-trace 通过
+
   </script>
   <script>
     document.getElementById('article').innerHTML = marked.parse(document.getElementById('md').textContent.trim());

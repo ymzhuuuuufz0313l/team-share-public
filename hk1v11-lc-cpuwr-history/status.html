@@ -246,23 +246,25 @@
 
 ## 1. 当前版本
 
-当前最新版本为 **0811v1**（根级固定名 `LC_CPUWR.v`，文件头标注 0811v1）：
+当前最新版本为 **0819v2**（根级固定名 `LC_CPUWR.v`，文件头标注 0819v2）：
 
 | 版本 | 主要状态 |
 |------|----------|
-| 0714v1 | chip_sel=0 默认值 + `LC_REG_MAPPING` 回拼 chip_sel=1 默认值；回归通过 ✅ |
-| 0716v1 | 新增 `FSEL[1:0]` @ `0x35`；已归档为 `0716_v1_work` ✅ |
-| 0721v1 | `LCONFIG_DATA`/`FCONFIG_DATA` 16bit→24bit（每步 3 寄存器）；checksum XOR 总量不变 ✅ |
-| 0807v1 | 新架构：`LINK_CONFIG_CTRL` 取代 `LINK_LOGIC` 承载寄存器通路；已归档 ✅ |
-| **0811v1** | **VPS_EN 新增/恢复（HK1V11_Register_20260811.xlsm）：VPS_EN[1]@reg3[7] 新增、VPS_EN[0]@reg40[6] 恢复，LC_CPUWR 解析例外** ✅ |
+| **0819v2** | **新增 `input Loop_sel[2:0]` 选择 CDR/KVCO 默认值（reg_kvco_ctrl: A/8；reg_cdr_icp: 4/6/8/C；reg_cdr_rlpf 恒 C），LINK_CONFIG_CTRL `.Loop_sel()` 空接** ✅ |
+| 0819v1 | 复位信号改名 `N_RST`→`RSTN`（止步于 LINK_CONFIG_CTRL 端口）；`R_LOAD` 确认保持内部 wire ✅ |
+| 0811v1 | VPS_EN 新增/恢复（HK1V11_Register_20260811.xlsm）：VPS_EN[1]@reg3[7] 新增、VPS_EN[0]@reg40[6] 恢复，LC_CPUWR 解析例外 ✅ |
 | 0810v1 | 寄存器表同步（HK1V11_Register_20260807.xlsm）：FSEL→reg146、reg53 改 reg_fbdiv_clk_sel、reg56 EOL、BCC 寄存器占位、reg50/51/53 错位修正、LSI 保护修正 ✅ |
+| 0807v1 | 新架构：`LINK_CONFIG_CTRL` 取代 `LINK_LOGIC` 承载寄存器通路；已归档 ✅ |
+| 0721v1 | `LCONFIG_DATA`/`FCONFIG_DATA` 16bit→24bit（每步 3 寄存器）；checksum XOR 总量不变 ✅ |
+| 0716v1 | 新增 `FSEL[1:0]` @ `0x35`；已归档为 `0716_v1_work` ✅ |
+| 0714v1 | chip_sel=0 默认值 + `LC_REG_MAPPING` 回拼 chip_sel=1 默认值；回归通过 ✅ |
 
-0811v1 交付物：
+0819v2 交付物：
 
-- 三份 RTL（根级固定名）：`LC_CPUWR.v` / `LC_REG_MAPPING.v` / `LINK_CONFIG_CTRL.v`（文件头 0811v1）
-- `markdownfile/0811v1/LC_CPUWR_0811_v1_changelist.md` 变更清单
-- chip_sel0/1 寄存器地址表已同步 0811v1；0811v1 快照备份 `verilog_hdl/0811v1/`
-- `iverilog -g2005-sv -DFF_DLY=0` 语法检查通过；rtl-code-review / rtl-signal-trace 通过
+- 两份 RTL（根级固定名）：`LC_CPUWR.v` / `LINK_CONFIG_CTRL.v`（文件头 0819v2）
+- `markdownfile/0819v2/LC_CPUWR_0819_v2_changelist.md` 变更清单
+- chip_sel0/1 寄存器地址表已同步 0819v2（reg37/38 默认值由 Loop_sel 选择）
+- 0819v1/0819v2 均通过验收三关（iverilog + rtl-code-review + rtl-signal-trace）
 
 ## 2. 已完成工作
 
@@ -273,6 +275,8 @@
 - **0807v1 新架构**：寄存器通路迁至 `LINK_CONFIG_CTRL`，新增 `R_REGxx_L` 行配置输出，复位推导移至 `RSTNGEN`
 - **0810v1 寄存器同步**：FSEL 移位、reg56 EOL、BCC 寄存器（I2C-only 占位）、reg50/51/53 字段错位修正、reg48/160/161 去 LSI 保护
 - **0811v1 VPS_EN**：VPS_EN[1]@reg3[7] 新增、VPS_EN[0]@reg40[6] 恢复；地址≤31 字段统一在 LC_REG_MAPPING 解析，VPS_EN 例外在 LC_CPUWR
+- **0819v1 复位改名**：复位信号 `N_RST`→`RSTN`（LC_CPUWR/LC_REG_MAPPING/LINK_CONFIG_CTRL/LINK_LOGIC，代码+注释），止步于 LINK_CONFIG_CTRL 端口避免与芯片复位 RSTN 撞名；`R_LOAD` 确认保持内部 wire
+- **0819v2 Loop_sel**：新增 `input Loop_sel[2:0]`，reg_kvco_ctrl 默认 = Loop_sel[2]?8:A、reg_cdr_icp 默认 = Loop_sel[1:0]→{4,6,8,C}、reg_cdr_rlpf 恒 C；assign 未解锁分支 + 复位块两处生效；LINK_CONFIG_CTRL `.Loop_sel()` 空接
 
 ## 3. 待确认项
 
@@ -282,6 +286,7 @@
 | chip_sel=1 的 I2C 读回 case | **已通过** | 复位后读回为 `8'hFF`/`8'hA5`/`8'hAA` ✅ |
 | chip_sel=1 的 checksum case | **已通过** | `cfg_frame` 写入后 R_REG 与回拼字节一致 ✅ |
 | BCC 协议接入 | **待 SPEC** | reg147/160/161 按 I2C-only 占位；regr_* 空接，待 bcc_ctrl 接入 |
+| Loop_sel PIN 引入 | **待 projectleader 定** | `Loop_sel[2:0]` 实际 3 个 PIN 引入与命名待定（当前 LINK_CONFIG_CTRL 空接）；引测点（TESTO）不归 LC_CPUWR |
 | DV env 同步 | **用户暂缓** | env_cfg reg51 位偏移、reg56 EOL 打包、CDR/BCC 打包、reg_model 旧模板，待确认后同步 |
 | 上游 `CHPI_CONFIG_L0` 升 24bit | **外部依赖** | 每拍 3 字节采样；全芯片 FCONFIG 流仿真联调前提 |
 | `LINK_LOGIC` `[23:16]` tie-off 删除 | 待上游升版 | 过渡期防 X 传播，上游 24bit 输出到位后删除
@@ -292,6 +297,7 @@
 2. **DV env 同步**：确认后统一更新 `env_cfg.sv`（reg51 位偏移、reg56 EOL 打包、CDR/BCC 打包）、`reg_model.sv`（替换旧模板）、`reg_define.csv`。
 3. **跟进上游 `CHPI_CONFIG_L0` 24bit 升版**（owner/时间节点待定），全芯片 FCONFIG 流仿真联调前提；上游升版后删除 `LINK_LOGIC` tie-off。
 4. 回归：checksum 全量 + I2C 读回 + reset（chip_sel=0/1）。
+5. **Loop_sel**：projectleader 确认 PIN 命名/来源后接入真实 PIN；引测点（TESTO）由相关模块处理。
 
   </script>
   <script>
