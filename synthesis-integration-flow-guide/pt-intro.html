@@ -449,6 +449,13 @@ prePT 阶段除了看时序违例，还要看**约束覆盖率**——报告 `pt
 
 **判读口径：只看 Untested 列（必须 = 0）**；Violated 并入"已检查"看待——违例修调由 APR 负责，constraint 侧的职责是保证每条路径都被约束覆盖到。
 
+报告有两版，注意区分（过滤清单定义在 `pt_report.tcl:10` 的 `COV_DISABLE`）：
+
+![coverage 报告的 -exclude_untested 过滤机制](./image/39_cov_filter.png)
+
+- **汇总版**（`*_coverage.rpt`）：带 `-exclude_untested {constant_disabled mode_disabled user_disabled no_paths false_paths}` 过滤——被过滤的类不显示；但 `no_clock` / `no_startpoint_clock`（异步复位类）**不在过滤清单里**，仍会计入 Untested
+- **明细版**（`log/report_analysis_coverage.rpt`）：不带过滤的全量清单，用于逐条归因
+
 2026-08-19 版报告（1P/2P 双模式，报告分存 `pt_rpt_1p/` / `pt_rpt_2p/`）：
 
 | 检查类型 | 1P Total | 1P Untested | 2P Total | 2P Untested |
