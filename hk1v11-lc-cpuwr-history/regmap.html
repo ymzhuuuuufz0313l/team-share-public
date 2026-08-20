@@ -565,6 +565,37 @@ assign R_REG31_F_RECON = {PWRC_NB, PWRC_NA, PWRC_PB, PWRC_PA};  // 8'hAA
 
 复核结论：全部寄存器位映射与 0817 表一致（含 reg56 EOL、reg3/40 VPS_EN、reg50/51/53 字段错位修正）。
 
+## 14.9 0819 复位改名与 Loop_sel 默认值
+
+### 14.9.1 0819v1 复位信号改名（无寄存器映射变化）
+
+- 复位信号 `N_RST` → `RSTN`（LC_CPUWR / LC_REG_MAPPING / LINK_CONFIG_CTRL / LINK_LOGIC 实例化），止步于 `LINK_CONFIG_CTRL` 端口（避免与芯片复位 RSTN 撞名）
+- `R_LOAD[1:0]` 由内部 wire 提升为 `LC_REG_MAPPING` output，`LINK_CONFIG_CTRL` `.R_LOAD()` 空接
+
+### 14.9.2 0819v2 Loop_sel[2:0] 选择 CDR/KVCO 默认值
+
+`reg_cdr_icp`（0x25[7:4]）与 `reg_kvco_ctrl`（0x26[7:4]）的**初始值不再固定**，改由 LC_CPUWR 新增输入 `Loop_sel[2:0]` 选择（`LINK_CONFIG_CTRL` `.Loop_sel()` 空接，实际 3 个 PIN 待定）：
+
+| 字段 | 地址 | Loop_sel 映射 |
+|------|------|----------------|
+| `reg_kvco_ctrl[3:0]` | 0x26[7:4] | `Loop_sel[2]=0` → `4'b1010(A)`；`Loop_sel[2]=1` → `4'b1000(8)` |
+| `reg_cdr_icp[3:0]` | 0x25[7:4] | `Loop_sel[1:0]`：`00→4'b0100(4)`、`01→4'b0110(6)`、`10→4'b1000(8)`、`11→4'b1100(C)` |
+| `reg_cdr_rlpf[3:0]` | 0x25[3:0] | 恒 `4'b1100(C)`，不随 Loop_sel 变化 |
+
+assign 未解锁分支与复位块（RSTN_NLOCK_NORMAL）两处 default 均按 Loop_sel 生效；`chip_sel0/1_register_address_map.md` 已同步。
+
+## 14.10 0820v1 新增 cr_done_filter[1:0]
+
+依据 `HK1V11_Register_20260819.xlsm`（与 20260817 版逐单元格 diff，确认唯一实质变更；同表新增 LOOP_SEL Mapping Table 图片与 0819v2 RTL 完全一致）：
+
+| 信号 | 位置 | 默认 | 保护 | 功能 |
+|------|------|------|------|------|
+| `cr_done_filter[1:0]` | **reg36[7:6]** (0x24)（原 Reserved） | `2'b00` | LSI_PRTECT | `00`=16 symbol、`01`=8、`10`=32、`11`=64 |
+
+- 字节默认值仍 `0x15`（`reg_cr_done_cnt[5:0]=6'b010101` 不变）
+- RTL 改动极小：`R_REG36_F[7:6]` 存储/写通路/复位值/I2C 读回掩码全部复用既有逻辑，仅新增 `output [1:0] cr_done_filter` + LSI_PRTECT 门控 assign
+- `LINK_CONFIG_CTRL` 透传输出（同 `reg_cr_done_cnt` 惯例，非空接）
+
 ## 15. 寄存器可视化大图
 
 chip_sel=0/1 默认字节映射、checksum 地址覆盖、LSI 保护范围、复位域分类、0721v1 拍重组对照等 SVG 大图已集中到独立的 **寄存器图解 Sheet**：

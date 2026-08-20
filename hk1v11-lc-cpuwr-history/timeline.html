@@ -503,6 +503,17 @@
 - **LINK_CONFIG_CTRL**：LC_CPUWR 实例化 `.Loop_sel()` 空接（实际 3 个 PIN 引入待 projectleader 定）
 - **验收三关**：iverilog + rtl-code-review + rtl-signal-trace 通过
 
+### 4.14 0820v1 新增 cr_done_filter[1:0] @ 0x24[7:6]
+
+依据 `HK1V11_Register_20260819.xlsm`（与 0817 版逐单元格 diff 确认唯一实质变更）：
+
+- **新增字段**：`cr_done_filter[1:0]` @ reg36[7:6]（原 Reserved），默认 `2'b00`，R/W，LSI_PRTECT 保护
+- **功能**：`00`=16 symbol、`01`=8、`10`=32、`11`=64 symbol；字节默认值仍 `0x15`
+- **RTL 改动极小**：`R_REG36_F[7:6]` 存储/写通路/复位值/读回掩码全部复用既有逻辑，仅新增 `output [1:0] cr_done_filter` + 一条 LSI_PRTECT 门控 assign
+- **LINK_CONFIG_CTRL**：透传输出（同 `reg_cr_done_cnt` 惯例）
+- **同表 LOOP_SEL Mapping Table**：与 0819v2 RTL 完全一致（kvco A/8、icp 4/6/8/C、rlpf 恒 C，001 为默认 strap），无需改动
+- **验收三关**：iverilog 联合编译 EXIT 0 + 代码评审（critical=0/high=0）+ 信号链路完整
+
   </script>
   <script>
     document.getElementById('article').innerHTML = marked.parse(document.getElementById('md').textContent.trim());

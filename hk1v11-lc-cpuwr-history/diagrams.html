@@ -284,7 +284,7 @@
 
 ## 1. chip_sel = 0 默认字节映射
 
-这张图展示 0810v1 在 chip_sel=0 模式下 POR 后的寄存器默认值布局，与 `LC_CPUWR_history/chip_sel0_register_address_map.md` 及 RTL 中复位默认值完全一致，用于建立寄存器空间基线并支撑后续 chip_sel=1 回拼差异分析。0810v1 已同步：reg50/51/53 字段修正、reg56 EOL、reg146 FSEL、reg147/160/161 新增。
+这张图展示 0820v1 在 chip_sel=0 模式下 POR 后的寄存器默认值布局，与 `LC_CPUWR_history/chip_sel0_register_address_map.md` 及 RTL 中复位默认值完全一致，用于建立寄存器空间基线并支撑后续 chip_sel=1 回拼差异分析。0810v1 已同步：reg50/51/53 字段修正、reg56 EOL、reg146 FSEL、reg147/160/161 新增；0820v1：reg36[7:6] 新增 `cr_done_filter[1:0]`（默认 `2'b00`，字节默认仍 0x15）。
 
 chip_sel=0 模式下 POR 后寄存器默认值全景；绿色为控制、黄色为电源、蓝紫为模拟相关字段。
 
@@ -292,7 +292,7 @@ chip_sel=0 模式下 POR 后寄存器默认值全景；绿色为控制、黄色�
 
 ## 2. chip_sel = 1 默认字节映射
 
-这张图展示 0810v1 在 chip_sel=1 模式下 POR 后的寄存器默认值布局，与 `LC_CPUWR_history/chip_sel1_register_address_map.md` 及 `LC_REG_MAPPING.v`（0810v1）回拼机制一致，用于定位 chip_sel=1 相对于 chip_sel=0 发生默认值变化的字段。
+这张图展示 0820v1 在 chip_sel=1 模式下 POR 后的寄存器默认值布局，与 `LC_CPUWR_history/chip_sel1_register_address_map.md` 及 `LC_REG_MAPPING.v`（0820v1）回拼机制一致，用于定位 chip_sel=1 相对于 chip_sel=0 发生默认值变化的字段。
 
 所谓「回拼」是因为 LC_CPUWR 模块内部的默认值逻辑只针对 chip_sel=0 场景实现；当 chip_sel=1 时，部分地址（如 0x09 / 0x0A / 0x1F）需要通过 LC_REG_MAPPING 额外写标志并把对应字节回写到寄存器影子值，才能让 I2C 读出的内容与 chip_sel=1 期望的默认值一致。
 
@@ -316,7 +316,7 @@ chip_sel=1 模式下 POR 后默认值；红色标出与 chip_sel=0 不同、由 
 
 ## 4. LSI 保护范围
 
-这张图展示各地址在 LSI_PRTECT 下的保护状态（红色=输出/读回经保护掩码，绿色=不受保护，紫色=密码寄存器 0x30），用于理解密码解锁前后的寄存器可见性差异。0810v1 重排版：字段全部显示全名，不再截断；0810v1 LSI 保护同步寄存器表（reg48/reg160/reg161 无掩码、reg147 保留保护）。
+这张图展示各地址在 LSI_PRTECT 下的保护状态（红色=输出/读回经保护掩码，绿色=不受保护，紫色=密码寄存器 0x30），用于理解密码解锁前后的寄存器可见性差异。**0820v1 全部重生成**：字段名/默认值直接取自 `chip_sel0_register_address_map.md`（不再从旧图继承错位字段名），保护状态对照 RTL 真值；reg36[7:6] 新增 `cr_done_filter[1:0]`（受保护）；reg37/38 的 CDR/KVCO 默认值标注为 Loop_sel 选择；保护范围自 0810v1 起不变（reg48/reg160/reg161 无掩码、reg147 保留保护）。
 
 ![LSI 保护范围](./images/lsi_unprotected_address_map.svg)
 
@@ -324,7 +324,7 @@ chip_sel=1 模式下 POR 后默认值；红色标出与 chip_sel=0 不同、由 
 
 这张图基于 `LC_CPUWR.v`（0810v1）寄存器声明中的复位域属性，用于判断全局复位或局部复位后哪些配置会被清零、哪些会保持。
 
-标出各寄存器所属的复位域；紫色为 N_RST、青色为 RSTN_SCR_EN，其余多为 N_RST_NLOCK。
+标出各寄存器所属的复位域；紫色为 N_RST、青色为 RSTN_SCR_EN，其余多为 N_RST_NLOCK。（0819v1 起端口侧 `N_RST`/`N_RST_NLOCK`/`RSTN_SCR_EN` 已改名 `RSTN`/`RSTN_NLOCK_NORMAL` 等，图中保留旧名以对应复位域语义。）
 
 从 RTL 端口注释与 always 块敏感列表可见：`N_RST` 是全局异步复位，用于影响系统级关键行为的寄存器，如 `0x01 PORSD`、`0x05 CH_SEL`、`0x06 SDC/DPLC_MODE`、`0x20 R_TESTO_SEL`、`0x21 R_UTC` 以及密码寄存器 `0x30 TEST_PRTCT`；`N_RST_NLOCK` 是 Lock 丢失/未锁定复位，覆盖其余大部分普通控制与状态寄存器。
 

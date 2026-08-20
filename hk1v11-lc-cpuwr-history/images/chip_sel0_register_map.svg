@@ -264,9 +264,9 @@
 <rect x="842" y="1018.0" width="64" height="26" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" rx="13"/>
 <circle cx="854" cy="1031.0" r="3.5" fill="#f59e0b"/>
 <text x="877.0" y="1035.0" text-anchor="middle" font-size="12" font-weight="700" fill="#1e293b" font-family="Consolas, Monaco, monospace">0x15</text>
-<rect x="170" y="1008" width="163" height="46" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="251.5" y="1029.0" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">Reserved</text>
-<text x="251.5" y="1043.0" text-anchor="middle" font-size="9" fill="#64748b">0</text>
+<rect x="170" y="1008" width="163" height="46" fill="#e0e7ff" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="251.5" y="1029.0" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">cr_done_filter[1:0]</text>
+<text x="251.5" y="1043.0" text-anchor="middle" font-size="9" fill="#64748b">2'b00</text>
 <rect x="334" y="1008" width="491" height="46" fill="#e0e7ff" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="579.5" y="1029.0" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">reg_cr_done_cnt[…</text>
 <text x="579.5" y="1043.0" text-anchor="middle" font-size="9" fill="#64748b">6'b010101</text>
