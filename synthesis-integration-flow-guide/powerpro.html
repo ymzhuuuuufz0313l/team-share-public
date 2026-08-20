@@ -480,6 +480,19 @@ show_analyzer                                 # ④ 启动图形化界面
 8. **导出各 hier 功耗到 Excel**：`report_power -hierarchical -csv -filename xxx.csv`；单项指标用 `report_format –metric "Clock Toggle – Data Stable" –csv –filename ctds_pwr.csv`（另有 `Clock Gating`、`Not Combinationally Enabled Flops`）。
 9. **RTL level 与 gate level 功耗差异**：PowerPro 预综合不考虑时序；实际综合因时序紧张采用 LVT cell 后，gate level 功耗会比 RTL level 大，主要是 LVT leakage 大。
 
+---
+
+## 3. HV2M23 实测数据（PowerPro RTL 级，2026-08-20）
+
+6 组模式（1P/2P × normal/dplc/drdod，tt_typ 85°C）的 Total 功耗，数据源为各 `rep_dir_<mode>/hier_pwr_detail.csv` 底部 total 块：
+
+![PowerPro 6 组模式 Total 功耗](./image/40_powerpro_6mode.png)
+
+- 趋势符合预期：1P < 2P，同 lane 下 normal < dplc < drdod
+- 功耗构成：寄存器 internal 占 ~2/3，时钟网络 ~18-20%，组合逻辑 ~12-16%（leakage 占比极小，SVT 库）
+- ⚠️ `1p_dplc` 与 `1p_drdod` 数值完全一致——疑似同波形/同配置跑出来的，待确认是否配置串了
+- 造图脚本：`HV2M23/back_ppt/gen_powerpro_image.py`（改脚本重跑即更新，不手改 PNG）
+
 </script>
 
   <script>
