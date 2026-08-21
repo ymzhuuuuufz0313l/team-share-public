@@ -597,6 +597,23 @@ flowchart LR
   F --> G["跑后仿"]
 ```
 
+### 5.1 后仿实例：I2C SDA 延时链实测边界（wc / bc）
+
+case：`t_i2c_access_reg_wc` / `t_i2c_access_reg_bc`（I2C 前门访问寄存器读写，网表 + SDF 两角）。
+
+对象为 `SDA_DLY_BUF` 延时链（`IBUF_IN → IDLY1~6 → IBUF_OUT`），Verdi 波形实测 IN→OUT 传播延迟：
+
+| corner | 实测延迟 |
+|---|---|
+| wc | **2.37 ns** |
+| bc | **0.913 ns** |
+
+![I2C SDA 延时链 wc 实测 2.37ns](./image/i2c_wc_delay_2p37.jpg)
+
+![I2C SDA 延时链 bc 实测 0.913ns](./image/i2c_bc_delay_0p913.jpg)
+
+用途：这两张图是 I2C 前门时序的设计边界证据——SDA 延时链在最快/最慢角下的实际延迟范围，供 I2C 时序设计与 review 引用。
+
 ---
 
 ---
