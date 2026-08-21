@@ -514,6 +514,20 @@
 - **同表 LOOP_SEL Mapping Table**：与 0819v2 RTL 完全一致（kvco A/8、icp 4/6/8/C、rlpf 恒 C，001 为默认 strap），无需改动
 - **验收三关**：iverilog 联合编译 EXIT 0 + 代码评审（critical=0/high=0）+ 信号链路完整
 
+### 4.15 0820v2 Loop_sel 默认值选择移到输出 assign
+
+将 0819v2 的 Loop_sel 默认值选择逻辑从**时序复位块**重构到**输出 assign 处**（综合/DC 友好），模仿 LC_REG_MAPPING 的 `WR ? 寄存器值 : 默认值` 模式并保留 LSI 保护：
+
+- **时序复位恢复固定值**：`R_REG37_F[7:4]`=4'b0110、`R_REG38_F[7:4]`=4'b1010（不再用 Loop_sel 组合值作复位默认）
+- **新增内部写标志**：`R_REG37_F_WR` / `R_REG38_F_WR`（ADDR37/38_F_TEST 置位，N_RST_NLOCK_NORMAL 复位清 0）
+- **assign 输出**（LSI_PRTECT & WR 组合）：
+  - `reg_kvco_ctrl = (LSI_PRTECT & R_REG38_F_WR) ? R_REG38_F[7:4] : reg_kvco_ctrl_default`
+  - `reg_cdr_icp = (LSI_PRTECT & R_REG37_F_WR) ? R_REG37_F[7:4] : reg_cdr_icp_default`
+- **语义**：解锁（LSI_PRTECT=1）且写过（WR=1）才输出寄存器写入值；否则输出 Loop_sel 选择的默认值
+- **保留** Loop_sel 组合 default 逻辑（`reg_kvco_ctrl_default = Loop_sel[2]?8:A`、`reg_cdr_icp_default = Loop_sel[1:0]→{4,6,8,C}`）
+- **综合/DC 收益**：复位默认值为常量，Loop_sel 仅存于组合逻辑，无时序复位依赖
+- **验收三关**：iverilog 联合编译 EXIT 0 + 代码评审（critical=0/high=0）+ 信号链路完整
+
   </script>
   <script>
     document.getElementById('article').innerHTML = marked.parse(document.getElementById('md').textContent.trim());

@@ -246,11 +246,12 @@
 
 ## 1. 当前版本
 
-当前最新版本为 **0820v1**（根级固定名 `LC_CPUWR.v`，文件头标注 0820v1）：
+当前最新版本为 **0820v2**（根级固定名 `LC_CPUWR.v`，文件头标注 0820v2）：
 
 | 版本 | 主要状态 |
 |------|----------|
-| **0820v1** | **新增 `cr_done_filter[1:0]` @ 0x24[7:6]（HK1V11_Register_20260819.xlsm，默认 2'b00，LSI_PRTECT），LINK_CONFIG_CTRL 透传输出；存储/复位/读回零改动** ✅ |
+| **0820v2** | **Loop_sel 默认值选择移到输出 assign（综合/DC 友好）：`(LSI_PRTECT & WR) ? 寄存器值 : Loop_sel默认值`；时序复位恢复固定值；新增内部写标志 R_REG37/38_F_WR** ✅ |
+| 0820v1 | 新增 `cr_done_filter[1:0]` @ 0x24[7:6]（HK1V11_Register_20260819.xlsm，默认 2'b00，LSI_PRTECT），LINK_CONFIG_CTRL 透传输出；存储/复位/读回零改动 ✅ |
 | 0819v2 | 新增 `input Loop_sel[2:0]` 选择 CDR/KVCO 默认值（reg_kvco_ctrl: A/8；reg_cdr_icp: 4/6/8/C；reg_cdr_rlpf 恒 C），LINK_CONFIG_CTRL `.Loop_sel()` 空接 ✅ |
 | 0819v1 | 复位信号改名 `N_RST`→`RSTN`（止步于 LINK_CONFIG_CTRL 端口）；`R_LOAD` 确认保持内部 wire ✅ |
 | 0811v1 | VPS_EN 新增/恢复（HK1V11_Register_20260811.xlsm）：VPS_EN[1]@reg3[7] 新增、VPS_EN[0]@reg40[6] 恢复，LC_CPUWR 解析例外 ✅ |
@@ -260,12 +261,11 @@
 | 0716v1 | 新增 `FSEL[1:0]` @ `0x35`；已归档为 `0716_v1_work` ✅ |
 | 0714v1 | chip_sel=0 默认值 + `LC_REG_MAPPING` 回拼 chip_sel=1 默认值；回归通过 ✅ |
 
-0820v1 交付物：
+0820v2 交付物：
 
-- 两份 RTL（根级固定名）：`LC_CPUWR.v` / `LINK_CONFIG_CTRL.v`（文件头 0820v1）
-- `markdownfile/0820v1/LC_CPUWR_0820_v1_changelist.md` 变更清单
-- chip_sel0/1 寄存器地址表已同步 0820v1（reg36[7:6] 新增 cr_done_filter）
-- 0819v1/0819v2/0820v1 均通过验收三关（iverilog + 代码评审 + 信号链路追踪）
+- 根级固定文件 `LC_CPUWR.v`（文件头 0820v2）
+- `markdownfile/0820v2/LC_CPUWR_0820_v2_changelist.md` 变更清单
+- 0820v1/0820v2 均通过验收三关（iverilog + 代码评审 + 信号链路追踪）
 
 ## 2. 已完成工作
 
@@ -279,6 +279,7 @@
 - **0819v1 复位改名**：复位信号 `N_RST`→`RSTN`（LC_CPUWR/LC_REG_MAPPING/LINK_CONFIG_CTRL/LINK_LOGIC，代码+注释），止步于 LINK_CONFIG_CTRL 端口避免与芯片复位 RSTN 撞名；`R_LOAD` 确认保持内部 wire
 - **0819v2 Loop_sel**：新增 `input Loop_sel[2:0]`，reg_kvco_ctrl 默认 = Loop_sel[2]?8:A、reg_cdr_icp 默认 = Loop_sel[1:0]→{4,6,8,C}、reg_cdr_rlpf 恒 C；assign 未解锁分支 + 复位块两处生效；LINK_CONFIG_CTRL `.Loop_sel()` 空接
 - **0820v1 cr_done_filter**：依据 HK1V11_Register_20260819.xlsm 新增 `cr_done_filter[1:0]` @ 0x24[7:6]（默认 2'b00，LSI_PRTECT），LINK_CONFIG_CTRL 透传输出；存储/复位/读回复用既有逻辑零改动
+- **0820v2 Loop_sel 重构**：Loop_sel 默认值选择从时序复位块移到输出 assign（综合/DC 友好）——`reg_kvco_ctrl = (LSI_PRTECT & R_REG38_F_WR) ? R_REG38_F[7:4] : reg_kvco_ctrl_default`、`reg_cdr_icp` 同理；R_REG37/38_F 复位恢复固定值（0110/1010）；新增内部写标志 R_REG37/38_F_WR（ADDR37/38_F_TEST 置位）；保留 Loop_sel 组合 default 逻辑
 
 ## 3. 待确认项
 
