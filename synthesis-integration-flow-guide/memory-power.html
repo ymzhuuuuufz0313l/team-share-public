@@ -453,6 +453,15 @@ HV2M23_digital_top        1.17e-02  2.58e-03  1.76e-06  1.43e-02  100.0
 
 > 完整报告目录：<a href="./server-reports/power/px_85c_random/rep_dir_1lane_fre1p8_tt_0812/" target="_blank">1lane_fre1p8_tt_0812</a>（其余 5 组同路径下 `rep_dir_*_0812*`）。配置差异体现在：1lane vs 2lane、频率 **1.7G vs 1.6G**、dplc/drdod 模式开关。注意目录名里的 `fre1p8` 是旧命名遗留，0812 实测 1lane 实际速率为 **1.7G**。
 
+### 2.4 功耗横向对比（PowerPro / PTPX 全览，vs HV3310B1 / HV1V21）
+
+四块合一：PowerPro 0720（LVT）/ 0820（SVT，当前）+ PTPX 0804（LVT）/ 0814（SVT，当前），签核级 Total 功耗对比，单位 mW（与 BE Review PPT v30 对比页同图）：
+
+![功耗对比全览（PowerPro / PTPX，LVT → SVT）](./image/power_compare_vertical.png)
+
+- HV2M23 SVT 当前值与本章 §2.3 的 0812 六组实测一致（1L 14.3 / 15.0 / 15.0、2L 15.5 / 16.1 / 17.9 mW）；
+- 造图脚本：`HV2M23/back_ppt/gen_power_compare_vertical.py`（数据源为 0720~0814 报表 Excel 汇总，与 BE Review PPT v30 对比页同源同图）。
+
 </script>
 
   <script>

@@ -614,6 +614,16 @@ case：`t_i2c_access_reg_wc` / `t_i2c_access_reg_bc`（I2C 前门访问寄存器
 
 用途：这两张图是 I2C 前门时序的设计边界证据——SDA 延时链在最快/最慢角下的实际延迟范围，供 I2C 时序设计与 review 引用。
 
+### 5.2 后仿环境维护：lane 速率与持续维护 case（0813 更新）
+
+0813 后仿环境更新（已邮件通知并 SOS update）：
+
+- **laneclk 速率适配实际要求**：2lane case 适配 **1.6G**、1lane case 适配 **1.7G**——通过修改 `user_define.sv` 中的 `F_RATE` 参数实现，无需改动其他环境文件；
+- **持续维护的 case**（共 10 个）：
+  - 1lane：`t_8b1lane` / `t_8b1lane_bc` / `t_8b1lane_wc` / `t_8b1lane_dplc` / `t_8b1lane_drdod`
+  - 2lane：`t_8b2lane` / `t_8b2lane_bc` / `t_8b2lane_wc` / `t_8b2lane_dplc` / `t_8b2lane_drdod`
+- 其余内容及注意事项与之前不变。
+
 ---
 
 ---
@@ -853,10 +863,23 @@ dco 落点实例（真实文件）：`SYNTHESIS/common/ip_cons/HV2M23_digital_to
 - 异步复位类输出：`-to [get_ports XRSTA_R]`；
 - 跨域配置信号（与 merge 总表 `RX0_OD_CLK_DIV2` → `CLK_L*_DTCTL_OD_DIV1P5` 的负 slack 对应）：`LC_CSPIF_L0/SETTING_DET_reg` → `DTCTL_L0/L1` 的 `DBR0N/DBL0N/START_R/START_L/L5/EN1_R/EN1_L_reg`，L0、L1 两侧逐条列出；`POL_DET_reg` → `DTCTL_L0/L1/DATA*` 用 `get_cells` 通配一整组。
 
+NOTE: 上图与上面的分类是**历史版本 dco 状态**（多条 `set_false_path` 写法实例演示）。08/18 约束收敛后，该文件中**语法生效的 false path 仅 1 条**（旧条目随 cell 流水号变更自然失效），见下节。
+
 写法经验（对照图）：
 
 - 起点能整组通配就通配（`R_*`、`DATA*`），终点是寄存器时逐列 L0/L1 两侧，避免误伤同组真实路径；
 - 每条 false path 都对应一次「报告定位 + 波形确认」，追加在文件末尾，不删旧条目。
+
+#### 当前生效的 false path（08/18 收敛后）
+
+dco 里历史追加的条目很多，但**当前语法生效的仅 1 条**：
+
+![ip_cons/HV2M23_digital_top.tcl:862 — 当前唯一生效的 set_false_path](./image/41_false_path_current.png)
+
+- 覆盖：准静态配置位 `R_REG_0[7]`（CPU 初始化写一次，运行中不变）→ `DTCTL_COMB/C258~C261` 门控 AND2 的 EN pin，共 4 条；
+- 为什么只能 false path：门控检查沿由门控时钟波形推导、无 capture 沿可搬 → multicycle 实测无效；`set_disable_clock_gating_check` 是属性、`write_sdc` 不导出 → postPT 收不到；false path 按端点匹配且为标准约束可导出 = 唯一可行解；
+- 范围克制：`-through` + `-to` 双向限定只放这 4 条，其余路径照查；
+- 寄存器说明：`R_REG_0`（地址 0x00）bit[7] = SHL——选择 B 组 DBLON 门控信号取自 lane0 还是 lane1（`DBLON_B = SHL ? DBLON_L1 : DBLON_L0`，DTCTL_COMB.v:153）；bit[6:4] = CHSEL。
 
 #### live PT 验证工作流（约束生效确认）
 
@@ -969,18 +992,18 @@ NOTE: "最严标准原则"——多个 mode 共用一个 check 点时按最严�
 ### 3.3 clock 定义与频率目标
 
 - create clock 周期在 `common/tcl_dir/common/clk_period.tcl` 中定义（`clk_period.tcl:1-5`），所有周期乘 `$MARGIN`：综合 `MARGIN=0.80`（给 DC 加严）、PT `MARGIN=1.00`。
-- **当前生效（HV2M23，接近 TO）**：`set_case_analysis 1 [get_port DPSEL_I]`（2P 模式）+ `RX0_CLKP = RX1_CLKP = 10.71ns`（对应 1.7G SPEC：`1.7G×1.05/18 = 99.16M ≈ 10.08ns`，实际取 10.71ns 留余量）。一组可选周期：`9.5 / 10.08 / 10.71 / 11.42 ns`（对应 1.8G/1.7G 不同档位）。
+- **当前生效（HV2M23，接近 TO，1P 模式）**：`set_case_analysis 0 [get_ports DPSEL_I]` + `RX0_CLKP = 10.08ns`（1.7G SPEC：`1.7G×1.05/18 = 99.16M ≈ 10.08ns`）/ `RX1_CLKP = 17.1ns`（1G：`1G×1.05/18 = 58M ≈ 17.1ns`）。一组可选周期：`9.5 / 10.08 / 10.71 / 11.42 ns`（对应 1.8G/1.7G/1.6G 不同档位，注释保留）。
 - 展频（spread spectrum）：**×1.05**（5%），体现在注释换算 `1.8G*1.05/18 = 105M = 9.5ns`、`1.7G*1.05/18 = 10.08ns`。
 - 相比其他项目（有要求 4 GHz 的），当前项目约束偏保守（over constraint）。
 - 另有一条慢 clock（教学示例，端口名 `CLKA_L`）周期约 15 ns（会议经验值；包内最接近的慢时钟是 RX1_CLK 备选 17.1ns，当前注释保留）。
 
-![clk_period.tcl：MARGIN 0.80、DPSEL_I=1、RX 时钟 10.71ns、展频 1.05 注释](./image/26_clk_period.png)
+![clk_period.tcl：MARGIN 0.80/1.00、DPSEL_I=0（1P）、RX0 10.08ns / RX1 17.1ns、展频 1.05 注释](./image/26_clk_period.png)
 
 <div class="metric-grid">
   <div class="metric-card">
-    <div class="metric-value">10.71 ns</div>
-    <div class="metric-label">RX 时钟周期（当前生效）</div>
-    <div class="metric-note">clk_period.tcl 实际值；1.7G SPEC</div>
+    <div class="metric-value">10.08 ns</div>
+    <div class="metric-label">RX0 时钟周期（当前生效，1P）</div>
+    <div class="metric-note">clk_period.tcl 实际值；1.7G SPEC（RX1 = 17.1ns）</div>
   </div>
   <div class="metric-card">
     <div class="metric-value">×1.05</div>

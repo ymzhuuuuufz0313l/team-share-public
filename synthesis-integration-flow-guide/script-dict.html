@@ -551,7 +551,7 @@ nLint -f ../filelist/$top_name.f -f .../mem_dummy.f -f macro.f -f ./nlint_dummy.
 
 generated clock：`DIV2`（`-edges {2 4 6}`）、`DIV1P5`（`-edges {1 3 4}`）等。
 
-结论：**hold uncertainty 全部 0.15 ns = 150 ps 统一；setup 400 ps 只对高速 lane 时钟成立，其余 0.4275 ~ 2 ns 不等**。时钟周期定义见 `clk_period.tcl`：当前生效 `RX0_CLKP = RX1_CLKP = 10.71ns`（1.7G SPEC），带 ×1.05 展频换算注释（`1.8G*1.05/18 = 9.5ns`、`1.7G*1.05/18 = 10.08ns`），综合 `MARGIN=0.80` / PT `MARGIN=1.00`。
+结论：**hold uncertainty 全部 0.15 ns = 150 ps 统一；setup 400 ps 只对高速 lane 时钟成立，其余 0.4275 ~ 2 ns 不等**。时钟周期定义见 `clk_period.tcl`：当前生效 `RX0_CLKP = 10.08ns`（1.7G SPEC：`1.7G*1.05/18 = 10.08ns`）/ `RX1_CLKP = 17.1ns`（1G：`1G*1.05/18 = 58M ≈ 17.1ns`；1P 模式，`set_case_analysis 0 DPSEL_I`），综合 `MARGIN=0.80` / PT `MARGIN=1.00`。
 
 <a id="pt_rpt"></a>
 ### pt_rpt 产出文件清单

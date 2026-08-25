@@ -492,6 +492,16 @@ show_analyzer                                 # ④ 启动图形化界面
 - 功耗构成：寄存器 internal 占 ~2/3，时钟网络 ~18-20%，组合逻辑 ~12-16%（leakage 占比极小，SVT 库）
 - 造图脚本：`HV2M23/back_ppt/gen_powerpro_image.py`（改脚本重跑即更新，不手改 PNG）
 
+## 4. 功耗横向对比（PowerPro / PTPX 全览，vs HV3310B1 / HV1V21）
+
+四块合一：PowerPro 0720（LVT）/ 0820（SVT，当前）+ PTPX 0804（LVT）/ 0814（SVT，当前），Total 功耗对比，单位 mW（与 BE Review PPT v30 对比页同图）：
+
+![功耗对比全览（PowerPro / PTPX，LVT → SVT）](./image/power_compare_vertical.png)
+
+- HV2M23(opt) 为优化版数据（APR 绕不出，未采用），仅供参考；
+- 同口径对比（1L normal）：SVT 10.54 mW 较 LVT 12.503 mW 下降；LVT 时期 opt 优化版曾做到 8.91 mW（APR 绕不出未采用）；
+- 造图脚本：`HV2M23/back_ppt/gen_power_compare_vertical.py`（数据源为 0720~0814 报表 Excel 汇总，与 BE Review PPT v30 对比页同源同图）。
+
 </script>
 
   <script>
