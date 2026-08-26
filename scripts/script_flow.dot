@@ -1,5 +1,5 @@
 digraph script_flow {
-  graph [fontname="Microsoft YaHei", fontsize=16, label="完整流程总图（环境 → 检查 → 综合 → LEC → prePT → 签核交付 → postPT → TO SIGNOFF，旁支功耗评估）", labelloc=t, rankdir=TB, bgcolor=white, pad=0.5, nodesep=0.6, ranksep=0.8];
+  graph [fontname="Microsoft YaHei", fontsize=16, label="完整流程总图（环境 → 检查 → 综合 → LEC → prePT → 签核交付 → postPT → TO SIGNOFF，旁支功耗评估 / 后仿验证）", labelloc=t, rankdir=TB, bgcolor=white, pad=0.5, nodesep=0.6, ranksep=0.8];
   node [fontname="Microsoft YaHei", fontsize=12, shape=box, style="rounded,filled", fillcolor=white, penwidth=1.5, margin="0.15,0.1"];
   edge [fontname="Microsoft YaHei", fontsize=10, penwidth=1.8, arrowsize=1.0];
 
@@ -31,6 +31,7 @@ digraph script_flow {
     pt_setup_pre [label="pt_setup.tcl\n读 .gv + ip_cons 约束", color="#a855f7"];
     write_sdc [label="write_sdc", color="#a855f7"];
     sdc_pr [label="sdc_pr/ 展开产物\n+ unconstrained / notimingcheck 依据", color="#a855f7"];
+    coverage_chk [label="coverage 检查\nuntested 清零 + waiver 建档", color="#a855f7"];
   }
   subgraph cluster_L6 {
     label="L6 签核交付（APR SIGNOFF）"; style="rounded,dashed"; color="#22c55e"; bgcolor="#f0fdf4";
@@ -60,6 +61,10 @@ digraph script_flow {
     ptpx [label="PTPX（run_ptpx）\nfour-line VCD → power.rpt\n看 Total Power", color="#0d9488"];
     powerpro [label="PowerPro 功耗评估\nRTL / Gate level", color="#0d9488"];
   }
+  subgraph cluster_L10 {
+    label="L10 后仿验证（旁支）"; style="rounded,dashed"; color="#ea580c"; bgcolor="#fff7ed";
+    gate_sim [label="后仿回归\nAPR 网表 + SDF\ntests_netlist_post case", color="#ea580c"];
+  }
 
   design_set -> compile_dc [color="#9333ea", style=dashed, label="source"];
   run_ckf -> run_dc [color="#6b7280", style=dashed];
@@ -76,7 +81,8 @@ digraph script_flow {
   pt_setup_pre -> write_sdc [color="#2563eb"];
   write_sdc -> sdc_pr [color="#16a34a", label="SDC"];
   sdc_pr -> apr [color="#16a34a", label="供 APR"];
-  sdc_pr -> signoff [color="#16a34a", style=dashed, label="交付前检查\nunconstrained 清零"];
+  sdc_pr -> coverage_chk [color="#a855f7", style=dashed, label="unconstrained / coverage"];
+  coverage_chk -> signoff [color="#a855f7", style=dashed, label="交付前检查\ncoverage 清零"];
   signoff -> release [color="#2563eb"];
   release -> apr [color="#16a34a", label="交付"];
   apr -> pt_setup_post [color="#16a34a", label="网表+spef+postcts SDC"];
@@ -92,6 +98,7 @@ digraph script_flow {
   merge_pl -> report_csv [color="#16a34a", label="csv"];
   report_csv -> to_signoff [color="#dc2626", label="全 ready"];
   write_sdf -> ptpx [color="#0d9488", style=dashed, label="后仿 fsdb 截 four-line VCD"];
+  write_sdf -> gate_sim [color="#ea580c", style=dashed, label="SDF（配合 APR 网表）"];
   design_set -> powerpro [color="#0d9488", style=dashed];
 
   edge [style=invis];
