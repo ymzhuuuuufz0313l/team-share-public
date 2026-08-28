@@ -528,6 +528,19 @@
 - **综合/DC 收益**：复位默认值为常量，Loop_sel 仅存于组合逻辑，无时序复位依赖
 - **验收三关**：iverilog 联合编译 EXIT 0 + 代码评审（critical=0/high=0）+ 信号链路完整
 
+### 4.16 0827v1 寄存器表同步：sw_reg_lane_ctrl 拆分迁移 + reg_eol 新增
+
+依据 `HK1V11_Register_20260827.xlsm`（基于 20260819 表逐单元格 diff 评估），与用户确认三项决策后实施：① 新单 bit 寄存器 **chip_sel=0/1 共用**；② LC_CPUWR `sw_reg_lane_ctrl` output **删除**（本地先行，服务器 LINK_CONFIG_CTRL 配套挂账）；③ LC_REG_MAPPING **新增 5 个单 bit output**：
+
+- **LC_CPUWR 删 `output [4:0] sw_reg_lane_ctrl`**：端口 + assign 删除（[REMOVED 0827v1] 留痕）；`R_REG51_F[6:2]` 复位默认 `5'b00010`→`5'b00000`（0x33[6:2] 改 Reserved）；存储/写译码/读回保留
+- **LC_CPUWR 新增 `output reg_eol`**：reg56[6]（0x38[6]，原 Reserved）：`LSI_PRTECT ? R_REG56_F[6] : 1'b0`，复位 `1'b0`；Short-encoding：0=DE by counter（默认）、1=DE by EOL；字节默认 `0x15` 不变
+- **LC_REG_MAPPING 换基线**：以**服务器 0825 版**为基线（含 AUTO_EQ mux：EQ / AEQ_reg_lane_ctrl / EQ_MODE / AUTO_EQ_EN input + reg_lane_ctrl output）
+- **LC_REG_MAPPING 新增 5 个单 bit output**：`sw_reg_lane_ctrl0`←R_REG04_F[0]、`ctrl1`←R_REG03_F[0]、`ctrl2`←R_REG03_F[1]、`ctrl3`←R_REG02_F[0]、`ctrl4`←R_REG02_F[1]（0x02/0x03/0x04，chip_sel=0/1 共用）；删 `input [4:0] sw_reg_lane_ctrl`
+- **mux 改造**：`reg_lane_ctrl` 组合块 `(reg_pin_eq|EQ_MODE)` 分支改用内部拼位 `{c4,c3,c2,c1,c0}`；AUTO_EQ / EQ 查表分支不变
+- **配套记录**：chip_sel0/1 地址表 MD ×2（新增 5 单 bit 行、0x33[6:2] Reserved、0x38[6] reg_eol、0xA0/0xA1 命名先行 `regr_SDID`/`regr_AEQ_lane_ctrl`）；`back3.HK1V11_changelist.xlsx` 追加 NO40 行
+- **集成提醒**：LINK_CONFIG_CTRL 本版不改——服务器侧需删旧 `.sw_reg_lane_ctrl` 连接 ×2 并为 LC_REG_MAPPING 实例补 5 个新 output 连接
+- **验收三关**：iverilog 通过（LC_CPUWR standalone 仅 `CLKINVX4AL9` 缺失 ×20 预期、LC_REG_MAPPING EXIT 0）+ 代码评审 pass=true（critical=0/high=0/medium=1 集成提醒）+ 信号链路完整（reg_eol 链路与 5 单 bit 链路无新增 CDC）；commit `b178160`
+
   </script>
   <script>
     document.getElementById('article').innerHTML = marked.parse(document.getElementById('md').textContent.trim());
