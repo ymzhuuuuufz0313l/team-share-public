@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-# Generate lsi_unprotected_address_map.svg from scratch (0819v2).
+# Generate lsi_unprotected_address_map.svg from scratch (0827v1).
 #
 # 旧版脚本通过解析旧 SVG 重排版，会继承旧图中的语义错误（字段名复制错位、缺行、
 # chip_sel0/1 默认值混杂、reg37/38 默认值过期等）。本版本改为：
 #   1) 字段名/默认值直接解析 chip_sel0_register_address_map.md（单一事实源）
-#   2) LSI_PRTECT 保护状态硬编码自 LC_CPUWR.v（0819v2）RTL 真值：
+#   2) LSI_PRTECT 保护状态硬编码自 LC_CPUWR.v（0827v1）RTL 真值：
 #      - 输出门控：R_REG32~38/40~47/51/53~57/144~147 字段 assign 带 LSI_PRTECT ? 掩码
 #      - 读回掩码：REGRD_NOML case 中 8'd32~38/40~47/49~57/144~147 带 & {8{LSI_PRTECT}}
 #      - 0x27(39) 0707v1 起解除保护；0x30(48) 为密码寄存器（==8'h72 解锁，不掩码）；
@@ -17,7 +17,7 @@ import xml.etree.ElementTree as ET
 MD0 = r"E:\project\HK1V11\LC_CPUWR_history\chip_sel0_register_address_map.md"
 DST = r"E:\project\team-share-public\hk1v11-lc-cpuwr-history\images\lsi_unprotected_address_map.svg"
 
-VERSION = "0820v1"
+VERSION = "0827v1"
 
 # --- RTL 真值：LSI_PRTECT 保护状态（按地址，十进制） ---
 PROTECTED = set(range(32, 39)) | set(range(40, 48)) | set(range(49, 58)) | {144, 145, 146, 147}
@@ -100,7 +100,7 @@ out.append(f'<svg xmlns="http://www.w3.org/2000/svg" width="{width}" height="{he
 out.append(f'<rect width="{width}" height="{height}" fill="#ffffff"/>')
 out.append(f'<text x="{cx}" y="38" text-anchor="middle" font-size="22" font-weight="bold" fill="#1e293b">LC_CPUWR {VERSION} 寄存器 LSI_PRTECT 保护状态（chip_sel = 0 视图）</text>')
 out.append(f'<text x="{cx}" y="62" text-anchor="middle" font-size="12" fill="#64748b">红色=受 LSI_PRTECT 保护（输出门控 + I2C 读回掩码）；绿色=不受保护；紫色=密码寄存器 0x30（=8&apos;h72 解锁）；字段/默认值取自 chip_sel0_register_address_map.md（{VERSION}）</text>')
-out.append(f'<text x="{cx}" y="82" text-anchor="middle" font-size="11" fill="#64748b">0820v1：0x24[7:6] 新增 cr_done_filter[1:0]（默认 2&apos;b00，受保护）；0819v2 起 reg37/38 的 reg_cdr_icp / reg_kvco_ctrl 默认值由 Loop_sel[2:0] 选择（reg_cdr_rlpf 恒 4&apos;b1100）；保护范围自 0810v1 起不变</text>')
+out.append(f'<text x="{cx}" y="82" text-anchor="middle" font-size="11" fill="#64748b">0827v1：0x38[6] 新增 reg_eol（1&apos;b0，受保护）；0x33[6:2] 改 Reserved（复位 5&apos;b00000）；0x02/0x03/0x04 新增单 bit lane_ctrl3/4/1/2/0（默认 0，不受保护）；保护范围自 0810v1 起不变</text>')
 
 for i in range(8):
     bx = X0 + i * COL_W + COL_W / 2

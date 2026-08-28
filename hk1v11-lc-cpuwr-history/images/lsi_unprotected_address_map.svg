@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="1198" height="3882" viewBox="0 0 1198 3882" style="background:#ffffff">
 <rect width="1198" height="3882" fill="#ffffff"/>
-<text x="599.0" y="38" text-anchor="middle" font-size="22" font-weight="bold" fill="#1e293b">LC_CPUWR 0820v1 寄存器 LSI_PRTECT 保护状态（chip_sel = 0 视图）</text>
-<text x="599.0" y="62" text-anchor="middle" font-size="12" fill="#64748b">红色=受 LSI_PRTECT 保护（输出门控 + I2C 读回掩码）；绿色=不受保护；紫色=密码寄存器 0x30（=8&apos;h72 解锁）；字段/默认值取自 chip_sel0_register_address_map.md（0820v1）</text>
-<text x="599.0" y="82" text-anchor="middle" font-size="11" fill="#64748b">0820v1：0x24[7:6] 新增 cr_done_filter[1:0]（默认 2&apos;b00，受保护）；0819v2 起 reg37/38 的 reg_cdr_icp / reg_kvco_ctrl 默认值由 Loop_sel[2:0] 选择（reg_cdr_rlpf 恒 4&apos;b1100）；保护范围自 0810v1 起不变</text>
+<text x="599.0" y="38" text-anchor="middle" font-size="22" font-weight="bold" fill="#1e293b">LC_CPUWR 0827v1 寄存器 LSI_PRTECT 保护状态（chip_sel = 0 视图）</text>
+<text x="599.0" y="62" text-anchor="middle" font-size="12" fill="#64748b">红色=受 LSI_PRTECT 保护（输出门控 + I2C 读回掩码）；绿色=不受保护；紫色=密码寄存器 0x30（=8&apos;h72 解锁）；字段/默认值取自 chip_sel0_register_address_map.md（0827v1）</text>
+<text x="599.0" y="82" text-anchor="middle" font-size="11" fill="#64748b">0827v1：0x38[6] 新增 reg_eol（1&apos;b0，受保护）；0x33[6:2] 改 Reserved（复位 5&apos;b00000）；0x02/0x03/0x04 新增单 bit lane_ctrl3/4/1/2/0（默认 0，不受保护）；保护范围自 0810v1 起不变</text>
 <text x="232.0" y="110" text-anchor="middle" font-size="12" fill="#64748b">[7]</text>
 <text x="356.0" y="110" text-anchor="middle" font-size="12" fill="#64748b">[6]</text>
 <text x="480.0" y="110" text-anchor="middle" font-size="12" fill="#64748b">[5]</text>
@@ -39,22 +39,38 @@
 <text x="852.0" y="197" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">Reserved</text>
 <text x="852.0" y="212" text-anchor="middle" font-size="9" fill="#64748b">0</text>
 <text x="158" y="256" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x02 (2)</text>
-<rect x="170" y="228" width="992" height="46" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1" stroke-dasharray="4,3" rx="4"/>
-<text x="666" y="257" text-anchor="middle" font-size="12" fill="#64748b">Reserved</text>
+<rect x="170" y="228" width="744" height="46" fill="#bbf7d0" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="542.0" y="249" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">Reserved</text>
+<text x="542.0" y="264" text-anchor="middle" font-size="9" fill="#64748b">0</text>
+<rect x="914" y="228" width="124" height="46" fill="#bbf7d0" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="976.0" y="249" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">sw_reg_lane_ctrl4</text>
+<text x="976.0" y="264" text-anchor="middle" font-size="9" fill="#64748b">1'b0</text>
+<rect x="1038" y="228" width="124" height="46" fill="#bbf7d0" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="1100.0" y="249" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">sw_reg_lane_ctrl3</text>
+<text x="1100.0" y="264" text-anchor="middle" font-size="9" fill="#64748b">1'b0</text>
 <text x="158" y="308" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x03 (3)</text>
 <rect x="170" y="280" width="124" height="46" fill="#bbf7d0" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="232.0" y="301" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">VPS_EN[1]</text>
 <text x="232.0" y="316" text-anchor="middle" font-size="9" fill="#64748b">1'b0</text>
-<rect x="294" y="280" width="868" height="46" fill="#bbf7d0" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="728.0" y="301" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">Reserved</text>
-<text x="728.0" y="316" text-anchor="middle" font-size="9" fill="#64748b">0</text>
+<rect x="294" y="280" width="620" height="46" fill="#bbf7d0" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="604.0" y="301" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">Reserved</text>
+<text x="604.0" y="316" text-anchor="middle" font-size="9" fill="#64748b">0</text>
+<rect x="914" y="280" width="124" height="46" fill="#bbf7d0" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="976.0" y="301" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">sw_reg_lane_ctrl2</text>
+<text x="976.0" y="316" text-anchor="middle" font-size="9" fill="#64748b">1'b0</text>
+<rect x="1038" y="280" width="124" height="46" fill="#bbf7d0" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="1100.0" y="301" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">sw_reg_lane_ctrl1</text>
+<text x="1100.0" y="316" text-anchor="middle" font-size="9" fill="#64748b">1'b0</text>
 <text x="158" y="360" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x04 (4)</text>
 <rect x="170" y="332" width="372" height="46" fill="#bbf7d0" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="356.0" y="353" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">SD_CHOP[2:0]</text>
 <text x="356.0" y="368" text-anchor="middle" font-size="9" fill="#64748b">3'b000</text>
-<rect x="542" y="332" width="620" height="46" fill="#bbf7d0" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="852.0" y="353" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">Reserved</text>
-<text x="852.0" y="368" text-anchor="middle" font-size="9" fill="#64748b">0</text>
+<rect x="542" y="332" width="496" height="46" fill="#bbf7d0" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="790.0" y="353" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">Reserved</text>
+<text x="790.0" y="368" text-anchor="middle" font-size="9" fill="#64748b">0</text>
+<rect x="1038" y="332" width="124" height="46" fill="#bbf7d0" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="1100.0" y="353" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">sw_reg_lane_ctrl0</text>
+<text x="1100.0" y="368" text-anchor="middle" font-size="9" fill="#64748b">1'b0</text>
 <text x="158" y="412" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x05 (5)</text>
 <rect x="170" y="384" width="372" height="46" fill="#bbf7d0" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="356.0" y="405" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">CH_SEL[2:0]</text>
@@ -435,8 +451,8 @@
 <text x="232.0" y="2797" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">reg_pin_eq</text>
 <text x="232.0" y="2812" text-anchor="middle" font-size="9" fill="#64748b">1'b0</text>
 <rect x="294" y="2776" width="620" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="604.0" y="2797" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">sw_reg_lane_ctrl[4:0]</text>
-<text x="604.0" y="2812" text-anchor="middle" font-size="9" fill="#64748b">5'b00010</text>
+<text x="604.0" y="2797" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">Reserved</text>
+<text x="604.0" y="2812" text-anchor="middle" font-size="9" fill="#64748b">0</text>
 <rect x="914" y="2776" width="124" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="976.0" y="2797" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">reg_lane_ck_inv_en</text>
 <text x="976.0" y="2812" text-anchor="middle" font-size="9" fill="#64748b">1'b0</text>
@@ -487,9 +503,12 @@
 <text x="790.0" y="3005" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">reg_vos_ctrl[5:0]</text>
 <text x="790.0" y="3020" text-anchor="middle" font-size="9" fill="#64748b">6'b100000</text>
 <text x="158" y="3064" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x38 (56)</text>
-<rect x="170" y="3036" width="248" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="294.0" y="3057" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">Reserved</text>
-<text x="294.0" y="3072" text-anchor="middle" font-size="9" fill="#64748b">0</text>
+<rect x="170" y="3036" width="124" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="232.0" y="3057" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">Reserved</text>
+<text x="232.0" y="3072" text-anchor="middle" font-size="9" fill="#64748b">0</text>
+<rect x="294" y="3036" width="124" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="356.0" y="3057" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">reg_eol</text>
+<text x="356.0" y="3072" text-anchor="middle" font-size="9" fill="#64748b">1'b0</text>
 <rect x="418" y="3036" width="124" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="480.0" y="3057" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">reg_eol_det</text>
 <text x="480.0" y="3072" text-anchor="middle" font-size="9" fill="#64748b">1'b0</text>
@@ -597,8 +616,8 @@
 <text x="356.0" y="3629" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">Reserved</text>
 <text x="356.0" y="3644" text-anchor="middle" font-size="9" fill="#64748b">0</text>
 <rect x="542" y="3608" width="620" height="46" fill="#bbf7d0" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="852.0" y="3629" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">SDID[4:0]</text>
-<text x="852.0" y="3644" text-anchor="middle" font-size="9" fill="#64748b">5'b00000</text>
+<text x="852.0" y="3629" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">regr_SDID[4:0]</text>
+<text x="852.0" y="3644" text-anchor="middle" font-size="9" fill="#64748b">（由 bcc_ctrl 驱动）</text>
 <text x="158" y="3688" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0xA1 (161)</text>
 <rect x="170" y="3660" width="124" height="46" fill="#bbf7d0" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="232.0" y="3681" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">Reserved</text>
@@ -613,8 +632,8 @@
 <text x="604.0" y="3681" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">regr_AEQ</text>
 <text x="604.0" y="3696" text-anchor="middle" font-size="9" fill="#64748b">1'b0</text>
 <rect x="666" y="3660" width="496" height="46" fill="#bbf7d0" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="914.0" y="3681" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">AEQ_reg_lane_ctrl[3:0]</text>
-<text x="914.0" y="3696" text-anchor="middle" font-size="9" fill="#64748b">4'b0000</text>
+<text x="914.0" y="3681" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">regr_AEQ_lane_ctrl[3:0]</text>
+<text x="914.0" y="3696" text-anchor="middle" font-size="9" fill="#64748b">（由 bcc_ctrl 驱动）</text>
 <text x="90" y="3736" font-size="13" font-weight="600" fill="#1e293b">图例</text>
 <rect x="90" y="3746" width="14" height="14" fill="#fecaca" stroke="#94a3b8" rx="2"/>
 <text x="110" y="3757" font-size="11" fill="#1e293b">受 LSI_PRTECT 保护</text>

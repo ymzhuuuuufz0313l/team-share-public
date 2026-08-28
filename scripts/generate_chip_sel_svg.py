@@ -447,8 +447,12 @@ def generate_svg(title: str, reg_map, diffs=None, highlight_label=""):
             # text: field name and default
             name = entry["name"]
             default = entry["default"]
-            # abbreviate very long names
-            display_name = name[:16] + "…" if len(name) > 16 else name
+            # abbreviate very long names (keep distinguishing suffix: strip sw_reg_ prefix first)
+            display_name = name
+            if len(display_name) > 16 and display_name.startswith("sw_reg_"):
+                display_name = display_name[len("sw_reg_"):]
+            if len(display_name) > 16:
+                display_name = display_name[:16] + "…"
 
             # choose font size based on width
             font_size = 10 if width_bits >= 2 else 8

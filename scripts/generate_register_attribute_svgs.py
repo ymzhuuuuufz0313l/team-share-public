@@ -3,11 +3,15 @@
 """
 Generate SVG diagrams for LC_CPUWR register attributes:
 1. Checksum participation
-2. LSI protection
-3. Reset domain classification
+2. Reset domain classification
 
-Data is derived from LC_CPUWR_20260714_v1_decimal.v RTL analysis,
-using chip_sel1_register_address_map.md for field names.
+Data is derived from the current LC_CPUWR.v RTL analysis (file header 0827v1),
+using chip_sel0/1_register_address_map.md for field names/defaults.
+
+NOTE: lsi_unprotected_address_map.svg is NOT generated here anymore — since
+0819v2 it is owned by hk1v11-lc-cpuwr-history/scripts/regen_lsi_map.py
+(single source chip_sel0 md + RTL LSI_PRTECT truth). Running this script used
+to overwrite it with a legacy layout, so that block was removed.
 """
 
 import re
@@ -183,6 +187,17 @@ def reset_domain(dec, name):
 # SVG generation
 # ---------------------------------------------------------------------------
 
+def abbrev_name(name: str, limit: int) -> str:
+    """Abbreviate long field names, keeping the distinguishing suffix
+    (strip the sw_reg_ prefix before falling back to hard truncation)."""
+    display = name
+    if len(display) > limit and display.startswith("sw_reg_"):
+        display = display[len("sw_reg_"):]
+    if len(display) > limit:
+        display = display[:limit] + "…"
+    return display
+
+
 def escape_xml(text: str) -> str:
     return (text
             .replace("&", "&amp;")
@@ -294,7 +309,7 @@ def generate_checksum_dual_svg(title, map0, map1):
 
             if has_field:
                 name = e["name"]
-                display_name = name[:14] + "…" if len(name) > 14 else name
+                display_name = abbrev_name(name, 14)
                 font_size = 9 if width_bits >= 2 else 8
                 lines.append(f'<text x="{x + w/2}" y="{y + cell_h/2 - 3}" text-anchor="middle" font-size="{font_size}" font-weight="500" fill="{COLORS["text"]}">{escape_xml(display_name)}</text>')
                 lines.append(f'<text x="{x + w/2}" y="{y + cell_h/2 + 11}" text-anchor="middle" font-size="{font_size - 1}" fill="{COLORS["muted"]}">{escape_xml(e["default"])}</text>')
@@ -420,7 +435,7 @@ def generate_attr_svg(title, reg_map, attr_func, legend_items, footer_text=""):
             lines.append(f'<rect x="{x}" y="{y}" width="{w}" height="{cell_h}" fill="{fill}" stroke="{COLORS["border"]}" stroke-width="1" rx="4"/>')
 
             name = entry["name"]
-            display_name = name[:16] + "…" if len(name) > 16 else name
+            display_name = abbrev_name(name, 16)
             font_size = 10 if width_bits >= 2 else 8
             lines.append(f'<text x="{x + w/2}" y="{y + cell_h/2 - 2}" text-anchor="middle" font-size="{font_size}" font-weight="500" fill="{COLORS["text"]}">{escape_xml(display_name)}</text>')
             lines.append(f'<text x="{x + w/2}" y="{y + cell_h/2 + 12}" text-anchor="middle" font-size="{font_size - 1}" fill="{COLORS["muted"]}">{escape_xml(entry["default"])}</text>')
@@ -456,29 +471,15 @@ def main():
 
     # 1. Checksum participation (dual chip_sel view)
     svg_chk = generate_checksum_dual_svg(
-        "LC_CPUWR 0810v1 参与 checksum 的地址（chip_sel=0 / chip_sel=1 对照）",
+        "LC_CPUWR 0827v1 参与 checksum 的地址（chip_sel=0 / chip_sel=1 对照）",
         map0,
         map1,
     )
     (out_dir / "checksum_address_map.svg").write_text(svg_chk, encoding="utf-8")
 
-    # 2. LSI protection
-    svg_lsi = generate_attr_svg(
-        "LC_CPUWR 0810v1 不受 LSI_PRTECT 保护的地址",
-        map1,
-        lambda dec, name: lsi_status(dec),
-        [
-            ("受 LSI_PRTECT 保护", "lsi_prot"),
-            ("不受保护", "lsi_open"),
-            ("密码寄存器 (0x30)", "lsi_pwd"),
-        ],
-        "0x00~0x1F、0x27、0x40~0x44、0xA0~0xA1 读回/输出不经过 LSI_PRTECT 掩码"
-    )
-    (out_dir / "lsi_unprotected_address_map.svg").write_text(svg_lsi, encoding="utf-8")
-
-    # 3. Reset domain
+    # 2. Reset domain
     svg_rst = generate_attr_svg(
-        "LC_CPUWR 0810v1 复位域分类",
+        "LC_CPUWR 0827v1 复位域分类",
         map1,
         lambda dec, name: reset_domain(dec, name),
         [
@@ -486,11 +487,11 @@ def main():
             ("N_RST", "rst_n"),
             ("RSTN_SCR_EN", "rst_scr"),
         ],
-        "大部分字段由 N_RST_NLOCK 复位；0x30 TEST_PRTCT 由 N_RST 复位"
+        "大部分字段由 N_RST_NLOCK 复位；0x30 TEST_PRTCT 由 N_RST 复位；0827v1 新增 0x02/0x03/0x04 单 bit lane_ctrl 与 0x38[6] reg_eol 均为 N_RST_NLOCK"
     )
     (out_dir / "reset_domain_address_map.svg").write_text(svg_rst, encoding="utf-8")
 
-    print(f"Generated:\n  {out_dir / 'checksum_address_map.svg'}\n  {out_dir / 'lsi_unprotected_address_map.svg'}\n  {out_dir / 'reset_domain_address_map.svg'}")
+    print(f"Generated:\n  {out_dir / 'checksum_address_map.svg'}\n  {out_dir / 'reset_domain_address_map.svg'}")
 
 
 if __name__ == "__main__":

@@ -596,6 +596,43 @@ assign 未解锁分支与复位块（RSTN_NLOCK_NORMAL）两处 default 均按 L
 - RTL 改动极小：`R_REG36_F[7:6]` 存储/写通路/复位值/I2C 读回掩码全部复用既有逻辑，仅新增 `output [1:0] cr_done_filter` + LSI_PRTECT 门控 assign
 - `LINK_CONFIG_CTRL` 透传输出（同 `reg_cr_done_cnt` 惯例，非空接）
 
+## 14.11 0827v1 lane_ctrl 单 bit 化与 reg_eol 新增
+
+依据 `HK1V11_Register_20260827.xlsm`（RTL 与 chip_sel0/1 地址表先行同步；规格表 cs=0 的 0x33[6:2] 旧字段待规格 owner 删除）。
+
+### 14.11.1 `sw_reg_lane_ctrl[4:0]` 拆分为 5 个单 bit 寄存器并迁移至 LC_REG_MAPPING
+
+原 `sw_reg_lane_ctrl[4:0]` @ `0x33[6:2]`（默认 `5'b00010`）删除，拆为：
+
+| 信号 | 新位置 | 默认 | 访问 | 说明 |
+|------|--------|------|------|------|
+| `sw_reg_lane_ctrl0` | **reg4[0]** (`0x04[0]`) | `1'b0` | R/W | chip_sel=0/1 共用 |
+| `sw_reg_lane_ctrl1` | **reg3[0]** (`0x03[0]`) | `1'b0` | R/W | chip_sel=0/1 共用 |
+| `sw_reg_lane_ctrl2` | **reg3[1]** (`0x03[1]`) | `1'b0` | R/W | chip_sel=0/1 共用 |
+| `sw_reg_lane_ctrl3` | **reg2[0]** (`0x02[0]`) | `1'b0` | R/W | chip_sel=0/1 共用（cs=1 时与 SMART_CS 同址不同位） |
+| `sw_reg_lane_ctrl4` | **reg2[1]** (`0x02[1]`) | `1'b0` | R/W | chip_sel=0/1 共用（cs=1 时与 SMART_CS 同址不同位） |
+
+实现要点：
+
+- `LC_REG_MAPPING` 直接 `assign sw_reg_lane_ctrlx = R_REGxx_F[n]`——0x02/0x03/0x04 地址 ≤0x08、两种 chip_sel 映射相同，故天然共用；无独立存储、无 LSI_PRTECT 门控（≤0x1F 本就不受保护），复位域随 `R_REG02/03/04_F`（N_RST_NLOCK）
+- `0x33[6:2]` 改 Reserved（复位 `5'b00000`）；`R_REG51_F` 存储保留，字节默认值 `0x08 → 0x00`
+- `LC_CPUWR` 删除 `output [4:0] sw_reg_lane_ctrl`；内部 lane 控制聚合量改由 5 个单 bit 输出重组（`{ctrl4,ctrl3,ctrl2,ctrl1,ctrl0}`）
+
+### 14.11.2 新增 `reg_eol` @ reg56[6] (`0x38[6]`)
+
+| 项 | 值 |
+|----|----|
+| 默认 | `1'b0`（字节默认值仍 `0x15`） |
+| 访问 | R/W，LSI_PRTECT 门控（0x38 属保护范围） |
+| 功能 | Short-encoding 应用选择：`0`=DE by counter（默认）、`1`=DE by EOL |
+| 复位域 | N_RST_NLOCK（`R_REG56_F[6]`） |
+
+### 14.11.3 BCC 命名对齐 0827 规格
+
+`0xA0[4:0]` SDID → `regr_SDID[4:0]`、`0xA1[3:0]` AEQ_reg_lane_ctrl → `regr_AEQ_lane_ctrl[3:0]`（均只读 R；RTL 侧端口改名随服务器协同后同步）。
+
+> ⚠️ **集成注意**：`LINK_CONFIG_CTRL.v`（服务器 0825 基线）未随本次修改，残留 2 处 `.sw_reg_lane_ctrl` 连接已过期，需服务器侧连同 `LC_REG_MAPPING` 的 5 个新单 bit 输出一并更新。
+
 ## 15. 寄存器可视化大图
 
 chip_sel=0/1 默认字节映射、checksum 地址覆盖、LSI 保护范围、复位域分类、0721v1 拍重组对照等 SVG 大图已集中到独立的 **寄存器图解 Sheet**：
