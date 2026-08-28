@@ -246,11 +246,12 @@
 
 ## 1. 当前版本
 
-当前最新版本为 **0820v2**（根级固定名 `LC_CPUWR.v`，文件头标注 0820v2）：
+当前最新版本为 **0827v1**（根级固定名 `LC_CPUWR.v`，文件头标注 0827v1；`LC_REG_MAPPING.v` 以服务器 0825 版为基线升 0827v1）：
 
 | 版本 | 主要状态 |
 |------|----------|
-| **0820v2** | **Loop_sel 默认值选择移到输出 assign（综合/DC 友好）：`(LSI_PRTECT & WR) ? 寄存器值 : Loop_sel默认值`；时序复位恢复固定值；新增内部写标志 R_REG37/38_F_WR** ✅ |
+| **0827v1** | **HK1V11_Register_20260827 表同步：`sw_reg_lane_ctrl` 拆 5 个单 bit output 迁移 `LC_REG_MAPPING`（0x33[6:2] 复位归零 Reserved）；新增 `reg_eol` @ 0x38[6]；地址表 MD ×2 同步 + NO40 Excel 行** ✅ |
+| 0820v2 | Loop_sel 默认值选择移到输出 assign（综合/DC 友好）：`(LSI_PRTECT & WR) ? 寄存器值 : Loop_sel默认值`；时序复位恢复固定值；新增内部写标志 R_REG37/38_F_WR ✅ |
 | 0820v1 | 新增 `cr_done_filter[1:0]` @ 0x24[7:6]（HK1V11_Register_20260819.xlsm，默认 2'b00，LSI_PRTECT），LINK_CONFIG_CTRL 透传输出；存储/复位/读回零改动 ✅ |
 | 0819v2 | 新增 `input Loop_sel[2:0]` 选择 CDR/KVCO 默认值（reg_kvco_ctrl: A/8；reg_cdr_icp: 4/6/8/C；reg_cdr_rlpf 恒 C），LINK_CONFIG_CTRL `.Loop_sel()` 空接 ✅ |
 | 0819v1 | 复位信号改名 `N_RST`→`RSTN`（止步于 LINK_CONFIG_CTRL 端口）；`R_LOAD` 确认保持内部 wire ✅ |
@@ -261,11 +262,15 @@
 | 0716v1 | 新增 `FSEL[1:0]` @ `0x35`；已归档为 `0716_v1_work` ✅ |
 | 0714v1 | chip_sel=0 默认值 + `LC_REG_MAPPING` 回拼 chip_sel=1 默认值；回归通过 ✅ |
 
-0820v2 交付物：
+0827v1 交付物：
 
-- 根级固定文件 `LC_CPUWR.v`（文件头 0820v2）
-- `markdownfile/0820v2/LC_CPUWR_0820_v2_changelist.md` 变更清单
-- 0820v1/0820v2 均通过验收三关（iverilog + 代码评审 + 信号链路追踪）
+- 根级固定文件 `LC_CPUWR.v`（文件头 0827v1）+ `LC_REG_MAPPING.v`（换服务器 0825 基线，新增 5 个单 bit output + mux 拼位改造）
+- `LC_CPUWR_history/` 双轨记录：目录级 `CHANGES.md` + 根级 `修改记录/CHANGES.md`；chip_sel0/1 地址表 MD ×2、`back3.HK1V11_changelist.xlsx` NO40 行
+- 验收三关（0827v1，commit `b178160`）：
+  - ① iverilog：通过——LC_CPUWR standalone 仅 `CLKINVX4AL9` 缺失 ×20（预期，单元库缺失）；LC_REG_MAPPING EXIT 0
+  - ② rtl-code-review：**pass=true**（critical=0, high=0, medium=1 集成提醒, low=2）
+  - ③ rtl-signal-trace：reg_eol 链路（R_REG56_F[6]→assign→端口，上层悬空=预期）与 5 单 bit 链路（R_REGxx_F→LC_REG_MAPPING 抽取→mux→reg_lane_ctrl→上层）完整，无新增 CDC
+- 0820v1/0820v2 亦均通过验收三关（iverilog + 代码评审 + 信号链路追踪）
 
 ## 2. 已完成工作
 
@@ -280,6 +285,7 @@
 - **0819v2 Loop_sel**：新增 `input Loop_sel[2:0]`，reg_kvco_ctrl 默认 = Loop_sel[2]?8:A、reg_cdr_icp 默认 = Loop_sel[1:0]→{4,6,8,C}、reg_cdr_rlpf 恒 C；assign 未解锁分支 + 复位块两处生效；LINK_CONFIG_CTRL `.Loop_sel()` 空接
 - **0820v1 cr_done_filter**：依据 HK1V11_Register_20260819.xlsm 新增 `cr_done_filter[1:0]` @ 0x24[7:6]（默认 2'b00，LSI_PRTECT），LINK_CONFIG_CTRL 透传输出；存储/复位/读回复用既有逻辑零改动
 - **0820v2 Loop_sel 重构**：Loop_sel 默认值选择从时序复位块移到输出 assign（综合/DC 友好）——`reg_kvco_ctrl = (LSI_PRTECT & R_REG38_F_WR) ? R_REG38_F[7:4] : reg_kvco_ctrl_default`、`reg_cdr_icp` 同理；R_REG37/38_F 复位恢复固定值（0110/1010）；新增内部写标志 R_REG37/38_F_WR（ADDR37/38_F_TEST 置位）；保留 Loop_sel 组合 default 逻辑
+- **0827v1 表同步**：依据 HK1V11_Register_20260827.xlsm——LC_CPUWR 删 `output [4:0] sw_reg_lane_ctrl`（0x33[6:2] 复位默认 5'b00000 → Reserved）、新增 `output reg_eol` @ 0x38[6]（`LSI_PRTECT ? R_REG56_F[6] : 1'b0`，Short-encoding：0=DE by counter 默认 / 1=DE by EOL）；LC_REG_MAPPING 换服务器 0825 基线（含 AUTO_EQ mux）、新增 `sw_reg_lane_ctrl0~4` 五个单 bit output（←R_REG04_F[0]/R_REG03_F[1:0]/R_REG02_F[1:0]，chip_sel 无关）、mux `(reg_pin_eq|EQ_MODE)` 分支改内部拼位 `{c4,c3,c2,c1,c0}`；LINK_CONFIG_CTRL 本版不改（服务器侧配套挂账：旧 `.sw_reg_lane_ctrl` 连接 ×2 待删 + 实例补 5 个新 output 连接）
 
 ## 3. 待确认项
 

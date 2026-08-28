@@ -237,11 +237,12 @@
         <p class="lead">
           LC_CPUWR 是 HK1V11 芯片 TCON 模块中负责 CPU 写寄存器接口的核心 RTL。
           本记录整理自 <code>E:\project\HK1V11\LC_CPUWR_history</code> 归档目录，
-          覆盖 2026-05 至 2026-08-21 的迭代过程，包括校验和机制演进、寄存器映射重构、命名规范化、验证同步、
+          覆盖 2026-05 至 2026-08-27 的迭代过程，包括校验和机制演进、寄存器映射重构、命名规范化、验证同步、
           0721v1 配置数据位宽 16bit→24bit 的协议级拍重组，以及 0807v1 新架构（LINK_CONFIG_CTRL 承载寄存器通路）与
           0810v1 寄存器表同步（FSEL 移位 / EOL / BCC 寄存器占位 / 字段错位修正）、0811v1 VPS_EN 新增/恢复，
           0819v1 复位改名 N_RST→RSTN，0819v2 新增 Loop_sel[2:0] 选择 CDR/KVCO 默认值，
-          0820v1 新增 cr_done_filter[1:0] @ 0x24[7:6]，以及 0820v2 Loop_sel 默认值选择移到输出 assign（综合/DC 友好）。
+          0820v1 新增 cr_done_filter[1:0] @ 0x24[7:6]，0820v2 Loop_sel 默认值选择移到输出 assign（综合/DC 友好），
+          0827v1 按新版寄存器表将 sw_reg_lane_ctrl 拆为 5 个单 bit 迁移 LC_REG_MAPPING，并新增 reg_eol @ 0x38[6]。
         </p>
       </div>
       <blockquote>
@@ -251,12 +252,12 @@
       <div class="chapter-grid">
         <a class="chapter-card" href="./intro.html"><div class="num">1</div><div class="title">引言与归档体系</div><div class="desc">模块定位、目录结构与归档规则</div></a>
         <a class="chapter-card" href="./diagrams.html"><div class="num">2</div><div class="title">寄存器图解 Sheet ⭐ 先看图</div><div class="desc">chip_sel 默认字节映射、checksum、LSI、复位域、0721v1 拍重组对照</div></a>
-        <a class="chapter-card" href="./timeline.html"><div class="num">3</div><div class="title">核心变更时间线</div><div class="desc">从 0612 基线重构到 0820v2 Loop_sel 重构</div></a>
+        <a class="chapter-card" href="./timeline.html"><div class="num">3</div><div class="title">核心变更时间线</div><div class="desc">从 0612 基线重构到 0827v1 寄存器表同步</div></a>
         <a class="chapter-card" href="./checksum.html"><div class="num">4</div><div class="title">校验和机制演进</div><div class="desc">双段 checksum、NG Unlock、Seg2 删除</div></a>
         <a class="chapter-card" href="./regmap.html"><div class="num">5</div><div class="title">寄存器映射与命名规范化</div><div class="desc">位段迁移、chip_sel 默认值、十进制命名、0810 字段错位修正</div></a>
         <a class="chapter-card" href="./register-research.html"><div class="num">6</div><div class="title">寄存器规格交叉验证</div><div class="desc">RTL / Excel / 地址映射三方核对、属性总表</div></a>
         <a class="chapter-card" href="./verification.html"><div class="num">7</div><div class="title">验证同步与 Checker 统一</div><div class="desc">checker 迁移、case 同步、仿真计划</div></a>
-        <a class="chapter-card" href="./status.html"><div class="num">8</div><div class="title">当前状态与后续</div><div class="desc">0820v2 状态、Loop_sel PIN 待定、BCC 待接入、DV 待同步</div></a>
+        <a class="chapter-card" href="./status.html"><div class="num">8</div><div class="title">当前状态与后续</div><div class="desc">0827v1 状态、Loop_sel PIN 待定、BCC 待接入、DV 待同步</div></a>
       </div>
     </article>
     <div class="footer">Shared from team knowledge base</div>
