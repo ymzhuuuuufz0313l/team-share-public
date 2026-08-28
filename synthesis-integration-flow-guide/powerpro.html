@@ -492,6 +492,18 @@ show_analyzer                                 # ④ 启动图形化界面
 - 功耗构成：寄存器 internal 占 ~2/3，时钟网络 ~18-20%，组合逻辑 ~12-16%（leakage 占比极小，SVT 库）
 - 造图脚本：`HV2M23/back_ppt/gen_powerpro_image.py`（改脚本重跑即更新，不手改 PNG）
 
+### 3.1 SVT 0826 六组实测（1.8G/0.9G 同 LVT 口径，2026-08-26）
+
+按 LVT 同速率口径（1L 1.8G / 2L 0.9G）重跑 SVT 的 6 组 Total 功耗，数据源为 `rep_dir_1p_{normal,dplc,drdod}_1800 / rep_dir_2p_{normal,dplc,drdod}_0900` 的 `hier_pwr_detail.csv` total 块（同 §3 解析方式；0820 的 1.7G/1.6G 组同图对照，库/版本列区分）：
+
+![PowerPro 0826 六组（1.8G/0.9G）实测对照](./image/42_powerpro_6mode_0826.png)
+
+- 1L 1.8G：normal 11.387 / dplc 11.838 / drdod 11.836 mW（较 1.7G 的 10.54 升约 8%，符合频率 1.8/1.7 ≈ +6% 的量级）
+- 2L 0.9G：normal 6.399 / dplc 6.619 / drdod 7.427 mW（较 1.6G 的 12.66 降约 49%，符合 0.9/1.6 ≈ 频率减半的量级）
+- 趋势仍成立：1P < 2P（同 total 吞吐下 2 lane 每 lane 减半），同 lane 下 normal < dplc ≈ drdod；leakage 占比极小（SVT 库）
+- 与 LVT 0720 同速率对比：1L 1.8G normal 11.387 vs LVT 12.503；2L 0.9G normal 6.399 vs LVT 6.229——SVT 在 2L 0.9G 下与 LVT 相当，1L 1.8G 下 SVT 更优（SVT leakage 低）
+- 造图脚本：`HV2M23/back_ppt/gen_powerpro_1800_0900.py`（数据源为 tar PACK_TAR_0826V0 解压后的 rep_dir_*_1800/_0900；改脚本重跑即更新）
+
 ## 4. 功耗横向对比（PowerPro / PTPX 全览，vs HV3310B1 / HV1V21）
 
 四块合一：PowerPro 0720（LVT）/ 0820（SVT，当前）+ PTPX 0804（LVT）/ 0814（SVT，当前），Total 功耗对比，单位 mW（与 BE Review PPT v30 对比页同图）：
@@ -501,6 +513,16 @@ show_analyzer                                 # ④ 启动图形化界面
 - HV2M23(opt) 为优化版数据（APR 绕不出，未采用），仅供参考；
 - 同口径对比（1L normal）：SVT 10.54 mW 较 LVT 12.503 mW 下降；LVT 时期 opt 优化版曾做到 8.91 mW（APR 绕不出未采用）；
 - 造图脚本：`HV2M23/back_ppt/gen_power_compare_vertical.py`（数据源为 0720~0814 报表 Excel 汇总，与 BE Review PPT v30 对比页同源同图）。
+
+### 4.1 SVT 0826 同速率对比补充（1.8G/0.9G，2026-08-26）
+
+将 §3.1 0826 六组与 SVT 0820（1.7G/1.6G）、LVT 0720（1.8G/0.9G）按 Total 汇总对比，便于查看同速率下的 SVT/LVT 差异与速率档位对功耗的影响：
+
+![PowerPro Total 对比（SVT 0826 / SVT 0820 / LVT 0720）](./image/43_powerpro_compare_0826.png)
+
+- 同速率 1L 1.8G：SVT 0826 11.387 vs LVT 12.503 mW（SVT 低 ~9%）；2L 0.9G：SVT 0826 6.399 vs LVT 6.229 mW（基本相当）
+- 速率档位敏感性：1L 1.8G→0.9G（实际 2L 0.9G）功耗约减半，频率是主要因子
+- 造图脚本：`HV2M23/back_ppt/gen_powerpro_1800_0900.py`
 
 </script>
 
