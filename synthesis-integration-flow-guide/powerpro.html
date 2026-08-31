@@ -500,7 +500,7 @@ show_analyzer                                 # ④ 启动图形化界面
 
 - 1L 1.8G：normal 11.387 / dplc 11.838 / drdod 11.836 mW（较 1.7G 的 10.54 升约 8%，符合频率 1.8/1.7 ≈ +6% 的量级）
 - 2L 0.9G：normal 6.399 / dplc 6.619 / drdod 7.427 mW（较 1.6G 的 12.66 降约 49%，符合 0.9/1.6 ≈ 频率减半的量级）
-- 趋势仍成立：1P < 2P（同 total 吞吐下 2 lane 每 lane 减半），同 lane 下 normal < dplc ≈ drdod；leakage 占比极小（SVT 库）
+- 对比口径反转了 1P/2P 关系：同 total 吞吐下 2 lane 每 lane 频率减半 → **2P（0.9G）6.399 < 1P（1.8G）11.387**，功耗接近减半、频率是主因；同 lane 下 normal < dplc ≈ drdod 仍成立；leakage 占比极小（SVT 库）
 - 与 LVT 0720 同速率对比：1L 1.8G normal 11.387 vs LVT 12.503；2L 0.9G normal 6.399 vs LVT 6.229——SVT 在 2L 0.9G 下与 LVT 相当，1L 1.8G 下 SVT 更优（SVT leakage 低）
 - 造图脚本：`HV2M23/back_ppt/gen_powerpro_1800_0900.py`（数据源为 tar PACK_TAR_0826V0 解压后的 rep_dir_*_1800/_0900；改脚本重跑即更新）
 
