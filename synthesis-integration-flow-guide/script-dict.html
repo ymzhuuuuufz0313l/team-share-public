@@ -713,7 +713,7 @@ python pack_tar.py SYNTHESIS hdl DV_TCON_C   # 多目录一起打包
 
 ### run_pt_sdf.py —— 并行生成 SDF
 
-一键并行跑 `tt_typical_25` / `wc_cbest_125` / `lt_cbest_m40` 三个 corner 生成 SDF，输出自动带日期+版本号（如 `HV2M23_digital_top_typical_25c_0813v1.sdf`）；`DUMP_SDF` 通过环境变量传入（`corner_set.tcl` 已改读 `env(DUMP_SDF)`，未设置默认 0）。
+一键并行跑 `tt_typical_25` / `wc_cbest_125` / `lt_cbest_m40` 三个 corner 生成 SDF，输出自动带日期+版本号（如 `HV2M23_digital_top_typical_25c_0813v1.sdf`）；`DUMP_SDF` 通过环境变量传入（`corner_set.tcl` 已改读 `env(DUMP_SDF)`，未设置默认 0）。0826 加固：`--help` / 未知参数只打印用法退出（不误触发 PT）；`--check` dry run 预览版本/corner/输出计划；每 corner 生成后自动诊断——失败 `[skip]`、PT 正常但无 SDF 产出 `[warn]`（防静默空 SDF），结尾汇总 `N/3`。
 
 <a id="get_pl"></a>
 ### get_*.pl（perl 抓取层，run_summary 调用）

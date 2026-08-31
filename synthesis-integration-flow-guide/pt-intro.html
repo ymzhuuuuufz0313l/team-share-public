@@ -1245,6 +1245,11 @@ WARNING: 真假路径判定不能交给 AI。constraint 漏报的代价是硅后
 - 不用再逐个 corner 手改 `corner_set.tcl` 的 `DUMP_SDF=1`、跑完再手动改回 0——规避了上一节提到的「忘改回 0 → `latest` 指向只产 SDF 的空 run」这个坑；
 - 三个 corner 一键并行提交，SDF 版本自动编号，多次生成互不覆盖、可追溯。
 
+**0826 更新**（健壮性加固）：
+
+- 参数解析修复：`--help` / `-h` / 无法识别的参数只打印用法即退出，**不再误触发完整 PT 运行**；新增 `--check`（dry run）——只打印版本号、corner 计划与 SDF 输出路径，不提交任务；
+- 每 corner 生成后自动诊断：PT 退出码非 0 → `[skip]` 标记该 corner 失败；PT 正常结束但 `write_sdf` 没有产出文件 → `[warn]` 提示去查 pt.log（防「rc=0 但静默产出空 SDF」）；结尾汇总 `Finished: N/3 corners generated SDF`，一眼确认三个 corner 是否齐全。
+
 ### 9.4 latest 拆分：`latest_1p` / `latest_2p`（1P / 2P 模式报告分开保留）
 
 **改了什么**：本项目存在 **1P（单 lane）与 2P（双 lane）两种时序模式**，约束用 `set_case_analysis` 固定 `DPSEL_I` 切换（`DPSEL_I=1` 为 2P）。两种模式各跑一轮 postPT 后，报告内容不同但都指向同一个 `latest`，会互相顶掉。现在拆成：
