@@ -251,6 +251,8 @@
 | 版本 | 主要状态 |
 |------|----------|
 | **0827v1** | **HK1V11_Register_20260827 表同步：`sw_reg_lane_ctrl` 拆 5 个单 bit output 迁移 `LC_REG_MAPPING`（0x33[6:2] 复位归零 Reserved）；新增 `reg_eol` @ 0x38[6]；地址表 MD ×2 同步 + NO40 Excel 行** ✅ |
+| 0821v2 | BCC 方向定论：`BCC_M` 回退 I2C R/W output（下发 bcc_ctrl）；`SDID`/`AEQ_reg_lane_ctrl` 保持只读 input（去 regr_ 前缀，对齐服务器 0825 命名）；服务器验证通过 ✅ |
+| 0821v1 | BCC 寄存器方向修正（spec 理解修正）：BCC_M/SDID/AEQ_reg_lane_ctrl 改 regr_* 只读 input、删 I2C 写通路（BCC_M 回退由 0821v2 完成）✅ |
 | 0820v2 | Loop_sel 默认值选择移到输出 assign（综合/DC 友好）：`(LSI_PRTECT & WR) ? 寄存器值 : Loop_sel默认值`；时序复位恢复固定值；新增内部写标志 R_REG37/38_F_WR ✅ |
 | 0820v1 | 新增 `cr_done_filter[1:0]` @ 0x24[7:6]（HK1V11_Register_20260819.xlsm，默认 2'b00，LSI_PRTECT），LINK_CONFIG_CTRL 透传输出；存储/复位/读回零改动 ✅ |
 | 0819v2 | 新增 `input Loop_sel[2:0]` 选择 CDR/KVCO 默认值（reg_kvco_ctrl: A/8；reg_cdr_icp: 4/6/8/C；reg_cdr_rlpf 恒 C），LINK_CONFIG_CTRL `.Loop_sel()` 空接 ✅ |
@@ -286,6 +288,9 @@
 - **0820v1 cr_done_filter**：依据 HK1V11_Register_20260819.xlsm 新增 `cr_done_filter[1:0]` @ 0x24[7:6]（默认 2'b00，LSI_PRTECT），LINK_CONFIG_CTRL 透传输出；存储/复位/读回复用既有逻辑零改动
 - **0820v2 Loop_sel 重构**：Loop_sel 默认值选择从时序复位块移到输出 assign（综合/DC 友好）——`reg_kvco_ctrl = (LSI_PRTECT & R_REG38_F_WR) ? R_REG38_F[7:4] : reg_kvco_ctrl_default`、`reg_cdr_icp` 同理；R_REG37/38_F 复位恢复固定值（0110/1010）；新增内部写标志 R_REG37/38_F_WR（ADDR37/38_F_TEST 置位）；保留 Loop_sel 组合 default 逻辑
 - **0827v1 表同步**：依据 HK1V11_Register_20260827.xlsm——LC_CPUWR 删 `output [4:0] sw_reg_lane_ctrl`（0x33[6:2] 复位默认 5'b00000 → Reserved）、新增 `output reg_eol` @ 0x38[6]（`LSI_PRTECT ? R_REG56_F[6] : 1'b0`，Short-encoding：0=DE by counter 默认 / 1=DE by EOL）；LC_REG_MAPPING 换服务器 0825 基线（含 AUTO_EQ mux）、新增 `sw_reg_lane_ctrl0~4` 五个单 bit output（←R_REG04_F[0]/R_REG03_F[1:0]/R_REG02_F[1:0]，chip_sel 无关）、mux `(reg_pin_eq|EQ_MODE)` 分支改内部拼位 `{c4,c3,c2,c1,c0}`；LINK_CONFIG_CTRL 本版不改（服务器侧配套挂账：旧 `.sw_reg_lane_ctrl` 连接 ×2 待删 + 实例补 5 个新 output 连接）
+- **0821v1/0821v2 BCC 方向定论**：0821v1 依 spec 理解将 BCC_M/SDID/AEQ_reg_lane_ctrl 改 regr_* 只读并删 I2C 写通路；0821v2 集成服务器 0825 后定论——CPUWR 无 BCC 总线访问权限，BCC_M 回退 I2C R/W output（下发 bcc_ctrl），SDID/AEQ_reg_lane_ctrl 保持只读 input 并去 regr_ 前缀对齐服务器命名；服务器验证通过（commit `602cea9`）
+- **0825/0828 服务器包集成**：0825 包整体替换 HDL/（`f54f8d6`）；0828 包（PACK_TAR_0828V0）覆盖 HDL/——修改 16/新增 2/删除 0，MD5 310/310 零差异（`d00e2a0`）；覆盖后 LC_CPUWR=0821v2、LINK_CONFIG_CTRL=服务器 0825 版（SDID 只读接通、BCC_M 上抛；⚠️ cr_done_filter 透传端口被服务器移除）；0827v1 评估=纯增量零冲突（LC_CPUWR/LC_REG_MAPPING 0827v1 为严格超集，拷回+集成补丁即重放）
+- **history 副本同步**：`LC_CPUWR_history/LINK_CONFIG_CTRL.v` 用户确认替换为服务器 0825 版（`b9e85a0`）；接口增量见 timeline 4.17
 
 ## 3. 待确认项
 
@@ -294,7 +299,9 @@
 | chip_sel=0 的 checksum / I2C 读回 case | **已通过** | `0x09`/`0x0A`/`0x1F` 读回为 `8'h00` ✅ |
 | chip_sel=1 的 I2C 读回 case | **已通过** | 复位后读回为 `8'hFF`/`8'hA5`/`8'hAA` ✅ |
 | chip_sel=1 的 checksum case | **已通过** | `cfg_frame` 写入后 R_REG 与回拼字节一致 ✅ |
-| BCC 协议接入 | **待 SPEC** | reg147/160/161 按 I2C-only 占位；regr_* 空接，待 bcc_ctrl 接入 |
+| BCC 协议接入 | **方向已定论（0821v2）** | CPUWR 无 BCC 总线访问权限：BCC_M=I2C R/W output 下发 bcc_ctrl（服务器 0825 LINK_CONFIG_CTRL 已接出）；SDID/AEQ_reg_lane_ctrl=bcc 写回只读监视（SDID input 已接通）；写回接入转交同事 |
+| lane ctrl 上电默认值迁移 | **待规格核对** | 0827v1 后上电默认 5'b00000（原 0x33[6:2]=5'b00010/3dB）；与 HK1V11_Register_20260827.xlsm 核对，如需 3dB 可置 R_REG03_F 复位 bit0=1 或软件初始化 |
+| LINK_CONFIG_CTRL 0827v1 集成补丁 | **待做** | 删 `.sw_reg_lane_ctrl` 连接 ×2（L172/L363/L472）+ LC_REG_MAPPING 实例补 `sw_reg_lane_ctrl0~4` 连接 + 可选 `.reg_eol()`；清单见评估报告 §5-D |
 | Loop_sel PIN 引入 | **待 projectleader 定** | `Loop_sel[2:0]` 实际 3 个 PIN 引入与命名待定（当前 LINK_CONFIG_CTRL 空接）；引测点（TESTO）不归 LC_CPUWR |
 | DV env 同步 | **用户暂缓** | env_cfg reg51 位偏移、reg56 EOL 打包、CDR/BCC 打包、reg_model 旧模板，待确认后同步 |
 | 上游 `CHPI_CONFIG_L0` 升 24bit | **外部依赖** | 每拍 3 字节采样；全芯片 FCONFIG 流仿真联调前提 |
@@ -302,7 +309,7 @@
 
 ## 4. 后续建议
 
-1. **BCC SPEC 确认后接入 bcc_ctrl**：`regr_AEQ/BCC_FF/PASS` 由 decoder 驱动，`SDID`/`AEQ_reg_lane_ctrl` 由 decoder 写回，`BCC_M` 作 manual 参数；同时把 `bcc_ctrl` 接入编译链。
+1. **BCC 写回接入（转交同事）**：方向已定论——`BCC_M` 由 I2C 写入后经 LC_CPUWR 输出下发 bcc_ctrl；`SDID`/`AEQ_reg_lane_ctrl`/`regr_AEQ/BCC_FF/PASS` 由 bcc_ctrl 驱动写回/监视（服务器 LINK_CONFIG_CTRL 已接通 SDID input）。
 2. **DV env 同步**：确认后统一更新 `env_cfg.sv`（reg51 位偏移、reg56 EOL 打包、CDR/BCC 打包）、`reg_model.sv`（替换旧模板）、`reg_define.csv`。
 3. **跟进上游 `CHPI_CONFIG_L0` 24bit 升版**（owner/时间节点待定），全芯片 FCONFIG 流仿真联调前提；上游升版后删除 `LINK_LOGIC` tie-off。
 4. 回归：checksum 全量 + I2C 读回 + reset（chip_sel=0/1）。

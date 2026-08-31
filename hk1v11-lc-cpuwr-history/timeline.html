@@ -528,6 +528,25 @@
 - **综合/DC 收益**：复位默认值为常量，Loop_sel 仅存于组合逻辑，无时序复位依赖
 - **验收三关**：iverilog 联合编译 EXIT 0 + 代码评审（critical=0/high=0）+ 信号链路完整
 
+### 4.15a 0821v1 BCC 寄存器方向修正（R/W → regr_ 只读）
+
+依据 BCC 协议归属的 spec 理解修正：reg147/160/161 实际由 bcc_ctrl 写入，I2C 侧只读——
+
+- 端口改名：`BCC_M/SDID/AEQ_reg_lane_ctrl` → `regr_BCC_M/regr_SDID/regr_AEQ_reg_lane_ctrl`，改为只读 input
+- 删除 R_REG147/160/161_F 存储、ADDR 写译码、写 always 块与输出 assign（I2C 写完全删除）
+- 读回直拼 input：reg147 保留 LSI_PRTECT 掩码，reg160/161 不带
+- LINK_CONFIG_CTRL 实例 BCC 端口改名 regr_*（空接）
+- **验收三关**：iverilog 通过 + rtl-code-review pass（critical=0/high=0/low=3）+ 信号链路完整
+
+### 4.15b 0821v2 BCC 方向定论（BCC_M 回退 I2C R/W + SDID/AEQ 保持只读）
+
+集成服务器 0825 包后与设计定论对齐：**CPUWR 无 BCC 总线访问权限**——
+
+- reg147 `BCC_M` 回退为 **I2C R/W output**（恢复存储/写译码/写块/assign，下发 bcc_ctrl 作配置；0810v1 本就是 R/W，0821v1 误改只读，本版回退）
+- reg160 `SDID` / reg161[3:0] `AEQ_reg_lane_ctrl` **保持只读 input**，去 regr_ 前缀对齐服务器命名
+- LINK_CONFIG_CTRL 不改（保持服务器 0825）；服务器验证通过，commit `602cea9`
+- **验收三关**：iverilog 通过（仅标准单元缺失预期）+ rtl-code-review pass（critical=0/high=0/medium=1 集成提醒）+ 信号链路完整（BCC_M 下发 + SDID/AEQ 读回）
+
 ### 4.16 0827v1 寄存器表同步：sw_reg_lane_ctrl 拆分迁移 + reg_eol 新增
 
 依据 `HK1V11_Register_20260827.xlsm`（基于 20260819 表逐单元格 diff 评估），与用户确认三项决策后实施：① 新单 bit 寄存器 **chip_sel=0/1 共用**；② LC_CPUWR `sw_reg_lane_ctrl` output **删除**（本地先行，服务器 LINK_CONFIG_CTRL 配套挂账）；③ LC_REG_MAPPING **新增 5 个单 bit output**：
@@ -537,9 +556,18 @@
 - **LC_REG_MAPPING 换基线**：以**服务器 0825 版**为基线（含 AUTO_EQ mux：EQ / AEQ_reg_lane_ctrl / EQ_MODE / AUTO_EQ_EN input + reg_lane_ctrl output）
 - **LC_REG_MAPPING 新增 5 个单 bit output**：`sw_reg_lane_ctrl0`←R_REG04_F[0]、`ctrl1`←R_REG03_F[0]、`ctrl2`←R_REG03_F[1]、`ctrl3`←R_REG02_F[0]、`ctrl4`←R_REG02_F[1]（0x02/0x03/0x04，chip_sel=0/1 共用）；删 `input [4:0] sw_reg_lane_ctrl`
 - **mux 改造**：`reg_lane_ctrl` 组合块 `(reg_pin_eq|EQ_MODE)` 分支改用内部拼位 `{c4,c3,c2,c1,c0}`；AUTO_EQ / EQ 查表分支不变
+- **BCC 命名先行**：地址表 0xA0/0xA1 已按 0827 规格标注 `regr_SDID[4:0]` / `regr_AEQ_lane_ctrl[3:0]`（只读）；RTL 端口维持 `SDID` / `AEQ_reg_lane_ctrl`（与服务器 0821v2 命名一致）——规格表 vs RTL 命名差异转规格 owner 协同
 - **配套记录**：chip_sel0/1 地址表 MD ×2（新增 5 单 bit 行、0x33[6:2] Reserved、0x38[6] reg_eol、0xA0/0xA1 命名先行 `regr_SDID`/`regr_AEQ_lane_ctrl`）；`back3.HK1V11_changelist.xlsx` 追加 NO40 行
 - **集成提醒**：LINK_CONFIG_CTRL 本版不改——服务器侧需删旧 `.sw_reg_lane_ctrl` 连接 ×2 并为 LC_REG_MAPPING 实例补 5 个新 output 连接
 - **验收三关**：iverilog 通过（LC_CPUWR standalone 仅 `CLKINVX4AL9` 缺失 ×20 预期、LC_REG_MAPPING EXIT 0）+ 代码评审 pass=true（critical=0/high=0/medium=1 集成提醒）+ 信号链路完整（reg_eol 链路与 5 单 bit 链路无新增 CDC）；commit `b178160`
+
+### 4.17 服务器包集成（0825 / 0828）与 LINK_CONFIG_CTRL 同步
+
+- **0825 包集成**（commit `f54f8d6`）：服务器 0825 RTL 整体替换本地 `HDL/`；DV_TCON_C（V2，剔除 ppm）按文件名替换
+- **0828 包集成**（commit `d00e2a0`）：`PACK_TAR_0828V0.tar.gz` 覆盖 `HDL/`——修改 16 / 新增 2 / 删除 0，MD5 复核 310/310 零差异；覆盖后 LC_CPUWR = **0821v2**（4.15b 定论随包回归）；其余差异主线：AUTO_EQ 复位链贯通、bcc_ctrl 协议增强（SDID_allocation 等）、LONG_ENCODING endian 修复、PIX_CLK_EN 常开修复
+- **LINK_CONFIG_CTRL = 服务器 0825 版**：SDID 只读接通、BCC_M 上抛、AUTO_EQ mux 连接在位；⚠️ 服务器版本**移除了 cr_done_filter 透传端口**（0820v1 曾加，LC_CPUWR 输出现在悬空于 LINK_CONFIG_CTRL 内部，下游如需需补连接）；`TOP/LOGIC_CENTER.v` 服务器为 symlink，本地以同内容普通文件落地
+- **history 副本同步**（commit `b9e85a0`）：`LC_CPUWR_history/LINK_CONFIG_CTRL.v` 经用户确认整文件替换为服务器 0825 版（原为本地 0821v1 旧版）；接口增量：+input `DCLK/LOOP_SEL/EQ/AEQ_reg_lane_ctrl/SDID/EQ_MODE/AUTO_EQ_EN`，+output `BCC_M/VBK/reg_lane_ctrl`，−output `reg_lane_ctrl_pre/reg_pin_eq/cr_done_filter`
+- **0827v1 重放状态**：评估确认 LC_CPUWR / LC_REG_MAPPING 的 0827v1 为 0828 包对应文件的**严格超集**——拷回 HDL + LINK_CONFIG_CTRL 集成补丁（删 `.sw_reg_lane_ctrl` 连接 ×2 + LC_REG_MAPPING 实例补 5 个新 output 连接 + 可选 `.reg_eol()`）即完成重放，零冲突；详见评估报告 `script\pack_0828_eval_0827v1.md` §5
 
   </script>
   <script>

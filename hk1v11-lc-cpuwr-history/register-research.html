@@ -244,6 +244,8 @@
   <script type="text/template" id="md">
 # 六、寄存器规格交叉验证
 
+> **⏳ 时间锚点**：本章节为 **0716 时点**的交叉验证记录（基线 0707 RTL + 0708/0716 Excel），保留作历史依据。文中 `0x32 sw_reg_lane_ctrl` 等字段的位置/命名与当前（0827v1：单 bit 迁移 0x02/0x03/0x04、0x33[6:2] Reserved）已不同——最新状态见[寄存器](./regmap.html)与[当前状态](./status.html)页。
+
 ## 1. 验证目的与基线
 
 `register_research/` 是对 `LC_CPUWR` 寄存器表、RTL 实现与 Excel 规格三者的一次交叉核对。它补充了前面章节中只讲"改了什么"所缺少的"依据是什么"。

@@ -384,6 +384,27 @@ one-shot unlock 实现后，checker 出现误判：
 
 > 待用户确认后统一同步；0810v1 RTL 已通过验收三关，不受 DV 同步进度影响。
 
+## 8. 0811 之后的验收同步（0811v1 → 0827v1）
+
+DV env 同步继续暂缓期间，RTL 侧每个版本仍独立完成验收三关（iverilog + rtl-code-review + rtl-signal-trace）：
+
+| 版本 | 日期 | 内容 | 验收结果 |
+|------|------|------|----------|
+| 0819v1 | 08-19 | 复位改名 N_RST→RSTN（止步 LINK_CONFIG_CTRL 端口）；R_LOAD 确认保持内部 wire | 三关全过 |
+| 0819v2 | 08-19 | 新增 Loop_sel[2:0] 选择 CDR/KVCO 默认值（LINK_CONFIG_CTRL 空接） | 三关全过 |
+| 0820v1 | 08-20 | 新增 cr_done_filter[1:0] @ 0x24[7:6] | 三关全过 |
+| 0820v2 | 08-20 | Loop_sel 默认值移到输出 assign（综合友好）+ 内部写标志 | 三关全过 |
+| 0821v1/v2 | 08-21/25 | BCC 方向定论：BCC_M=I2C R/W output 下发 bcc_ctrl；SDID/AEQ_reg_lane_ctrl=bcc 写回只读监视 | 三关全过 + 服务器验证 |
+| 0827v1 | 08-25/28 | sw_reg_lane_ctrl 拆 5 个单 bit 迁移 LC_REG_MAPPING（0x33[6:2] Reserved）；新增 reg_eol @0x38[6] | 三关全过（review pass=true） |
+
+**0828 包集成后的 env 缺口**（在原暂缓项之上新增）：
+
+- `sw_reg_lane_ctrl0~4`（0x02/0x03/0x04 单 bit）与 `reg_eol`（0x38[6]）的 env 打包/模型缺失
+- lane ctrl 上电默认 3dB→0dB 迁移：env 需建立上电默认读回预期（0x02/0x03=0x00、0x04[0]=0、0x33[6:2]=0）防静默漂移
+- LINK_CONFIG_CTRL 服务器 0825 版的 cr_done_filter 透传端口被移除——下游消费方确认前，cr_done_filter 仅为 LC_CPUWR 输出悬空
+
+> 评估详情：`script\pack_0828_eval_0827v1.md`；DV env 同步整体仍按用户暂缓策略执行。
+
   </script>
   <script>
     document.getElementById('article').innerHTML = marked.parse(document.getElementById('md').textContent.trim());
