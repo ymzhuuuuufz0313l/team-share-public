@@ -62,6 +62,29 @@ def clean_default(v):
 
 TABLE = parse_md(MD0)
 
+# 0827v1 视觉优化：连续（地址连续、纯 Reserved [7:0]、未受保护）行合并为区间带，与其他图风格一致
+def is_pure_reserved(row):
+    _, _, fields = row
+    return len(fields) == 1 and fields[0][2] == "Reserved" and fields[0][0] == 7 and fields[0][1] == 0
+
+UNITS = []  # ('row', row) 或 ('band', first_row, last_row)
+i = 0
+while i < len(TABLE):
+    row = TABLE[i]
+    if is_pure_reserved(row) and row[0] not in PROTECTED:
+        j = i + 1
+        while (j < len(TABLE) and TABLE[j][0] == TABLE[j - 1][0] + 1
+               and is_pure_reserved(TABLE[j]) and TABLE[j][0] not in PROTECTED):
+            j += 1
+        if j - i >= 3:
+            UNITS.append(('band', TABLE[i], TABLE[j - 1]))
+        else:
+            UNITS.extend(('row', r) for r in TABLE[i:j])
+        i = j
+    else:
+        UNITS.append(('row', row))
+        i += 1
+
 # --- 颜色（柔和低饱和） ---
 C_PROT = "#fecaca"   # 受 LSI_PRTECT 保护（红）
 C_FREE = "#bbf7d0"   # 不受保护（绿）
@@ -90,7 +113,7 @@ def fit_font(name, span):
     return 6.5
 
 width  = X0 + 8 * COL_W + 36
-n_rows = len(TABLE)
+n_rows = len(UNITS)
 height = TOP + n_rows * ROW_H + 170
 cx = width / 2
 
@@ -106,8 +129,15 @@ for i in range(8):
     bx = X0 + i * COL_W + COL_W / 2
     out.append(f'<text x="{bx}" y="{TOP - 14}" text-anchor="middle" font-size="12" fill="#64748b">[{7 - i}]</text>')
 
-for idx, (dec, hexa, fields) in enumerate(TABLE):
+for idx, unit in enumerate(UNITS):
     y = TOP + idx * ROW_H
+    if unit[0] == 'band':
+        r0, r1 = unit[1], unit[2]
+        out.append(f'<text x="{LABEL_X}" y="{y + 28}" text-anchor="end" font-size="13" font-weight="600" fill="#64748b">{r0[1]} ~ {r1[1]} ({r0[0]} ~ {r1[0]})</text>')
+        out.append(f'<rect x="{X0}" y="{y}" width="{8 * COL_W}" height="{CELL_H}" fill="{C_RSRV}" stroke="#94a3b8" stroke-width="1" stroke-dasharray="4,3" rx="4"/>')
+        out.append(f'<text x="{X0 + 4 * COL_W}" y="{y + 29}" text-anchor="middle" font-size="12" fill="#64748b">⋯ 全 Reserved ⋯（不受保护）</text>')
+        continue
+    dec, hexa, fields = unit[1]
     out.append(f'<text x="{LABEL_X}" y="{y + 28}" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">{hexa} ({dec})</text>')
     # 整行 Reserved → 灰色虚线行
     if len(fields) == 1 and fields[0][2] == "Reserved" and fields[0][0] == 7 and fields[0][1] == 0:
