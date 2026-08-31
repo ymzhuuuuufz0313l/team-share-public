@@ -309,10 +309,14 @@ def generate_checksum_dual_svg(title, map0, map1):
 
             if has_field:
                 name = e["name"]
-                display_name = abbrev_name(name, 14)
+                # render the FULL field name; shrink font-size to fit the cell
+                display_name = name
                 font_size = 9 if width_bits >= 2 else 8
-                lines.append(f'<text x="{x + w/2}" y="{y + cell_h/2 - 3}" text-anchor="middle" font-size="{font_size}" font-weight="500" fill="{COLORS["text"]}">{escape_xml(display_name)}</text>')
-                lines.append(f'<text x="{x + w/2}" y="{y + cell_h/2 + 11}" text-anchor="middle" font-size="{font_size - 1}" fill="{COLORS["muted"]}">{escape_xml(e["default"])}</text>')
+                avail = max(w - 10, 24)
+                if len(display_name) * font_size * 0.62 > avail:
+                    font_size = max(5.0, avail / (len(display_name) * 0.62))
+                lines.append(f'<text x="{x + w/2}" y="{y + cell_h/2 - 3}" text-anchor="middle" font-size="{font_size:.1f}" font-weight="500" fill="{COLORS["text"]}">{escape_xml(display_name)}</text>')
+                lines.append(f'<text x="{x + w/2}" y="{y + cell_h/2 + 11}" text-anchor="middle" font-size="{max(font_size - 1, 4.5):.1f}" fill="{COLORS["muted"]}">{escape_xml(e["default"])}</text>')
 
     gy = top_margin + bit_label_h + 16
     for dec in addresses:
@@ -435,10 +439,14 @@ def generate_attr_svg(title, reg_map, attr_func, legend_items, footer_text=""):
             lines.append(f'<rect x="{x}" y="{y}" width="{w}" height="{cell_h}" fill="{fill}" stroke="{COLORS["border"]}" stroke-width="1" rx="4"/>')
 
             name = entry["name"]
-            display_name = abbrev_name(name, 16)
+            # render the FULL field name; shrink font-size to fit the cell
+            display_name = name
             font_size = 10 if width_bits >= 2 else 8
-            lines.append(f'<text x="{x + w/2}" y="{y + cell_h/2 - 2}" text-anchor="middle" font-size="{font_size}" font-weight="500" fill="{COLORS["text"]}">{escape_xml(display_name)}</text>')
-            lines.append(f'<text x="{x + w/2}" y="{y + cell_h/2 + 12}" text-anchor="middle" font-size="{font_size - 1}" fill="{COLORS["muted"]}">{escape_xml(entry["default"])}</text>')
+            avail = max(w - 10, 24)
+            if len(display_name) * font_size * 0.62 > avail:
+                font_size = max(5.0, avail / (len(display_name) * 0.62))
+            lines.append(f'<text x="{x + w/2}" y="{y + cell_h/2 - 2}" text-anchor="middle" font-size="{font_size:.1f}" font-weight="500" fill="{COLORS["text"]}">{escape_xml(display_name)}</text>')
+            lines.append(f'<text x="{x + w/2}" y="{y + cell_h/2 + 12}" text-anchor="middle" font-size="{max(font_size - 1, 4.5):.1f}" fill="{COLORS["muted"]}">{escape_xml(entry["default"])}</text>')
 
     # Legend
     legend_y = svg_h - 90

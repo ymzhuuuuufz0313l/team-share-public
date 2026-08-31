@@ -447,17 +447,16 @@ def generate_svg(title: str, reg_map, diffs=None, highlight_label=""):
             # text: field name and default
             name = entry["name"]
             default = entry["default"]
-            # abbreviate very long names (keep distinguishing suffix: strip sw_reg_ prefix first)
+            # render the FULL field name (no abbreviation); shrink font-size to fit the cell
             display_name = name
-            if len(display_name) > 16 and display_name.startswith("sw_reg_"):
-                display_name = display_name[len("sw_reg_"):]
-            if len(display_name) > 16:
-                display_name = display_name[:16] + "…"
 
-            # choose font size based on width
+            # choose base font size based on width, then shrink for long names
             font_size = 10 if width_bits >= 2 else 8
-            lines.append(f'<text x="{x + w/2}" y="{y + cell_h/2 - 2}" text-anchor="middle" font-size="{font_size}" font-weight="500" fill="{COLORS["text"]}">{escape_xml(display_name)}</text>')
-            lines.append(f'<text x="{x + w/2}" y="{y + cell_h/2 + 12}" text-anchor="middle" font-size="{font_size - 1}" fill="{COLORS["muted"]}">{escape_xml(default)}</text>')
+            avail = max(w - 10, 24)
+            if len(display_name) * font_size * 0.62 > avail:
+                font_size = max(5.0, avail / (len(display_name) * 0.62))
+            lines.append(f'<text x="{x + w/2}" y="{y + cell_h/2 - 2}" text-anchor="middle" font-size="{font_size:.1f}" font-weight="500" fill="{COLORS["text"]}">{escape_xml(display_name)}</text>')
+            lines.append(f'<text x="{x + w/2}" y="{y + cell_h/2 + 12}" text-anchor="middle" font-size="{max(font_size - 1, 4.5):.1f}" fill="{COLORS["muted"]}">{escape_xml(default)}</text>')
 
             if is_diff:
                 # diff star
