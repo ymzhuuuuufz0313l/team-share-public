@@ -73,7 +73,22 @@ ip/syn_HV2M23_digital_top/fc/
 └── report_fc.tcl          # 报告段
 ```
 
-**回传方式**（按项目惯例）：本地 SVN 副本同步后 TortoiseSVN 提交；或直接 scp 到服务器对应目录。
+**回传方式（重要，无文件传输通道时）**：本地无法直接传文件到服务器，改用**自解压安装脚本**——本地已生成两个脚本（`synthesis/fc_deploy/gen_fc_common.sh` 92KB、`gen_fc_run.sh` 25KB），在服务器上：
+
+```csh
+# 1. 新建两个空文件，把对应脚本全文粘贴进去（远程软件里操作）
+vi gen_fc_common.sh     # 粘贴 gen_fc_common.sh 全文，保存
+vi gen_fc_run.sh        # 粘贴 gen_fc_run.sh 全文，保存
+
+# 2. 执行（参数为服务器上的 SYNTHESIS 目录；若已 source 项目环境可省略参数）
+sh gen_fc_common.sh $PROJECT_PATH/SYNTHESIS
+sh gen_fc_run.sh    $PROJECT_PATH/SYNTHESIS
+```
+
+脚本会自动建目录、写入全部文件、并剥除粘贴可能引入的 CR 行尾，最后 `ls` 出产物清单供核对。
+注意：`gen_fc_common.sh` 约 92KB（dont_use_fc.tcl 占大头），如果远程软件单次粘贴吃不消，告诉我，我再把它拆成多个小脚本。
+（若以后恢复文件传输通道，也可直接 SVN/scp 回传，效果相同。）
+
 **不要动**服务器上现有的 `dc/`、`genus/` 等目录——FC 是全新平行目录。
 
 ---
