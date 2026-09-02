@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>进阶实验室 · Fusion Compiler 引入评估实录</title>
+  <link rel="stylesheet" href="./assets/style.css">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a class="navbar-brand" href="./">⚡ 进阶实验室 · Fusion Compiler</a>
+      <div class="navbar-links" id="navbar-links"></div>
+    </div>
+  </nav>
+
+  <div class="container">
+    <article class="article">
+
+      <div class="hero">
+        <span class="kicker">Advanced Design · Series 02</span>
+        <h1>Fusion Compiler 引入评估实录</h1>
+        <p class="lead">
+          在 HV2M23 项目现有 DC 综合流程上，平行引入 Fusion Compiler 的完整实践：
+          范围决策（先综合后全流程）、内网环境踩坑实录、license 排查、
+          9 脚本平行架构设计，以及 DC → FC 的关键差异对照。
+        </p>
+        <div class="author">作者：ymzhuuuu · HV2M23 综合流程实践</div>
+        <div class="tagline">license 只卡「运行」，不卡「搭建」——先把结构建好，再填空试跑</div>
+      </div>
+
+      <div class="statbar">
+        <div class="stat"><div class="num">V-2023.12-SP5</div><div class="lbl">确认的 FC 版本</div></div>
+        <div class="stat"><div class="num">9</div><div class="lbl">新增脚本（平行架构）</div></div>
+        <div class="stat"><div class="num">A→B</div><div class="lbl">范围策略：先综合后全流程</div></div>
+        <div class="stat"><div class="num">196s</div><div class="lbl">license 逐个问服务器耗时</div></div>
+      </div>
+
+      <div class="section-title">本系列 · Sheet 导航</div>
+      <div class="chapter-grid">
+
+        <a class="chapter-card" href="./evaluation.html">
+          <div class="num">1</div>
+          <div class="title">FC 引入评估实录</div>
+          <div class="desc">从 DC 到 FC 的平行迁移全记录：环境踩坑（装错的 NanoTime 包、缺失的 Fusion-Compiler-NX license）、9 脚本平行架构、DC→FC 命令差异对照与 .db→NDM 库卡点。</div>
+          <span class="tag">工具迁移 · 进行中</span>
+        </a>
+
+        <div class="chapter-card" style="opacity:.55; cursor:default;">
+          <div class="num">2</div>
+          <div class="title">服务器回传上手指引</div>
+          <div class="desc">FC 流程脚本回传内网服务器后的部署与首跑指引（目录放置、环境变量、试跑检查点）。</div>
+          <span class="tag">筹备中</span>
+        </div>
+
+      </div>
+
+      <div class="section-title">一句话结论</div>
+      <div class="pcard">
+        <div class="prow"><span class="k">结论</span><span>引入 FC 的最大卡点不在脚本而在<b>库格式（.db → NDM）与 license 授权</b>；采用「平行架构 + 变量占位 + 同名输出」策略，可在授权到位前就完成全部脚本搭建，下游 PT/LEC 流程零改动。</span></div>
+      </div>
+
+      <div class="section-title">相关系列</div>
+      <div class="chapter-grid">
+        <a class="chapter-card" href="../advanced-design/">
+          <div class="num">S1</div>
+          <div class="title">模式相关时序约束的拆与合</div>
+          <div class="desc">Advanced Design Lab Series 01：1P/2P 双模式芯片的 STA 进阶方法论（合并时钟 / set_max_delay / MMMC）。</div>
+          <span class="tag">进阶设计实验室</span>
+        </a>
+        <a class="chapter-card" href="../synthesis-integration-flow-guide/">
+          <div class="num">G</div>
+          <div class="title">Synthesis &amp; Integration Flow 指南</div>
+          <div class="desc">现有 DC 流程的环境配置、脚本字典、LEC、PT 签核与功耗分析完整文档——本系列的流程基线。</div>
+          <span class="tag">工具指南</span>
+        </a>
+      </div>
+
+    </article>
+    <div class="footer">ADVANCED DESIGN LAB · knowledge reservoir</div>
+  </div>
+
+  <script>
+const chapters = [
+  ['index', '主题首页'],
+  ['evaluation', 'FC引入实录']
+];
+const currentPath = location.pathname.split('/').pop() || 'index.html';
+const linksContainer = document.getElementById('navbar-links');
+chapters.forEach(([slug, label]) => {
+  const href = slug === 'index' ? './' : `./${slug}.html`;
+  const filename = slug === 'index' ? 'index.html' : `${slug}.html`;
+  const a = document.createElement('a');
+  a.href = href;
+  a.textContent = label;
+  if (currentPath === filename || currentPath.endsWith('/' + filename) || (currentPath === '' && slug === 'index')) {
+    a.classList.add('active');
+  }
+  linksContainer.appendChild(a);
+});
+  </script>
+
+</body>
+</html>
