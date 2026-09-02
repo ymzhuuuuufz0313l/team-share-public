@@ -61,10 +61,11 @@
 ```
 common/tcl_dir/fc/
 ├── basic_setup_fc.tcl     # 基础设置（输出变量 + app options）
-├── common_db_ndm.tcl      # 库配置（FC_LIB_MODE / .db 路径）
+├── common_db_ndm.tcl      # 库配置（FC_LIB_MODE / NDM 路径）
 ├── fc_user_proc.tcl       # 用户过程（kv_compile_fusion 等）
 ├── design_rule_fc.tcl     # 设计规则约束
-└── dont_use_fc.tcl        # dont_use 清单
+├── dont_use_fc.tcl        # dont_use 清单
+└── gen_ndm_lm.tcl         # 一次性建库脚本（icc2_lm_shell 用，db→NDM）
 
 ip/syn_HV2M23_digital_top/fc/
 ├── run_fc                 # csh 入口（要加执行权限）
@@ -90,26 +91,29 @@ python3 deploy_fc.py $PROJECT_PATH/SYNTHESIS
 
 ---
 
-## 二、首跑前的 3 项检查（5 分钟）
+## 二、首跑前的检查与一次性建库（约 10 分钟）
 
-在服务器上执行：
+> **注意**：license 只在计算节点可用（登录节点直连 fc_shell 会报 `Fusion-Compiler-NX`）。
+> **所有 FC/LM 命令一律走 `bsub -Ip "..."`**，以下命令同此。
 
 ```csh
-# 1. license 是否就绪（正常 = 打印 banner 后安静退出，无 ERROR）
-source /eda/env/NEXT/fs_compiler_V-2023.12-SP5.cshrc
-fc_shell -no_init -x "exit" -batch
+# 0. 一次性建 NDM 库（read_db 只在 icc2_lm_shell 里有，fc_shell 没有——已实测确认）
+mkdir -p $PROJECT_PATH/SYNTHESIS/common/ndm
+cd $PROJECT_PATH/SYNTHESIS/common/ndm
+bsub -Ip "icc2_lm_shell -f $PROJECT_PATH/SYNTHESIS/common/tcl_dir/fc/gen_ndm_lm.tcl"
+# 成功标志：当前目录下生成 nexchip_145_9t.ndm/
+# check_workspace 若报缺 physical 数据（没有 LEF）属预期，看是否能 tolerate（已标 TODO）
 
-# 2. 预填的两个 .db 库文件是否存在（common_db_ndm.tcl 里写死的）
+# 1. license 自检（走 bsub；正常 = 打印 banner 后安静退出）
+bsub -Ip "fc_shell -no_init -x \"exit\" -batch"
+
+# 2. 确认 .db 源文件存在（建 NDM 的输入，预检过可跳过）
 ls /eda/process/015/ENEXCHIP/standcell/M31HSSC900EL150SL_00.01.000/ccs_db/M31HSSC900EL150SL_125CSS1P62_cmax_ccs.db
 ls /eda/process/015/ENEXCHIP/standcell/M31HSSC900EL150SS_01.05.000/ccs_db/M31HSSC900EL150SS_125CSS1P62_cmax_ccs.db
-
-# 3. hdlin.enable_vpp 这个 app option 是否存在（已被 catch 包裹，不存在只是告警）
-fc_shell -no_init -x "get_app_options hdlin.*" -batch
 ```
 
-- 第 1 条报 license 错 → 停下来找 IT，后面不用做
-- 第 2 条文件不存在 → 把实际存在的文件名/目录反馈回来（改 `common_db_ndm.tcl` 的 `FC_DB_FILES`）
-- 第 3 条看输出里有没有 `hdlin.enable_vpp`
+- 第 0 步失败 → 把 LM shell 的报错原文发回（重点是 `create_workspace` / `check_workspace` 的选项问题）
+- 第 1 步报 license 错 → 停下来找 IT
 
 ---
 
@@ -117,8 +121,8 @@ fc_shell -no_init -x "get_app_options hdlin.*" -batch
 
 ```csh
 cd $PROJECT_PATH/SYNTHESIS/ip/syn_HV2M23_digital_top/fc
-chmod +x run_fc          # 首次回传后加一次执行权限
-./run_fc 1               # 带参数 = 跑完自动退出 fc_shell；不带参数 = 跑完驻留交互模式
+bsub -Ip "csh ./run_fc 1"    # license 只在计算节点，必须走 bsub
+                             # 带 1 = 跑完自动退出 fc_shell
 ```
 
 `run_fc` 会自动完成：建 `rep_dir/` → 调 `genfilelist` 生成文件列表 → 记录 svn.info → source FC 环境 → 启动 `fc_shell -f compile_fc.tcl`，日志写到 `rep_dir/fc.log`。
