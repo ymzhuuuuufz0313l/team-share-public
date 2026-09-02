@@ -49,12 +49,12 @@
           <span class="tag">工具迁移 · 进行中</span>
         </a>
 
-        <div class="chapter-card" style="opacity:.55; cursor:default;">
+        <a class="chapter-card" href="./handoff-guide.html">
           <div class="num">2</div>
           <div class="title">服务器回传上手指引</div>
-          <div class="desc">FC 流程脚本回传内网服务器后的部署与首跑指引（目录放置、环境变量、试跑检查点）。</div>
-          <span class="tag">筹备中</span>
-        </div>
+          <div class="desc">FC 流程脚本回传内网服务器后的部署与首跑指引：回传清单、首跑前 3 项检查、分阶段定位法、已知风险点与反馈清单。</div>
+          <span class="tag">上手指引</span>
+        </a>
 
       </div>
 
@@ -86,7 +86,8 @@
   <script>
 const chapters = [
   ['index', '主题首页'],
-  ['evaluation', 'FC引入实录']
+  ['evaluation', 'FC引入实录'],
+  ['handoff-guide', '回传上手指引']
 ];
 const currentPath = location.pathname.split('/').pop() || 'index.html';
 const linksContainer = document.getElementById('navbar-links');

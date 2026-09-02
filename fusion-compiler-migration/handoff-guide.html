@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>进阶实验室 · FC 引入实录 — 服务器回传上手指引</title>
+  <link rel="stylesheet" href="./assets/style.css">
+  <script src="./js/marked.min.js"></script>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a class="navbar-brand" href="./">⚡ 进阶实验室 · Fusion Compiler</a>
+      <div class="navbar-links" id="navbar-links"></div>
+    </div>
+  </nav>
+
+  <div class="container with-toc">
+    <aside class="toc-wrapper">
+      <div class="toc" id="toc"></div>
+    </aside>
+
+    <div class="content">
+      <article class="article" id="article"></article>
+      <div class="page-nav">
+        <a class="prev" href="./evaluation.html"><span class="label">← 上一篇</span><span class="title">FC 引入评估实录</span></a>
+        <a class="next" href="./"><span class="label">回主题 →</span><span class="title">Fusion Compiler 迁移 · Sheet 导航</span></a>
+      </div>
+    </div>
+  </div>
+
+  <div class="lightbox" id="lightbox">
+    <span class="close" id="lightbox-close">&times;</span>
+    <img id="lightbox-img" src="" alt="">
+    <div class="hint">滚轮缩放 · 拖拽移动 · Esc 或点击空白处关闭</div>
+  </div>
+
+<script type="text/template" id="md">
+# Fusion Compiler 服务器回传上手指引
+
+> 适用对象：HV2M23 项目 `HV2M23_digital_top` 综合（方案 A：FC 仅做综合，出 netlist+SDC 给 APR）
+> 工具版本：Fusion Compiler **V-2023.12-SP5**（`/eda/synopsys/fusioncompiler/V-2023.12-SP5/bin/fc_shell`）
+> 前置条件：FC license（`Fusion-Compiler-NX`）已由 IT 配好——未配好前跑不起来，先确认这个
+
+---
+
+## 一、回传清单（传什么、传到哪）
+
+本地新增的 9 个文件，按**相同相对路径**回传到服务器（服务器侧目录名为大写 `SYNTHESIS`）：
+
+| 本地路径 | 服务器路径 |
+|---|---|
+| `synthesis/common/tcl_dir/fc/` 下 5 个 tcl | `$PROJECT_PATH/SYNTHESIS/common/tcl_dir/fc/` |
+| `synthesis/ip/syn_HV2M23_digital_top/fc/` 下 4 个文件 | `$PROJECT_PATH/SYNTHESIS/ip/syn_HV2M23_digital_top/fc/` |
+
+文件明细：
+
+```
+common/tcl_dir/fc/
+├── basic_setup_fc.tcl     # 基础设置（输出变量 + app options）
+├── common_db_ndm.tcl      # 库配置（FC_LIB_MODE / .db 路径）
+├── fc_user_proc.tcl       # 用户过程（kv_compile_fusion 等）
+├── design_rule_fc.tcl     # 设计规则约束
+└── dont_use_fc.tcl        # dont_use 清单
+
+ip/syn_HV2M23_digital_top/fc/
+├── run_fc                 # csh 入口（要加执行权限）
+├── compile_fc.tcl         # 主流程
+├── fc_outputs.tcl         # 输出段
+└── report_fc.tcl          # 报告段
+```
+
+**回传方式**（按项目惯例）：本地 SVN 副本同步后 TortoiseSVN 提交；或直接 scp 到服务器对应目录。
+**不要动**服务器上现有的 `dc/`、`genus/` 等目录——FC 是全新平行目录。
+
+---
+
+## 二、首跑前的 3 项检查（5 分钟）
+
+在服务器上执行：
+
+```csh
+# 1. license 是否就绪（正常 = 打印 banner 后安静退出，无 ERROR）
+source /eda/env/NEXT/fs_compiler_V-2023.12-SP5.cshrc
+fc_shell -no_init -x "exit" -batch
+
+# 2. 预填的两个 .db 库文件是否存在（common_db_ndm.tcl 里写死的）
+ls /eda/process/015/ENEXCHIP/standcell/M31HSSC900EL150SL_00.01.000/ccs_db/M31HSSC900EL150SL_125CSS1P62_cmax_ccs.db
+ls /eda/process/015/ENEXCHIP/standcell/M31HSSC900EL150SS_01.05.000/ccs_db/M31HSSC900EL150SS_125CSS1P62_cmax_ccs.db
+
+# 3. hdlin.enable_vpp 这个 app option 是否存在（已被 catch 包裹，不存在只是告警）
+fc_shell -no_init -x "get_app_options hdlin.*" -batch
+```
+
+- 第 1 条报 license 错 → 停下来找 IT，后面不用做
+- 第 2 条文件不存在 → 把实际存在的文件名/目录反馈回来（改 `common_db_ndm.tcl` 的 `FC_DB_FILES`）
+- 第 3 条看输出里有没有 `hdlin.enable_vpp`
+
+---
+
+## 三、跑起来（输入什么指令）
+
+```csh
+cd $PROJECT_PATH/SYNTHESIS/ip/syn_HV2M23_digital_top/fc
+chmod +x run_fc          # 首次回传后加一次执行权限
+./run_fc 1               # 带参数 = 跑完自动退出 fc_shell；不带参数 = 跑完驻留交互模式
+```
+
+`run_fc` 会自动完成：建 `rep_dir/` → 调 `genfilelist` 生成文件列表 → 记录 svn.info → source FC 环境 → 启动 `fc_shell -f compile_fc.tcl`，日志写到 `rep_dir/fc.log`。
+
+---
+
+## 四、跑起来后怎么看（按阶段定位）
+
+`compile_fc.tcl` 的执行阶段和对应检查点：
+
+| 阶段 | 看什么 | 正常表现 | 挂了怎么办 |
+|---|---|---|---|
+| ① 建库 | `fc.log` 搜 `create_lib` / `read_db` | 无 ERROR | 大概率是 .db 路径不对 → 反馈 `fc.log` 前 100 行 |
+| ② 读 RTL | 搜 `read_filelist_all` / `analyze` / `elaborate` | 列出全部 RTL 文件、无 file not exist | 文件路径/`+incdir+` 问题 → 反馈报错段 |
+| ③ link / check_design | 搜 `link` | 无 unresolved reference | FC 的 `link` 可能要换 `link_block`（已标 TODO）→ 把报错原文发回 |
+| ④ 约束段 | 搜 `clk_period` / `kv_clkio` / `input_delay` | 逐个 source 通过 | **首跑最可能挂这里**（复用的约束文件含 DC 专有命令如 `set_wire_load_model`）→ 把报错行原文发回，逐条修 |
+| ⑤ compile_fusion | 搜 `compile_fusion` | initial_opto → final_opto 推进 | 挂了就反馈报错上下文 50 行 |
+| ⑥ 输出+报告 | `ls rep_dir/` | 有 `.gv` `.gv_org` `_onlytop.v` `.sdc` `.rpt` `_max.rpt` | 缺文件 → 反馈 `fc.log` 尾部 |
+
+快速判断整轮成败：
+
+```csh
+grep -c "TODO\|Error\|ERROR" rep_dir/fc.log    # 粗看错误密度
+ls -la rep_dir/                                 # 看产物齐不齐
+```
+
+---
+
+## 五、已知风险点（首跑大概率会踩到，不要慌）
+
+1. **约束段 DC 专有命令**：`common/` 和 `ip_cons/` 复用的 6 个约束文件里可能有 `set_wire_load_model`、`set_driving_cell` 等，fc_shell 遇错会中断——把报错行原文发回即可，逐条翻译
+2. **`link` vs `link_block`**：已标 TODO，报错就换
+3. **`report_timing` 选项缩写**：`-trans -cap -net` 可能要写全 `-transition_time -capacitance -nets`（影响报告段和 4 个 alias）
+4. **app options 名称**：`basic_setup_fc.tcl` 里只有 `hdlin.enable_vpp` 是活动的且已 catch 包裹；其余 DC 变量已全部注释+TODO
+5. **下游路径问题（B1）**：PT/LEC 现有脚本写死了 `dc/rep_dir/`，**首跑阶段不用管**；等 FC 结果要用 PT 签核时，临时方案：
+   ```csh
+   cp fc/rep_dir/${TOP_NAME}.gv* ../dc/rep_dir/   # 让现有 PT 脚本吃到 FC 网表
+   ```
+   长期方案（改 `read_design.tcl`/`rtl_gate.do` 用 `$SYN_TOOL` 参数化路径）等评估结论后再做
+6. **corner 绑定**：`common_db_ndm.tcl` 目前只适配 `wcl_cmax_m40_setup`，不要切 `$CORNER` 跑别的角
+
+---
+
+## 六、给我反馈什么
+
+首跑结束后，把下面这些打包发回：
+
+| 必给 | 说明 |
+|---|---|
+| `rep_dir/fc.log` | 全文（或至少第一个 ERROR 往前 50 行 + 往后 20 行） |
+| `ls rep_dir/` 输出 | 看产物完整性 |
+| 命中的 TODO 清单 | 报错行号对应脚本里哪条 TODO(FC-CONFIRM) |
+| `report_fc.tcl` 产物 `.rpt` | 如果跑到了报告段，`.rpt` 和 `_max.rpt` 一起发回，用于和 DC 版对比 |
+
+如果一次跑通了：把 `.rpt`（report_area/report_power/report_qor 段）发回，和 DC 的 `dc/rep_dir/HV2M23_digital_top.rpt` 做 QoR 对比，评估 FC 是否可替代 DC。
+</script>
+
+<script>
+const chapters = [
+  ['index', '主题首页'],
+  ['evaluation', 'FC引入实录'],
+  ['handoff-guide', '回传上手指引']
+];
+const currentPath = location.pathname.split('/').pop() || 'index.html';
+const linksContainer = document.getElementById('navbar-links');
+chapters.forEach(([slug, label]) => {
+  const href = slug === 'index' ? './' : `./${slug}.html`;
+  const filename = slug === 'index' ? 'index.html' : `${slug}.html`;
+  const a = document.createElement('a');
+  a.href = href;
+  a.textContent = label;
+  if (currentPath === filename || currentPath.endsWith('/' + filename)) a.classList.add('active');
+  linksContainer.appendChild(a);
+});
+</script>
+<script>
+const md = document.getElementById('md').textContent;
+document.getElementById('article').innerHTML = marked.parse(md);
+
+const toc = document.getElementById('toc');
+const headings = document.querySelectorAll('.article h2, .article h3');
+const tocLinks = [];
+headings.forEach(h => {
+  const id = h.textContent.trim().replace(/\s+/g, '-').replace(/[^\w\u4e00-\u9fa5-]/g, '');
+  h.id = id;
+  const cls = h.tagName === 'H2' ? 'toc-h2' : 'toc-h3';
+  const a = document.createElement('a');
+  a.href = '#' + id;
+  a.textContent = h.textContent;
+  a.className = cls;
+  toc.appendChild(a);
+  tocLinks.push(a);
+});
+
+tocLinks.forEach((link, i) => {
+  if (!link.classList.contains('toc-h2')) return;
+  const children = [];
+  for (let j = i + 1; j < tocLinks.length && tocLinks[j].classList.contains('toc-h3'); j++) children.push(tocLinks[j]);
+  if (!children.length) return;
+  link.classList.add('toc-parent');
+  const arrow = document.createElement('span');
+  arrow.className = 'toc-arrow';
+  arrow.textContent = '▸';
+  link.prepend(arrow);
+  children.forEach(c => c.parentLink = link);
+  arrow.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const collapsed = link.classList.toggle('collapsed');
+    children.forEach(c => c.style.display = collapsed ? 'none' : '');
+  });
+});
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      tocLinks.forEach(l => l.classList.remove('active'));
+      let active = tocLinks.find(a => a.getAttribute('href') === '#' + entry.target.id);
+      if (active && active.style.display === 'none' && active.parentLink) active = active.parentLink;
+      if (active) active.classList.add('active');
+    }
+  });
+}, { rootMargin: '-10% 0px -75% 0px' });
+headings.forEach(h => observer.observe(h));
+</script>
+<script>
+const lightbox = document.getElementById('lightbox');
+const lbImg = document.getElementById('lightbox-img');
+const lbClose = document.getElementById('lightbox-close');
+let scale = 1;
+let isDragging = false;
+let startX = 0, startY = 0, translateX = 0, translateY = 0;
+function openLightbox(src) { lbImg.src = src; scale = 1; translateX = 0; translateY = 0; updateTransform(); lightbox.classList.add('active'); document.body.style.overflow = 'hidden'; }
+function closeLightbox() { lightbox.classList.remove('active'); document.body.style.overflow = ''; }
+function updateTransform() { lbImg.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`; }
+document.addEventListener('click', (e) => { const img = e.target.closest('img'); if (!img || img.id === 'lightbox-img' || !img.closest('.article')) return; openLightbox(img.src); });
+lbClose.addEventListener('click', closeLightbox);
+lightbox.addEventListener('click', (e) => { if (e.target === lightbox) closeLightbox(); });
+lightbox.addEventListener('wheel', (e) => { e.preventDefault(); const d = e.deltaY > 0 ? -0.12 : 0.12; scale = Math.min(Math.max(0.5, scale + d), 5); updateTransform(); });
+lbImg.addEventListener('mousedown', (e) => { isDragging = true; startX = e.clientX - translateX; startY = e.clientY - translateY; lbImg.classList.add('grabbing'); e.preventDefault(); });
+document.addEventListener('mousemove', (e) => { if (!isDragging) return; translateX = e.clientX - startX; translateY = e.clientY - startY; updateTransform(); });
+document.addEventListener('mouseup', () => { isDragging = false; lbImg.classList.remove('grabbing'); });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && lightbox.classList.contains('active')) closeLightbox(); });
+</script>
+
+</body>
+</html>
