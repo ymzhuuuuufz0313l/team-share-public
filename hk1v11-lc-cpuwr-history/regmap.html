@@ -552,7 +552,7 @@ assign R_REG31_F_RECON = {PWRC_NB, PWRC_NA, PWRC_PB, PWRC_PA};  // 8'hAA
 - `VPS_EN_0` = `LSI_PRTECT ? R_REG40_F[6] : 1'b0`（reg40 属 LSI 保护）
 - `LINK_CONFIG_CTRL` 中 `.VPS_EN_0()` / `.VPS_EN_1()` 空接
 
-**R_DBC_WIDTH_OPT 描述更新**（reg41[2:1]，位置/默认不变）：`00`=LD_W(92)+36 packets、`01`=+64、`10`=+70、`11`=+134。
+**R_DBC_WIDTH_OPT 描述更新**（reg41[2:1]，位置不变；0811v1 时默认仍 `2'b00`，**0903v1 起默认 `2'b01`**、字节默认 `0x00→0x02`，详见 §14.12）：`00`=LD_W(92)+36 packets、`01`=+64、`10`=+70、`11`=+134。
 
 ## 14.8 0817 复核修正（HK1V11_Register_20260817.xlsm）
 
@@ -632,6 +632,29 @@ assign 未解锁分支与复位块（RSTN_NLOCK_NORMAL）两处 default 均按 L
 `0xA0[4:0]` SDID → `regr_SDID[4:0]`、`0xA1[3:0]` AEQ_reg_lane_ctrl → `regr_AEQ_lane_ctrl[3:0]`（均只读 R；RTL 侧端口改名随服务器协同后同步）。
 
 > ⚠️ **集成注意**：`LINK_CONFIG_CTRL.v`（服务器 0825 基线）未随本次修改，残留 2 处 `.sw_reg_lane_ctrl` 连接已过期，需服务器侧连同 `LC_REG_MAPPING` 的 5 个新单 bit 输出一并更新。
+
+## 14.12 0903v1 0x29 默认值变更与 FPGA SCREN 常开
+
+依据 `HK1V11_Register_20260903.xlsm`（2026-09-07 同步，history sheet 仅 0x29 默认值一处实质变更）。寄存器 map 本身无变化（地址/字段位置/保护属性均不变）。
+
+### 14.12.1 `R_DBC_WIDTH_OPT[1:0]` @ reg41[2:1] (`0x29`) 默认值变更
+
+| 项 | 0827v1 及之前 | 0903v1 |
+|----|---------------|--------|
+| 字节默认值（`R_REG41_F`，十进制 41） | `0x00` | **`0x02`** |
+| `R_DBC_WIDTH_OPT[1:0]` 复位默认 | `2'b00` | **`2'b01`** |
+
+- 字段位置/访问/LSI_PRTECT 保护均不变；复位值与 LSI_PRTECT 读回兜底同步修改
+- 表侧同步（0903 xlsm）：Reg_1V11 sheet——Address 0x29 default `0x00→0x02`；Reg_description_F_CHIP_SEL=0/1 sheet——`R_DBC_WIDTH_OPT[1:0]` default `2'b00→2'b01`
+- 编码含义不变：`00`=LD_W(92)+36 packets、`01`=+64、`10`=+70、`11`=+134（默认编码由 +36 变为 +64）
+
+### 14.12.2 `R_SCREN` 增加 VU440_FPGA 平台分支（LC_REG_MAPPING）
+
+- `` `ifdef VU440_FPGA ``：`R_SCREN` 强制 `1'b1`（FPGA 平台 scramble 常开）
+- `` `else ``：保持 `R_SCREN = R_REG00_F[4]`（0x00[4]），ASIC/仿真流程行为不变
+- 寄存器 map 无变化：0x00[4] SCREN 字段位置/默认值均不变
+
+> env/reg_model 本版无功能变化（无寄存器地址/map 变化）。
 
 ## 15. 寄存器可视化大图
 

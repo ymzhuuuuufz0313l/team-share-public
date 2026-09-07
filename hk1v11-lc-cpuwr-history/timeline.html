@@ -569,6 +569,15 @@
 - **history 副本同步**（commit `b9e85a0`）：`LC_CPUWR_history/LINK_CONFIG_CTRL.v` 经用户确认整文件替换为服务器 0825 版（原为本地 0821v1 旧版）；接口增量：+input `DCLK/LOOP_SEL/EQ/AEQ_reg_lane_ctrl/SDID/EQ_MODE/AUTO_EQ_EN`，+output `BCC_M/VBK/reg_lane_ctrl`，−output `reg_lane_ctrl_pre/reg_pin_eq/cr_done_filter`
 - **0827v1 重放状态**：评估确认 LC_CPUWR / LC_REG_MAPPING 的 0827v1 为 0828 包对应文件的**严格超集**——拷回 HDL + LINK_CONFIG_CTRL 集成补丁（删 `.sw_reg_lane_ctrl` 连接 ×2 + LC_REG_MAPPING 实例补 5 个新 output 连接 + 可选 `.reg_eol()`）即完成重放，零冲突；详见评估报告 `script\pack_0828_eval_0827v1.md` §5
 
+### 4.18 0903v1 寄存器表同步（HK1V11_Register_20260903.xlsm）：0x29 默认值变更 + FPGA SCREN 常开
+
+2026-09-07 同步，依据 `HK1V11_Register_20260903.xlsm`（history sheet：仅 0x29 默认值一处实质变更）：
+
+- **LC_CPUWR（0827v1→0903v1）**：0x29（十进制 41，`R_REG41_F`）字节默认值 `0x00` → `0x02`，即 `R_DBC_WIDTH_OPT[1:0]` @ 0x29[2:1] 复位默认 `2'b00` → `2'b01`（复位值与 LSI_PRTECT 读回兜底同步修改）
+- **LC_REG_MAPPING（0827v1→0903v1）**：`` `ifdef VU440_FPGA `` 分支 `R_SCREN` 强制 `1'b1`（FPGA 平台 scramble 常开）；`` `else `` 分支保持 `R_SCREN = R_REG00_F[4]`（0x00[4]），ASIC/仿真流程行为不变
+- **寄存器 map 无变化**：0x29 地址/字段位置/保护属性均不变，仅字节默认值调整；0903 xlsm 表同步——Reg_1V11 sheet：Address 0x29 default `0x00→0x02`；Reg_description_F_CHIP_SEL=0/1 sheet：`R_DBC_WIDTH_OPT[1:0]` default `2'b00→2'b01`
+- **env/reg_model**：无功能变化（无寄存器地址/map 变化）
+
   </script>
   <script>
     document.getElementById('article').innerHTML = marked.parse(document.getElementById('md').textContent.trim());

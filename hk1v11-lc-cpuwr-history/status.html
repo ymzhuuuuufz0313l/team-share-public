@@ -246,10 +246,11 @@
 
 ## 1. 当前版本
 
-当前最新版本为 **0827v1**（根级固定名 `LC_CPUWR.v`，文件头标注 0827v1；`LC_REG_MAPPING.v` 以服务器 0825 版为基线升 0827v1）：
+当前最新版本为 **0903v1**（根级固定名 `LC_CPUWR.v`，文件头标注 0903v1：0x29 字节默认 `0x00→0x02`；`LC_REG_MAPPING.v` 升 0903v1：`` `ifdef VU440_FPGA `` 下 `R_SCREN` 强制 `1'b1`，FPGA scramble 常开）：
 
 | 版本 | 主要状态 |
 |------|----------|
+| **0903v1** | **HK1V11_Register_20260903 表同步：0x29（十进制 41，R_REG41_F）字节默认 `0x00→0x02`（`R_DBC_WIDTH_OPT[1:0]` @ 0x29[2:1] 默认 `2'b00→2'b01`）；LC_REG_MAPPING `` `ifdef VU440_FPGA `` 下强制 `R_SCREN=1'b1`（FPGA scramble 常开），ASIC/仿真行为不变；寄存器 map 无变化、env/reg_model 无功能变化** ✅ |
 | **0827v1** | **HK1V11_Register_20260827 表同步：`sw_reg_lane_ctrl` 拆 5 个单 bit output 迁移 `LC_REG_MAPPING`（0x33[6:2] 复位归零 Reserved）；新增 `reg_eol` @ 0x38[6]；地址表 MD ×2 同步 + NO40 Excel 行** ✅ |
 | 0821v2 | BCC 方向定论：`BCC_M` 回退 I2C R/W output（下发 bcc_ctrl）；`SDID`/`AEQ_reg_lane_ctrl` 保持只读 input（去 regr_ 前缀，对齐服务器 0825 命名）；服务器验证通过 ✅ |
 | 0821v1 | BCC 寄存器方向修正（spec 理解修正）：BCC_M/SDID/AEQ_reg_lane_ctrl 改 regr_* 只读 input、删 I2C 写通路（BCC_M 回退由 0821v2 完成）✅ |
@@ -263,6 +264,13 @@
 | 0721v1 | `LCONFIG_DATA`/`FCONFIG_DATA` 16bit→24bit（每步 3 寄存器）；checksum XOR 总量不变 ✅ |
 | 0716v1 | 新增 `FSEL[1:0]` @ `0x35`；已归档为 `0716_v1_work` ✅ |
 | 0714v1 | chip_sel=0 默认值 + `LC_REG_MAPPING` 回拼 chip_sel=1 默认值；回归通过 ✅ |
+
+0903v1 交付物：
+
+- 根级固定文件 `LC_CPUWR.v`（文件头 0903v1）：0x29（十进制 41，`R_REG41_F`）字节默认值 `0x00 → 0x02`，即 `R_DBC_WIDTH_OPT[1:0]` @ 0x29[2:1] 复位默认 `2'b00 → 2'b01`（复位值与 LSI_PRTECT 读回兜底同步修改）
+- 根级固定文件 `LC_REG_MAPPING.v`（文件头 0903v1）：`` `ifdef VU440_FPGA `` 分支 `R_SCREN` 强制 `1'b1`（FPGA 平台 scramble 常开）；`` `else `` 分支保持 `R_SCREN = R_REG00_F[4]`（0x00[4]），ASIC/仿真流程行为不变；寄存器 map 无变化
+- 寄存器表 `HK1V11_Register_20260903.xlsm` 同步：Reg_1V11 sheet——Address 0x29 default `0x00→0x02`；Reg_description_F_CHIP_SEL=0/1 sheet——`R_DBC_WIDTH_OPT[1:0]` default `2'b00→2'b01`
+- env/reg_model：无功能变化（无寄存器地址/map 变化）
 
 0827v1 交付物：
 
@@ -291,6 +299,7 @@
 - **0821v1/0821v2 BCC 方向定论**：0821v1 依 spec 理解将 BCC_M/SDID/AEQ_reg_lane_ctrl 改 regr_* 只读并删 I2C 写通路；0821v2 集成服务器 0825 后定论——CPUWR 无 BCC 总线访问权限，BCC_M 回退 I2C R/W output（下发 bcc_ctrl），SDID/AEQ_reg_lane_ctrl 保持只读 input 并去 regr_ 前缀对齐服务器命名；服务器验证通过（commit `602cea9`）
 - **0825/0828 服务器包集成**：0825 包整体替换 HDL/（`f54f8d6`）；0828 包（PACK_TAR_0828V0）覆盖 HDL/——修改 16/新增 2/删除 0，MD5 310/310 零差异（`d00e2a0`）；覆盖后 LC_CPUWR=0821v2、LINK_CONFIG_CTRL=服务器 0825 版（SDID 只读接通、BCC_M 上抛；⚠️ cr_done_filter 透传端口被服务器移除）；0827v1 评估=纯增量零冲突（LC_CPUWR/LC_REG_MAPPING 0827v1 为严格超集，拷回+集成补丁即重放）
 - **history 副本同步**：`LC_CPUWR_history/LINK_CONFIG_CTRL.v` 用户确认替换为服务器 0825 版（`b9e85a0`）；接口增量见 timeline 4.17
+- **0903v1 表同步**：依据 HK1V11_Register_20260903.xlsm——LC_CPUWR 0x29（十进制 41，`R_REG41_F`）字节默认 `0x00→0x02`（`R_DBC_WIDTH_OPT[1:0]` @ 0x29[2:1] 复位默认 `2'b00→2'b01`，复位值与 LSI_PRTECT 读回兜底同步修改）；LC_REG_MAPPING `` `ifdef VU440_FPGA `` 下 `R_SCREN` 强制 `1'b1`（FPGA 平台 scramble 常开，`` `else `` 分支保持 `R_SCREN = R_REG00_F[4]`，ASIC/仿真流程行为不变）；寄存器 map 无变化，env/reg_model 无功能变化
 
 ## 3. 待确认项
 
