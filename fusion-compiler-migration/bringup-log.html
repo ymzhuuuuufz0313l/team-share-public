@@ -122,6 +122,45 @@
 4. 与 APR 确认金属叠构（1P4M_TM8K 占位待核）
 5. 全流程跑通后，产出与 DC 同名 netlist/SDC 交付下游比对
 
+## 7. FC 与 DC 的差异清单（需要重视）
+
+> 这一节是整篇实录的沉淀重点。差异分两类：**报错型**差异（一跑就炸，逼你当场修）和**静默型**差异（不报错，但你以为的行为和实际行为不一致——后者更危险）。DLY0 事件把两类都演全了。
+
+### 7.1 已确认差异（全部服务器实测）
+
+| # | 差异点 | DC 行为 | FC 行为 | 处置 |
+|---|---|---|---|---|
+| D1 | 库格式 | .db 单文件，`link_library` 直接挂 | 只认 NDM 参考库 | 一次性 `icc2_lm_shell` 建 NDM（`gen_ndm_lm.tcl`） |
+| D2 | 顶层指定 | `current_design` 隐式即可 | elaborate 后必须 `set_top_module`（DES-203） | link 前插入 |
+| D3 | WORK 库映射 | `define_design_lib WORK` | 命令不存在（CMD-005）；analyze 结果直接进 design library | 注释掉 |
+| D4 | **空匹配语义** | `get_cells` 零匹配 → 警告 + `set_dont_touch` 静默 no-op | `get_cells` 零匹配 → `set_dont_touch` 报 SEL-005，**掐死整个 source 的脚本** | `set_dont_touch`/`set_disable_timing` 装 DC 语义桥（catch + skip） |
+| D5 | set_register_merging 对象 | `[get_designs]` 可用 | `[get_designs]` 类型不匹配（SEL-002） | catch 容错跳过，留 TODO |
+| D6 | 选项体系 | `set_compile_ultra_*` 等 DC 变量 | FC 用 `set_app_options`；`hdlin.enable_vpp` 不存在 | 逐条翻译 + catch 容错 |
+| D7 | 综合命令 | `compile_ultra -to ...` | `compile_fusion -to ...`（clock gating 自动插入） | `kv_compile_fusion` |
+| D8 | 错误检查 | `check_error` 内建 | fc_shell 没有 | 全部 catch/err_msg 守卫 |
+| D9 | 输出格式 | 可写 DDC | 不支持 DDC；`save_block`/`save_lib` | 输出文件名与 DC 保持一致，下游零改动 |
+
+### 7.2 最重要的一条：D4 空匹配语义（DLY0 事件还原）
+
+`common/ip_cons/HV2M23_digital_top.tcl` 是 **DC/FC 共享的约束文件**（项目资产，任何一方都不能单独改它）。里面有一条：
+
+```tcl
+set_dont_touch [get_cells -hier *DLY0]
+```
+
+现场勘测结论（fc_shell 交互探针）：
+- 设计里延时单元**都在**（`DLY_INDATA0_0/DLY_1`、`SDA_DLY_BUF/IDLY1~6`……）——elaborate 没丢东西
+- `*DLY0` 零匹配——**DLY0 是上一代芯片 HV1V21 的遗留模式**（HV1V21 的 `DLY_5NS_CELL.v` 实例叫 DLY0；HV2M23 改名了），这条约束是继承下来的"僵尸模式"
+- 也就是说：**DC 每天跑这条线也是零匹配，只是 DC 静默跳过；fc_shell 直接把 800 多行的共享约束文件掐死在第 405 行**
+
+处置：不改共享文件，在 FC 侧给 `set_dont_touch` / `set_disable_timing` 装"DC 语义桥"——空匹配打 `FC-WARN` 继续跑，与 DC 行为对齐。
+
+### 7.3 为什么需要重视
+
+1. **报错会逼你修，静默差异会让你带着错误假设跑很远。** DES-203 这种报错型差异半天就清掉了；但如果没有 interactive probe 现场勘测，`*DLY0` 这种"DC 其实也匹配不到"的事实就永远不会浮出水面。
+2. **共享文件是桥接的边界。** 约束文件、文件列表这些 DC/FC 共用的资产，任何适配都必须做在工具侧（包装器/预处理），这是评估方案里定死的纪律。
+3. **这份清单会持续增长。** 约束段排雷还在进行（`set_wire_load_model`、`set_driving_cell` 等 DC 专有命令在预期中），每确认一条就追加一行——这张表就是 FC 评估报告的核心资产。
+
 （正文结束。发布时如需压缩可保留全部表格与第 4 节叙事。）
 </script>
 
