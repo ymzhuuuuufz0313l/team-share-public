@@ -157,8 +157,23 @@
       font-family: "IBM Plex Mono", Consolas, monospace;
       font-size: 12.5px;
       color: rgba(236, 231, 217, 0.55);
+      margin-bottom: 26px;
     }
     .hero .meta b { color: rgba(236, 231, 217, 0.9); font-weight: 500; }
+    .hero .hero-hint {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 18px;
+      border: 1px solid rgba(240, 161, 55, 0.45);
+      border-radius: 10px;
+      background: rgba(240, 161, 55, 0.10);
+      font-size: 14px;
+      color: rgba(236, 231, 217, 0.88);
+    }
+    .hero .hero-hint a { color: #f0a137; text-decoration: none; font-weight: 600; }
+    .hero .hero-hint a:hover { text-decoration: underline; }
+    .hero .hero-hint .arrow { color: rgba(240, 161, 55, 0.7); }
     .hero .reg {
       position: absolute;
       right: 24px;
@@ -265,18 +280,6 @@
     .stat .k { font-size: 12.5px; color: var(--muted); margin-top: 2px; }
     @media (max-width: 720px) { .stats { grid-template-columns: repeat(2, 1fr); } }
 
-    /* reading hint */
-    .hint {
-      margin: 26px 0 0;
-      padding: 14px 20px;
-      border-radius: 10px;
-      background: var(--chip);
-      font-size: 14px;
-      color: var(--muted);
-    }
-    .hint a { color: var(--accent); text-decoration: none; font-weight: 600; }
-    .hint a:hover { text-decoration: underline; }
-
     /* chapter grid */
     .section-title {
       font-family: "IBM Plex Mono", Consolas, monospace;
@@ -373,6 +376,10 @@
         <span>SPAN <b>2026-05 → 2026-09</b></span>
         <span>ARCHIVE <b>LC_CPUWR_history</b></span>
       </div>
+      <div class="hero-hint">
+        <span>⭐</span>
+        <span>推荐阅读：先 <a href="./intro.html">引言</a> 了解归档体系 <span class="arrow">→</span> 再到 <a href="./diagrams.html">寄存器图解</a> 看六张全景图建立整体印象 <span class="arrow">→</span> 其余章节按需查阅</span>
+      </div>
       <div class="reg">
         CURRENT
         <span class="ver">0903v1</span>
@@ -403,8 +410,6 @@
       <div class="stat"><div class="v">3</div><div class="k">道验收关（iverilog / review / trace）</div></div>
       <div class="stat"><div class="v">06-15</div><div class="k">归档体系建立</div></div>
     </div>
-
-    <div class="hint">⭐ 推荐阅读：先 <a href="./intro.html">引言</a> 了解归档体系，再到 <a href="./diagrams.html">寄存器图解</a> 看六张全景图建立整体印象，其余章节按需查阅。</div>
 
     <div class="section-title">章节索引</div>
     <div class="chapter-grid">
