@@ -385,7 +385,7 @@ one-shot unlock 实现后，checker 出现误判：
 
 > 待用户确认后统一同步；0810v1 RTL 已通过验收三关，不受 DV 同步进度影响。
 
-## 8. 0811 之后的验收同步（0811v1 → 0903v1）
+## 8. 0811 之后的验收同步（0811v1 → 0907v1）
 
 DV env 同步继续暂缓期间，RTL 侧每个版本仍独立完成验收三关（iverilog + rtl-code-review + rtl-signal-trace）：
 
@@ -398,6 +398,7 @@ DV env 同步继续暂缓期间，RTL 侧每个版本仍独立完成验收三关
 | 0821v1/v2 | 08-21/25 | BCC 方向定论：BCC_M=I2C R/W output 下发 bcc_ctrl；SDID/AEQ_reg_lane_ctrl=bcc 写回只读监视 | 三关全过 + 服务器验证 |
 | 0827v1 | 08-25/28 | sw_reg_lane_ctrl 拆 5 个单 bit 迁移 LC_REG_MAPPING（0x33[6:2] Reserved）；新增 reg_eol @0x38[6] | 三关全过（review pass=true） |
 | 0903v1 | 09-03/07 | 0x29 字节默认 0x00→0x02（R_DBC_WIDTH_OPT[1:0] 默认 2'b01）；LC_REG_MAPPING `ifdef VU440_FPGA 下 R_SCREN 强制 1'b1 | 三关全过（iverilog exit 0；review pass=true，critical=0/high=1*；trace 无阻塞） |
+| 0907v1 | 09-07 | cs=1 专有输出（SR_*/PWRC_T*/PWRC_PA~NB 共 12 个）加 CHIP_SEL 门控：cs=0 输出字段默认值，cs=1 行为不变；map/默认值/RECON/LC_CPUWR 无变化 | 三关全过（iverilog 双分支 exit 0；review/trace 报告在 `markdownfile/0907v1/`） |
 
 > *0903v1 review 唯一 HIGH 为验证影响（非 RTL 缺陷）：DV 侧 t_reg_i2c_rst / chpi checker / reg_defines_i2c 仍编码 0x29 旧默认 0x00，env 同步暂缓期间列为交付前跟踪项；trace 附带低危观测项（未开 LSI 保护时 0x29 I2C 读回 0x00≠新默认 0x02）。评审与追踪报告：`LC_CPUWR_history/markdownfile/0903v1/`。
 

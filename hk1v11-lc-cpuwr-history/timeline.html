@@ -579,6 +579,16 @@
 - **寄存器 map 无变化**：0x29 地址/字段位置/保护属性均不变，仅字节默认值调整；0903 xlsm 表同步——Reg_1V11 sheet：Address 0x29 default `0x00→0x02`；Reg_description_F_CHIP_SEL=0/1 sheet：`R_DBC_WIDTH_OPT[1:0]` default `2'b00→2'b01`
 - **env/reg_model**：无功能变化（无寄存器地址/map 变化）
 
+### 4.19 0907v1 CHIP_SEL 门控修复：cs=1 专有输出防误写外漏
+
+2026-09-07 用户评审发现：`LC_REG_MAPPING` 的 cs=1 专有输出（共 12 个）未做 CHIP_SEL 门控——cs=0 下误写这些 Reserved 地址会把随机值漏到输出。
+
+- **影响输出**：`SR_PR/PF/NR/NF`（0x09）、`PWRC_TA/TB/P/N`（0x0A）、`PWRC_PA/PB/NA/NB`（0x1F）
+- **修复（0903v1→0907v1，仅 LC_REG_MAPPING）**：cs=0 时输出字段默认值常量——`SR_*=2'b11`、`PWRC_TA/TB=2'b01`、`PWRC_P/N=2'b10`、`PWRC_PA~NB=2'b10`；cs=1 保持"写标志 ? 写入值 : 默认值"不变
+- **联动说明**：`R_REG09/10/31_F_RECON` 由这 12 个输出回拼，cs=0 时 RECON 也随之变为默认值（RECON 仅供 chip_sel=1 I2C 回读，联动可接受）
+- **无变化**：寄存器 map / 默认值 / I2C 读回（RECON）/ `LC_CPUWR`；PWRC 段注释旧描述（cs=0→2'b00）同步更正为 2'b10
+- **验收三关**：iverilog 双分支（默认 + `` `VU440_FPGA ``）EXIT 0 + rtl-code-review + rtl-signal-trace（报告 `markdownfile/0907v1/`）
+
   </script>
   <script>
     document.getElementById('article').innerHTML = marked.parse(document.getElementById('md').textContent.trim());

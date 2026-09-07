@@ -370,7 +370,7 @@
     <div class="hero-inner">
       <div class="kicker">HK1V11 · TCON · CPU 写寄存器接口</div>
       <h1>LC_CPUWR<br>代码修改<span class="thin">全记录</span></h1>
-      <p class="lead">一个寄存器接口模块五个月的演进档案：从 0612 基线重构，到 0903v1 寄存器表同步。</p>
+      <p class="lead">一个寄存器接口模块五个月的演进档案：从 0612 基线重构，到 0907v1 CHIP_SEL 门控修复。</p>
       <div class="meta">
         <span>AUTHOR <b>ymzhuuuu</b></span>
         <span>SPAN <b>2026-05 → 2026-09</b></span>
@@ -382,7 +382,7 @@
       </div>
       <div class="reg">
         CURRENT
-        <span class="ver">0903v1</span>
+        <span class="ver">0907v1</span>
         REV 2026-09-07
       </div>
     </div>
@@ -392,13 +392,13 @@
     <div class="latest">
       <div class="badge">
         <span class="tag">LATEST</span>
-        <span class="num">0903v1</span>
+        <span class="num">0907v1</span>
       </div>
       <div class="body">
-        <div class="t">0903v1 · HK1V11_Register_20260903 表同步（09-07 入库，验收三关通过）</div>
+        <div class="t">0907v1 · LC_REG_MAPPING CHIP_SEL 门控修复（09-07，cs=1 专有输出防误写外漏）</div>
         <ul>
-          <li><code>0x29</code> 字节默认 <code>0x00→0x02</code>：<code>R_DBC_WIDTH_OPT[1:0]</code> 默认 <code>2'b01</code></li>
-          <li>FPGA 平台 <code>R_SCREN</code> 强制置 1（<code>`ifdef VU440_FPGA</code>），ASIC/仿真行为不变</li>
+          <li>cs=1 专有输出（<code>SR_*</code>/<code>PWRC_T*</code>/<code>PWRC_PA~NB</code> 共 12 个）加 <code>CHIP_SEL</code> 门控：cs=0 输出字段默认值，cs=1 行为不变</li>
+          <li>寄存器 map / 默认值 / I2C 读回（RECON）无变化，<code>LC_CPUWR</code> 不动；iverilog 双分支通过</li>
         </ul>
       </div>
       <a class="more" href="./timeline.html">全部版本演进 →</a>
@@ -406,7 +406,7 @@
 
     <div class="stats">
       <div class="stat"><div class="v">8</div><div class="k">章节页面</div></div>
-      <div class="stat"><div class="v">9<em>+</em></div><div class="k">归档版本（0612 → 0903v1）</div></div>
+      <div class="stat"><div class="v">10<em>+</em></div><div class="k">归档版本（0612 → 0907v1）</div></div>
       <div class="stat"><div class="v">3</div><div class="k">道验收关（iverilog / review / trace）</div></div>
       <div class="stat"><div class="v">06-15</div><div class="k">归档体系建立</div></div>
     </div>
@@ -415,12 +415,12 @@
     <div class="chapter-grid">
       <a class="chapter-card" href="./intro.html"><div class="num">01</div><div class="title">引言与归档体系</div><div class="desc">模块定位、目录结构与归档规则</div></a>
       <a class="chapter-card" href="./diagrams.html"><div class="num">02</div><div class="title">寄存器图解 Sheet<span class="star">先看图</span></div><div class="desc">chip_sel 默认字节映射、checksum、LSI、复位域、0721v1 拍重组对照</div></a>
-      <a class="chapter-card" href="./timeline.html"><div class="num">03</div><div class="title">核心变更时间线</div><div class="desc">从 0612 基线重构到 0903v1 寄存器表同步</div></a>
+      <a class="chapter-card" href="./timeline.html"><div class="num">03</div><div class="title">核心变更时间线</div><div class="desc">从 0612 基线重构到 0907v1 CHIP_SEL 门控修复</div></a>
       <a class="chapter-card" href="./checksum.html"><div class="num">04</div><div class="title">校验和机制演进</div><div class="desc">双段 checksum、NG Unlock、Seg2 删除</div></a>
       <a class="chapter-card" href="./regmap.html"><div class="num">05</div><div class="title">寄存器映射与命名规范化</div><div class="desc">位段迁移、chip_sel 默认值、十进制命名、0903v1 0x29 默认值变更</div></a>
       <a class="chapter-card" href="./register-research.html"><div class="num">06</div><div class="title">寄存器规格交叉验证</div><div class="desc">RTL / Excel / 地址映射三方核对、属性总表</div></a>
       <a class="chapter-card" href="./verification.html"><div class="num">07</div><div class="title">验证同步与 Checker 统一</div><div class="desc">checker 迁移、case 同步、仿真计划</div></a>
-      <a class="chapter-card" href="./status.html"><div class="num">08</div><div class="title">当前状态与后续</div><div class="desc">0903v1 状态、Loop_sel PIN 待定、BCC 待接入、DV 待同步</div></a>
+      <a class="chapter-card" href="./status.html"><div class="num">08</div><div class="title">当前状态与后续</div><div class="desc">0907v1 状态、Loop_sel PIN 待定、BCC 待接入、DV 待同步</div></a>
     </div>
 
     <div class="footer">SHARED FROM TEAM KNOWLEDGE BASE</div>
