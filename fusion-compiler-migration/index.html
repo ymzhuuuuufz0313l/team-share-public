@@ -56,6 +56,13 @@
           <span class="tag">上手指引</span>
         </a>
 
+        <a class="chapter-card" href="./bringup-log.html">
+          <div class="num">3</div>
+          <div class="title">FC 首跑排障实录</div>
+          <div class="desc">骨架通电之后的一个下午：CMD-005 / LM-010 / LEFR-012 / LM-091 / DES-203 五道关卡，报错码→根因→处置全记录，NDM 参考库建成、流程推进到 link 阶段。</div>
+          <span class="tag">首跑排障实录</span>
+        </a>
+
       </div>
 
       <div class="section-title">一句话结论</div>
@@ -87,7 +94,8 @@
 const chapters = [
   ['index', '主题首页'],
   ['evaluation', 'FC引入实录'],
-  ['handoff-guide', '回传上手指引']
+  ['handoff-guide', '回传上手指引'],
+  ['bringup-log', '首跑排障实录']
 ];
 const currentPath = location.pathname.split('/').pop() || 'index.html';
 const linksContainer = document.getElementById('navbar-links');

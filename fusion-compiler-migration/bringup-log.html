@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>进阶实验室 · FC 首跑排障实录 — 一个下午，五道关卡</title>
+  <link rel="stylesheet" href="./assets/style.css">
+  <script src="./js/marked.min.js"></script>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a class="navbar-brand" href="./">⚡ 进阶实验室 · Fusion Compiler</a>
+      <div class="navbar-links" id="navbar-links"></div>
+    </div>
+  </nav>
+
+  <div class="container with-toc">
+    <aside class="toc-wrapper">
+      <div class="toc" id="toc"></div>
+    </aside>
+
+    <div class="content">
+      <article class="article" id="article"></article>
+      <div class="page-nav">
+        <a class="prev" href="./handoff-guide.html"><span class="label">← 上一篇</span><span class="title">服务器回传上手指引</span></a>
+        <a class="next" href="./"><span class="label">回主题 →</span><span class="title">Fusion Compiler 迁移 · Sheet 导航</span></a>
+      </div>
+    </div>
+  </div>
+
+  <div class="lightbox" id="lightbox">
+    <span class="close" id="lightbox-close">&times;</span>
+    <img id="lightbox-img" src="" alt="">
+    <div class="hint">滚轮缩放 · 拖拽移动 · Esc 或点击空白处关闭</div>
+  </div>
+
+<script type="text/template" id="md">
+# FC 首跑排障实录：一个下午，五道关卡
+
+> 前一篇《Fusion Compiler 引入评估实录》讲的是"为什么引入、怎么搭骨架"；这一篇讲骨架放到服务器上真正通电之后发生的事。时间：2026-09-02 下午；对象：HV2M23_digital_top 综合流程。**结论先行：NDM 参考库已建成，FC 流程已推进到 elaborate 之后的 link 阶段**——每一道坎的报错码、根因与处置都记录在案。
+
+## 1. 下午时间线
+
+| 序 | 事件 | 结果 |
+|---|---|---|
+| 起 | bsub 首跑 `run_fc` | ✅ 意外之喜：license 已被 IT 配好 |
+| 关1 | `read_db` unknown command（CMD-005） | ❌ fc_shell 根本没有这个命令 → 转向 LM 建 NDM |
+| 关2 | check_workspace 要求 physical library（LM-010） | ❌ → 补读 cell LEF |
+| 关3 | LEFR-012 → LIB-007 → LMUI-050/042/045 连锁 | ❌ 无工艺文件的连锁反应，还掉进 exploration flow 陷阱 |
+| 转机 | 在库里发现 `milkyway_techfiles/tech/*.tf` | ✅ 这套库是**双流程打包**的！ |
+| 关4 | LEF 与 .db 有 676 个 design 对不上（LM-091/014/015） | ❌ → `check_workspace -allow_missing` |
+| 收官 | commit_workspace | ✅ **`nexchip_145_9t.ndm` 建成** |
+| 关5 | `define_design_lib` unknown command（CMD-005） | ❌ → 注释掉（FC 的 NDM 流程不需要） |
+| 关6 | DES-203：必须 `set_top_module` | ✅ 已插入 link 之前（待重跑验证） |
+| 关7 | SEL-002：`set_register_merging [get_designs]` 类型不匹配 | ✅ catch 容错跳过 |
+| 此刻 | elaborate 已完成（53 模块 / 顶层 528 端口 / 8614 instances） | ⏭️ 下一步：link → 约束段 |
+
+## 2. 问题清单（报错码 → 根因 → 处置）
+
+| 编号 | 报错 | 根因 | 处置 | 状态 |
+|---|---|---|---|---|
+| P1 | Fusion-Compiler-NX license 在登录节点拿不到 | license 只在 bsub 计算节点可用（服务器 ACL/环境差异） | 所有 FC/LM 命令一律 `bsub -Ip` | ✅ |
+| P2 | bsub 里 source cshrc 语法错 | bsub 作业 shell 是 **bash**，环境脚本是 csh 语法 | 套一层 `csh -c '...'` | ✅ |
+| P3 | CMD-015 could not open script file | `/tmp` 是**节点本地**的，登录节点建的文件计算节点看不到 | 辅助脚本放共享路径（`$PROJECT_PATH` 下） | ✅ |
+| P4 | CMD-005 `read_db` | read_db 是 **icc2_lm_shell**（Library Manager）的命令，fc_shell 没有 | 放弃 db 直连，改为"LM 建一次 NDM，FC 挂 ref lib" | ✅ |
+| P5 | LM-010 必须有 physical library | normal 流程的 check 前提 | 补读两个 cell LEF | ✅ |
+| P6 | LEFR-012 library has no technology information | cell LEF 里不含工艺段 | 需要真正的工艺文件 | ✅ |
+| P7 | LIB-007 cannot load technology file（喂 LEF 给 `-technology`） | `-technology` 只认 .tf（Milkyway 格式），不认 LEF；LM 也没有 `read_tech_lef` | 换 .tf | ✅ |
+| P8 | LMUI-050/042：check/commit 是废弃 no-op；LMUI-045：根 workspace 不可 process | **exploration flow 陷阱**：它只在内存里探索，根 workspace 不能产出 NDM | 回 normal flow | ✅ |
+| P9 | LM-091/014：676 个 design 在 .db 里缺失（XOR/FILLER/TAP…）；LM-015 Check FAILED | LEF 与 .db 版本不完全配套：FILLER/TAP 类纯物理 cell 本就不进 .db，另有部分命名代差 | `check_workspace -allow_missing`（缺的当 physical-only 补进 base lib） | ✅ |
+| P10 | —— | —— | **NDM 建成**：2×.db 时序 + 2×cell LEF + `EL150S_1P4M_TM8K.tf` 工艺 | ✅ |
+| P11 | CMD-005 `define_design_lib` | DC 命令，fc_shell 没有；FC/NDM 流程里 analyze 结果直接进 design library，不需要 WORK 映射 | 注释掉 | ✅ |
+| P12 | DES-203 cannot be linked with link_block, please use set_top_module | FC 必须显式宣告顶层（DC 的 `current_design` 语义不够） | elaborate 后、link 前插入 `set_top_module $TOP_NAME` | ✅ 待重跑验证 |
+| P13 | SEL-002/005：set_register_merging 对象类型不匹配 | fc_shell 里 `[get_designs]` 返回类型不被接受 | catch 容错跳过（非关键优化项），留 TODO 找正确对象形式 | ✅ |
+| P14 | FC-WARN：hdlin.enable_vpp Invalid option name | 该 app option 在 V-2023.12-SP5 不存在（预检 ③ 预判命中） | 已被 catch 包裹，仅告警 | ✅ |
+| P15 | —— | —— | 待办：约束段的 DC 专有命令（最高风险）、RAM .db 未入 NDM（u_mem* link 会缺）、金属叠构 1P4M_TM8K 待 APR 确认、寄存器合并是否真被关闭 | ⏳ |
+
+## 3. 三个认知
+
+1. **db→NDM 是绕不过去的墙。** fc_shell 世界的"库"就是 NDM；.db 只能当原料，在 icc2_lm_shell 里一次性转成 NDM（`create_workspace → read_db/read_lef → check → commit`）。这是一次性投入，之后所有综合复用。
+2. **库包是双流程的，"找不到"往往是"没找对地方"。** 顶层目录里 Cadence 系的 `cdk/lef` 一眼可见，Synopsys 系的 `milkyway_techfiles/ccs_db/nldm_db` 藏在旁边——找对视角，`create_workspace -technology` 的原料一直都在。
+3. **工具迁移的差异集中在"流程动词"，"名词"基本平移。** `define_design_lib`/`set_top_module`/`link_block` 这些流程动词需要逐个对照 fc_shell 的说法；而约束、dont_use、报告这类"名词"直接搬过来就能跑。每次 CMD-005 就是在消一条迁移 TODO。
+
+## 4. 心路历程（下午版）
+
+> 这一段不谈技术，谈节奏和心态，写给未来同样要做工具迁移的自己。
+
+**第一反应是"跑一下试试"。** 骨架搭完那天其实心里没底：66 处 `TODO(FC-CONFIRM)` 像悬着的雷。真正跑起来才发现，雷的分布比想象的友好——它不在"名词"里，而在"流程动词"和"库"里。
+
+**license 通了的那一下是强心针。** 之前一直按"license 没好"做心理建设，结果 bsub 一跑 banner 直接出来了。但紧接着 read_db 就给我泼了冷水：连"读库"这个最基础的动作，fc_shell 都不认识。那一刻才真正理解了 FC 和 DC 的代差——**不是一个工具的升级，是一套世界观的切换**（.db 单文件世界 → NDM 库容器世界）。
+
+**掉进 exploration 陷阱是下午最憋屈的一段。** `-flow logic_only` 不存在；照着报错把合法值列出来试 exploration，结果 check/commit 全是"废弃 no-op"，workspace 建了又"没有 workspace 可处理"，绕了一大圈才发现根 workspace 压根不能产出。教训：**报错信息给的合法值列表 ≠ 推荐用法**。
+
+**"我们是 Cadence APR"这句话救了场。** 在我准备继续跟 LM 死磕的时候，同事一句"我们 APR 是 Innovus 的"点醒了搜索方向——不该找"Synopsys 专用的库"，而该在这套库里找"任何 Synopsys 能吃的东西"。`milkyway_techfiles` 一冒出来，整条路瞬间从死局变活局：工艺文件有，cell LEF 有，.db 有，normal 流程全套能跑。
+
+**最后三道坎的节奏已经完全不同了。** define_design_lib → 注释；set_top_module → 插一行；set_register_merging → catch 一把。从"报错即停"到"报错即修一行再跑"，中午还在担心"要不要放弃 NDM 路线"，下午后半程已经进入流水线节奏。这种从"摸黑"到"手感"的转变，大概就是做一次工具评估最有价值的产出——**它证明这条路的每一步都是可复现的，而且有人走通过一遍**。
+
+**还没到开香槟的时候。** 约束段（大量 DC 专有约束命令）是下一个雷区，RAM 库还没进 NDM，金属叠构还没和 APR 对齐。但今天的日志已经把"不确定性"压缩成了"待办清单"。
+
+## 5. 当前进度仪表盘
+
+| 关卡 | 状态 |
+|---|---|
+| license（bsub 计算节点） | ✅ |
+| NDM 参考库（.db+LEF+.tf → `nexchip_145_9t.ndm`） | ✅ |
+| create_lib + 挂 ref lib | ✅ |
+| 读 RTL / elaborate（53 模块 / 8614 instances） | ✅ |
+| set_top_module → link | 🔧 已修待验证 |
+| 约束段（DC 专有命令排雷） | ⏳ 最高风险区 |
+| compile_fusion 综合本体 | ⏳ RAM 库待补 |
+| 输出 netlist+SDC（文件名与 DC 完全一致） | ⏳ |
+
+## 6. 下一步
+
+1. 重跑（deploy_fc.py 已更新至 set_top_module/容错版）→ 过 link/check_design
+2. 约束段排雷：逐条翻译 DC 专有命令，报错原文 → 对照修
+3. RAM .db 路径确认后重建 NDM（gen_ndm_lm.tcl 的 `lappend DB_FILES` 预留位）
+4. 与 APR 确认金属叠构（1P4M_TM8K 占位待核）
+5. 全流程跑通后，产出与 DC 同名 netlist/SDC 交付下游比对
+
+（正文结束。发布时如需压缩可保留全部表格与第 4 节叙事。）
+</script>
+
+<script>
+const chapters = [
+  ['index', '主题首页'],
+  ['evaluation', 'FC引入实录'],
+  ['handoff-guide', '回传上手指引'],
+  ['bringup-log', '首跑排障实录']
+];
+const currentPath = location.pathname.split('/').pop() || 'index.html';
+const linksContainer = document.getElementById('navbar-links');
+chapters.forEach(([slug, label]) => {
+  const href = slug === 'index' ? './' : `./${slug}.html`;
+  const filename = slug === 'index' ? 'index.html' : `${slug}.html`;
+  const a = document.createElement('a');
+  a.href = href;
+  a.textContent = label;
+  if (currentPath === filename || currentPath.endsWith('/' + filename)) a.classList.add('active');
+  linksContainer.appendChild(a);
+});
+</script>
+<script>
+const md = document.getElementById('md').textContent;
+document.getElementById('article').innerHTML = marked.parse(md);
+
+const toc = document.getElementById('toc');
+const headings = document.querySelectorAll('.article h2, .article h3');
+const tocLinks = [];
+headings.forEach(h => {
+  const id = h.textContent.trim().replace(/\s+/g, '-').replace(/[^\w\u4e00-\u9fa5-]/g, '');
+  h.id = id;
+  const cls = h.tagName === 'H2' ? 'toc-h2' : 'toc-h3';
+  const a = document.createElement('a');
+  a.href = '#' + id;
+  a.textContent = h.textContent;
+  a.className = cls;
+  toc.appendChild(a);
+  tocLinks.push(a);
+});
+
+tocLinks.forEach((link, i) => {
+  if (!link.classList.contains('toc-h2')) return;
+  const children = [];
+  for (let j = i + 1; j < tocLinks.length && tocLinks[j].classList.contains('toc-h3'); j++) children.push(tocLinks[j]);
+  if (!children.length) return;
+  link.classList.add('toc-parent');
+  const arrow = document.createElement('span');
+  arrow.className = 'toc-arrow';
+  arrow.textContent = '▸';
+  link.prepend(arrow);
+  children.forEach(c => c.parentLink = link);
+  arrow.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const collapsed = link.classList.toggle('collapsed');
+    children.forEach(c => c.style.display = collapsed ? 'none' : '');
+  });
+});
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      tocLinks.forEach(l => l.classList.remove('active'));
+      let active = tocLinks.find(a => a.getAttribute('href') === '#' + entry.target.id);
+      if (active && active.style.display === 'none' && active.parentLink) active = active.parentLink;
+      if (active) active.classList.add('active');
+    }
+  });
+}, { rootMargin: '-10% 0px -75% 0px' });
+headings.forEach(h => observer.observe(h));
+</script>
+<script>
+const lightbox = document.getElementById('lightbox');
+const lbImg = document.getElementById('lightbox-img');
+const lbClose = document.getElementById('lightbox-close');
+let scale = 1;
+let isDragging = false;
+let startX = 0, startY = 0, translateX = 0, translateY = 0;
+function openLightbox(src) { lbImg.src = src; scale = 1; translateX = 0; translateY = 0; updateTransform(); lightbox.classList.add('active'); document.body.style.overflow = 'hidden'; }
+function closeLightbox() { lightbox.classList.remove('active'); document.body.style.overflow = ''; }
+function updateTransform() { lbImg.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`; }
+document.addEventListener('click', (e) => { const img = e.target.closest('img'); if (!img || img.id === 'lightbox-img' || !img.closest('.article')) return; openLightbox(img.src); });
+lbClose.addEventListener('click', closeLightbox);
+lightbox.addEventListener('click', (e) => { if (e.target === lightbox) closeLightbox(); });
+lightbox.addEventListener('wheel', (e) => { e.preventDefault(); const d = e.deltaY > 0 ? -0.12 : 0.12; scale = Math.min(Math.max(0.5, scale + d), 5); updateTransform(); });
+lbImg.addEventListener('mousedown', (e) => { isDragging = true; startX = e.clientX - translateX; startY = e.clientY - translateY; lbImg.classList.add('grabbing'); e.preventDefault(); });
+document.addEventListener('mousemove', (e) => { if (!isDragging) return; translateX = e.clientX - startX; translateY = e.clientY - startY; updateTransform(); });
+document.addEventListener('mouseup', () => { isDragging = false; lbImg.classList.remove('grabbing'); });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && lightbox.classList.contains('active')) closeLightbox(); });
+</script>
+
+</body>
+</html>
