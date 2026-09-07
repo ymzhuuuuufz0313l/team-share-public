@@ -7,28 +7,29 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <title>引言与归档体系 · LC_CPUWR 修改记录</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>
 :root {
-      --bg: #f8fafc;
-      --surface: #ffffff;
-      --text: #1e293b;
-      --muted: #64748b;
-      --accent: #0f766e;
-      --accent-soft: #ccfbf1;
-      --line: #e2e8f0;
-      --shadow: 0 10px 40px rgba(0,0,0,0.08);
+      --bg: #f4f1ea;
+      --surface: #fffdf7;
+      --text: #1c2534;
+      --muted: #667180;
+      --accent: #b45309;
+      --accent-soft: #f7e8d4;
+      --line: #ddd6c8;
+      --shadow: 0 12px 32px rgba(28,37,52,0.10);
     }
     @media (prefers-color-scheme: dark) {
       :root {
-        --bg: #0f172a;
-        --surface: #1e293b;
-        --text: #f1f5f9;
-        --muted: #94a3b8;
-        --accent: #2dd4bf;
-        --accent-soft: #115e59;
-        --line: #334155;
-        --shadow: 0 10px 40px rgba(0,0,0,0.35);
+        --bg: #0e1420;
+        --surface: #161f31;
+        --text: #e9e5d9;
+        --muted: #9aa4b5;
+        --accent: #f0a137;
+        --accent-soft: #3a2f1a;
+        --line: #2b3852;
+        --shadow: 0 12px 32px rgba(0,0,0,0.45);
       }
     }
     * { box-sizing: border-box; }
@@ -132,7 +133,7 @@
     th, td { border: 1px solid var(--line); padding: 10px 14px; text-align: left; }
     th { background: var(--accent-soft); font-weight: 600; }
     tr:nth-child(even) { background: rgba(0,0,0,0.02); }
-    code { background: var(--bg); padding: 3px 7px; border-radius: 5px; font-family: "SFMono-Regular", Consolas, monospace; font-size: 14px; color: var(--accent); }
+    code { background: var(--bg); padding: 3px 7px; border-radius: 5px; font-family: "IBM Plex Mono", "SFMono-Regular", Consolas, monospace; font-size: 14px; color: var(--accent); }
     pre { background: var(--bg); padding: 18px; border-radius: 10px; overflow-x: auto; border: 1px solid var(--line); }
     pre code { padding: 0; background: transparent; color: var(--text); }
     blockquote { border-left: 4px solid var(--accent); margin: 20px 0; padding: 14px 20px; background: var(--accent-soft); border-radius: 0 10px 10px 0; }
@@ -251,9 +252,9 @@
 **LC_CPUWR** 是 HK1V11 芯片 TCON 模块中负责 **CPU 写寄存器接口** 的核心 RTL 模块。
 它接收 CPU 通过 I2C/SPI 等总线下发的配置，维护一组片内寄存器，并向后续链路（`LC_REG_MAPPING`，以及 0807v1 起的 `LINK_CONFIG_CTRL`）输出控制信号。
 
-在 2026-04 至 2026-09-03 的开发周期中，LC_CPUWR 经历了大量迭代：校验和机制从双段演变为单段、NG Unlock 方案从 PlanA/PlanB 最终收敛为 one-shot、寄存器命名从十六进制后缀全面十进制化、并按 `chip_sel0/1` 重构了默认值体系。
+在 2026-04 → 2026-09-03 的开发周期中，LC_CPUWR 经历了密集迭代：校验和双段→单段、NG Unlock 收敛为 one-shot、寄存器命名全面十进制化、并按 `chip_sel0/1` 重构了默认值体系。**逐版本完整演进见 [三、核心变更时间线](./timeline.html)**。
 
-**0807v1 起架构变化**：寄存器通路实例化从 `LINK_LOGIC` 迁至新模块 `LINK_CONFIG_CTRL`，`LINK_LOGIC` 变为纯数据通路顶层；**0810v1** 依据 `HK1V11_Register_20260807.xlsm` 完成寄存器表同步（FSEL 移位、EOL、BCC 寄存器占位、字段错位修正）；**0811v1** 依据 `HK1V11_Register_20260811.xlsm` 新增/恢复 VPS_EN；**0819v1** 复位信号改名 `N_RST`→`RSTN`；**0819v2** 新增 `Loop_sel[2:0]` 选择 CDR/KVCO 默认值；**0820v1** 依据 `HK1V11_Register_20260819.xlsm` 新增 `cr_done_filter[1:0]` @ 0x24[7:6]；**0827v1** 依据 `HK1V11_Register_20260827.xlsm` 将 `sw_reg_lane_ctrl` 拆为 5 个单 bit 寄存器迁移至 `LC_REG_MAPPING`（0x02/0x03/0x04，chip_sel=0/1 共用）并新增 `reg_eol` @ 0x38[6]（Short-encoding 应用选择）；**0903v1** 依据 `HK1V11_Register_20260903.xlsm` 将 0x29（十进制 41，`R_REG41_F`）字节默认值 `0x00→0x02`（`R_DBC_WIDTH_OPT[1:0]` @ 0x29[2:1] 默认 `2'b00→2'b01`），并在 `` `ifdef VU440_FPGA `` 下强制 `R_SCREN=1'b1`（FPGA 平台 scramble 常开，ASIC/仿真行为不变）。
+**里程碑速览**：`0807v1` 寄存器通路迁入新模块 LINK_CONFIG_CTRL ・ `0810v1` 寄存器表同步（FSEL/EOL/BCC）・ `0819v1` 复位改名 RSTN ・ `0819v2` Loop_sel 选择 CDR/KVCO 默认值 ・ `0827v1` lane_ctrl 拆 5 单 bit + reg_eol ・ `0903v1` 0x29 默认值变更 + FPGA SCREN 常开
 
 为了管理这些密集变更，项目于 2026-06-15 建立了 `LC_CPUWR_history` 归档目录，集中保存 RTL 快照、changelist、modify plan、compliance report 及验证同步资料。
 

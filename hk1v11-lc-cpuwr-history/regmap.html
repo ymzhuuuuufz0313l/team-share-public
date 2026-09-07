@@ -7,28 +7,29 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <title>寄存器映射与命名规范化 · LC_CPUWR 修改记录</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>
 :root {
-      --bg: #f8fafc;
-      --surface: #ffffff;
-      --text: #1e293b;
-      --muted: #64748b;
-      --accent: #0f766e;
-      --accent-soft: #ccfbf1;
-      --line: #e2e8f0;
-      --shadow: 0 10px 40px rgba(0,0,0,0.08);
+      --bg: #f4f1ea;
+      --surface: #fffdf7;
+      --text: #1c2534;
+      --muted: #667180;
+      --accent: #b45309;
+      --accent-soft: #f7e8d4;
+      --line: #ddd6c8;
+      --shadow: 0 12px 32px rgba(28,37,52,0.10);
     }
     @media (prefers-color-scheme: dark) {
       :root {
-        --bg: #0f172a;
-        --surface: #1e293b;
-        --text: #f1f5f9;
-        --muted: #94a3b8;
-        --accent: #2dd4bf;
-        --accent-soft: #115e59;
-        --line: #334155;
-        --shadow: 0 10px 40px rgba(0,0,0,0.35);
+        --bg: #0e1420;
+        --surface: #161f31;
+        --text: #e9e5d9;
+        --muted: #9aa4b5;
+        --accent: #f0a137;
+        --accent-soft: #3a2f1a;
+        --line: #2b3852;
+        --shadow: 0 12px 32px rgba(0,0,0,0.45);
       }
     }
     * { box-sizing: border-box; }
@@ -132,7 +133,7 @@
     th, td { border: 1px solid var(--line); padding: 10px 14px; text-align: left; }
     th { background: var(--accent-soft); font-weight: 600; }
     tr:nth-child(even) { background: rgba(0,0,0,0.02); }
-    code { background: var(--bg); padding: 3px 7px; border-radius: 5px; font-family: "SFMono-Regular", Consolas, monospace; font-size: 14px; color: var(--accent); }
+    code { background: var(--bg); padding: 3px 7px; border-radius: 5px; font-family: "IBM Plex Mono", "SFMono-Regular", Consolas, monospace; font-size: 14px; color: var(--accent); }
     pre { background: var(--bg); padding: 18px; border-radius: 10px; overflow-x: auto; border: 1px solid var(--line); }
     pre code { padding: 0; background: transparent; color: var(--text); }
     blockquote { border-left: 4px solid var(--accent); margin: 20px 0; padding: 14px 20px; background: var(--accent-soft); border-radius: 0 10px 10px 0; }
