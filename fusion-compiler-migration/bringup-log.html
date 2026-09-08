@@ -209,6 +209,19 @@ set_dont_touch [get_cells -hier *DLY0]
 | final_opto + 输出 netlist/SDC | ⏳ |
 | 遗留小账 | SQM-1067：`*SFF*` 模式误伤名字带 SFF 的普通门（DC 时代同病，约束精修时处理）；RAM 模型未入 NDM；金属叠构 1P4M_TM8K 待 APR 确认 |
 
+### 8.6 寄生路线定案（0908 晚）：map_only 先行 + collateral 请求
+
+三选一路线的侦察结果落地：
+
+- PDK 顶层（`DesignKit/1P4M/Nexchip_150HS_PDK_20220711/`）为纯 Cadence 血统：`cds.lib` / `display.drf` / `pdkInstall.pl`，无任何 Synopsys 寄生库目录
+- `EL150S_1P4M_TM8K.tf` 仅含单位/精度声明（`unitResistanceName=kohm` 等 4 行），**无每层 R/C 数值**——`set_layer_rc` 路线缺原料
+- 深挖 find（maxdepth 9，tlup/nxtgrd/qrc）无命中——这套库从 DC 时代就用 wireload 模型，**从未配过 Synopsys 寄生库**
+
+**定案：双轨。**
+
+1. **`FC_COMPILE_MODE=map_only` 先行**（已实现进 fc_user_proc.tcl，默认值）：停在 initial_map，零互连线延时——优先打通"映射 → write_verilog/write_sdc → 下游 PT/LEC 消费"的闭环，验证方案 A 的产物可用性；QoR 偏乐观，评估报告注明
+2. **collateral 请求单发 IT/foundry**（外部依赖，最长线）：①1P4M 叠构 TLU+（Synopsys 格式）；②官方现成 NDM（如有）。到位后 `set_parasitics_parameters` + 切 `full` 模式，补 logic_opto/final_opto 与 DC 的 QoR 对比
+
 （正文结束。发布时如需压缩可保留全部表格与第 4 节叙事。）
 </script>
 
