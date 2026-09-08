@@ -299,6 +299,26 @@ LEC 首跑 573 个 NONEQ 之后，用"对照实验 + 逐层排他"又打了三�
 
 方法论沉淀：**"对照实验 + 排他法"比"猜选项名"快得多**——R4 的对照实验一轮就洗清了 write 的嫌疑；R5 的"库内状态 vs 文件原文"对勘锁定了压平发生的段落。另外：远程终端一律纯 ASCII（中文会乱码）；探针输出落 md 文件再回传，比截终端可靠。
 
+### 8.12 配点/建模环节：282 点的最后一公里
+
+层级修复后 LEC 复测：EQ 1896 / NON-EQ 282，且 R 侧路径已与 G 侧同为层级形式——**只剩总线位命名差异（G `reg[9]` vs R `reg_9_`）和一个 `/U$1` 后缀**。随即对网表做了"最终嫌疑排除"五连测：
+
+| 检查 | 结果 |
+|---|---|
+| FC `.gv` 里 `DATA_PS_ENC_reg_9_` 的完整例化 | `DFFRBQX1AS9 DATA_PS_ENC_reg_9_ ( .D(DATA_PS_ENC_CMD[9]), .CK(DCLK), .RB(N_RST_NLOCK), .Q(DATA_PS_ENC[9]) )` —— 标准叶子 DFF，四端口全对 |
+| 与 DC 网表同款寄存器对比 | DC 也是 `DFFRBQX1AS9 R_REG_12_reg_7_ ( .D(...), .CK(net3503), .RB(n62), ... )`——命名风格、结构**完全一致** |
+| awk 定位所在 module | `LC_CPUWR_HV2M23_0`，正常子模块 |
+| `^module R_REG` 搜索 | 无输出——**没有寄存器包装模块**（排除"每个寄存器被包一层"假设） |
+| 门控 ICG 检查 | `GCKHBQX1AS9 clock_gate_R_REG_12_reg (.CK(WCK1_A), .E(address_12), .TE(1'b0), .Q(...))` —— **门控使能与 RTL 加载使能完全一致** |
+
+**结论：FC 网表洗清全部嫌疑。** 问题定位在 Conformal 的**配点/建模环节**：这 282 对寄存器 Conformal 明明已经配上（报告成对列出），但证明时把 R 侧 DFF cell 拆解成了内部原语（路径带 `/U$1`），导致证明失败。同款 cell、同款命名，DC 网表每天过 LEC——所以这是工具对 FC 上下文的建模/配点行为差异，不是设计或网表错误。
+
+**正在走的修复路**：这个版本的 Conformal 有改名规则命令（`ADD RENaming Rule` / `TEST RENaming Rule` / `DELETE RENaming Rule` / `REPORT Renaming Rule`，help 已确认存在）。计划：在 FC 专属副本 `rtl_gate_fc.do` 里加重命名规则，把 revised 侧 `reg_N_` 归一为 `reg[N]` 风格，先 `TEST` 后正式生效，再重新 compare——282 点预期大幅配平。若配平后仍 NON-EQ，才是真功能差异（嫌疑指向 RTL5.1 overlapped case 的综合歧义：`CSPI_CMD_ALIGN_L0/L1.v` 的 `case(1'b1)` parallel_case）。
+
+**调试教训（本节追加）**：
+1. 网表洗嫌疑要"五连测"到叶子级：完整例化行、同款对比、所在 module、端口全貌、包装模块搜索——一组 grep 铁证胜过十次猜测
+2. `analyze_non_equivalent_points` 在该 Conformal 版本不存在；dofile 直接启动 lec 会因缺 `env(lec_exit_flag)` 在 157 行 abort（run_lec 会设）——**直接起 lec 调试时先 `setenv lec_exit_flag 0`**
+
 （正文结束。发布时如需压缩可保留全部表格与第 4 节叙事。）
 </script>
 
