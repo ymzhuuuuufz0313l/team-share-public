@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>进阶实验室 · FC 引入 — 换项目快速启动手册（信息清单 · 可复用脚本 · SOP · 踩坑地图）</title>
+  <link rel="stylesheet" href="./assets/style.css">
+  <script src="./js/marked.min.js"></script>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a class="navbar-brand" href="./">⚡ 进阶实验室 · Fusion Compiler</a>
+      <div class="navbar-links" id="navbar-links"></div>
+    </div>
+  </nav>
+
+  <div class="container with-toc">
+    <aside class="toc-wrapper">
+      <div class="toc" id="toc"></div>
+    </aside>
+
+    <div class="content">
+      <article class="article" id="article"></article>
+      <div class="page-nav">
+        <a class="prev" href="./help-request.html"><span class="label">← 上一篇</span><span class="title">外部求助清单</span></a>
+        <a class="next" href="./"><span class="label">回主题 →</span><span class="title">Fusion Compiler 迁移 · Sheet 导航</span></a>
+      </div>
+    </div>
+  </div>
+
+  <div class="lightbox" id="lightbox">
+    <span class="close" id="lightbox-close">&times;</span>
+    <img id="lightbox-img" src="" alt="">
+    <div class="hint">滚轮缩放 · 拖拽移动 · Esc 或点击空白处关闭</div>
+  </div>
+
+<script type="text/template" id="md">
+# FC 引入 · 换项目快速启动手册（大一统）
+
+> **目标读者**：下一个项目里执行 FC 引入的工程师 + AI Agent。
+> **一句话**：把 HV2M23 三天踩出来的路，压缩成「信息清单 + 可复用脚本 + 标准流程 + 踩坑地图」四件套——换项目时照单执行，把三天级的工作压缩成一天级。
+
+## 1. 换项目时，先告诉 Agent 这些信息（输入契约）
+
+| 类别 | 需要的信息 | HV2M23 示例 |
+|---|---|---|
+| 工具 | FC 版本与 env 脚本路径；license 可用范围（节点/bsub） | V-2023.12-SP5，`/eda/env/NEXT/fs_compiler_V-2023.12-SP5.cshrc`，仅 bsub 计算节点 |
+| 目录 | 项目根（$PROJECT_PATH）与综合目录结构 | `/project/.../HV2M23/SYNTHESIS/{common,ip,top,ECO}` |
+| 设计 | TOP_NAME、filelist 生成方式 | `HV2M23_digital_top`，`genfilelist` |
+| 标准单元库 | LVT/SVT 两个 .db 路径 + **cell 命名后缀规则** | `...SL_...ccs.db`→LVT(`*AL9`)、`...SS_...ccs.db`→SVT(`*AS9`)，ccs_db 目录 |
+| 物理数据 | cell LEF、工艺文件（.tf 或 TLU+）、叠构变体名 | `lef/`、`milkyway_techfiles/tech/*.tf`、1P4M_TM8K |
+| 宏单元 | RAM/IO 模型路径（或缺省说明） | 待确认（求助清单 R2） |
+| 约束 | DC 侧约束文件位置（将复制为 FC 副本） | `common/tcl_dir/common/*.tcl` + `common/ip_cons/*.tcl` |
+| 运行方式 | 直接跑 or LSF（bsub）；作业 shell 类型 | `bsub -Ip`；作业 shell 是 bash，cshrc 要套 `csh -c` |
+| 下游 | netlist/SDC 的消费方与路径约定 | PT 读 `*/rep_dir/*.gv`；LEC 读 `.gv_org/_onlytop` |
+| 传输约束 | 是否只能粘贴文本（决定部署方式） | 是 → 用 `deploy_fc.py` 单文件方案 |
+
+## 2. 可复用脚本清单（17 文件体系，标注改动量）
+
+| 脚本 | 复用度 | 换项目时要动什么 |
+|---|---|---|
+| `fc_deploy/gen_fc_installer.py` | ★★★ 全复用 | 不改：读清单自动打包 `deploy_fc.py`（含 build 时间戳） |
+| `ip/.../fc/run_fc` | ★★★ | 不改（TOP_NAME/环境来自项目配置） |
+| `ip/.../fc/compile_fc.tcl` | ★★★ | 不改（流程骨架；约束已指向 FC 副本） |
+| `common/tcl_dir/fc/fc_user_proc.tcl` | ★★★ | 不改（kv_compile_fusion / map_only 已通用化） |
+| `common/tcl_dir/fc/basic_setup_fc.tcl` | ★★☆ | 微调（app options 按版本增删） |
+| `common/tcl_dir/fc/design_rule_fc.tcl` | ★★☆ | 按新库增删分支 |
+| `common/tcl_dir/fc/*_fc.tcl` 约束副本 | ★★☆ | 从 DC 版重新复制 + 跑"全量模式体检"清僵尸模式 |
+| `common/tcl_dir/fc/common_db_ndm.tcl` | ★☆☆ **必改** | 库路径 / flavor 变量 / NDM 输出路径 |
+| `common/tcl_dir/fc/gen_ndm_lm.tcl` | ★☆☆ **必改** | .db / LEF / .tf 路径、输出库名、叠构 |
+| `common/tcl_dir/fc/dont_use_fc.tcl` | ★☆☆ **必改** | 新库分支（**合并库名 + 后缀规则**，切记 D11 教训） |
+| `fc_deploy/deploy_fc.py` | 自动 | 由生成器产出，勿手改；末行/头部/运行时带 build 时间戳 |
+
+## 3. 标准作业流程（SOP 七步）
+
+| 步 | 动作 | 要点 / 坑位指引 |
+|---|---|---|
+| S0 | 信息收集 | 第 1 节逐项填齐；**特别是 cell 命名后缀规则**（dont_use 全靠它） |
+| S1 | 服务器预检 | license（bsub）/ 工具版本 / env source 方式（注意作业 shell 类型） |
+| S2 | 建 NDM | 改 `gen_ndm_lm.tcl` → `icc2_lm_shell` 跑 normal 流程 → 产物为单一 clib（**记住 D11：库名会变**） |
+| S3 | dont_use 重写 | 用探针循环验证每条模式的**真实匹配数**（参照排障实录 8.8 的体检循环），不许凭空猜 |
+| S4 | 约束副本 | DC 版复制 → FC-FIX；跑全量模式体检清僵尸模式 |
+| S5 | map_only 首跑 | 对照差异清单 D1~D17 排雷；报告类命令一律 catch 兜底 |
+| S6 | 输出链路 | write_verilog / write_sdc 的 FC 语法（D16/D17），产物名与 DC 对齐 |
+| S7 | full 模式 | TLU+ 到位 → `set_parasitics_parameters` → `FC_COMPILE_MODE=full` → QoR 对比 |
+
+## 4. 踩坑地图（D1~D17 摘要）
+
+把《FC 首跑排障实录》第 7 / 8.4 / 8.7 / 8.8 节的完整差异清单当新项目的 checklist——**每一条都是实测过的坑**。摘要版：
+
+- **库世界观**：db→NDM 不可绕（D1）；read_db 只在 icc2_lm_shell（D4 系）；合并后库名 + 后缀是最容易翻车的雷（D11）
+- **流程动词**：set_top_module / define_design_lib / write_verilog / write_sdc 语法各不同（D2/D3/D16/D17）
+- **静默语义差**：空匹配、空报告（D4/D13）——不报错但行为不同，比报错更危险
+- **寄生**：logic_opto 强制 TLU+，wireload 时代没有就要提前找（D12）
+- **工程习惯**：远程终端纯 ASCII；集合 API 用 sizeof_collection/foreach_in_collection；内置命令不可 rename（D10/D14）
+
+## 5. 给 Agent 的启动 Prompt 模板（复制即用）
+
+```
+我在 <项目名> 要评估/启用 Fusion Compiler 替代 DC 做综合（仅综合，产物给下游 APR/PT）。
+- 工具：<FC 版本与 env 路径>；license 仅 <bsub 计算节点> 可用
+- 设计：TOP_NAME=<名字>，filelist 由 <genfilelist> 生成
+- 库：LVT db=<路径>；SVT db=<路径>；cell LEF=<路径>；工艺文件=<.tf/TLU+ 路径与叠构名>
+- cell 命名后缀：LVT=<后缀>、SVT=<后缀>（dont_use 分支要用）
+- 约束：DC 约束在 <路径>，请复制为 FC 专属副本再修
+- 运行：<bsub -Ip / 直接>，作业 shell 是 <bash/csh>
+- 传输：只能粘贴文本，请用 fc_deploy/gen_fc_installer.py 生成单文件部署脚本
+- 已知差异清单 D1~D17 在 <网站链接>，逐条对照排雷
+请从 S0 信息确认开始，按 SOP 七步推进；报告类命令一律 catch 兜底；每关产物贴回给我。
+```
+
+## 6. 一句话总结
+
+**工具迁移的资产不是脚本本身，而是「信息契约 + 差异地图 + 一套经过实测的作业顺序」。** 三件套齐了，下一个项目的 FC 引入应该是一天级而不是三天级的工作。
+</script>
+
+<script>
+const chapters = [
+  ['index', '主题首页'],
+  ['evaluation', 'FC引入实录'],
+  ['handoff-guide', '回传上手指引'],
+  ['bringup-log', '首跑排障实录'],
+  ['help-request', '求助清单'],
+  ['fc-sop', '快速启动手册']
+];
+const currentPath = location.pathname.split('/').pop() || 'index.html';
+const linksContainer = document.getElementById('navbar-links');
+chapters.forEach(([slug, label]) => {
+  const href = slug === 'index' ? './' : `./${slug}.html`;
+  const filename = slug === 'index' ? 'index.html' : `${slug}.html`;
+  const a = document.createElement('a');
+  a.href = href;
+  a.textContent = label;
+  if (currentPath === filename || currentPath.endsWith('/' + filename)) a.classList.add('active');
+  linksContainer.appendChild(a);
+});
+</script>
+<script>
+const md = document.getElementById('md').textContent;
+document.getElementById('article').innerHTML = marked.parse(md);
+
+const toc = document.getElementById('toc');
+const headings = document.querySelectorAll('.article h2, .article h3');
+const tocLinks = [];
+headings.forEach(h => {
+  const id = h.textContent.trim().replace(/\s+/g, '-').replace(/[^\w\u4e00-\u9fa5-]/g, '');
+  h.id = id;
+  const cls = h.tagName === 'H2' ? 'toc-h2' : 'toc-h3';
+  const a = document.createElement('a');
+  a.href = '#' + id;
+  a.textContent = h.textContent;
+  a.className = cls;
+  toc.appendChild(a);
+  tocLinks.push(a);
+});
+
+tocLinks.forEach((link, i) => {
+  if (!link.classList.contains('toc-h2')) return;
+  const children = [];
+  for (let j = i + 1; j < tocLinks.length && tocLinks[j].classList.contains('toc-h3'); j++) children.push(tocLinks[j]);
+  if (!children.length) return;
+  link.classList.add('toc-parent');
+  const arrow = document.createElement('span');
+  arrow.className = 'toc-arrow';
+  arrow.textContent = '▸';
+  link.prepend(arrow);
+  children.forEach(c => c.parentLink = link);
+  arrow.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const collapsed = link.classList.toggle('collapsed');
+    children.forEach(c => c.style.display = collapsed ? 'none' : '');
+  });
+});
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      tocLinks.forEach(l => l.classList.remove('active'));
+      let active = tocLinks.find(a => a.getAttribute('href') === '#' + entry.target.id);
+      if (active && active.style.display === 'none' && active.parentLink) active = active.parentLink;
+      if (active) active.classList.add('active');
+    }
+  });
+}, { rootMargin: '-10% 0px -75% 0px' });
+headings.forEach(h => observer.observe(h));
+</script>
+<script>
+const lightbox = document.getElementById('lightbox');
+const lbImg = document.getElementById('lightbox-img');
+const lbClose = document.getElementById('lightbox-close');
+let scale = 1;
+let isDragging = false;
+let startX = 0, startY = 0, translateX = 0, translateY = 0;
+function openLightbox(src) { lbImg.src = src; scale = 1; translateX = 0; translateY = 0; updateTransform(); lightbox.classList.add('active'); document.body.style.overflow = 'hidden'; }
+function closeLightbox() { lightbox.classList.remove('active'); document.body.style.overflow = ''; }
+function updateTransform() { lbImg.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`; }
+document.addEventListener('click', (e) => { const img = e.target.closest('img'); if (!img || img.id === 'lightbox-img' || !img.closest('.article')) return; openLightbox(img.src); });
+lbClose.addEventListener('click', closeLightbox);
+lightbox.addEventListener('click', (e) => { if (e.target === lightbox) closeLightbox(); });
+lightbox.addEventListener('wheel', (e) => { e.preventDefault(); const d = e.deltaY > 0 ? -0.12 : 0.12; scale = Math.min(Math.max(0.5, scale + d), 5); updateTransform(); });
+lbImg.addEventListener('mousedown', (e) => { isDragging = true; startX = e.clientX - translateX; startY = e.clientY - translateY; lbImg.classList.add('grabbing'); e.preventDefault(); });
+document.addEventListener('mousemove', (e) => { if (!isDragging) return; translateX = e.clientX - startX; translateY = e.clientY - startY; updateTransform(); });
+document.addEventListener('mouseup', () => { isDragging = false; lbImg.classList.remove('grabbing'); });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && lightbox.classList.contains('active')) closeLightbox(); });
+</script>
+
+</body>
+</html>
