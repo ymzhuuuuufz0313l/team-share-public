@@ -161,6 +161,54 @@ set_dont_touch [get_cells -hier *DLY0]
 2. **共享文件是桥接的边界。** 约束文件、文件列表这些 DC/FC 共用的资产，任何适配都必须做在工具侧（包装器/预处理），这是评估方案里定死的纪律。
 3. **这份清单会持续增长。** 约束段排雷还在进行（`set_wire_load_model`、`set_driving_cell` 等 DC 专有命令在预期中），每确认一条就追加一行——这张表就是 FC 评估报告的核心资产。
 
+## 8. 0908 续篇：约束段通关与首次映射成功
+
+> 接第 4 节的心路历程：set_top_module 修完之后，这一轮一口气推进了三关半——约束段全部通关、compile_fusion 的 initial_map（RTL→门级映射）跑通、然后倒在 logic_opto 的寄生参数上。
+
+### 8.1 这一轮的关卡
+
+| 关卡 | 现象 | 根因 | 处置 | 结果 |
+|---|---|---|---|---|
+| 约束段·僵尸模式 | `*DLY0`(L405)、`*DLY7/8/9×2`(L421-424) SEL-005 掐死脚本 | HV1V21 遗留模式，HV2M23 延时单元已是 IDLY1~6；DC 下同样零匹配但静默 no-op | 交互探针全量体检 74 条 dont_touch → 揪出全部 5 条僵尸，一次性注释（FC-FIX） | ✅ 其余 70 条全过 |
+| 综合前报告 | `report_clock_gating` 报 "Errors detected during redirect"（CMD-013） | 综合前设计里还没有 CG cell，fc_shell 硬报错（DC 出空报告） | catch 包裹跳过（compile_fc.tcl + report_fc.tcl 两处） | ✅ |
+| **映射目标全灭** | **OPT-1006**：Library analysis failure - cannot find minimum required gates (buffer/inverter) → designPreludeChecks 失败 | **NDM 合并改变了库名空间**：全部 cell 并入单一 clib `nexchip_145_9t`（*AL9=SL/LVT 662 + *AS9=SS/SVT 720 + 其他 28）；dont_use_fc.tcl 仍用旧 db 库名 `M31HSSC900EL150SL/SS_..._ccs/*` → 模式在 fc_shell 里过度匹配成"全部 cell"，除 remove_from_collection 显式摘除的 GCKHBQX8AL9 外**全被禁**（逐 cell 探针证实：BUFX03AS9/INVX03AS9 等 SVT 基础门也 dont_use=true） | nexchip 分支改用合并库名 + cell 后缀区分 flavor；12t 分支同款隐患一并修 | ✅ 修复 |
+| logic_opto 启动 | SCN-1001：No valid parasitics for EARLY/LATE corner default → fc/logic_opto/mcmmStart 失败（FLW-2543/1762）；"Zero interconnect delay is used" | logic_opto 的 MCMM 流程强制要求 corner 寄生参数（`set_parasitics_parameters`，即 TLU+）；这套 Cadence 向 PDK 尚未找到 Synopsys 格式寄生库 | 三选一进行中：①继续找 TLU+（挖深+换关键词）；②.tf 若含每层 R/C 则走 `set_layer_rc`；③降级 `compile_fusion -to initial_map` 先出网表（零互连线延时，QoR 偏乐观） | ⏳ |
+
+### 8.2 里程碑：initial_map 通关数据
+
+- **映射结果：AREA 146688.53 / 5770 cells**——RTL 真正变成了门级
+- 时钟门控（compile_fusion 自动插入，无需手写 insert_clock_gating）：**101 个 ICG，门控 1006 位 = 59.32%**；未门控主因是 enable 恒 1（632 位）与位宽不满足（52+6）
+- 阶段耗时：initial_map 全程约 40 秒（High-Level Optimization and Technology Mapping 占 66%）
+- **结论：FC 能吃下我们建的 NDM、修好的约束和 dont_use，把 HV2M23_digital_top 的 RTL 映成门级——方案 A 的核心可行性已经验证。剩下的（寄生精度、QoR 对比）是精度问题，不是可行性问题。**
+
+### 8.3 工程方法论追加（这轮比报错更值钱的部分）
+
+1. **集合 API 语义**：Synopsys collection 不是 Tcl list——`llength` 永远返回 1、`puts` 打出 `_selNNN` 句柄、`lindex` 取不出元素；正确姿势是 `sizeof_collection` / `foreach_in_collection` / `get_object_name`
+2. **探针输出落 md**：交互勘测结果用 `open/puts/close` 直接写 markdown 文件再截图，比截终端可靠（也符合远程终端纯 ASCII 原则）
+3. **fc_shell 内置命令不可 rename**（CMD-013）：想包装内置命令只剩"调用点文本重写"和"FC 专属副本"两条路——本项目由用户拍板选了后者（不要求复用 DC 约束文件）
+4. **库名空间迁移是隐形雷**：db→NDM 合并后库名变了，DC 脚本里所有 `旧库名/cell` 模式都要按新库名重写；且 fc_shell 对"不存在的库前缀"的处理不是安静空匹配而是失控宽匹配，必须逐模式实测
+5. **僵尸模式要全量体检而不是逐个踩**：一条探针循环把 74 条模式全部验一遍，5 条僵尸一次清完，省掉 N 个"改一行-重跑"的往返
+
+### 8.4 差异清单增补（接第 7 节 D1–D9）
+
+| # | 差异点 | DC 行为 | FC 行为 | 处置 |
+|---|---|---|---|---|
+| D10 | 内置命令 rename | 可 rename 后包装 | CMD-013 command cannot be renamed | 放弃包装，改 FC 专属副本 |
+| D11 | 库名空间 | 每个 .db 是独立库 | NDM 合并为单一 clib（nexchip_145_9t），flavor 靠 cell 后缀（*AL9/*AS9）区分 | dont_use 分支按合并库名+后缀重写 |
+| D12 | 综合期寄生 | wireload 模型即可 | logic_opto 强制要求 corner parasitics（SCN-1001） | TLU+ / set_layer_rc / 降级 initial_map，三选一 |
+| D13 | report_clock_gating 空设计 | 出空报告 | 硬报错中断 redirect | catch 跳过 |
+| D14 | 集合 API | get_* 结果可 llength/puts | 必须 sizeof_collection / foreach_in_collection / get_object_name | 探针脚本按 FC API 重写 |
+
+### 8.5 进度仪表盘（0908 收盘）
+
+| 关卡 | 状态 |
+|---|---|
+| license / NDM / elaborate+link / 约束段 | ✅ |
+| initial_map（映射） | ✅ AREA 146688 / 5770 cells / 门控 59.3% |
+| logic_opto（需寄生参数） | ⏳ TLU+ 搜索中（三选一路线待定） |
+| final_opto + 输出 netlist/SDC | ⏳ |
+| 遗留小账 | SQM-1067：`*SFF*` 模式误伤名字带 SFF 的普通门（DC 时代同病，约束精修时处理）；RAM 模型未入 NDM；金属叠构 1P4M_TM8K 待 APR 确认 |
+
 （正文结束。发布时如需压缩可保留全部表格与第 4 节叙事。）
 </script>
 
