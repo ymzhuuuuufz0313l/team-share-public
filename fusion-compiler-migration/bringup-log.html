@@ -222,6 +222,19 @@ set_dont_touch [get_cells -hier *DLY0]
 1. **`FC_COMPILE_MODE=map_only` 先行**（已实现进 fc_user_proc.tcl，默认值）：停在 initial_map，零互连线延时——优先打通"映射 → write_verilog/write_sdc → 下游 PT/LEC 消费"的闭环，验证方案 A 的产物可用性；QoR 偏乐观，评估报告注明
 2. **collateral 请求单发 IT/foundry**（外部依赖，最长线）：①1P4M 叠构 TLU+（Synopsys 格式）；②官方现成 NDM（如有）。到位后 `set_parasitics_parameters` + 切 `full` 模式，补 logic_opto/final_opto 与 DC 的 QoR 对比
 
+### 8.7 输出段首雷：总线命名风格（D15）
+
+`FC_COMPILE_MODE=map_only` 下 `compile_fusion -to initial_map` 干净结束（Block 状态 `is mapped`，AREA 146688 / 5770 cells），流程推进到 `fc_outputs.tcl` 第一条命令即踩新雷：
+
+```
+define_name_rules hv_core_rule ... -target_bus_naming_style {%s[%d]}
+Error (CMD-031): value not valid. Specify one of: (), <>, [], {}
+```
+
+- **差异（D15）**：DC 允许 printf 风格总线命名（%s%d / %s[%d]），FC 只接受四种括号对 `() < > [] {}`
+- **修复**：`{%s[%d]}` → `{[]}`（语义等价 bus[0]，LEC/PT 标准格式）；`-map` 子句与三条 `change_names` 全部 catch 兜底——输出段任何命名细节不再中断流程
+- **进度**：compile → 映射 → 输出段，只剩 `write_verilog / write_sdc` 落盘即产物闭环
+
 （正文结束。发布时如需压缩可保留全部表格与第 4 节叙事。）
 </script>
 
