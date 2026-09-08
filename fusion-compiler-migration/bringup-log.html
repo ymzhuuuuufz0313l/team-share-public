@@ -235,6 +235,21 @@ Error (CMD-031): value not valid. Specify one of: (), <>, [], {}
 - **修复**：`{%s[%d]}` → `{[]}`（语义等价 bus[0]，LEC/PT 标准格式）；`-map` 子句与三条 `change_names` 全部 catch 兜底——输出段任何命名细节不再中断流程
 - **进度**：compile → 映射 → 输出段，只剩 `write_verilog / write_sdc` 落盘即产物闭环
 
+### 8.8 输出第二关：write_verilog 语法（D16）
+
+`kv_change_names` 修复后全部通过（verilog 规则改名 4485 个对象 / hv_core_rule_2 改 8 个），输出段第二条踩新雷：
+
+```
+write_verilog -hierarchy $NETLIST_FILE_ORG
+Error (CMD-031): '-hierarchy' 的值必须是 all | design | design_lib | top
+Error (CMD-007): Required argument 'verilog_file_name' was not found
+```
+
+- **差异（D16）**：DC 的 `write_verilog -hierarchy <file>`（文件做位置参数）在 FC 里拆成 `-hierarchy <范围>` + 文件名位置参数
+- **语义映射**（`write_verilog -help` 实测）：DC `write -hierarchy` ≡ FC `-hierarchy design`（全层级）；DC 不带 -hierarchy 的仅顶层写 ≡ FC `-hierarchy top`
+- **修复**：三条 write 分别改为 `-hierarchy design`（.gv_org / .gv）与 `-hierarchy top`（_onlytop.v），待重跑验证
+- **进度**：映射 ✅ → 命名 ✅ → 输出语法已修待验证 → 产物落盘在望
+
 （正文结束。发布时如需压缩可保留全部表格与第 4 节叙事。）
 </script>
 
