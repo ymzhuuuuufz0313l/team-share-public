@@ -97,6 +97,7 @@
 - **静默语义差**：空匹配、空报告（D4/D13）——不报错但行为不同，比报错更危险
 - **寄生**：logic_opto 强制 TLU+，wireload 时代没有就要提前找（D12）
 - **工程习惯**：远程终端纯 ASCII；集合 API 用 sizeof_collection/foreach_in_collection；内置命令不可 rename（D10/D14）
+- **验收段**：LEC NONEQ 先查层级（`grep -c "^module"`）与总线命名（`reg_2_` vs `reg[2]`）——ungroup 类 app option 配错会导致"假 FAIL"（见 8.10）
 
 ## 5. 给 Agent 的启动 Prompt 模板（复制即用）
 

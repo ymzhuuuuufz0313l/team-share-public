@@ -269,6 +269,18 @@ write_sdc 的 `-output` 修复（D17）落下后，**FC 首跑全程无 Error �
 
 三天排障账本：D1~D17 差异全部落档；66 处 TODO(FC-CONFIRM) 大部分已实测消除；骨架 9 文件生长为 17 文件部署体系。从"fc_shell 都不认识 read_db"到"94 秒产出全套交付物"——这条迁移路已经走通了。
 
+### 8.10 验收段：LEC 首跑 NONEQ（573 点）与根因定位
+
+`gen_fc_verify.py` 生成的 `fc_lec/`（由 lec/ 镜像 + `dc/rep_dir`→`fc/rep_dir` 字节改写）首跑 Conformal LEC（RTL vs FC 网表）：
+
+- **结果：FAIL NONEQ**——EQ 1601 / NON-EQ 573（PO 13 + DFF 560）
+- **非等值点模式极规整**：集中在 `u_LOGIC_CENTER/LINK_LOGIC/LC_CPUWR_HV2M23/R_REG_*` 总线；R 侧名字呈"层级压平 + 下划线总线"（`u_LOGIC_CENTER_LINK_LOGIC_LC_CPUWR_HV2M23/R_REG_12_reg_2_`）
+- **两根因（探针实测）**：
+  - **网表被压平**：`grep -c "^module " .gv` 只剩 15 个（RTL 读了 53 个模块）→ 层级丢了
+  - **app option 命中**：`get_app_options *ungroup*` 实测找到 **`rtl_opt.conditioning.disable_boundary_optimization_and_auto_ungrouping`**（对应 DC `compile_ultra -no_autoungroup` 的等价物，待验证）与 `compile.flatten_multidimensional_bus`（疑似总线扁平化开关）
+  - 附带彩蛋：`design.change_names_dc_compatible`（DC 兼容命名模式，或能简化 D15 手工规则）
+- **下一步**：设该 app option → 重跑 FC → LEC 复测；若 module 数回 53、点数收敛到 0，LEC 验收即 PASS
+
 （正文结束。发布时如需压缩可保留全部表格与第 4 节叙事。）
 </script>
 
