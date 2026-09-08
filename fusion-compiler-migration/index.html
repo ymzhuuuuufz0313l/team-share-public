@@ -63,6 +63,13 @@
           <span class="tag">首跑排障实录</span>
         </a>
 
+        <a class="chapter-card" href="./help-request.html">
+          <div class="num">4</div>
+          <div class="title">外部求助清单</div>
+          <div class="desc">面向 IT / Foundry FAE / CAD 的请求总表：R1 TLU+ 寄生参数（最高优先级）、R2 RAM 时序模型、R3 官方 NDM、R4 金属叠构确认、R5/R6 license 与环境清理，附项目上下文。</div>
+          <span class="tag">求助清单</span>
+        </a>
+
       </div>
 
       <div class="section-title">一句话结论</div>
@@ -95,7 +102,8 @@ const chapters = [
   ['index', '主题首页'],
   ['evaluation', 'FC引入实录'],
   ['handoff-guide', '回传上手指引'],
-  ['bringup-log', '首跑排障实录']
+  ['bringup-log', '首跑排障实录'],
+  ['help-request', '求助清单']
 ];
 const currentPath = location.pathname.split('/').pop() || 'index.html';
 const linksContainer = document.getElementById('navbar-links');

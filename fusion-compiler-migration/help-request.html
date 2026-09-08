@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>进阶实验室 · FC 引入 — 外部求助清单（需要 IT / Foundry / CAD 协助的事项）</title>
+  <link rel="stylesheet" href="./assets/style.css">
+  <script src="./js/marked.min.js"></script>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a class="navbar-brand" href="./">⚡ 进阶实验室 · Fusion Compiler</a>
+      <div class="navbar-links" id="navbar-links"></div>
+    </div>
+  </nav>
+
+  <div class="container with-toc">
+    <aside class="toc-wrapper">
+      <div class="toc" id="toc"></div>
+    </aside>
+
+    <div class="content">
+      <article class="article" id="article"></article>
+      <div class="page-nav">
+        <a class="prev" href="./bringup-log.html"><span class="label">← 上一篇</span><span class="title">FC 首跑排障实录</span></a>
+        <a class="next" href="./"><span class="label">回主题 →</span><span class="title">Fusion Compiler 迁移 · Sheet 导航</span></a>
+      </div>
+    </div>
+  </div>
+
+  <div class="lightbox" id="lightbox">
+    <span class="close" id="lightbox-close">&times;</span>
+    <img id="lightbox-img" src="" alt="">
+    <div class="hint">滚轮缩放 · 拖拽移动 · Esc 或点击空白处关闭</div>
+  </div>
+
+<script type="text/template" id="md">
+# FC 引入 · 外部求助清单
+
+> **给谁看**：IT / EDA 管理员、Foundry FAE、CAD 支持。
+> **背景一句话**：HV2M23 项目正在评估用 Fusion Compiler（V-2023.12-SP5）替代 Design Compiler 做综合。工具、license、库合成（NDM）、约束迁移、RTL 映射均已被项目组自行打通（RTL→门级映射已成功，5770 cells）；目前剩余的阻塞项全部依赖**库数据与授权**，超出项目组可自行解决的范围，清单如下。
+
+## 请求总表
+
+| # | 请求 | 优先级 | 阻塞什么 | 需要提供方 |
+|---|------|--------|----------|-----------|
+| R1 | TLU+ 寄生参数文件（Synopsys 格式，1P4M 叠构） | **高** | compile_fusion 的 logic_opto / final_opto 阶段（SCN-1001），无它则 QoR 精度受限 | IT / Foundry FAE |
+| R2 | RAM / 宏单元时序模型路径与清单（.db 或 .lib） | **高** | 设计中 u_mem* 存储器的链接与完整映射 | CAD / 库管理员 |
+| R3 | Foundry 官方 NDM / Fusion-Compiler-ready 库（如存在） | 中 | 替代项目组自合成 NDM，获得官方完整视图与支持 | Foundry FAE |
+| R4 | 金属叠构官方确认（HV2M23 是否 1P4M / TM8K） | 中 | 建库 techfile 选择与寄生精度 | Foundry 文档 / APR |
+| R5 | Fusion Compiler license 开放登录节点（低优先级确认项） | 低 | 目前仅 bsub 计算节点可用，登录节点报 Fusion-Compiler-NX | IT / License 管理 |
+| R6 | `/eda/synopsys/NEXT/fs_compiler_vW-2024.09-SP3` 误装包（实为 NanoTime）清理/重部署确认 | 低 | 环境脚本指向混乱（已绕行用 V-2023.12-SP5） | IT |
+
+## R1：TLU+ 寄生参数文件（最高优先级）
+
+**我们要它做什么**：Fusion Compiler 的 logic_opto / final_opto 优化阶段按 corner 消费寄生参数（报错原文：`SCN-1001: No valid parasitics for EARLY/LATE corner default. Related command: set_parasitics_parameters`）。
+
+**为什么自己解决不了**：
+- 已全盘搜索 `/eda/process/015/ENEXCHIP`（maxdepth 9，关键词 tlup / nxtgrd / qrc / tlp）——无 Synopsys 格式寄生文件
+- 该 PDK 打包以 Cadence 流程为中心：有 QRC（`qrcTechFile`）无 TLU+；QRC 格式无法直接被 FC 消费，且项目组无格式转换工具
+- 工艺文件 `.tf`（EL150S_1P4M_TM8K.tf）仅含单位/精度声明，**无每层 R/C 数值**，`set_layer_rc` 路线同样缺原料
+
+**具体需要**：1P4M 叠构（EL150S_1P4M_TM8K 或官方认定叠构）的 TLU+ 文件一对（early / late，或 single file 注明用途）；若有配套 `ICT` 文件也一并提供。
+
+**给到形式**：放置路径（如 `/eda/process/015/ENEXCHIP/...` 任意可读位置）+ 文件名，或直接告知现有路径。
+
+## R2：RAM / 宏单元时序模型
+
+**我们要它做什么**：综合网表中 `u_mem*` 存储器实例的链接与检查。
+
+**为什么自己解决不了**：standcell 包（M31HSSC900EL150SL/SS）内未见宏单元模型；宏单元库若存在，其位置与清单只有库管理者掌握。
+
+**具体需要**：HV2M23 使用的 RAM/ROM 宏单元的 `.db`（或 `.lib`）文件路径清单 + 对应 corner 说明；与 stdcell 同 corner（125CSS1P62_cmax）优先。
+
+## R3：官方 NDM（如存在）
+
+**我们要它做什么**：项目组已自行用 icc2_lm_shell 将 stdcell .db + cell LEF + techfile.tf 合成为 NDM 并成功跑通映射；但这是"项目组合成库"。若 foundry/官方有 Fusion-Compiler-ready 的 NDM（含完整视图、RAM、IO），以官方库为准更稳。
+
+**为什么自己解决不了**：是否有官方 NDM、版本与下载位置，只有 foundry/库管理方知道。
+
+**具体需要**：一句话回复"有/没有"；有则给路径。
+
+## R4：金属叠构官方确认
+
+**背景**：库内存在 1P2M_TM4K / 1P3M_TM6K / 1P4M_TM8K 多个叠构变体（含 MIM 变体）。项目组按 `DesignKit/1P4M/` 路径名推断 HV2M23 为 **1P4M / TM8K**，并已按此建库。
+
+**需要**：APR 或 foundry 文档确认实际叠构；若非 1P4M_TM8K，给出正确变体名。
+
+## R5 / R6：低优先级确认项
+
+- R5：FC license 目前**仅在 bsub 计算节点可用**（登录节点直连报 Fusion-Compiler-NX）。如属有意配置请忽略；如可开放登录节点，使用体验更佳。
+- R6：`/eda/synopsys/NEXT/fs_compiler_vW-2024.09-SP3` 包内容实为 NanoTime（此前已反馈）；请确认重部署计划，或直接移除避免误用。
+
+## 附：项目上下文
+
+- 工具：Fusion Compiler V-2023.12-SP5（`/eda/synopsys/fusioncompiler/V-2023.12-SP5`，env `/eda/env/NEXT/fs_compiler_V-2023.12-SP5.cshrc`）
+- 已完成：NDM 自合成（2×.db + 2×cell LEF + techfile.tf，`/project/HV2M23/designer/DD/ymzhu/HV2M23/SYNTHESIS/common/ndm/nexchip_145_9t.ndm`）；约束迁移；RTL elaborate（53 模块 / 8614 instances）；initial_map 映射（AREA 146688 / 5770 cells / ICG 101）
+- 详细过程：本主题《FC 首跑排障实录》sheet
+</script>
+
+<script>
+const chapters = [
+  ['index', '主题首页'],
+  ['evaluation', 'FC引入实录'],
+  ['handoff-guide', '回传上手指引'],
+  ['bringup-log', '首跑排障实录'],
+  ['help-request', '求助清单']
+];
+const currentPath = location.pathname.split('/').pop() || 'index.html';
+const linksContainer = document.getElementById('navbar-links');
+chapters.forEach(([slug, label]) => {
+  const href = slug === 'index' ? './' : `./${slug}.html`;
+  const filename = slug === 'index' ? 'index.html' : `${slug}.html`;
+  const a = document.createElement('a');
+  a.href = href;
+  a.textContent = label;
+  if (currentPath === filename || currentPath.endsWith('/' + filename)) a.classList.add('active');
+  linksContainer.appendChild(a);
+});
+</script>
+<script>
+const md = document.getElementById('md').textContent;
+document.getElementById('article').innerHTML = marked.parse(md);
+
+const toc = document.getElementById('toc');
+const headings = document.querySelectorAll('.article h2, .article h3');
+const tocLinks = [];
+headings.forEach(h => {
+  const id = h.textContent.trim().replace(/\s+/g, '-').replace(/[^\w\u4e00-\u9fa5-]/g, '');
+  h.id = id;
+  const cls = h.tagName === 'H2' ? 'toc-h2' : 'toc-h3';
+  const a = document.createElement('a');
+  a.href = '#' + id;
+  a.textContent = h.textContent;
+  a.className = cls;
+  toc.appendChild(a);
+  tocLinks.push(a);
+});
+
+tocLinks.forEach((link, i) => {
+  if (!link.classList.contains('toc-h2')) return;
+  const children = [];
+  for (let j = i + 1; j < tocLinks.length && tocLinks[j].classList.contains('toc-h3'); j++) children.push(tocLinks[j]);
+  if (!children.length) return;
+  link.classList.add('toc-parent');
+  const arrow = document.createElement('span');
+  arrow.className = 'toc-arrow';
+  arrow.textContent = '▸';
+  link.prepend(arrow);
+  children.forEach(c => c.parentLink = link);
+  arrow.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const collapsed = link.classList.toggle('collapsed');
+    children.forEach(c => c.style.display = collapsed ? 'none' : '');
+  });
+});
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      tocLinks.forEach(l => l.classList.remove('active'));
+      let active = tocLinks.find(a => a.getAttribute('href') === '#' + entry.target.id);
+      if (active && active.style.display === 'none' && active.parentLink) active = active.parentLink;
+      if (active) active.classList.add('active');
+    }
+  });
+}, { rootMargin: '-10% 0px -75% 0px' });
+headings.forEach(h => observer.observe(h));
+</script>
+<script>
+const lightbox = document.getElementById('lightbox');
+const lbImg = document.getElementById('lightbox-img');
+const lbClose = document.getElementById('lightbox-close');
+let scale = 1;
+let isDragging = false;
+let startX = 0, startY = 0, translateX = 0, translateY = 0;
+function openLightbox(src) { lbImg.src = src; scale = 1; translateX = 0; translateY = 0; updateTransform(); lightbox.classList.add('active'); document.body.style.overflow = 'hidden'; }
+function closeLightbox() { lightbox.classList.remove('active'); document.body.style.overflow = ''; }
+function updateTransform() { lbImg.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`; }
+document.addEventListener('click', (e) => { const img = e.target.closest('img'); if (!img || img.id === 'lightbox-img' || !img.closest('.article')) return; openLightbox(img.src); });
+lbClose.addEventListener('click', closeLightbox);
+lightbox.addEventListener('click', (e) => { if (e.target === lightbox) closeLightbox(); });
+lightbox.addEventListener('wheel', (e) => { e.preventDefault(); const d = e.deltaY > 0 ? -0.12 : 0.12; scale = Math.min(Math.max(0.5, scale + d), 5); updateTransform(); });
+lbImg.addEventListener('mousedown', (e) => { isDragging = true; startX = e.clientX - translateX; startY = e.clientY - translateY; lbImg.classList.add('grabbing'); e.preventDefault(); });
+document.addEventListener('mousemove', (e) => { if (!isDragging) return; translateX = e.clientX - startX; translateY = e.clientY - startY; updateTransform(); });
+document.addEventListener('mouseup', () => { isDragging = false; lbImg.classList.remove('grabbing'); });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && lightbox.classList.contains('active')) closeLightbox(); });
+</script>
+
+</body>
+</html>
