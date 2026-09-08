@@ -281,6 +281,24 @@ write_sdc 的 `-output` 修复（D17）落下后，**FC 首跑全程无 Error �
   - 附带彩蛋：`design.change_names_dc_compatible`（DC 兼容命名模式，或能简化 D15 手工规则）
 - **下一步**：设该 app option → 重跑 FC → LEC 复测；若 module 数回 53、点数收敛到 0，LEC 验收即 PASS
 
+### 8.11 层级保卫战：从 573 到 282 的定位与修复
+
+LEC 首跑 573 个 NONEQ 之后，用"对照实验 + 逐层排他"又打了三轮：
+
+| 轮次 | 动作 / 现象 | 结论 |
+|---|---|---|
+| R1 | `rtl_opt.conditioning.disable_boundary_optimization_and_auto_ungrouping` 设在 basic_setup | NDMUI-299：design-scoped 选项，设计未创建时不能设 |
+| R2 | 移到 link 之后，选项成功设置，但 `.gv` 仍 15 个 module | 该选项不管编译期压平，且会误关 boundary optimization → 弃用 |
+| R3 | 间歇性 `DPSEL_I` 报错（SEL-005）复现 | 规律：`save_lib` 存下的库被下次 `open_lib` 复用时 elaborate 状态脏 → **全量重跑前 `file delete -force` 清库**（fresh rebuild 策略，全量仅 ~90s） |
+| R4 | 对照实验：`write_verilog -hierarchy all` vs `design` | 产物完全相同 → **write 无罪** |
+| R5 | 网表原文 grep + 块内探针（open_block + get_cells 821/971 对勘） | 库内层级活、网表实例名被拼接成 `u_A_B_C`、总线位标量化 `reg_3_` |
+| R6 | `info commands *ungroup*` 探针 | **命中 `set_ungroup` / `set_autoungroup_options`（-start_level）** |
+| R7 | 双保险修复：`set_autoungroup_options -start_level 999` + `set_ungroup [get_cells -hier *] false` | **生效：module 数 15→221；LEC EQ 1601→1896、NON-EQ 573→282** |
+
+当前残留 282 点已收敛为单一模式：时钟门控寄存器组的总线位命名（G `reg[9]` vs R `reg_9_/U$1`），且两侧层级路径已一致。深挖方向：RTL9 位部分赋值 + FC 时钟门控使能推断（LC_CSPIF_L0 的 `DATA_PS_ENC <= 9'b0` 分支）、RTL5.1 overlapped case（CSPI_CMD_ALIGN 的 `case(1'b1)` parallel_case）。
+
+方法论沉淀：**"对照实验 + 排他法"比"猜选项名"快得多**——R4 的对照实验一轮就洗清了 write 的嫌疑；R5 的"库内状态 vs 文件原文"对勘锁定了压平发生的段落。另外：远程终端一律纯 ASCII（中文会乱码）；探针输出落 md 文件再回传，比截终端可靠。
+
 （正文结束。发布时如需压缩可保留全部表格与第 4 节叙事。）
 </script>
 
