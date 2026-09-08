@@ -250,6 +250,25 @@ Error (CMD-007): Required argument 'verilog_file_name' was not found
 - **修复**：三条 write 分别改为 `-hierarchy design`（.gv_org / .gv）与 `-hierarchy top`（_onlytop.v），待重跑验证
 - **进度**：映射 ✅ → 命名 ✅ → 输出语法已修待验证 → 产物落盘在望
 
+### 8.9 收官：产物闭环达成（0908 12:53）
+
+write_sdc 的 `-output` 修复（D17）落下后，**FC 首跑全程无 Error 收官**：94 秒 / 峰值内存 1449 MB / "Thank you for using Fusion Compiler." / fc_shell 体面退出。
+
+`rep_dir/` 产物清单（**与 DC 同名同位，下游零改动**）：
+
+| 产物 | 大小 | 说明 |
+|---|---|---|
+| `HV2M23_digital_top.gv` | 1.1 MB | 映射网表（下游主用） |
+| `HV2M23_digital_top.gv.org` | 1.1 MB | 原始命名网表（netlist_reform.pl 已处理） |
+| `HV2M23_digital_top_onlytop.v` | 758 KB | 仅顶层（LEC 用） |
+| `HV2M23_digital_top.sdc` | 366 KB | 时序约束 |
+| `HV2M23_digital_top_lib/` | — | 断点续跑库 |
+| `.max_rpt` / `.rpt` / `.pre_compile` / `.chk_design` / `dont_touch.tcl` / `fc.log` | — | 报告与辅助 |
+
+**方案 A 判词（map_only 精度）**：FC 能完整产出下游所需的全部综合交付物。剩余三件事：①下游 PT / LEC 实测消费（最终验收）；②TLU+ 到位后切 full 模式补 QoR 对比；③RAM 模型与金属叠构确认（见求助清单 sheet）。
+
+三天排障账本：D1~D17 差异全部落档；66 处 TODO(FC-CONFIRM) 大部分已实测消除；骨架 9 文件生长为 17 文件部署体系。从"fc_shell 都不认识 read_db"到"94 秒产出全套交付物"——这条迁移路已经走通了。
+
 （正文结束。发布时如需压缩可保留全部表格与第 4 节叙事。）
 </script>
 
