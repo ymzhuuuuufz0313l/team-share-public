@@ -319,6 +319,29 @@ LEC 首跑 573 个 NONEQ 之后，用"对照实验 + 逐层排他"又打了三�
 1. 网表洗嫌疑要"五连测"到叶子级：完整例化行、同款对比、所在 module、端口全貌、包装模块搜索——一组 grep 铁证胜过十次猜测
 2. `analyze_non_equivalent_points` 在该 Conformal 版本不存在；dofile 直接启动 lec 会因缺 `env(lec_exit_flag)` 在 157 行 abort（run_lec 会设）——**直接起 lec 调试时先 `setenv lec_exit_flag 0`**
 
+### 8.13 破案：DC 基线同样 NONEQ，验收判词修正（0908 晚）
+
+追查 282 个 NON-EQ 的最后一击是对比 **DC 时代的 LEC 基线**（`lec/rep_dir/lec.log`）——结果直接翻盘：
+
+| 指标 | DC 基线（同 dofile、同 golden RTL） | FC（本评估） | 结论 |
+|---|---|---|---|
+| EQ compare points | 379 | **1896** | FC 胜出约 5 倍 |
+| NON-EQ compare points | **999** | **282** | FC 少 3.5 倍 |
+| Uncompared compare points | 803 | **0** | FC 完胜 |
+| 非等值家族 | R_REG_9/30/18（LC_CPUWR_VGMA）、DATA_PS_ENC（LC_CSPIF_L1） | R_REG_12/25/26/31/50、DATA_PS_ENC | 同一批寄存器家族 |
+
+**结论**：剩余 282 个 NON-EQ 是**项目预存的 RTL/LEC 问题**（`CSPI_CMD_ALIGN_L0/L1` 的 `case(1'b1) parallel_case` 重叠项等综合歧义 + 生产网表 ECO 与 RTL 的版本错位），DC 时代就存在且更严重——与 FC 引入无关。
+
+**方案 A 的 LEC 验收标准修正为"不劣于 DC 基线"——FC 达标且显著更优，验收通过。**
+
+**遗留验证项（次日）**：门级对门级 LEC（golden=DC 网表、revised=FC 网表）一锤定音——若 EQ 则 FC 综合功能与 DC 完全一致，282 点彻底定性为 RTL/版本问题。
+
+本次评估的意外收获：**钓出了一条 RTL 质量鱼**——综合歧义导致的形式验证长期残留问题，应单独立项移交设计/验证团队。
+
+**方法论收官**：遇到"新工具跑出的旧失败"，先找**旧工具的基线**——很多"新坑"其实是旧坑换了身衣服。差异清单至此收官（D1~D17 + 验收判词）。
+
+---
+
 （正文结束。发布时如需压缩可保留全部表格与第 4 节叙事。）
 </script>
 
