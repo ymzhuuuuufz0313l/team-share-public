@@ -6,31 +6,58 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet">
   <title>Memory 与功耗 · ASIC IP Synthesis &amp; Integration Flow 工具使用指南</title>
   <script src="./js/marked.min.js"></script>
   <script src="./glossary.js"></script>
   <style>
 
 :root {
-  --bg: #f8fafc;
-  --surface: #ffffff;
-  --text: #1e293b;
-  --muted: #64748b;
-  --accent: #0d9488;
-  --accent-soft: #ccfbf1;
-  --line: #e2e8f0;
-  --shadow: 0 10px 40px rgba(0,0,0,0.08);
+  --bg: #f4f1ea;
+  --surface: #fffdf7;
+  --text: #1c2534;
+  --muted: #667180;
+  --accent: #b45309;
+  --accent-strong: #92400e;
+  --accent-soft: #f7e8d4;
+  --line: #ddd6c8;
+  --chip: #efe9db;
+  --ink: #0d1526;
+  --ink-2: #131f38;
+  --shadow: 0 12px 32px rgba(28, 37, 52, 0.10);
+  --ok: #047857;
+  --ok-bg: rgba(4, 120, 87, 0.08);
+  --bad: #b91c1c;
+  --bad-bg: rgba(185, 28, 28, 0.08);
+  --warn: #b45309;
+  --warn-bg: rgba(180, 83, 9, 0.10);
+  --info: #1d4ed8;
+  --info-bg: rgba(29, 78, 216, 0.08);
+  --font-mono: "IBM Plex Mono", "SFMono-Regular", Consolas, monospace;
+  --font-serif: "Noto Serif SC", "Songti SC", serif;
 }
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #0f172a;
-    --surface: #1e293b;
-    --text: #f1f5f9;
-    --muted: #94a3b8;
-    --accent: #2dd4bf;
-    --accent-soft: #134e4a;
-    --line: #334155;
-    --shadow: 0 10px 40px rgba(0,0,0,0.35);
+    --bg: #0e1420;
+    --surface: #161f31;
+    --text: #e9e5d9;
+    --muted: #9aa4b5;
+    --accent: #f0a137;
+    --accent-strong: #f6b95c;
+    --accent-soft: #3a2f1a;
+    --line: #2b3852;
+    --chip: #1e2a44;
+    --shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+    --ok: #34d399;
+    --ok-bg: rgba(52, 211, 153, 0.10);
+    --bad: #f87171;
+    --bad-bg: rgba(248, 113, 113, 0.10);
+    --warn: #f0a137;
+    --warn-bg: rgba(240, 161, 55, 0.12);
+    --info: #93c5fd;
+    --info-bg: rgba(147, 197, 253, 0.10);
   }
 }
 * { box-sizing: border-box; }
@@ -60,7 +87,9 @@ body {
   gap: 16px;
 }
 .navbar-brand {
-  font-weight: 700;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  letter-spacing: 0.04em;
   color: var(--accent);
   white-space: nowrap;
   font-size: 15px;
@@ -85,8 +114,8 @@ body {
   transition: background 0.15s;
   text-decoration: none;
 }
-.navbar-links a:hover { background: var(--bg); text-decoration: none; }
-.navbar-links a.active { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+.navbar-links a:hover { background: var(--chip); text-decoration: none; }
+.navbar-links a.active { background: var(--accent); color: #fff; font-weight: 600; }
 @media (max-width: 640px) {
   .navbar-inner { padding: 10px 16px; gap: 10px; }
   .navbar-brand { font-size: 14px; }
@@ -108,9 +137,9 @@ body {
   box-shadow: var(--shadow);
 }
 .toc a { display: block; padding: 6px 8px; border-radius: 6px; color: var(--muted); margin: 2px 0; transition: background 0.15s, color 0.15s; text-decoration: none; }
-.toc a:hover { background: var(--bg); color: var(--accent); text-decoration: none; }
+.toc a:hover { background: var(--chip); color: var(--accent); text-decoration: none; }
 .toc a.active { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
-.toc a.toc-h1 { font-weight: 700; color: var(--accent); margin-bottom: 8px; cursor: default; }
+.toc a.toc-h1 { font-family: var(--font-mono); font-weight: 600; font-size: 12px; letter-spacing: 0.14em; color: var(--accent); margin-bottom: 8px; cursor: default; }
 .toc a.toc-h3 { padding-left: 18px; font-size: 13px; }
 .toc li.toc-h2-item { display: flex; align-items: center; gap: 2px; }
 .toc li.toc-h2-item > a { flex: 1; min-width: 0; }
@@ -134,8 +163,8 @@ h2, h3 { scroll-margin-top: 72px; }
   .toc-wrapper { display: none; }
   .container.with-toc { display: block; }
 }
-h1 { font-size: 36px; margin: 0 0 20px; color: var(--accent); font-weight: 700; letter-spacing: -0.5px; }
-h2 { font-size: 26px; margin: 48px 0 18px; padding-bottom: 10px; border-bottom: 1px solid var(--line); color: var(--text); font-weight: 600; }
+h1 { font-family: var(--font-serif); font-size: 34px; font-weight: 900; line-height: 1.28; letter-spacing: 0.01em; margin: 0 0 22px; color: var(--text); }
+h2 { font-family: var(--font-serif); font-size: 24px; font-weight: 700; margin: 48px 0 18px; padding-bottom: 10px; border-bottom: 1px solid var(--line); color: var(--text); }
 h3 { font-size: 20px; margin: 32px 0 14px; color: var(--text); font-weight: 600; }
 p { margin: 14px 0; }
 a { color: var(--accent); text-decoration: none; }
@@ -147,19 +176,19 @@ td code { word-break: break-all; }
 th, td { border: 1px solid var(--line); padding: 10px 14px; text-align: left; }
 th { background: var(--accent-soft); font-weight: 600; }
 tr:nth-child(even) { background: rgba(0,0,0,0.02); }
-code { background: var(--bg); padding: 3px 7px; border-radius: 5px; font-family: "SFMono-Regular", Consolas, monospace; font-size: 14px; color: var(--accent); }
-pre { background: var(--bg); padding: 18px; border-radius: 10px; overflow-x: auto; border: 1px solid var(--line); }
-pre code { padding: 0; background: transparent; color: var(--text); }
+code { background: var(--chip); padding: 2px 7px; border-radius: 5px; font-family: var(--font-mono); font-size: 13.5px; color: var(--accent-strong); }
+pre { background: linear-gradient(160deg, var(--ink) 0%, var(--ink-2) 100%); border: 1px solid var(--ink); padding: 18px 20px; border-radius: 10px; overflow-x: auto; box-shadow: var(--shadow); }
+pre code { padding: 0; background: transparent; color: #e9e5d9; font-size: 13.5px; line-height: 1.7; }
 blockquote { border-left: 4px solid var(--accent); margin: 20px 0; padding: 14px 20px; background: var(--accent-soft); border-radius: 0 10px 10px 0; }
 ul, ol { padding-left: 28px; }
 li { margin: 8px 0; }
 hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
-.footer { text-align: center; color: var(--muted); margin-top: 48px; font-size: 13px; }
+.footer { text-align: center; color: var(--muted); margin-top: 48px; font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.06em; }
 .page-nav { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 48px; }
 .page-nav a { display: block; padding: 16px 20px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; color: var(--text); transition: border-color 0.2s, box-shadow 0.2s; text-decoration: none; }
 .page-nav a:hover { border-color: var(--accent); box-shadow: var(--shadow); text-decoration: none; }
 .page-nav a.next { text-align: right; margin-left: auto; }
-.page-nav .label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+.page-nav .label { display: block; font-family: var(--font-mono); font-size: 11.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
 .page-nav .title { font-weight: 600; color: var(--accent); }
 @media (max-width: 640px) { .page-nav { grid-template-columns: 1fr; } .page-nav a.next { text-align: left; margin-left: 0; } }
 .hero { text-align: center; margin-bottom: 40px; }
@@ -252,7 +281,7 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
   position: fixed;
   max-width: 320px;
   padding: 14px 18px;
-  --tooltip-bg-rgb: 219, 234, 254;
+  --tooltip-bg-rgb: 247, 232, 212;
   background: rgba(var(--tooltip-bg-rgb), 0.88);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
@@ -319,7 +348,7 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
   
 @media (prefers-color-scheme: dark) {
   .term-tooltip {
-    --tooltip-bg-rgb: 30, 58, 138;
+    --tooltip-bg-rgb: 58, 47, 26;
   }
 }
 </style>
@@ -328,7 +357,7 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
 <body>
   <nav class="navbar">
     <div class="navbar-inner">
-      <a class="navbar-brand" href="./">BE Integration Flow</a>
+      <a class="navbar-brand" href="./">SYN_FLOW_GUIDE</a>
       <div class="navbar-links" id="navbar-links"></div>
     </div>
   </nav>
@@ -478,6 +507,7 @@ const chapters = [
   ['powerpro', 'PowerPro 功耗评估'],
   ['to-signoff', 'TO SIGNOFF'],
   ['faq', 'FAQ 与清单'],
+  ['learning-path', '学习路径'],
   ['script-dict', '脚本字典']
 ];
 const currentPath = location.pathname.split('/').pop() || 'index.html';
