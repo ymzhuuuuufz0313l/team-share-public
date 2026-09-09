@@ -589,6 +589,15 @@
 - **无变化**：寄存器 map / 默认值 / I2C 读回（RECON）/ `LC_CPUWR`；PWRC 段注释旧描述（cs=0→2'b00）同步更正为 2'b10
 - **验收三关**：iverilog 双分支（默认 + `` `VU440_FPGA ``）EXIT 0 + rtl-code-review + rtl-signal-trace（报告 `markdownfile/0907v1/`）
 
+### 4.20 0909v1 SCREN 口径对齐：ifdef 强制分支注释停用 + 门控服务器确认合入
+
+2026-09-09 服务器同步，`LC_REG_MAPPING` 0907v1 → 0909v1，与服务器确认两项口径：
+
+- **0907v1 CHIP_SEL 门控确认服务器已合入**：12 个 cs=1 专有输出的 CHIP_SEL 门控（cs=0 输出字段默认值，cs=1 行为不变），服务器按同款写法合入，本地与服务器一致
+- **SCREN ifdef 强制分支注释停用**：`` `ifdef VU440_FPGA `` 分支（0903v1 引入，FPGA 平台 `R_SCREN` 强制 `1'b1`）注释停用——所有平台（含 FPGA）scramble 由软件经 `R_REG00_F[4]`（0x00[4]）控制，默认关
+- **寄存器定义不变**：map / 地址 / 字段 / 默认值均无变化，仅 SCREN 来源统一为软件控制；`LC_CPUWR` 保持 0903v1 与服务器一致
+- **验收**：iverilog 两分支（默认 + `` `VU440_FPGA ``）通过
+
   </script>
   <script>
     document.getElementById('article').innerHTML = marked.parse(document.getElementById('md').textContent.trim());

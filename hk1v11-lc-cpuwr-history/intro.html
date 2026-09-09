@@ -252,9 +252,9 @@
 **LC_CPUWR** 是 HK1V11 芯片 TCON 模块中负责 **CPU 写寄存器接口** 的核心 RTL 模块。
 它接收 CPU 通过 I2C/SPI 等总线下发的配置，维护一组片内寄存器，并向后续链路（`LC_REG_MAPPING`，以及 0807v1 起的 `LINK_CONFIG_CTRL`）输出控制信号。
 
-在 2026-04 → 2026-09-03 的开发周期中，LC_CPUWR 经历了密集迭代：校验和双段→单段、NG Unlock 收敛为 one-shot、寄存器命名全面十进制化、并按 `chip_sel0/1` 重构了默认值体系。**逐版本完整演进见 [三、核心变更时间线](./timeline.html)**。
+在 2026-04 → 2026-09-09 的开发周期中，LC_CPUWR 经历了密集迭代：校验和双段→单段、NG Unlock 收敛为 one-shot、寄存器命名全面十进制化、并按 `chip_sel0/1` 重构了默认值体系。**逐版本完整演进见 [三、核心变更时间线](./timeline.html)**。
 
-**里程碑速览**：`0807v1` 寄存器通路迁入新模块 LINK_CONFIG_CTRL ・ `0810v1` 寄存器表同步（FSEL/EOL/BCC）・ `0819v1` 复位改名 RSTN ・ `0819v2` Loop_sel 选择 CDR/KVCO 默认值 ・ `0827v1` lane_ctrl 拆 5 单 bit + reg_eol ・ `0903v1` 0x29 默认值变更 + FPGA SCREN 常开 ・ `0907v1` CHIP_SEL 门控防误写外漏
+**里程碑速览**：`0807v1` 寄存器通路迁入新模块 LINK_CONFIG_CTRL ・ `0810v1` 寄存器表同步（FSEL/EOL/BCC）・ `0819v1` 复位改名 RSTN ・ `0819v2` Loop_sel 选择 CDR/KVCO 默认值 ・ `0827v1` lane_ctrl 拆 5 单 bit + reg_eol ・ `0903v1` 0x29 默认值变更 + FPGA SCREN 常开 ・ `0907v1` CHIP_SEL 门控防误写外漏 ・ `0909v1` SCREN 口径对齐服务器
 
 为了管理这些密集变更，项目于 2026-06-15 建立了 `LC_CPUWR_history` 归档目录，集中保存 RTL 快照、changelist、modify plan、compliance report 及验证同步资料。
 

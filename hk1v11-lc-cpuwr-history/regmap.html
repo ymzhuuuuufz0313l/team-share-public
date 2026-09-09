@@ -673,6 +673,14 @@ assign 未解锁分支与复位块（RSTN_NLOCK_NORMAL）两处 default 均按 L
 - PWRC 段注释旧描述（cs=0→`2'b00`）同步更正为 `2'b10`
 - 验收三关通过（iverilog 双分支 EXIT 0）；评审与追踪报告见 `markdownfile/0907v1/`
 
+## 14.14 0909v1 SCREN 口径对齐：FPGA ifdef 强制分支注释停用
+
+2026-09-09 服务器同步（`LC_REG_MAPPING` 0907v1 → 0909v1），对 §14.12.2 的 FPGA 分支口径修正：
+
+- **FPGA 强制分支注释停用**：`` `ifdef VU440_FPGA `` 下 `R_SCREN` 强制 `1'b1` 不再生效——所有平台（含 FPGA）统一 `R_SCREN = R_REG00_F[4]`（0x00[4]），scramble 由软件控制（默认关）
+- 0907v1 的 12 个 cs=1 专有输出 CHIP_SEL 门控（§14.13）确认服务器已按同款写法合入
+- 寄存器 map 无变化：0x00[4] SCREN 字段位置/默认值均不变；`LC_CPUWR` 保持 0903v1 与服务器一致
+
 ## 15. 寄存器可视化大图
 
 chip_sel=0/1 默认字节映射、checksum 地址覆盖、LSI 保护范围、复位域分类、0721v1 拍重组对照等 SVG 大图已集中到独立的 **寄存器图解 Sheet**：
