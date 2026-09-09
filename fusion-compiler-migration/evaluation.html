@@ -112,7 +112,7 @@ DC 产物（`rep_dir/` 下的 `.ddc` / `.gv` / `.sdc`）直接喂给下游：**P
 ③ <b>A 的产出物（NDM 配置、compile 脚本、约束移植）全是 B 的地基</b>，以后做 B 只是往后续接 place/cts/route，不返工。
 </blockquote>
 
-### 流程对比：DC 现状 vs FC 目标（方案 A）
+### 2.1 流程对比：DC 现状 vs FC 目标（方案 A）
 
 **现状（DC 流程）：**
 
@@ -148,7 +148,7 @@ DC 产物（`rep_dir/` 下的 `.ddc` / `.gv` / `.sdc`）直接喂给下游：**P
 
 这一节是本次评估最有「实战价值」的部分——内网环境的信息查不到文档，只能一条条命令试出来。
 
-### 时间线：找到真正的 fc_shell
+### 3.1 时间线：找到真正的 fc_shell
 
 <div class="timeline">
   <div class="titem"><span class="tdate">Step 1</span>三连查 <code>which fc_shell</code> / <code>fc_shell -version</code> / <code>ls /eda/env | grep -iE 'fc|fusion'</code> → <b>全部找不到</b>，FC 没进默认 PATH。</div>
@@ -165,7 +165,7 @@ DC 产物（`rep_dir/` 下的 `.ddc` / `.gv` / `.sdc`）直接喂给下游：**P
   <div class="prow"><span class="k">知识框</span><span><b>NanoTime（NT）是什么</b>：Synopsys 的<b>晶体管级</b>静态时序分析工具，可以理解为「模拟/定制电路版的 PrimeTime」。PT 分析门级网表（标准单元数字电路），NT 分析 SPICE 网表（SRAM、PLL、LVDS、SerDes 等模拟/定制模块的内部时序）。对 HV2M23 这种带 LVDS/OSC 模拟硬核的芯片，NT 本来就有用——但它是另一个工具，不是 Fusion Compiler。</span></div>
 </div>
 
-### 第二坑：license 验证的三连报错
+### 3.2 第二坑：license 验证的三连报错
 
 fc_shell 能启动了，但验证过程又踩了一串参数坑，最后停在真正的硬卡点上：
 
@@ -202,7 +202,7 @@ license 排查过程：
 <code>SNPSLMD_LICENSE_FILE</code>；若没有，需走 license 采购/扩容流程。
 </blockquote>
 
-### ✅ 正确的 FC 环境验证命令清单（可直接复用）
+### 3.3 ✅ 正确的 FC 环境验证命令清单（可直接复用）
 
 ```csh
 # 1. source 环境（注意在 NEXT 子目录下，不在默认 PATH）
@@ -223,7 +223,7 @@ find /eda/synopsys -maxdepth 6 -name "fc_shell" >& /dev/null
 
 设计原则：**不动现有 DC 流程，平行加一套**（与 genus 备选流程的先例一致），库路径等未确认信息全部用变量 + `TODO(FC-CONFIRM)` 占位。
 
-### 目录结构
+### 4.1 目录结构
 
 ```
 synthesis/
@@ -240,7 +240,7 @@ synthesis/
     └── report_fc.tcl                         #   报告段（从 DC 主流程后半段拆出）
 ```
 
-### 9 脚本清单
+### 4.2 9 脚本清单
 
 | # | 文件 | 对应 DC 文件 | 职责 |
 |:--|:---|:---|:---|
@@ -254,7 +254,7 @@ synthesis/
 | 8 | `fc_outputs.tcl` | compile_dc.tcl 后半段 | 输出 .gv/.sdc（同名兼容下游）+ save_lib 保存 NDM |
 | 9 | `report_fc.tcl` | compile_dc.tcl 报告段 | QoR 报告集：area/power/timing/clock_gating，对齐 DC 报告格式便于对比 |
 
-### 变量契约（两条并行开发线之间的接口约定）
+### 4.3 变量契约（两条并行开发线之间的接口约定）
 
 | 变量 | 含义 | 状态 |
 |:---|:---|:---|
@@ -265,7 +265,7 @@ synthesis/
 | `FC_DB_FILES` / `FC_RAM_DB_FILES` | 标准单元 / RAM 的 .db 列表 | ⏳ 待库信息 |
 | `NDM_DIR` | FC 库工作区，固定 `rep_dir/${TOP_NAME}_lib` | 已定 |
 
-### 主流程骨架（compile_fc.tcl 的核心段落）
+### 4.4 主流程骨架（compile_fc.tcl 的核心段落）
 
 ```tcl
 # 1. Library: create NDM-based lib (ndm mode) or read_db fallback (db mode)
@@ -297,7 +297,7 @@ source fc_outputs.tcl    # write_verilog .gv / write_sdc .sdc / save_lib
 source report_fc.tcl     # report_qor / area / power / timing / clock_gating
 ```
 
-### 零改动复用清单
+### 4.5 零改动复用清单
 
 - `common/ip_cons/*.tcl`（55KB 主约束 + input/output delay）——预计 90% 兼容，试跑后按报错逐条修
 - `common/tcl_dir/common/`：`clk_period.tcl`、`kv_clkio.tcl`、`common_cons.tcl`
@@ -319,7 +319,7 @@ source report_fc.tcl     # report_qor / area / power / timing / clock_gating
 
 ## 6. 当前状态与下一步
 
-### 状态看板
+### 6.1 状态看板
 
 | # | 事项 | 状态 | 说明 |
 |:--|:---|:---|:---|
@@ -329,7 +329,7 @@ source report_fc.tcl     # report_qor / area / power / timing / clock_gating
 | ③ | 运行方式（直接跑 / LSF） | <span class="badge badge-warn">待确认</span> | 决定 `run_fc` 是否包 bsub |
 | — | 9 个脚本骨架 | <span class="badge badge-info">并行开发中</span> | 两条工作线并发搭建，路径变量占位 |
 
-### 待办清单
+### 6.2 待办清单
 
 1. **等 IT 解决 license**（唯一硬卡点，只影响"跑"不影响"搭"）
 2. 内网确认 nexchip_145 库：有无现成 `.ndm`；没有则确认 tech lef / cell lef / TLU+ / RAM 的 .db 路径

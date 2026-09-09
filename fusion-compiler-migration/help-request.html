@@ -47,7 +47,7 @@
 > **给谁看**：IT / EDA 管理员、Foundry FAE、CAD 支持。
 > **背景一句话**：HV2M23 项目正在评估用 Fusion Compiler（V-2023.12-SP5）替代 Design Compiler 做综合。工具、license、库合成（NDM）、约束迁移、RTL 映射均已被项目组自行打通（RTL→门级映射已成功，5770 cells）；目前剩余的阻塞项全部依赖**库数据与授权**，超出项目组可自行解决的范围，清单如下。
 
-## 请求总表
+## 1. 请求总表
 
 | # | 请求 | 优先级 | 阻塞什么 | 需要提供方 |
 |---|------|--------|----------|-----------|
@@ -58,7 +58,7 @@
 | R5 | Fusion Compiler license 开放登录节点（低优先级确认项） | 低 | 目前仅 bsub 计算节点可用，登录节点报 Fusion-Compiler-NX | IT / License 管理 |
 | R6 | `/eda/synopsys/NEXT/fs_compiler_vW-2024.09-SP3` 误装包（实为 NanoTime）清理/重部署确认 | 低 | 环境脚本指向混乱（已绕行用 V-2023.12-SP5） | IT |
 
-## R1：TLU+ 寄生参数文件（最高优先级）
+## 2. R1：TLU+ 寄生参数文件（最高优先级）
 
 **我们要它做什么**：Fusion Compiler 的 logic_opto / final_opto 优化阶段按 corner 消费寄生参数（报错原文：`SCN-1001: No valid parasitics for EARLY/LATE corner default. Related command: set_parasitics_parameters`）。
 
@@ -71,7 +71,7 @@
 
 **给到形式**：放置路径（如 `/eda/process/015/ENEXCHIP/...` 任意可读位置）+ 文件名，或直接告知现有路径。
 
-## R2：RAM / 宏单元时序模型
+## 3. R2：RAM / 宏单元时序模型
 
 **我们要它做什么**：综合网表中 `u_mem*` 存储器实例的链接与检查。
 
@@ -79,7 +79,7 @@
 
 **具体需要**：HV2M23 使用的 RAM/ROM 宏单元的 `.db`（或 `.lib`）文件路径清单 + 对应 corner 说明；与 stdcell 同 corner（125CSS1P62_cmax）优先。
 
-## R3：官方 NDM（如存在）
+## 4. R3：官方 NDM（如存在）
 
 **我们要它做什么**：项目组已自行用 icc2_lm_shell 将 stdcell .db + cell LEF + techfile.tf 合成为 NDM 并成功跑通映射；但这是"项目组合成库"。若 foundry/官方有 Fusion-Compiler-ready 的 NDM（含完整视图、RAM、IO），以官方库为准更稳。
 
@@ -87,18 +87,18 @@
 
 **具体需要**：一句话回复"有/没有"；有则给路径。
 
-## R4：金属叠构官方确认
+## 5. R4：金属叠构官方确认
 
 **背景**：库内存在 1P2M_TM4K / 1P3M_TM6K / 1P4M_TM8K 多个叠构变体（含 MIM 变体）。项目组按 `DesignKit/1P4M/` 路径名推断 HV2M23 为 **1P4M / TM8K**，并已按此建库。
 
 **需要**：APR 或 foundry 文档确认实际叠构；若非 1P4M_TM8K，给出正确变体名。
 
-## R5 / R6：低优先级确认项
+## 6. R5 / R6：低优先级确认项
 
 - R5：FC license 目前**仅在 bsub 计算节点可用**（登录节点直连报 Fusion-Compiler-NX）。如属有意配置请忽略；如可开放登录节点，使用体验更佳。
 - R6：`/eda/synopsys/NEXT/fs_compiler_vW-2024.09-SP3` 包内容实为 NanoTime（此前已反馈）；请确认重部署计划，或直接移除避免误用。
 
-## 附：项目上下文
+## 7. 附：项目上下文
 
 - 工具：Fusion Compiler V-2023.12-SP5（`/eda/synopsys/fusioncompiler/V-2023.12-SP5`，env `/eda/env/NEXT/fs_compiler_V-2023.12-SP5.cshrc`）
 - 已完成：NDM 自合成（2×.db + 2×cell LEF + techfile.tf，`/project/HV2M23/designer/DD/ymzhu/HV2M23/SYNTHESIS/common/ndm/nexchip_145_9t.ndm`）；约束迁移；RTL elaborate（53 模块 / 8614 instances）；initial_map 映射（AREA 146688 / 5770 cells / ICG 101）
