@@ -434,9 +434,10 @@ img:hover { box-shadow: 0 8px 30px rgba(0,0,0,0.12); }
 **1. CSS**：
 
 ```css
-.toc a.toc-parent { position: relative; padding-left: 24px; }
+.toc a.toc-h2 { position: relative; padding-left: 24px; } /* 所有 h2 统一预留箭头槽位，无子项的 h2 也与有子项的视觉对齐（2026-09-09 用户要求） */
 /* h3 子项缩进：文字起始位置必须明显在 h2 父项文字之后（父项 padding-left 24px，子项在此基础上再缩进） */
 .toc a.toc-h3 { padding-left: 38px; font-size: 13px; }
+.toc a.toc-parent { position: relative; }
 .toc .toc-arrow {
   position: absolute;
   left: 6px;

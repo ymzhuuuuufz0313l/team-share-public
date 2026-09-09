@@ -152,8 +152,9 @@ body {
   margin-bottom: 8px;
   cursor: default;
 }
-.toc a.toc-h3 { padding-left: 24px; font-size: 13px; }
-.toc a.toc-parent { position: relative; padding-left: 24px; }
+.toc a.toc-h2 { position: relative; padding-left: 24px; } /* all h2 reserve the arrow slot so entries align */
+.toc a.toc-h3 { padding-left: 38px; font-size: 13px; }
+.toc a.toc-parent { position: relative; }
 .toc .toc-arrow {
   position: absolute; left: 6px; top: 50%;
   transform: translateY(-50%) rotate(90deg);
