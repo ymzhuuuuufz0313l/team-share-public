@@ -7,28 +7,43 @@
   <meta http-equiv="Expires" content="0">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>HK1V11 420b 长编码验证体系</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>
-:root {
-      --bg: #f8fafc;
-      --surface: #ffffff;
-      --text: #1e293b;
-      --muted: #64748b;
-      --accent: #0f766e;
-      --accent-soft: #ccfbf1;
-      --line: #e2e8f0;
-      --shadow: 0 10px 40px rgba(0,0,0,0.08);
+    :root {
+      --bg: #f4f1ea;
+      --surface: #fffdf7;
+      --text: #1c2534;
+      --muted: #667180;
+      --accent: #b45309;
+      --accent-strong: #92400e;
+      --accent-soft: #f7e8d4;
+      --ink: #0d1526;
+      --ink-2: #131f38;
+      --line: #ddd6c8;
+      --chip: #efe9db;
+      --shadow: 0 12px 32px rgba(28, 37, 52, 0.10);
+      --ok: #047857;
+      --warn: #b45309;
+      --font-mono: "IBM Plex Mono", "SFMono-Regular", Consolas, "JetBrains Mono", monospace;
+      --font-serif: "Noto Serif SC", "Songti SC", serif;
     }
     @media (prefers-color-scheme: dark) {
       :root {
-        --bg: #0f172a;
-        --surface: #1e293b;
-        --text: #f1f5f9;
-        --muted: #94a3b8;
-        --accent: #2dd4bf;
-        --accent-soft: #115e59;
-        --line: #334155;
-        --shadow: 0 10px 40px rgba(0,0,0,0.35);
+        --bg: #0e1420;
+        --surface: #161f31;
+        --text: #e9e5d9;
+        --muted: #9aa4b5;
+        --accent: #f0a137;
+        --accent-strong: #f6b95c;
+        --accent-soft: #3a2f1a;
+        --line: #2b3852;
+        --chip: #1e2a44;
+        --shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+        --ok: #34d399;
+        --warn: #f0a137;
       }
     }
     * { box-sizing: border-box; }
@@ -41,141 +56,338 @@
       font-size: 16px;
       line-height: 1.75;
     }
-    .container {
+    .mono { font-family: var(--font-mono); }
+
+    /* ---------- navbar ---------- */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--surface);
+      border-bottom: 1px solid var(--line);
+    }
+    .navbar-inner {
       max-width: 1170px;
       margin: 0 auto;
-      padding: 48px 24px;
-    }
-    .article {
-      background: var(--surface);
-      border-radius: 20px;
-      padding: 56px 64px;
-      box-shadow: var(--shadow);
-    }
-    @media (max-width: 640px) {
-      .container { padding: 24px 16px; }
-      .article { padding: 32px 24px; border-radius: 16px; }
-    }
-    h1 { font-size: 36px; margin: 0 0 20px; color: var(--accent); font-weight: 700; letter-spacing: -0.5px; }
-    h2 { font-size: 26px; margin: 48px 0 18px; padding-bottom: 10px; border-bottom: 1px solid var(--line); color: var(--text); font-weight: 600; }
-    h3 { font-size: 20px; margin: 32px 0 14px; color: var(--text); font-weight: 600; }
-    p { margin: 14px 0; }
-    a { color: var(--accent); text-decoration: none; }
-    a:hover { text-decoration: underline; }
-    img {
-      max-width: 100%;
-      border-radius: 10px;
-      border: 1px solid var(--line);
-      cursor: zoom-in;
-      display: block;
-      margin: 28px auto;
-      transition: box-shadow 0.2s ease;
-    }
-    img:hover { box-shadow: 0 8px 30px rgba(0,0,0,0.12); }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin: 20px 0;
-      font-size: 14.5px;
-    }
-    th, td {
-      border: 1px solid var(--line);
-      padding: 10px 14px;
-      text-align: left;
-    }
-    th { background: var(--accent-soft); font-weight: 600; }
-    tr:nth-child(even) { background: rgba(0,0,0,0.02); }
-    code {
-      background: var(--bg);
-      padding: 3px 7px;
-      border-radius: 5px;
-      font-family: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
-      font-size: 14px;
-      color: var(--accent);
-    }
-    pre {
-      background: var(--bg);
-      padding: 18px;
-      border-radius: 10px;
-      overflow-x: auto;
-      border: 1px solid var(--line);
-    }
-    pre code { padding: 0; background: transparent; color: var(--text); }
-    blockquote {
-      border-left: 4px solid var(--accent);
-      margin: 20px 0;
-      padding: 14px 20px;
-      background: var(--accent-soft);
-      border-radius: 0 10px 10px 0;
-      color: var(--text);
-    }
-    ul, ol { padding-left: 28px; }
-    li { margin: 8px 0; }
-    hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
-    .footer {
-      text-align: center;
-      color: var(--muted);
-      margin-top: 48px;
-      font-size: 13px;
-    }
-
-    /* Top nav */
-    .top-nav {
+      padding: 10px 24px;
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      margin-bottom: 32px;
-      padding: 0 4px;
+      gap: 16px;
     }
-    .top-nav a {
-      font-size: 14px;
+    .navbar-brand {
+      font-family: var(--font-mono);
       font-weight: 600;
       color: var(--accent);
+      white-space: nowrap;
+      font-size: 14px;
+      letter-spacing: 0.04em;
+      text-decoration: none;
+    }
+    .navbar-brand:hover { text-decoration: none; }
+    .navbar-links {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      overflow-x: auto;
+      flex: 1;
+      scrollbar-width: none;
+    }
+    .navbar-links::-webkit-scrollbar { display: none; }
+    .navbar-links a {
+      padding: 5px 10px;
+      border-radius: 6px;
+      font-size: 13.5px;
+      color: var(--text);
+      white-space: nowrap;
+      transition: background 0.15s, color 0.15s;
+      text-decoration: none;
+    }
+    .navbar-links a:hover { background: var(--chip); color: var(--text); text-decoration: none; }
+    .navbar-links a.active { background: var(--accent); color: #fff; font-weight: 600; }
+    @media (max-width: 640px) {
+      .navbar-inner { padding: 8px 14px; gap: 10px; }
+      .navbar-brand { font-size: 13px; }
+      .navbar-links a { font-size: 12.5px; padding: 4px 8px; }
+    }
+
+    /* ---------- hero：墨蓝网格 + 琥珀点睛 ---------- */
+    .hero {
+      position: relative;
+      background:
+        radial-gradient(900px 320px at 85% -10%, rgba(240, 161, 55, 0.14), transparent 60%),
+        repeating-linear-gradient(0deg, rgba(255,255,255,0.045) 0 1px, transparent 1px 56px),
+        repeating-linear-gradient(90deg, rgba(255,255,255,0.045) 0 1px, transparent 1px 56px),
+        linear-gradient(160deg, var(--ink) 0%, var(--ink-2) 100%);
+      color: #ece7d9;
+      overflow: hidden;
+    }
+    .hero-inner {
+      max-width: 1170px;
+      margin: 0 auto;
+      padding: 84px 24px 72px;
+      position: relative;
+    }
+    .hero .kicker {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      letter-spacing: 0.22em;
+      color: #f0a137;
+      text-transform: uppercase;
+      margin-bottom: 22px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .hero .kicker::before {
+      content: "";
+      display: inline-block;
+      width: 34px;
+      height: 2px;
+      background: #f0a137;
+    }
+    .hero h1 {
+      font-family: var(--font-serif);
+      font-weight: 900;
+      font-size: clamp(34px, 5.2vw, 56px);
+      line-height: 1.18;
+      margin: 0 0 18px;
+      letter-spacing: 0.01em;
+      color: #f7f3e8;
+    }
+    .hero h1 .thin { color: #f0a137; }
+    .hero .lead {
+      font-size: 17px;
+      color: rgba(236, 231, 217, 0.82);
+      max-width: 620px;
+      margin: 0 0 34px;
+    }
+    .hero .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 26px;
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      color: rgba(236, 231, 217, 0.55);
+      margin-bottom: 26px;
+    }
+    .hero .meta b { color: rgba(236, 231, 217, 0.9); font-weight: 500; }
+    .hero .hero-hint {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
+      gap: 10px;
+      padding: 10px 18px;
+      border: 1px solid rgba(240, 161, 55, 0.45);
+      border-radius: 10px;
+      background: rgba(240, 161, 55, 0.10);
+      font-size: 14px;
+      color: rgba(236, 231, 217, 0.88);
     }
-    .top-nav .home { font-size: 15px; }
-
-    /* Page nav */
-    .page-nav {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-      margin-top: 48px;
+    .hero .hero-hint a { color: #f0a137; text-decoration: none; font-weight: 600; }
+    .hero .hero-hint a:hover { text-decoration: underline; }
+    .hero .hero-hint .arrow { color: rgba(240, 161, 55, 0.7); }
+    .hero .reg {
+      position: absolute;
+      right: 24px;
+      top: 84px;
+      text-align: right;
+      font-family: var(--font-mono);
+      color: rgba(236, 231, 217, 0.35);
+      font-size: 12px;
+      line-height: 1.9;
+      user-select: none;
     }
-    .page-nav a {
+    .hero .reg .ver {
       display: block;
-      padding: 16px 20px;
+      font-size: 44px;
+      font-weight: 600;
+      color: rgba(240, 161, 55, 0.85);
+      line-height: 1.1;
+    }
+    @media (max-width: 720px) {
+      .hero-inner { padding: 56px 20px 48px; }
+      .hero .reg { display: none; }
+    }
+
+    /* ---------- body layout ---------- */
+    .container { max-width: 1170px; margin: 0 auto; padding: 40px 24px 56px; }
+
+    /* latest strip */
+    .latest {
+      display: flex;
+      gap: 22px;
+      align-items: stretch;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-left: 4px solid var(--accent);
+      border-radius: 14px;
+      padding: 22px 26px;
+      box-shadow: var(--shadow);
+      margin-top: -58px;
+      position: relative;
+      z-index: 2;
+    }
+    .latest .badge {
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      min-width: 108px;
+      padding: 10px 14px;
+      border-radius: 10px;
+      background: var(--chip);
+      font-family: var(--font-mono);
+    }
+    .latest .badge .tag { font-size: 11px; letter-spacing: 0.14em; color: var(--muted); }
+    .latest .badge .num { font-size: 22px; font-weight: 600; color: var(--accent); }
+    .latest .body { flex: 1; min-width: 0; }
+    .latest .body .t { font-weight: 700; font-size: 15.5px; margin-bottom: 6px; }
+    .latest .body ul { margin: 0; padding-left: 18px; color: var(--muted); font-size: 14px; }
+    .latest .body li { margin: 3px 0; }
+    .latest .more {
+      flex-shrink: 0;
+      align-self: center;
+      font-size: 13.5px;
+      color: var(--accent);
+      text-decoration: none;
+      white-space: nowrap;
+      font-weight: 600;
+    }
+    .latest .more:hover { text-decoration: underline; }
+    code {
+      background: var(--chip);
+      padding: 2px 6px;
+      border-radius: 5px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: var(--accent-strong);
+    }
+    @media (max-width: 720px) {
+      .latest { flex-direction: column; gap: 12px; margin-top: -32px; }
+      .latest .badge { flex-direction: row; gap: 10px; min-width: 0; }
+      .latest .more { align-self: flex-start; }
+    }
+
+    /* stats */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin: 26px 0 8px;
+    }
+    .stat {
       background: var(--surface);
       border: 1px solid var(--line);
       border-radius: 12px;
+      padding: 16px 18px;
+    }
+    .stat .v {
+      font-family: var(--font-mono);
+      font-size: 24px;
+      font-weight: 600;
       color: var(--text);
-      transition: border-color 0.2s, box-shadow 0.2s;
     }
-    .page-nav a:hover {
-      border-color: var(--accent);
-      box-shadow: var(--shadow);
-      text-decoration: none;
-    }
-    .page-nav a.next { text-align: right; margin-left: auto; }
-    .page-nav .label {
-      display: block;
-      font-size: 12px;
+    .stat .v em { font-style: normal; font-size: 13px; color: var(--accent); margin-left: 2px; }
+    .stat .v.ok { color: var(--ok); }
+    .stat .v.warn { color: var(--warn); }
+    .stat .k { font-size: 12.5px; color: var(--muted); margin-top: 2px; }
+    @media (max-width: 720px) { .stats { grid-template-columns: repeat(2, 1fr); } }
+
+    /* section title + chapter grid */
+    .section-title {
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
       color: var(--muted);
-      margin-bottom: 4px;
+      text-transform: uppercase;
+      margin: 44px 0 18px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
     }
-    .page-nav .title { font-weight: 600; color: var(--accent); }
-    @media (max-width: 640px) {
-      .page-nav { grid-template-columns: 1fr; }
-      .page-nav a.next { text-align: left; margin-left: 0; }
+    .section-title::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+    .chapter-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 14px;
+    }
+    .chapter-card {
+      position: relative;
+      display: block;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 20px 20px 18px;
+      color: var(--text);
+      text-decoration: none;
+      transition: transform 0.16s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+      overflow: hidden;
+    }
+    .chapter-card::before {
+      content: "";
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 3px;
+      background: var(--accent);
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .chapter-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow);
+      border-color: var(--accent);
+    }
+    .chapter-card:hover::before { opacity: 1; }
+    .chapter-card .num {
+      font-family: var(--font-mono);
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      color: var(--accent);
+      margin-bottom: 10px;
+    }
+    .chapter-card .title { font-weight: 700; font-size: 15.5px; margin-bottom: 6px; }
+    .chapter-card .desc { font-size: 13px; color: var(--muted); line-height: 1.55; }
+
+    /* overview images */
+    .overview-img {
+      max-width: 100%;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      cursor: zoom-in;
+      display: block;
+      margin: 18px auto 28px;
+      box-shadow: var(--shadow);
+      background: var(--surface);
+    }
+
+    /* conclusion panel */
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-left: 4px solid var(--accent);
+      border-radius: 12px;
+      padding: 18px 22px;
+      font-size: 14.5px;
+      color: var(--muted);
+    }
+    .panel b { color: var(--text); }
+
+    .footer {
+      text-align: center;
+      color: var(--muted);
+      margin-top: 56px;
+      font-family: var(--font-mono);
+      font-size: 12px;
+      letter-spacing: 0.06em;
     }
 
     /* Image lightbox */
     .lightbox {
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,0.92);
+      background: rgba(13, 21, 38, 0.93);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -198,152 +410,43 @@
       transform-origin: center center;
       transition: none;
       margin: 0;
+      box-shadow: 0 0 80px rgba(0, 0, 0, 0.6);
     }
     .lightbox img.grabbing { cursor: grabbing; }
     .lightbox .hint {
       position: absolute;
-      bottom: 24px;
+      bottom: 26px;
       left: 50%;
       transform: translateX(-50%);
-      color: rgba(255,255,255,0.7);
-      font-size: 13px;
+      color: rgba(233, 229, 217, 0.7);
+      font-family: var(--font-mono);
+      font-size: 12.5px;
       pointer-events: none;
       user-select: none;
-      background: rgba(0,0,0,0.4);
-      padding: 6px 14px;
-      border-radius: 20px;
+      background: rgba(0, 0, 0, 0.5);
+      padding: 6px 16px;
+      border-radius: 999px;
+      border: 1px solid rgba(233, 229, 217, 0.18);
     }
     .lightbox .close {
       position: absolute;
-      top: 20px;
-      right: 24px;
-      color: rgba(255,255,255,0.8);
-      font-size: 32px;
+      top: 18px;
+      right: 22px;
+      color: rgba(233, 229, 217, 0.85);
+      font-size: 34px;
       line-height: 1;
       cursor: pointer;
       user-select: none;
-      width: 40px;
-      height: 40px;
+      width: 44px;
+      height: 44px;
       display: flex;
       align-items: center;
       justify-content: center;
       border-radius: 50%;
       transition: background 0.2s;
+      border: 1px solid transparent;
     }
-    .lightbox .close:hover { background: rgba(255,255,255,0.15); color: #fff; }
-
-    /* Landing page cards */
-    .hero { text-align: center; margin-bottom: 40px; }
-    .hero h1 { margin-bottom: 12px; }
-    .hero .meta { color: var(--muted); font-size: 14px; margin-bottom: 16px; }
-    .hero .lead { font-size: 17px; max-width: 720px; margin: 0 auto; color: var(--text); }
-
-    .section-title {
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--muted);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      margin: 40px 0 16px;
-    }
-
-    .chapter-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-      gap: 16px;
-    }
-    .chapter-card {
-      display: block;
-      background: var(--surface);
-      border: 1px solid var(--line);
-      border-radius: 14px;
-      padding: 20px;
-      color: var(--text);
-      transition: border-color 0.2s, transform 0.15s, box-shadow 0.2s;
-    }
-    .chapter-card:hover {
-      border-color: var(--accent);
-      transform: translateY(-2px);
-      box-shadow: var(--shadow);
-      text-decoration: none;
-    }
-    .chapter-card .num {
-      display: inline-block;
-      width: 28px;
-      height: 28px;
-      line-height: 28px;
-      border-radius: 50%;
-      background: var(--accent-soft);
-      color: var(--accent);
-      font-size: 13px;
-      font-weight: 700;
-      text-align: center;
-      margin-bottom: 10px;
-    }
-    .chapter-card .title { font-weight: 600; font-size: 15px; margin-bottom: 6px; }
-    .chapter-card .desc { font-size: 13px; color: var(--muted); line-height: 1.5; }
-
-    .overview-img { margin: 28px 0; }
-  .navbar {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      background: var(--surface);
-      border-bottom: 1px solid var(--line);
-      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
-    }
-    .navbar-inner {
-      max-width: 1170px;
-      margin: 0 auto;
-      padding: 12px 24px;
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
-    .navbar-brand {
-      font-weight: 700;
-      color: var(--accent);
-      white-space: nowrap;
-      font-size: 15px;
-    }
-    .navbar-links {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      overflow-x: auto;
-      flex: 1;
-      scrollbar-width: none;
-    }
-    .navbar-links::-webkit-scrollbar { display: none; }
-    .navbar-links a {
-      padding: 6px 10px;
-      border-radius: 6px;
-      font-size: 14px;
-      color: var(--text);
-      white-space: nowrap;
-      transition: background 0.15s;
-    }
-    .navbar-links a:hover {
-      background: var(--bg);
-      text-decoration: none;
-    }
-    .navbar-links a.active {
-      background: var(--accent-soft);
-      color: var(--accent);
-      font-weight: 600;
-    }
-    @media (max-width: 640px) {
-      .navbar-inner { padding: 10px 16px; gap: 10px; }
-      .navbar-brand { font-size: 14px; }
-      .navbar-links a { font-size: 13px; padding: 5px 8px; }
-    }
-    .author { margin-top: 8px; font-size: 14px; color: var(--muted); }
-  .statbar { display: flex; gap: 16px; flex-wrap: wrap; margin: 24px 0 8px; }
-  .stat { flex: 1; min-width: 130px; text-align: center; border: 1px solid var(--line); border-radius: 14px; padding: 14px 8px; background: var(--surface); }
-  .stat .num { font-size: 30px; font-weight: 800; color: var(--accent); line-height: 1.2; }
-  .stat .num.ok { color: #16a34a; }
-  .stat .num.warn { color: #eab308; }
-  .stat .lbl { font-size: 13px; color: var(--muted); margin-top: 4px; }
+    .lightbox .close:hover { background: rgba(255,255,255,0.12); color: #fff; }
   </style>
 </head>
 <body>
@@ -366,90 +469,119 @@
     </div>
   </div>
 </nav>
-  <div class="container">
-    <article class="article">
-      <div class="hero">
-        <h1>HK1V11 420b 长编码验证体系</h1>
-        <div class="author">作者：ymzhuuuu</div>
-        <p class="lead">
-          基于 DV_TCON_C 现有 8B/10B 结构重建的 420b 长编码验证环境，通过
-          <code>CHPI_MODE_420B</code> 宏隔离。当前版本 <code>0720v1</code>（工作副本 <code>current_work</code>）：接收端不看 RTL，
-          脚本对线上 20-bit 对齐数据做离线 413b/420b 解码比对，已证实线上数据全部正确；
-          0721~0722 新增 <code>check_rtl_tag.py</code> / <code>decode_max.py</code> / <code>compare_pkt20.py</code> 三条证据链，定位 DUT <code>tag_value</code> 块边界时序问题。
-        </p>
-        <div class="statbar">
-          <div class="stat"><div class="num">0720v1</div><div class="lbl">当前环境版本</div></div>
-          <div class="stat"><div class="num">53</div><div class="lbl">规划验证 Case</div></div>
-          <div class="stat"><div class="num ok">5/5</div><div class="lbl">✅ 线上数据区域全对</div></div>
-          <div class="stat"><div class="num warn">6/10</div><div class="lbl">联调问题已解决 / 移交</div></div>
-        </div>
-      </div>
 
-      <div class="section-title">整体框架</div>
-      <img class="overview-img" src="./longcode_verification_architecture.svg?v=20260720" alt="longcode 验证架构">
+<header class="hero">
+  <div class="hero-inner">
+    <div class="kicker">HK1V11 · 420B 长编码 · 验证体系</div>
+    <h1>HK1V11 420b<br>长编码<span class="thin">验证体系</span></h1>
+    <p class="lead">基于 DV_TCON_C 现有 8B/10B 结构重建的 420b 长编码验证环境：接收端不看 RTL，脚本离线解码比对，已证实线上数据全部正确。</p>
+    <div class="meta">
+      <span>AUTHOR <b>ymzhuuuu</b></span>
+      <span>ENV <b>longcode_ver / current_work</b></span>
+      <span>MACRO <b>CHPI_MODE_420B</b></span>
+      <span>SPAN <b>2026-07-15 → 2026-07-22</b></span>
+    </div>
+    <div class="hero-hint">
+      <span>⭐</span>
+      <span>推荐阅读：先 <a href="./architecture.html">整体架构</a> 看全貌 <span class="arrow">→</span> 再到 <a href="./debug-log.html">排障实录</a> 看三条证据链 <span class="arrow">→</span> 复用脚本看 <a href="./decoder.html">420b 解码</a></span>
+    </div>
+    <div class="reg">
+      CURRENT
+      <span class="ver">0720v1</span>
+      REV 2026-07-22
+    </div>
+  </div>
+</header>
 
-      <div class="section-title">收发结构框图 · 脚本离线验证</div>
-      <img class="overview-img" src="./pydec_tx_rx_structure.svg?v=20260720" alt="收发结构框图：不看 RTL 的脚本离线验证">
+<div class="container">
+  <div class="latest">
+    <div class="badge">
+      <span class="tag">LATEST</span>
+      <span class="num">0722</span>
+    </div>
+    <div class="body">
+      <div class="t">0721~0722 · 三条证据链定位 DUT <code>tag_value</code> 块边界时序问题</div>
+      <ul>
+        <li>新增 <code>check_rtl_tag.py</code>（替换点判定）/ <code>decode_max.py</code>（层级分离）/ <code>compare_pkt20.py</code>（收发对比）三条证据链</li>
+        <li>Python 离线解码证实线上 20-bit 对齐数据 <b>5/5 区域全部正确</b>，问题锁定在 DUT 解码侧</li>
+      </ul>
+    </div>
+    <a class="more" href="./debug-log.html">全部排障演进 →</a>
+  </div>
 
-      <div class="section-title">模式对比</div>
-      <img class="overview-img" src="./8b10b_vs_420b_architecture.svg?v=20260720" alt="8B/10B vs 420B 架构对比">
+  <div class="stats">
+    <div class="stat"><div class="v">0720v1</div><div class="k">当前环境版本</div></div>
+    <div class="stat"><div class="v">53</div><div class="k">规划验证 Case</div></div>
+    <div class="stat"><div class="v ok">5<em>/</em>5</div><div class="k">线上数据区域全对</div></div>
+    <div class="stat"><div class="v warn">6<em>/</em>10</div><div class="k">联调问题已解决 / 移交</div></div>
+  </div>
 
-      <div class="section-title">章节索引</div>
-      <div class="chapter-grid">
+  <div class="section-title">整体框架</div>
+  <img class="overview-img" src="./longcode_verification_architecture.svg?v=20260720" alt="longcode 验证架构">
+  <img class="overview-img" src="./pydec_tx_rx_structure.svg?v=20260720" alt="收发结构框图：不看 RTL 的脚本离线验证">
+  <img class="overview-img" src="./8b10b_vs_420b_architecture.svg?v=20260720" alt="8B/10B vs 420B 架构对比">
+
+  <div class="section-title">章节索引</div>
+  <div class="chapter-grid">
     <a class="chapter-card" href="./architecture.html">
-      <div class="num">1</div>
-      <div class="title">一、整体架构</div>
-      <div class="desc">0720v1 环境组件、数据流与脚本离线验证收发框图（含 0721~0722 新增三条证据链脚本）</div>
+      <div class="num">01</div>
+      <div class="title">整体架构</div>
+      <div class="desc">0720v1 环境组件、数据流与脚本离线验证收发框图（含 0721~0722 三条证据链脚本）</div>
     </a>
     <a class="chapter-card" href="./comparison.html">
-      <div class="num">2</div>
-      <div class="title">二、8B/10B vs 420B 对比</div>
+      <div class="num">02</div>
+      <div class="title">8B/10B vs 420B 对比</div>
       <div class="desc">8B/10B 与 420B 模式差异对照</div>
     </a>
     <a class="chapter-card" href="./frame.html">
-      <div class="num">3</div>
-      <div class="title">三、420b 帧结构</div>
+      <div class="num">03</div>
+      <div class="title">420b 帧结构</div>
       <div class="desc">Config / V blanking / Active / IDLE 帧格式</div>
     </a>
     <a class="chapter-card" href="./phases.html">
-      <div class="num">4</div>
-      <div class="title">四、验证执行阶段</div>
+      <div class="num">04</div>
+      <div class="title">验证执行阶段</div>
       <div class="desc">Smoke 到 Regression 的 7 个执行阶段</div>
     </a>
     <a class="chapter-card" href="./cases.html">
-      <div class="num">5</div>
-      <div class="title">五、Case 命名规则</div>
+      <div class="num">05</div>
+      <div class="title">Case 命名规则</div>
       <div class="desc">53 个 case 的命名规范与分布</div>
     </a>
     <a class="chapter-card" href="./decoder.html">
-      <div class="num">6</div>
-      <div class="title">六、420b 解码</div>
-      <div class="desc">Python 离线解码为主 · RTL 解码链联调中 · 新增替换点判定/层级分离/收发对比脚本</div>
+      <div class="num">06</div>
+      <div class="title">420b 解码</div>
+      <div class="desc">Python 离线解码为主 · RTL 解码链联调中 · 替换点判定 / 层级分离 / 收发对比脚本</div>
     </a>
     <a class="chapter-card" href="./encoding.html">
-      <div class="num">7</div>
-      <div class="title">七、编码规则要点</div>
+      <div class="num">07</div>
+      <div class="title">编码规则要点</div>
       <div class="desc">413b→420b 编码、加扰、位序与联调现状</div>
     </a>
     <a class="chapter-card" href="./issues.html">
-      <div class="num">8</div>
-      <div class="title">八、关键待确认问题</div>
+      <div class="num">08</div>
+      <div class="title">关键待确认问题</div>
       <div class="desc">位序、LSP、IDLE、UTC 等待确认项</div>
     </a>
     <a class="chapter-card" href="./debug-log.html">
-      <div class="num">9</div>
-      <div class="title">九、排障实录</div>
-      <div class="desc">联调问题定位、进展与结论：Python 离线解码证实线上数据全部正确；0722 更新根因为 tag_value 块边界时序错</div>
+      <div class="num">09</div>
+      <div class="title">排障实录</div>
+      <div class="desc">Python 离线解码证实线上数据全部正确；0722 根因定位 tag_value 块边界时序</div>
     </a>
     <a class="chapter-card" href="./next.html">
       <div class="num">10</div>
-      <div class="title">十、后续工作</div>
+      <div class="title">后续工作</div>
       <div class="desc">待同步到 DV_TCON_C 的后续任务</div>
     </a>
-      </div>
-    </article>
-    <div class="footer">Shared from team knowledge base</div>
   </div>
+
+  <div class="section-title">一句话结论</div>
+  <div class="panel">
+    线上 420b 数据经 Python 离线解码证实<b>全部正确</b>，问题锁定在 DUT 解码侧 <b>tag_value 块边界时序</b>；验证重心从「数据对不对」转向「RTL 解码链联调」。
+  </div>
+
+  <div class="footer">SHARED FROM TEAM KNOWLEDGE BASE</div>
+</div>
 
   <div class="lightbox" id="lightbox">
     <span class="close" id="lightbox-close">&times;</span>
@@ -467,7 +599,7 @@ const lightbox = document.getElementById('lightbox');
     function resetTransform() { scale = 1; translateX = 0; translateY = 0; updateTransform(); }
     function openLightbox(src) { lightboxImg.src = src; resetTransform(); lightbox.classList.add('active'); document.body.style.overflow = 'hidden'; }
     function closeLightbox() { lightbox.classList.remove('active'); document.body.style.overflow = ''; setTimeout(() => { lightboxImg.src = ''; }, 250); }
-    document.querySelectorAll('.article img').forEach(img => img.addEventListener('click', () => openLightbox(img.src)));
+    document.querySelectorAll('.container img').forEach(img => img.addEventListener('click', () => openLightbox(img.src)));
     lightboxClose.addEventListener('click', (e) => { e.stopPropagation(); closeLightbox(); });
     lightbox.addEventListener('click', (e) => { if (e.target === lightbox) closeLightbox(); });
     lightbox.addEventListener('wheel', (e) => { e.preventDefault(); scale = Math.min(Math.max(0.5, scale + (e.deltaY > 0 ? -0.15 : 0.15)), 5); updateTransform(); }, { passive: false });
