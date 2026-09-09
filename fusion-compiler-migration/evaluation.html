@@ -7,13 +7,16 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <title>进阶实验室 · Fusion Compiler 引入评估实录</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./assets/style.css">
   <script src="./js/marked.min.js"></script>
 </head>
 <body>
   <nav class="navbar">
     <div class="navbar-inner">
-      <a class="navbar-brand" href="./">⚡ 进阶实验室 · Fusion Compiler</a>
+      <a class="navbar-brand" href="./">FC_MIGRATION</a>
       <div class="navbar-links" id="navbar-links"></div>
     </div>
   </nav>
@@ -42,7 +45,7 @@
 # Fusion Compiler 引入评估实录：从 DC 流程到 FC 综合环境搭建
 
 > 把 Fusion Compiler（FC）引进现有 DC 综合流程，不是「换条命令」那么简单：
-> 真正的卡点是**库格式（.db → NDM）**、**环境部署（装错的 NanoTime 包）**和 **license 授权**。
+> 真正的卡点是**库格式（.db → NDM）**、**环境部署（装错的 NanoTime 包）** 和 **license 授权**。
 > 本篇完整记录从现状评估、范围决策、环境踩坑到脚本架构设计的全过程。
 
 <div class="statbar">
