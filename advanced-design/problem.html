@@ -42,11 +42,11 @@
   </div>
 
 <script type="text/template" id="md">
-# 1. 问题是什么
+# 一、问题是什么
 
 > 从一个真实芯片（HV2M23）的 STA 实践出发，回答三件事：**1P/2P 是什么、误报现象长什么样、根因到底在哪**。
 
-## 1.1 背景：一颗芯片，两种工作模式
+## 1. 背景：一颗芯片，两种工作模式
 
 HV2M23 是显示驱动 TCON 类芯片，接收端（isP RX）支持两种接收模式：
 
@@ -76,7 +76,7 @@ set RX1_CLKP [expr 10.71*$MARGIN]
 
 > 注意：RTL 里实际的模式选择信号叫 <code>DP_SEL</code>（来自 `DPSEL_I` 端口缓冲），下文证据链都围绕它展开。
 
-## 1.2 现象：1P 模式下工具"误报" lane1 路径
+## 2. 现象：1P 模式下工具"误报" lane1 路径
 
 **现象描述**：跑 1P 约束时，工具报告了一批 setup 违例，终点指向
 <code>CLKGEN_U1 / U_DCLK1_OD_DIV1P5 / SAMP_CNT_reg_*</code> ——
@@ -109,7 +109,7 @@ false path 指向的是 <code>CLKGEN_U1 / U_DCLK1_OD_DIV1P5</code>（lane1）—
 > 2. 1P 下 lane1 的 DIV1P5 计数器**功能上不工作**，检查它本身就没有意义 —— 即使 MET 也是"白检查"，
 >    一旦其它 corner 报违例，工程师就要去"修一条根本不工作的路径"，纯浪费。
 
-### 1.2.1 逐段解读：这条被误报的路径长什么样
+### 2.1 逐段解读：这条被误报的路径长什么样
 
 下面这张图是 **1P 模式（wc_typical_125）下，真实 `report_timing_setup.rpt` 中
 SAMP_CNT 路径的逐段还原**——把时钟树、数据路径、slack 计算完整串起来：
@@ -149,9 +149,9 @@ SAMP_CNT 路径的逐段还原**——把时钟树、数据路径、slack 计算
 > 一张图把"同一族路径，两种模式两种语义"说清楚了：**1P 下它是不激活的分频器内部计数器，
 > 2P 下它是 lane1 数据链路的真实一环**。这就是方案 A（合并时钟）解不了、必须上方案 B/C 的原因。
 
-## 1.3 根因证据链（三条）
+## 3. 根因证据链（三条）
 
-### 证据 ①：RTL —— lane1 在 1P 下被复位、不工作
+### 3.1 证据 ①：RTL —— lane1 在 1P 下被复位、不工作
 
 `CLKGEN_U1.v` 里，lane1 的复位信号直接与 DP_SEL 相关：
 
@@ -170,7 +170,7 @@ assign SRA = ~DP_SEL ? SRA_1P : SHL ? SR_2P_L0 : SR_L1;   // 1P 用单 lane 数�
 assign DB0[7:0] = ~DP_SEL ? DB0_1P[7:0] : DB0_2P[7:0];
 ```
 
-### 证据 ②：SDC —— lane1 的 DIV1P5 时钟源却来自 lane0
+### 3.2 证据 ②：SDC —— lane1 的 DIV1P5 时钟源却来自 lane0
 
 看 `HV2M23_digital_top.tcl`（`create_generated_clock`），**lane1 分频器吃的是 lane0 的 OD 时钟**：
 
@@ -192,7 +192,7 @@ create_generated_clock -name CLK_L1_DTCTL_OD_DIV1P5 \
 
 工具只认证据②：时钟存在 → 终点寄存器必须检查 → 报路径。它不知道证据①里的功能语义。
 
-### 证据 ③：`clk_period.tcl` 中注释掉的 false path
+### 3.3 证据 ③：`clk_period.tcl` 中注释掉的 false path
 
 `clk_period.tcl` 里躺着一行注释掉的 false path，正是当年手工处理这条路径的痕迹：
 
@@ -205,7 +205,7 @@ set_case_analysis 1 [get_port DPSEL_I]
 > 注释 = 证据：它存在过，说明曾经（或本该）对这条路径设 false path；
 > 它被注释掉，说明当前 2P 约束下这些路径是真实工作的，不能一刀切 false。
 
-## 1.4 问题的本质：模式相关的时序例外（mode-dependent exception）
+## 4. 问题的本质：模式相关的时序例外（mode-dependent exception）
 
 把三条证据合起来，问题可以精确表述为：
 
@@ -220,7 +220,7 @@ set_case_analysis 1 [get_port DPSEL_I]
 SoC / TCON / 数模混合芯片里非常常见。凡是遇到「某些路径只在某个工作模式下才真实」的芯片，
 都会撞上同一个问题。
 
-## 1.5 为什么这个问题值得专门讲
+## 5. 为什么这个问题值得专门讲
 
 | 维度 | 说明 |
 |:---|:---|

@@ -42,12 +42,12 @@
   </div>
 
 <script type="text/template" id="md">
-# 5. 进阶方案 C：MMMC（多模式多角）——标准正解
+# 五、进阶方案 C：MMMC（多模式多角）——标准正解
 
 > 前面所有纠结，本质是「想在一份约束里塞两种模式」。MMMC 的答案很简单：
 > <b>不塞，让工具原生支持多个 mode。</b>
 
-## 5.1 MMMC 是什么
+## 1. MMMC 是什么
 
 **MMMC = Multi-Mode Multi-Corner**（多模式多角），是 ICC2 / Innovus / PT 等工具的**原生能力**：
 
@@ -64,7 +64,7 @@
          ↓ 每个 mode × 10 corner
 ```
 
-## 5.2 为什么 MMMC 是标准答案
+## 2. 为什么 MMMC 是标准答案
 
 | 维度 | 现状（手拆） | MMMC |
 |:---|:---|:---|
@@ -78,9 +78,9 @@
 **核心收益**：mode 相关的例外（如 lane1 假路径 false path）放进**各自 mode**，
 工具绝不会把它泄漏到其它模式——「1P false、2P 真查」这个语义，MMMC 用结构表达，而不是用人力。
 
-## 5.3 落地方式（以 Synopsys 工具为例）
+## 3. 落地方式（以 Synopsys 工具为例）
 
-### 阶段 1：定义 mode
+### 3.1 阶段 1：定义 mode
 
 在 PT / ICC2 里分别定义两个 mode，各自 source 一套约束（沿用项目 `clk_period.tcl` 的风格，`MARGIN` 为时序余量系数）：
 
@@ -104,7 +104,7 @@ set RX1_CLKP [expr 10.71*$MARGIN]
 
 > 两个 mode 共用一份 `clk_period.tcl` 时，用 `if {$MODE == "1P"} {...} else {...}` 或由 MMMC 按 mode 加载不同配置。真正的 MMMC 是把「case_analysis + 时钟 + 例外」整体放进各自 mode，工具按 mode×corner 统一调度。
 
-### 阶段 2：APR 侧使用 MMMC（ICC2 概念）
+### 3.2 阶段 2：APR 侧使用 MMMC（ICC2 概念）
 
 ```
 create_scenario -name sc_1p_wc_cworst   -mode mode_1P -corner wc_cworst
@@ -114,12 +114,12 @@ set_analysis_view ...
 optimize_clock_tree / place_opt  ← 同时满足所有 scenario
 ```
 
-### 阶段 3：PT 签核
+### 3.3 阶段 3：PT 签核
 
 PT 支持多 scenario / 多 mode 联合分析，一份 session 同时签核 1P 与 2P 的所有 corner，
 报告按 scenario 分别输出——对应回现有的 `latest_1p` / `latest_2p` 归档结构，只是不再手动切换。
 
-## 5.4 常见误解澄清
+## 4. 常见误解澄清
 
 <div class="pcard">
   <div class="prow"><span class="k">误解 1</span><span>「APR 只接受一个版本」→ 对，但接受的是 <b>一个网表 + 多套 mode 约束</b>，MMMC 正是这么设计的，不冲突。</span></div>
@@ -127,7 +127,7 @@ PT 支持多 scenario / 多 mode 联合分析，一份 session 同时签核 1P �
   <div class="prow"><span class="k">误解 3</span><span>「模式少没必要」→ 模式再多，MMMC 的组织成本是 O(mode)，手拆是 O(mode²) 的维护负担。</span></div>
 </div>
 
-## 5.5 与方案 A/B 的关系
+## 5. 与方案 A/B 的关系
 
 | 方案 | 本质 | 适用 |
 |:---|:---|:---|
@@ -138,7 +138,7 @@ PT 支持多 scenario / 多 mode 联合分析，一份 session 同时签核 1P �
 > 方案 B 与 C 不是对立关系：如果项目短期内上不了 MMMC 流程，方案 B 是 C 的「最小可行替代」；
 > 一旦 MMMC 就绪，方案 B 的 max_delay 应该被 mode 化的约束取代。
 
-## 5.6 结论
+## 6. 结论
 
 <div class="pcard">
   <div class="prow"><span class="k">判定</span><span><b>MMMC 是模式相关时序问题的标准答案</b>——用工具原生结构表达「同一路径不同模式语义」，APR 与 PT 都支持。</span></div>

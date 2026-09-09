@@ -107,7 +107,8 @@
     .toc a:hover { background: var(--bg); color: var(--accent); text-decoration: none; }
     .toc a.active { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
     .toc a.toc-h1 { font-weight: 700; color: var(--accent); margin-bottom: 8px; cursor: default; }
-    .toc a.toc-h3 { padding-left: 18px; font-size: 13px; }
+    .toc a.toc-h2 { position: relative; padding-left: 24px; } /* all h2 reserve the arrow slot so entries align */
+    .toc a.toc-h3 { padding-left: 38px; font-size: 13px; }
     h2, h3 { scroll-margin-top: 72px; }
     .content { flex: 1; min-width: 0; }
     .article {
@@ -283,7 +284,7 @@
 
 > ⭐ **本章优先级最高**：建议在读完后文之前，先浏览本章六张全景图，建立 LC_CPUWR 寄存器空间的整体印象，再深入各个变更细节。
 
-> **0903v1 注记**：`0x29`（`R_DBC_WIDTH_OPT[1:0]` @ reg41[2:1]）字节默认值已由 `0x00` 改为 `0x02`（默认编码 `2'b00→2'b01`，+36→+64 packets）；本章各默认值/保护/复位域大图基于 0827v1 生成，图中 0x29 仍显示旧值 `0x00`，读图时按 0903v1 值修正（详见[寄存器](./regmap.html) §14.12）。`LC_REG_MAPPING` 另在 `` `ifdef VU440_FPGA `` 下强制 `R_SCREN=1'b1`（FPGA 平台 scramble 常开，不影响寄存器 map）。
+> **0903v1 注记**：`0x29`（`R_DBC_WIDTH_OPT[1:0]` @ reg41[2:1]）字节默认值已由 `0x00` 改为 `0x02`（默认编码 `2'b00→2'b01`，+36→+64 packets）；本章各默认值/保护/复位域大图基于 0827v1 生成，图中 0x29 仍显示旧值 `0x00`，读图时按 0903v1 值修正（详见[寄存器](./regmap.html) §23）。`LC_REG_MAPPING` 另在 `` `ifdef VU440_FPGA `` 下强制 `R_SCREN=1'b1`（FPGA 平台 scramble 常开，不影响寄存器 map）。
 
 ## 1. chip_sel = 0 默认字节映射
 

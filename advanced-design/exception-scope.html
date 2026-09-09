@@ -42,13 +42,13 @@
   </div>
 
 <script type="text/template" id="md">
-# 7. 例外约束的作用范围：-through 什么时候必须加
+# 七、例外约束的作用范围：-through 什么时候必须加
 
 > 来源：HV2M23 STA 实践（2026-08-18）。把输出端口的 false path 换成 multicycle 时遇到的通用问题：
 > **只写 `-to` 的例外会罩住到该端点的全部路径**——按报告里"最差的一条"配的参数，
 > 会不会让其他路径出错？什么时候必须加 `-through` 收窄？
 
-## 7.1 例外的默认作用范围比直觉大
+## 1. 例外的默认作用范围比直觉大
 
 `set_multicycle_path` / `set_false_path` / `set_max_delay` 这类 timing exception，
 匹配范围由 `-from / -through / -to` 的**交集**决定。只写 `-to` 时：
@@ -60,7 +60,7 @@ set_multicycle_path 2 -setup -end -to [get_ports XRSTB_R]
 生效范围 = 到该端点的**所有路径**（所有 startpoint、所有 launch 时钟域），一条不漏。
 你按报告里 slack 最差的那条路径选的参数（N 值 / delay 值），会**无差别作用于其它每一条**。
 
-## 7.2 blanket -to 的两种非预期后果
+## 2. blanket -to 的两种非预期后果
 
 <div class="pcard danger">
   <div class="prow"><span class="k">放松过度<br>（主要风险）</span><span>本身 slack 为正的路径也被放松 → <b>掩盖未来的真实违例</b>：明天有人改逻辑把延迟拉大 5ns，原本会报警，现在被例外静默吃掉。例外的本质是"放弃检查"，范围越大放弃越多。</span></div>
@@ -68,7 +68,7 @@ set_multicycle_path 2 -setup -end -to [get_ports XRSTB_R]
   <div class="prow"><span class="k">hold 侧<br>（无风险）</span><span><code>hold N−1 -end</code> 按 <b>capture 时钟周期</b>回拉检查沿，与起点无关——同 capture 时钟下对所有起点都正确，不会引入新 hold 违例。这点是统一的。</span></div>
 </div>
 
-## 7.3 判断标准：起点是否同质
+## 3. 判断标准：起点是否同质
 
 | 起点情况 | 结论 | 做法 |
 |:---|:---|:---|
@@ -80,7 +80,7 @@ set_multicycle_path 2 -setup -end -to [get_ports XRSTB_R]
 > 只是从"完全不查"变成"放松 N 拍"。精度的提升只能靠 `-from` / `-through` 收窄对象来实现，
 > 光换命令类型没有收窄效果。
 
-## 7.4 通用安全流程（配约束前两步）
+## 4. 通用安全流程（配约束前两步）
 
 ```tcl
 # 第一步：枚举该端点的所有起点（把正 slack 的也列出来），检查是否同质
@@ -95,12 +95,12 @@ report_timing -to [get_ports <port>] -delay_type min -max_paths 50 -slack_lesser
 - 第一步看 startpoint 列表：全同一类逻辑 → blanket 安全；发现异质起点 → 拆分
 - 没枚举过起点之前，**默认怀疑它异质**
 
-## 7.5 实战对照（HV2M23，2026-08-18）
+## 5. 实战对照（HV2M23，2026-08-18）
 
 | 端口组 | 起点性质 | 最终约束 | 是否需要 through |
 |:---|:---|:---|:---|
 | `XRSTA/B_L/R` | 同质（全是复位逻辑输出） | `multicycle 2/1 -end -to <ports>` | 否（blanket 可接受） |
-| `POL1A/1B/2A/B_L/R` | 待枚举复核（CSPIF strobe + DTCTL 行频逻辑都可能驱动） | `multicycle 2/1 -end -to <ports>` | 先跑 §7.4 第一步，异质则拆 |
+| `POL1A/1B/2A/B_L/R` | 待枚举复核（CSPIF strobe + DTCTL 行频逻辑都可能驱动） | `multicycle 2/1 -end -to <ports>` | 先跑 §4 第一步，异质则拆 |
 | `R_REG_0_reg_7_ → C258~C261` 门控 | 明确只放松 reg7 来源 | `false_path -through reg7/Q -to <cell>/I1` | **是**（正确示范） |
 
 当天两条真实违例数据（打开 false path 后）：
@@ -112,7 +112,7 @@ report_timing -to [get_ports <port>] -delay_type min -max_paths 50 -slack_lesser
 
 根因共性：launch 时钟树 ~5ns vs 输出端口 capture 名义 0 延迟的结构性 skew。
 
-## 7.6 关联经验：门控时钟检查（clock gating check）不吃 multicycle
+## 6. 关联经验：门控时钟检查（clock gating check）不吃 multicycle
 
 同一天踩的另一个坑，值得一起记：对 ICG/门控 AND 的 EN pin 检查，三种约束方法两维死活不同——
 
@@ -127,7 +127,7 @@ report_timing -to [get_ports <port>] -delay_type min -max_paths 50 -slack_lesser
 > 以及**它能不能活着穿过你的约束生成流程到达 signoff**（维度二：write_sdc / release 链路）。
 > 只验证 pt_shell 里有效，不代表流程里有效。
 
-## 7.7 结论
+## 7. 结论
 
 <div class="pcard">
   <div class="prow"><span class="k">一句话</span><span><b>-through 不是防"出错"的，是防"误伤异质路径"和"放弃过多检查"的。</b></span></div>

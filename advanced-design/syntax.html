@@ -42,13 +42,13 @@
   </div>
 
 <script type="text/template" id="md">
-# 6. SDC / TCL 语法库
+# 六、SDC / TCL 语法库
 
 > 把本案例涉及的全部时序约束命令整理成可查可复制的语法参考。
 > 覆盖 <code>set_max_delay</code>、<code>set_false_path</code>、<code>set_case_analysis</code>、
 > <code>create_clock</code>、<code>set_clock_groups</code>、<code>create_generated_clock</code>。
 
-## 6.1 set_max_delay —— 覆盖默认时钟约束
+## 1. set_max_delay —— 覆盖默认时钟约束
 
 ```tcl
 set_max_delay <value> [-from <list>] [-through <list>] [-to <list>]
@@ -67,7 +67,7 @@ set_max_delay <value> [-from <list>] [-through <list>] [-to <list>]
 - 默认对指定路径上的 **max analysis（setup）** 生效，**不影响 min（hold）**；
 - 加 `-rise/-fall` 可只约束沿向。
 
-### 本案例推荐写法（精确限定）
+### 1.1 本案例推荐写法（精确限定）
 
 ```tcl
 set_max_delay 10.71 \
@@ -75,7 +75,7 @@ set_max_delay 10.71 \
   -to     [get_pins {u_LOGIC_CENTER/CLKGEN_U1/U_DCLK1_OD_DIV1P5/SAMP_CNT_reg_*/D}]
 ```
 
-### 反例（作用域过宽，会误伤）
+### 1.2 反例（作用域过宽，会误伤）
 
 ```tcl
 # ❌ 覆盖整个模块所有 D pin —— 可能放水真实路径
@@ -83,15 +83,15 @@ set_max_delay 10.71 -to [get_pins {u_LOGIC_CENTER/CLKGEN_U1/*/D}]
 ```
 
 > 配图示意：在真实报告路径上，`-through` 起点 + `-to` 终点如何精确圈出约束段——
-> 见 <a href="./maxdelay.html#411在真实报告路径上落笔约束到底写在哪里">方案 B · 4.1.1 节</a> 的配图讲解。
+> 见 <a href="./maxdelay.html#11-在真实报告路径上落笔约束到底写在哪里">方案 B · 1.1 节</a> 的配图讲解。
 
-### 查询已设置的值
+### 1.3 查询已设置的值
 
 ```tcl
 report_exceptions -type max_delay -nosplit
 ```
 
-## 6.2 set_false_path —— 完全跳过时序检查
+## 2. set_false_path —— 完全跳过时序检查
 
 ```tcl
 set_false_path [-from <list>] [-through <list>] [-to <list>]
@@ -106,7 +106,7 @@ set_false_path [-from <list>] [-through <list>] [-to <list>]
 set_false_path -to [get_pins {u_LOGIC_CENTER/CLKGEN_U1/U_DCLK1_OD_DIV1P5/SAMP_CNT_reg_*/D}]
 ```
 
-### 查询已设置的例外
+### 2.1 查询已设置的例外
 
 ```tcl
 report_exceptions -type false_path -nosplit      # 只列 false path
@@ -114,7 +114,7 @@ report_exceptions -nosplit                        # 全部例外
 report_exceptions -ignored -nosplit               # 被忽略/未生效的例外
 ```
 
-## 6.3 set_case_analysis —— 固定常量，让工具传播
+## 3. set_case_analysis —— 固定常量，让工具传播
 
 ```tcl
 set_case_analysis <0|1|rising|falling> <port|pin>
@@ -135,14 +135,14 @@ set_case_analysis 1 [get_port DPSEL_I]   # 2P 模式
 > 推导 lane1 相关路径不激活，无需手动 false path —— 这是比 max_delay 更干净的路子，
 > 前提是要改 RTL + 重跑 DC。
 
-### 查询已设置的 case analysis
+### 3.1 查询已设置的 case analysis
 
 ```tcl
 report_case_analysis
 report_timing -case_analysis  # 时序报告带 case analysis 信息
 ```
 
-## 6.4 create_clock —— 定义主时钟
+## 4. create_clock —— 定义主时钟
 
 ```tcl
 create_clock -name <name> -period <period> [-waveform {<rise> <fall>}] <source>
@@ -161,7 +161,7 @@ create_clock -name RX0_CLK -period 10.71 -waveform { 0 5.355 } [get_ports {clk_l
 create_clock -name RX1_CLK -period 10.71 -waveform { 0 5.355 } [get_ports {clk_lane_L1}]
 ```
 
-## 6.5 create_generated_clock —— 定义派生时钟
+## 5. create_generated_clock —— 定义派生时钟
 
 ```tcl
 create_generated_clock -name <name> -source <pin|port> \
@@ -188,7 +188,7 @@ create_generated_clock -name CLK_L1_DTCTL_OD_DIV1P5 \
 > 注意：本案例的关键证据之一 —— lane1 的 DIV1P5 时钟 source 是 <code>clk_lane_od_L0</code>（lane0），
 > 这就是「1P 下 lane1 时钟还在跑」的来源。
 
-## 6.6 set_clock_groups —— 声明时钟关系
+## 6. set_clock_groups —— 声明时钟关系
 
 ```tcl
 set_clock_groups -name <name> \
@@ -213,7 +213,7 @@ set_clock_groups -asynchronous -name RX0_CLK_1 \
 > 跨时钟域 false path 用 `set_clock_groups -asynchronous` 一次性表达，比逐条 `set_false_path -from/-to`
 > 更清晰、更不易漏。
 
-## 6.7 优先级总表（PT 例外规则）
+## 7. 优先级总表（PT 例外规则）
 
 从高到低：
 
@@ -223,7 +223,7 @@ set_clock_groups -asynchronous -name RX0_CLK_1 \
 
 > 设计例外（exception）时记住这条优先级，是避免「写了但不生效」的关键。
 
-## 6.8 通用调试命令速查
+## 8. 通用调试命令速查
 
 ```tcl
 report_clocks -attributes                  # 所有时钟定义
@@ -234,7 +234,7 @@ check_timing                               # 约束完整性检查（推荐每�
 report_timing -from <pin> -to <pin>        # 单路径详细时序
 ```
 
-## 6.9 本案例对应的「检查清单」
+## 9. 本案例对应的「检查清单」
 
 <div class="pcard">
   <div class="prow"><span class="k">①</span><span><code>report_exceptions -ignored</code>：确认无「写了却没生效」的例外</span></div>

@@ -107,7 +107,8 @@
     .toc a:hover { background: var(--bg); color: var(--accent); text-decoration: none; }
     .toc a.active { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
     .toc a.toc-h1 { font-weight: 700; color: var(--accent); margin-bottom: 8px; cursor: default; }
-    .toc a.toc-h3 { padding-left: 18px; font-size: 13px; }
+    .toc a.toc-h2 { position: relative; padding-left: 24px; } /* all h2 reserve the arrow slot so entries align */
+    .toc a.toc-h3 { padding-left: 38px; font-size: 13px; }
     h2, h3 { scroll-margin-top: 72px; }
     .content { flex: 1; min-width: 0; }
     .article {
@@ -245,7 +246,7 @@
   <script type="text/template" id="md">
 # 三、核心变更时间线
 
-## 0. 2026-06-15：LC_CPUWR_history 归档目录建立
+## 1. 2026-06-15：LC_CPUWR_history 归档目录建立
 
 在迭代进入密集期之前，项目建立了独立的版本归档目录 `E:\\project\\HK1V11\\LC_CPUWR_history`，用于：
 
@@ -255,36 +256,36 @@
 
 初始目录包含 `README.md`、changelist、plan 文档，后续逐步扩展为 `verilog_hdl/`、`markdownfile/`、`case/` 等子目录。
 
-## 1. 2026-04：寄存器模块重写与 checksum 雏形
+## 2. 2026-04：寄存器模块重写与 checksum 雏形
 
-### 1.1 读写寄存器模块重写（0421）
+### 2.1 读写寄存器模块重写（0421）
 
 - `LC_CPUWR.v` 按地址顺序重新组织
 - 对应寄存器 Excel 修改信号复位值与复位信号
 - 总体结构与代码风格保持不变
 
-### 1.2 寄存器稳定判断（0430）
+### 2.2 寄存器稳定判断（0430）
 
 - 增加寄存器判断功能：只有寄存器信息稳定且多帧得到相同信息时才更新进寄存器表
 - 为后续 checksum 的"三帧一致"机制打下基础
 
-### 1.3 I2C only 区域 password 保护（0506）
+### 2.3 I2C only 区域 password 保护（0506）
 
 - 按照 `LSI_PROTECT` 要求，对 I2C 专用地址 `0x50~0x56` 中所有可写寄存器增加 password error reset 保护
 
-## 2. 2026-05：REG07 与 checksum 机制成型
+## 3. 2026-05：REG07 与 checksum 机制成型
 
-### 2.1 0507 寄存器大表更新
+### 3.1 0507 寄存器大表更新
 
 - `AVE_R` 从 `0x00[2:0]` 移到 `0x00[7:5]`
 - `reg_lane_ck_inv_en` 从 `0x25[7]` 移到 `0x50[1]`
 
-### 2.2 0511 REG07 checksum update 功能
+### 3.2 0511 REG07 checksum update 功能
 
 - 新增 `REG07` 寄存器相关的 checksum update 功能
 - 后续演变为 `CTRLF_CHECKSUM[3:0]`，控制 checksum 使能
 
-### 2.3 0512 部分寄存器不能进行 checksum update
+### 3.3 0512 部分寄存器不能进行 checksum update
 
 发现三帧一致更新机制与时序冲突：
 - `PORSD` / `POL` 等信号需要在第一帧结束就置位，但 checksum 要求 3 帧一致才生效
@@ -295,7 +296,7 @@
 - **K1 后做一个 latch**：latch=1 后保持 checksum 功能
 - 即 **LSP 结束后第一次发送指令改为直写**，确保关键信号在第一帧即可生效，而不是永久绕过 checksum
 
-### 2.4 0512 寄存器新增修改项
+### 3.4 0512 寄存器新增修改项
 
 删除字段：
 - `SMART_CS[3:0]` @ 0x02
@@ -308,65 +309,65 @@
 - `reg_pin_eq_auto[3:2]` 地址从 `0x02[5:4]` 改为 `0x02[3:2]`
 - `regr_lane_ctrl[4:0]` 默认值改为 `5'b11000`
 
-### 2.5 0519~0520 checksum 功能最终方案
+### 3.5 0519~0520 checksum 功能最终方案
 
 - `REG07[3:0]` 命名为 `CTRLF_CHECKSUM[3:0]`，默认值 `0x05`（使能校验和）
 - 最终方案：`REG07` 默认值为 `0`（使能 checksum 检测），写入 `0x05` 时关闭 checksum（直写模式）
 - LSP 阶段结束至 K1 发起前不做 checksum，寄存器直写；K1 后 latch 保持 checksum 功能
 
-## 3. 2026-06：时钟域统一、命名规范化与大规模重构
+## 4. 2026-06：时钟域统一、命名规范化与大规模重构
 
-### 3.1 0615 时钟域统一
+### 4.1 0615 时钟域统一
 
 - `Seg2` 时钟从 `WCK1_A_TEST` 统一为 `WCK1_A`
 - 删除 `WCK1_A_TEST` 输入端口
 - 替换约 85 处 always 敏感列表
 - 消除 `chksum_mode` 跨时钟域 CDC 问题
 
-### 3.2 0615 I2C 地址译码十进制化
+### 4.2 0615 I2C 地址译码十进制化
 
 - I2C 专用地址译码信号 `ADDR50~56_I2C_TEST` 重命名为 `ADDR80~86_I2C_TEST`
 - I2C readback case 地址字面量从 `8'h*` 改为 `8'd*`
 
-### 3.3 0615 Seg2 checksum 删除
+### 4.3 0615 Seg2 checksum 删除
 
 - 彻底移除 `CHKSUM_T_EN` 宏、Seg2 shadow 寄存器及 XOR checksum 校验逻辑
 - `0x20~0x38` 全部 25 个测试寄存器改为 `WCK1_A` 时钟域直写
 
-### 3.4 0616 Seg1 扩展与 NG Unlock
+### 4.4 0616 Seg1 扩展与 NG Unlock
 
 - `R_REG09_F` / `R_REG10_F` / `R_REG29_F` / `R_REG30_F` 加入 Seg1 寄存器并参与 checksum
 - Seg1 shadow 寄存器从 9 个扩展到 13 个
 - 新增 `unmatch_cnt_a` 连续 mismatch 计数器与 `unlock_latch_a` 解锁锁存器
 - 连续 5 帧 mismatch 后自动旁路 checksum 直写
 
-### 3.5 0616 LC_REG_MAPPING 输出重构
+### 4.5 0616 LC_REG_MAPPING 输出重构
 
 - 删除 `LSI_PRTECT` 输入
 - `SP_S` / `VBK` / `VBK_EN` 直接由对应寄存器输出，不再受 `LSI_PRTECT` 掩码控制
 - 新增 chip_sel=1 专用 `SR_*` / `PWRC_T*` / `PWRC_PA/PB/NA/NB` 输出
 
-### 3.6 0616 寄存器位置调整与新增
+### 4.6 0616 寄存器位置调整与新增
 
 - `R_BAC` 从 `R_REG31_F[1]` 移到 `R_REG40_F[2]`
 - 多个寄存器名从十六进制改为十进制：`R_REG20~38_F` → `R_REG32~56_F`，`R_REG50~56_I2C` → `R_REG80~86_I2C`
 - `LSI_PRTECT` 源从 `R_REG30_F == 8'h72` 改为 `R_REG48_F == 8'h72`
 - 新增 `ACS_EN`、`Level_Skip_frame`、`Skip_frame_count` 等字段
 
-### 3.7 0617 SMART_CS / Pattern Detect / 动态 PWRC 删除
+### 4.7 0617 SMART_CS / Pattern Detect / 动态 PWRC 删除
 
 - 移除 `PAT_DET_DYN`、`PAT_DET_STA`、`PTN_DET_ENB`、`POL_SW`、`POL_SW_PRE`
 - 移除 `SMART_CS`、`R_SUBP_CS_OPT`、`R_SUBP_TPE_OPT` 等 smart charge share 寄存器
 - 移除 `R_STATIC_PWRC_OPT`、`R_TPW_EXTEND_EN` 等动态 PWRC 控制
 - `VPS_EN` 功能由 pattern detect 触发改为直接由 `VPS_EN & BKD` 控制
 
-### 3.8 0622 SSFC 信号新增与 SCREN 控制
+### 4.8 0622 SSFC 信号新增与 SCREN 控制
 
 - 新增 `SSFC` 输入端口
 - `R_SCREN` 由 `R_REG00_F[4]` 直接输出改为 `R_REG00_F[4] & SSFC`
 - scramble enable 仅在 `SSFC==1` 时有效
 
-### 3.9 0624 寄存器大规模重构
+### 4.9 0624 寄存器大规模重构
 
 - `AVE_R/G/B` 合并为 `AVE_RGBW` @ `0x00[7:5]`
 - 删除 `AVE_AUTO`、`AVE_G`、`AVE_B`、`AVE_DELTA`
@@ -378,35 +379,35 @@
 - 删除 I2C 专用地址 `80~86` 及所有 autoEQ 相关字段
 - `0x50/0x51/0x52` 作为 `0x32/0x33/0x34` 的 I2C 读回别名
 
-## 4. 2026-07~08：CDR/UTC、默认值、命名统一与新架构
+## 5. 2026-07~08：CDR/UTC、默认值、命名统一与新架构
 
-### 4.1 0701 CDR/UTC 更新
+### 5.1 0701 CDR/UTC 更新
 
 - `reg_cr_done_cnt[5:0]` 默认值从 `0x12` 改为 `0x15`（@0x24）
 - 新增 `reg56/57` 承载 `UTC_long01_frame` / `UTC_header_cnt` / `UTC_header_frame`，默认值 `0x05/0x03`
 - 新增 `reg144~146` 直接映射 CDR fast/fine lock 参数
 
-### 4.1a 0702 UTC 0x38/0x39 修复
+### 5.1a 0702 UTC 0x38/0x39 修复
 
 0702 发现 `env_cfg.sv` 中 0x38/0x39 仍被当作 reserved，导致 UTC 相关字段无法通过 cfg_frame 配置。修复：新增 0x38/0x39 成员与 cfg_frame 覆盖入口。
 
-### 4.2 0702 PWRC_TSEL
+### 5.2 0702 PWRC_TSEL
 
 - 新增 `PWRC_TSEL` @ `0x20[7]`，由 `R_REG32_F[7]` 驱动，默认 `1'b0`
 
-### 4.3 0703 Segment1 frame end 改为 0x27
+### 5.3 0703 Segment1 frame end 改为 0x27
 
 - 地址 `39(0x27)` 加入 Segment1 checksum，作为新的 frame end
 - 地址 `31(0x1F)` 改为普通 shadow 寄存器，不再作为 frame end
 - `reg_lane_ctrl` 改名为 `sw_reg_lane_ctrl`
 - 删除 `CHPI_SEL ? ... : ...` 条件复位默认值，统一使用 `8'h00`
 
-### 4.4 0705 复位值支持 CHIP_SEL 选择
+### 5.4 0705 复位值支持 CHIP_SEL 选择
 
 - `R_REG10_F(0x0A)` 复位默认值改为 `{CHPI_SEL,1'b0,CHPI_SEL,1'b0,1'b0,CHPI_SEL,1'b0,CHPI_SEL}`，chip_sel=1 时为 `8'hA5`
 - `R_REG31_F(0x1F)` 复位默认值改为 `{CHPI_SEL,1'b0,CHPI_SEL,1'b0,CHPI_SEL,1'b0,CHPI_SEL,1'b0}`，chip_sel=1 时为 `8'hAA`
 
-### 4.5 0706 CHPI_SEL → CHIP_SEL 与 checker 数组扩展
+### 5.5 0706 CHPI_SEL → CHIP_SEL 与 checker 数组扩展
 
 - 模块端口 `CHPI_SEL` 统一重命名为 `CHIP_SEL`
 - 内部所有 `CHPI_SEL` 引用同步修改
@@ -415,13 +416,13 @@
 - 因 0x27 加入 Segment1，checker 的 `expected/loaded` 数组从 32 元素扩展为 256 元素
 - 全量 checksum case 回归通过
 
-### 4.6 0708 SMART_CS[3:0]
+### 5.6 0708 SMART_CS[3:0]
 
 - `0x02` 增加 `SMART_CS[3:0]` 字段（`[7:6],[3:2]`），默认 `4'b0000`
 - `LC_REG_MAPPING` 新增 `SMART_CS[3:0]` 输出，仅在 `CHIP_SEL=1` 时有效
 - `LINK_LOGIC` 连接 `SMART_CS` 到 `LC_REG_MAPPING`
 
-### 4.7 0714 默认值最终调整
+### 5.7 0714 默认值最终调整
 
 - `R_REG09` / `R_REG10` / `R_REG31` 在 `LC_CPUWR` 内部复位默认值统一改为 `8'h00`
 - chip_sel=1 的默认值通过 `LC_REG_MAPPING` 的**写标志 + 回拼字节**机制实现：
@@ -432,7 +433,7 @@
 - 使用 `iverilog -g2005-sv -DFF_DLY=0` 完成三份 RTL 语法检查
 - 修复注释块与 `always` 关键字合并到同一行导致的语法错误
 
-### 4.8 0721 CONFIG_DATA 16bit → 24bit（每步 3 寄存器）
+### 5.8 0721 CONFIG_DATA 16bit → 24bit（每步 3 寄存器）
 
 协议级"拍重组"变更：`LCONFIG_DATA` / `FCONFIG_DATA` 端口位宽由 16bit 扩为 24bit，每个 ADD 步进写 **3 个寄存器**。
 
@@ -444,7 +445,7 @@
 - 0716v1 备份为 `0716_v1_work`；DV env 升 0721v1 并补齐服务器 0716 同步遗漏的 FSEL 更新
 - 对照图见「图解」章第 6 节：`config_data_beat_regroup_0721.svg`
 
-### 4.9 0807 新架构：LINK_CONFIG_CTRL 承载寄存器通路
+### 5.9 0807 新架构：LINK_CONFIG_CTRL 承载寄存器通路
 
 服务器 0807 导出整体替换 HDL 与 DV_TCON_C，架构发生重大变化：
 
@@ -454,7 +455,7 @@
 - **LC_CPUWR 变化**：输出端口新增 `R_REG00_L`~`R_REG04_L`（行配置），复位推导 `N_RST_NLOCK_NORMAL`/`RSTN_SCR_EN_NORMAL` 移至 `RSTNGEN`；24bit CONFIG_DATA 保留
 - **归档**：0807v1 三件套（`LC_CPUWR` / `LC_REG_MAPPING` / `LINK_CONFIG_CTRL`）入库
 
-### 4.10 0810 寄存器表同步（HK1V11_Register_20260807.xlsm）
+### 5.10 0810 寄存器表同步（HK1V11_Register_20260807.xlsm）
 
 依据最新寄存器表完成 0810v1 变更：
 
@@ -467,7 +468,7 @@
 - **验收三关**：iverilog + rtl-code-review + rtl-signal-trace 全部通过
 - **接口归属**：0810v1 新增信号（EOL/BCC 等）在 `LINK_CONFIG_CTRL` 中 `.xx()` 空接，不定义端口（由 bcc_ctrl 等模块接入）
 
-### 4.11 0811 VPS_EN 新增/恢复（HK1V11_Register_20260811.xlsm）
+### 5.11 0811 VPS_EN 新增/恢复（HK1V11_Register_20260811.xlsm）
 
 依据 20260811 寄存器表新增/恢复 VPS_EN 字段：
 
@@ -478,7 +479,7 @@
 - **LINK_CONFIG_CTRL**：`.VPS_EN_0()` / `.VPS_EN_1()` 空接
 - **验收三关**：iverilog + rtl-code-review + rtl-signal-trace 通过
 
-### 4.12 0819 复位改名 N_RST → RSTN
+### 5.12 0819 复位改名 N_RST → RSTN
 
 复位信号命名统一（异步复位）改名：
 
@@ -488,7 +489,7 @@
 - **R_LOAD**：确认保持内部 wire（不作为 output），撤销临时端口提升
 - **验收三关**：iverilog + rtl-code-review + rtl-signal-trace 通过
 
-### 4.13 0819v2 新增 Loop_sel[2:0] 选择 CDR/KVCO 默认值
+### 5.13 0819v2 新增 Loop_sel[2:0] 选择 CDR/KVCO 默认值
 
 新增接口输入 `Loop_sel[2:0]`，按应用场景（长编码长0/长1、高低速）选择 CDR/KVCO 默认值：
 
@@ -504,7 +505,7 @@
 - **LINK_CONFIG_CTRL**：LC_CPUWR 实例化 `.Loop_sel()` 空接（实际 3 个 PIN 引入待 projectleader 定）
 - **验收三关**：iverilog + rtl-code-review + rtl-signal-trace 通过
 
-### 4.14 0820v1 新增 cr_done_filter[1:0] @ 0x24[7:6]
+### 5.14 0820v1 新增 cr_done_filter[1:0] @ 0x24[7:6]
 
 依据 `HK1V11_Register_20260819.xlsm`（与 0817 版逐单元格 diff 确认唯一实质变更）：
 
@@ -515,7 +516,7 @@
 - **同表 LOOP_SEL Mapping Table**：与 0819v2 RTL 完全一致（kvco A/8、icp 4/6/8/C、rlpf 恒 C，001 为默认 strap），无需改动
 - **验收三关**：iverilog 联合编译 EXIT 0 + 代码评审（critical=0/high=0）+ 信号链路完整
 
-### 4.15 0820v2 Loop_sel 默认值选择移到输出 assign
+### 5.15 0820v2 Loop_sel 默认值选择移到输出 assign
 
 将 0819v2 的 Loop_sel 默认值选择逻辑从**时序复位块**重构到**输出 assign 处**（综合/DC 友好），模仿 LC_REG_MAPPING 的 `WR ? 寄存器值 : 默认值` 模式并保留 LSI 保护：
 
@@ -529,7 +530,7 @@
 - **综合/DC 收益**：复位默认值为常量，Loop_sel 仅存于组合逻辑，无时序复位依赖
 - **验收三关**：iverilog 联合编译 EXIT 0 + 代码评审（critical=0/high=0）+ 信号链路完整
 
-### 4.15a 0821v1 BCC 寄存器方向修正（R/W → regr_ 只读）
+### 5.15a 0821v1 BCC 寄存器方向修正（R/W → regr_ 只读）
 
 依据 BCC 协议归属的 spec 理解修正：reg147/160/161 实际由 bcc_ctrl 写入，I2C 侧只读——
 
@@ -539,7 +540,7 @@
 - LINK_CONFIG_CTRL 实例 BCC 端口改名 regr_*（空接）
 - **验收三关**：iverilog 通过 + rtl-code-review pass（critical=0/high=0/low=3）+ 信号链路完整
 
-### 4.15b 0821v2 BCC 方向定论（BCC_M 回退 I2C R/W + SDID/AEQ 保持只读）
+### 5.15b 0821v2 BCC 方向定论（BCC_M 回退 I2C R/W + SDID/AEQ 保持只读）
 
 集成服务器 0825 包后与设计定论对齐：**CPUWR 无 BCC 总线访问权限**——
 
@@ -548,7 +549,7 @@
 - LINK_CONFIG_CTRL 不改（保持服务器 0825）；服务器验证通过，commit `602cea9`
 - **验收三关**：iverilog 通过（仅标准单元缺失预期）+ rtl-code-review pass（critical=0/high=0/medium=1 集成提醒）+ 信号链路完整（BCC_M 下发 + SDID/AEQ 读回）
 
-### 4.16 0827v1 寄存器表同步：sw_reg_lane_ctrl 拆分迁移 + reg_eol 新增
+### 5.16 0827v1 寄存器表同步：sw_reg_lane_ctrl 拆分迁移 + reg_eol 新增
 
 依据 `HK1V11_Register_20260827.xlsm`（基于 20260819 表逐单元格 diff 评估），与用户确认三项决策后实施：① 新单 bit 寄存器 **chip_sel=0/1 共用**；② LC_CPUWR `sw_reg_lane_ctrl` output **删除**（本地先行，服务器 LINK_CONFIG_CTRL 配套挂账）；③ LC_REG_MAPPING **新增 5 个单 bit output**：
 
@@ -562,7 +563,7 @@
 - **集成提醒**：LINK_CONFIG_CTRL 本版不改——服务器侧需删旧 `.sw_reg_lane_ctrl` 连接 ×2 并为 LC_REG_MAPPING 实例补 5 个新 output 连接
 - **验收三关**：iverilog 通过（LC_CPUWR standalone 仅 `CLKINVX4AL9` 缺失 ×20 预期、LC_REG_MAPPING EXIT 0）+ 代码评审 pass=true（critical=0/high=0/medium=1 集成提醒）+ 信号链路完整（reg_eol 链路与 5 单 bit 链路无新增 CDC）；commit `b178160`
 
-### 4.17 服务器包集成（0825 / 0828）与 LINK_CONFIG_CTRL 同步
+### 5.17 服务器包集成（0825 / 0828）与 LINK_CONFIG_CTRL 同步
 
 - **0825 包集成**（commit `f54f8d6`）：服务器 0825 RTL 整体替换本地 `HDL/`；DV_TCON_C（V2，剔除 ppm）按文件名替换
 - **0828 包集成**（commit `d00e2a0`）：`PACK_TAR_0828V0.tar.gz` 覆盖 `HDL/`——修改 16 / 新增 2 / 删除 0，MD5 复核 310/310 零差异；覆盖后 LC_CPUWR = **0821v2**（4.15b 定论随包回归）；其余差异主线：AUTO_EQ 复位链贯通、bcc_ctrl 协议增强（SDID_allocation 等）、LONG_ENCODING endian 修复、PIX_CLK_EN 常开修复
@@ -570,7 +571,7 @@
 - **history 副本同步**（commit `b9e85a0`）：`LC_CPUWR_history/LINK_CONFIG_CTRL.v` 经用户确认整文件替换为服务器 0825 版（原为本地 0821v1 旧版）；接口增量：+input `DCLK/LOOP_SEL/EQ/AEQ_reg_lane_ctrl/SDID/EQ_MODE/AUTO_EQ_EN`，+output `BCC_M/VBK/reg_lane_ctrl`，−output `reg_lane_ctrl_pre/reg_pin_eq/cr_done_filter`
 - **0827v1 重放状态**：评估确认 LC_CPUWR / LC_REG_MAPPING 的 0827v1 为 0828 包对应文件的**严格超集**——拷回 HDL + LINK_CONFIG_CTRL 集成补丁（删 `.sw_reg_lane_ctrl` 连接 ×2 + LC_REG_MAPPING 实例补 5 个新 output 连接 + 可选 `.reg_eol()`）即完成重放，零冲突；详见评估报告 `script\pack_0828_eval_0827v1.md` §5
 
-### 4.18 0903v1 寄存器表同步（HK1V11_Register_20260903.xlsm）：0x29 默认值变更 + FPGA SCREN 常开
+### 5.18 0903v1 寄存器表同步（HK1V11_Register_20260903.xlsm）：0x29 默认值变更 + FPGA SCREN 常开
 
 2026-09-07 同步，依据 `HK1V11_Register_20260903.xlsm`（history sheet：仅 0x29 默认值一处实质变更）：
 
@@ -579,7 +580,7 @@
 - **寄存器 map 无变化**：0x29 地址/字段位置/保护属性均不变，仅字节默认值调整；0903 xlsm 表同步——Reg_1V11 sheet：Address 0x29 default `0x00→0x02`；Reg_description_F_CHIP_SEL=0/1 sheet：`R_DBC_WIDTH_OPT[1:0]` default `2'b00→2'b01`
 - **env/reg_model**：无功能变化（无寄存器地址/map 变化）
 
-### 4.19 0907v1 CHIP_SEL 门控修复：cs=1 专有输出防误写外漏
+### 5.19 0907v1 CHIP_SEL 门控修复：cs=1 专有输出防误写外漏
 
 2026-09-07 用户评审发现：`LC_REG_MAPPING` 的 cs=1 专有输出（共 12 个）未做 CHIP_SEL 门控——cs=0 下误写这些 Reserved 地址会把随机值漏到输出。
 
@@ -589,7 +590,7 @@
 - **无变化**：寄存器 map / 默认值 / I2C 读回（RECON）/ `LC_CPUWR`；PWRC 段注释旧描述（cs=0→2'b00）同步更正为 2'b10
 - **验收三关**：iverilog 双分支（默认 + `` `VU440_FPGA ``）EXIT 0 + rtl-code-review + rtl-signal-trace（报告 `markdownfile/0907v1/`）
 
-### 4.20 0909v1 SCREN 口径对齐：ifdef 强制分支注释停用 + 门控服务器确认合入
+### 5.20 0909v1 SCREN 口径对齐：ifdef 强制分支注释停用 + 门控服务器确认合入
 
 2026-09-09 服务器同步，`LC_REG_MAPPING` 0907v1 → 0909v1，与服务器确认两项口径：
 

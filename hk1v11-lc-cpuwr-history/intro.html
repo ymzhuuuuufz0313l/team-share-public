@@ -107,7 +107,8 @@
     .toc a:hover { background: var(--bg); color: var(--accent); text-decoration: none; }
     .toc a.active { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
     .toc a.toc-h1 { font-weight: 700; color: var(--accent); margin-bottom: 8px; cursor: default; }
-    .toc a.toc-h3 { padding-left: 18px; font-size: 13px; }
+    .toc a.toc-h2 { position: relative; padding-left: 24px; } /* all h2 reserve the arrow slot so entries align */
+    .toc a.toc-h3 { padding-left: 38px; font-size: 13px; }
     h2, h3 { scroll-margin-top: 72px; }
     .content { flex: 1; min-width: 0; }
     .article {

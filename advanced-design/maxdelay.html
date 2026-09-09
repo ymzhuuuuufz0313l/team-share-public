@@ -42,12 +42,12 @@
   </div>
 
 <script type="text/template" id="md">
-# 4. 进阶方案 B：不设 false path，用 set_max_delay 覆盖
+# 四、进阶方案 B：不设 false path，用 set_max_delay 覆盖
 
 > 这是进阶方案：合并成一套约束后，**不设 false path**，对模式相关假路径改用
 > <code>set_max_delay</code> 来"软约束"。思路有道理，但正确性取决于几个关键前提。
 
-## 4.1 方案原理：让"假路径"也能查，但用 2P 的真实周期去查
+## 1. 方案原理：让"假路径"也能查，但用 2P 的真实周期去查
 
 核心逻辑：`set_max_delay` 的**优先级高于时钟周期约束**，会对指定路径用你给的值替代默认时钟约束。
 
@@ -68,7 +68,7 @@ set_max_delay 10.71 -to [get_pins {u_LOGIC_CENTER/CLKGEN_U1/U_DCLK1_OD_DIV1P5/SA
 > 为什么是 <code>-to .../D</code>（数据端 pin）？因为 `set_max_delay` 约束的是**数据到达时间**，
 > 用寄存器数据端 D pin 作为约束终点，语义最准确。也可以配合 `-from/-through` 进一步收窄。
 
-### 4.1.1 在真实报告路径上落笔：约束到底写在哪里
+### 1.1 在真实报告路径上落笔：约束到底写在哪里
 
 把「1P 误报路径的起点」和「2P 真实检查的终点」放在同一张图上，约束写在哪一段一目了然：
 
@@ -95,9 +95,9 @@ set_max_delay 10.71 -to [get_pins {u_LOGIC_CENTER/CLKGEN_U1/U_DCLK1_OD_DIV1P5/SA
    答：`CK` 是时钟 pin，`set_max_delay` 约束数据到达；终点必须是**数据端 D**，语义才正确。
 
 3. **如果终点写成 `CLKGEN_U1/*/D`（整个模块）会怎样？**
-   答：范围爆炸，把 lane1 里真实工作的寄存器也放水了——这就是 4.3 节要讲的"精确匹配"陷阱。
+   答：范围爆炸，把 lane1 里真实工作的寄存器也放水了——这就是第 3 节要讲的"精确匹配"陷阱。
 
-## 4.2 关键前提 ①：max_delay 的值必须取"2P 真实需求"，不能随意设大
+## 2. 关键前提 ①：max_delay 的值必须取"2P 真实需求"，不能随意设大
 
 这是整个方案正确性的命门：
 
@@ -113,7 +113,7 @@ set_max_delay 10.71 -to [get_pins {u_LOGIC_CENTER/CLKGEN_U1/U_DCLK1_OD_DIV1P5/SA
 > 判据：设完 max_delay 后，**2P 报告里这条路径的 slack 应与未设约束时几乎一致**
 > （证明没有过度放松）；1P 报告里它不再假违例（证明方案生效）。两条同时满足才算对。
 
-## 4.3 关键前提 ②：必须精确匹配对象，否则误伤真实路径
+## 3. 关键前提 ②：必须精确匹配对象，否则误伤真实路径
 
 `set_max_delay` 会**覆盖**作用域内所有路径的时钟约束。匹配太宽会误伤：
 
@@ -133,7 +133,7 @@ set_max_delay 10.71 \
 | `-to [具体寄存器]` | 单个寄存器族 | <span class="badge badge-warn">中</span> |
 | `-through [起点] -to [终点]` | 精确路径集 | <span class="badge badge-ok">低（推荐）</span> |
 
-## 4.4 关键前提 ③：set_max_delay 只管 setup，hold 不受影响
+## 4. 关键前提 ③：set_max_delay 只管 setup，hold 不受影响
 
 - `set_max_delay` 只约束 **data path max（setup）**；
 - **hold 检查**基于最短路径（min delay），与周期无关，也不受 max_delay 影响；
@@ -141,7 +141,7 @@ set_max_delay 10.71 \
 
 > 因此方案 B 只改 setup 语义，不会意外放松 hold——这是它比 false path 更"局部"的一个优点。
 
-## 4.5 与 false path 的关系：优先级冲突，不能混用
+## 5. 与 false path 的关系：优先级冲突，不能混用
 
 同一个对象上，`set_false_path` 和 `set_max_delay` 都是 timing exception，**会冲突**：
 
@@ -166,7 +166,7 @@ set_max_delay 10.71 -to [get_pins {…/SAMP_CNT_reg_*/D}]
 > 用方案 B 前，务必全局检查：是否有旧的 false path 覆盖同一条路径（例如 `clk_period.tcl`
 > 里被注释掉的那行 SAMP_CNT false path）。残留的 false path 会让方案 B 静默失效。
 
-## 4.6 方案 B 的验证清单
+## 6. 方案 B 的验证清单
 
 <div class="pcard">
   <div class="prow"><span class="k">①</span><span>确认这些路径在 <b>2P 下 slack MET</b>（有真实余量），才值得用 max_delay 兜底</span></div>
@@ -176,7 +176,7 @@ set_max_delay 10.71 -to [get_pins {…/SAMP_CNT_reg_*/D}]
   <div class="prow"><span class="k">⑤</span><span>hold 检查照常跑，确认方案 B 未改变 hold 语义</span></div>
 </div>
 
-## 4.7 结论：可行，但它是"近似解"
+## 7. 结论：可行，但它是"近似解"
 
 <div class="pcard">
   <div class="prow"><span class="k">判定</span><span>方案 B <b>原理可行</b>，是「模式相关假路径」的有效工程技巧，业界有先例。</span></div>
