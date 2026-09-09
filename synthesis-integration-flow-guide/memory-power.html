@@ -85,6 +85,8 @@ body {
   display: flex;
   align-items: center;
   gap: 16px;
+      flex-wrap: wrap;
+      row-gap: 4px;
 }
 .navbar-brand {
   font-family: var(--font-mono);
@@ -100,7 +102,7 @@ body {
   display: flex;
   align-items: center;
   gap: 3px;
-  overflow-x: auto;
+  flex-wrap: wrap;
   flex: 1;
   scrollbar-width: none;
 }
@@ -497,18 +499,15 @@ HV2M23_digital_top        1.17e-02  2.58e-03  1.76e-06  1.43e-02  100.0
 
 const chapters = [
   ['index', '首页'],
-  ['environment', '环境与配置'],
+  ['environment', '环境'],
   ['rtl-check', 'RTL 检查'],
   ['synthesis-upf', '综合'],
   ['lec', 'LEC 验证'],
   ['signoff-timing', 'APR SIGNOFF'],
   ['pt-intro', 'POSTPT'],
-  ['memory-power', 'Memory 与功耗'],
-  ['powerpro', 'PowerPro 功耗评估'],
+  ['memory-power', 'PTPX'],
+  ['powerpro', 'PowerPro'],
   ['to-signoff', 'TO SIGNOFF'],
-  ['faq', 'FAQ 与清单'],
-  ['learning-path', '学习路径'],
-  ['script-dict', '脚本字典']
 ];
 const currentPath = location.pathname.split('/').pop() || 'index.html';
 const linksContainer = document.getElementById('navbar-links');
