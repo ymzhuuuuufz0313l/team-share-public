@@ -512,6 +512,102 @@ end
 
 **判定与状态**：第一刀（CSPI_CMD_ALIGN）验证成功且方向正确；85 点进入"工具建模与实现选择"深水区，先三角验证再定路线。修复代码均为实验态（.bak_ecofix 可回退），正式入库待设计组评审。
 
+---
+
+### 8.18 为什么"最简单的逻辑"也会翻：phase map 缺席案（0911 续二）
+
+> 85 点残余里最刺眼的是 ANCTL 的 CS_START_1d/2d——"复位给 1、时钟给 0"，教科书级异步置位寄存器，居然 NON-EQ。本文记录从"这是 FC 的问题吧"到官方文档实锤"phase map 默认关闭"的完整推理链，以及一行命令的解法。
+
+**① 案发寄存器的 RTL（没有任何问题）**
+
+```verilog
+reg CS_START_1d, CS_START_2d, CS_START_3d, CS_START_4d;
+always @(posedge STB_CLK or negedge RSTN)
+if (!RSTN) begin
+    CS_START_1d <= 1'b1;  // 异步复位 → 1
+    CS_START_2d <= 1'b1;
+    CS_START_3d <= 1'b1;
+    CS_START_4d <= 1'b1;
+end else begin
+    CS_START_1d <= 1'b0;  // 常态 → 0
+    CS_START_2d <= CS_START_1d;
+    CS_START_3d <= CS_START_2d;
+    CS_START_4d <= CS_START_3d;
+end
+```
+
+教科书级"异步置位寄存器"。库里有天选单元 **DFFSBQX1AS9**（异步置位到 1：SB=RSTN、D=0，一个单元直连），而且 FC 在同一张网表别处就用了 DFFSBQX1AS9/DFFSBQBX1AS9。
+
+**② FC 怎么映射的（合法，但选了"互补形态"）**
+
+FC 网表实图（.gv + 时序报告佐证）：
+
+```verilog
+DFFRBQBX1AS9 CS_START_1d_reg ( .D ( 1'b1 ) , .CK ( STB_CLK ) , .RB ( RSTN ) , ... );
+```
+
+FC 没用置位单元，而是把"置位寄存器"翻成**复位寄存器的镜像**：D=1'b1（常态值）、RB=RSTN（复位脚）、**外部网走 QB**（时序报告 max.rpt：`CS_START_1d_reg/QB → CS_START_2d_reg/D` 实锤）。
+
+对照 DC 的映射：`DFFSBQX1AS9 CS_START_1d_reg ( .D(1'b0), .SB(RSTN), .Q(...) )`——直连置位单元形态。
+
+**两边外部功能逐位等价（负负得正），FC 没有功能错误**——但它选了 Conformal 最难认的互补形态。
+
+**③ 单元命名速查**
+
+| 片段 | 含义 |
+|---|---|
+| RB | Reset Bar = 异步复位脚，低有效，复位时 Q→0 |
+| SB | Set Bar = 异步置位脚，低有效，置位时 Q→1 |
+| QB（输出位） | 单元同时带反相输出 QB |
+| AND2DFFRBQX1AS9 | AND2 门 + 复位 DFF 复合单元 |
+
+**④ LEC 为什么报错：golden 模型 vs revised 模型逐位互补**
+
+Conformal 配点后比较的是两个寄存器模型的 Q 函数：
+
+- golden 模型（SET 型）：{SET=!RSTN, D=0} → Q = !RSTN
+- revised 模型（RESET 型 + QB 输出）：{RESET=RSTN, D=1} → 内部 Q = RSTN，**外部网 = QB = !Q**
+
+内部 Q 逐位互补；要判等，Conformal 必须**吸收"revised 外部网取 QB"这层反相**。
+
+**⑤ 深层原因（官方文档实锤）**
+
+Cadence 培训手册（conformal_lec_training_basic_advance.pdf）：
+
+- **p175** "Phase inverted mapping: Problem"——"DFF/DLAT implemented with phase inverted library cells (**inverted data, set/reset swapping**)"，配图就是 golden SET 型 vs revised RESET 型
+- **p176** "Solution"——`set mapping method -phase`；快速版 `add mapping model <cell_name*> -invert -revised` 只对已知反相单元族开
+- **p182** "More typical causes of false non-equivalence"——**"Phase map method is off by default for optimal runtime"（为了跑分速度默认关闭）**；官方给出的指纹症状：**"Symptom shows non-equivalence on Data, Set, and Reset cones"**——与本项目 non_eq.rpt 的 [DATA]/[SET]/[RESET] 三段 symptom 一字不差
+
+**核心思想（三条）**
+
+1. **LEC 比较的粒度是"配对点上的布尔函数"，不是"硅片宏观行为"**——golden 模型和网表模型"长得不像"（逐位互补）就会翻点，哪怕外部功能等价
+2. **"简单逻辑"反而容易翻**：D 是常数、复位值与数据极性相反 → 综合器实现自由度最大（置位单元/复位单元+反相/QN 输出…），golden 与网表模型形态分歧的概率最大；复杂逻辑结构唯一，反而不翻
+3. **判定责任的方法论**：把"外部网是否等价"与"模型点是否等价"分开——外部等价 + 模型翻 = 配点/建模问题（本例）；外部不等价 = 真功能分歧（CSPI_CMD_ALIGN 那类）
+
+**⑥ 解法（官方一行）**
+
+在 fc_lec/rtl_gate.do 的 `set_mapping_method -nobbox_name_match` 之后、`set_system_mode lec` 之前插入：
+
+```tcl
+set_mapping_method -phase
+```
+
+快速版（只对已知反相单元族，runtime 更友好）：
+
+```tcl
+add mapping model DFFRB* -invert -revised
+set_mapping_method -phase
+```
+
+单点验证利器：`prove <golden_ID> <revised_ID> -invert`（直接证明"是否只差一个反相"）。
+
+**⑦ 状态与责任判定**
+
+- 责任各半：FC 映射质量怪癖（放着置位单元不用选了互补形态——合法但 LEC 不友好）× Conformal phase map 默认关闭（识别功能没开）
+- **RTL 无罪、FC 网表功能无罪、RTL 改写方案（_n 反相结构）已否决并回退——不需要**：phase map 开启后原 RTL 直接过
+- 服务器重跑（85 → 预期 0）待执行；POFF_DRA ×12 为 CS_START 下游（ANCTL_COMB L608-612），预期同步归零
+- 确认归零后需把 `-phase` 固化进 gen_fc_verify.py 生成器，避免每次重生成丢失
+
 （正文结束。发布时如需压缩可保留全部表格与第 4 节叙事。）
 </script>
 
