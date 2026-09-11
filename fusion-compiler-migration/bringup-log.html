@@ -463,6 +463,55 @@ end
 
 **判定与状态**：选 A。修复已落 hdl（CSPI_CMD_ALIGN_L0.v / L1.v，两处同步），本地与服务器待实测：run_fc → fc_lec 预期 282→0（对标 lec_apr_eco 的 PASS 剖面：0 差异 / 2184 点全等价）；实测过后仍需设计组评审正式入库。若实测后仍有残余 NONEQ，为第二处歧义源，按同法逐个点名。附：LEC 验收参照系更正——锚定 lec_apr_eco（PASS 态），旧 lec/ 的 FAIL 是 pre-ECO 网表的预期状态，不作为任何基线。
 
+---
+
+### 8.17 282→85：第一刀见效，残余 85 解剖（0911 续）
+
+> 19 文件版部署验证全绿；RTL 修复送上网格后，fc_lec 从 282 降到 85（EQ 1896→2093）——CSPI_CMD_ALIGN 根因实锤吃掉 197 点。本文解剖残余 85、更正验收参照系，并记录两个新嫌疑（ICG 模型代差、QN 反相寄存器配点）。
+
+**① 19 文件版部署验证全绿**
+
+- deploy_fc.py 19 文件版（74387 B / md5 `8b620dde2cb0755001b316f8e8c757a4` / build 2026-09-11 09:19）上服务器，md5 核对一致
+- run_fc 重跑三连查：SQM-1067 计 17 行（scan 复合单元拦截照常工作）；计数式 catch 输出 `FC-OUT-OK: naming stage clean (0 caught errors)`——**零告警，连 define_name_rules -map 都真过了**；Total cell area 158607.59 与 0908 逐位一致（零行为漂移，确定性复现）；netlist_reform.pl 两网表 Not change、112 秒 / 1465 MB 干净退出
+
+**② RTL 修复上网格：282→85**
+
+- 新工具 `deploy_rtl_fix.py`（9279 B / md5 `b961aaa7153c2d3e66d8687874b10e72`，zlib+base64 粘贴式安装器，与 deploy_fc.py 同款防粘贴损坏机制，自动 .bak_ecofix 备份）把两份修复后的 CSPI_CMD_ALIGN 送进服务器 HDL（L0 md5 `f72673490fdc3fbf2d73cd9d5f0f8bd3` / L1 md5 `d82fbfeda4711ecc37a4584636050871`）
+- fc_lec 重跑（RTL vs FC 网表）：**EQ 2093 / NON-EQ 85 / Uncompared 0**——对比修复前 EQ 1896 / NON-EQ 282：**197 个点被第一刀吃掉，`case(1'b1)`+pragma 根因实锤**
+- Uncompared=0 说明映射全配平，剩下的都是真逻辑分歧
+
+**③ 验收参照系更正（重要教训）**
+
+- g2g（旧 DC 网表 vs FC 网表）实验**作废**：do 文件从旧 lec/ 框架派生，golden 锚在 pre-ECO 旧网表上，还拿旧 999/803 当基线——参照系锚错
+- 真值链 = **lec_apr_eco**：golden=当前 RTL（filelist）+ revised=后端 yzhao release 的 ECO 网表（/project/HV2M23/designer/AD/yzhao/release/.../timing/latest/HV2M23_digital_top.v.gz），PASS 剖面：**0 差异 / 2184 点全等价（476 PO + 1706 DFF + 2 DLAT）**
+- 新原则：**旧 lec/ 过不了是正确的（做了 ECO，旧网表 vs 演进后 RTL，不救）；fc_lec 必须过（FC 网表是今后链路的起点）**
+
+**④ 残余 85 解剖**
+
+- 层级分布（按父路径聚类）：LC_CSPIF_L0 的 G_DATA_reg[*] 家族为主体，+ CENTER1/ANCTL 的 CS_START_1d/2d，+ POFF_DRA_CH* PO ×12（ANCTL_COMB L608-612：POFF_DRA_CH* = ...| CS_START[0]，是 CS_START 的下游，跟着主家族走）
+- **CS_START_1d/2d = "复位到 1"寄存器**（RTL：复位→1、常态→0）：FC 用"复位到 0 单元（DFFRBQX1AS9）+ D=1 + 输出走 QN"实现；golden 模型 {SET=!RSTN, D=0} vs revised 模型 {D=1, RESET=!RSTN}——功能等价，但模型内部点逐位取反，Conformal 配点在这种"QN 反相寄存器"上翻车
+- **G_DATA_reg[*] = 带 hold 分支的寄存器**：FC 选 DFFRBQX1AS9（普通 DFF）+外部逻辑，ECO 网表同位置用 AND2DFFRBQX1AS9（AND2+DFF 复合单元）——实现路线不同；R 侧 DFF 内部 MUX 点（/U$1）与 golden mux 不一致，分歧在 [DATA] 数据锥
+
+**⑤ 两个新嫌疑**
+
+1. **ICG 模型代差**：lib_common_lec.do 的单元模型第三份是 `/XXW_PRJ01/HV1V21/designer/AD/yangluo/work/APR_CDM_TOAPR/APR_CDM.v`——**HV1V21 老项目的 CDM 模型**。HV2M23 的 GCKHBQX* ICG 若模型有代差或未被识别为 clock-gating 单元，"hold 分支寄存器"（G_DATA 类）的 hold 等价性就断。待 CAD 确认 HV2M23 版 CDM 模型
+2. **QN 反相寄存器配点**：复位到 1 寄存器的 QN 实现需要 Conformal 识别反相映射；当前 `set_mapping_method -nobbox_name_match` 环境下的配点策略待查
+
+**⑥ 进行中的三角验证**
+
+- r2g_bbox.rpt / unreach.rpt：黑盒与不可达点确认
+- lec_r2.log 里 GCKH/clock_gating 相关行：ICG 识别情况
+- 新 RTL 下重跑 lec_apr_eco 三角对照：仍 PASS → 85 是 FC 实现细节（配点/模型路线，不改 RTL）；翻同族点 → 新旧语义接力点，交设计组裁决心
+
+**⑦ 新增问题清单**
+
+1. 残余 85 待归零（三角验证定路线）
+2. APR_CDM.v 模型代差待 CAD 确认（HV1V21 旧路径是否适用 HV2M23）
+3. 历史链（lec_apr / lec_apr_eco）在新 RTL 语义下的复验策略待设计组裁决（"多-hot 是不是合法输入态、出现了谁赢"）
+4. QN 反相 / ICG hold 的 Conformal 建模配点策略
+
+**判定与状态**：第一刀（CSPI_CMD_ALIGN）验证成功且方向正确；85 点进入"工具建模与实现选择"深水区，先三角验证再定路线。修复代码均为实验态（.bak_ecofix 可回退），正式入库待设计组评审。
+
 （正文结束。发布时如需压缩可保留全部表格与第 4 节叙事。）
 </script>
 
