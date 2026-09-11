@@ -608,6 +608,8 @@ set_mapping_method -phase
 - 服务器重跑（85 → 预期 0）待执行；POFF_DRA ×12 为 CS_START 下游（ANCTL_COMB L608-612），预期同步归零
 - 确认归零后需把 `-phase` 固化进 gen_fc_verify.py 生成器，避免每次重生成丢失
 
+> 📚 本案例全记录已整理为独立学习页「[FC LEC 282 点 NONEQ 攻坚实录——一个问题的四种死法](./lec-noneq-case.html)」：四刀四种根因 + 三行命令详解 + 方法论沉淀。
+
 （正文结束。发布时如需压缩可保留全部表格与第 4 节叙事。）
 </script>
 
@@ -618,7 +620,8 @@ const chapters = [
   ['handoff-guide', '回传上手指引'],
   ['bringup-log', '首跑排障实录'],
   ['help-request', '求助清单'],
-  ['fc-sop', '快速启动手册']
+  ['fc-sop', '快速启动手册'],
+  ['lec-noneq-case', 'NONEQ攻坚实录']
 ];
 const currentPath = location.pathname.split('/').pop() || 'index.html';
 const linksContainer = document.getElementById('navbar-links');

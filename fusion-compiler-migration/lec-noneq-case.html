@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>进阶实验室 · FC LEC 282 点 NONEQ 攻坚实录 — 一个问题的四种死法</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./assets/style.css">
+  <script src="./js/marked.min.js"></script>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a class="navbar-brand" href="./">FC_MIGRATION</a>
+      <div class="navbar-links" id="navbar-links"></div>
+    </div>
+  </nav>
+
+  <div class="container with-toc">
+    <aside class="toc-wrapper">
+      <div class="toc" id="toc"></div>
+    </aside>
+
+    <div class="content">
+      <article class="article" id="article"></article>
+      <div class="page-nav">
+        <a class="prev" href="./fc-sop.html"><span class="label">← 上一篇</span><span class="title">换项目快速启动手册</span></a>
+        <a class="next" href="./"><span class="label">回主题 →</span><span class="title">Fusion Compiler 迁移 · Sheet 导航</span></a>
+      </div>
+    </div>
+  </div>
+
+  <div class="lightbox" id="lightbox">
+    <span class="close" id="lightbox-close">&times;</span>
+    <img id="lightbox-img" src="" alt="">
+    <div class="hint">滚轮缩放 · 拖拽移动 · Esc 或点击空白处关闭</div>
+  </div>
+
+<script type="text/template" id="md">
+# 六、FC LEC 282 点 NONEQ 攻坚实录——一个问题的四种死法
+
+> **FC 综合网表 vs RTL 的 LEC（fc_lec）首跑：EQ 1601 / NON-EQ 573。** 四刀砍下去——层级压缩 → 总线命名 → pragma 谎言 → phase map 缺席，收敛路径 **573 → 282 → 85 →（预期 0）**。每一刀是完全不同的根因：**层级、命名、语义、建模**。本文是完整作战记录 + 方法论沉淀，按"换个人也能照着走"的标准写；日记版过程细节见《[首跑排障实录](./bringup-log.html)》8.10~8.18。
+>
+> 战场：HV2M23_digital_top（RTL 53 模块）× Fusion Compiler（map_only 网表）× Conformal LEC。时间：2026-09-08 产物闭环 → 09-10~09-11 攻坚。
+
+## 1. 战场与器材：fc_lec 三件套
+
+### 1.1 目录与 do 文件
+
+`gen_fc_verify.py` 生成的 `fc_lec/` 目录，核心 do 文件 `rtl_gate.do`（RTL vs 门级网表）：
+
+| 角色 | 内容 |
+|---|---|
+| golden | 当前 RTL（filelist 全量读入） |
+| revised | FC 综合网表 `HV2M23_digital_top.gv_org` |
+
+### 1.2 启动与判定
+
+- **启动**：`bsub -Ip` 上计算节点跑 Conformal；绕过 run_lec 直接起 lec 调试时，先 `setenv lec_exit_flag 0`——否则 dofile 会因缺这个环境变量在半路 abort（run_lec 会替你设）。
+- **判定**：`grep -A8 "Compare Results" lec.log`——EQ / NON-EQ / Uncompared 三行数字定胜负；Uncompared=0 说明配点全配平，剩下的都是真比较失败。
+
+### 1.3 两把关键快手命令
+
+```bash
+# ① 数层级：一眼看出网表有没有被压平（RTL 读入 53 个 module）
+grep -c "^module" HV2M23_digital_top.gv
+
+# ② 失败点按父路径聚类：NON-EQ 点一次看清"死在谁家"
+grep "(G)" non_eq.rpt | awk '{print $NF}' | sed 's|/[^/]*$||' | sort | uniq -c | sort -rn | head
+```
+
+① 是本案例第一刀的破案探针（15 vs 53 直接实锤压平）；② 把每一轮的失败点变成"按父模块计数的排行榜"，主线轮动一目了然——85 点残余的三个家族就是这么排出来的。
+
+## 2. 第一刀 · 层级压缩（573→282）
+
+**症状**：首跑 NON-EQ 573（PO 13 + DFF 560），失败点模式极规整——全在 `R_REG_*` 时钟门控寄存器总线，R 侧名字呈"层级压平 + 下划线拼接"（`u_LOGIC_CENTER_LINK_LOGIC_LC_CPUWR_HV2M23/R_REG_12_reg_2_`）。
+
+**定位**：`grep -c "^module"` 网表里只剩 **15** 个 module（RTL 读入 53 个）→ FC 默认 autoungroup 把层级压平了，Conformal 按层级路径配点自然全乱。定位走"对照实验 + 逐层排他"七轮：app option `disable_boundary_optimization_and_auto_ungrouping` 设不进（design-scoped）、设了也不管编译期压平，`write_verilog -hierarchy all` vs `design` 对照实验洗清写网表环节的嫌疑，最后 `info commands *ungroup*` 探针命中真凶 `set_autoungroup_options` / `set_ungroup`。
+
+**修复（命令级双保险）**：
+
+```tcl
+set_autoungroup_options -start_level 999
+set_ungroup [get_cells -hier *] false
+```
+
+**效果**：module 数 **15→221**，LEC **EQ 1601→1896 / NON-EQ 573→282**。
+
+> **教训**：换综合器先查层级保持策略；配点失败第一眼数 module 数。"猜选项名"不如"对照实验 + 排他法"——一轮对照实验能洗清一个环节的全部嫌疑。
+
+## 3. 第二刀 · 总线命名：让网表说 LEC 认识的名字
+
+**症状**：层级修好后，残余 282 点收敛为单一模式——总线位命名差异：G 侧 `reg[9]` vs R 侧 `reg_9_`（外加 `/U$1` 后缀伪影）。网表本身五连测洗清嫌疑：叶子 DFF 端口全对、与 DC 网表同款寄存器结构完全一致、门控 ICG 使能与 RTL 一致——**FC 网表无罪，是名字对不上**。
+
+**根因**：跨工具命名体系没有显式对齐。FC 的 `define_name_rules` 总线风格只收 `() <> [] {}` 四种括号对，不收 DC 的 printf 风格 `%s[%d]`（差异清单 D15，CMD-031 实测）；网表默认输出 `reg_9_` 下划线风格，Conformal 靠默认改名规则兜不住。
+
+**修复**：FC 侧显式对齐 DC 兼容命名——`design.change_names_dc_compatible=true` + `define_name_rules` 括号对 `{[]}`，让网表命名天生长成 LEC 认识的样子（19 文件版部署实测 `naming stage clean (0 caught errors)`，连 `define_name_rules -map` 都真过了）。LEC 侧还有一条备路：Conformal 官方 renaming rule（`add renaming rule <id> <search> <replace> [-revised]`，先 `test renaming rule` 再正式生效）可把 `reg_N_` 归一成 `reg[N]`，官方手册 p87-96 有与本项目形态一致的示例。
+
+> **教训**：跨工具命名体系必须显式对齐，网表命名规则要 DC 兼容；"输出能落盘"和"下游能配对"是两件事。
+
+## 4. 中场 · 参照系修正（重要教训）
+
+攻坚中段踩了一个比任何一刀都隐蔽的坑：一度把 **DC 基线 `lec/`（EQ 379 / NON-EQ 999 + 803 未比对）** 当验收锚，还准备了 g2g（旧 DC 网表 vs FC 网表）终判实验。后经核查全部推翻：
+
+- `lec/` 的 golden 网表是 **pre-ECO 旧网表**——本项目做过 ECO，旧链 FAIL 是**预期状态**，不能当任何新链的基线；
+- **真值链 = `lec_apr_eco`**：golden=当前 RTL（filelist）、revised=后端 release 的 ECO 网表，PASS 剖面 **0 差异 / 2184 点全等价（476 PO + 1706 DFF + 2 DLAT）**——这才是"过"该长什么样；
+- g2g 实验作废（do 文件从旧 lec/ 框架派生，golden 锚在旧网表上）。
+
+> **教训**：验收锚点必须锚在**最新真值链**上；历史链 FAIL 不等于新链有问题。跑任何对照实验前先问一句："我这个 golden 到底是谁、几岁了？"
+
+## 5. 第三刀 · pragma 谎言（282→85）
+
+**症状**：RTL 一处修复吃掉 197 点（EQ 1896→2093）——病灶在 `CSPI_CMD_ALIGN_L0/L1` 的 18 路桶形对齐器。
+
+**原代码**（两份文件同款）：
+
+```verilog
+always @ (*) begin
+    case (1'b1) //synthesis parallel_case full_case
+        (DATA_POINT_LAT[ 1]) : DATA_PS_ALIGN_PRE[17:0] = {I_INDATA_D2[   0],I_INDATA_D3[17: 1]};
+        ...
+        default: DATA_PS_ALIGN_PRE[17:0] = I_INDATA_D3[17: 0];
+    endcase
+end
+```
+
+**为什么翻**：`case(1'b1)` 的**仿真语义是优先级**（按源码顺序第一个匹配项胜出，低位优先，全零走 default），而两个 pragma 向综合器承诺"分支互斥、可以丢优先级并行"。于是 RTL 成了三个读者三样东西：**仿真 / Conformal（golden 侧）按优先级解析；DC / FC 综合（revised 侧）按 pragma 承诺造并行 OR 逻辑**。LEC 的职责恰恰是探索被承诺"不会发生"的输入态——多-hot 态下两个函数可区分 → 驱动锥含此对齐器的全部观察点 NON-EQ（197 点；当年旧 lec 的 999/803 是同一个病）。
+
+**修复**：显式 OR 累加 one-hot 选择器，去 pragma（`CSPI_CMD_ALIGN_L0.v` / `L1.v` 两处同步）：
+
+```verilog
+if (DATA_POINT_LAT[17:0] == 18'b0) begin
+    DATA_PS_ALIGN_PRE[17:0] = I_INDATA_D3[17:0];      // no select bit: D3 passthrough
+end else begin
+    DATA_PS_ALIGN_PRE[17:0] = 18'b0;                  // one-hot: OR-accumulate
+    if (DATA_POINT_LAT[ 1]) DATA_PS_ALIGN_PRE = DATA_PS_ALIGN_PRE | {I_INDATA_D2[  0],I_INDATA_D3[17: 1]};
+    ...
+    if (DATA_POINT_LAT[17]) DATA_PS_ALIGN_PRE = DATA_PS_ALIGN_PRE | {I_INDATA_D2[16:0],I_INDATA_D3[17  ]};
+end
+```
+
+one-hot 不变式下与原 case **逐位等价**（单 hot → 同一项；全零 → D3 直通），芯片实际行为零改变，QoR 不动（综合器原本就在造并行 mux）。**效果：fc_lec 282→85，pragma 根因实锤。**
+
+> **深层教训**：pragma 把意图编码在注释里，RTL 就成了"因读者而异的双重事实源"——综合器、仿真器、形式工具各自解读必然分裂。备选方案（只删 parallel_case 保优先级 / formal 侧豁免 / 复刻 ECO / 形式化证不变式）各有代价；根治 = **把意图从注释搬进结构**。FC 没有制造问题，它只是多年来第一个全新读这份 RTL 的综合器——把老伤口重新暴露了。
+
+## 6. 第四刀 · 互补形态与 phase map（85→预期 0）
+
+### 6.1 残余 85 解剖
+
+按父路径聚类（1.3 命令②），三个家族：
+
+| 家族 | 特征 |
+|---|---|
+| `LC_CSPIF_L0` 的 `G_DATA_reg[*]` | 带 hold 分支的寄存器——FC 选普通 DFF + 外部逻辑，ECO 网表同位置用 AND2+DFF 复合单元，实现路线不同，分歧在 [DATA] 数据锥 |
+| `ANCTL` 的 `CS_START_1d/2d` | "复位到 1"寄存器（本刀主角，见 6.2） |
+| `POFF_DRA` PO ×12 | CS_START 下游（`POFF_DRA_CH* = ...| CS_START[0]`），跟着主家族走 |
+
+### 6.2 CS_START 案例：两个都对，模型互补
+
+RTL 教科书级异步置位寄存器（复位→1、常态→0）：
+
+```verilog
+always @(posedge STB_CLK or negedge RSTN)
+if (!RSTN) CS_START_1d <= 1'b1;      // 异步复位 → 1
+else       CS_START_1d <= 1'b0;      // 常态 → 0
+```
+
+库里有天选单元 **DFFSBQX1AS9**（异步置位单元，一个直连），DC 用的正是它；FC 却选了"互补形态"：
+
+```verilog
+DFFSBQX1AS9  CS_START_1d_reg ( .D(1'b0), .SB(RSTN), .Q(...) );   // DC：置位单元直连
+DFFRBQBX1AS9 CS_START_1d_reg ( .D(1'b1), .RB(RSTN), .QB(...) );  // FC：复位单元 + D=1，外部网走 QB
+```
+
+**两个都对**——外部功能逐位等价（负负得正），时序报告 `CS_START_1d_reg/QB → CS_START_2d_reg/D` 实锤 QB 扇出，FC 没有功能错误。但 Conformal 配点后比较的是**模型内部函数**：
+
+- golden 模型（SET 型）：`{SET=!RSTN, D=0}` → Q = !RSTN
+- revised 模型（RESET 型 + QB 输出）：`{D=1, RB=RSTN}` → 内部 Q = RSTN，外部网 = QB = !Q
+
+两形态**逐位互补**；要判等，Conformal 必须额外吸收"revised 外部网取 QB"这层反相——默认配置不吸收 → NON-EQ。
+
+### 6.3 根因：phase map 默认关闭（官方文档实锤）
+
+Cadence 官方培训手册（conformal_lec_training_basic_advance）：
+
+- **p175** "Phase inverted mapping: Problem"——DFF/DLAT 以反相形态库单元实现（inverted data / set-reset 互换），配图就是 golden SET 型 vs revised RESET 型；
+- **p176** "Solution"——`set mapping method -phase`；快速版 `add mapping model <cell*> -invert -revised` 只对已知反相单元族开；
+- **p182** "More typical causes of false non-equivalence"——**"Phase map method is off by default for optimal runtime"（为了跑分速度默认关闭）**；官方给出的指纹症状：**"Symptom shows non-equivalence on Data, Set, and Reset cones"**——与我们 non_eq.rpt 的 [DATA]/[SET]/[RESET] 三段 symptom **一字不差**。
+
+### 6.4 解法与责任判定方法论
+
+```tcl
+# 全局开：配点时额外考虑反相版本
+set_mapping_method -phase
+# 或精准版：只对已知反相单元族开（runtime 友好）
+add mapping model DFFRB* -invert -revised
+set_mapping_method -phase
+```
+
+单点定性利器：`prove <golden_ID> <revised_ID> -invert`（直接证明"是否只差一个反相"）。
+
+**责任判定两分法**：把"外部网是否等价"与"模型点是否等价"**分开**——外部等价 + 模型翻 = **配点/建模问题**（改 LEC 配置或模型，本例）；外部不等价 = **真功能分歧**（改 RTL 或定意图，第三刀那类）。本刀结论：FC 网表功能无罪，RTL 无罪，罪在"默认关闭的识别功能"；RTL 改写方案（_n 反相结构）已否决并回退——phase map 开启后原 RTL 直接过。
+
+## 7. 三行命令详解（可操作）
+
+**插入位置**：`read_design` / `set_root_module` 之后、`set_system_mode lec` 之前（本项目放 `rtl_gate.do` 的 `set_mapping_method -nobbox_name_match` 一带）。
+
+### ① `set_mapping_method -phase`
+
+配点时额外考虑"revised 是 golden 的反相版本"：数据脚反相、set/reset 互换、输出可取 QB。反相一致则标记**相位反相等价**，并把这层反相传播进后续锥比较。默认关闭的原因：配点搜索空间近似翻倍、拖 runtime——只在大批"指纹症状"（Data/Set/Reset 三锥同翻）时全局开。
+
+### ② `add mapping model DFFRB* -invert -revised`
+
+登记"revised 侧已知会以反相形态使用的单元族"（`DFFRB*` = 复位 DFF 家族），让 phase map 只对这些单元生效——全局 `-phase` 的精准版，runtime 友好。`-invert` 声明按反相匹配，`-revised` 指明反相发生在 revised 侧。
+
+### ③ `prove <golden_ID> <revised_ID> -invert`
+
+单点证明"这两点是否互为反相"。用法次序：**先定性**——`-invert` PASS = 纯反相，配点/建模问题，开 phase map 清全场；**再定量**——重跑 compare 看 NON-EQ 归零。若 `-invert` 也 FAIL = 反相之外还有真分歧，继续挖（回第三刀的方法查语义）。
+
+## 8. 核心思想沉淀（四条）
+
+1. **LEC 比较的粒度是"配对点上的布尔函数"，不是"硅片宏观行为"**——golden 模型和网表模型形态不像（哪怕逐位互补、外部功能等价）就会翻点。
+2. **"简单逻辑"反而容易翻**：D 是常数、复位值与数据极性相反 → 实现自由度最大（置位单元 / 复位单元+反相 / QN 输出…），形态分歧概率最大；复杂逻辑结构唯一，反而不翻。
+3. **RTL 必须是单一事实源**：pragma 把意图编码在注释里，就是让 RTL"因读者而异"——综合器、仿真器、形式工具各自解读必然分裂；意图要编码在结构里。
+4. **责任判定两分法**：外部网等价 + 模型点翻 = 配点/建模问题（改 LEC 配置或模型）；外部不等价 = 真语义分歧（改 RTL 或定意图）。先 `-invert` 定性，再动手。
+
+## 9. 状态与遗留
+
+- `-phase` 修复待服务器实测（预期 **85→0**，POFF_DRA ×12 随 CS_START 下游同步归零）；确认后固化进 `gen_fc_verify.py` 生成器，避免每次重生成丢失。
+- ICG 模型代差嫌疑：`lib_common_lec.do` 第三份模型是 HV1V21 旧项目路径的 `APR_CDM.v`，待 CAD 确认 HV2M23 版。
+- 历史链（lec_apr / lec_apr_eco）在新 RTL 并行语义下的复验策略待设计组裁决——裁决问题只有一句："多-hot 是不是合法输入态？出现了谁赢？"
+- 修复代码均为实验态（`.bak_ecofix` 可回退），正式入库待设计组评审。
+</script>
+
+<script>
+const chapters = [
+  ['index', '主题首页'],
+  ['evaluation', 'FC引入实录'],
+  ['handoff-guide', '回传上手指引'],
+  ['bringup-log', '首跑排障实录'],
+  ['help-request', '求助清单'],
+  ['fc-sop', '快速启动手册'],
+  ['lec-noneq-case', 'NONEQ攻坚实录']
+];
+const currentPath = location.pathname.split('/').pop() || 'index.html';
+const linksContainer = document.getElementById('navbar-links');
+chapters.forEach(([slug, label]) => {
+  const href = slug === 'index' ? './' : `./${slug}.html`;
+  const filename = slug === 'index' ? 'index.html' : `${slug}.html`;
+  const a = document.createElement('a');
+  a.href = href;
+  a.textContent = label;
+  if (currentPath === filename || currentPath.endsWith('/' + filename)) a.classList.add('active');
+  linksContainer.appendChild(a);
+});
+</script>
+<script>
+const md = document.getElementById('md').textContent;
+document.getElementById('article').innerHTML = marked.parse(md);
+
+const toc = document.getElementById('toc');
+const headings = document.querySelectorAll('.article h2, .article h3');
+const tocLinks = [];
+headings.forEach(h => {
+  const id = h.textContent.trim().replace(/\s+/g, '-').replace(/[^\w\u4e00-\u9fa5-]/g, '');
+  h.id = id;
+  const cls = h.tagName === 'H2' ? 'toc-h2' : 'toc-h3';
+  const a = document.createElement('a');
+  a.href = '#' + id;
+  a.textContent = h.textContent;
+  a.className = cls;
+  toc.appendChild(a);
+  tocLinks.push(a);
+});
+
+tocLinks.forEach((link, i) => {
+  if (!link.classList.contains('toc-h2')) return;
+  const children = [];
+  for (let j = i + 1; j < tocLinks.length && tocLinks[j].classList.contains('toc-h3'); j++) children.push(tocLinks[j]);
+  if (!children.length) return;
+  link.classList.add('toc-parent');
+  const arrow = document.createElement('span');
+  arrow.className = 'toc-arrow';
+  arrow.textContent = '▸';
+  link.prepend(arrow);
+  children.forEach(c => c.parentLink = link);
+  arrow.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const collapsed = link.classList.toggle('collapsed');
+    children.forEach(c => c.style.display = collapsed ? 'none' : '');
+  });
+});
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      tocLinks.forEach(l => l.classList.remove('active'));
+      let active = tocLinks.find(a => a.getAttribute('href') === '#' + entry.target.id);
+      if (active && active.style.display === 'none' && active.parentLink) active = active.parentLink;
+      if (active) active.classList.add('active');
+    }
+  });
+}, { rootMargin: '-10% 0px -75% 0px' });
+headings.forEach(h => observer.observe(h));
+</script>
+<script>
+const lightbox = document.getElementById('lightbox');
+const lbImg = document.getElementById('lightbox-img');
+const lbClose = document.getElementById('lightbox-close');
+let scale = 1;
+let isDragging = false;
+let startX = 0, startY = 0, translateX = 0, translateY = 0;
+function openLightbox(src) { lbImg.src = src; scale = 1; translateX = 0; translateY = 0; updateTransform(); lightbox.classList.add('active'); document.body.style.overflow = 'hidden'; }
+function closeLightbox() { lightbox.classList.remove('active'); document.body.style.overflow = ''; }
+function updateTransform() { lbImg.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`; }
+document.addEventListener('click', (e) => { const img = e.target.closest('img'); if (!img || img.id === 'lightbox-img' || !img.closest('.article')) return; openLightbox(img.src); });
+lbClose.addEventListener('click', closeLightbox);
+lightbox.addEventListener('click', (e) => { if (e.target === lightbox) closeLightbox(); });
+lightbox.addEventListener('wheel', (e) => { e.preventDefault(); const d = e.deltaY > 0 ? -0.12 : 0.12; scale = Math.min(Math.max(0.5, scale + d), 5); updateTransform(); });
+lbImg.addEventListener('mousedown', (e) => { isDragging = true; startX = e.clientX - translateX; startY = e.clientY - translateY; lbImg.classList.add('grabbing'); e.preventDefault(); });
+document.addEventListener('mousemove', (e) => { if (!isDragging) return; translateX = e.clientX - startX; translateY = e.clientY - startY; updateTransform(); });
+document.addEventListener('mouseup', () => { isDragging = false; lbImg.classList.remove('grabbing'); });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && lightbox.classList.contains('active')) closeLightbox(); });
+</script>
+
+</body>
+</html>

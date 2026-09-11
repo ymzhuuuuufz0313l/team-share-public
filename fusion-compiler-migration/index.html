@@ -390,12 +390,12 @@
       </div>
       <div class="hero-hint">
         <span>⭐</span>
-        <span>推荐阅读：先 <a href="./evaluation.html">评估实录</a> 看全貌 <span class="arrow">→</span> 再到 <a href="./bringup-log.html">首跑排障</a> 看五道关卡 <span class="arrow">→</span> 复刻直接抄 <a href="./fc-sop.html">快速启动手册</a></span>
+        <span>推荐阅读：先 <a href="./evaluation.html">评估实录</a> 看全貌 <span class="arrow">→</span> 再到 <a href="./bringup-log.html">首跑排障</a> 看五道关卡 <span class="arrow">→</span> 复刻直接抄 <a href="./fc-sop.html">快速启动手册</a> <span class="arrow">→</span> 深挖看 <a href="./lec-noneq-case.html">NONEQ 攻坚</a></span>
       </div>
       <div class="reg">
         CURRENT
-        <span class="ver">09-09</span>
-        REV 2026-09-09
+        <span class="ver">09-11</span>
+        REV 2026-09-11
       </div>
     </div>
   </header>
@@ -404,20 +404,20 @@
     <div class="latest">
       <div class="badge">
         <span class="tag">LATEST</span>
-        <span class="num">09-09</span>
+        <span class="num">09-11</span>
       </div>
       <div class="body">
-        <div class="t">09-09 · 方案 A LEC 验收通过（FC 网表不劣于 DC 基线）</div>
+        <div class="t">09-11 · LEC 282 点 NONEQ 攻坚独立成篇：四刀 573→282→85→（预期 0）</div>
         <ul>
-          <li>LEC 判词：FC <code>EQ 1896 / NON-EQ 282</code>，优于 DC 基线 <code>EQ 379 / NON-EQ 999 + 803 未比对</code></li>
-          <li>残余 282 点定位为预存 RTL 歧义（非 FC 引入），移交设计组；门级对门级 LEC 终验待跑</li>
+          <li>四刀四种根因：层级压缩（autoungroup）→ 总线命名（DC 兼容）→ pragma 谎言（case(1&apos;b1)）→ phase map 缺席（互补形态映射）</li>
+          <li>完整作战记录 + 方法论沉淀整理为学习页 <code>lec-noneq-case.html</code>；<code>-phase</code> 修复待服务器实测归零</li>
         </ul>
       </div>
-      <a class="more" href="./bringup-log.html">全部排障演进 →</a>
+      <a class="more" href="./lec-noneq-case.html">攻坚全记录 →</a>
     </div>
 
     <div class="stats">
-      <div class="stat"><div class="v">5</div><div class="k">Sheet 页面</div></div>
+      <div class="stat"><div class="v">6</div><div class="k">Sheet 页面</div></div>
       <div class="stat"><div class="v">18</div><div class="k">部署文件（deploy_fc.py 一键安装）</div></div>
       <div class="stat"><div class="v">D1<em>~</em>D19</div><div class="k">编号踩坑全记录</div></div>
       <div class="stat"><div class="v">2<em>天</em></div><div class="k">从踩坑到 LEC 通过</div></div>
@@ -450,6 +450,11 @@
         <div class="title">换项目快速启动手册</div>
         <div class="desc">三天压成一天：输入契约清单、18 文件可复用体系、SOP 七步、D1~D19 踩坑地图</div>
       </a>
+      <a class="chapter-card" href="./lec-noneq-case.html">
+        <div class="num">六</div>
+        <div class="title">LEC 282 点 NONEQ 攻坚实录<span class="star">新</span></div>
+        <div class="desc">fc_lec 四刀战记：层级压缩、总线命名、pragma 谎言、phase map 缺席——573→282→85→（预期 0）</div>
+      </a>
     </div>
 
     <div class="section-title">一句话结论</div>
@@ -481,7 +486,8 @@
       ['handoff-guide', '回传指引'],
       ['bringup-log', '排障实录'],
       ['help-request', '求助清单'],
-      ['fc-sop', '快速启动']
+      ['fc-sop', '快速启动'],
+      ['lec-noneq-case', 'NONEQ攻坚']
     ];
     const currentPath = location.pathname.split('/').pop() || 'index.html';
     const linksContainer = document.getElementById('navbar-links');
