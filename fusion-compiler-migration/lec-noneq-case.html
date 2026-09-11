@@ -44,7 +44,7 @@
 <script type="text/template" id="md">
 # 六、FC LEC 282 点 NONEQ 攻坚实录——一个问题的四种死法
 
-> **FC 综合网表 vs RTL 的 LEC（fc_lec）首跑：EQ 1601 / NON-EQ 573。** 四刀砍下去——层级压缩 → 总线命名 → pragma 谎言 → phase map 缺席，收敛路径 **573 → 282 → 85 →（预期 0）**。每一刀是完全不同的根因：**层级、命名、语义、建模**。本文是完整作战记录 + 方法论沉淀，按"换个人也能照着走"的标准写；日记版过程细节见《[首跑排障实录](./bringup-log.html)》8.10~8.18。
+> **FC 综合网表 vs RTL 的 LEC（fc_lec）首跑：EQ 1601 / NON-EQ 573。** 四刀砍下去——层级压缩 → 总线命名 → pragma 谎言 → phase map 缺席，收敛路径 **573 → 282 → 85 → 0**，终审 **PASS（EQ 2178 / NON-EQ 0 / Uncompared 0）**。每一刀是完全不同的根因：**层级、命名、语义、建模**。本文是完整作战记录 + 方法论沉淀，按"换个人也能照着走"的标准写；日记版过程细节见《[首跑排障实录](./bringup-log.html)》8.10~8.18。
 >
 > 战场：HV2M23_digital_top（RTL 53 模块）× Fusion Compiler（map_only 网表）× Conformal LEC。时间：2026-09-08 产物闭环 → 09-10~09-11 攻坚。
 
@@ -148,7 +148,7 @@ one-hot 不变式下与原 case **逐位等价**（单 hot → 同一项；全�
 
 > **深层教训**：pragma 把意图编码在注释里，RTL 就成了"因读者而异的双重事实源"——综合器、仿真器、形式工具各自解读必然分裂。备选方案（只删 parallel_case 保优先级 / formal 侧豁免 / 复刻 ECO / 形式化证不变式）各有代价；根治 = **把意图从注释搬进结构**。FC 没有制造问题，它只是多年来第一个全新读这份 RTL 的综合器——把老伤口重新暴露了。
 
-## 6. 第四刀 · 互补形态与 phase map（85→预期 0）
+## 6. 第四刀 · 互补形态与 phase map（85→0）
 
 ### 6.1 残余 85 解剖
 
@@ -231,7 +231,7 @@ set_mapping_method -phase
 
 ## 9. 状态与遗留
 
-- `-phase` 修复待服务器实测（预期 **85→0**，POFF_DRA ×12 随 CS_START 下游同步归零）；确认后固化进 `gen_fc_verify.py` 生成器，避免每次重生成丢失。
+- ✅ **已实测终审：`-phase` 修复后 PASS——EQ 2178 / NON-EQ 0 / Aborted 0 / Uncompared 0**（POFF_DRA ×12 随 CS_START 下游同步归零，全案 573→282→85→0 终结）；已固化进 `gen_fc_verify.py` 生成器（对生成的 .do 自动注入 `-phase`，幂等、带 [phase-map] 标记）。
 - ICG 模型代差嫌疑：`lib_common_lec.do` 第三份模型是 HV1V21 旧项目路径的 `APR_CDM.v`，待 CAD 确认 HV2M23 版。
 - 历史链（lec_apr / lec_apr_eco）在新 RTL 并行语义下的复验策略待设计组裁决——裁决问题只有一句："多-hot 是不是合法输入态？出现了谁赢？"
 - 修复代码均为实验态（`.bak_ecofix` 可回退），正式入库待设计组评审。
