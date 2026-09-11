@@ -397,6 +397,72 @@ add renaming rule <id> <search> <replace> [-golden|-revised]
 
 **收官一句话：这轮体检之后，账本上只剩两类事——等 TLU+（外部依赖）和跑 g2g（服务器时间），技术疑虑清零。**
 
+---
+
+### 8.16 case(1'b1)+pragma 之殇：fc_lec 282 点根因与修复（0911）
+
+> fc_lec（RTL vs FC 网表）卡在 282 点 NONEQ。本文七问七答：原代码是什么 / 为什么有问题 / 新代码是什么 / 为什么没问题 / 深层原因 / DC 与 FC 在此的差异 / 替代方案。结论先行：**不是 do 文件的错，是 RTL 里 case(1'b1)+pragma 让 RTL 成为"因读者而异的双重事实源"；修复 = 把意图从注释搬进结构。**
+
+**① 原来代码是什么**：两份文件 CSPI_CMD_ALIGN_L0.v（L318）/ L1.v（L267）里同一个 18 路桶形对齐器（代码贴核心段，中间省略号）：
+
+```verilog
+always @ (*) begin
+    case (1'b1) //synthesis parallel_case full_case
+        (DATA_POINT_LAT[ 1]) : DATA_PS_ALIGN_PRE[17:0] = {I_INDATA_D2[   0],I_INDATA_D3[17: 1]};
+        ...
+        (DATA_POINT_LAT[17]) : DATA_PS_ALIGN_PRE[17:0] = {I_INDATA_D2[16:0],I_INDATA_D3[17   ]};
+        default: DATA_PS_ALIGN_PRE[17:0] = I_INDATA_D3[17: 0];
+    endcase
+end
+```
+
+DATA_POINT_LAT 相位码按设计意图是 one-hot-or-zero（上游优先编码器生成）。`case(1'b1)` 是优先级选择习语；两个 pragma 是给综合器的承诺。
+
+**② 为什么有问题**：Verilog 里 case(1'b1) 的**仿真语义 = 优先级**（按源码顺序第一个匹配项胜出，最低位 [1] 优先，全零走 default）。而 `parallel_case` 承诺"分支互斥、可以丢优先级"，`full_case` 承诺"分支已覆盖全部有效值"。承诺只在 DATA_POINT_LAT 严格 one-hot-or-zero 时为真。于是三个读者读到三样东西：**仿真/Conformal golden 按优先级**；**DC/FC 综合按承诺造并行 OR 逻辑**。只要 formal 探索到多-hot 输入态（Conformal 的职责恰恰是探索被承诺"不会发生"的态），两个函数可区分 → 驱动锥含此对齐器的全部观察点 NON-EQ（POFF_DRA_CH* 等 282 点；当年旧 lec 的 999/803 同家族）。
+
+**③ 新代码是什么**：改成显式 OR 累加 one-hot 选择器（17 项，贴前 3 项+末项示意，注释说明 L0/L1 两处同步）：
+
+```verilog
+// same fix applied in CSPI_CMD_ALIGN_L0.v & L1.v (synced, 2026-09-11)
+always @ (*) begin
+    if (DATA_POINT_LAT[17:0] == 18'b0) begin
+        DATA_PS_ALIGN_PRE[17:0] = I_INDATA_D3[17:0];   // no select bit: D3 passthrough
+    end else begin
+        DATA_PS_ALIGN_PRE[17:0] = 18'b0;               // one-hot: OR-accumulate
+        if (DATA_POINT_LAT[ 1]) DATA_PS_ALIGN_PRE[17:0] = DATA_PS_ALIGN_PRE[17:0] | {I_INDATA_D2[   0],I_INDATA_D3[17: 1]};
+        if (DATA_POINT_LAT[ 2]) DATA_PS_ALIGN_PRE[17:0] = DATA_PS_ALIGN_PRE[17:0] | {I_INDATA_D2[ 1:0],I_INDATA_D3[17: 2]};
+        if (DATA_POINT_LAT[ 3]) DATA_PS_ALIGN_PRE[17:0] = DATA_PS_ALIGN_PRE[17:0] | {I_INDATA_D2[ 2:0],I_INDATA_D3[17: 3]};
+        ...
+        if (DATA_POINT_LAT[17]) DATA_PS_ALIGN_PRE[17:0] = DATA_PS_ALIGN_PRE[17:0] | {I_INDATA_D2[16:0],I_INDATA_D3[17   ]};
+    end
+end
+```
+
+**④ 为什么新代码没问题**：
+
+- 无 pragma：仿真、DC 综合、FC 综合、Conformal 四方第一次看到**同一个 AND-OR 函数**——RTL 回归单一事实源；
+- one-hot 不变式下与原 case **逐位等价**（单 hot → 同一项；全零 → D3 直通），芯片实际行为零改变；
+- 多-hot 态的新语义（OR 混合）= 过去 DC/FC 在 parallel_case 下真正生成的函数；对 ECO 网表的影响见⑦.5；
+- QoR 不动：综合器原本就在造并行 mux。
+
+**⑤ 深层原因是什么**：三层。**语言层**——pragma 把意图编码在注释而不是结构里，RTL 成为"因读者而异的双重事实源"，这是根因；**方法学层**——full_case/parallel_case 是 Synopsys 自家文档都警告的高危 pragma，而 formal 工具的天职就是探索被承诺"不会发生"的输入态，二者天然对抗；**流程史层**——这颗链子的真实历史是 RTL(带谎言) → DC(照谎言综合) → APR → **ECO 把网表强行修回真值** → lec_apr_eco 过。旧 lec 的 999 是症状，ECO 是创可贴，RTL 的病从未治过。FC 是多年来第一个全新读这份 RTL 的综合器——它没有制造问题，它把老伤口重新暴露了。
+
+**⑥ DC 和 FC 在这里差异是什么**：在这个构造上**没有行为差异**：DC 和 FC 都守 pragma、都造并行逻辑；旧 DC 网表同样栽（旧 lec 999/803，同家族）。真正的差异是**际遇**：DC 网表后来被 ECO 修成与 RTL 一致所以下游能过，FC 网表是全新的、没被 ECO"洗"过，分歧裸露。其他历史差异（FC 保留层级、命名体系不同、DC 2739 seq vs FC 1804 的 banking/latch 计数差）都不是 282 的成因——成因只有一个：pragma。
+
+**⑦ 有没有别的方法**：
+
+| 方案 | 做法 | 评价 |
+|---|---|---|
+| A. 改 RTL（已选） | 显式 OR 累加 one-hot mux，去 pragma | 单一事实源；不变式下功能等价；QoR 不动；根治 |
+| B. 只删 parallel_case | 保留 case(1'b1) 优先级语义 | LEC 能过，但 18 路 18bit 优先级链伤 QoR，pragma 习惯残留 |
+| C. formal 侧兜底 | 让 Conformal 按综合语义读 golden（读 pragma/加约束） | 治检查者不治设计；每个未来工具都要记得豁免；仿真 vs 硅片的原始分歧仍在 |
+| D. 复刻 ECO | FC 网表出来后再跑功能 ECO 修回真值 | 每次综合交一笔 ECO 税；ECO 是历史补丁不是流程件 |
+| E. 形式化证明不变式 | 证上游 one-hot + 约束喂 Conformal 排除多-hot 态 | 严谨且不动 RTL，但 LEC 复杂度高，且 RTL 谎言对仿真/调试仍在 |
+
+**⑦.5 对 lec_apr / lec_apr_eco 历史链的影响（改 RTL 前必读）**：LEC 把 DATA_POINT_LAT 当匹配后的自由 key-point 变量，下游锥比较会探遍其所有取值——包括多-hot。fc_lec 的 FAIL 本身证明多-hot 态会被探到（若被证明不可达，优先级 vs 并行的差异会被屏蔽，fc_lec 就不会 FAIL）。而 lec_apr_eco 当前 0 差异 PASS 意味着 ECO 网表被 ECO 钉死在旧 golden（优先级）语义上。因此换用并行语义的新 RTL 后，历史链大概率在同一批点翻 NON-EQ——这不是回归破坏，是**语义版本升级**：历史网表应在旧 golden 基线归档，不跨版本复验。若流程要求历史链重跑复验，则改选方案 B（只删 parallel_case，golden 函数不变，代价是 FC 综合出 18 路 18bit 优先级链、QoR 受损）。A/B 裁决权在设计组，裁决问题只有一句："多-hot 是不是合法输入态？出现了谁赢？"服务器将三链实测（fc_lec / lec_apr / lec_apr_eco）后定案。
+
+**判定与状态**：选 A。修复已落 hdl（CSPI_CMD_ALIGN_L0.v / L1.v，两处同步），本地与服务器待实测：run_fc → fc_lec 预期 282→0（对标 lec_apr_eco 的 PASS 剖面：0 差异 / 2184 点全等价）；实测过后仍需设计组评审正式入库。若实测后仍有残余 NONEQ，为第二处歧义源，按同法逐个点名。附：LEC 验收参照系更正——锚定 lec_apr_eco（PASS 态），旧 lec/ 的 FAIL 是 pre-ECO 网表的预期状态，不作为任何基线。
+
 （正文结束。发布时如需压缩可保留全部表格与第 4 节叙事。）
 </script>
 
