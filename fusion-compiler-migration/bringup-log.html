@@ -367,6 +367,36 @@ LEC 首跑 573 个 NONEQ 之后，用"对照实验 + 逐层排他"又打了三�
 
 **顺带钉死一个事实**：DC 报告里 `Number of buf/inv: 1304` 而 FC 只有 538——DC 的 map 阶段插了大量缓冲（零互连线下它是多余负载），FC 的 map_only 没插。这再次证明 8.7/8.8 节的结论：**两种工具的"map"不是一个动作**。
 
+### 8.15 体检复盘与官方校准（0911）
+
+> 接 8.14：暂停跑实验，做了一轮迁移体检复盘 + 官方手册校准。这一节把悬账逐条用 ground truth 定性——该结案的结案、该翻案的翻案、该判死的判死，并从官方文档拿到 renaming rule 语法与 QoR 口径两份"标准答案"。
+
+**① P0-1 RAM 面积口径【结案·虚惊】**：DC/FC 两边原生报告实测——black_box 功耗组均 0.0%、Total RAM Instance = 0、Sequential Macro Cell = 0；filelist 复核不含含 RAM 宏的 `kv_reg2axi.v` / `kv_page2axi.v`（`mem_wrap_1p_32_128_x1` 只存在于这两个未入综合的模块）→ **8.14 的面积对比（FC 158,607 µm² vs DC 167,727 µm²，-5.4%）同口径成立**，RAM 缺库没有污染对比数据。
+
+**② 寄存器 banking 实锤为 0**：FC `.rpt` 明示 **Multi-bit Sequential Cell Count: 0 / Banking Ratio 0.00%** → `set_register_merging` 被 catch 跳过后，多比特合并真的没有发生（P13 从猜想升级为实锤）。待修，直接影响 QoR——TLU+ 到位重跑时必须一并解决。
+
+**③ wireload 兜底判死**：FC User Guide 2019 p126/p131——compile_fusion 的 pre-compile checklist 把 OPT-2002（Missing parasitic information / TLUPlus）列为**硬性前置**，全文档无 wireload 估计路径 → logic_opto/full 只能等 TLU+，不做无谓实验；8.6 节"map_only 先行"路线获官方文档背书。
+
+**④ Conformal renaming rule 官方语法**（conformal_lec_training_basic_advance p87-96）：
+
+```
+add renaming rule <id> <search> <replace> [-golden|-revised]
+```
+
+- 通配：`%d`=数字、`%s`=字母数字；特殊字符用 `\` 转义；替换串用 `@1`/`@2` 引用分组
+- 纪律：先 `test renaming rule` 验证，再 add 正式生效；`map key point` 增量续配（已映射点保留）
+- 官方示例对号入座：p88 的 `fifo_reg[0][0]` vs `fifo_0__reg[0]` 与本项目 `reg[9]` vs `reg_9_` 形态一致；p94 示例同样出现 `/U$1` 后缀 → **佐证 8.12 的判断：/U$1 是 DFF 原语化伪影，不是库建模缺陷**
+
+**⑤ SQM-1067 翻案：dont_use 没有误伤**：fc.log 实测 `*SFF*` 命中的 `AND2SFFQBX*NAL9` / `AND2SFFQX*AL9` / `AND2SFFRBQBX*AL9` 全部是本库 **scan-FF 复合单元**（SQM-1067 消息自带 "scan cell" 字样），227 次拦截是 SCAN_EN=0 下 dont_use 正常工作；体检报告的"收紧模式"建议被 ground truth 否决——全部单元以 AL9/AS9 后缀结尾，收紧是 no-op；网表实际使用的 `DFFQX1AS9` / `DFFRBQBX1AS9` / `DFFSBQ*` / `DFFRSB*` / `AND2DFFRBQX1AS9` 均无 scan 口。8.5 遗留小账的这条"误伤"正式销账。
+
+**⑥ 官方 QoR 口径校准**：500 次流片公告的 "+20%" 是**性能单项**（功耗 -10~15%、面积 -5%）；我们 map_only 实测面积 -5.4% 正中官方面积期望；官方节点覆盖 40nm~3nm，145nm 更老一层 → 评估报告口径定为"**面积小幅改善已验证，时序/功耗等 TLU+ 与 SAIF**"，防止按 20% 定预期。
+
+**⑦ g2g LEC 就绪，终判实验待跑**：`rtl_gate_g2g.do`（golden=DC `.gv_org` / revised=FC `.gv_org`）+ `deploy_fc.py` 19 文件版（74387 B / md5 `8b620dde2cb0755001b316f8e8c757a4` / build 2026-09-11 09:19）——8.13 预留的方案 A 终判实验（门级对门级 LEC）万事俱备，只欠服务器一跑。
+
+**⑧ 资料注脚**：官方手册合集 github.com/ccccccccyt/UserGuide（90 本 PDF）已本地化检索——③④⑥ 的页码出处均来自这套合集。
+
+**收官一句话：这轮体检之后，账本上只剩两类事——等 TLU+（外部依赖）和跑 g2g（服务器时间），技术疑虑清零。**
+
 （正文结束。发布时如需压缩可保留全部表格与第 4 节叙事。）
 </script>
 
