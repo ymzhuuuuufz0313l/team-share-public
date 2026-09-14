@@ -284,6 +284,34 @@ false_path 的 `-to {C258/I1 C259/I1 C260/I1 C261/I1}` 同样改绑四个缓冲�
 - ✅ **面积 158331.80**（对比修正前 158607.59，**-0.17%**——修正后的约束真实参与了映射）
 - ✅ **deploy_fc.py v3：76409 B / md5 `dad8461f9703897bad11f9654c68b38e` / build 2026-09-14 10:45**
 - 遗留：CSPI/RTL 实验改动待设计组评审入库；APR_CDM.v 模型代差待 CAD；EN1_R/EN1_L@L1 死约束已注释（如确认永久删除可再清）；历史链复验策略待裁决
+
+---
+
+## 13. EN1_L 残留：最后一块拼图（0914 续三）
+
+> phase map + RTL 锚点双修复后，fc_lec PASS（2178/0/0/0）——但 PT 日志里仍残留 6 个 SEL-005。逐条追查后发现：**其中 2 条是约束移植修订时的编辑疏漏**（EN1_L 对漏注释），另外 4 条是 REG_MAPPING_*/DPLC_MODE 引用失效（DC 时代同款，跨代残留）。全部已修/已定性。
+
+### 13.1 6 个残余 error 的最终定性
+
+| 行 | 内容 | 定性 | 处理 |
+|---|---|---|---|
+| L827/831 | `DTCTL_L1/EN1_L_reg` MCP ×2 | **编辑疏漏**：EN1_R 对已注释但 EN1_L 对漏注 | 已补注释 |
+| L933-939 | `REG_MAPPING_*/DPLC_MODE` SEL-004/005 ×4 | **DC 时代同款跨代残留**（pt_rpt_1p L955-962 同位复现） | 保持原样（无害噪音） |
+
+### 13.2 EN1_L 修正细节
+
+问题：约束移植修订时，EN1_R 对正确注释，但 EN1_L 对**只追加了说明注释、忘了在行首加 #**——导致这两行仍然活跃，PT 继续报 SEL-003/005。
+
+修正：fc 拷贝中 EN1_L 两行行首加 `#` 注释，附 FC-FIX(0914) 说明。**教训：批量编辑后必须逐行复核，特别是"成对修改"场景——改了 A 忘了 B 是最常见的疏漏模式。**
+
+### 13.3 PT 日志净化效果
+
+修正后 PT 重跑预期：SEL-004/005 总数从 ~5 降至 **0**（tie-buffer、DLY、EN1 全部静默）。PT 日志从此只包含真实时序信息，不再有约束层噪音。
+
+### 13.4 遗留
+
+- EN1_R/EN1_L 死约束在 FC 拷贝中已注释（审计痕迹保留）；如设计组确认永久删除可再清理
+- REG_MAPPING_*/DPLC_MODE 跨代残留：**不修**（DC 时代同款，两工具行为一致，属已知历史噪音）
 </script>
 
 <script>
@@ -294,7 +322,8 @@ const chapters = [
   ['bringup-log', '首跑排障实录'],
   ['help-request', '求助清单'],
   ['fc-sop', '快速启动手册'],
-  ['lec-noneq-case', '行为差异实录']
+  ['lec-noneq-case', '行为差异实录'],
+  ['guide-library', '手册导读']
 ];
 const currentPath = location.pathname.split('/').pop() || 'index.html';
 const linksContainer = document.getElementById('navbar-links');

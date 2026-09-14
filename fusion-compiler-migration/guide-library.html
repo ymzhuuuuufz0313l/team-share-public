@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>EDA 手册库导读与阅读顺序</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #f4f1ea;
+      --surface: #fffdf7;
+      --text: #1c2534;
+      --muted: #667180;
+      --accent: #b45309;
+      --accent-strong: #92400e;
+      --ink: #0d1526;
+      --ink-2: #131f38;
+      --line: #ddd6c8;
+      --chip: #efe9db;
+      --shadow: 0 12px 32px rgba(28, 37, 52, 0.10);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0e1420;
+        --surface: #161f31;
+        --text: #e9e5d9;
+        --muted: #9aa4b5;
+        --accent: #f0a137;
+        --accent-strong: #f6b95c;
+        --line: #2b3852;
+        --chip: #1e2a44;
+        --shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+      }
+      .r-jing { color: #0e1420; }
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      font-size: 16px;
+      line-height: 1.7;
+    }
+    .mono { font-family: "IBM Plex Mono", "SFMono-Regular", Consolas, monospace; }
+
+    /* ---------- navbar ---------- */
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--surface);
+      border-bottom: 1px solid var(--line);
+    }
+    .navbar-inner {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 10px 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .navbar-brand {
+      font-family: "IBM Plex Mono", Consolas, monospace;
+      font-weight: 600;
+      font-size: 14px;
+      letter-spacing: 0.04em;
+      color: var(--accent);
+      white-space: nowrap;
+      text-decoration: none;
+    }
+    .navbar-links {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      overflow-x: auto;
+      flex: 1;
+      scrollbar-width: none;
+    }
+    .navbar-links::-webkit-scrollbar { display: none; }
+    .navbar-links a {
+      padding: 5px 10px;
+      border-radius: 6px;
+      font-size: 13.5px;
+      color: var(--text);
+      white-space: nowrap;
+      text-decoration: none;
+      transition: background 0.15s, color 0.15s;
+    }
+    .navbar-links a:hover { background: var(--chip); }
+    .navbar-links a.active { background: var(--accent); color: #fff; font-weight: 600; }
+    @media (max-width: 640px) {
+      .navbar-inner { padding: 8px 14px; gap: 10px; }
+      .navbar-links a { font-size: 12.5px; padding: 4px 8px; }
+    }
+
+    /* ---------- hero ---------- */
+    .hero {
+      position: relative;
+      background:
+        radial-gradient(900px 320px at 85% -10%, rgba(240, 161, 55, 0.14), transparent 60%),
+        repeating-linear-gradient(0deg, rgba(255,255,255,0.045) 0 1px, transparent 1px 56px),
+        repeating-linear-gradient(90deg, rgba(255,255,255,0.045) 0 1px, transparent 1px 56px),
+        linear-gradient(160deg, var(--ink) 0%, var(--ink-2) 100%);
+      color: #ece7d9;
+      overflow: hidden;
+    }
+    .hero-inner {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 84px 24px 72px;
+      position: relative;
+    }
+    .hero .kicker {
+      font-family: "IBM Plex Mono", Consolas, monospace;
+      font-size: 13px;
+      letter-spacing: 0.22em;
+      color: #f0a137;
+      text-transform: uppercase;
+      margin-bottom: 22px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .hero .kicker::before {
+      content: "";
+      display: inline-block;
+      width: 34px;
+      height: 2px;
+      background: #f0a137;
+    }
+    .hero h1 {
+      font-family: "Noto Serif SC", "Songti SC", serif;
+      font-weight: 900;
+      font-size: clamp(34px, 5.2vw, 56px);
+      line-height: 1.18;
+      margin: 0 0 18px;
+      letter-spacing: 0.01em;
+      color: #f7f3e8;
+    }
+    .hero h1 .thin { color: #f0a137; }
+    .hero .lead {
+      font-size: 17px;
+      color: rgba(236, 231, 217, 0.82);
+      max-width: 560px;
+      margin: 0 0 34px;
+    }
+    .hero .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 26px;
+      font-family: "IBM Plex Mono", Consolas, monospace;
+      font-size: 12.5px;
+      color: rgba(236, 231, 217, 0.55);
+      margin-bottom: 26px;
+    }
+    .hero .meta b { color: rgba(236, 231, 217, 0.9); font-weight: 500; }
+    .hero .hero-hint {
+      display: inline-flex;
+      align-items: flex-start;
+      gap: 10px;
+      max-width: 820px;
+      padding: 12px 18px;
+      border: 1px solid rgba(240, 161, 55, 0.45);
+      border-radius: 10px;
+      background: rgba(240, 161, 55, 0.10);
+      font-size: 14px;
+      line-height: 1.7;
+      color: rgba(236, 231, 217, 0.88);
+    }
+    .hero .hero-hint > span:first-child { flex-shrink: 0; }
+    .hero .hero-hint b { color: #f0a137; font-weight: 600; }
+    .hero .reg {
+      position: absolute;
+      right: 24px;
+      top: 84px;
+      text-align: right;
+      font-family: "IBM Plex Mono", Consolas, monospace;
+      color: rgba(236, 231, 217, 0.35);
+      font-size: 12px;
+      line-height: 1.9;
+      user-select: none;
+    }
+    .hero .reg .ver {
+      display: block;
+      font-size: 44px;
+      font-weight: 600;
+      color: rgba(240, 161, 55, 0.85);
+      line-height: 1.1;
+    }
+    @media (max-width: 720px) {
+      .hero-inner { padding: 56px 20px 48px; }
+      .hero .reg { display: none; }
+    }
+
+    /* ---------- body layout ---------- */
+    .container { max-width: 1120px; margin: 0 auto; padding: 40px 24px 56px; }
+
+    /* stats */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+      margin: 26px 0 8px;
+    }
+    .stat {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 16px 18px;
+    }
+    .stat .v {
+      font-family: "IBM Plex Mono", Consolas, monospace;
+      font-size: 24px;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .stat .v em { font-style: normal; font-size: 13px; color: var(--accent); margin-left: 2px; }
+    .stat .k { font-size: 12.5px; color: var(--muted); margin-top: 2px; }
+    @media (max-width: 720px) { .stats { grid-template-columns: repeat(2, 1fr); } }
+
+    /* section title */
+    .section-title {
+      font-family: "IBM Plex Mono", Consolas, monospace;
+      font-size: 12.5px;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      color: var(--muted);
+      text-transform: uppercase;
+      margin: 40px 0 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .section-title::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+
+    /* ---------- 推荐阅读顺序 · 路线卡 ---------- */
+    .route {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      row-gap: 46px;
+      margin: 18px 0 8px;
+    }
+    .route-card {
+      position: relative;
+      display: block;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 16px 16px 14px;
+      color: var(--text);
+      text-decoration: none;
+      transition: transform 0.16s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+    }
+    .route-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow);
+      border-color: var(--accent);
+    }
+    .rc-head {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .rc-id {
+      font-family: "IBM Plex Mono", Consolas, monospace;
+      font-size: 30px;
+      font-weight: 600;
+      line-height: 1;
+      color: var(--accent);
+    }
+    .rc-days {
+      font-family: "IBM Plex Mono", Consolas, monospace;
+      font-size: 11.5px;
+      color: var(--muted);
+      background: var(--chip);
+      border-radius: 20px;
+      padding: 2px 9px;
+      white-space: nowrap;
+    }
+    .rc-name { font-weight: 700; font-size: 14.5px; margin-bottom: 4px; }
+    .rc-goal { font-size: 12px; color: var(--muted); line-height: 1.6; margin-bottom: 10px; }
+    .rc-label {
+      font-family: "IBM Plex Mono", Consolas, monospace;
+      font-size: 10.5px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+    .rc-doc {
+      display: block;
+      font-family: "IBM Plex Mono", Consolas, monospace;
+      font-size: 11px;
+      line-height: 1.55;
+      color: var(--text);
+      word-break: break-all;
+    }
+    .rc-doc + .rc-doc { margin-top: 2px; }
+    .rc-none { font-size: 12px; color: var(--muted); }
+    @media (max-width: 719px) {
+      .route { grid-template-columns: 1fr; row-gap: 34px; }
+      .route-card:not(:last-child)::after {
+        content: "↓";
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        bottom: -28px;
+        color: var(--accent);
+        font-family: "IBM Plex Mono", Consolas, monospace;
+        font-size: 15px;
+        font-weight: 600;
+      }
+    }
+    @media (min-width: 720px) and (max-width: 1059px) {
+      .route { grid-template-columns: repeat(2, 1fr); row-gap: 44px; }
+      .route-card:nth-child(odd)::after {
+        content: "→";
+        position: absolute;
+        right: -13px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--accent);
+        font-family: "IBM Plex Mono", Consolas, monospace;
+        font-size: 15px;
+        font-weight: 600;
+      }
+      .route-card:nth-child(even):not(:last-child)::after {
+        content: "⤵";
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        bottom: -36px;
+        color: var(--accent);
+        font-family: "IBM Plex Mono", Consolas, monospace;
+        font-size: 15px;
+        font-weight: 600;
+      }
+    }
+    @media (min-width: 1060px) {
+      .route-card:not(:nth-child(4n))::after {
+        content: "→";
+        position: absolute;
+        right: -13px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--accent);
+        font-family: "IBM Plex Mono", Consolas, monospace;
+        font-size: 15px;
+        font-weight: 600;
+      }
+      .route-card:nth-child(4n)::after {
+        content: "⤵";
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        bottom: -38px;
+        color: var(--accent);
+        font-family: "IBM Plex Mono", Consolas, monospace;
+        font-size: 15px;
+        font-weight: 600;
+      }
+      .route-card:last-child::after { content: none; }
+    }
+
+    /* ---------- 分阶段文档区 ---------- */
+    .stage { margin: 6px 0 14px; scroll-margin-top: 72px; }
+    .stage-goal { margin: 0 0 14px; font-size: 14px; color: var(--text); }
+    .legend {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px 12px;
+      font-size: 12.5px;
+      color: var(--muted);
+      margin: 0 0 18px;
+    }
+    .doc-list { display: flex; flex-direction: column; gap: 10px; }
+    .doc-row {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 12px 16px;
+    }
+    .doc-row.fine { border-left: 4px solid var(--accent); }
+    .doc-meta {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px 10px;
+    }
+    .doc-file {
+      font-family: "IBM Plex Mono", Consolas, monospace;
+      font-size: 12.5px;
+      color: var(--text);
+      word-break: break-all;
+    }
+    .chip {
+      background: var(--chip);
+      color: var(--accent-strong);
+      font-family: "IBM Plex Mono", Consolas, monospace;
+      font-size: 11.5px;
+      padding: 1px 9px;
+      border-radius: 20px;
+      white-space: nowrap;
+    }
+    .chip-v { color: var(--muted); }
+    .doc-pages {
+      font-family: "IBM Plex Mono", Consolas, monospace;
+      font-size: 11.5px;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+    .rbadge {
+      font-family: "IBM Plex Mono", Consolas, monospace;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      padding: 1px 10px;
+      border-radius: 20px;
+      white-space: nowrap;
+    }
+    .r-jing { background: var(--accent); color: #fff; }
+    .r-xuan { color: var(--accent); border: 1px solid var(--accent); }
+    .r-su   { color: var(--text); border: 1px solid var(--line); }
+    .r-cha  { background: var(--chip); color: var(--muted); }
+    .r-cun  { background: var(--chip); color: var(--muted); opacity: 0.72; }
+    .doc-o { font-weight: 700; font-size: 14.5px; margin-top: 8px; line-height: 1.6; }
+    .doc-s { font-size: 14px; color: var(--text); margin-top: 4px; line-height: 1.7; opacity: 0.92; }
+
+    /* ---------- 剔除区 ---------- */
+    .xnote { margin: 0 0 16px; font-size: 13.5px; color: var(--muted); }
+    .xblock {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 16px 18px;
+      margin-bottom: 16px;
+    }
+    .xhead { font-weight: 700; font-size: 14.5px; margin-bottom: 10px; }
+    .xscroll { overflow-x: auto; }
+    .xtable { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+    .xtable th {
+      text-align: left;
+      font-family: "IBM Plex Mono", Consolas, monospace;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      padding: 6px 10px;
+      border-bottom: 1px solid var(--line);
+      white-space: nowrap;
+    }
+    .xtable td {
+      padding: 7px 10px;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+    .xtable tr:last-child td { border-bottom: none; }
+    .xf {
+      font-family: "IBM Plex Mono", Consolas, monospace;
+      font-size: 11.5px;
+      color: var(--text);
+      word-break: break-all;
+    }
+
+    .footer {
+      text-align: center;
+      color: var(--muted);
+      margin-top: 56px;
+      font-family: "IBM Plex Mono", Consolas, monospace;
+      font-size: 12px;
+      letter-spacing: 0.06em;
+      line-height: 2;
+    }
+    .footer a { color: var(--accent); text-decoration: none; }
+    .footer a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a class="navbar-brand" href="./">FC_MIGRATION</a>
+      <div class="navbar-links" id="navbar-links"></div>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="hero-inner">
+      <div class="kicker">HV2M23 · REFERENCE LIBRARY · DC → FC</div>
+      <h1>EDA 手册库<br>导读与<span class="thin">阅读顺序</span></h1>
+      <p class="lead">对 UserGuide 仓库 86 份 PDF 逐本阅读后的导读：讲什么、值不值得读、按什么顺序读。</p>
+      <div class="meta">
+        <span>SOURCE <b>github.com/ccccccccyt/UserGuide</b></span>
+        <span>COVERAGE <b>86 PDF · 663 MB</b></span>
+        <span>KEPT <b>69 份收录</b></span>
+      </div>
+      <div class="hero-hint">
+        <span>⭐</span>
+        <span><b>精读主线 10 本</b>：SNUG 可综合 SV → SDC 应用笔记 → DC UG 2023 → FC UG 2019 + ICC2 UG 2022 → Library Compiler UG 2018 → 约束与优化 UG 2022 + PrimeTime UG 2022 → Formality UG 2022 + Conformal LEC 培训；其余全部按需查阅。</span>
+      </div>
+      <div class="reg">
+        COVERAGE
+        <span class="ver">86</span>
+        PDFS · 663 MB
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <div class="stats">
+      <div class="stat"><div class="v">86<em>份</em></div><div class="k">PDF 总量</div></div>
+      <div class="stat"><div class="v">663<em>MB</em></div><div class="k">仓库体积</div></div>
+      <div class="stat"><div class="v">69<em>份</em></div><div class="k">收录导读 · 8 阶段</div></div>
+      <div class="stat"><div class="v">17<em>份</em></div><div class="k">剔除（10 重复 + 7 无关）</div></div>
+    </div>
+
+    <div class="section-title">推荐阅读顺序 · S1 → S8 · 精读主线</div>
+    <div class="route">
+      <a class="route-card" href="#s1">
+        <div class="rc-head"><span class="rc-id">S1</span><span class="rc-days">1~2 天</span></div>
+        <div class="rc-name">语言与约束基础</div>
+        <div class="rc-goal">开工前把 RTL 写法与约束语法的天花板摸清——综合器能吃进什么 SV，SDC 怎么写才规范。</div>
+        <div class="rc-label">精读 · 2 本</div>
+        <span class="rc-doc">SNUG-SV-2013_Synthesizable-SystemVerilog_paper.pdf</span>
+        <span class="rc-doc">Using the Synopsys® Design Constraints Format Application Note.pdf</span>
+      </a>
+      <a class="route-card" href="#s2">
+        <div class="rc-head"><span class="rc-id">S2</span><span class="rc-days">2~3 天</span></div>
+        <div class="rc-name">现状基线 · Design Compiler</div>
+        <div class="rc-goal">吃透现有 DC 流程的“我们能做什么”——迁移对照表的左列全在这里。</div>
+        <div class="rc-label">精读 · 1 本</div>
+        <span class="rc-doc">Design Compiler® User Guide 2023.pdf</span>
+      </a>
+      <a class="route-card" href="#s3">
+        <div class="rc-head"><span class="rc-id">S3</span><span class="rc-days">3~4 天</span></div>
+        <div class="rc-name">迁移目标 · Fusion Compiler / ICC2</div>
+        <div class="rc-goal">建立 FC 全景：物理综合/P&amp;R 流程、fc_shell、与 ICC2 的同源关系——迁移叙事的目的地。</div>
+        <div class="rc-label">精读 · 2 本</div>
+        <span class="rc-doc">Fusion Compiler™ User Guide 2019.pdf</span>
+        <span class="rc-doc">IC Compiler™ II Implementation User Guide 2022.pdf</span>
+      </a>
+      <a class="route-card" href="#s4">
+        <div class="rc-head"><span class="rc-id">S4</span><span class="rc-days">2~3 天</span></div>
+        <div class="rc-name">库与格式</div>
+        <div class="rc-goal">迁移最大卡点“.db→NDM、Liberty 字段”的主战场——库转换出问题时的弹药库。</div>
+        <div class="rc-label">精读 · 1 本</div>
+        <span class="rc-doc">library_compiler.pdf</span>
+      </a>
+      <a class="route-card" href="#s5">
+        <div class="rc-head"><span class="rc-id">S5</span><span class="rc-days">3~4 天</span></div>
+        <div class="rc-name">约束与时序</div>
+        <div class="rc-goal">迁移后 PT 签核要过的关——约束体系不变是“下游零改动”的底气来源。</div>
+        <div class="rc-label">精读 · 2 本</div>
+        <span class="rc-doc">Timing Constraints and Optimization User Guide 2022.pdf</span>
+        <span class="rc-doc">PrimeTime® User Guide 2022.pdf</span>
+      </a>
+      <a class="route-card" href="#s6">
+        <div class="rc-head"><span class="rc-id">S6</span><span class="rc-days">2~3 天</span></div>
+        <div class="rc-name">等价性验证 · LEC</div>
+        <div class="rc-goal">迁移的验收门：DC 网表 vs FC 网表要过 LEC——网站上 NONEQ 攻坚篇的理论后盾。</div>
+        <div class="rc-label">精读 · 2 本</div>
+        <span class="rc-doc">Formality® User Guide 2022.pdf</span>
+        <span class="rc-doc">conformal_lec_training_basic_advance.pdf</span>
+      </a>
+      <a class="route-card" href="#s7">
+        <div class="rc-head"><span class="rc-id">S7</span><span class="rc-days">按需</span></div>
+        <div class="rc-name">验证与 DFT（背景板）</div>
+        <div class="rc-goal">综合迁移不直接动验证环境，但仿真器/UVM/DFT 手册放在手边，跨栈问题不慌。</div>
+        <div class="rc-label">按需查阅</div>
+        <span class="rc-none">无精读 · 仿真器 / UVM / DFT 手册备查</span>
+      </a>
+      <a class="route-card" href="#s8">
+        <div class="rc-head"><span class="rc-id">S8</span><span class="rc-days">按需</span></div>
+        <div class="rc-name">开源对照与理论拓展</div>
+        <div class="rc-goal">商业工具之外的坐标系：开源综合/STA 看原理，教材补底层，竞品文档作流程对照。</div>
+        <div class="rc-label">按需查阅</div>
+        <span class="rc-none">无精读 · 开源 / 教材 / 竞品文档备查</span>
+      </a>
+    </div>
+
+    <div class="section-title">分阶段文档导读 · S1 → S8</div>
+    <div class="legend">
+      <span>读法徽标：</span>
+      <span class="rbadge r-jing">精读</span><span>主线必读</span>
+      <span class="rbadge r-xuan">选读</span><span>按专题深入</span>
+      <span class="rbadge r-su">速读</span><span>短平快过一遍</span>
+      <span class="rbadge r-cha">速查</span><span>当字典用</span>
+      <span class="rbadge r-cun">存档</span><span>旧版本备查</span>
+    </div>
+    <div id="stages"></div>
+
+    <div class="section-title">附录 · 剔除区（17 份未收录）</div>
+    <p class="xnote">以下 17 份不设导读卡片：重复副本 10 份（保留官方名称 / 现行版本那份），无关内容 7 份（与数字 IC 设计流程无关）。</p>
+    <div class="xblock">
+      <div class="xhead">重复副本 · 10 份</div>
+      <div class="xscroll">
+        <table class="xtable">
+          <thead><tr><th>剔除文件</th><th>保留文件</th><th>原因</th></tr></thead>
+          <tbody id="dup-body"></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="xblock">
+      <div class="xhead">无关内容 · 7 份</div>
+      <div class="xscroll">
+        <table class="xtable">
+          <thead><tr><th>文件</th><th>剔除原因</th></tr></thead>
+          <tbody id="irr-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="footer">
+      SHARED FROM TEAM KNOWLEDGE BASE · SOURCE: github.com/ccccccccyt/UserGuide<br>
+      <a href="./index.html">← 返回首页</a>
+    </div>
+  </div>
+
+  <script>
+    const DATA = {
+      "stats": { "total": 86, "size_mb": 663, "kept": 69, "dup": 10, "irrelevant": 7, "stages": 8 },
+      "route_oneline": "精读主线 10 本：SNUG 可综合 SV → SDC 应用笔记 → DC UG 2023 → FC UG 2019 + ICC2 UG 2022 → Library Compiler UG 2018 → 约束与优化 UG 2022 + PrimeTime UG 2022 → Formality UG 2022 + Conformal LEC 培训；其余全部按需查阅。",
+      "stages": [
+        {
+          "id": "S1", "name": "语言与约束基础", "days": "1~2 天", "goal": "开工前把 RTL 写法与约束语法的天花板摸清——综合器能吃进什么 SV，SDC 怎么写才规范。",
+          "docs": [
+            { "f": "SNUG-SV-2013_Synthesizable-SystemVerilog_paper.pdf", "t": "SNUG 论文", "v": "2013", "p": 45, "r": "精读", "o": "可综合 SystemVerilog 子集：破除“SV 只能做验证”的误解", "s": "SNUG 经典论文，逐类讲 DC/Synplify 支持的可综合 SV 构造（类型、参数化、package）及相对 Verilog-1995 的 QoR 优势。45 页半天可读完，是建立“RTL 写法→综合行为”正确认知的最短路径。" },
+            { "f": "Using the Synopsys® Design Constraints Format Application Note.pdf", "t": "SDC 官方", "v": "2.1 / 2017-12", "p": 32, "r": "精读", "o": "SDC 约束格式官方应用笔记：时钟、IO delay、例外约束语法", "s": "Synopsys 官方 SDC 规范说明，覆盖 create_clock、set_input/output_delay、false_path/multicycle 等写法约定与总线/层级命名规则。迁移中约束文件原样复用，写法争议以这份 v2.1 为准。" },
+            { "f": "Using Tcl With Synopsys Tools 2021.pdf", "t": "Synopsys Tcl", "v": "S-2021.06", "p": 114, "r": "选读", "o": "Synopsys 全家桶共用 Tcl 接口：解析、替换、总线记法、脚本组织", "s": "DC/FC/PT/Formality 共用同一 Tcl 方言。讲命令替换、引号转义、总线记法等脚本层细节——脚本从 DC 平移到 fc_shell 前，这 114 页能提前排掉一大类语法坑。" },
+            { "f": "TCL.pdf", "t": "教材（扫描版）", "v": "—", "p": 561, "r": "存档", "o": "TCL 教材（扫描版无文本层，依书名判断为 Tcl 语法教程）", "s": "561 页扫描版，无法提取文本。工具手册（上一行）已覆盖工具内 Tcl 用法，仅纯 Tcl 语法疑问时再翻。" },
+            { "f": "SystemVerilog数字系统设计（英Mark Zwolinski 夏宇闻译）.pdf", "t": "教材（扫描版）", "v": "—", "p": 280, "r": "存档", "o": "SystemVerilog 数字系统设计中译本（扫描版无文本层）", "s": "Zwolinski 教材中译本（夏宇闻译），64MB 扫描版无法提取文本。团队 RTL 已成型，作语言参考资料备查。" },
+            { "f": "Design Constraints Format Application Note 2011.pdf", "t": "SDC 官方", "v": "1.9 / 2011-09", "p": 32, "r": "存档", "o": "SDC 应用笔记 v1.9（v2.1 的上一版）", "s": "SDC 应用笔记 2011 版（v1.9），内容已被 2017 年 v2.1 版覆盖。仅当需对照 SDC 规范演进时翻看，日常以 S1 的 v2.1 版为准。" }
+          ]
+        },
+        {
+          "id": "S2", "name": "现状基线 · Design Compiler", "days": "2~3 天", "goal": "吃透现有 DC 流程的“我们能做什么”——迁移对照表的左列全在这里。",
+          "docs": [
+            { "f": "Design Compiler® User Guide 2023.pdf", "t": "Synopsys DC", "v": "U-2022.12-SP3 / 2023-04", "p": 879, "r": "精读", "o": "DC 主手册：NXT/GTopo 模式、compile_ultra、约束、增量编译、报告", "s": "现行 DC 流程的权威手册，覆盖工具模式（wireload/topographical/multimode/UPF）、综合准备、compile 策略、DesignWare 高层优化与各类报告。迁移对照的“左边”以此为准，与 FC 逐章对照。" },
+            { "f": "Design Compiler® User Guide 2019.pdf", "t": "Synopsys DC", "v": "P-2019.03", "p": 792, "r": "存档", "o": "DC 2019 版主手册", "s": "上一版的 DC 主手册，章节结构与 2023 版同源。服务器上若还是 P-2019.03 版本，则查它比查 2023 版更贴合实际。" },
+            { "f": "Design Compiler® Optimization Reference Manual 2011.pdf", "t": "Synopsys DC", "v": "F-2011.09", "p": 241, "r": "选读", "o": "DC 优化原理：设计空间、structuring/flattening、FSM 优化、compile 策略", "s": "版本偏老但把优化机理讲得最透：技术无关优化→映射、层次压平与 structuring 取舍、top-down/compile-characterize-write-recompile 策略。理解 compile 行为“为什么这样”看它。" },
+            { "f": "Design Compiler Reference Manual Optimization and Timing Analysis.pdf", "t": "Synopsys DC", "v": "1999.10", "p": 717, "r": "存档", "o": "1999 年 DC 参考：优化与时序分析命令", "s": "上个世纪的老参考手册（1.1MB 文字版），仅作命令演进考古，不建议投入时间。" },
+            { "f": "HDL Compiler™ for SystemVerilog 2023.pdf", "t": "Synopsys DC", "v": "U-2022.12-SP3", "p": 296, "r": "选读", "o": "DC 读入 SV 的规则：可综合子集、参数化、宏定义、RTL 预处理", "s": "DC 前端 HDL Compiler 的 SV 支持手册：版本指定、参数覆盖、宏、prune/保持等。filelist 报错、SV 语法不被支持、宏不一致时直接查它（注意：库里另一份《Design Compiler for SystemVerilog User Guide 2023》是它的字节级重复副本）。" },
+            { "f": "Design Vision™ User Guide 2012.pdf", "t": "Synopsys DC", "v": "G-2012.06", "p": 114, "r": "存档", "o": "DC 图形前端 Design Vision：界面与原理图查看", "s": "DC 的 GUI（Design Vision）使用说明，很薄。想图形化看综合后原理图/时序时用，服务器无 GUI 时跳过。" },
+            { "f": "Synthesis Tool Commands 2022.pdf", "t": "Synopsys DC", "v": "U-2022.12", "p": 2940, "r": "速查", "o": "综合工具命令大全（按字母序的字典）", "s": "2940 页命令字典，从 acs_read_hdl 到 write_* 全量命令语法，含 change_names、add_pg_pin_to_lib 等迁移高频命令。不通读，写脚本时当 man 页用——LEC 攻坚里 change_names 的总线命名坑，字典里就有正解。" }
+          ]
+        },
+        {
+          "id": "S3", "name": "迁移目标 · Fusion Compiler / ICC2", "days": "3~4 天", "goal": "建立 FC 全景：物理综合/P&R 流程、fc_shell、与 ICC2 的同源关系——迁移叙事的目的地。",
+          "docs": [
+            { "f": "Fusion Compiler™ User Guide 2019.pdf", "t": "Synopsys FC", "v": "P-2019.03-SP4", "p": 828, "r": "精读", "o": "FC 主手册：物理综合/P&R 流程总览、UPF 电源意图、fc_shell 入门", "s": "FC 全景总纲：物理综合与 P&R 流程概览、UPF/多电压概念、fc_shell 命令行、设计数据管理。迁移入门第一本，读完再下钻 ICC2。（库里另一份文件名多一个空格的同名 PDF 是字节级重复）" },
+            { "f": "IC Compiler™ II Implementation User Guide 2022.pdf", "t": "Synopsys ICC2", "v": "T-2022.03", "p": 864, "r": "精读", "o": "ICC2 实现手册（FC 同内核）：place/CTS/route、multimode、分布式", "s": "FC 的底层引擎就是 ICC2。这本讲实现细节：floorplan、placement、CTS、route、multimode/multicorner、multicore/分布式。FC 手册讲“流程”，这本讲“怎么做”，两本配合精读。" },
+            { "f": "IC Compiler™ II Implementation User Guide 2018.pdf", "t": "Synopsys ICC2", "v": "O-2018.06", "p": 658, "r": "存档", "o": "ICC2 2018 旧版实现手册", "s": "旧版（开头是 FOSS 许可声明长篇），有 2022 版即可，仅在服务器装的是 O-2018.06 时用。" },
+            { "f": "Fusion Compiler™ Tool 2020.pdf", "t": "Synopsys FC", "v": "Q-2019.12-SP4", "p": 5921, "r": "速查", "o": "FC 全命令字典（5921 页，按字母序）", "s": "FC 全部命令的 man 页合集：add_buffer 到 write_*，含 ECO、约束、物理优化全量命令。脚本开发期的头号字典，不通读。" },
+            { "f": "Fusion Compiler™ Graphical User Interface User Guide 2020.pdf", "t": "Synopsys FC", "v": "Q-2019.12-SP2", "p": 271, "r": "选读", "o": "FC GUI：layout 视图、标尺、strokes、batch 模式判断", "s": "FC 图形界面手册：启动/GUI 判定、版图查看、时序标尺、视图设置。上 GUI 检查 floorplan 或给 Review 截图时用。" },
+            { "f": "Multivoltage Flow 2019.pdf", "t": "Synopsys 低功耗", "v": "2019-12", "p": 225, "r": "选读", "o": "多电压域流程：电源策略、AON/retention 单元、UPF 落地", "s": "低功耗多电压设计在综合/实现工具里的落地：电压域划分、always-on/隔离/retention 单元、PG pin 库转换。若 HV 系列后续带 UPF 意图，这本是必读；当前纯数字流程可缓。" }
+          ]
+        },
+        {
+          "id": "S4", "name": "库与格式", "days": "2~3 天", "goal": "迁移最大卡点“.db→NDM、Liberty 字段”的主战场——库转换出问题时的弹药库。",
+          "docs": [
+            { "f": "library_compiler.pdf", "t": "Synopsys LC", "v": "O-2018.06", "p": 1134, "r": "精读", "o": "Library Compiler 主手册：Liberty→.db、库检查、NDM 时代 LC 的角色", "s": "LC 主手册（1134 页）：读 Liberty/生成 .db、check_library、库属性与命名规则。FC 迁移第一大卡点是库格式，这本是库问题的第一手册。" },
+            { "f": "Library Compiler™ Modeling Timing, Signal Integrity, and Power in Technology Libraries 2010.pdf", "t": "Synopsys LC", "v": "D-2010.03", "p": 656, "r": "选读", "o": "在工艺库中建模时序/SI/功耗：timing arc、CCSN、内部功耗", "s": "讲 .lib 里时序 arc、噪声/CCSN、internal/switching 功耗模型怎么写。Foundry 库数据可疑、或需要自建/修改库属性时，用它理解字段背后的电气含义。" },
+            { "f": "Liberty Reference Manual 2020.pdf", "t": "Liberty 格式", "v": "R-2020.09", "p": 373, "r": "速查", "o": "Liberty (.lib) 格式属性字典（现行版，开源发行）", "s": "Synopsys 开源发行的现行 Liberty 参考手册，library/cell/pin 三层全部属性逐条定义。.lib 字段争议时的格式仲裁标准。" },
+            { "f": "Liberty User Guides and Reference Manual Suite 2017.06.pdf", "t": "Liberty 格式", "v": "2017.06", "p": 1458, "r": "速查", "o": "Liberty 全套件：Release Notes + UG 两卷 + RM，LVF/OCV 模型最全", "s": "信息量最大的 Liberty 单册：LVF（OCV sigma 表、retain arc、统计矩模型）、部分电压摆幅等新建模语法都在 Release Notes+UG 里。做签核级时序库/LVF 相关问题时查。（库里另一份括号写法同名 PDF 是重复副本）" },
+            { "f": "Liberty Reference Manual 2007.pdf", "t": "Liberty 格式", "v": "2007.03", "p": 284, "r": "存档", "o": "Liberty 2007 老版格式参考", "s": "老版格式参考，属性定义被 2020 版收录，有新版即可。" },
+            { "f": "LEFDEF 5.8 Language Reference.pdf", "t": "LEF/DEF 格式", "v": "5.8 / 2018-03", "p": 856, "r": "速查", "o": "LEF/DEF 5.8 交换格式语法（含先进节点规则）", "s": "Cadence LEF/DEF 5.8 语言参考：层/过孔/macro/spacing 规则与 DEF 结构。物理库与工艺文件互操作的字段字典，先进节点规则优先查这版。" },
+            { "f": "LEF DEF Reference.pdf", "t": "LEF/DEF 格式", "v": "5.7 / 2009-11", "p": 414, "r": "存档", "o": "LEF/DEF 5.7 旧版格式参考", "s": "5.8 的上一版，篇幅近半，有新版即可。" },
+            { "f": "Library Compiler™ Physical Libraries User Guide 2005.pdf", "t": "Synopsys LC", "v": "X-2005.09", "p": 83, "r": "存档", "o": ".plib 物理库格式（Milkyway 时代产物）", "s": "面向早已退役的 Milkyway/物理综合时代流程，与 FC 的 NDM 体系脱节，仅存档。" }
+          ]
+        },
+        {
+          "id": "S5", "name": "约束与时序", "days": "3~4 天", "goal": "迁移后 PT 签核要过的关——约束体系不变是“下游零改动”的底气来源。",
+          "docs": [
+            { "f": "Timing Constraints and Optimization User Guide 2022.pdf", "t": "Synopsys 综合", "v": "U-2022.12", "p": 359, "r": "精读", "o": "综合侧时序约束与优化：STA 基础、时钟、IO delay、例外约束", "s": "DC/FC 语境下的时序约束体系现行手册：STA 概念、时钟定义/延迟/不确定性、IO 约束、multicycle/false path 例外与优化行为。约束文件从 DC 迁 FC 前后都用它对齐语义。" },
+            { "f": "Timing constraints and optimization UG 2009.pdf", "t": "Synopsys 综合", "v": "C-2009.06", "p": 345, "r": "存档", "o": "同上 2009 老版", "s": "同书 2009 版，章节同源，有 2022 版即可。" },
+            { "f": "PrimeTime® User Guide 2022.pdf", "t": "Synopsys PT", "v": "T-2022.03", "p": 1323, "r": "精读", "o": "PrimeTime 签核 STA 主手册：流程、报告、OCV/AOCV、SI", "s": "PT 现行主手册：静态时分析流程、report_timing 体系、OCV/AOCV/SDPD、crosstalk、功耗估算。迁移方案承诺“下游 PT 零改动”，这本就是验证那句话的依据。" },
+            { "f": "PrimeTime®User Guide.pdf", "t": "Synopsys PT", "v": "N-2017.12-SP2", "p": 1190, "r": "存档", "o": "PT 2017 版主手册", "s": "上一版 PT 手册，若服务器 PT 还是 N-2017.12 则用它对版本。" },
+            { "f": "Prime Time Fundametal UG.pdf", "t": "Synopsys PT", "v": "F-2011.06", "p": 514, "r": "选读", "o": "PT 基础教程：STA 概念+基本流程，比主手册友好", "s": "PT Fundamentals 教程版，STA 基础概念+起步流程讲得比 1300 页主手册亲和，新人 STA 入门用它。" },
+            { "f": "STA圣经.pdf", "t": "STA 教材", "v": "2008", "p": 1174, "r": "选读", "o": "《Static Timing Analysis for Nanometer Designs》经典教材", "s": "Bhasker & Chadha 的 STA 经典（业界称 STA 圣经）：从 CMOS/设计流程到时钟、例外、crosstalk、噪声，工具之外补原理。面试与 debug 双修。" }
+          ]
+        },
+        {
+          "id": "S6", "name": "等价性验证 · LEC", "days": "2~3 天", "goal": "迁移的验收门：DC 网表 vs FC 网表要过 LEC——网站上 NONEQ 攻坚篇的理论后盾。",
+          "docs": [
+            { "f": "Formality® User Guide 2022.pdf", "t": "Synopsys FM", "v": "T-2022.03", "p": 342, "r": "精读", "o": "Formality 主手册：flow、match、verify、debug", "s": "FM 现行主手册：reference/implementation 容器、SVF guide、match 策略、verify 与失败 debug。DC→FC 网表 LEC 验收的主力工具手册。" },
+            { "f": "conformal_lec_training_basic_advance.pdf", "t": "Cadence Conformal", "v": "培训教材", "p": 239, "r": "精读", "o": "Conformal LEC 基础+进阶培训：flat/hierarchical compare、匹配与 debug", "s": "Cadence LEC 官方培训教材（Verplex 血统）：形式验证原理、flat compare 会话、层次比较、不匹配点定位。与网站 lec-noneq-case.html 的 NONEQ 四刀方法论同源，对照读收效最大。（库里《Logic Equivalence Checker.pdf》是它的字节级重复）" },
+            { "f": "Formality® Automated Setup File (SVF)2005.pdf", "t": "Synopsys FM", "v": "X-2005.12", "p": 56, "r": "选读", "o": "SVF 自动 setup 文件：从 DC 流程生成 guide 信息供 FM 匹配", "s": "SVF（Automated Setup File）机制说明：set_dft_signal 之外的 guide/architecture_db 命令、multiplier 验证示例。SVF 是 DC→FM 匹配质量的关键输入，56 页值得花半小时。" },
+            { "f": "Formality 2016.pdf", "t": "Synopsys FM", "v": "L-2016.03", "p": 340, "r": "存档", "o": "FM 2016 版手册", "s": "版本演进中间站，有 2022 版即可。" },
+            { "f": "Formality 2010.pdf", "t": "Synopsys FM", "v": "D-2010.03", "p": 331, "r": "存档", "o": "FM 2010 版手册", "s": "同上，存档。" },
+            { "f": "Formality 2005.pdf", "t": "Synopsys FM", "v": "X-2005.12", "p": 409, "r": "存档", "o": "FM 2005 版手册", "s": "最老版本，存档。四版并列恰好能看出 FM 二十年的功能演进脉络。" }
+          ]
+        },
+        {
+          "id": "S7", "name": "验证与 DFT（背景板）", "days": "按需", "goal": "综合迁移不直接动验证环境，但仿真器/UVM/DFT 手册放在手边，跨栈问题不慌。",
+          "docs": [
+            { "f": "Verification Continuum™VCS 2023.pdf", "t": "Synopsys VCS", "v": "V-2023.12", "p": 1695, "r": "速查", "o": "VCS 仿真器主手册（现行版）", "s": "VCS 现行主手册：synopsys_sim.setup、三步流、UVM/SVA 支持、调试与覆盖率。仿真环境问题时查。" },
+            { "f": "Verification Continuum™VCS 2022.pdf", "t": "Synopsys VCS", "v": "S-2021.09-SP2", "p": 2385, "r": "存档", "o": "VCS 2022 版主手册", "s": "上一版，有 2023 版即可。" },
+            { "f": "Universal Verification Methodology (UVM).pdf", "t": "UVM", "v": "Cookbook", "p": 599, "r": "选读", "o": "Mentor UVM Cookbook：testbench 架构、agent、phasing、factory", "s": "Verification Academy 出的 UVM Cookbook 合订本，图解 testbench 架构与各组件职责，是 UVM 结构入门最友好的一本。" },
+            { "f": "Universal Verification Methodology(UVM) Class Reference Manual 1.2.pdf", "t": "UVM", "v": "1.2 / 2014", "p": 938, "r": "速查", "o": "UVM 1.2 类参考手册", "s": "Accellera UVM 1.2 全量类 API 参考，查 uvm_* 类方法语义用。" },
+            { "f": "IEEE Std 1800.2-2017.pdf", "t": "IEEE 标准", "v": "1800.2-2017", "p": 472, "r": "速查", "o": "UVM 的 IEEE 标准文本", "s": "UVM 的 IEEE 标准化版本（由 Accellera 1.2 发展而来），标准视角的类参考，与上一本二选一即可。" },
+            { "f": "UVM Register Abstraction Layer Generator User Guide 2017.pdf", "t": "Synopsys ralgen", "v": "M-2017.03", "p": 226, "r": "选读", "o": "RALF→UVM RAL 模型生成：寄存器验证自动化入口", "s": "ralgen 用户指南：从寄存器描述（RALF）生成 UVM RAL 模型、字段/数组/分组处理、用户代码嵌入。做寄存器自动化验证（regmap 工作流）时的工具手册。" },
+            { "f": "DFT 2022.pdf", "t": "Synopsys TestMAX", "v": "T-2022.03", "p": 1124, "r": "选读", "o": "TestMAX/DFT Compiler 主手册：scan 插入、压缩、LogicBIST", "s": "Synopsys DFT 平台主手册（文件名叫 DFT 2022，实为 TestMAX DFT User Guide）：scan 替换/压缩、DFTMAX、与综合流程的 test-ready compile。项目启动 DFT 时读。" },
+            { "f": "TetraMAX® ATPG 2015.pdf", "t": "Synopsys TetraMAX", "v": "K-2015.06", "p": 791, "r": "存档", "o": "ATPG 老手册", "s": "TestMAX 前身的 ATPG 手册，有 TestMAX 2022 即可。" },
+            { "f": "Test Pattern Validation 2015.pdf", "t": "Synopsys TetraMAX", "v": "K-2015.06", "p": 259, "r": "存档", "o": "STIL pattern 验证手册", "s": "TetraMAX 配套的 pattern 生成/验证流程，随 DFT 需要再读。" }
+          ]
+        },
+        {
+          "id": "S8", "name": "开源对照与理论拓展", "days": "按需", "goal": "商业工具之外的坐标系：开源综合/STA 看原理，教材补底层，竞品文档作流程对照。",
+          "docs": [
+            { "f": "YosysHQ Yosys 2023.pdf", "t": "开源 Yosys", "v": "2023-03", "p": 330, "r": "选读", "o": "开源综合 Yosys 官方手册：RTLIL、pass 体系、脚本流", "s": "Yosys 官方手册：综合内部门（RTLIL 中间表示）、常用 pass、脚本化流程。是理解“综合器到底做什么”的最佳开源标本，本机 iverilog/yosys 仿真链路可直接配套实践。" },
+            { "f": "Yosys Open SYnthesis Suite.pdf", "t": "开源 Yosys", "v": "2022-12 slides", "p": 169, "r": "存档", "o": "Yosys 作者演讲 slides：综合示例+扩展开发", "s": "作者 Claire Wolf 的 Yosys 全景演讲稿，综合示例到 C++ 扩展开发，入门观感好。" },
+            { "f": "Yosys Manual.pdf", "t": "开源 Yosys", "v": "学位论文版", "p": 280, "r": "存档", "o": "Yosys 设计与实现（作者学位论文）", "s": "Yosys 的设计与实现论文（AST→RTLIL→ABC 映射），想改 Yosys 或研究综合算法才需要。" },
+            { "f": "Yosys - A Free Verilog Synthesis Suite.pdf", "t": "开源 Yosys", "v": "论文", "p": 6, "r": "速读", "o": "Yosys 6 页论文：定位与 coarse-grain 支持", "s": "6 页短论文，5 分钟了解 Yosys 的定位与设计取舍。" },
+            { "f": "OpenSTA.pdf", "t": "开源 OpenSTA", "v": "—", "p": 75, "r": "选读", "o": "开源 STA 引擎命令参考：与 PT 同源的 Tcl 接口", "s": "OpenSTA 命令行参考，75 页。命令体系与 PrimeTime 同源（create_clock/report_checks），是理解 PT 命令语义的轻量开源对照，也可用于本地脚本实验。" },
+            { "f": "OpenROAD.pdf", "t": "开源 OpenROAD", "v": "2022-03", "p": 206, "r": "选读", "o": "开源 RTL→GDS 全流程：no-human-in-loop 理念与 flow 脚本", "s": "DARPA IDEA 项目的开源数字实现全流程文档：flow 结构、power grid、CTS/route 脚本。对照商业流程看全链路，理解各步骤的输入输出契约。" },
+            { "f": "Genus Synthesis Flows Guide 2019.pdf", "t": "Cadence Genus", "v": "19.1", "p": 121, "r": "选读", "o": "竞品综合工具 Genus 流程指南", "s": "Cadence 综合竞品的流程指南（Generic/Express flow），121 页薄册。竞品视角对照 DC/FC 的流程组织，迁移方案评审时增加谈资。" },
+            { "f": "Genus User Guide for Legacy UI 2018.pdf", "t": "Cadence Genus", "v": "18.1", "p": 332, "r": "存档", "o": "Genus 旧 UI 用户手册", "s": "竞品旧版界面手册，存档参考。" },
+            { "f": "Genus Attribute Reference.pdf", "t": "Cadence Genus", "v": "22.1", "p": 2228, "r": "速查", "o": "Genus 属性字典", "s": "竞品属性字典，仅在深挖竞品行为差异时查。" },
+            { "f": "Innovus 2022.pdf", "t": "Cadence Innovus", "v": "22.10", "p": 1908, "r": "速查", "o": "竞品 P&R 主手册（现行版）", "s": "Cadence 布局布线竞品主手册：placement/CTS/route 到 signoff。FC/ICC2 流程概念对照用，非主线资料。（旧版 19.11 有重复副本 InnovusUG_19.1.pdf，已剔除）" },
+            { "f": "Innovus User Guide 2019.pdf", "t": "Cadence Innovus", "v": "19.11", "p": 1574, "r": "存档", "o": "竞品 P&R 旧版手册", "s": "Innovus 旧版，有 2022 版即可。" },
+            { "f": "Synopsys Synplify Pro for Microchip Reference Manual.pdf", "t": "Synplify Pro", "v": "2024-01", "p": 336, "r": "存档", "o": "Microchip 版 FPGA 综合工具参考", "s": "Synplify Pro 的 Microchip FPGA 定制版手册，属 FPGA 场景，与当前 ASIC 流程关联弱，存档。" },
+            { "f": "Electronic Design Automation_ Synthesis Verification and Test Systems on Silicon 2009.pdf", "t": "EDA 教材", "v": "2009", "p": 971, "r": "选读", "o": "EDA 系统教材：综合、验证、测试各领域一章", "s": "Wang/Chang/Cheng 编的 EDA 教科书，逻辑综合/验证/DFT 各领域一章。想系统性理解各工具背后原理时按章选读。（库里另一份逗号版文件名是重复副本）" },
+            { "f": "André Inácio Reis, Rolf Drechsler (eds.) - Advanced Logic Synthesis-Springer International Publishing (2018).pdf", "t": "学术专著", "v": "2018", "p": 236, "r": "存档", "o": "逻辑综合学术前沿论文集（Springer）", "s": "逻辑综合研究方向论文集（SAT-based、可逆电路等），研究向，工程流程用不上。" },
+            { "f": "Designing Fast CMOS Circuits.pdf", "t": "电路教材", "v": "1998 draft", "p": 223, "r": "选读", "o": "Logical Effort 经典：门延迟模型、级数选择、门尺寸", "s": "Sutherland/Sproull/Harris 的 Logical Effort（1998 草稿版）：延迟的线性模型、最优级数、常见门目录。手算延迟估算的基本功，看综合报告里的 buffer tree 时心里有数。" },
+            { "f": "SVA The Power of Assertions in SystemVerilog.pdf", "t": "SVA 教材", "v": "2nd / 2015", "p": 589, "r": "选读", "o": "SVA 断言专著：序列、属性、多时钟、抽象层", "s": "SystemVerilog Assertion 权威专著（Synopsys/Cadence/Intel 作者阵容），断言语法到方法论。验证侧深挖或写 checker 时用。" },
+            { "f": "SystemVerilog for Design(Second Edition).pdf", "t": "SV 教材", "v": "2nd / 2006", "p": 436, "r": "选读", "o": "SV 设计子集教材（Sutherland/Davidmann/Flake）", "s": "面向硬件设计的 SystemVerilog 经典教材：接口、枚举、struct、always_ff 等设计构造。RTL 写法升级的教材。" },
+            { "f": "System Verilog for Verification, 3nd Edition.pdf", "t": "SV 教材", "v": "3rd / 2012", "p": 499, "r": "选读", "o": "SV 验证教材（Chris Spear，testbench 语言特性）", "s": "《SystemVerilog for Verification》第三版（Spear/Tumbush）：class、随机化、coverage、OOP testbench。验证新人标准教材。" },
+            { "f": "IEEE Std 1800-2017.pdf", "t": "IEEE 标准", "v": "1800-2017", "p": 1315, "r": "速查", "o": "SystemVerilog LRM 现行标准", "s": "SV 语言参考手册（LRM）现行主流版本：全量语法语义。工具对某语法支持有歧义时的最终仲裁。（库里长文件名那份是仅水印不同的重复副本）" },
+            { "f": "IEEE Std 1800-2023.pdf", "t": "IEEE 标准", "v": "1800-2023", "p": 1354, "r": "速查", "o": "SystemVerilog LRM 最新修订（2024-02 发布）", "s": "LRM 最新版。工具链（综合/仿真/LEC）全面支持 2023 后再切换，日常以 2017 版为准。" },
+            { "f": "Simulation and Analysis.pdf", "t": "Synopsys HSPICE", "v": "B-2008.09", "p": 1024, "r": "存档", "o": "HSPICE 电路仿真手册", "s": "HSPICE（晶体管级仿真）手册，属模拟/电路仿真域，不在数字综合迁移主线上，存档。" }
+          ]
+        }
+      ],
+      "excluded": {
+        "duplicates": [
+          { "drop": "Design Compiler 2023.pdf", "keep": "Design Compiler® User Guide 2023.pdf", "why": "同一版本 U-2022.12-SP3（879 页），两份拷贝" },
+          { "drop": "Synopsys design compiler user manual.pdf", "keep": "Design Compiler® User Guide 2019.pdf", "why": "同一版本 P-2019.03（792 页），两份拷贝" },
+          { "drop": "Design Compiler for SystemVerilog User Guide 2023.pdf", "keep": "HDL Compiler™ for SystemVerilog 2023.pdf", "why": "MD5 完全相同，后者是官方名称" },
+          { "drop": "Fusion Compiler™ User Guide  2019.pdf（文件名多一个空格）", "keep": "Fusion Compiler™ User Guide 2019.pdf", "why": "MD5 完全相同，仅文件名空格差异" },
+          { "drop": "Electronic Design Automation_ Synthesis, Verification, and Test (Systems on Silicon) (2009).pdf", "keep": "Electronic Design Automation_ Synthesis Verification and Test Systems on Silicon 2009.pdf", "why": "MD5 完全相同，仅标点命名差异" },
+          { "drop": "innovusUG_19.1.pdf", "keep": "Innovus User Guide 2019.pdf", "why": "MD5 完全相同，同一份 19.11 手册" },
+          { "drop": "Liberty User Guides and Reference Manual Suite(2017).pdf", "keep": "Liberty User Guides and Reference Manual Suite 2017.06.pdf", "why": "MD5 完全相同，仅括号写法差异" },
+          { "drop": "IEEE Standard for SystemVerilog — Unified…（长名版）", "keep": "IEEE Std 1800-2017.pdf", "why": "同一标准全文，仅 IEEE Xplore 下载水印用户不同" },
+          { "drop": "Logic Equivalence Checker.pdf", "keep": "conformal_lec_training_basic_advance.pdf", "why": "MD5 完全相同，后者文件名信息量更大" },
+          { "drop": "Using Tcl With Synopsys Tools  2021.pdf（文件名多一个空格）", "keep": "Using Tcl With Synopsys Tools 2021.pdf", "why": "同为 114 页同内容，仅文件名空格差异" }
+        ],
+        "irrelevant": [
+          { "file": "GIS Algorithms(2015).pdf / Ningchuan Xiao - GIS Algorithms-sagepub (2015).pdf", "why": "GIS 地理信息科学教材（两份相同），与 IC 设计无关" },
+          { "file": "Introduction.to.Algorithms.4th.Edition.2022.4.pdf", "why": "算法导论（CLRS 第4版）通用计算机算法教材，与 EDA 流程无直接关系" },
+          { "file": "MPLAB® C18 C COMPILER USER'S GUIDE.pdf", "why": "Microchip PIC 单片机 C 编译器手册，与数字后端/验证无关" },
+          { "file": "Technology Mapping for LUT-Based FPGA.pdf", "why": "FPGA LUT 技术映射学术专著，与 ASIC 综合迁移主线无关" },
+          { "file": "Timing Constraints Editor User Guide 2022.pdf", "why": "Microchip Libero SoC（FPGA）的约束编辑器手册，非 Synopsys 工具链" },
+          { "file": "Timing Constraints Editor User Guid 2023.pdf", "why": "同上 2023 版，FPGA 工具文档" }
+        ]
+      }
+    };
+
+    const RBADGE = { "精读": "r-jing", "选读": "r-xuan", "速读": "r-su", "速查": "r-cha", "存档": "r-cun" };
+
+    // 分阶段文档区
+    const stagesRoot = document.getElementById('stages');
+    DATA.stages.forEach(st => {
+      const sec = document.createElement('section');
+      sec.className = 'stage';
+      sec.id = st.id.toLowerCase();
+      const t = document.createElement('div');
+      t.className = 'section-title';
+      t.textContent = st.id + ' · ' + st.name + ' · ' + st.days;
+      const g = document.createElement('p');
+      g.className = 'stage-goal';
+      g.textContent = st.goal;
+      const list = document.createElement('div');
+      list.className = 'doc-list';
+      st.docs.forEach(d => {
+        const row = document.createElement('article');
+        row.className = 'doc-row' + (d.r === '精读' ? ' fine' : '');
+        const meta = document.createElement('div');
+        meta.className = 'doc-meta';
+        const f = document.createElement('span'); f.className = 'doc-file'; f.textContent = d.f;
+        const ct = document.createElement('span'); ct.className = 'chip'; ct.textContent = d.t;
+        const cv = document.createElement('span'); cv.className = 'chip chip-v'; cv.textContent = d.v;
+        const pg = document.createElement('span'); pg.className = 'doc-pages'; pg.textContent = d.p + ' 页';
+        const rb = document.createElement('span'); rb.className = 'rbadge ' + (RBADGE[d.r] || 'r-su'); rb.textContent = d.r;
+        meta.append(f, ct, cv, pg, rb);
+        const o = document.createElement('div'); o.className = 'doc-o'; o.textContent = d.o;
+        const s = document.createElement('div'); s.className = 'doc-s'; s.textContent = d.s;
+        row.append(meta, o, s);
+        list.appendChild(row);
+      });
+      sec.append(t, g, list);
+      stagesRoot.appendChild(sec);
+    });
+
+    // 剔除区
+    const dupBody = document.getElementById('dup-body');
+    DATA.excluded.duplicates.forEach(x => {
+      const tr = document.createElement('tr');
+      const td1 = document.createElement('td'); td1.className = 'xf'; td1.textContent = x.drop;
+      const td2 = document.createElement('td'); td2.className = 'xf'; td2.textContent = x.keep;
+      const td3 = document.createElement('td'); td3.textContent = x.why;
+      tr.append(td1, td2, td3);
+      dupBody.appendChild(tr);
+    });
+    const irrBody = document.getElementById('irr-body');
+    DATA.excluded.irrelevant.forEach(x => {
+      const tr = document.createElement('tr');
+      const td1 = document.createElement('td'); td1.className = 'xf'; td1.textContent = x.file;
+      const td2 = document.createElement('td'); td2.textContent = x.why;
+      tr.append(td1, td2);
+      irrBody.appendChild(tr);
+    });
+  </script>
+
+  <script>
+    const chapters = [
+      ['index', '首页'],
+      ['evaluation', '评估实录'],
+      ['handoff-guide', '回传指引'],
+      ['bringup-log', '排障实录'],
+      ['help-request', '求助清单'],
+      ['fc-sop', '快速启动'],
+      ['lec-noneq-case', '行为差异实录'],
+      ['guide-library', '手册导读']
+    ];
+    const currentPath = location.pathname.split('/').pop() || 'index.html';
+    const linksContainer = document.getElementById('navbar-links');
+    chapters.forEach(([slug, label]) => {
+      const href = slug === 'index' ? './' : `./${slug}.html`;
+      const filename = slug === 'index' ? 'index.html' : `${slug}.html`;
+      const a = document.createElement('a');
+      a.href = href;
+      a.textContent = label;
+      if (currentPath === filename || currentPath.endsWith('/' + filename) || (currentPath === '' && slug === 'index')) {
+        a.classList.add('active');
+      }
+      linksContainer.appendChild(a);
+    });
+  </script>
+</body>
+</html>
