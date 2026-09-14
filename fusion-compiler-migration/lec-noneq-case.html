@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>进阶实验室 · FC LEC 282 点 NONEQ 攻坚实录 — 一个问题的四种死法</title>
+  <title>进阶实验室 · FC vs DC 行为差异攻坚实录 — 从 NONEQ 282 点到约束移植</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet">
@@ -42,7 +42,7 @@
   </div>
 
 <script type="text/template" id="md">
-# 六、FC LEC 282 点 NONEQ 攻坚实录——一个问题的四种死法
+# 六、FC vs DC 行为差异攻坚实录——从 NONEQ 282 点到约束移植
 
 > **FC 综合网表 vs RTL 的 LEC（fc_lec）首跑：EQ 1601 / NON-EQ 573。** 四刀砍下去——层级压缩 → 总线命名 → pragma 谎言 → phase map 缺席，收敛路径 **573 → 282 → 85 → 0**，终审 **PASS（EQ 2178 / NON-EQ 0 / Uncompared 0）**。每一刀是完全不同的根因：**层级、命名、语义、建模**。本文是完整作战记录 + 方法论沉淀，按"换个人也能照着走"的标准写；日记版过程细节见《[首跑排障实录](./bringup-log.html)》8.10~8.18。
 >
@@ -235,6 +235,55 @@ set_mapping_method -phase
 - ICG 模型代差嫌疑：`lib_common_lec.do` 第三份模型是 HV1V21 旧项目路径的 `APR_CDM.v`，待 CAD 确认 HV2M23 版。
 - 历史链（lec_apr / lec_apr_eco）在新 RTL 并行语义下的复验策略待设计组裁决——裁决问题只有一句："多-hot 是不是合法输入态？出现了谁赢？"
 - 修复代码均为实验态（`.bak_ecofix` 可回退），正式入库待设计组评审。
+
+---
+
+## 10. PT 消费实证与 29 error 三分类（0914）
+
+fc_lec PASS（2178/0/0/0）之后，用 `top/sta/fc_pre`（由 gen_fc_verify 生成、指向 FC 网表与 FC 产 SDC 的 PT 环境）跑了 PT smoke test：**link 零 unresolved、setup 零违例**（"No paths with slack less than 0.000000"）、hold 违例清单为 pre-CTS 常态。诊断 summary 的 **29 errors** 逐条取证后分为三类——**全部在 DC 时代的 PT 日志（pt_rpt_1p/read_tcl.log）里找到同样的警告，与 FC 无关**：
+
+| 类 | 内容 | DC 时代 | 机理 |
+|---|---|---|---|
+| A | `*BUF_PON_CS_SEL_0/1*`、`*BUF_POFF_CS_SEL_0/1*`、`*BUF_PGMA_MNT_POS/NEG*` SEL-004 | 同样 SEL-004 | tie buffer：输入绑 `1'b0` + 输出悬空（顶层例化只连 XON），PT link 时常数传播+无用单元吸收，模型里不存在 → get_cells 找不到 → dont_touch 空转。**无害**（网表里 cell 在，硅片不变） |
+| B | `*DLY0`、`*DLY7/8/9` SEL-004/005 | 同样 SEL-004/005 | HV1V21 遗留 dont_touch 条目，HV2M23 网表里没有以 DLY0 结尾的 cell（glob 尾锚不匹配是正确行为）。约束条目为跨代残留 |
+| C | `DTCTL_L1/EN1_R_reg`、`EN1_L_reg` SEL-003 | 同样 SEL-003 | **约束自身写错**：RTL 里 EN1_R/EN1_L 只存在于 DTCTL_L0（`DTCTL_L0.v:174 reg EN1_R`），`DTCTL_L1.v` 零命中——L1 块是从 L0 块复制时忘了删。FC 网表正确地没有这些寄存器 |
+
+> **取证方法**：目录级 grep 会漏 `.log` 文件（工具过滤），必须**指名文件路径**直查；DC 时代日志 `pt_rpt_1p/read_tcl.log` 单文件 grep `SEL-00|No cell objects|Nothing matched|Nothing implicitly` 得到完整清单。
+
+## 11. 约束移植：RTL 锚点迁移（0914）
+
+C258-261 家族的处理：约束不再引用综合自动名，改绑 **RTL 显式例化的缓冲**（`DTCTL_COMB.v:193-196`，名字在 DC/FC 两版网表逐字保留）：
+
+```tcl
+# 修改前（绑 DC 自动名，跨工具失效/错绑）
+set_multicycle_path  -hold 4 -from [get_cells .../DTCTL_L1/DBRON_reg] -to [get_pins .../DTCTL_COMB/C261/*]
+# 修改后（绑 RTL 例化缓冲的 O 脚 = 原门 I1 的驱动网，路径族等价且更稳）
+set_multicycle_path  -hold 4 -from [get_cells .../DTCTL_L1/DBRON_reg] -to [get_pins .../DTCTL_COMB/BUF_DBRON_B_CG_EN/O]
+```
+
+映射表：
+
+| 门（DC 自动名） | RTL 例化缓冲锚点 |
+|---|---|
+| C258 | `BUF_DBLON_A_CG_EN/O` |
+| C259 | `BUF_DBRON_A_CG_EN/O` |
+| C260 | `BUF_DBLON_B_CG_EN/O` |
+| C261 | `BUF_DBRON_B_CG_EN/O` |
+
+false_path 的 `-to {C258/I1 C259/I1 C260/I1 C261/I1}` 同样改绑四个缓冲的 `/O`。
+
+**语义说明**：端点从"门的 I1 脚"挪到"驱动它的缓冲 O 脚"，中间只隔一条网，路径族等价且略紧（对 hold 放宽更安全）。
+
+> **教训**：与第二刀同理——约束锚点也要跨工具存活；绑综合器自动命名的对象，换一次综合工具就断一次。**锚 RTL 里显式存在、两代网表逐字保留的名字**，才是一等公民锚点。
+
+## 12. 终审状态（0914）
+
+- ✅ **fc_lec 重综合后重跑：PASS 2178 / 0 / 0 / 0**（约束修正后的网表再次形式证明 ≡ RTL）
+- ✅ **PT setup 零违例保持**（"No paths with slack less than 0.000000"）
+- ✅ **FC 综合侧约束零空匹配**（修正后的 RTL 锚点在 fc_shell 全部命中）
+- ✅ **面积 158331.80**（对比修正前 158607.59，**-0.17%**——修正后的约束真实参与了映射）
+- ✅ **deploy_fc.py v3：76409 B / md5 `dad8461f9703897bad11f9654c68b38e` / build 2026-09-14 10:45**
+- 遗留：CSPI/RTL 实验改动待设计组评审入库；APR_CDM.v 模型代差待 CAD；EN1_R/EN1_L@L1 死约束已注释（如确认永久删除可再清）；历史链复验策略待裁决
 </script>
 
 <script>
@@ -245,7 +294,7 @@ const chapters = [
   ['bringup-log', '首跑排障实录'],
   ['help-request', '求助清单'],
   ['fc-sop', '快速启动手册'],
-  ['lec-noneq-case', 'NONEQ攻坚实录']
+  ['lec-noneq-case', '行为差异实录']
 ];
 const currentPath = location.pathname.split('/').pop() || 'index.html';
 const linksContainer = document.getElementById('navbar-links');

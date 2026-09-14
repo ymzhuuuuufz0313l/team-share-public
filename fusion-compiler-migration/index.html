@@ -390,12 +390,12 @@
       </div>
       <div class="hero-hint">
         <span>⭐</span>
-        <span>推荐阅读：先 <a href="./evaluation.html">评估实录</a> 看全貌 <span class="arrow">→</span> 再到 <a href="./bringup-log.html">首跑排障</a> 看五道关卡 <span class="arrow">→</span> 复刻直接抄 <a href="./fc-sop.html">快速启动手册</a> <span class="arrow">→</span> 深挖看 <a href="./lec-noneq-case.html">NONEQ 攻坚</a></span>
+        <span>推荐阅读：先 <a href="./evaluation.html">评估实录</a> 看全貌 <span class="arrow">→</span> 再到 <a href="./bringup-log.html">首跑排障</a> 看五道关卡 <span class="arrow">→</span> 复刻直接抄 <a href="./fc-sop.html">快速启动手册</a> <span class="arrow">→</span> 深挖看 <a href="./lec-noneq-case.html">行为差异实录</a></span>
       </div>
       <div class="reg">
         CURRENT
-        <span class="ver">09-11</span>
-        REV 2026-09-11
+        <span class="ver">09-14</span>
+        REV 2026-09-14
       </div>
     </div>
   </header>
@@ -404,13 +404,13 @@
     <div class="latest">
       <div class="badge">
         <span class="tag">LATEST</span>
-        <span class="num">09-11</span>
+        <span class="num">0914</span>
       </div>
       <div class="body">
-        <div class="t">09-11 · LEC 282 点 NONEQ 攻坚独立成篇：四刀 573→282→85→（预期 0）</div>
+        <div class="t">0914 · LEC 独立页更名扩编「FC vs DC 行为差异攻坚实录」：新增 PT 消费实证、29 error 三分类、约束 RTL 锚点移植</div>
         <ul>
-          <li>四刀四种根因：层级压缩（autoungroup）→ 总线命名（DC 兼容）→ pragma 谎言（case(1&apos;b1)）→ phase map 缺席（互补形态映射）</li>
-          <li>完整作战记录 + 方法论沉淀整理为学习页 <code>lec-noneq-case.html</code>；<code>-phase</code> 修复待服务器实测归零</li>
+          <li>终审收口：fc_lec 重综合后重跑 <code>PASS 2178/0/0/0</code>；PT setup 零违例保持；面积 158331.80（-0.17%）；deploy_fc.py v3 build 2026-09-14</li>
+          <li>29 errors 三分类全部在 DC 时代 PT 日志同款命中（tie buffer 空转 / 跨代残留 / 约束写错），与 FC 无关；C258-261 约束改绑 RTL 显式例化缓冲锚点</li>
         </ul>
       </div>
       <a class="more" href="./lec-noneq-case.html">攻坚全记录 →</a>
@@ -452,8 +452,8 @@
       </a>
       <a class="chapter-card" href="./lec-noneq-case.html">
         <div class="num">六</div>
-        <div class="title">LEC 282 点 NONEQ 攻坚实录<span class="star">新</span></div>
-        <div class="desc">fc_lec 四刀战记：层级压缩、总线命名、pragma 谎言、phase map 缺席——573→282→85→（预期 0）</div>
+        <div class="title">FC vs DC 行为差异攻坚实录<span class="star">新</span></div>
+        <div class="desc">NONEQ 四刀战记（层级/命名/pragma/phase map）+ PT 消费实证与 29 error 三分类 + 约束 RTL 锚点移植——573→282→85→0 终审 PASS</div>
       </a>
     </div>
 
@@ -487,7 +487,7 @@
       ['bringup-log', '排障实录'],
       ['help-request', '求助清单'],
       ['fc-sop', '快速启动'],
-      ['lec-noneq-case', 'NONEQ攻坚']
+      ['lec-noneq-case', '行为差异']
     ];
     const currentPath = location.pathname.split('/').pop() || 'index.html';
     const linksContainer = document.getElementById('navbar-links');
