@@ -139,6 +139,8 @@ H4INV = R_REG00_L[4]  R_POL2 = R_REG03_L[6]
 
 ## 案例 3：skew -900（空报告 × 哨兵值）
 
+> **说明**：这是当天下午的早期诊断。当天夜间的最终定案——perl 哨兵修复、三份"非法起点回退"报表、以及"改完还是 -900"的投放路径原因——见 **案例 9**；本案例给出的探针三原则仍然有效。
+
 ### 现象
 
 skew 汇总 Excel/CSV 出现 **-993 ~ -998** 的 margin 值（wc_cbest 例：**-993.55687**），明显不是真实时序。
@@ -161,8 +163,8 @@ report_timing_skew_sd.tcl
 1. 探针层级错：`report_timing_skew_sd.tcl:15` 写 `u_LOGIC_CENTER/CENTER1/DTCTL/u_gate_INV_SD_CLK_INV/O*`；该反相器真实位置是 `u_LOGIC_CENTER/LC_CLK_RST_GEN/CLKGEN/u_gate_INV_SD_CLK_INV`（CLKGEN.v:186）
 2. perl 哨兵：`get_sd_busskew.pl:33-34` 初始化 `$max=0; $min=1000;`——空报告没有任何 `data arrival time` 行，值永不更新
 3. 差值：`get_sd_busskew.pl:117` `margin_max = 数据max − clk_min = 6.44 − 1000 = -993.55687`，与 Excel 逐位吻合
-4. **次生错误**：`margin_min = 数据min − clk_max = 数据min − 0`，数值"看着正常"（4.44/5.09…）其实同样是垃圾——真实时钟延迟应 ~10-12
-5. clk_b 另有一病：`DTCTL/DPLC_CLK*`、`DTCTL/SD_CLK_INV*` 用模块输入端口 pin 做探针，把 SP_I、R_REG06_F 等无关起点的路径混进包络（clk_b min≈2.3 vs max≈11 的大裂口即由此造成）
+4. **次生错误**：`margin_min = 数据min − clk_max = 数据min − 0`，数值"看着正常"（4.44/5.09…）其实同样是垃圾——真实时钟延迟是 CLKGEN 到 pad 的时钟树延迟（几 ns 量级，需用修好的探针实测），不是 0
+5. clk_b 另有一病：`DTCTL/DPLC_CLK*`、`DTCTL/SD_CLK_INV*` 用模块输入端口 pin 做探针，把**无关起点**的路径混进包络。实测 clk_b 的 10 个起点里有 `SP_I (input port)`、`APR_CDM_17/A`、`LC_CPUWR/R_REG05_F_reg_5/6/7`、`R_REG06_F_reg_2/7`、`SHORT_ENCODING_OUTPUT/data_cnt_reg_2_`、`CLKGEN/short_encoding_phase_data_0_half_dly_reg`（clk_b min≈2.3 vs max≈11 的大裂口即由此造成）
 
 ### 处理
 
