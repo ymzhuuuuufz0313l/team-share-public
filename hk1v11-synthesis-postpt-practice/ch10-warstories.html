@@ -28,7 +28,7 @@
   <script type="text/template" id="md">
 # 十、问题解决心路历程（排障实录）
 
-> 全站唯一有实质内容的一章。收录 0915~0916 两天里 POSTPT 签核与 skew 汇总的六段真实排障，每段按「现象 → 定位思路 → 证据链 → 处理 → 结论/遗留」展开。**结论先行：两天的主线只有一条——约束的生效链是 `ip_cons → pre-PT write_sdc → APR → postcts.sdc → POSTPT`；而 "read_cons.log / read_tcl.log 的 SEL-004/005 计数" 是这条链上唯一可靠的回归指标。**
+> 全站唯一有实质内容的一章。收录 0915~0916 两天里 POSTPT 签核与 skew 汇总的九段真实排障，每段按「现象 → 定位思路 → 证据链 → 处理 → 结论/遗留」展开。**结论先行：两天的主线只有一条——约束的生效链是 `ip_cons → pre-PT write_sdc → APR → postcts.sdc → POSTPT`；而 "read_cons.log / read_tcl.log 的 SEL-004/005 计数" 是这条链上唯一可靠的回归指标。**
 
 ## 收敛仪表盘
 
@@ -168,7 +168,7 @@ report_timing_skew_sd.tcl
 
 - clk_a → `CLKGEN/u_gate_INV_SD_CLK_INV/CLKINVX4/O`（与 SDC 生成时钟定义点一致）
 - clk_b → 双源包络：`u_gate_MUX_SD_CLK/CLKMUX2X2/O` + `u_gate_INV_SD_CLK_INV/CLKINVX4/O`（DTCTL.v:741-744：CLKA 恒为 SD_CLK_INV；CLKB = DPLC_MODE_TRUE ? DPLC_CLK : SD_CLK_INV）
-- 全部时钟报告加 `-slack_lesser_than 50`；补齐 perl 期望的 dplc 8 份报告（暂行值，DPLC_CLK 生成时钟未定义）
+- 全部时钟报告加 `-slack_lesser_than 50`；~~补齐 perl 期望的 dplc 8 份报告（暂行值，DPLC_CLK 生成时钟未定义）~~ → 该"暂行填充"在**案例 9** 中被判定为**伪造数字**并已删除（dplc 行留空，等真实 DPLC 模式 run）
 - `report_timing_skew_io.tcl` 同病同修：`PAD_INBUF/U3/O`、`SDA_LO` 在 1V11 不存在 → 改 `SCL_I` / `SDA_OE`
 
 ### 结论与遗留
@@ -223,37 +223,181 @@ pre-PT `read_tcl.log` 出现 **18 条 SEL-004/005**。逐条清点，三类：
 - 教训：**模块/时钟改名后，所有引用点（clock list、pin 通配、报告脚本、skew 探针）都要过一遍 SEL 计数**——把 read_tcl.log / read_cons.log 的 SEL-004/005 总数当回归指标，非零即回归
 - L422-428 的层级笔误由人工评审抓住（"层级和同组不一致"）——逐行对账仍是最后的安全网
 
-## 案例 6：G2 ON HOLD（未闭环，诚实的待定项）
+## 案例 6：G2 从 ON HOLD 到"先启用待确认"
 
-`R_BKDU (R_REG03_L_reg_2_) → BK_ST_reg`：RTL 上 `BIT_ALIGN_ST = BIT_ALIGN_PT | (R_BKDU & K2_FIND)`（LONG_ENCODING_ALIGN.v:429），R_BKDU 与已采纳的 G1/G3 是同一位。但 **dummy 行发送时 K2 与 BKDU 寄存器之间的时序间隙未经设计确认**——如果间隙有硬要求，mc2 会掩盖真问题。
+`R_BKDU (R_REG03_L_reg_2_) → BK_ST_reg`：RTL 上 `BIT_ALIGN_ST = BIT_ALIGN_PT | (R_BKDU & K2_FIND)`（LONG_ENCODING_ALIGN.v:429），R_BKDU 与已采纳的 G1/G3 是同一位。最初因 **dummy 行发送时 K2 与 BKDU 寄存器之间的时序间隙未确认** 而整组注释 ON HOLD。
 
-处置：整组注释 ON HOLD，保持单周期检查；-0.191 违例走评审豁免。等 design 确认间隙后再启用或永久豁免。
+后续处置（2026-09-16 17:08）：团队决定 **enabled first**——STA 环境验证 OK，先启用 mc2 收敛该违例；同时在 ip_cons 头部留下状态行："The actual timing gap between the K2 word and the BKDU register update during dummy-line transmission STILL NEEDS jjlu confirmation → treat as open, pending jjlu review. If jjlu rejects, re-comment the G2 lines in both branches."
 
-这条留在这里是想说明：**不是所有违例都要用约束消掉，"诚实的待定"比"错误的收敛"便宜。**
+这条的启示：**"先启用 + 显式标注待确认"是一种可接受的中间态**，但必须把待确认状态写进约束文件的头部注释里，让评审人一眼看到，而不是默默收敛。
+
+## 案例 7：网表 A/B 审判——同一份约束，两版网表选哪版
+
+### 现象
+
+后端连续交付两版网表，都跑了完整 POSTPT：A 版（gating setup 违例 15 条，19373 cells / 25411 nets）与 B 版（gating 30 条，19250 / 25276）。两版 `ip_cons` 逐字节相同（diff=0，含 round4+round5+NORMAL 修复）——**这是难得的纯净 A/B：唯一变量就是网表本身**。
+
+### 判据（先登记再看数据，防止事后凑结论）
+
+1. 签核 corner 加权：wc_cworst（setup 主签核）> wc_typical > wc_cbest（min-RC，SI 放大区）
+2. 违例率 = 违例数 ÷ 该类检查总数（两版 ICG 数不同，绝对条数不可直接比）
+3. 真违例净值（剔除两版共有的 -5.x 系统性家族）
+4. 约束兼容性（SEL、mc 落地、ignored）
+
+### 数据对照
+
+| 判据 | A (gating15) | B (gating30) | 胜 |
+|---|---|---|---|
+| setup wc_cworst（签核点） | 31 (w-0.358) | 49 (w-0.454) | **A** |
+| setup wc_cbest | 194 (w-0.681) | 92 (w-0.518) | B |
+| gating 违例率 | 15/47 = **31.9%** | 30/54 = **55.6%** | **A** |
+| hold CONFIG_DATA 族 | 4~30 | 35~64（裕量差 ×5-10，兄弟时钟 skew 硬伤，约束无解） | **A** |
+| DPLC 面板数据通路 | 108 违例（仅 cbest） | 0 | B |
+| 约束兼容性 | SEL=0 / mc=55 / round5 落地 / ignored=0 | 完全相同 | 平 |
+
+### 判定：选 A（六条理由）
+
+1. 签核 corner 决定胜负：wc_cworst A 双优（条数与裕量）
+2. B 的 hold 是硬伤且约束救不了（CONFIG_DATA ×10、兄弟时钟 skew 类，只能 APR 返工）；A 的对应项本来就小
+3. gating 类 A 全面占优（违例率 31.9% vs 55.6%，三个 wc corner 条数全胜）；B 只在 cbest 单点 worst 值占优
+4. A 的最大短板（DPLC 108 条）只在 cbest 出现（其余 9 corner 全 0），是单一可圈定的家族，SI 放大性质明显，交给 APR 定向修比 B 的全局 hold 劣化好处理
+5. B 的 K1 家族优势已被 round5 中和（96→3，同一约束下）
+6. 约束兼容性完全相同 → 差异纯粹是网表质量
+
+### 翻转条件（诚实记录）
+
+- cbest 被列为 setup 签核 gate 且 DPLC 必须立刻干净、APR 短期修不了 A 的 108 条
+- designer 确认 B 的 CONFIG_DATA hold 可用约束合理豁免 → B 硬伤消失
+- B 的 gating 检查总数（54 vs 47）若查出是误检 → 违例率对比需重算
+
+**给 APR 的两个破局问题**：① A 的 DPLC 108 条（cbest only）能否一个 ECO 轮次修掉？② B 的 CONFIG_DATA hold（41 条 -0.5）什么根因？——**谁的问题便宜修，就选谁**。
+
+## 案例 8：DPLC_GROUP 与 max_delay 优先级陷阱
+
+### 现象
+
+A 版 wc_cbest 冒出 108 条 setup 违例，全部收敛到两个起点寄存器：`R_REG06_F_reg_7_`（= DPLC_GROUP，DPLC 协议时序模式选择位）×87 和 `R_REG00_F_reg_6_`（= AVE_RGBW[1]，平均权重配置）×2，终点是 DTCTL 的 DPLC 数据生成/输出寄存器。其余 9 个 corner 全 0。
+
+### 机制（为什么只在 cbest 崩）
+
+数据路径（LC_CPUWR → DPLC_GROUP 组合扇出 → DTCTL）约 **9.9ns**，而约束是 `set_max_delay 6.35`（1× DPLC 周期）：
+
+```
+required = max_delay(6.35) + capture 时钟网络延迟
+cworst：延迟 ~4.4 → required ~10.75 > 9.9 → 过
+cbest ：延迟 ~3.0 → required ~9.35 < 9.9  → 崩（108 条）
+```
+
+**这条 max_delay 是靠 capture 时钟延迟垫着才能过的**——min-RC corner 延迟一缩，全线崩盘。corner 结构性脆弱，不是路径本身慢。
+
+### 为什么 multicycle 救不了
+
+PT 例外优先级：`set_false_path > set_max_delay > set_multicycle_path`。**实锤**：约束文件里本来就有 `R_REG*_F_reg* → DCLK_DATA_MUX_*` 的 mc2，这 89 条（报告 top 内）照样违例——mc 在 max_delay 面前直接被忽略。
+
+### 解法：更具体的 set_max_delay（不是新发明，是沿用先例）
+
+同一文件里密码寄存器早有先例：`set_max_delay [expr $DPLC_CLKP*2] -from R_REG48_F_reg*`。照此办理：
+
+```tcl
+set_max_delay [expr $DPLC_CLKP*2] -from .../R_REG06_F_reg_7_/CK -to .../DTCTL/U_DPLC_DATA_GEN/*/D*
+set_max_delay [expr $DPLC_CLKP*2] -from .../R_REG06_F_reg_7_/CK -thr .../U_DPLC_DATA_GEN/* -to .../data_out_tmp*/D*
+# R_REG00_F_reg_6_ 同款两行
+```
+
+同类例外里 point-to-point（-from -to）优先于 general（-to），所以只有这两个配置寄存器扇出的路径被放宽到 12.7ns（required = 12.7+延迟 ≥ 15.7 > 9.9，全 corner 收敛），**其余 DPLC 动态路径仍按 6.35 严格检查**。
+
+### 强限定条款（来自用户的明确要求）
+
+"-from 精确到 `R_REG06_F_reg_7_` / `R_REG00_F_reg_6_` 两个寄存器、零族通配"——宽松只属于这两个静态配置位；`R_REG06_F[2]`（DPLC_MODE）当前零违例，明确不放，防止顺手扩大化。
+
+### 结论
+
+**"只准 multicycle"的规则碰到 max_delay 罩着的路径时会失效**——此时正确做法不是 break rule 去加 false_path，而是用"更具体的宽松 set_max_delay"让路径保持被检查、只是窗口变宽。这是约束工具箱里第三件工具，值得记住。
+
+## 案例 9：skew -900 定案——"改完还是 -900"的两个额外真相
+
+### 现象
+
+按案例 3 修好探针、把文件拷到别处后，报表里 **-993.56 依旧**。用户判断"路径找错了或脚本有问题"——**判断对了一半**。
+
+### 定案证据（本地真实报表目录，msys perl 5.40）
+
+| 步骤 | 内容 | 结果 |
+|---|---|---|
+| ① 复现 | 拿 git HEAD 的旧 perl + 0916V5 真实报表跑 | 输出 `0,1000,6.44313,...` 与 `-993.55687`，**与已发布 csv 完全一致** |
+| ② 修复 | 新 perl（去掉哨兵）跑同一批报表 | 该字段留**空白**，stderr 点名 `report_timing_sd_l_1p_clk_a.rpt has no 'data arrival time' line` |
+| ③ 回归 | 其余字段逐字节比对 | **完全相同**（修哨兵无副作用） |
+
+### 真相一：坏的不止一个文件，另外三个"假得合理"
+
+同一 run 的 4 份时钟报表：
+
+| 文件 | 状态 | 后果 |
+|---|---|---|
+| `sd_l_1p_clk_a.rpt` | **151 字节空壳**（只有 SEL-003/005） | 哨兵 → -993.56（明显假） |
+| `sd_r_1p_clk_a.rpt` | 3.3 MB，起点 `LC_CPUWR/R_REG06_F_reg_7_`（**数据寄存器**），带 `invalid start point (UITE-416)` | pt_shell 回退成"终点为该时钟 pad 的全部路径"，把 11.3 ns 的**数据路径**当时钟到达时间 → margin = -5.15（看着像真的超标） |
+| `sd_l_1p_clk_b.rpt` | 起点 `CLKGEN/short_encoding_phase_data_0_half_dly_reg`（数据寄存器），2 invalid start point | margin = +3.75（落在窗口外，像"超标"） |
+| `sd_r_1p_clk_b.rpt` | 同上 | margin = **+2.84（落在 [-2.5:+2.5] 窗口内）**——最危险，会被当成"合格"信以为真 |
+
+教训：**"有些行看起来正常"比"全部离谱"更危险**。哨兵值至少一眼可疑；非法起点回退出的假数字能一路混进签核表。
+
+### 真相二：服务器上根本没跑新脚本
+
+最新 `PACK_TAR_0916V5`（16:12）里 `SYNTHESIS/top/sta/post/common/report_timing_skew_sd.tcl` 仍是 **4747 字节的 56 行旧版**（第 15 行还是 DTCTL 层级）。调用链是 `pt_setup.tcl:328/333 source ../../common/report_timing_skew_sd.tcl`（相对 `top/sta/post/pt/<corner>/` 解析）——**文件必须落在 `top/sta/post/common/`，并且要重跑 `run_pt`（`run_summary` 只是重新解析已有 corner 报表，不重跑就不会变）**。
+
+### 处理（本次落地）
+
+1. **探针**：clk_a → `CLKGEN/u_gate_INV_SD_CLK_INV/CLKINVX4/O`；clk_b → 双源包络（`SD_CLK_INV` + `u_gate_MUX_SD_CLK/CLKMUX2X2/O`）。两点即 SDC 里 `create_generated_clock` 的源 pin（`ip_cons:54-55,60-68`；`read_cons.log:476-486`），pt_shell 按**时钟源**处理——与 HV2M23 做法一致。
+2. **perl 去哨兵**：`$max=0; $min=1000;` → `undef` + `defined()` 保护；新增 `margin()`：任一操作数未测到就输出**空白**；每文件统计 `data_lines`，为 0 时 stderr WARNING 点名文件。
+3. **删掉伪造的 dplc 行**：早前为"填满 perl 期望的文件集"把 1p 的数据探针复制给 dplc——那是**编数字**。改为留空（原流程行为），等真实 DPLC 模式 run（2M23 用 `latest_1p`/`latest_2p` 两套 run 目录）。
+
+### 验证清单（拷服务器后逐条过）
+
+1. 4 份 `*_clk_*.rpt`：>1 KB、`grep -c "data arrival time"` > 0；
+2. `Startpoint:` 必须是 **CLKGEN 的时钟源 pin**（`clock source 'SD_CLK_INV_*'`），**不应再有** `invalid start point (UITE-416)`；
+3. 日志无 `WARNING(get_sd_busskew.pl)`；
+4. `report_sd_busskew.csv` 不再出现 < -100 的 margin，左 CLKA margin 为**带符号个位数**（0 ~ ±3 ns 量级）。
+
+### 结论
+
+- -900 的完整因果链：**探针层级错 → 1 份空报表 + 3 份非法起点回退 → perl 0/1000 哨兵 → 假 margin 进签核表**。
+- 修完还见 -900 的原因**不在脚本逻辑，而在投放位置 + 是否重跑 corner**：改副本无效，只跑 `run_summary` 无效。
+- 遗留：DPLC 模式 CLKB 的独立 `DPLC_CLK`（`CLKGEN.v:182,190`，`u_gate_MUX_DPLC_CLK/O`）在 SDC 里**还没有** `create_generated_clock`，要测它得先在 ip_cons 补定义；合格窗规格（1V11 `[-2.5:+2.5]`/`[-1:4]` vs 指南 `[-1:+6]`）仍待后端确认。
 
 ## 心法清单
 
 1. **先同 corner 对齐，再谈工具差异**（案例 2 第一步省掉半天弯路）
 2. **SEL-004/005 计数是约束链的回归指标**（案例 1/5）
-3. **空报告 + 哨兵值 = 最隐蔽的假数据源**，解析脚本要防呆（案例 3）
+3. **空报告 + 哨兵值 = 最隐蔽的假数据源**，解析脚本要防呆（案例 3/9）；**非法起点的回退报表更危险**——数字"假得合理"，能混进签核表
 4. 例外约束的演进路径：逐条（审计友好）→ 家族合并（可维护）→ 双分支（跨工具安全）（案例 4）
 5. 改名/重构必过一遍引用点自检（案例 5）
 6. 按扇入矩阵补全集，而不是逐个打地鼠（案例 2）
 7. 证据链写到 文件:行号，让下一个接手的人不用重走
-8. **诚实的待定 > 错误的收敛**（案例 6）
+8. **诚实的待定 > 错误的收敛**；但"先启用+头部标注待确认"是更好的中间态（案例 6）
+9. **判据先登记再看数据**；纯净 A/B（约束 diff=0）是判网表质量的黄金机会（案例 7）
+10. 记住例外优先级链 `false_path > max_delay > multicycle`——它决定哪件工具能用（案例 8）
+11. **"改完没变化"先查三件事：文件投放到调用链认的路径了吗？跑的是 `run_pt` 还是只 `run_summary`？改的是脚本还是副本？**（案例 9）
+12. **宁可留空，不要编数字**：解析脚本缺数据就输出空白 + 日志点名，"暂行填充"迟早变成假签核（案例 9）
 
 ## 未闭环清单
 
 | 项 | 状态 |
 |---|---|
+| 网表 A/B 选定：已选 A（gating=15）；翻转条件见案例 7 | ✅ 09/16 |
+| G2（R_BKDU→BK_ST_reg）：已启用，K2-BKDU 间隙待 jjlu 确认 | 🟡 |
+| G9 TRAINING_RESULT / G11 SMT_CS mc：已并入 pending bundle，待 jjlu 评审 | 🟡 |
+| G10 DPLC_GROUP max_delay 2×：待 jjlu 评审 + POSTPT 验证（组 108→0、required 显示 12.7） | 🟡 |
+| round5 K1 mc：已生效（96→3），头部标 NOT-YET-CONFIRMED 待评审 | 🟡 |
+| skew -900：根因**已定案并修复**（哨兵 + 探针层级 + 非法起点回退；perl/sd/io 已改，本地精确复现验证） | ✅ 09/16 定案 |
+| skew 修复文件待拷服务器 `top/sta/post/common/` 并**重跑 run_pt** 后复验 4 份时钟报表 | 🔴 待服务器 |
 | DPLC_CLK 生成时钟未定义（DRD FIXME）→ dplc skew 报告为暂行值 | ⏳ |
 | DCLK_CONFIG_SHORT 相位 FIXME（对 setup 无影响已证明，对 hold 未查） | ⏳ |
 | F2 同域 88 条 / F3 半周期 17 条真时序违例 | ⚠️ 交 APR/设计 |
 | tt_cworst_25 hold -5.42（C2278/C2272） | ⚠️ 专项 |
 | 生成时钟 uncertainty=0 | ⚠️ |
 | wc_cbest 是否作 setup 签核 gate | ⏳ |
-| SMT_CS FLAG sticky / TRAINING_RESULT×4 | ⏳ 待 designer |
 | skew 合格窗规格（1V11 vs 流程指南） | 🟡 待后端确认 |
+| DPLC_MODE（R_REG06_F[2]）：当前零违例未放松，冒头按 G10 同模式处理 | 🟢 观察 |
   </script>
   <script src="./js/site.js"></script>
 </body>
