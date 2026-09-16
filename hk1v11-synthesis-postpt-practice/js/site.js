@@ -42,6 +42,18 @@
     var toc = document.getElementById('toc');
     var headings = document.querySelectorAll('.article h2, .article h3');
     var tocLinks = [];
+
+    /* 页标题作为左侧目录的第一条（对齐 cpuwr / longcode 站的 toc-h1 形式） */
+    var pageH1 = document.querySelector('.article h1');
+    if (pageH1) {
+      var t1 = document.createElement('a');
+      t1.className = 'toc-h1';
+      t1.href = '#';
+      t1.textContent = pageH1.textContent;
+      t1.addEventListener('click', function (e) { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); });
+      toc.appendChild(t1);
+    }
+
     headings.forEach(function (h) {
       var id = h.textContent.trim().replace(/\s+/g, '-').replace(/[^\w\u4e00-\u9fa5-]/g, '');
       h.id = id;
