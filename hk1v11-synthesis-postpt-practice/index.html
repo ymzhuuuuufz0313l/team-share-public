@@ -390,7 +390,7 @@
     <div class="hero-inner">
       <div class="kicker">HK1V11 · SYNTHESIS / SIGNOFF · PRACTICE</div>
       <h1>综合 / 签核流程<br>实践<span class="thin">记录</span></h1>
-      <p class="lead">一到九章搭 1V11 自己的流程骨架：位置、检查点、交付物；第十章是全站唯一有肉的地方——六段真实排障实录。</p>
+      <p class="lead">一到九章搭 1V11 自己的流程骨架：位置、检查点、交付物；第十章是全站唯一有肉的地方——九段真实排障实录。</p>
       <div class="meta">
         <span>AUTHOR <b>ymzhuuuu</b></span>
         <span>PROJECT <b>HK1V11</b></span>
@@ -398,7 +398,7 @@
       </div>
       <div class="hero-hint">
         <span>⭐</span>
-        <span>推荐直奔 <a href="./ch10-warstories.html">第十章 排障实录</a> 看六段真实案例 <span class="arrow">→</span> 一~九章为流程骨架，数据逐步补录</span>
+        <span>推荐直奔 <a href="./ch10-warstories.html">第十章 排障实录</a> 看九段真实案例 <span class="arrow">→</span> 一~九章为流程骨架，数据逐步补录</span>
       </div>
       <div class="reg">
         CURRENT
@@ -415,11 +415,11 @@
         <span class="num">0916</span>
       </div>
       <div class="body">
-        <div class="t">0916 · mc 约束四轮收敛入库 + skew -900 根因修复</div>
+        <div class="t">0916 · 网表 A/B 定案 + skew -900 根因定案 + mc 四~六轮入库</div>
         <ul>
-          <li>round1~3 共 72 条逐条 mc 经 POSTPT 实证收敛（G1/G3 42 条 + G2~G8 30 条 + POL 补全 3 条）；G2 待 design 确认暂缓</li>
-          <li>skew -900 根因：时钟探针层级失配 → 空报告 → perl 哨兵值进差值；<code>report_timing_skew_sd.tcl</code> / <code>_io.tcl</code> 已重写</li>
-          <li>round4 合并版：<code>dc_shell / pt_shell</code> 双分支 + 族通配，100+ 行收敛为 7 组</li>
+          <li>网表 A/B 审判：判据先登记再看数据，选 <b>A</b>（wc_cworst 31 vs 49、gating 违例率 31.9% vs 55.6%；B 的 CONFIG_DATA hold ×10 兄弟时钟 skew，约束救不了）</li>
+          <li>skew -900 根因定案：1 份空报表 + 3 份"非法起点回退"假报表 + perl 0/1000 哨兵；"改完还是 -900" = <b>投放路径错 + 只跑 run_summary</b></li>
+          <li>round4~6：<code>dc_shell / pt_shell</code> 双分支 + 族通配（100+ 行 → 约 30 行）、round5 K1 家族 96→3、G10 DPLC 静态配置位 max_delay 2×</li>
         </ul>
       </div>
       <a class="more" href="./ch10-warstories.html">排障实录 →</a>
@@ -427,8 +427,8 @@
 
     <div class="stats">
       <div class="stat"><div class="v">10</div><div class="k">章节（一~九骨架 + 十实录）</div></div>
-      <div class="stat"><div class="v">6</div><div class="k">排障案例</div></div>
-      <div class="stat"><div class="v">4</div><div class="k">轮 mc 收敛</div></div>
+      <div class="stat"><div class="v">9</div><div class="k">排障案例</div></div>
+      <div class="stat"><div class="v">6</div><div class="k">轮 mc 收敛</div></div>
       <div class="stat"><div class="v">09<em>-16</em></div><div class="k">建站（首次入库）</div></div>
     </div>
 
@@ -482,7 +482,7 @@
       <a class="chapter-card" href="./ch10-warstories.html">
         <div class="num">十</div>
         <div class="title">问题解决心路历程<span class="star">有货</span></div>
-        <div class="desc">六段真实排障：约束链认知坑、-0.588 跨域 mc 缺口、skew -900、DC 陷阱、改名残留、G2 待定</div>
+        <div class="desc">九段真实排障：约束链认知坑、-0.588 跨域 mc 缺口、skew -900、DC 双分支陷阱、改名残留、G2 待定、网表 A/B 审判、max_delay 优先级、-900 定案</div>
       </a>
     </div>
 

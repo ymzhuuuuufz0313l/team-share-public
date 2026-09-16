@@ -38,6 +38,8 @@
 | round2 | 补 G2~G8 共 30 对 | G2/G4/G5/G6/G7 全清；POL 组浮出 3 条新起点路径（打地鼠） |
 | round3 | POL 扇入矩阵补全 3 对 | 矩阵完备，宣告无 round4 打地鼠 |
 | round4 | 族通配合并 + dc_shell/pt_shell 双分支 | 100+ 行 → 约 30 行；DC 不再误读 |
+| round5 | K1_FIND → CPUWR 族 mc（G1~G8 之外的新家族） | K1 家族违例 96 → 3（同一约束下） |
+| round6 | G9 TRAINING_RESULT / G11 SMT_CS 的 mc + G10 DPLC 静态配置位 max_delay 2× | 已入 pending bundle，待评审 + POSTPT 验证（案例 7/8） |
 
 ## 案例 1：约束链认知坑——"改了 ip_cons 怎么没生效"
 
@@ -200,7 +202,7 @@ if {$synopsys_program_name == "pt_shell"} {
 }
 ```
 
-同时按族通配把 100+ 行合并为约 30 行（叉乘多覆盖为空匹配，无害）。G2 在两分支均注释 ON HOLD。
+同时按族通配把 100+ 行合并为约 30 行（叉乘多覆盖为空匹配，无害）。G2 当时在两分支均注释 ON HOLD（09/16 17:08 改为"先启用 + 头部标注待确认"，见案例 6）。
 
 ### 结论
 
@@ -363,6 +365,14 @@ set_max_delay [expr $DPLC_CLKP*2] -from .../R_REG06_F_reg_7_/CK -thr .../U_DPLC_
 - -900 的完整因果链：**探针层级错 → 1 份空报表 + 3 份非法起点回退 → perl 0/1000 哨兵 → 假 margin 进签核表**。
 - 修完还见 -900 的原因**不在脚本逻辑，而在投放位置 + 是否重跑 corner**：改副本无效，只跑 `run_summary` 无效。
 - 遗留：DPLC 模式 CLKB 的独立 `DPLC_CLK`（`CLKGEN.v:182,190`，`u_gate_MUX_DPLC_CLK/O`）在 SDC 里**还没有** `create_generated_clock`，要测它得先在 ip_cons 补定义；合格窗规格（1V11 `[-2.5:+2.5]`/`[-1:4]` vs 指南 `[-1:+6]`）仍待后端确认。
+
+### 证据文件
+
+| 文件 | 内容 |
+|---|---|
+| `修改记录/skew_sd_busskew_minus900_rootcause_20260916.md`（+ .html / .pdf） | 根因定案全文：空报表原文、三份回退报表的起点与 UITE-416、perl 新旧输出对照、服务器落地与验证清单 |
+| `修改记录/evidence_skew_fix_20260916/` | 本地复现证据：`old.out`（精确复现 -993.55687）、`new.out`（该字段转空白）、`new.err`（WARNING 点名空报告文件） |
+| 代码入库 `3a2de19`（HK1V11） | `report_timing_skew_sd.tcl` / `_io.tcl` / `get_sd_busskew.pl` 修复 + 报告与 PDF |
 
 ## 心法清单
 
