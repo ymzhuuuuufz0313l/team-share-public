@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>三、综合 · HK1V11 综合/签核流程实践</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./css/style.css">
+  <script src="./js/marked.min.js"></script>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a class="navbar-brand" href="./">HK1V11_FLOW_PRACTICE</a>
+      <div class="navbar-links" id="navbar-links"></div>
+    </div>
+  </nav>
+  <div class="container with-toc">
+    <aside class="toc-wrapper"><div class="toc" id="toc"></div></aside>
+    <div class="content">
+      <article class="article" id="article"></article>
+      <div class="page-nav" id="page-nav"></div>
+      <div class="footer">HK1V11 SYNTHESIS / SIGNOFF PRACTICE · AUTHOR ymzhuuuu · UPDATED 2026-09-16</div>
+    </div>
+  </div>
+  <script type="text/template" id="md">
+# 三、综合
+
+> 骨架页 + 一条本轮实证的关键认知（DC 分支纪律，详见 ch10 案例 4）。
+
+## 本章在 1V11 流程中的位置
+
+DC 综合。约束主文件 `common/ip_cons/HK1V11_digital_top.tcl`；库与优化配置在 `common/tcl_dir/dc/`（`dont_use_all.tcl`、`design_rule.tcl`）。
+
+## 关键检查点
+
+- **约束文件是 dc_shell / pt_shell 共享资产，按综合后命名写的约束必须待在 pt_shell 分支**：
+
+```tcl
+if {$synopsys_program_name != "pt_shell"} {
+    # DC 分支：RTL 族通配（elaborate 阶段没有位拆分名和 /D* 引脚）
+} else {
+    # PT 分支：网表名 + get_cells / get_pins
+}
+```
+
+逐条网表名约束写在公共区 → DC 侧失配丢约束（ch10 案例 4）。
+
+- `set_dont_touch [get_cells -hier *u_gate*]` 保护手搭时钟单元（CLKGEN 的 u_gate_* 软 wrapper 在 post-route 网表实证存活，read_cons.log 零 SEL）
+- 时钟/模块改名后的残留自检（ch10 案例 5：clock list / pin 通配）
+
+## 📋 数据待补
+
+- 1V11 DC qor（面积 / 时序 / 门控率）
+
+## 交叉引用
+
+- 指南站同章：[综合](../synthesis-integration-flow-guide/synthesis-upf.html)
+- 相关排障：[十、排障实录](./ch10-warstories.html) 案例 4 / 案例 5
+  </script>
+  <script src="./js/site.js"></script>
+</body>
+</html>

@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>十、问题解决心路历程 · HK1V11 综合/签核流程实践</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./css/style.css">
+  <script src="./js/marked.min.js"></script>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a class="navbar-brand" href="./">HK1V11_FLOW_PRACTICE</a>
+      <div class="navbar-links" id="navbar-links"></div>
+    </div>
+  </nav>
+  <div class="container with-toc">
+    <aside class="toc-wrapper"><div class="toc" id="toc"></div></aside>
+    <div class="content">
+      <article class="article" id="article"></article>
+      <div class="page-nav" id="page-nav"></div>
+      <div class="footer">HK1V11 SYNTHESIS / SIGNOFF PRACTICE · AUTHOR ymzhuuuu · UPDATED 2026-09-16</div>
+    </div>
+  </div>
+  <script type="text/template" id="md">
+# 十、问题解决心路历程（排障实录）
+
+> 全站唯一有实质内容的一章。收录 0915~0916 两天里 POSTPT 签核与 skew 汇总的六段真实排障，每段按「现象 → 定位思路 → 证据链 → 处理 → 结论/遗留」展开。**结论先行：两天的主线只有一条——约束的生效链是 `ip_cons → pre-PT write_sdc → APR → postcts.sdc → POSTPT`；而 "read_cons.log / read_tcl.log 的 SEL-004/005 计数" 是这条链上唯一可靠的回归指标。**
+
+## 收敛仪表盘
+
+| 轮次 | 动作 | 结果 |
+|---|---|---|
+| round1 | G1（25 条）+ G3（17 条）逐条 mc 进 ip_cons，走 PREPT→DATABASE→POSTPT 正流程 | ✅ 42 条违例全消、ignored_exceptions 为零、mc 未被折叠 |
+| round2 | 补 G2~G8 共 30 对 | G2/G4/G5/G6/G7 全清；POL 组浮出 3 条新起点路径（打地鼠） |
+| round3 | POL 扇入矩阵补全 3 对 | 矩阵完备，宣告无 round4 打地鼠 |
+| round4 | 族通配合并 + dc_shell/pt_shell 双分支 | 100+ 行 → 约 30 行；DC 不再误读 |
+
+## 案例 1：约束链认知坑——"改了 ip_cons 怎么没生效"
+
+### 现象
+
+在 `ip_cons/HK1V11_digital_top.tcl` 里加了 `set_multicycle_path`，重跑 POSTPT（wc_cbest_125），报告数值**纹丝不动**。
+
+### 定位思路
+
+不要猜"工具没吃"，去看**它到底读了什么**。POSTPT 的约束加载在 `top/sta/post/common/pt_setup.tcl:284-290`，只有三行 source：
+
+```tcl
+source ${TCL_DIR}/common/clk_period.tcl       -verbose -echo  >  ${log_dir}/read_cons.log
+source ${TCL_DIR}/common/kv_clkio_postpt.tcl  -verbose -echo >> ${log_dir}/read_cons.log
+source ${SDC_PATH}/${SDC_NAME}_postcts.sdc    -verbose -echo >> ${log_dir}/read_cons.log
+```
+
+`pt.log:1260-1266` 里能看到这三行的实际执行。**`ip_cons` 只在 pre-PT 被读**——post 流程从不 source 它。
+
+### 证据链
+
+- 约束生效链：`ip_cons` → ① pre-PT `write_sdc` → `sdc_pr` → ② APR（吃 sdc_pr 做 CTS）→ `postcts.sdc` → ③ POSTPT
+- 只改 ip_cons 直接重跑 POSTPT = 跳过 ①②，postcts.sdc 还是旧的
+- 自检命令：
+
+```csh
+# 约束是否进了 postcts.sdc（应 >0）
+grep -c "R_REG03_L_reg_2_" .../HK1V11_digital_top_postcts.sdc
+# PT 是否真的读到（read_cons.log 有 -echo 回显）
+grep "R_REG03_L_reg_2_" wc_cbest_125/latest/log/read_cons.log
+```
+
+### 处理与结论
+
+- 快速验证：把 mc 直接 append 到服务器 postcts.sdc 末尾（例外追加即生效）
+- 固化：走正流程 ip_cons → PREPT → DATABASE → POSTPT（我们最终采用）
+- **结论：POSTPT 的设计约束只有一个入口 postcts.sdc；ip_cons 是它的"祖先"，不是它本身**
+
+## 案例 2：-0.588 配置跨域 mc 缺口（三轮打地鼠）
+
+### 现象
+
+PT wc_cbest_125 setup：`R_REG03_L_reg_2_`（WCLK1_A_CHPI_DCLK_SHORT）→ `PIX_CLK_EN_reg`（RX_CLK）slack **-0.588**；而 APR 工程师给的 Tempus 截图（ssg_1p62_125_**cworst**）同路径 **+0.300 MET**。"APR 不报错，PT 报错"。
+
+### 定位思路（三步：先对齐，再拆解，再找缺口）
+
+**第一步：同 corner 对齐，排除工具分歧。**
+PT 在 wc_cworst_125（与截图同 corner）同路径 = **+0.0798 MET**，与 APR +0.300 同量级（残差 0.22 属工具/寄生/derate 正常范围）→ 工具间没有矛盾，矛盾的是 corner 覆盖。
+
+**第二步：拆 cbest 为什么最差。**
+launch 边沿 5.715 / capture 边沿 7.620 → 有效窗口只有 **1.905ns**（半个 RX_CLK 周期）。cbest↔cworst 的 0.668ns 摆动分解：
+
+| 摆动项 | Δ | 方向 |
+|---|---|---|
+| capture 时钟 latency（2.929 → 3.100） | +0.168 | cworst capture 更慢，利于 cworst |
+| launch 时钟 latency（3.119 → 3.001） | +0.117 | cbest 反而更慢 |
+| 数据路径（5.586 → 5.203） | +0.383 | cbest 反而更慢 |
+
+同单元延迟两 corner 几乎相同（相位 FF CK→Q：0.3697 vs 0.3686）→ 差异在**线网**。min-RC 下纯 RC 缩放只会更快，变慢只能是 **SI 串扰 delta**（两 corner 均 `SI_CHECK=1`；cbest 耦合占比高）→ 只有 cbest 破线。
+
+**第三步：找约束缺口。**
+对照 `ip_cons`：`R_REG*_F_reg*` → RX_CLK 有 mc 2/1（L211-212）、`R_REG*_L_*` → DCLK_DATA_MUX_* 有 mc（L223-226），**唯独 `R_REG*_L_*` → RX_CLK 没有**。违例起点恰是 R_REG03_L（0x43 行配置寄存器，R_BKDU 背光禁用位）——准静态配置写被按 1.905ns 单周期检查。
+
+### 证据链（关键数字）
+
+| 项 | wc_cbest_125 | wc_cworst_125 |
+|---|---|---|
+| launch / capture 边沿 | 5.715 / 7.620 | 5.715 / 7.620 |
+| launch CK 到达 | 8.833635 | 8.716483 |
+| 数据到达 | 10.610210 | 10.109614 |
+| capture CK 到达 | 10.549459 | 10.720139 |
+| slack | **-0.588483** | **+0.079763** |
+
+（wc_typical -0.204 居中；uncertainty 两边同为 0.4）
+
+### 处理（三轮收敛）
+
+- **round1**：G1（R_BKDU→PIX_CLK_EN + PIX_DATA×24，25 条）+ G3（→REG_MAPPING 拷贝，17 条）= 42 条逐条 mc；POSTPT（0915 18:57）42 条违例全消、ignored_exceptions 为零
+- **round2**：G2/G4/G5/G6/G7/G8 共 30 对补齐 → G2/G4~G7 全清；**POL 组浮出 3 条新起点路径**（打地鼠）
+- **round3**：推出 POL 扇入矩阵后补最后 3 对，矩阵闭环：
+
+```text
+POL1_PRE = ~(POLC ^ POL)          POL3_PRE = (~H4INV) ^ POL1_PRE
+POL2_PRE = ~(POLC ^ POL2)         POL4_PRE = (~H4INV) ^ POL2_PRE
+POLC = R_REG00_L[2]   POL = R_REG00_L[1]
+H4INV = R_REG00_L[4]  R_POL2 = R_REG03_L[6]
+（ANCTL.v:98-101；POL1_SYNC 为两级打拍第一级，ANCTL.v:224）
+```
+
+- **round4**：族通配合并 + dc_shell/pt_shell 双分支（见案例 4）
+
+### 结论与遗留
+
+- 根因是**约束缺口**，不是工具分歧、也不是节点失配（read_cons.log 零 SEL，`u_gate_*/CG_CELL/Q`、`u_gate_*/CLKMUX2X2/O` 在 post-route 网表全部命中）
+- 打地鼠教训：top-N 报告收集会漏掉被压住的次差路径；按**扇入矩阵补全集**才能一次收口
+- 不可 mc 的残留：`DATA_POINT_LAT_reg_9_ → BK_ST_reg`（RX_CLK 同域，GBA -0.144 / PBA -0.069）、`SMT_CS/FLAG_1H_H2L_reg → CS_SYNC_reg_0/1_`（动态标志跨域，待 design 确认 FLAG 是否 sticky）
+
+## 案例 3：skew -900（空报告 × 哨兵值）
+
+### 现象
+
+skew 汇总 Excel/CSV 出现 **-993 ~ -998** 的 margin 值（wc_cbest 例：**-993.55687**），明显不是真实时序。
+
+### 定位思路（顺着数据流往回找）
+
+```text
+report_timing_skew_sd.tcl
+  → rpt/skew/report_timing_sd_*.rpt          （10 corner × 8 份）
+    → get_sd_busskew.pl                       （解析 max/min）
+      → <corner>_sd_busskew.txt               （单行 48 列）
+        → merge_sd_busskew.pl
+          → summary/latest/report_sd_busskew.csv   ← Excel 在这里
+```
+
+逐级回查发现：**`sd_l_1p_clk_a.rpt` 全部 10 个 corner 都是 151 字节空壳**，内容只有 SEL-003/005 报错——时钟探针没匹配到任何对象。
+
+### 证据链
+
+1. 探针层级错：`report_timing_skew_sd.tcl:15` 写 `u_LOGIC_CENTER/CENTER1/DTCTL/u_gate_INV_SD_CLK_INV/O*`；该反相器真实位置是 `u_LOGIC_CENTER/LC_CLK_RST_GEN/CLKGEN/u_gate_INV_SD_CLK_INV`（CLKGEN.v:186）
+2. perl 哨兵：`get_sd_busskew.pl:33-34` 初始化 `$max=0; $min=1000;`——空报告没有任何 `data arrival time` 行，值永不更新
+3. 差值：`get_sd_busskew.pl:117` `margin_max = 数据max − clk_min = 6.44 − 1000 = -993.55687`，与 Excel 逐位吻合
+4. **次生错误**：`margin_min = 数据min − clk_max = 数据min − 0`，数值"看着正常"（4.44/5.09…）其实同样是垃圾——真实时钟延迟应 ~10-12
+5. clk_b 另有一病：`DTCTL/DPLC_CLK*`、`DTCTL/SD_CLK_INV*` 用模块输入端口 pin 做探针，把 SP_I、R_REG06_F 等无关起点的路径混进包络（clk_b min≈2.3 vs max≈11 的大裂口即由此造成）
+
+### 处理
+
+时钟探针三原则：**① 从 CLKGEN buffer/mux 输出脚（时钟分叉点）起量；② 数据从 DTCTL 真实数据寄存器起量；③ 不拿寄存器当时钟探针。**
+
+- clk_a → `CLKGEN/u_gate_INV_SD_CLK_INV/CLKINVX4/O`（与 SDC 生成时钟定义点一致）
+- clk_b → 双源包络：`u_gate_MUX_SD_CLK/CLKMUX2X2/O` + `u_gate_INV_SD_CLK_INV/CLKINVX4/O`（DTCTL.v:741-744：CLKA 恒为 SD_CLK_INV；CLKB = DPLC_MODE_TRUE ? DPLC_CLK : SD_CLK_INV）
+- 全部时钟报告加 `-slack_lesser_than 50`；补齐 perl 期望的 dplc 8 份报告（暂行值，DPLC_CLK 生成时钟未定义）
+- `report_timing_skew_io.tcl` 同病同修：`PAD_INBUF/U3/O`、`SDA_LO` 在 1V11 不存在 → 改 `SCL_I` / `SDA_OE`
+
+### 结论与遗留
+
+- -900 = **探针失配 → 空报告 → 哨兵值进差值**，与真实时序无关
+- 防呆建议：解析 perl 对空报告（未匹配到任何 data arrival）显式输出 NA 或报错，**禁止哨兵静默进 margin**
+- 遗留：DPLC_CLK 生成时钟未定义（ip_cons FIXME DRD 段），dplc 数值待重生成；1V11 合格窗（1p [-2.5:+2.5] / dplc [-1:4]）与流程指南（[-1:+6]）不一致，待后端确认
+
+## 案例 4：逐条 mc 的 DC 陷阱与 round4 双分支
+
+### 现象（潜在）
+
+逐条 mc（`-from [get_cells .../R_REG03_L_reg_2_] -to [get_pins .../PIX_DATA_reg_18_/D*]`）写在 `if {$synopsys_program_name != "pt_shell"}` **之外**——dc_shell 也会读它。
+
+### 根因
+
+DC elaborate 阶段没有综合后的位拆分名（`R_REG03_L_reg_2_`），也没有 `/D*` 引脚 → `get_cells`/`get_pins` 失配 → 约束静默丢失（或报错中断）。pre-PT `read_tcl.log` 已实证同类失配（SEL-005 ×2，见案例 5）。
+
+### 处理（round4）
+
+双分支：
+
+```tcl
+if {$synopsys_program_name == "pt_shell"} {
+    # PT 分支：综合后网表名 + get_cells/get_pins
+    # （pre-PT write_sdc → postcts.sdc 全链实测可达）
+} else {
+    # DC 分支：RTL 族通配（R_REG03_L_reg* / PIX_DATA_reg*），不用 get_pins
+}
+```
+
+同时按族通配把 100+ 行合并为约 30 行（叉乘多覆盖为空匹配，无害）。G2 在两分支均注释 ON HOLD。
+
+### 结论
+
+共享约束文件里，**任何按综合后命名写的约束都必须待在 pt_shell 分支**；DC 分支只写 RTL 名/族通配。跨工具共享文件的分支纪律，值得写进流程规范。
+
+## 案例 5：改名残留与旧项目探针
+
+### 现象
+
+pre-PT `read_tcl.log` 出现 **18 条 SEL-004/005**。逐条清点，三类：
+
+1. `ip_cons:156-157` clock list 仍写 `DPLC_CLK_*`（时钟已改名 `NORMAL_CLK_*`）→ **I2C/OSC ↔ NORMAL_CLK_\* 的 clock-group false path 缺失**
+2. `ip_cons:281` `LC_MONBLOCK/DCLK_DIV*` 无匹配 → monblock false_path 的排除集为空（div clk 引脚被误纳入 false_path）
+3. round2 新 G3 两条 `-to` 少写一级 `LINK_LOGIC/`（SEL-005 ×2）→ mc 没生效，0916V1 中对应路径仍违例 -0.322 / -0.288
+
+另外 `report_timing_skew_io.tcl` 的 `PAD_INBUF/U3/O`、`SDA_LO` 是上一代芯片对象，1V11 里不存在 → io 报告 229 字节空壳。
+
+### 处理与教训
+
+- 教训：**模块/时钟改名后，所有引用点（clock list、pin 通配、报告脚本、skew 探针）都要过一遍 SEL 计数**——把 read_tcl.log / read_cons.log 的 SEL-004/005 总数当回归指标，非零即回归
+- L422-428 的层级笔误由人工评审抓住（"层级和同组不一致"）——逐行对账仍是最后的安全网
+
+## 案例 6：G2 ON HOLD（未闭环，诚实的待定项）
+
+`R_BKDU (R_REG03_L_reg_2_) → BK_ST_reg`：RTL 上 `BIT_ALIGN_ST = BIT_ALIGN_PT | (R_BKDU & K2_FIND)`（LONG_ENCODING_ALIGN.v:429），R_BKDU 与已采纳的 G1/G3 是同一位。但 **dummy 行发送时 K2 与 BKDU 寄存器之间的时序间隙未经设计确认**——如果间隙有硬要求，mc2 会掩盖真问题。
+
+处置：整组注释 ON HOLD，保持单周期检查；-0.191 违例走评审豁免。等 design 确认间隙后再启用或永久豁免。
+
+这条留在这里是想说明：**不是所有违例都要用约束消掉，"诚实的待定"比"错误的收敛"便宜。**
+
+## 心法清单
+
+1. **先同 corner 对齐，再谈工具差异**（案例 2 第一步省掉半天弯路）
+2. **SEL-004/005 计数是约束链的回归指标**（案例 1/5）
+3. **空报告 + 哨兵值 = 最隐蔽的假数据源**，解析脚本要防呆（案例 3）
+4. 例外约束的演进路径：逐条（审计友好）→ 家族合并（可维护）→ 双分支（跨工具安全）（案例 4）
+5. 改名/重构必过一遍引用点自检（案例 5）
+6. 按扇入矩阵补全集，而不是逐个打地鼠（案例 2）
+7. 证据链写到 文件:行号，让下一个接手的人不用重走
+8. **诚实的待定 > 错误的收敛**（案例 6）
+
+## 未闭环清单
+
+| 项 | 状态 |
+|---|---|
+| DPLC_CLK 生成时钟未定义（DRD FIXME）→ dplc skew 报告为暂行值 | ⏳ |
+| DCLK_CONFIG_SHORT 相位 FIXME（对 setup 无影响已证明，对 hold 未查） | ⏳ |
+| F2 同域 88 条 / F3 半周期 17 条真时序违例 | ⚠️ 交 APR/设计 |
+| tt_cworst_25 hold -5.42（C2278/C2272） | ⚠️ 专项 |
+| 生成时钟 uncertainty=0 | ⚠️ |
+| wc_cbest 是否作 setup 签核 gate | ⏳ |
+| SMT_CS FLAG sticky / TRAINING_RESULT×4 | ⏳ 待 designer |
+| skew 合格窗规格（1V11 vs 流程指南） | 🟡 待后端确认 |
+  </script>
+  <script src="./js/site.js"></script>
+</body>
+</html>

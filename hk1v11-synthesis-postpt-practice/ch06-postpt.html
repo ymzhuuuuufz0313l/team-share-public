@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>六、POSTPT · HK1V11 综合/签核流程实践</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./css/style.css">
+  <script src="./js/marked.min.js"></script>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a class="navbar-brand" href="./">HK1V11_FLOW_PRACTICE</a>
+      <div class="navbar-links" id="navbar-links"></div>
+    </div>
+  </nav>
+  <div class="container with-toc">
+    <aside class="toc-wrapper"><div class="toc" id="toc"></div></aside>
+    <div class="content">
+      <article class="article" id="article"></article>
+      <div class="page-nav" id="page-nav"></div>
+      <div class="footer">HK1V11 SYNTHESIS / SIGNOFF PRACTICE · AUTHOR ymzhuuuu · UPDATED 2026-09-16</div>
+    </div>
+  </div>
+  <script type="text/template" id="md">
+# 六、POSTPT
+
+> 骨架页 + 约束链要点；本章排障案例最多（ch10 案例 1/2/3/5 都发生在这一环）。
+
+## 本章在 1V11 流程中的位置
+
+`top/sta/post/pt/<corner>/run_pt` → `corner_set.tcl` → `../common/pt_setup.tcl` → 报告 → `run_summary`（get/merge busskew → summary CSV）。
+
+## 约束链（本章最重要的一张表）
+
+`pt_setup.tcl:284-290` 只 source 三份约束：
+
+| # | 文件 | 作用 |
+|---|---|---|
+| 1 | `common/tcl_dir/common/clk_period.tcl` | 周期变量（MARGIN 机制） |
+| 2 | `common/tcl_dir/common/kv_clkio_postpt.tcl` | post 版 kv_* proc（无 ideal_network） |
+| 3 | `${SDC_PATH}/${SDC_NAME}_postcts.sdc` | **设计约束本体（APR 发布）** |
+
+**ip_cons 不直达 POSTPT**：ip_cons → pre-PT write_sdc → sdc_pr → APR → postcts.sdc → POSTPT（ch10 案例 1）。
+
+## 运行结构
+
+- `run_pt`：`RUN_ID=YYYYMMDD_N` → `history/<run_id>/{log,rpt,whole_session}` → `latest` 软链
+- 10 corner：tt / lt / ml / wc × cbest / cworst / typical × 温度
+
+## 关键检查点
+
+- `latest/log/read_cons.log`：SEL-004/005 计数 = 0（约束真的落到网表）
+- `latest/log/ignored_exceptions.rpt`：例外没有被静默忽略
+- `rpt/summary/HK1V11_digital_top_cons.rpt`：违例分组（clock_gating / 各时钟组）
+- `rpt/skew/*.rpt` → `summary/latest/report_sd_busskew.csv`：margin 在窗内（哨兵值警惕，ch10 案例 3）
+- `rpt/summary/..._timing.rpt` / `check_timing` / `unconstrained_endpoints.rpt`
+
+## 📋 数据待补
+
+- 各 corner qor / 违例收敛数据
+
+## 交叉引用
+
+- 指南站同章：[POSTPT](../synthesis-integration-flow-guide/pt-intro.html)
+- 本章排障案例：[十、排障实录](./ch10-warstories.html) 案例 1 / 2 / 3 / 5
+  </script>
+  <script src="./js/site.js"></script>
+</body>
+</html>

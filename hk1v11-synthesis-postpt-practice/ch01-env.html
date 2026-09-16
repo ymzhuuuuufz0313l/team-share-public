@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>一、环境与配置 · HK1V11 综合/签核流程实践</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./css/style.css">
+  <script src="./js/marked.min.js"></script>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a class="navbar-brand" href="./">HK1V11_FLOW_PRACTICE</a>
+      <div class="navbar-links" id="navbar-links"></div>
+    </div>
+  </nav>
+  <div class="container with-toc">
+    <aside class="toc-wrapper"><div class="toc" id="toc"></div></aside>
+    <div class="content">
+      <article class="article" id="article"></article>
+      <div class="page-nav" id="page-nav"></div>
+      <div class="footer">HK1V11 SYNTHESIS / SIGNOFF PRACTICE · AUTHOR ymzhuuuu · UPDATED 2026-09-16</div>
+    </div>
+  </div>
+  <script type="text/template" id="md">
+# 一、环境与配置
+
+> 骨架页：只写"位置、检查点、交付物"，实测数据后续补录（见文末数据待补）。
+
+## 本章在 1V11 流程中的位置
+
+环境是流程起点：一套配置喂三个工具（DC / pre-PT / postPT），口径不一致 = 白跑。
+
+| 对象 | 路径（相对 `SYNTHESIS/`） | 用途 |
+|---|---|---|
+| pre-PT 配置 | `top/sta/pre/pt/design.set` | TOP_NAME / SDC_NAME / SDC_PATH / PR_PATH / VOLTAGE / POSTPT_EN |
+| post-PT 配置 | `top/sta/post/pt/design.set` | 同上；POSTPT_EN=1 走签核分支 |
+| 库配置 | `common/tcl_dir/common/common_db.tcl` | link_library / target_library（nexchip_145_9t） |
+| corner 开关 | `top/sta/post/pt/<corner>/corner_set.tcl` | CONS_CHECK / SI_CHECK / CORNER |
+| 时钟周期源 | `common/tcl_dir/common/clk_period.tcl` | RX_CLKP=3.81 / DPLC_CLKP=6.35 / OSC / I2C（MARGIN：DC×0.8 / PT×1.0） |
+
+## 关键检查点
+
+- 换项目只动 `design.set`（TOP_NAME / SDC_NAME / SDC_PATH / PR_PATH）
+- **DC / prePT / postPT 三处 design.set 口径一致**（pre-PT `design.set` 的 POSTPT_EN 会改变 kv proc 是否注入 ideal_network，进而影响 write_sdc 内容——见 ch10 案例 1 的连锁证据）
+- corner 开关核对：`SI_CHECK=1`（串扰/skew 分析开启）
+- PT 版本：M-2017.06-SP3-3（pt1706 环境）
+
+## 交付物 / 应看什么
+
+- `design.set` 改动差分（前后对照）
+- `common_db.tcl` 的 link_library 与 release 库版本对应关系
+- 10 corner 的 `corner_set.tcl` 开关矩阵
+
+## 📋 数据待补
+
+- 1V11 环境实测：VT 库使用率、license 分布、单 corner 运行时长
+- 三处 design.set 逐参数快照
+
+## 交叉引用
+
+- 指南站同章：[环境与配置](../synthesis-integration-flow-guide/environment.html)
+  </script>
+  <script src="./js/site.js"></script>
+</body>
+</html>

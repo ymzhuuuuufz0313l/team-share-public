@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>HK1V11 综合 / 签核流程实践记录</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./css/style.css">
+  <script src="./js/marked.min.js"></script>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a class="navbar-brand" href="./">HK1V11_FLOW_PRACTICE</a>
+      <div class="navbar-links" id="navbar-links"></div>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="kicker">HK1V11 · SYNTHESIS / SIGNOFF PRACTICE</div>
+    <h1>综合 / 签核流程<br>实践记录</h1>
+    <p class="lead">一到九章搭 1V11 自己的流程骨架（位置、检查点、交付物）；第十章是全站唯一有肉的地方——六段真实排障实录：现象、定位思路、证据链、处理、结论。</p>
+    <div class="author">作者：ymzhuuuu · 更新 2026-09-16</div>
+    <div class="tagline">数据逐步补录中 · 排障实录已完稿</div>
+  </header>
+
+  <div class="container">
+    <div class="statbar">
+      <div class="stat"><div class="num">10</div><div class="lbl">章节（一~九骨架 + 十实录）</div></div>
+      <div class="stat"><div class="num">6</div><div class="lbl">排障案例（第十章）</div></div>
+      <div class="stat"><div class="num">4</div><div class="lbl">轮 mc 收敛（round1~4）</div></div>
+      <div class="stat"><div class="num">70+</div><div class="lbl">条逐条约束收敛为 7 组</div></div>
+    </div>
+
+    <div class="section-title">章节索引</div>
+    <div class="chapter-grid">
+      <a class="chapter-card" href="./ch01-env.html">
+        <div class="num">一</div>
+        <div class="title">环境与配置</div>
+        <div class="desc">design.set 三处口径、common_db 库配置、corner 开关</div>
+      </a>
+      <a class="chapter-card" href="./ch02-rtl-check.html">
+        <div class="num">二</div>
+        <div class="title">RTL 检查</div>
+        <div class="desc">CKF 连接性检查、nLint 语法检查与 waive 清单</div>
+      </a>
+      <a class="chapter-card" href="./ch03-synthesis.html">
+        <div class="num">三</div>
+        <div class="title">综合</div>
+        <div class="desc">DC 约束的 dc_shell / pt_shell 双分支、dont_use、compile</div>
+      </a>
+      <a class="chapter-card" href="./ch04-lec.html">
+        <div class="num">四</div>
+        <div class="title">LEC 验证</div>
+        <div class="desc">形式验证节点与一致性检查</div>
+      </a>
+      <a class="chapter-card" href="./ch05-apr-signoff.html">
+        <div class="num">五</div>
+        <div class="title">APR SIGNOFF</div>
+        <div class="desc">DataBase 发布物（postcts.sdc / 网表 / spef）与交付检查</div>
+      </a>
+      <a class="chapter-card" href="./ch06-postpt.html">
+        <div class="num">六</div>
+        <div class="title">POSTPT</div>
+        <div class="desc">约束链三文件、10 corner 运行、skew 报告链</div>
+      </a>
+      <a class="chapter-card" href="./ch07-memory-power.html">
+        <div class="num">七</div>
+        <div class="title">Memory 与功耗</div>
+        <div class="desc">Memory 生成与 mem_wrap、PTPX 功耗仿真</div>
+      </a>
+      <a class="chapter-card" href="./ch08-powerpro.html">
+        <div class="num">八</div>
+        <div class="title">PowerPro 功耗评估</div>
+        <div class="desc">评估环境与 report 检查</div>
+      </a>
+      <a class="chapter-card" href="./ch09-to-signoff.html">
+        <div class="num">九</div>
+        <div class="title">TO SIGNOFF</div>
+        <div class="desc">summary CSV、check_timing、违例分组怎么读</div>
+      </a>
+      <a class="chapter-card" href="./ch10-warstories.html">
+        <div class="num">十</div>
+        <div class="title">问题解决心路历程<span class="tag">排障实录 · 有货</span></div>
+        <div class="desc">六段真实排障：约束链认知坑、-0.588 跨域 mc 缺口、skew -900、DC 陷阱、改名残留、G2 待定</div>
+      </a>
+    </div>
+
+    <div class="section-title">1V11 流程骨架</div>
+    <div class="flow">
+      <div class="fbox"><b>RTL / CKF / nLint</b><br>RTL 检查与可综合性清理</div>
+      <div class="farrow">→</div>
+      <div class="fbox"><b>DC 综合</b><br>ip_cons 约束（dc_shell 分支）→ netlist + SDC</div>
+      <div class="farrow">→</div>
+      <div class="fbox"><b>pre-PT</b><br>读 ip_cons（pt_shell 分支）→ write_sdc → sdc_pr</div>
+      <div class="farrow">→</div>
+      <div class="fbox"><b>APR / DataBase</b><br>吃 sdc_pr 做 CTS → 发布 postcts.sdc / 网表 / spef</div>
+      <div class="farrow">→</div>
+      <div class="fbox"><b>POSTPT</b><br>10 corner：read_cons（SEL 自检）→ 时序 → skew 报告链</div>
+      <div class="farrow">→</div>
+      <div class="fbox"><b>run_summary</b><br>get/merge busskew → summary CSV → 签核判读</div>
+    </div>
+
+    <div class="section-title">一句话结论</div>
+    <div class="pcard">
+      约束的生效路径是一条链：<b>ip_cons → pre-PT write_sdc → APR → postcts.sdc → POSTPT</b>。任何"改了没生效"，先沿这条链找断点；改完之后，用 <b>read_tcl.log / read_cons.log 的 SEL-004/005 计数</b>做回归自检——零告警才代表约束真的落到了网表上。
+    </div>
+
+    <div class="footer">HK1V11 SYNTHESIS / SIGNOFF PRACTICE · AUTHOR ymzhuuuu · UPDATED 2026-09-16</div>
+  </div>
+
+  <script src="./js/site.js"></script>
+</body>
+</html>
