@@ -376,6 +376,68 @@ set_max_delay [expr $DPLC_CLKP*2] -from .../R_REG06_F_reg_7_/CK -thr .../U_DPLC_
 | `修改记录/evidence_skew_fix_20260916/` | 本地复现证据：`old.out`（精确复现 -993.55687）、`new.out`（该字段转空白）、`new.err`（WARNING 点名空报告文件） |
 | 代码入库 `3a2de19`（HK1V11） | `report_timing_skew_sd.tcl` / `_io.tcl` / `get_sd_busskew.pl` 修复 + 报告与 PDF |
 
+## 案例 10：MPW 规格与"pulse 是不是时钟周期的一半"
+
+### 现象
+
+SD 输出口补上 `set_min_pulse_width` 检查（批次 1）后，wc_cbest 一次冒出 **8 条违例**（worst CLKA_L **-0.365**）。规格链：MPW SPEC = **2ns**；3G(DPLC) 时 6.37/2=3.175 → 余量 1.175；5G(不开 DPLC) 若按同样余量 1.175 反推检查值只剩 **0.73**——"DPLC 那一坨设 0.7 几、其他保持 2、不设 false_path"，听起来像个方案，但每一步都值得拆开验证。
+
+### 第一问：pulse 是不是时钟周期的一半？
+
+**只对 50% 占空比的链成立：**
+
+| 链 | 周期 | 高相 | 低相 | 是一半吗 |
+|---|---|---|---|---|
+| LONG 链（50% 占空比） | 3.81 | 1.905 | 1.905 | ✅ |
+| LONG 链 @3G | 6.35 | 3.175 | 3.175 | ✅ |
+| SHORT 链（`edges {1 3 4}`，非对称） | 5.715 | 3.81 | **1.905 = T/3** | ❌ |
+| SHORT 链 @3G | 9.525 | 6.35 | **3.175 = T/3** | ❌ |
+
+MPW 检查的是**较短那一相**；两条链的低相恰好相同（5G 1.905 / 3G 3.175），所以"按一半算"的数字恰好没露馅——但概念本身是错的，遇到别的占空比就会翻车。
+
+### 第二问：5G 通道口上的活时钟，pulse 到底是多少？
+
+**不是 1.905，是 3.81 / 5.715：**
+
+| 证据 | 内容 |
+|---|---|
+| RTL `CLKGEN.v:179/185` | `SD_CLK = PANEL_DPLC_CLK_SEL ? DCLK_DATA : normal_clk`；normal_clk 是 DCLK_DATA **÷2** 翻转（L168-176） |
+| SDC `ip_cons L57-61` | `SD_CLK_SHORT/LONG` 的 master 是 `NORMAL_CLK_SHORT/LONG`（= DCLK_DATA_MUX **÷2**） |
+
+→ no-DPLC（5G）时口上周期 **7.62ns（LONG）/ 11.43ns（SHORT）**，pulse = **3.81 / 5.715**，MPW=2 的余量 **1.81 / 3.715**——比 3G 的 1.175 还宽。1.905 是 DCLK_DATA（lane 侧）和 DPLC mux-I1 腿的脉冲，那些时钟在 normal 模式下**在片上是死的**（`set_case_analysis 0` 会杀掉）。
+
+### 第三问：规格到底从哪来？
+
+- 俊杰答疑："**DPLC clk 就是 RX_CLK**" → SDC 链条结构本来就对（`DCLK_DATA_LONG = RX_CLK ÷1`），错的只是基础周期 `RX_CLKP` 的值（5G=3.81 / 3G=6.35）
+- 3G 的周期项目里**早有名字**：`DPLC_CLKP = 6.35`（`clk_period.tcl:19`，注释 "3G×1.05/20=157.5M"）
+- FIXME 块（`ip_cons L99-131`）的头注释原文是 "**DRD output clock for pulsewidth requirement FIXME!! add later**"——它就是为 MPW 需求预留的占位块，`set_min_pulse_width ... 2` 的 spec 值一直在文件里，只是从没被接上。早前判它为"幽灵代码"是误判，需要 1V11 化（L102 层级错误、时钟名是 2M23 的）
+
+### 处理（已入真实 ip_cons，commit `36145c5`，全英文注释）
+
+1. **端口预算**：`set_max_delay 14 -to CLKA_L/CLKB_L/CLKA_R/CLKB_R`（= 2M23 原值 L657-660）
+2. **分时钟族 MPW**：
+   - 活时钟（÷2 链，pulse 3.81/5.715）：
+     `set_min_pulse_width -low -high 2 [get_clocks {NORMAL_CLK_SHORT NORMAL_CLK_LONG SD_CLK_SHORT SD_CLK_LONG SD_CLK_INV_SHORT SD_CLK_INV_LONG}]`
+   - 1.905-pulse 族：
+     `set_min_pulse_width -low -high 0.73 [get_clocks {DCLK_DATA_SHORT DCLK_DATA_LONG DCLK_DATA_MUX_SHORT DCLK_DATA_MUX_LONG SD_CLK_DPLC_SHORT SD_CLK_DPLC_LONG SD_CLK_INV_DPLC_SHORT SD_CLK_INV_DPLC_LONG}]`
+     （0.73 = 1.905 − 1.175，与 3G 等余量；**不设 false_path**；检查仍开着，真实占空比恶化会报出来）
+3. FIXME 块的端口时钟定义留作批次 2（skew / 输出延迟用）
+4. `set_case_analysis` 本轮未启用（留作后续 setup 基线评审项）
+
+### 结论
+
+- **"余量"是结果，不是规格**：spec 是绝对值 2ns（面板采样需求）；余量随 pulse 自然变化——5G 时 1.81/3.715 比 3G 的 1.175 **更宽**，不存在"必须设 1.905−1.175 才能保住余量"的问题。
+- **分时钟族的宽松阈值（0.73）**，是"不能用 false_path、又要让幻影时钟闭嘴"时的诚实替代：检查没关，真实恶化照样抓。
+- **pulse=半周期要先验证占空比**：非对称链（`edges {1 3 4}`）低相是 T/3，不是一半。
+
+### 证据文件
+
+| 文件 | 内容 |
+|---|---|
+| ip_cons commit `36145c5`（HK1V11） | 最终方案入真实约束：`set_max_delay 14` ×4 口 + 分时钟族 MPW 2 / 0.73，全英文注释 |
+| `修改记录/pending_constraints_SD_output_20260917.tcl` | 推演全记录：幻影速率定性、模式开关提案、FIXME 借鉴清单、0.73 论证与 pulse 概念澄清 |
+| `CLKGEN.v:179/185`、`ip_cons L57-61`、`clk_period.tcl:19` | "5G 活时钟 = ÷2 链"的 RTL+SDC 双证、3G 周期变量出处 |
+
 ## 心法清单
 
 1. **先同 corner 对齐，再谈工具差异**（案例 2 第一步省掉半天弯路）
@@ -390,6 +452,9 @@ set_max_delay [expr $DPLC_CLKP*2] -from .../R_REG06_F_reg_7_/CK -thr .../U_DPLC_
 10. 记住例外优先级链 `false_path > max_delay > multicycle`——它决定哪件工具能用（案例 8）
 11. **"改完没变化"先查三件事：文件投放到调用链认的路径了吗？跑的是 `run_pt` 还是只 `run_summary`？改的是脚本还是副本？**（案例 9）
 12. **宁可留空，不要编数字**：解析脚本缺数据就输出空白 + 日志点名，"暂行填充"迟早变成假签核（案例 9）
+13. **"余量"是结果不是规格**——spec 是绝对值（2ns），余量随 pulse 变化且 5G 方向更宽（案例 10）
+14. 不能用 false_path 又要幻影时钟闭嘴时，**分时钟族的宽松阈值**是更诚实的替代——检查仍开着，真实恶化会报（案例 10）
+15. **pulse=半周期要先验证占空比**：非对称链（`edges {1 3 4}`）低相是 T/3，不是一半（案例 10）
 
 ## 未闭环清单
 
