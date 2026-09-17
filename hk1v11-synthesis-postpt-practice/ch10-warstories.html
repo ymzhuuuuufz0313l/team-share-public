@@ -412,31 +412,43 @@ MPW 检查的是**较短那一相**；两条链的低相恰好相同（5G 1.905 
 - 3G 的周期项目里**早有名字**：`DPLC_CLKP = 6.35`（`clk_period.tcl:19`，注释 "3G×1.05/20=157.5M"）
 - FIXME 块（`ip_cons L99-131`）的头注释原文是 "**DRD output clock for pulsewidth requirement FIXME!! add later**"——它就是为 MPW 需求预留的占位块，`set_min_pulse_width ... 2` 的 spec 值一直在文件里，只是从没被接上。早前判它为"幽灵代码"是误判，需要 1V11 化（L102 层级错误、时钟名是 2M23 的）
 
-### 处理（已入真实 ip_cons，commit `36145c5`，全英文注释）
+### 处理（终版，HK1V11 commit `c15fe91`，全英文注释，多行分段结构）
 
-1. **端口预算**：`set_max_delay 14 -to CLKA_L/CLKB_L/CLKA_R/CLKB_R`（= 2M23 原值 L657-660）
-2. **分时钟族 MPW**：
-   - 活时钟（÷2 链，pulse 3.81/5.715）：
-     `set_min_pulse_width -low -high 2 [get_clocks {NORMAL_CLK_SHORT NORMAL_CLK_LONG SD_CLK_SHORT SD_CLK_LONG SD_CLK_INV_SHORT SD_CLK_INV_LONG}]`
-   - 1.905-pulse 族：
-     `set_min_pulse_width -low -high 0.73 [get_clocks {DCLK_DATA_SHORT DCLK_DATA_LONG DCLK_DATA_MUX_SHORT DCLK_DATA_MUX_LONG SD_CLK_DPLC_SHORT SD_CLK_DPLC_LONG SD_CLK_INV_DPLC_SHORT SD_CLK_INV_DPLC_LONG}]`
-     （0.73 = 1.905 − 1.175，与 3G 等余量；**不设 false_path**；检查仍开着，真实占空比恶化会报出来）
-3. FIXME 块的端口时钟定义留作批次 2（skew / 输出延迟用）
-4. `set_case_analysis` 本轮未启用（留作后续 setup 基线评审项）
+**(A) MODE SELECTION —— case analysis 必须启用**（初版"本轮未启用"作废，两行打在两个时钟 mux 上）：
+
+```tcl
+set_case_analysis 0 [get_pins u_LOGIC_CENTER/LC_CLK_RST_GEN/CLKGEN/u_gate_MUX_SD_CLK/CLKMUX2X2/S]
+set_case_analysis 0 [get_pins u_LOGIC_CENTER/LC_CLK_RST_GEN/CLKGEN/u_gate_MUX_DCLK_DATA/CLKMUX2X2/S]
+```
+
+- 第一条：`PANEL_DPLC_CLK_SEL=0` → 不开 DPLC（mux 选 normal_clk）
+- 第二条：`SP=0` → LONG 编码（`CLKGEN.v:130-135` 证实 SP 是长短编码选择脚：0=LONG/PIX_CLK_LONG、1=SHORT/DCLK_DIV1P5_SHORT）
+- ⚠️ **警告**：SP=0 会杀掉**整个 SHORT 编码时钟族** → 本轮 run 是**新基线**，签核前必须确认 LONG 是出货编码
+
+**(B) CLOCK-TO-OUTPUT BUDGET**：`set_max_delay 14 -to CLKA_L/CLKB_L/CLKA_R/CLKB_R`（= 2M23 原值 L657-660）
+
+**(C) MPW 分时钟族（0.73 只给 LONG 族，不是整个 1.905 族）**：
+
+| 段 | 对象 | 值 | 说明 |
+|---|---|---|---|
+| **(C1)** | `NORMAL_CLK_LONG` / `SD_CLK_LONG` / `SD_CLK_INV_LONG` | **2** | LONG 正常腿（÷2 链，pulse 3.81），一行一个 `get_clocks` |
+| **(C2)** | `DCLK_DATA_LONG` / `DCLK_DATA_MUX_LONG` / `SD_CLK_DPLC_LONG` / `SD_CLK_INV_DPLC_LONG` | **0.73** | 仅这 4 个时钟对象（0.73 = 1.905 − 1.175，与 3G 等余量；**不设 false_path**；检查仍开着，真实恶化会报） |
+| **(C3)** | SHORT 族 | 不设值 | SP=0 已把 SHORT 族杀掉；留注释模板，若 SHORT 成为出货编码再启用 |
 
 ### 结论
 
 - **"余量"是结果，不是规格**：spec 是绝对值 2ns（面板采样需求）；余量随 pulse 自然变化——5G 时 1.81/3.715 比 3G 的 1.175 **更宽**，不存在"必须设 1.905−1.175 才能保住余量"的问题。
-- **分时钟族的宽松阈值（0.73）**，是"不能用 false_path、又要让幻影时钟闭嘴"时的诚实替代：检查没关，真实恶化照样抓。
+- **分时钟族/分模式设检查阈值**：幻影时钟要么 case 杀掉，要么给等余量阈值（0.73 = 1.905 − 1.175），**不要统一给 spec 值**。
 - **pulse=半周期要先验证占空比**：非对称链（`edges {1 3 4}`）低相是 T/3，不是一半。
+- **case_analysis 是模式选择，不是 false_path**——但它杀的是整个时钟族（SP=0 灭掉全部 SHORT 编码时钟），落笔前必须确认出货模式（本轮：no DPLC + LONG）。
 
 ### 证据文件
 
 | 文件 | 内容 |
 |---|---|
-| ip_cons commit `36145c5`（HK1V11） | 最终方案入真实约束：`set_max_delay 14` ×4 口 + 分时钟族 MPW 2 / 0.73，全英文注释 |
+| ip_cons commit `c15fe91`（HK1V11） | 终版入真实约束：(A) 双 mux `set_case_analysis 0` + (B) `set_max_delay 14` ×4 口 + (C1/C2/C3) 分段 MPW（2 只给 LONG 正常腿、0.73 只给 LONG 族 4 个时钟对象、SHORT 留模板），全英文注释 |
 | `修改记录/pending_constraints_SD_output_20260917.tcl` | 推演全记录：幻影速率定性、模式开关提案、FIXME 借鉴清单、0.73 论证与 pulse 概念澄清 |
-| `CLKGEN.v:179/185`、`ip_cons L57-61`、`clk_period.tcl:19` | "5G 活时钟 = ÷2 链"的 RTL+SDC 双证、3G 周期变量出处 |
+| `CLKGEN.v:130-135`、`CLKGEN.v:179/185`、`ip_cons L57-61`、`clk_period.tcl:19` | SP=长短编码选择脚；"5G 活时钟 = ÷2 链"的 RTL+SDC 双证；3G 周期变量出处 |
 
 ## 心法清单
 
@@ -453,7 +465,7 @@ MPW 检查的是**较短那一相**；两条链的低相恰好相同（5G 1.905 
 11. **"改完没变化"先查三件事：文件投放到调用链认的路径了吗？跑的是 `run_pt` 还是只 `run_summary`？改的是脚本还是副本？**（案例 9）
 12. **宁可留空，不要编数字**：解析脚本缺数据就输出空白 + 日志点名，"暂行填充"迟早变成假签核（案例 9）
 13. **"余量"是结果不是规格**——spec 是绝对值（2ns），余量随 pulse 变化且 5G 方向更宽（案例 10）
-14. 不能用 false_path 又要幻影时钟闭嘴时，**分时钟族的宽松阈值**是更诚实的替代——检查仍开着，真实恶化会报（案例 10）
+14. **分时钟族/分模式设检查阈值**：幻影时钟要么 case 杀掉，要么给等余量阈值（0.73=1.905−1.175），不要统一给 spec 值（案例 10）
 15. **pulse=半周期要先验证占空比**：非对称链（`edges {1 3 4}`）低相是 T/3，不是一半（案例 10）
 
 ## 未闭环清单
