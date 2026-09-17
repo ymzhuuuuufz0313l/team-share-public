@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
@@ -518,6 +518,95 @@ if {$DPLC_CASE == 0} {
 | `clk_period.tcl`（HK1V11 `130f773`） | `DPLC_CASE` 开关联动 `RX_CLKP`（1→6.35=`DPLC_CLKP`，0→3.81；info exists guard） |
 | 2M23 对照 | `clk_period.tcl:16 set_case_analysis 0 [get_ports DPSEL_I]`；L20-21 `RX0/RX1` 双 lane 并存（证明"双网表"是双 lane 结构使然，非通用做法） |
 | `CLKGEN.v:130-135` / `179/185` | SP=编码选择、PANEL_DPLC_CLK_SEL=模式选择（两个独立 mux，系列串联） |
+
+## 案例 12：最终定稿——不用 case，per-clock MPW 就够了
+
+### 现象
+
+案例 10/11 讨论了 case_analysis、速率开关、if/else MPW——最终用户全部推翻：**一个都不需要**。clk_period.tcl 的老设计本来就是正确的。
+
+### 为什么不需要 case（三句话）
+
+1. clk_period 老设计 = **两档速率共存**：RX_CLKP 3.81 管大部分路径（5G），DPLC_CLKP 6.35 管 DPLC 路径（3G）——同一个 run 里各查各的，不需要拆成两次跑。
+2. MPW 按**时钟对象**设值（非端口）：正常腿 2 / 数据腿 0.73——每族带自己的阈值，不活跃的族无 arrival 无检查自动空转。不需要 case 杀时钟。
+3. 2M23 要 DPSEL_I case 是因为 RX0/RX1 是**两条物理 lane**（10.08/17.1 独立时钟域）；1V11 单 RX_CLK + 双速率共存，结构不同。
+
+### 最终约束（ip_cons 14 行，commit `337c171`）
+
+```tcl
+set_max_delay 14 -to CLKA_L
+set_max_delay 14 -to CLKB_L
+set_max_delay 14 -to CLKA_R
+set_max_delay 14 -to CLKB_R
+set_min_pulse_width -low -high 2    [get_clocks NORMAL_CLK_LONG]   # +SD_CLK_LONG/SD_CLK_INV_LONG/NORMAL_CLK_SHORT/SD_CLK_SHORT/SD_CLK_INV_SHORT
+set_min_pulse_width -low -high 0.73 [get_clocks DCLK_DATA_LONG]   # +DCLK_DATA_MUX_LONG/SD_CLK_DPLC_LONG/SD_CLK_INV_DPLC_LONG/SHORT 同族
+```
+
+无 false_path、无 if/else、无开关变量、clk_period 零修改。
+
+### 被推翻的方案（防回流）
+
+| 方案 | 否决理由 |
+|---|---|
+| DPLC_CASE 速率开关（clk_period if/else） | 老方式（双速率共存）更对，不需要跑两个 case |
+| set_case_analysis 双开关 | 不需要任何 case 机制 |
+| MPW 按 DPLC_CASE if/else（0.73↔2） | 随 case 一起删，固定 2/0.73 |
+| 端口预算 12 / 12.7 | 终值 14（=2M23 原值，覆盖配置路径 12.4） |
+| G12（总线 12.7） | 被 14 覆盖，SUPERSEDED |
+
+### 2M23 参照
+
+- `HV2M23_digital_top.tcl:657-660`：`set_max_delay 14 -to CLKA/CLKB × L/R`——**我们照抄了**
+- L591-609：数据口 `set_output_delay -min 2.6/2.2`（将来批次 4）
+- L647-650：时钟口 `set_output_delay 0.5`（同上）
+- 2M23 的 DPSEL_I case：RX0/RX1 两条物理 lane 选数据通路——1V11 没这个结构
+
+### 结论
+
+- 约束不是越多越精密越好——**老设计已经正确时，最好的改动是不改**
+- "跑两个 case"的方案精准但复杂度加倍，用户否决正确
+- pulse = 半周期只对 50% 占空比成立（LONG 链 T/2、SHORT 链 T/3，低相恰好同值 1.905）
+- MPW 按时钟对象设值即可同时覆盖活跃/不活跃族，无需 case 机制
+
+### 证据文件
+
+| 文件 | 内容 |
+|---|---|
+| ip_cons（HK1V11 `337c171`） | 14 行活动约束，全英文注释，无 case/false_path/if-else |
+| clk_period.tcl | 零修改（原始五行：MARGIN/OSC/I2C/RX_CLKP 3.81/DPLC_CLKP 6.35） |
+| HV2M23_digital_top.tcl:657-660 | `set_max_delay 14` 照抄样板 |
+
+## 终版补遗：set_case_analysis 全删——回归"分时钟族 MPW"就够了（0917 深夜定稿）
+
+> **本节推翻了案例 10/11 中描述的 case_analysis / DPLC_CASE 方案。** 演进过程中引入的 case 机制是过度工程：幻影违例已经被 per-clock 0.73 化解了，不需要再杀任何时钟。
+
+### 演进链
+
+| 版本 | 方案 | 结果 |
+|------|------|------|
+| v1 | port 级统一 MPW=1.9 | 8 条违例（幻影速率） |
+| v2 | per-clock MPW 2/0.73 + case_analysis → 双开关/四 case/if-else | 过度工程 |
+| **v3 终版** | **无 case，纯 per-clock MPW 2/0.73** | ✅ |
+
+### 最终活动约束（ip_cons HEAD `337c171`，仅 14 行）
+
+```tcl
+set_max_delay 14 -to CLKA_L / CLKB_L / CLKA_R / CLKB_R
+set_min_pulse_width -low -high 2    [6 个正常腿时钟对象]
+set_min_pulse_width -low -high 0.73 [8 个数据/DPLC 腿时钟对象]
+```
+
+- clk_period.tcl 保持原始（RX_CLKP 3.81 + DPLC_CLKP 6.35 两档共存），零修改
+- set_case_analysis **全部删除**：不需要 case、不需要开关、不需要 if/else、不需要 false_path
+- 两族时钟共存传播、各查各的 MPW，一个 run 覆盖全部产品 case
+
+### 为什么 case 不需要了
+
+用户判断"以前的方式就是正确的"：大部分路径按 5G 来（RX_CLKP 3.81），DPLC 的按 3G 来（DPLC_CLKP 6.35），两档速率共存于同一次 run。分时钟族设 MPW 值（2/0.73）已经解决了幻影违例问题——0.73 不是"放水"，是**保住 1.175ns 余量的诚实最小阈值**，真实占空比恶化依然报警。引入 case_analysis 是在解决一个已经被解决的问题。
+
+### 心法追加
+
+- **case_analysis 不是万能解——先问 per-clock 值能不能解决。** 如果每个时钟对象可以带自己的阈值，多模式共存比分模式切换更简洁。
 
 ## 心法清单
 
