@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
@@ -612,6 +612,68 @@ set_min_pulse_width -low -high 0.73 [8 个数据/DPLC 腿时钟对象]
 
 - **case_analysis 不是万能解——先问 per-clock 值能不能解决。** 如果每个时钟对象可以带自己的阈值，多模式共存比分模式切换更简洁。
 
+## 案例 13：俊杰口径全面 review——中间路径 setup/hold 卡、输出口 MPW 卡
+
+> **俊杰原则**（最高指导）：*"中间的路径都是 setup/hold 去卡；只有输出的这几个 CLKA_L/CLKB_L/CLKA_R/CLKB_R 相关的用 MPW 去卡，卡的方法就是 generate 出来，然后对 generate 出来的分别取不同的 MPW"*
+
+这是对最终定稿版（无 case、clk_period 原始、14 行无条件约束）的一次全面交叉检查——**三个方面全部干净，不需要改任何东西**。
+
+### 三方面 review 结果
+
+#### 方面 1：MPW 14 行有没有过度？
+
+| 时钟对象族 | 是否到达输出口 | 证据 |
+|---|---|---|
+| 6 个正常腿（NORMAL/SD_CLK/SD_CLK_INV SHORT+LONG） | ✅ 通过 ÷2 链全部到达 | CLKGEN.v:185 mux→INV→端口 |
+| 8 个数据/DPLC 腿（DCLK_DATA/MUX/SD_CLK_DPLC/INV_DPLC SHORT+LONG） | ✅ DCLK_DATA_MUX 经 SD_CLK mux(I1) 到达 | V2 run MPW 报表实测 DCLK_DATA_LONG 到达 CLKB_L |
+
+**内部寄存器顺带检查**：对 DCLK_DATA_*/MUX_* 设 MPW 会顺带检查 DTCTL/DPLC_DATA_GEN/SMT_CS 等内部寄存器的 CK 脚（约 14 个 always 块）——但脉冲 ~1.905 >> 0.73 全部轻松通过，**不产生噪音，反而提供了占空比劣化的早期报警**。这是有益副作用，不是坏处。
+
+**结论：14 行没有过度。**
+
+#### 方面 2：其他约束需要联动修改吗？
+
+| 交互对 | 冲突？ | 证据 |
+|---|---|---|
+| set_max_delay 14 ×4口 vs G10 12.7（U_DPLC_DATA_GEN） | ✅ 无——端点不同 | L146-149 vs L582-587 |
+| mc 有指向 4 口的吗？ | ✅ 无——G1~G11 终点全是内部寄存器 | grep = 0 命中 |
+| set_false_path 与 MPW/max_delay | ✅ 无——L336/338/345 均不涉及 4 口或 14 时钟 | ip_cons L336-345 |
+| set_input_delay | ✅ 无关——仅 dout_lane* 输入侧 | L240-241 |
+| G10 12.7 = 2×DPLC_CLKP | ✅ 正确——DPLC_CLKP=6.35 常量，不依赖任何开关 | clk_period.tcl:19 |
+
+**结论：零冲突，不需要联动修改。**
+
+#### 方面 3：skew 脚本需要调整吗？
+
+| 检查项 | 结论 |
+|---|---|
+| clk 探针选点（INV_SD_CLK_INV pin） | ✅ 4 个变体的分叉点，一个探针覆盖全部 |
+| -slack_lesser_than 50 | ✅ 端口已有 set_max_delay 14，路径 constrained，slack ≈ 8.7 < 50 → 全部打印 |
+| 无 case 时 4 变体共存包络 | ✅ 合理——skew 测的是最坏情况包络（min/max 跨 4 变体），正是一次 run 覆盖全部产品 case 的设计意图 |
+| 数据侧（DB*_pre/DB*_reg 探针） | ✅ 已审计无遗漏（案例 9 结论） |
+
+**结论：skew 脚本不需要调整。**
+
+### 分层设计的精髓
+
+俊杰口径的核心是**分层**：
+
+```
+┌─────────────────────────────────────────────────────┐
+│  中间路径（内部时序）                                 │
+│  → setup/hold 卡：G 系列 mc、APR 修线、传统时序收敛   │
+│  → 与 MPW 互不干扰（MPW 查时钟引脚脉冲宽度，不查数据） │
+├─────────────────────────────────────────────────────┤
+│  输出口（CLKA_L/CLKB_L/CLKA_R/CLKB_R）               │
+│  → MPW 卡：对 generate 出来的时钟分别设 2 / 0.73     │
+│  → set_max_delay 14：clock-to-out 总预算             │
+│  → 与 mc 互不干扰（mc 终点不是端口）                  │
+└─────────────────────────────────────────────────────┘
+```
+
+两层各司其职、互不踩脚——这正是"一套约束覆盖全部产品 case"的架构基础。
+
+---
 ## 心法清单
 
 1. **先同 corner 对齐，再谈工具差异**（案例 2 第一步省掉半天弯路）
