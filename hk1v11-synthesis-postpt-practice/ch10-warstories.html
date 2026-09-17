@@ -450,6 +450,75 @@ set_case_analysis 0 [get_pins u_LOGIC_CENTER/LC_CLK_RST_GEN/CLKGEN/u_gate_MUX_DC
 | `修改记录/pending_constraints_SD_output_20260917.tcl` | 推演全记录：幻影速率定性、模式开关提案、FIXME 借鉴清单、0.73 论证与 pulse 概念澄清 |
 | `CLKGEN.v:130-135`、`CLKGEN.v:179/185`、`ip_cons L57-61`、`clk_period.tcl:19` | SP=长短编码选择脚；"5G 活时钟 = ÷2 链"的 RTL+SDC 双证；3G 周期变量出处 |
 
+## 案例 11：DPLC_CASE 与 3G/5G 速率开关——为什么 1V11 只有一套约束
+
+### 现象
+
+案例 10 定下分时钟族 MPW 后，连出三个问题：
+
+1. MPW 约束要分几套？四 case（长/短编码 × DPLC 开/关）要不要四份约束文件？
+2. 2M23 当年分了两个网表，我们是不是也得跟着拆？
+3. 2M23 的 `clk_period.tcl` 里有 `RX0_CLKP`(10.08)/`RX1_CLKP`(17.1) 两套周期，1V11 的 `clk_period.tcl` 里只有一个 `RX_CLKP`(3.81)——3G 的周期去哪了？
+
+### 三问
+
+**① MPW 值跟哪个轴走？** —— 只跟**速率轴**（DPLC/noDPLC），与编码轴无关：
+
+| 轴 | 值 | 依据 |
+|---|---|---|
+| 编码轴（LONG vs SHORT） | **无差别** | 正常腿都设 2（LONG pulse 3.81 / SHORT pulse 5.715 都 >2）；数据腿都设 0.73（**LONG 低相 = T/2 = 1.905，SHORT 低相 = T/3 = 1.905，数字相同、来历不同**） |
+| 速率轴（DPLC vs noDPLC） | **0.73 vs 2** | 5G 计时下 DPLC 族是幻影（没这个通路没这个模式）→ 0.73 是"诚实最小阈值"（=1.905−1.175，与 3G 等余量）；3G 真模式下 pulse=3.175，规格 2 适用 |
+
+**② SP_CASE 是要按 run 翻的开关吗？** —— 不是。`SP_I` 是**物理输入引脚**（HK1V11_digital_top.v:253/408，BUFFER_I.v:120 `SP_buf = SP_I`），板上绑死的**静态声明**，是 2M23 `DPSEL_I` 的对应物。真正按 run 翻的开关只有 `DPLC_CASE`。
+
+**③ 3G/5G 为什么 1V11 的 clk_period 没有两套？** —— 两边的物理结构根本不同：
+
+- **2M23**：`RX0_CLKP=10.08` / `RX1_CLKP=17.1`（clk_period.tcl L20-21）是**两条并存的独立 lane**，两个时钟域同时存在，所以不需要开关；他们真正用 case 的地方只有数据通路模式选择（`clk_period.tcl:16 set_case_analysis 0 [get_ports DPSEL_I]`）。
+- **1V11**：只有**一根 RX_CLK 管脚**（clk_lane），同一物理时钟在 5G/3G 两种速率下跑——**一个 clock 同时只能有一个周期**，正确形式是**按 run 切换基础周期**。俊杰的答案 "DPLC clk = RX_CLK" 证明链条结构本来就对（`DCLK_DATA_LONG = RX_CLK ÷1`），错的只是 `RX_CLKP` 的值；而且 3G 的周期项目里早有名字：`DPLC_CLKP=6.35`（clk_period.tcl:19，注释 "3G×1.05/20=157.5M"）。
+
+### 处理
+
+**一个开关联动三件事，四种 case 一份文件：**
+
+```tcl
+set SP_CASE   0    ;# 出货 strap 的静态声明（物理引脚，板上绑死）：0=LONG, 1=SHORT
+set DPLC_CASE 0    ;# 按 run 翻的速率开关：0=noDPLC(5G, RX_CLKP 3.81), 1=DPLC(3G, RX_CLKP 6.35)
+set_case_analysis $SP_CASE   [get_ports SP_I]
+set_case_analysis $DPLC_CASE [get_pins u_LOGIC_CENTER/LC_CLK_RST_GEN/CLKGEN/u_gate_MUX_SD_CLK/CLKMUX2X2/S]
+```
+
+`clk_period.tcl` 同步加 `DPLC_CASE` 开关（1→`RX_CLKP=6.35=DPLC_CLKP`，0→3.81；info exists guard）。
+
+**MPW 值跟随 DPLC_CASE（用户的挑战被接受）**：
+
+```tcl
+if {$DPLC_CASE == 0} {
+  # 幻影情境：0.73 = 1.905 - 1.175（诚实最小阈值，保住检出能力）
+  set_min_pulse_width -low -high 0.73 [get_clocks {DCLK_DATA_SHORT DCLK_DATA_LONG DCLK_DATA_MUX_SHORT DCLK_DATA_MUX_LONG SD_CLK_DPLC_SHORT SD_CLK_DPLC_LONG SD_CLK_INV_DPLC_SHORT SD_CLK_INV_DPLC_LONG}]
+} else {
+  # 3G 真模式：规格 2（pulse 3.175，余量 1.175）
+  set_min_pulse_width -low -high 2 [get_clocks {…同上 8 个时钟对象…}]
+}
+```
+
+> 之前"无条件 0.73"被用户当场反驳：**DPLC 模式真时钟下 0.73 太松，会掩盖 pulse 劣化到 1.9 以下的真违例**——值必须跟随速率，这一点和 case_analysis 值跟随 case 是同一个道理。
+
+### 结论
+
+- **四种 case 的实现 = 两个开关变量**：`SP_CASE`（出货 strap 静态声明）+ `DPLC_CASE`（按 run 翻）。不需要四份约束、不需要 2M23 式双网表/双目录。
+- **"余量"是结果，不是规格**：spec 是绝对值（2ns）；MPW 检查值的语义是"该模式下诚实的最小阈值"，幻影档和真模式档分开给。
+- **3G 的周期在项目里早有名字**（`DPLC_CLKP=6.35`）：缺的从来不是周期定义，而是把它接到 `RX_CLKP` 上的那个开关。
+- **后续联动清单**：`set_max_delay 14`（绝对预算，四 case 通用，不动）；正常腿 MPW=2（两 case 都过，不动）；G10 的 `2×DPLC_CLKP=12.7`（表达式跟常量，速率切换时复核语义，列复核项）；G1~G8 mc（launch 相对，不动）。
+
+### 证据文件
+
+| 文件 | 内容 |
+|---|---|
+| ip_cons (A)/(C1)/(C2)（HK1V11 `5f78f6f` 起） | 双开关 case_analysis + MPW if/else（DPLC_CASE=0→0.73，=1→2），全英文注释 |
+| `clk_period.tcl`（HK1V11 `130f773`） | `DPLC_CASE` 开关联动 `RX_CLKP`（1→6.35=`DPLC_CLKP`，0→3.81；info exists guard） |
+| 2M23 对照 | `clk_period.tcl:16 set_case_analysis 0 [get_ports DPSEL_I]`；L20-21 `RX0/RX1` 双 lane 并存（证明"双网表"是双 lane 结构使然，非通用做法） |
+| `CLKGEN.v:130-135` / `179/185` | SP=编码选择、PANEL_DPLC_CLK_SEL=模式选择（两个独立 mux，系列串联） |
+
 ## 心法清单
 
 1. **先同 corner 对齐，再谈工具差异**（案例 2 第一步省掉半天弯路）
@@ -467,6 +536,8 @@ set_case_analysis 0 [get_pins u_LOGIC_CENTER/LC_CLK_RST_GEN/CLKGEN/u_gate_MUX_DC
 13. **"余量"是结果不是规格**——spec 是绝对值（2ns），余量随 pulse 变化且 5G 方向更宽（案例 10）
 14. **分时钟族/分模式设检查阈值**：幻影时钟要么 case 杀掉，要么给等余量阈值（0.73=1.905−1.175），不要统一给 spec 值（案例 10）
 15. **pulse=半周期要先验证占空比**：非对称链（`edges {1 3 4}`）低相是 T/3，不是一半（案例 10）
+16. **约束值跟哪个轴走先问清楚**：速率轴决定 MPW 值，编码轴由 case 自然处理——对称的不用分文件（案例 11）
+17. **一个物理时钟同时只能有一个周期**：多速率单管脚芯片，正确形式是"按 run 切换基础周期 + 同一开关联动 case 与派生值"，不是维护两套时钟定义（案例 11）
 
 ## 未闭环清单
 
@@ -487,6 +558,8 @@ set_case_analysis 0 [get_pins u_LOGIC_CENTER/LC_CLK_RST_GEN/CLKGEN/u_gate_MUX_DC
 | wc_cbest 是否作 setup 签核 gate | ⏳ |
 | skew 合格窗规格（1V11 vs 流程指南） | 🟡 待后端确认 |
 | DPLC_MODE（R_REG06_F[2]）：当前零违例未放松，冒头按 G10 同模式处理 | 🟢 观察 |
+| DPLC_CASE=1（3G）签核 run：`clk_period.tcl` 速率开关已备（RX_CLKP 6.35/3.81），待 jjlu 确认出货模式后跑 | ⏳ |
+| G10 `2×DPLC_CLKP=12.7` 表达式在 5G/3G 速率切换下的语义复核 | ⏳ 复核项 |
   </script>
   <script src="./js/site.js"></script>
 </body>
