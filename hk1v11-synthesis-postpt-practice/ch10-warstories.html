@@ -535,7 +535,7 @@ if {$DPLC_CASE == 0} {
 2. MPW 按**时钟对象**设值（非端口）：正常腿 2 / 数据腿 0.73——每族带自己的阈值，不活跃的族无 arrival 无检查自动空转。不需要 case 杀时钟。
 3. 2M23 要 DPSEL_I case 是因为 RX0/RX1 是**两条物理 lane**（10.08/17.1 独立时钟域）；1V11 单 RX_CLK + 双速率共存，结构不同。
 
-### 最终约束（ip_cons 14 行，commit `337c171`）
+### 最终约束（ip_cons：4 行 set_max_delay + 14 行 MPW，合计 18 行活动约束；定稿 commit `a3049b7`）
 
 ```tcl
 set_max_delay 14 -to CLKA_L
@@ -576,7 +576,7 @@ set_min_pulse_width -low -high 0.73 [get_clocks DCLK_DATA_LONG]   # +DCLK_DATA_M
 
 | 文件 | 内容 |
 |---|---|
-| ip_cons（HK1V11 `337c171`） | 14 行活动约束，全英文注释，无 case/false_path/if-else |
+| ip_cons（HK1V11 定稿 `a3049b7`，其后 `fbe6665`/`a18cd24` 仅注释与 STATUS 标注） | 18 行活动约束（4+14），全英文注释，无 case/false_path/if-else；0918 起块头标 **STATUS: added 2026-09-17 NOT YET CONFIRMED OK**（待 jjlu 确认 MPW 2/0.73 + 下次 run 验证） |
 | clk_period.tcl | 零修改（原始五行：MARGIN/OSC/I2C/RX_CLKP 3.81/DPLC_CLKP 6.35） |
 | HV2M23_digital_top.tcl:657-660 | `set_max_delay 14` 照抄样板 |
 
@@ -592,7 +592,7 @@ set_min_pulse_width -low -high 0.73 [get_clocks DCLK_DATA_LONG]   # +DCLK_DATA_M
 | v2 | per-clock MPW 2/0.73 + case_analysis → 双开关/四 case/if-else | 过度工程 |
 | **v3 终版** | **无 case，纯 per-clock MPW 2/0.73** | ✅ |
 
-### 最终活动约束（ip_cons HEAD `337c171`，仅 14 行）
+### 最终活动约束（ip_cons HEAD：4 行 max_delay + 14 行 MPW = 18 行）
 
 ```tcl
 set_max_delay 14 -to CLKA_L / CLKB_L / CLKA_R / CLKB_R
@@ -637,7 +637,7 @@ set_min_pulse_width -low -high 0.73 [8 个数据/DPLC 腿时钟对象]
 |---|---|---|
 | set_max_delay 14 ×4口 vs G10 12.7（U_DPLC_DATA_GEN） | ✅ 无——端点不同 | L146-149 vs L582-587 |
 | mc 有指向 4 口的吗？ | ✅ 无——G1~G11 终点全是内部寄存器 | grep = 0 命中 |
-| set_false_path 与 MPW/max_delay | ✅ 无——L336/338/345 均不涉及 4 口或 14 时钟 | ip_cons L336-345 |
+| set_false_path 与 MPW/max_delay | ✅ 无——L336/338/345 均不涉及 4 口或 14 时钟 | ip_cons L336-345（@`337c171`；其后注释提交使 HEAD 漂移至 L361-370，语义不变） |
 | set_input_delay | ✅ 无关——仅 dout_lane* 输入侧 | L240-241 |
 | G10 12.7 = 2×DPLC_CLKP | ✅ 正确——DPLC_CLKP=6.35 常量，不依赖任何开关 | clk_period.tcl:19 |
 
@@ -705,6 +705,7 @@ set_min_pulse_width -low -high 0.73 [8 个数据/DPLC 腿时钟对象]
 | G10 DPLC_GROUP max_delay 2×：待 jjlu 评审 + POSTPT 验证（组 108→0、required 显示 12.7） | 🟡 |
 | round5 K1 mc：已生效（96→3），头部标 NOT-YET-CONFIRMED 待评审 | 🟡 |
 | skew -900：根因**已定案并修复**（哨兵 + 探针层级 + 非法起点回退；perl/sd/io 已改，本地精确复现验证） | ✅ 09/16 定案 |
+| SD 输出约束（max_delay 14 ×4 + MPW 2/0.73）：**代码未签核**——ip_cons 块头 STATUS 标 NOT YET CONFIRMED OK，待 jjlu 确认 MPW 值 + 下次 run 三项验证（MPW 0 违例 / setup 与 V2 可比 / skew arrival slack ~8.7） | 🟡 09/18 |
 | skew 修复文件待拷服务器 `top/sta/post/common/` 并**重跑 run_pt** 后复验 4 份时钟报表 | 🔴 待服务器 |
 | DPLC_CLK 生成时钟未定义（DRD FIXME）→ dplc skew 报告为暂行值 | ⏳ |
 | DCLK_CONFIG_SHORT 相位 FIXME（对 setup 无影响已证明，对 hold 未查） | ⏳ |
