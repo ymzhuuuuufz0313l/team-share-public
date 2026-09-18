@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
@@ -674,6 +674,40 @@ set_min_pulse_width -low -high 0.73 [8 个数据/DPLC 腿时钟对象]
 两层各司其职、互不踩脚——这正是"一套约束覆盖全部产品 case"的架构基础。
 
 ---
+
+## 案例 14：RX_CLK 50 条逐族判定——true path 与设计评审项
+
+### 现象
+
+0918V0 run（终版约束体系验证通过：MPW 0 违例、skew slack 8.729=14−5.271、setup 129）后，wc_cbest_125 仍剩 **RX_CLK 组 50 条 setup 违例**。问题：这些都是真路径吗？有没有可以约束掉的？
+
+### 逐族判定（按 worst 15 分析，全带 RTL file:line 证据）
+
+| 族 | 条数 | worst | 性质 | 处理方式 |
+|---|---|---|---|---|
+| **A1** LONG_ENCODING_ALIGN | 24 | **-0.496** | 同域 RX_CLK→RX_CLK 单周期解码管线 | **设计评审**：DATA_POINT_LAT→K4_FIND→flag_det 可否打一拍（同 0917V1 SHORT 修法）；其余 APR 修线 |
+| **B** CHPI_SD_CTRL 半周期 | 16 | -0.220 | 设计故意 negedge 采样（DTCTL.v:672） | **设计评审**：STB/HSR negedge→posedge 可否改 |
+| **A2** SHORT_ENCODING_ALIGN | 6 | -0.444 | 同域，**0917V1 RTL 已修但未进网表** | **等下版 APR 网表** |
+| **A3** DESCRAMBLE | 2 | -0.049 | 同域轻微 | 随 APR |
+| **A0** BUFFER_I | 1 | -0.083 | 同域轻微 | 随 APR |
+
+### 深度链路追踪：worst path (-0.496)
+
+DATA_POINT_LAT_reg_13_ → lag_det_reg（同域 RX_CLK，无中间寄存器，单周期）：
+
+- **LONG_ENCODING_ALIGN.v L310**：DATA_POINT_LAT 是对齐后 20-bit 数据寄存器
+- **L318-341**：大 mux（20-to-1 → DATA_ALIGN_PRE，组合）
+- **L346-354**：K4_CODE 比较（组合）→ K4_FIND 信号
+- **跨模块 → AUTO_EQ_TRAINIG_JUDGE.v L67**：flag_det 寄存器
+
+**功能语义**：flag_det 是 **auto-EQ 训练判定标志**（准静态：set 一次就保持）。K4_FIND→flag_det 的复位**很可能不需要下一拍生效**——可修法与 0917V1 SHORT_ENCODING_ALIGN 完全相同（RTL 打一拍或 mc2）。**待俊杰确认。**
+
+### 结论
+
+1. **50 条全部是 true path**（物理上同域、无中间寄存器、有数据流），**没有一条可以当前约束修掉**。
+2. 但 **A1 worst（flag_det/cnt_flag）和 B 族（半周期）可能通过设计修改消除**——A1 是准静态标志可打拍，B 是 negedge 采样可改 posedge。
+3. A2 的 6 条 SHORT 违例将在下版网表（含 0917V1 RTL 修改）后自动消失。
+
 ## 心法清单
 
 1. **先同 corner 对齐，再谈工具差异**（案例 2 第一步省掉半天弯路）
@@ -705,11 +739,11 @@ set_min_pulse_width -low -high 0.73 [8 个数据/DPLC 腿时钟对象]
 | G10 DPLC_GROUP max_delay 2×：待 jjlu 评审 + POSTPT 验证（组 108→0、required 显示 12.7） | 🟡 |
 | round5 K1 mc：已生效（96→3），头部标 NOT-YET-CONFIRMED 待评审 | 🟡 |
 | skew -900：根因**已定案并修复**（哨兵 + 探针层级 + 非法起点回退；perl/sd/io 已改，本地精确复现验证） | ✅ 09/16 定案 |
-| SD 输出约束（max_delay 14 ×4 + MPW 2/0.73）：**代码未签核**——ip_cons 块头 STATUS 标 NOT YET CONFIRMED OK，待 jjlu 确认 MPW 值 + 下次 run 三项验证（MPW 0 违例 / setup 与 V2 可比 / skew arrival slack ~8.7） | 🟡 09/18 |
+| SD 输出约束（max_delay 14 ×4 + MPW 2/0.73）：**0918V0 run 已验证通过**——MPW 0 违例、setup 131→129（R_REG06_F→CLKB 清零）、skew slack 8.729=14−5.271 全受约束、hold 零回归；MPW 值待 jjlu 最终签核确认 | ✅ 09/18 验证 |
 | skew 修复文件待拷服务器 `top/sta/post/common/` 并**重跑 run_pt** 后复验 4 份时钟报表 | 🔴 待服务器 |
 | DPLC_CLK 生成时钟未定义（DRD FIXME）→ dplc skew 报告为暂行值 | ⏳ |
 | DCLK_CONFIG_SHORT 相位 FIXME（对 setup 无影响已证明，对 hold 未查） | ⏳ |
-| F2 同域 88 条 / F3 半周期 17 条真时序违例 | ⚠️ 交 APR/设计 |
+| RX_CLK 50 条逐族判定（0918V0）：全部 true path；A1 worst（flag_det）+ B 族（negedge 半周期）待设计评审可消除；A2 6 条等下版网表 | ⚠️ 交 APR/设计 |
 | tt_cworst_25 hold -5.42（C2278/C2272） | ⚠️ 专项 |
 | 生成时钟 uncertainty=0 | ⚠️ |
 | wc_cbest 是否作 setup 签核 gate | ⏳ |
