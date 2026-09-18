@@ -125,7 +125,7 @@
 <text x="852.0" y="576" text-anchor="middle" font-size="9" fill="#64748b">1'b0</text>
 <rect x="914" y="540" width="124" height="46" fill="#bbf7d0" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="976.0" y="561" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">reg_eq_rbc1</text>
-<text x="976.0" y="576" text-anchor="middle" font-size="9" fill="#64748b">1'b0</text>
+<text x="976.0" y="576" text-anchor="middle" font-size="9" fill="#64748b">1'b1</text>
 <rect x="1038" y="540" width="124" height="46" fill="#bbf7d0" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="1100.0" y="561" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">reg_eq_rbc0</text>
 <text x="1100.0" y="576" text-anchor="middle" font-size="9" fill="#64748b">1'b0</text>
@@ -434,7 +434,7 @@
 <text x="158" y="1972" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x36 (54)</text>
 <rect x="170" y="1944" width="992" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="666.0" y="1965" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">reg_eq_bias_tune[7:0]</text>
-<text x="666.0" y="1980" text-anchor="middle" font-size="9" fill="#64748b">8'b01010101</text>
+<text x="666.0" y="1980" text-anchor="middle" font-size="9" fill="#64748b">8'b00010111</text>
 <text x="158" y="2024" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x37 (55)</text>
 <rect x="170" y="1996" width="124" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="232.0" y="2017" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">Reserved</text>

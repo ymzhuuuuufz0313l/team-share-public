@@ -599,6 +599,20 @@
 - **寄存器定义不变**：map / 地址 / 字段 / 默认值均无变化，仅 SCREN 来源统一为软件控制；`LC_CPUWR` 保持 0903v1 与服务器一致
 - **验收**：iverilog 两分支（默认 + `` `VU440_FPGA ``）通过
 
+### 5.24 0918v1 EQ 默认值调整 + 服务器 0917 基线重建
+
+2026-09-18 用户要求默认值调整；同时将 `LC_CPUWR_history/` 根级三件套基线重建为服务器 2026-09-17 压缩包版（= HDL/ 工作副本）。
+
+- **默认值变更（LC_CPUWR，chip_sel=0/1 共用）**：
+  - `reg_eq_bias_tune[7:0]`（0x36）默认 `8'h55 → 8'h17`（assign LSI_PRTECT 兜底 + `R_REG54_F` 异步复位两处）；0x36 字节默认 `0x55→0x17`
+  - `reg_eq_rbc1`（0x08[1]）默认 `1'b0 → 1'b1`（shadow + 两个 `ifdef CHKSUM_A_EN` 分支共三处复位）；0x08 字节默认 `0x00→0x02`
+  - `reg_eq_rbc0`（0x08[0]）默认确认保持 `1'b0`
+- **基线重建吸收的服务器 0917 增量**：LC_CPUWR Part17 ECO dummy cells 加 `` `ifndef VU440_FPGA ``；LC_REG_MAPPING 新增 FPGA ILA（`ila_clk` + `ILA_LC_REG_MAPPING` 实例）与 AUTO_EQ 分支 `{AEQ_reg_lane_ctrl,1'b0}`；LINK_CONFIG_CTRL 删除旧 `sw_reg_lane_ctrl` 连接、补 `sw_reg_lane_ctrl0~4`/`reg_eol` 空接、`cr_done_filter` 接通——**0827v1 集成挂账全部清零**
+- **关键核实**：0907v1 的 12 个 cs=1 专有输出 CHIP_SEL 门控逻辑在服务器 0917 版中**仍然存在**（仅一处描述性注释残留），基线重建不造成功能回退
+- **寄存器 map 无变化**：仅默认值调整；chip_sel0/1 地址表与四张寄存器 SVG 大图同步
+- **env 未同步**（用户决策）：DV_TCON_C 的 env 默认值仍为旧值，依赖上电默认值检查的 case 会不一致，挂账待 env 窗口
+- **验收三关**：iverilog 两分支通过（仅预期缺标准单元/子模块）+ rtl-code-review pass=true（critical=0, high=0）+ rtl-signal-trace 链路完整（报告 `markdownfile/0918v1/`）
+
   </script>
   <script>
     document.getElementById('article').innerHTML = marked.parse(document.getElementById('md').textContent.trim());

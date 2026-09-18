@@ -386,7 +386,7 @@ one-shot unlock 实现后，checker 出现误判：
 
 > 待用户确认后统一同步；0810v1 RTL 已通过验收三关，不受 DV 同步进度影响。
 
-## 8. 0811 之后的验收同步（0811v1 → 0909v1）
+## 8. 0811 之后的验收同步（0811v1 → 0918v1）
 
 DV env 同步继续暂缓期间，RTL 侧每个版本仍独立完成验收三关（iverilog + rtl-code-review + rtl-signal-trace）：
 
@@ -401,6 +401,7 @@ DV env 同步继续暂缓期间，RTL 侧每个版本仍独立完成验收三关
 | 0903v1 | 09-03/07 | 0x29 字节默认 0x00→0x02（R_DBC_WIDTH_OPT[1:0] 默认 2'b01）；LC_REG_MAPPING `ifdef VU440_FPGA 下 R_SCREN 强制 1'b1 | 三关全过（iverilog exit 0；review pass=true，critical=0/high=1*；trace 无阻塞） |
 | 0907v1 | 09-07 | cs=1 专有输出（SR_*/PWRC_T*/PWRC_PA~NB 共 12 个）加 CHIP_SEL 门控：cs=0 输出字段默认值，cs=1 行为不变；map/默认值/RECON/LC_CPUWR 无变化 | 三关全过（iverilog 双分支 exit 0；review/trace 报告在 `markdownfile/0907v1/`） |
 | 0909v1 | 09-09 | SCREN `` `ifdef VU440_FPGA `` 强制分支注释停用（全平台含 FPGA 由软件经 0x00[4] 控制，默认关）；0907v1 CHIP_SEL 门控确认服务器已按同款写法合入 | iverilog 两分支 exit 0（注释停用无功能变化） |
+| 0918v1 | 09-18 | EQ 默认值调整：`reg_eq_bias_tune` 默认 8'h55→8'h17、`reg_eq_rbc1` 默认 0→1、`reg_eq_rbc0` 保持 0（0x08/0x36 字节默认 0x00→0x02 / 0x55→0x17）；基线重建为服务器 0917 版（FPGA ILA / ECO ifdef / AUTO_EQ `{AEQ,1'b0}` / 0827v1 集成挂账清零） | 三关全过（iverilog 两分支；review pass=true，critical=0/high=0；trace 链路完整；报告在 `markdownfile/0918v1/`） |
 
 > *0903v1 review 唯一 HIGH 为验证影响（非 RTL 缺陷）：DV 侧 t_reg_i2c_rst / chpi checker / reg_defines_i2c 仍编码 0x29 旧默认 0x00，env 同步暂缓期间列为交付前跟踪项；trace 附带低危观测项（未开 LSI 保护时 0x29 I2C 读回 0x00≠新默认 0x02）。评审与追踪报告：`LC_CPUWR_history/markdownfile/0903v1/`。
 

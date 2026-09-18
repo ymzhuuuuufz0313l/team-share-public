@@ -136,7 +136,7 @@
 <text x="158" y="568.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x08 (8)</text>
 <rect x="842" y="550.0" width="64" height="26" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" rx="13"/>
 <circle cx="854" cy="563.0" r="3.5" fill="#22c55e"/>
-<text x="877.0" y="567.0" text-anchor="middle" font-size="12" font-weight="700" fill="#1e293b" font-family="Consolas, Monaco, monospace">0x00</text>
+<text x="877.0" y="567.0" text-anchor="middle" font-size="12" font-weight="700" fill="#1e293b" font-family="Consolas, Monaco, monospace">0x02</text>
 <rect x="170" y="540" width="163" height="46" fill="#ccfbf1" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="251.5" y="561.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">SD_CHOP_F[1:0]</text>
 <text x="251.5" y="575.0" text-anchor="middle" font-size="9.0" fill="#64748b">2'b00</text>
@@ -151,7 +151,7 @@
 <text x="620.5" y="575.0" text-anchor="middle" font-size="7.0" fill="#64748b">1'b0</text>
 <rect x="662" y="540" width="81" height="46" fill="#e0e7ff" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="702.5" y="561.0" text-anchor="middle" font-size="8.0" font-weight="500" fill="#1e293b">reg_eq_rbc1</text>
-<text x="702.5" y="575.0" text-anchor="middle" font-size="7.0" fill="#64748b">1'b0</text>
+<text x="702.5" y="575.0" text-anchor="middle" font-size="7.0" fill="#64748b">1'b1</text>
 <rect x="744" y="540" width="81" height="46" fill="#e0e7ff" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="784.5" y="561.0" text-anchor="middle" font-size="8.0" font-weight="500" fill="#1e293b">reg_eq_rbc0</text>
 <text x="784.5" y="575.0" text-anchor="middle" font-size="7.0" fill="#64748b">1'b0</text>
@@ -526,10 +526,10 @@
 <text x="158" y="1920.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x36 (54)</text>
 <rect x="842" y="1902.0" width="64" height="26" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" rx="13"/>
 <circle cx="854" cy="1915.0" r="3.5" fill="#f59e0b"/>
-<text x="877.0" y="1919.0" text-anchor="middle" font-size="12" font-weight="700" fill="#1e293b" font-family="Consolas, Monaco, monospace">0x55</text>
+<text x="877.0" y="1919.0" text-anchor="middle" font-size="12" font-weight="700" fill="#1e293b" font-family="Consolas, Monaco, monospace">0x17</text>
 <rect x="170" y="1892" width="655" height="46" fill="#e0e7ff" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="497.5" y="1913.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">reg_eq_bias_tune[7:0]</text>
-<text x="497.5" y="1927.0" text-anchor="middle" font-size="9.0" fill="#64748b">8'b01010101</text>
+<text x="497.5" y="1927.0" text-anchor="middle" font-size="9.0" fill="#64748b">8'b00010111</text>
 <text x="158" y="1972.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x37 (55)</text>
 <rect x="842" y="1954.0" width="64" height="26" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" rx="13"/>
 <circle cx="854" cy="1967.0" r="3.5" fill="#f59e0b"/>

@@ -248,10 +248,11 @@
 
 ## 1. 当前版本
 
-当前最新版本为 **0909v1**（`LC_REG_MAPPING.v` 文件头 0909v1：SCREN `` `ifdef VU440_FPGA `` 强制分支注释停用——全平台（含 FPGA）scramble 由软件经 0x00[4] 控制（默认关），0907v1 CHIP_SEL 门控确认服务器已合入；`LC_CPUWR.v` 保持 0903v1 与服务器一致）：
+当前最新版本为 **0918v1**（三件套文件头均 0918v1，基线 = 服务器 2026-09-17 压缩包：`reg_eq_bias_tune[7:0]` 默认 `8'h55→8'h17`、`reg_eq_rbc1` 默认 `1'b0→1'b1`、`reg_eq_rbc0` 保持 `1'b0`；吸收服务器 FPGA ILA / ECO ifdef / AUTO_EQ `{AEQ_reg_lane_ctrl,1'b0}` 增量，0827v1 集成挂账清零；0907v1 CHIP_SEL 门控确认仍在服务器版中）：
 
 | 版本 | 主要状态 |
 |------|----------|
+| **0918v1** | **EQ 默认值调整 + 服务器 0917 基线重建：`reg_eq_bias_tune[7:0]`（0x36）默认 `8'h55→8'h17`（0x36 字节 `0x55→0x17`）；`reg_eq_rbc1`（0x08[1]）默认 `1'b0→1'b1`（0x08 字节 `0x00→0x02`）；`reg_eq_rbc0` 保持 `1'b0`；chip_sel=0/1 共用；env 默认值未同步（用户决策，挂账）** ✅ |
 | **0909v1** | **SCREN 口径对齐服务器：`` `ifdef VU440_FPGA `` 强制分支注释停用，所有平台（含 FPGA）scramble 由软件经 `R_REG00_F[4]`（0x00[4]）控制（默认关）；0907v1 CHIP_SEL 门控确认服务器已按同款写法合入；寄存器定义不变，`LC_CPUWR` 保持 0903v1** ✅ |
 | **0907v1** | **CHIP_SEL 门控修复：cs=1 专有输出（`SR_PR/PF/NR/NF`、`PWRC_TA/TB/P/N`、`PWRC_PA/PB/NA/NB` 共 12 个）cs=0 输出字段默认值（SR=`2'b11`、TA/TB=`2'b01`、P/N=`2'b10`、PA~NB=`2'b10`），cs=1 行为不变；寄存器 map/默认值/I2C 读回（RECON）无变化，LC_CPUWR 不动** ✅ |
 | **0903v1** | **HK1V11_Register_20260903 表同步：0x29（十进制 41，R_REG41_F）字节默认 `0x00→0x02`（`R_DBC_WIDTH_OPT[1:0]` @ 0x29[2:1] 默认 `2'b00→2'b01`）；LC_REG_MAPPING `` `ifdef VU440_FPGA `` 下强制 `R_SCREN=1'b1`（FPGA scramble 常开），ASIC/仿真行为不变；寄存器 map 无变化、env/reg_model 无功能变化** ✅ |
@@ -268,6 +269,13 @@
 | 0721v1 | `LCONFIG_DATA`/`FCONFIG_DATA` 16bit→24bit（每步 3 寄存器）；checksum XOR 总量不变 ✅ |
 | 0716v1 | 新增 `FSEL[1:0]` @ `0x35`；已归档为 `0716_v1_work` ✅ |
 | 0714v1 | chip_sel=0 默认值 + `LC_REG_MAPPING` 回拼 chip_sel=1 默认值；回归通过 ✅ |
+
+0918v1 交付物：
+
+- 根级固定三件套（文件头均 0918v1，基线 = 服务器 2026-09-17 压缩包）：`LC_CPUWR.v`——`reg_eq_bias_tune` 默认 `8'h55→8'h17`（assign 兜底 + 异步复位）、`reg_eq_rbc1` 默认 `1'b0→1'b1`（三处复位）、`reg_eq_rbc0` 保持 `1'b0`；`LC_REG_MAPPING.v`/`LINK_CONFIG_CTRL.v` 仅版本头 + 服务器增量吸收，无本次功能改动
+- 基线核实：0907v1 的 12 个 cs=1 专有输出 CHIP_SEL 门控逻辑在服务器 0917 版中仍然存在（无功能回退）
+- chip_sel0/1 地址表更新 + 四张寄存器 SVG 大图默认值同步（0x08 字节 `0x00→0x02`、rbc1 `1'b1`、0x36 `0x17`/`8'b00010111`）
+- 验收三关：① iverilog 两分支通过（仅预期缺 CLKINVX4AL9/CHPI_CONFIG_L0/ILA_LC_REG_MAPPING）；② rtl-code-review pass=true（critical=0, high=0, medium=1 env 未同步-用户确认）；③ rtl-signal-trace 链路完整（纯组合透传无 CDC）；报告见 `LC_CPUWR_history/markdownfile/0918v1/`
 
 0909v1 交付物：
 
@@ -318,6 +326,7 @@
 - **history 副本同步**：`LC_CPUWR_history/LINK_CONFIG_CTRL.v` 用户确认替换为服务器 0825 版（`b9e85a0`）；接口增量见 timeline 4.17
 - **0903v1 表同步**：依据 HK1V11_Register_20260903.xlsm——LC_CPUWR 0x29（十进制 41，`R_REG41_F`）字节默认 `0x00→0x02`（`R_DBC_WIDTH_OPT[1:0]` @ 0x29[2:1] 复位默认 `2'b00→2'b01`，复位值与 LSI_PRTECT 读回兜底同步修改）；LC_REG_MAPPING `` `ifdef VU440_FPGA `` 下 `R_SCREN` 强制 `1'b1`（FPGA 平台 scramble 常开，`` `else `` 分支保持 `R_SCREN = R_REG00_F[4]`，ASIC/仿真流程行为不变）；寄存器 map 无变化，env/reg_model 无功能变化
 - **0907v1 CHIP_SEL 门控修复**：用户评审发现 cs=1 专有输出（`SR_PR/PF/NR/NF` @0x09、`PWRC_TA/TB/P/N` @0x0A、`PWRC_PA/PB/NA/NB` @0x1F，共 12 个）无 CHIP_SEL 门控——cs=0 下误写 Reserved 地址会把随机值漏到输出；修复为 cs=0 输出字段默认值常量、cs=1 行为不变（仅 LC_REG_MAPPING 0903v1→0907v1，map/RECON/LC_CPUWR 无变化）
+- **0918v1 EQ 默认值 + 服务器基线重建**：`reg_eq_bias_tune` 默认 `8'h55→8'h17`、`reg_eq_rbc1` 默认 `0→1`、`reg_eq_rbc0` 保持 0（0x08/0x36 字节默认 `0x00→0x02`/`0x55→0x17`）；根级三件套基线重建为服务器 0917 版，0827v1 集成挂账清零（cr_done_filter 接通、sw_reg_lane_ctrl 旧连接清除）；验收三关全过
 
 ## 3. 待确认项
 
@@ -328,9 +337,9 @@
 | chip_sel=1 的 checksum case | **已通过** | `cfg_frame` 写入后 R_REG 与回拼字节一致 ✅ |
 | BCC 协议接入 | **方向已定论（0821v2）** | CPUWR 无 BCC 总线访问权限：BCC_M=I2C R/W output 下发 bcc_ctrl（服务器 0825 LINK_CONFIG_CTRL 已接出）；SDID/AEQ_reg_lane_ctrl=bcc 写回只读监视（SDID input 已接通）；写回接入转交同事 |
 | lane ctrl 上电默认值迁移 | **待规格核对** | 0827v1 后上电默认 5'b00000（原 0x33[6:2]=5'b00010/3dB）；与 HK1V11_Register_20260827.xlsm 核对，如需 3dB 可置 R_REG03_F 复位 bit0=1 或软件初始化 |
-| LINK_CONFIG_CTRL 0827v1 集成补丁 | **待做** | 删 `.sw_reg_lane_ctrl` 连接 ×2（L172/L363/L472）+ LC_REG_MAPPING 实例补 `sw_reg_lane_ctrl0~4` 连接 + 可选 `.reg_eol()`；清单见评估报告 §5-D |
+| LINK_CONFIG_CTRL 0827v1 集成补丁 | **✅ 已完成（0918v1）** | 服务器 0917 版已集成：旧 `.sw_reg_lane_ctrl` 连接已删、`sw_reg_lane_ctrl0~4`/`reg_eol` 空接已补、`cr_done_filter` 接通；0918v1 基线重建时确认清零 |
 | Loop_sel PIN 引入 | **待 projectleader 定** | `Loop_sel[2:0]` 实际 3 个 PIN 引入与命名待定（当前 LINK_CONFIG_CTRL 空接）；引测点（TESTO）不归 LC_CPUWR |
-| DV env 同步 | **用户暂缓** | env_cfg reg51 位偏移、reg56 EOL 打包、CDR/BCC 打包、reg_model 旧模板，待确认后同步 |
+| DV env 同步 | **用户暂缓** | env_cfg reg51 位偏移、reg56 EOL 打包、CDR/BCC 打包、reg_model 旧模板，待确认后同步；0918v1 新增缺口：0x08/0x36 env 默认值（rbc1=0、bias_tune=0x55）仍为旧值，依赖上电默认值检查的 case 会不一致 |
 | 上游 `CHPI_CONFIG_L0` 升 24bit | **外部依赖** | 每拍 3 字节采样；全芯片 FCONFIG 流仿真联调前提 |
 | `LINK_LOGIC` `[23:16]` tie-off 删除 | 待上游升版 | 过渡期防 X 传播，上游 24bit 输出到位后删除
 
