@@ -613,6 +613,21 @@
 - **env 未同步**（用户决策）：DV_TCON_C 的 env 默认值仍为旧值，依赖上电默认值检查的 case 会不一致，挂账待 env 窗口
 - **验收三关**：iverilog 两分支通过（仅预期缺标准单元/子模块）+ rtl-code-review pass=true（critical=0, high=0）+ rtl-signal-trace 链路完整（报告 `markdownfile/0918v1/`）
 
+### 5.25 0920v1 EQ 引脚查表 12dB 编码修正
+
+2026-09-20 依 `HK1V11_Register_20260919`（用户转述）：EQ 引脚查表 12dB 档编码重定义。仅改 `LC_REG_MAPPING`（先例同 0907v1 单文件升版），`LC_CPUWR`/`LINK_CONFIG_CTRL` 保持 0918v1。
+
+| EQ[0:2] | 旧 reg_lane_ctrl | 新 reg_lane_ctrl | 增益 |
+|---------|------------------|------------------|------|
+| 100 / 101 | `5'b10000` | **`5'b10100`** | 12dB（不变） |
+| 000 / 001 | `5'b00010` | 不变 | 3dB |
+| 010 / 011 | `5'b01000` | 不变 | 6dB |
+| default（110/111） | `5'b11000` | 不变 | 19dB |
+
+- mux 优先级不变：`AUTO_EQ_EN` > `reg_pin_eq|EQ_MODE`（sw 单 bit 拼位）> EQ 引脚查表
+- 同表第 1 项（0x36 默认 `0x55→0x17`）已由 0918v1 完成；`rx_phy_eq_ctrl.v` 同名分支为选择器（选寄存器值），不涉及
+- 验收：iverilog 默认分支 EXIT 0 / FPGA 分支仅预期缺 ILA；评审 pass；信号连接零变化（报告 `markdownfile/0920v1/`）
+
   </script>
   <script>
     document.getElementById('article').innerHTML = marked.parse(document.getElementById('md').textContent.trim());

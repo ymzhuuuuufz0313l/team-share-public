@@ -248,10 +248,11 @@
 
 ## 1. 当前版本
 
-当前最新版本为 **0918v1**（三件套文件头均 0918v1，基线 = 服务器 2026-09-17 压缩包：`reg_eq_bias_tune[7:0]` 默认 `8'h55→8'h17`、`reg_eq_rbc1` 默认 `1'b0→1'b1`、`reg_eq_rbc0` 保持 `1'b0`；吸收服务器 FPGA ILA / ECO ifdef / AUTO_EQ `{AEQ_reg_lane_ctrl,1'b0}` 增量，0827v1 集成挂账清零；0907v1 CHIP_SEL 门控确认仍在服务器版中）：
+当前最新版本为 **0920v1**（`LC_REG_MAPPING.v` 文件头 0920v1：依 HK1V11_Register_20260919——EQ 引脚查表 12dB 编码修正，`EQ[0:2]=100/101` 由 `5'b10000` 改 `5'b10100`；`LC_CPUWR.v`/`LINK_CONFIG_CTRL.v` 保持 0918v1：EQ 默认值调整 + 服务器 09-17 基线重建）：
 
 | 版本 | 主要状态 |
 |------|----------|
+| **0920v1** | **EQ 引脚查表 12dB 编码修正（仅 LC_REG_MAPPING）：`EQ[0:2]=100/101` → `reg_lane_ctrl=5'b10100`（原 `5'b10000`）；其余表项（3dB/6dB/19dB）与 mux 优先级不变；验收三关通过** ✅ |
 | **0918v1** | **EQ 默认值调整 + 服务器 0917 基线重建：`reg_eq_bias_tune[7:0]`（0x36）默认 `8'h55→8'h17`（0x36 字节 `0x55→0x17`）；`reg_eq_rbc1`（0x08[1]）默认 `1'b0→1'b1`（0x08 字节 `0x00→0x02`）；`reg_eq_rbc0` 保持 `1'b0`；chip_sel=0/1 共用；env 默认值未同步（用户决策，挂账）** ✅ |
 | **0909v1** | **SCREN 口径对齐服务器：`` `ifdef VU440_FPGA `` 强制分支注释停用，所有平台（含 FPGA）scramble 由软件经 `R_REG00_F[4]`（0x00[4]）控制（默认关）；0907v1 CHIP_SEL 门控确认服务器已按同款写法合入；寄存器定义不变，`LC_CPUWR` 保持 0903v1** ✅ |
 | **0907v1** | **CHIP_SEL 门控修复：cs=1 专有输出（`SR_PR/PF/NR/NF`、`PWRC_TA/TB/P/N`、`PWRC_PA/PB/NA/NB` 共 12 个）cs=0 输出字段默认值（SR=`2'b11`、TA/TB=`2'b01`、P/N=`2'b10`、PA~NB=`2'b10`），cs=1 行为不变；寄存器 map/默认值/I2C 读回（RECON）无变化，LC_CPUWR 不动** ✅ |
@@ -269,6 +270,12 @@
 | 0721v1 | `LCONFIG_DATA`/`FCONFIG_DATA` 16bit→24bit（每步 3 寄存器）；checksum XOR 总量不变 ✅ |
 | 0716v1 | 新增 `FSEL[1:0]` @ `0x35`；已归档为 `0716_v1_work` ✅ |
 | 0714v1 | chip_sel=0 默认值 + `LC_REG_MAPPING` 回拼 chip_sel=1 默认值；回归通过 ✅ |
+
+0920v1 交付物：
+
+- 根级固定文件 `LC_REG_MAPPING.v`（文件头 0920v1）：EQ 引脚查表 `3'b100,3'b101` 分支 `5'b10000→5'b10100`（HK1V11_Register_20260919）；`LC_CPUWR.v`/`LINK_CONFIG_CTRL.v` 保持 0918v1 不动
+- 验收三关：① iverilog 默认分支 EXIT 0、FPGA 分支仅预期缺 ILA；② rtl-code-review pass=true；③ 信号连接零变化；报告见 `LC_CPUWR_history/markdownfile/0920v1/`
+- 备注：`HK1V11_Register_20260919.xlsm` 本地不存在（规格表由 owner 维护）；env 预期值挂账
 
 0918v1 交付物：
 

@@ -382,8 +382,8 @@
       </div>
       <div class="reg">
         CURRENT
-        <span class="ver">0918v1</span>
-        REV 2026-09-18
+        <span class="ver">0920v1</span>
+        REV 2026-09-20
       </div>
     </div>
   </header>
@@ -392,13 +392,13 @@
     <div class="latest">
       <div class="badge">
         <span class="tag">LATEST</span>
-        <span class="num">0918v1</span>
+        <span class="num">0920v1</span>
       </div>
       <div class="body">
-        <div class="t">0918v1 · EQ 默认值调整 + 服务器 0917 基线重建（09-18，bias_tune 8'h55→8'h17 / rbc1 默认 0→1）</div>
+        <div class="t">0920v1 · EQ 引脚查表 12dB 编码修正（09-20，依 HK1V11_Register_20260919，仅 LC_REG_MAPPING）</div>
         <ul>
-          <li><code>reg_eq_bias_tune[7:0]</code>（0x36）默认 <code>8'h55→8'h17</code>；<code>reg_eq_rbc1</code>（0x08[1]）默认 <code>1'b0→1'b1</code>（0x08 字节默认 0x00→0x02）；<code>reg_eq_rbc0</code> 保持 0</li>
-          <li>根级三件套基线重建为服务器 09-17 压缩包版：吸收 FPGA ILA、ECO 单元 ifdef、AUTO_EQ <code>{AEQ_reg_lane_ctrl,1'b0}</code>，LINK_CONFIG_CTRL 0827v1 集成挂账清零；0907v1 CHIP_SEL 门控确认仍在</li>
+          <li>EQ 引脚查表 <code>EQ[0:2]=100/101</code> 的 <code>reg_lane_ctrl[4:0]</code> 由 <code>5'b10000</code> 改为 <code>5'b10100</code>（12dB 编码重定义）；其余表项与 mux 优先级不变</li>
+          <li>同表第 1 项（0x36 默认 <code>0x55→0x17</code>）已由 0918v1 完成；<code>LC_CPUWR</code>/<code>LINK_CONFIG_CTRL</code> 保持 0918v1 不动</li>
         </ul>
       </div>
       <a class="more" href="./timeline.html">全部版本演进 →</a>
@@ -406,7 +406,7 @@
 
     <div class="stats">
       <div class="stat"><div class="v">8</div><div class="k">章节页面</div></div>
-      <div class="stat"><div class="v">10<em>+</em></div><div class="k">归档版本（0612 → 0918v1）</div></div>
+      <div class="stat"><div class="v">10<em>+</em></div><div class="k">归档版本（0612 → 0920v1）</div></div>
       <div class="stat"><div class="v">3</div><div class="k">道验收关（iverilog / review / trace）</div></div>
       <div class="stat"><div class="v">06-15</div><div class="k">归档体系建立</div></div>
     </div>
@@ -415,12 +415,12 @@
     <div class="chapter-grid">
       <a class="chapter-card" href="./intro.html"><div class="num">01</div><div class="title">引言与归档体系</div><div class="desc">模块定位、目录结构与归档规则</div></a>
       <a class="chapter-card" href="./diagrams.html"><div class="num">02</div><div class="title">寄存器图解 Sheet<span class="star">先看图</span></div><div class="desc">chip_sel 默认字节映射、checksum、LSI、复位域、0721v1 拍重组对照</div></a>
-      <a class="chapter-card" href="./timeline.html"><div class="num">03</div><div class="title">核心变更时间线</div><div class="desc">从 0612 基线重构到 0918v1 EQ 默认值调整</div></a>
+      <a class="chapter-card" href="./timeline.html"><div class="num">03</div><div class="title">核心变更时间线</div><div class="desc">从 0612 基线重构到 0920v1 EQ 查表编码修正</div></a>
       <a class="chapter-card" href="./checksum.html"><div class="num">04</div><div class="title">校验和机制演进</div><div class="desc">双段 checksum、NG Unlock、Seg2 删除</div></a>
       <a class="chapter-card" href="./regmap.html"><div class="num">05</div><div class="title">寄存器映射与命名规范化</div><div class="desc">位段迁移、chip_sel 默认值、十进制命名、0903v1 0x29 默认值变更</div></a>
       <a class="chapter-card" href="./register-research.html"><div class="num">06</div><div class="title">寄存器规格交叉验证</div><div class="desc">RTL / Excel / 地址映射三方核对、属性总表</div></a>
       <a class="chapter-card" href="./verification.html"><div class="num">07</div><div class="title">验证同步与 Checker 统一</div><div class="desc">checker 迁移、case 同步、仿真计划</div></a>
-      <a class="chapter-card" href="./status.html"><div class="num">08</div><div class="title">当前状态与后续</div><div class="desc">0918v1 状态、Loop_sel PIN 待定、BCC 待接入、DV 待同步</div></a>
+      <a class="chapter-card" href="./status.html"><div class="num">08</div><div class="title">当前状态与后续</div><div class="desc">0920v1 状态、Loop_sel PIN 待定、BCC 待接入、DV 待同步</div></a>
     </div>
 
     <div class="footer">SHARED FROM TEAM KNOWLEDGE BASE</div>
