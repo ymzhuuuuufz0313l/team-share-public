@@ -711,6 +711,8 @@ DATA_POINT_LAT_reg_13_ → lag_det_reg（同域 RX_CLK，无中间寄存器，�
 2. 但 **A1 worst（flag_det/cnt_flag）和 B 族（半周期）可能通过设计修改消除**——A1 是准静态标志可打拍，B 是 negedge 采样可改 posedge。
 3. A2 的 6 条 SHORT 违例将在下版网表（含 0917V1 RTL 修改）后自动消失。
 
+> **【规律修正 2026-09-20，见案例 16】** 本案例归纳的"直接例化库 cell 无层级层"结论**有误**：真规律是 **AL9 后缀=叶子 cell（无层）/ 无后缀（CLKINVX4 等包装模块）=层级保留**。V3 报表实证两者并存。修正采用双形式防呆写法，且——用户当时的写法本来是对的。
+
 ## 案例 15：同名 -add 生成时钟 → MPW 幻影违例（负脉宽）
 
 ### 现象（0920V1 run）
@@ -735,6 +737,48 @@ mux 输出 pin（`u_gate_MUX_DPLC_CLK/MUX2X2/O`）上两条生成时钟用了**�
 ### 本轮对照：其余全部达标
 
 setup **51/-0.632**（上一轮 2 条跨域 gating 假违例已消失，见案例 14 后续）、RX_CLK 35/-0.444、lt/ml/tt 全 0、**dplc skew 80 格首次全有数**、SEL=0。
+
+## 案例 16：V3 过渡态——新网表切换 + 约束完善同轮发生，1053 条假违例的定位与一次收口
+
+### 背景
+
+V3 = 用户从 DC 找到的**第一个有效新网表**（新 RTL 重综合：K4_FIND 打拍已进网表、CLKGEN 改名 CLKMUX2X2 / 新增 u_gate_INV_DPLC_CLK_LONG、I2C_ST 重构改用 I2C_CLK_INV 时钟）。**网表本身是好的，是新基线**——数字爆炸全部是 SDC 侧缺口被新网表暴露。
+
+### 现象（0920V3 run，wc_cbest）
+
+- setup **51 → 1053 条 / -6.865**（WCLK1_A_DCLK_LONG 组 320 条 I2C 假族 + gating 79）
+- hold 1917 / -5.078（**+171 与 setup 假族同源**）
+- MPW 37（负脉宽伪影）；DPLC 时钟 4 条定义只物化 1 条
+
+### 三个根因与修复（commit 88ac9c5 + 63809e2）
+
+| # | 根因 | 修复 |
+|---|---|---|
+| 1 | **I2C_CLK_INV 未入异步组**（爆炸主因）：新网表 I2C_ST 状态机改用 I2C_CLK_INV，而 `iic_root_clklist` 只有 I2C_CLK → I2C_CLK_INV ↔ WCLK1_A_DCLK 无组关系 → 500ns vs 3.81ns 边沿展开 → 320 条假违例 | `iic_root_clklist` 加 I2C_CLK_INV |
+| 2 | **DPLC pin 半改**：手改 ip_cons 只改了 1/3 处（MUX2X2→CLKMUX2X2），时钟定义链断 | DPLC 链 5 条时钟全定义（1P5_SHORT / SHORT_DIV / LONG_LEG / LONG / SHORT）+ 双形式防呆 pin |
+| 3 | **配置位假 gating 暴露**：79 条 gating 大部分是配置位（DPLC_GROUP 等）准静态使能被按每周期检查 | CPUWR 毯子（2M23 L666 同款）`set_multicycle_path 2/1 -through u_.../LC_CPUWR/R_*`，G14 标 SUPERSEDED |
+
+### 案例 14 教训修正（重要）
+
+之前归纳的"直接例化库 cell 无层级层"是**错的**。V3 报表实证的真规律：
+
+- **AL9 后缀 = 工艺叶子 cell**（CLKBUFX4AL9）→ pin 路径无中间层（`inst/O`）
+- **无 AL9 后缀**（CLKINVX4 / MUX2X2 / CLKMUX2X2 / CG_CELL）**= 包装模块** → 层级保留（`inst/CLKINVX4/O`）
+- 证据：`u_gate_INV_SD_CLK_INV/CLKINVX4/O` 每轮工作；`u_gate_BUF_DPLC_CLK_1P5_SHORT/O` 无层——V3 报表实证两者并存
+- **流程教训**：用户写的 `/CLKINVX4/O` 本来是对的，AI 拿错误归纳的"规律"去推翻——**必须先查网表报表证据再动手改别人的正确修改**
+- 终极方案：双形式防呆 proc（先试 /O 再试 /CLKINVX4/O），网表打平差异免疫
+
+### G14 → 毯子的架构升级
+
+2M23 用一条毯子 `-through LC_CPUWR_*/R_*` mc 2/1 盖全部配置位（L666-667），其 L727-732 有被注释的逐 pin 历史——他们也走过打地鼠再改毯子。1V11 采纳同款。审计结论：LC_CPUWR 41 个 reg 全是配置/写接口/帧率慢信号（checksum/match 计数器每帧级，无 ns 级动态）；LC_REG_MAPPING 纯映射 + 3 个配置采样寄存器（R_PWRCP/R_PWRCN_COP、BKDU_SYNC 在动态选通 BIT_ALIGN_PT 下采样配置——**选通路径不从配置寄存器出发、不被毯子覆盖、保持全查**）。
+
+### V5 预期（修复已入库，等 run 验证）
+
+setup **~40-50 真路径** · gating **~6** · hold **~1746 基线** · MPW **0** · dplc skew **全行**。
+
+### 汇报口径（预期管理）
+
+V3 数字是切换过渡态一次性暴露——邮件重点给 V5 预期轨迹和已确认成果（MPW 清零、K4_FIND 结构消失、DPLC 首次可测、毯子），不渲染"问题扩大"。
 
 ## 心法清单
 
@@ -777,6 +821,10 @@ setup **51/-0.632**（上一轮 2 条跨域 gating 假违例已消失，见案�
 
 **教训**：网表切换轮的"爆炸"要先假设**既有约束缺口被暴露**，逐族定位归因，不要先怀疑网表；预期管理（过渡态→修复→预期）比只报数字更能传达真实状态。
 
+- **网表证据优先**：pin 层级规律看 cell 名后缀（AL9=叶子无层，无后缀=包装模块有层）；不确定就双形式防呆——先查报表再下结论
+- **别推翻用户的正确修改**：拿归纳的"规律"推翻别人手写的内容前，必须先有网表报表证据
+- **过渡态 ≠ 回归**：换网表+补约束同轮发生时，逐族分辨"新暴露的旧缺口"与"真新问题"（本例 100% 是前者）
+
 ## 未闭环清单
 
 | 项 | 状态 |
@@ -803,4 +851,4 @@ setup **51/-0.632**（上一轮 2 条跨域 gating 假违例已消失，见案�
   <script src="./js/site.js"></script>
 </body>
 </html>
-<!-- ymzhu 2026-09-20 10:09 -->
+<!-- ymzhu 2026-09-20 15:55 -->
