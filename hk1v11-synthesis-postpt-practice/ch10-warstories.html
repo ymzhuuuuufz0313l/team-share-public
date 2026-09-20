@@ -711,6 +711,31 @@ DATA_POINT_LAT_reg_13_ → lag_det_reg（同域 RX_CLK，无中间寄存器，�
 2. 但 **A1 worst（flag_det/cnt_flag）和 B 族（半周期）可能通过设计修改消除**——A1 是准静态标志可打拍，B 是 negedge 采样可改 posedge。
 3. A2 的 6 条 SHORT 违例将在下版网表（含 0917V1 RTL 修改）后自动消失。
 
+## 案例 15：同名 -add 生成时钟 → MPW 幻影违例（负脉宽）
+
+### 现象（0920V1 run）
+
+- MPW 从 **0 违例 → 40 条**，全部 `Related clock: DPLC_CLK`，Check: `clock_tree_pulse_width`
+- 典型路径 CLKB_L 端口：rise 沿到达 **6.334ns**、fall 沿到达 **5.727ns** → actual pulse width **-0.607ns（负值，物理不可能）**，required 0.73，slack -1.337
+- 伴生两个症状：hold **+4 条**（DPLC_CLK 发起的 gating hold 检查，data_cnt_pre_reg）；LONG 腿 DPLC_CLK 生成时钟本轮没物化
+
+### 根因（SDC 建模错误）
+
+mux 输出 pin（`u_gate_MUX_DPLC_CLK/MUX2X2/O`）上两条生成时钟用了**同一个名字 `DPLC_CLK`**——两个不同周期的 master（LONG 腿 `DCLK_DATA_LONG` 3.81ns + SHORT 腿 `DPLC_CLK_SHORT_DIV` 5.715ns）以 `-add` 同名定义：
+
+1. **write_sdc 对同名多 master 非确定性地只保留一条**——实测：0920V0 包留了 LONG 腿、0920V1 包留了 SHORT 腿，两轮行为不同
+2. **PT 把两个 master 的波形合并在同一个时钟名下** → 脉宽检查时边沿交错配对（rise 来自一个 master、fall 配到另一个）→ 幻影负脉冲
+
+**为什么没早发现**：既有惯例本来就是正确答案——SD_CLK 引脚上的 4 个变体用的就是 4 个**不同名字**（SD_CLK_SHORT/LONG/DPLC_SHORT/DPLC_LONG）。违反惯例时**没有任何报错**，只有两个间接症状（同名只物化一条 + 负脉宽）。
+
+### 修复（commit 2734ee3）
+
+两条腿改为不同名字：`DPLC_CLK_LONG`（master DCLK_DATA_LONG）/ `DPLC_CLK_SHORT`（master DPLC_CLK_SHORT_DIV）；MPW 列表同步两行；rx 时钟组通配 `DPLC_CLK*` 天然覆盖。修复验证中（用户重跑 0920V2）。
+
+### 本轮对照：其余全部达标
+
+setup **51/-0.632**（上一轮 2 条跨域 gating 假违例已消失，见案例 14 后续）、RX_CLK 35/-0.444、lt/ml/tt 全 0、**dplc skew 80 格首次全有数**、SEL=0。
+
 ## 心法清单
 
 1. **先同 corner 对齐，再谈工具差异**（案例 2 第一步省掉半天弯路）
@@ -731,6 +756,8 @@ DATA_POINT_LAT_reg_13_ → lag_det_reg（同域 RX_CLK，无中间寄存器，�
 16. **约束值跟哪个轴走先问清楚**：速率轴决定 MPW 值，编码轴天然对称（同值 2/0.73）不用分套（案例 11→12）
 17. **一个物理时钟同时只能有一个周期**：多速率的正确形式是"两档速率共存于同一 run"（clk_period 的 RX_CLKP + DPLC_CLKP），不是 case 切换（案例 11→12）
 18. **case_analysis 不是万能解——先问 per-clock 值能不能解决。** 如果每个时钟对象可以带自己的阈值，多模式共存比分模式切换更简洁（案例 12）
+19. **同一 pin 上多个 -add 生成时钟必须用不同名字**——同名 = master 波形合并 = 边沿配对错乱（幻影脉宽/幻影违例），且 write_sdc 行为不确定（V0 留 LONG 腿、V1 留 SHORT 腿）（案例 15）
+20. **负脉宽（actual pulse < 0）是建模伪影的标志性信号**——物理不可能，见到就该查时钟定义而不是查后端；同理 2000ns 级边沿展开（案例 14 后续的跨域 gating）也是伪影指纹（案例 15）
 
 ## 未闭环清单
 
@@ -744,7 +771,7 @@ DATA_POINT_LAT_reg_13_ → lag_det_reg（同域 RX_CLK，无中间寄存器，�
 | skew -900：根因**已定案并修复**（哨兵 + 探针层级 + 非法起点回退；perl/sd/io 已改，本地精确复现验证） | ✅ 09/16 定案 |
 | SD 输出约束（max_delay 14 ×4 + MPW 2/0.73）：**0918V0 run 已验证通过**——MPW 0 违例、setup 131→129（R_REG06_F→CLKB 清零）、skew slack 8.729=14−5.271 全受约束、hold 零回归；MPW 值待 jjlu 最终签核确认 | ✅ 09/18 验证 |
 | skew 修复文件待拷服务器 `top/sta/post/common/` 并**重跑 run_pt** 后复验 4 份时钟报表 | 🔴 待服务器 |
-| DPLC_CLK 生成时钟未定义（DRD FIXME）→ dplc skew 报告为暂行值 | ⏳ |
+| DPLC_CLK 生成时钟未定义（DRD FIXME）→ dplc skew 报告为暂行值 | ✅ 09/20 已定义并出数（80 格全有数）；但同名 -add 建模致 40 条 MPW 幻影，改名修复（2734ee3）待 0920V2 验证 |
 | DCLK_CONFIG_SHORT 相位 FIXME（对 setup 无影响已证明，对 hold 未查） | ⏳ |
 | RX_CLK 50 条逐族判定（0918V0）：全部 true path；A1 worst（flag_det）+ B 族（negedge 半周期）待设计评审可消除；A2 6 条等下版网表 | ⚠️ 交 APR/设计 |
 | tt_cworst_25 hold -5.42（C2278/C2272） | ⚠️ 专项 |
