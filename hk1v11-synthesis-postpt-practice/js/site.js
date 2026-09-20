@@ -5,16 +5,16 @@
 
   var CHAPTERS = [
     ['index.html',            '首页'],
-    ['ch01-env.html',         '一 环境与配置'],
-    ['ch02-rtl-check.html',   '二 RTL 检查'],
-    ['ch03-synthesis.html',   '三 综合'],
-    ['ch04-lec.html',         '四 LEC 验证'],
-    ['ch05-apr-signoff.html', '五 APR SIGNOFF'],
-    ['ch06-postpt.html',      '六 POSTPT'],
-    ['ch07-memory-power.html','七 Memory 与功耗'],
-    ['ch08-powerpro.html',    '八 PowerPro'],
-    ['ch09-to-signoff.html',  '九 TO SIGNOFF'],
-    ['ch10-warstories.html',  '十 排障实录']
+    ['ch01-env.html',         '环境与配置'],
+    ['ch02-rtl-check.html',   'RTL 检查'],
+    ['ch03-synthesis.html',   '综合'],
+    ['ch04-lec.html',         'LEC 验证'],
+    ['ch05-apr-signoff.html', 'APR SIGNOFF'],
+    ['ch06-postpt.html',      'POSTPT'],
+    ['ch07-memory-power.html','Memory 与功耗'],
+    ['ch08-powerpro.html',    'PowerPro'],
+    ['ch09-to-signoff.html',  'TO SIGNOFF'],
+    ['ch10-warstories.html',  '排障实录']
   ];
 
   function currentPage() {
