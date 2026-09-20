@@ -29,31 +29,54 @@
     </div>
   </div>
   <script type="text/template" id="md">
+
 # 七、Memory 与功耗
 
-> 骨架页：1V11 数据整体待补。
+&gt; 本章对应指南站的 memory compiler 流程与 PTPX 功耗仿真。1V11 现状：**flow 配置就位、实测数据未产生**（PTPX / memory 清单尚未在本项目跑过），本章先落方法论框架与 1V11 的脚本入口，实测数据产生后回填。
 
-## 本章在 1V11 流程中的位置
+## 1. Memory 与 memlist
 
-| 对象 | 路径（相对 `SYNTHESIS/`） | 用途 |
-|---|---|---|
-| Memory 列表生成 | `common/script/gen_memlist.pl` | memlist 交付 |
-| MBIST 生成 | `common/script/mbist_gen.pl` | mbist 逻辑 |
+1V11 的脚本入口（相对 `SYNTHESIS/common/script/`）：
 
-## 关键检查点
+| 脚本 | 用途 |
+|---|---|
+| `gen_memlist.pl` | memory 列表生成（memlist 交付） |
+| `mbist_gen.pl` | MBIST 逻辑生成 |
 
-- memlist 与网表中 memory 实例一致
-- PTPX 活动文件与场景覆盖
+关键检查点：
 
-## 📋 数据待补
+- memlist 与网表中 memory 实例一致（换网表后核对一遍）
+- 有 memory 的项目需把 memory 库加进 `common_db`（`MEM_EN` / `MEM_SNPS_EN` / `MEM_FARA_EN` 开关，见 <a href="./ch01-env.html">一、环境与配置</a> §2）
 
-- 1V11 memory 清单、mem_wrap 结构、PTPX 场景与结果
+memory compiler 生成 / lib-DB 整理 / mem_wrap 生成的完整步骤（word/bit/byte 填写、ring layer、`gen_tcl.pl` → `cp_lib` → merge、wrapper config 字段）见 <a href="../synthesis-integration-flow-guide/memory-power.html" target="_blank">指南站同章 §1</a>——1V11 未使用 memory，届时直接复用该成熟流程。
+
+## 2. 功耗仿真（PTPX）
+
+运行位置 `SYNTHESIS/top/power/0.px_template/`，入口 `run_ptpx`。配置要点（`px_cfg.tcl`）：
+
+| 字段 | 指向 |
+|---|---|
+| `verilog_file` | PR release 的网表路径 |
+| `sdc_file` | post-PT release 的 SDC（`sdc_version` 需为 2.0） |
+| `spef_dir` / `ip0_inst` / `ip0_strip` | PR release timing 目录与顶层实例 |
+| `ip0_vcd` | 后仿截取的 VCD（`fsdb2vcd ... -bt -et -o`），`power_mode=time_based` |
+
+结果判读：看 `*_power.rpt` 的 Hierarchy 表**顶层行的 Total Power**（Int / Switch / Leak 为拆分项），配套 `*_toggle_rate_detail.rpt` 看 toggle rate。
+
+前置依赖：VCD 生成前需在 post-PT 对应 corner 开 `DUMP_SDF` 生成 SDF、后仿 case 读 SDF——DUMP_SDF 的互斥分支坑（忘改回 0 → latest 指向空 run）见 <a href="./ch06-postpt.html">六、POSTPT</a> §3 与指南站 §5。
+
+## 3. 1V11 现状与回填计划
+
+- 1V11 的 PTPX 场景（lane 数 × 速率 × normal/dplc/drdod 模式矩阵）尚未定义，活动文件（VCD）尚未截取。
+- 实测数据产生后，按指南站的呈现规格回填本章：六组模式 Total 功耗表（数据源 `rep_dir_*/hier_pwr_detail.csv` total 块）+ 功耗构成占比（寄存器 internal / 时钟网络 / 组合逻辑 / leakage）+ 造图脚本。
+- 功耗横向对比（PowerPro RTL/Gate + PTPX，跨项目）的方法论与表格模板见指南站 memory-power §2.4 与 powerpro §3~§4。
 
 ## 交叉引用
 
-- 指南站同章：[Memory 与功耗](../synthesis-integration-flow-guide/memory-power.html)
-  </script>
+- 指南站同章：<a href="../synthesis-integration-flow-guide/memory-power.html" target="_blank">SYN_FLOW_GUIDE · Memory 与功耗仿真</a>（memory compiler 全流程 / PTPX 实例与六组实测）
+- 功耗评估工具对比：<a href="./ch08-powerpro.html">八、PowerPro 功耗评估</a>
+</script>
   <script src="./js/site.js"></script>
 </body>
 </html>
-<!-- ymzhu 2026-09-20 10:09 -->
+<!-- ymzhu 2026-09-20 10:30 -->

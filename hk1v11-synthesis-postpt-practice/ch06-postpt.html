@@ -29,49 +29,150 @@
     </div>
   </div>
   <script type="text/template" id="md">
-# 六、POSTPT
 
-> 骨架页 + 约束链要点；本章排障案例最多（ch10 案例 1/2/3/5 都发生在这一环）。
+# 六、POSTPT：PrimeTime 时序分析方法论（1V11 实跑版）
 
-## 本章在 1V11 流程中的位置
+&gt; 本篇覆盖 prePT / postPT 的运行与配置、1V11 的约束链与约束体系、skew 方法论与报告解读。方法论总纲见 <a href="../synthesis-integration-flow-guide/pt-intro.html" target="_blank">SYN_FLOW_GUIDE · POSTPT</a>（STA 基础 / uncertainty 纪律 / SDF 生成 / 约束迭代闭环），本章不重复，只补 1V11 的实测与差异。本章排障案例最多——ch10 案例 1/2/3/5/9 都发生在这一环。
 
-`top/sta/post/pt/<corner>/run_pt` → `corner_set.tcl` → `../common/pt_setup.tcl` → 报告 → `run_summary`（get/merge busskew → summary CSV）。
+## 1. prePT / postPT 在流程中的位置
 
-## 约束链（本章最重要的一张表）
+### 1.1 prePT：DC 之后、交付 APR 之前的第一次全量 STA
+
+与 LEC 可并行（都只吃综合网表）。1V11 的 prePT 还承担一个特有职责：**`write_sdc` 物化约束**——ip_cons 里的 Tcl 条件在这里执行、产物 `sdc_pr/HK1V11_digital_top.tcl` 交给 APR 做 CTS。
+
+### 1.2 postPT：APR 返回之后的 signoff 级时序验收
+
+```bash
+cd sta/post/pt/<corner>
+run_pt
+```
+
+### 1.3 prePT vs postPT 对比（1V11 口径）
+
+| 维度 | prePT | postPT |
+|------|-------|--------|
+| 输入 | DC 网表 + clk_period.tcl + ip_cons | APR 网表 + spef + **postcts.sdc** |
+| 关键产物 | `sdc_pr/`、`unconstrained_endpoints.rpt`、coverage | 10 corner 全套 setup/hold/MPW/skew 报表 |
+| 工具 | M-2017.06-SP3-3（pt1706） | 同左 |
+
+## 2. 约束链（本章最重要的一张表）
 
 `pt_setup.tcl:284-290` 只 source 三份约束：
 
 | # | 文件 | 作用 |
 |---|---|---|
-| 1 | `common/tcl_dir/common/clk_period.tcl` | 周期变量（MARGIN 机制） |
+| 1 | `common/tcl_dir/common/clk_period.tcl` | 周期变量（MARGIN 机制；1V11 保持原始零修改） |
 | 2 | `common/tcl_dir/common/kv_clkio_postpt.tcl` | post 版 kv_* proc（无 ideal_network） |
 | 3 | `${SDC_PATH}/${SDC_NAME}_postcts.sdc` | **设计约束本体（APR 发布）** |
 
-**ip_cons 不直达 POSTPT**：ip_cons → pre-PT write_sdc → sdc_pr → APR → postcts.sdc → POSTPT（ch10 案例 1）。
+**ip_cons 不直达 POSTPT**：`ip_cons → pre-PT write_sdc → sdc_pr → APR → postcts.sdc → POSTPT`。只改 ip_cons 直接重跑 POSTPT = 跳过前两级，postcts.sdc 还是旧的（ch10 案例 1）。
 
-## 运行结构
+KEY: <strong>PREPT 的 <code>read_cons.log</code> 是约束生效的唯一裁判</strong>。每轮更新约束后必查三个数：SEL-004/005 警告数（应为 0）、新约束行是否出现在 SDC 清单里、`unconstrained_endpoints` 是否清零。
 
-- `run_pt`：`RUN_ID=YYYYMMDD_N` → `history/<run_id>/{log,rpt,whole_session}` → `latest` 软链
-- 10 corner：tt / lt / ml / wc × cbest / cworst / typical × 温度
+## 3. 运行结构与 corner
 
-## 关键检查点
+- `run_pt`：`RUN_ID=YYYYMMDD_N` → `history/<run_id>/{log,rpt,whole_session}` → `latest` 软链（与指南站 §9.1 的 history/latest 改造一致）。
+- 10 corner 全量跑（无 wcl / 无 bc）：`wc_cworst_125` / `wc_cbest_125` / `wc_typical_125` / `lt_cworst_m40` / `lt_cbest_m40` / `lt_typical_m40` / `ml_cbest_125` / `tt_cworst_25` / `tt_cbest_25` / `tt_typical_25`。
+- corner 定义与 PVT 含义、DUMP_SDF 互斥分支的坑（忘改回 0 → latest 指向只产 SDF 的空 run）→ 见指南站 §4~§5，1V11 机制相同。
 
-- `latest/log/read_cons.log`：SEL-004/005 计数 = 0（约束真的落到网表）
-- `latest/log/ignored_exceptions.rpt`：例外没有被静默忽略
-- `rpt/summary/HK1V11_digital_top_cons.rpt`：违例分组（clock_gating / 各时钟组）
-- `rpt/skew/*.rpt` → `summary/latest/report_sd_busskew.csv`：margin 在窗内（哨兵值警惕，ch10 案例 3）
-- `rpt/summary/..._timing.rpt` / `check_timing` / `unconstrained_endpoints.rpt`
+## 4. 1V11 约束体系（终版）
 
-## 📋 数据待补
+### 4.1 无 case，两档速率共存
 
-- 各 corner qor / 违例收敛数据
+`clk_period.tcl` 原始设计即正确：RX_CLKP 3.81 管大部分 5G 路径 + DPLC_CLKP 6.35 管 DPLC（3G）路径，同一次 run 各查各的。**无 case_analysis、无开关、无 if/else、无 false_path**（演进全程：port 级 MPW → case 双开关 → 终版纯 per-clock，见 ch10 案例 10~12）。
+
+### 4.2 活动约束清单（18 行 + G 系列 + G13）
+
+| 块 | 内容 | 值 |
+|---|---|---|
+| clock-to-out | `set_max_delay 14` ×4 口（CLKA/CLKB × L/R） | =2M23 原值 |
+| MPW 正常腿 | NORMAL_CLK / SD_CLK / SD_CLK_INV × SHORT/LONG 共 6 对象 | 2（pulse 3.81/5.715） |
+| MPW 数据/DPLC 腿 | DCLK_DATA / MUX / SD_CLK_DPLC / INV_DPLC × SHORT/LONG 共 8 对象 | 0.73（=1.905−1.175，与 3G 等余量） |
+| MPW DPLC_CLK 链 | DPLC_CLK_1P5_SHORT / DPLC_CLK_SHORT_DIV / DPLC_CLK | 0.73 |
+| G1~G8 / round5 / G9 / G11 | 配置位 mc 2/1（dc_shell / pt_shell 双分支） | — |
+| G10 | DPLC 静态配置位 `set_max_delay 2×DPLC_CLKP=12.7` | 例外优先级解法（案例 8） |
+| G13 | DATA_POINT_LAT 扇出 mc 2/1（**TEMPORARY**，RTL 打拍后删） | 覆盖 24 条 worst −0.496 |
+
+KEY: <strong>MPW 值跟速率轴（2 vs 0.73），不跟编码轴（SHORT/LONG 同值）</strong>——SHORT 链低相 = T/3 = 1.905 与 LONG 的 T/2 数字恰好相同、来历不同。<strong>pulse = 半周期只对 50% 占空比成立</strong>（`edges {1 3 4}` 非对称链低相是 T/3）；MPW 查的是较短相。
+
+### 4.3 俊杰口径（分层设计）
+
+*"中间的路径都是 setup/hold 去卡；只有输出的这几个 CLKA/CLKB 相关的用 MPW 去卡"*——两层互不干扰：MPW 查时钟引脚脉冲宽度（DRC），不改变 setup/hold 的 required/arrival；mc 终点是寄存器不是端口。全面 review 三方面（MPW 是否过度 / 联动修改 / skew 脚本）全部干净，详见 ch10 案例 13。
+
+## 5. Skew 方法论（1V11 实战）
+
+### 5.1 探针三原则与 -900 定案
+
+**① 从 CLKGEN buffer/mux 输出脚（时钟分叉点）起量；② 数据从 DTCTL 真实数据寄存器起量；③ 不拿寄存器当时钟探针。** skew -900 的完整因果链：探针层级错 → 1 份空报表 + 3 份非法起点回退 → perl 0/1000 哨兵 → 假 margin 进签核表（ch10 案例 3/9）。
+
+### 5.2 DPLC_CLK 生成时钟（0918 修复）
+
+dplc skew 行全空的根因：**SDC 引用了 0917V1 RTL 的 cell 名，但当前网表是 0916 版**——pin 不存在 → create_generated_clock 静默失败 → write_sdc 不物化。修正为当前网表名（mux= `MUX2X2/O`、SHORT 腿反相器= `u_gate_INV_DPLC_CLK_1P5_SHORT_INV`、LONG 腿直连 PIX_CLK_LONG 无反相器）；0917V1 网表进来后换回新名。
+
+### 5.3 skew margin 规格（待模拟确认）
+
+1V11 推导（用户口径）：数据/时钟边沿已对齐 → 挪到数据眼中心 = 移 **T/6**（normal）；DPLC 口时钟多一级 1.5 分频 → 换算为 **T/4**。
+
+| 速率 | 周期 T | normal (T/6) | DPLC (T/4) |
+|---|---|---|---|
+| 5G | 3.810 | ±0.635 | — |
+| 4.5G | 4.233 | ±0.706 | — |
+| 4G | 4.762 | ±0.794 | — |
+| 3G/DPLC | 6.350 | — | ±1.588 |
+
+对照：perl 脚本硬编码标签 1p `[-2.5:+2.5]`（比推导宽 ~4 倍）、dplc `[-1:4]`（不对称窗）。2M23 的 `[-1:6]` 出自其 §4.1 推导（15ns 周期 − 4 − 4 = 7ns 窗 → ±3.5，clock 带 +2.5 偏移 → [-1:+6]），是经验+结构值。**1V11 的合格窗待模拟侧最终确认**。
+
+### 5.4 报告脚本参数
+
+`report_timing_skew_sd.tcl`：时钟组 `-max_path 2000 -nworst 1000 -slack_lesser_than 50`（端口已有 max_delay 14，slack ≈ 8.7 < 50 全打印）；每组第一条 `>` 新建、其余 `>>` 追加。`-slack_lesser_than` 阈值按分析目的定，不是抄参数（指南站 §4.5 的迭代纪律全文适用）。
+
+## 6. 报告解读与实测现状
+
+- `read_cons.log`：SEL=0 才继续（唯一裁判）
+- `rpt/summary/HK1V11_digital_top_cons.rpt`：违例分组
+- `run_summary` → `summary/latest/report_setup.csv` 等 merge 总表（行 = clock 组，列 = corner × {violation number, biggest violation}）
+- skew：`report_sd_busskew.csv`（警惕哨兵值与"假得合理"的回退值，ch10 案例 9）
+
+1V11 实测（0918V0/V2 run）：
+
+| 指标 | 数值 | 说明 |
+|---|---|---|
+| MPW | **0 违例** | 终版约束首次验证通过 |
+| setup wc_cbest | 129 条 / worst −0.632 | RX_CLK 族 50 条已逐族判定（ch10 案例 14） |
+| setup wc_cworst | 29 / −0.255 | 签核主 corner |
+| hold | ~1742 / −5.078（全 corner 同量级） | 既有 P0，独立专项 |
+| skew clk 报表 | slack (MET) 8.729 = 14 − 5.271 | 全部受约束 |
+
+## 7. 1V11 实测坑清单（write_sdc / 对象匹配三连）
+
+| 坑 | 症状 | 解法 |
+|---|---|---|
+| write_sdc 静默失败 | ip_cons 里有、sdc_pr 里没有、POSTPT 无此时钟/约束 | RTL 领先网表时（cell 名网表里不存在）create_generated_clock 直接消失；先对当前网表核对 pin 名 |
+| `-to` 模块通配 | UITE-216 "not a valid endpoint" → mc 静默失效 | **必须精确到寄存器 `/D` 引脚**（G1~G8 模式），模块 `/*` 会罩住 DCLK/PIX_CLK/RSTN 等输入端口 |
+| SDC pin 名 vs 网表版本 | 同上 | SDC 的 pin 引用必须对**当前网表**验证（不是对最新 RTL） |
+
+## 8. 约束迭代闭环
+
+```mermaid
+flowchart LR
+  A["违例定性<br/>(APR 修得掉?)"] -->|"修不掉"| B["改 ip_cons<br/>(pt_shell 分支)"]
+  B --> C["PREPT<br/>write_sdc 物化"]
+  C --> D["查 read_cons.log<br/>SEL=0 / 新行在清单"]
+  D --> E["DATABASE + POSTPT<br/>10 corner"]
+  E --> F["run_summary 总表"]
+  F -->|"清零且无误伤"| G["✅ 收敛"]
+  F -->|"仍有"| A
+```
+
+每轮重跑后确认两件事：目标违例已清；没有误伤真实路径。例外约束**叠加式维护**（不删旧条目，cell 流水号变更使旧条目自然失效）。
 
 ## 交叉引用
 
-- 指南站同章：[POSTPT](../synthesis-integration-flow-guide/pt-intro.html)
-- 本章排障案例：[十、排障实录](./ch10-warstories.html) 案例 1 / 2 / 3 / 5
-  </script>
+- 指南站同章：<a href="../synthesis-integration-flow-guide/pt-intro.html" target="_blank">SYN_FLOW_GUIDE · POSTPT</a>（uncertainty 纪律 / notimingcheck / SDF 全流程 / coverage 判读 / live PT 工作流）
+- 本章排障案例：<a href="./ch10-warstories.html">十、排障实录</a> 案例 1 / 2 / 3 / 5 / 8 / 9 / 13 / 14
+- 交付纪律：<a href="./ch05-apr-signoff.html">五、APR SIGNOFF</a>；签核判读：<a href="./ch09-to-signoff.html">九、TO SIGNOFF</a>
+</script>
   <script src="./js/site.js"></script>
 </body>
 </html>
-<!-- ymzhu 2026-09-20 10:09 -->
+<!-- ymzhu 2026-09-20 10:30 -->

@@ -29,30 +29,57 @@
     </div>
   </div>
   <script type="text/template" id="md">
+
 # 四、LEC 验证
 
-> 骨架页：位置、检查点、交付物；数据待补。
+&gt; 综合完成后，必须通过 LEC 验证综合后的网表与 RTL 功能一致——LEC 通过后才允许 netlist 进 APR / 签核。
 
-## 本章在 1V11 流程中的位置
+## 1. LEC 基本流程
 
-| 对象 | 路径（相对 `SYNTHESIS/`） | 用途 |
-|---|---|---|
-| LEC 运行产物 | `ip/syn_HK1V11_digital_top/lec/rep_dir/` | 形式验证报告 |
+```bash
+cd lec
+run_lec
+```
 
-## 关键检查点
+1V11 运行产物：`SYNTHESIS/ip/syn_HK1V11_digital_top/lec/rep_dir/`。`run_lec` / `rtl_gate.do` 一般无需修改（ECO 场景才调整）。
 
-- 综合后 / 输出后的 LEC 节点必须做（对照指南站"必须做 LEC 的三个节点"）
-- LEC 通过后才允许 netlist 进 APR / 签核
+KEY: 不能以"没弹窗"作为 LEC 通过的依据——没弹窗可能只是 LEC 根本没跑起来。必须逐个打开 log，确认最后一行是真的 pass。
 
-## 📋 数据待补
+通过标准（与指南站一致）：
 
-- 1V11 最新 LEC 结果：节点、对比对象（RTL vs netlist）、结果
+- `lec.log` 无 Error
+- `abort.rpt` = 0 个 abort point
+- `non_eq.rpt` = 0 个 non-equivalent point
+- `unmapped.rpt` = 0 个 unmapped point；出现不一定代表不过，但必须追查原因（指南站曾因此发现真实 bug）
+
+## 2. 必须做 LEC 的三个节点
+
+| 节点 | 说明 |
+|------|------|
+| 综合完成后（交付 APR 前） | 此阶段常规通过率接近 100% |
+| APR 布局布线返回后 | APR 阶段的摆弄有时会把 LEC 搞不过，总体通过率较高 |
+| ECO 修改完成后 | 第一版基本都会不过；不过代表有地方没改对，需逐一定位 |
+
+1V11 当前进度：综合后节点已完成；APR 返回节点的 LEC 随每轮网表（A/B 版）执行；ECO 节点尚未进入。
+
+## 3. 1V11 的 LEC 与约束链的配合
+
+LEC 只保证**逻辑一致**，不保证时序与约束正确——两者是互补的验收：
+
+| 验收 | 工具 | 通过标准 | 1V11 现状 |
+|---|---|---|---|
+| 逻辑一致 | LEC | abort / non-EQ / unmapped 全 0 | 综合后节点通过 |
+| 约束覆盖 | prePT | unconstrained 清零、SEL=0 | 每轮 run 检查（read_cons.log） |
+| 时序收敛 | postPT | 全 corner 总账 | 进行中（见 <a href="./ch09-to-signoff.html">九、TO SIGNOFF</a>） |
+
+KEY: 网表换版（如 A→B）时 LEC 要重做，约束兼容性也要重查——1V11 的 A/B 两版在 SEL / mc 落地 / ignored 三项完全相同，才敢说"差异纯粹是网表质量"（<a href="./ch10-warstories.html">十、排障实录</a> 案例 7）。
 
 ## 交叉引用
 
-- 指南站同章：[LEC 验证](../synthesis-integration-flow-guide/lec.html)
-  </script>
+- 指南站同章：<a href="../synthesis-integration-flow-guide/lec.html" target="_blank">SYN_FLOW_GUIDE · 形式验证（LEC）</a>（通过标准全文 / Genus 加速选项 EC_R2V_EN）
+- 下一环：<a href="./ch05-apr-signoff.html">五、APR SIGNOFF</a>
+</script>
   <script src="./js/site.js"></script>
 </body>
 </html>
-<!-- ymzhu 2026-09-20 10:09 -->
+<!-- ymzhu 2026-09-20 10:30 -->

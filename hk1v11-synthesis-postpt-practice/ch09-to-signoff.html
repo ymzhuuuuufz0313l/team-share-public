@@ -29,37 +29,75 @@
     </div>
   </div>
   <script type="text/template" id="md">
+
 # 九、TO SIGNOFF
 
-> 骨架页 + 签核判读的分级思路。
+&gt; 最终签核前的最后一道确认：APR 把全部内容修改完成后，**再跑一次 postPT + run_summary**，确认时序全部 ready，才进入 signoff。1V11 当前处于"约束迭代收敛期"，本章先落判读框架与当前实测基线。
 
-## 本章在 1V11 流程中的位置
+## 1. 最终确认流程
 
-签核判读 = 读 summary：`top/sta/post/pt/summary/latest/`
+```mermaid
+flowchart LR
+  A["APR 修改全部完成<br/>(修调 / ECO)"] --> B["重跑 postPT<br/>10 个 corner"]
+  B --> C["run_summary"]
+  C --> D["逐个看 merge csv"]
+  D --> E{"全部 ready?"}
+  E -->|"是"| F["✅ TO SIGNOFF<br/>进入最终签核"]
+  E -->|"否"| G["回到约束迭代闭环<br/>或继续修调"]
+```
 
-| 文件 | 看什么 |
-|---|---|
-| `report_setup.csv` / `report_hold.csv` | 各 corner setup/hold qor |
-| `report_sd_busskew.csv` | SD skew margin（⚠️ 警惕哨兵值假数，见 ch10 案例 3） |
-| `report_phy_busskew.csv` | phy skew |
-| `HK1V11_digital_top_cons.rpt` | 违例分组清单 |
-| `latest/log/unconstrained_endpoints.rpt` | 未约束终点 |
+与指南站的差异：2M23 按模式拆 `latest_1p` / `latest_2p` 两套报告；**1V11 无 case、单套 latest**（两档速率共存于同一次 run，见 <a href="./ch06-postpt.html">六、POSTPT</a> §4.1）。
 
-## 关键检查点：违例分级判读
+## 2. merge csv 各看什么（1V11 的 summary/latest/）
 
-1. **真时序违例**：同域单周期路径（如 `DATA_POINT_LAT_reg_9_ → rx_shifter_reg_*`）→ 交 APR/设计
-2. **准静态配置跨域**：`R_REG*_L_* → RX_CLK` 族 → mc 已收敛（ch10 案例 2）
-3. **报告假值**：哨兵值/探针失配（ch10 案例 3）→ 修脚本，不是修时序
+| 文件 | 看什么 | ready 标准 |
+|------|--------|-----------|
+| `report_setup.csv` | 每 clock 组 × 每 corner violation number / biggest violation | 全 0，或仅剩已逐条定性并给出处置结论的项 |
+| `report_hold.csv` | hold（min）路径 | 同上 |
+| `report_sd_busskew.csv` | SD skew margin | margin 落在规格窗（⚠️ 1V11 合格窗待模拟确认，警惕哨兵值） |
+| `report_phy_busskew.csv` | PHY bus skew | 各组在规格内 |
+| `HK1V11_digital_top_cons.rpt` / `unconstrained_endpoints.rpt` | 违例分组 / 未约束终点 | unconstrained 清零 |
 
-## 📋 数据待补
+残留违例必须**逐条能说清来历**：已豁免的要能对上 ip_cons 里的 mc / max_delay 条目，说不清的不能放行。
 
-- 最新一轮 10 corner 签核数据
+## 3. 1V11 当前基线与违例分级判读
+
+0918V2 run（终版约束 + G13 + DPLC_CLK 修正后）：
+
+| 指标 | wc_cworst_125 | wc_cbest_125 | wc_typical_125 |
+|---|---|---|---|
+| setup | 29 / −0.255 | **129 / −0.632** | 39 / −0.403 |
+| hold | 1752 / −5.141 | 1742 / −5.078 | 1750 / −5.123 |
+
+违例分级判读（三类，处置不同）：
+
+1. **真时序违例**：同域单周期数据路径 → 交 APR 修线或设计打拍。实例：RX_CLK 组 50 条逐族判定（ch10 案例 14）——A1 族 24 条（G13 已 mc 豁免）、B 族 16 条 negedge 半周期（设计评审可改 posedge）、A2 族 6 条等 0917V1 网表、A3/A0 轻微随 APR。
+2. **准静态配置跨域**：`R_REG*_L_*` / `R_REG*_F_reg*` 配置写 → mc / 更具体的 max_delay 已收敛（G 系列 + G10，ch10 案例 2/8）。
+3. **报告假值**：哨兵值 / 探针失配 / 非法起点回退（ch10 案例 3/9）→ **修脚本，不是修时序**。
+
+KEY: hold ~1742 条/corner、worst −5.078 是既有 P0（每轮 run 逐条相同 = 零回归基线），独立专项跟进，交付说明中必须注明——不能混进本轮约束工作的结论里。
+
+## 4. IO buf type 确认
+
+5 个 csv 全部 ready 之后，还要确认 **IO 末级 buffer type** 是否符合预期——APR 修调 / ECO 后末级 buf 可能被换型，时序过不代表 buf 用对。
+
+1V11 脚本（`SYNTHESIS/top/sta/post/common/`）：`report_input_last_buf.tcl` / `report_output_last_buf.tcl`。判读方法（含 `NO_LOAD_CELL` / `NO_DRIVER_CELL` 例外端口的成因分析）见 <a href="../synthesis-integration-flow-guide/to-signoff.html" target="_blank">指南站同章 §3</a>——2M23 的实例教训（`set_case_analysis` 固化导致扇出被吸收）在 1V11 无 case 的设计下预期不出现，但判读方法相同。
+
+## 5. 交付前的最后清单
+
+- [ ] 10 corner 全跑、run_summary 总表无新冒违例
+- [ ] setup：仅剩已定性项（真路径交 APR/设计、mc 豁免对得上 ip_cons 条目）
+- [ ] hold：与基线逐条相同（P0 已注明）
+- [ ] skew：margin 全部有数且在确认后的规格窗内（dplc 行已出数）
+- [ ] unconstrained 清零、SEL=0
+- [ ] IO buf type 核对完成
 
 ## 交叉引用
 
-- 指南站同章：[TO SIGNOFF](../synthesis-integration-flow-guide/to-signoff.html)
-  </script>
+- 指南站同章：<a href="../synthesis-integration-flow-guide/to-signoff.html" target="_blank">SYN_FLOW_GUIDE · TO SIGNOFF</a>（五个 csv 报告实例 / IO buf type 判读全文）
+- 违例定性方法：<a href="./ch06-postpt.html">六、POSTPT</a>；逐族判定实例：<a href="./ch10-warstories.html">十、排障实录</a> 案例 14
+</script>
   <script src="./js/site.js"></script>
 </body>
 </html>
-<!-- ymzhu 2026-09-20 10:09 -->
+<!-- ymzhu 2026-09-20 10:30 -->

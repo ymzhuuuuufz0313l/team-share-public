@@ -29,29 +29,73 @@
     </div>
   </div>
   <script type="text/template" id="md">
+
 # 八、PowerPro 功耗评估
 
-> 骨架页：1V11 数据整体待补。
+&gt; 本章收录 PowerPro 低功耗评估的方法论框架（功耗构成、评估工具、环境搭建、report 检查），并标注 1V11 的现状：**环境目录已由 gensyn 自动生成，实测评估尚未执行**。
 
-## 本章在 1V11 流程中的位置
+## 1. 功耗基础与评估工具
 
-| 对象 | 路径（相对 `SYNTHESIS/`） | 用途 |
-|---|---|---|
-| PowerPro 运行产物 | `ip/syn_HK1V11_digital_top/powerpro/`（`rep_dir/`、`WORK/`、`calypto/`） | 功耗评估报告 |
+### 1.1 功耗构成
 
-## 关键检查点
+- **静态功耗（leakage）**：与工艺库、电压、温度相关；漏电关系 LVT > SVT > HVT，与温度成指数关系。
+- **动态功耗**：switching power（`P = C·Vdd²·Fclock`）+ internal power（`P = tsc·Vdd·Ipeak·Fclock`）。
 
-- 覆盖模式（6 mode）与 report 检查
+### 1.2 评估工具对比
 
-## 📋 数据待补
+| 工具 | 评估阶段 | 级别 | 读取文件 | 目标 |
+|------|----------|------|----------|------|
+| RedHawk | 设计后端 | whole chip（APR 同事） | post-netlist + 带 SDF 后仿 VCD | IR drop 影响，值偏大 |
+| PTPX | 设计后端 | whole chip（综合同事） | 同 RedHawk | whole-chip 功耗，与回片对比 |
+| PowerPro（RTL level） | IP RTL 阶段 | IP owner | RTL code、sdc、前仿波形 | 初步评估 + 低功耗优化 |
+| PowerPro（Gate level） | 设计后端 | 专人 | 同 PTPX | 与 RTL level 及回片对比 |
 
-- 1V11 PowerPro 实测数据与模式覆盖表
+评估条件：**1 个 idle mode + N 个 function mode**；TT corner、typical 电压、85°C（lib 无 85 用 125）。
+
+KEY: 务必确保实测功耗时的条件与评估功耗时的条件一致，否则对比无意义。
+
+## 2. 环境搭建与运行
+
+PowerPro 已集成到 IP 综合环境，`gensyn` 自动创建 `powerpro/` 目录（`fsdb/`、`sdc/`、`WORK/`、`script/`、`run_power_opt`）。1V11 的实例目录：`SYNTHESIS/ip/syn_HK1V11_digital_top/powerpro/`（`WORK/`、`calypto/` 已在 package 中出现，证明环境可生成）。
+
+搭建四步（详见 <a href="../synthesis-integration-flow-guide/powerpro.html" target="_blank">指南站同章 §2</a>）：
+
+1. **RTL filelist**：维护 `syn_<ip>/filelist/` 下 `<ip>.f` 与 `<ip>.sv.f`
+2. **link 波形**到 `fsdb/`，design.set 指定 `FSDB_FILE` / `FSDB_HIER`（可 `fsdbextract` 截取时间窗）
+3. **design.set 指定约束**：`CLOCK_MCP_CASE_SDC`（IP 约束）+ `CORNER`（tt_typical_85）
+4. **时钟约束与 gray box**：`sdc/<ip>.sdc` 中 create_clock / create_generated_clock；不优化 module 用 `set_gray_box –module ...`
+
+运行与 report 检查：
+
+```bash
+source /eda/env/NEXT/powerpro2024.2.1.cshrc
+bsub -Ip run_power_opt
+python3 powerpro_script.py                    # 生成 report_info（逐项 check）
+python3 powerpro_chk.py report_info report_info2
+show_analyzer
+```
+
+report 检查三件事：`powerpro.log` **反标率 100%**；`sa.log` 未反标信号清理；`sa.log` X 态信号清理。之后看 IP Efficiency（Memory Gating / CG Efficiency / Power Summary）与 Dashboard。
+
+## 3. 1V11 现状
+
+| 项 | 状态 |
+|---|---|
+| 环境目录 | ✅ `ip/syn_HK1V11_digital_top/powerpro/` 已生成（WORK/ calypto/ 实证） |
+| 前仿波形（fsdb） | ⏳ 待仿真侧 dump 并 link |
+| RTL level 评估 | ⏳ 未跑 |
+| Gate level 评估 | ⏳ 依赖 netlist + SDF + 后仿 VCD |
+
+实测数据产生后，按指南站的规格回填：6 组模式（lane × normal/dplc/drdod）Total 功耗表 + 构成占比 + 与 LVT/SVT 及跨项目对比（造图脚本化，不手改 PNG）。
+
+WARNING: PowerPro 读取的 RTL 必须是可综合代码，无法综合会 internal ERROR 退出——常见坑（VHDL 分读、build_design 出错、数组 dump、hier 功耗导出 Excel）的解法清单见指南站 §2.4。
 
 ## 交叉引用
 
-- 指南站同章：[PowerPro 功耗评估](../synthesis-integration-flow-guide/powerpro.html)
-  </script>
+- 指南站同章：<a href="../synthesis-integration-flow-guide/powerpro.html" target="_blank">SYN_FLOW_GUIDE · PowerPro 功耗评估</a>（培训课件全记录 / HV2M23 六组实测 / 常见问题 9 条）
+- PTPX 侧：<a href="./ch07-memory-power.html">七、Memory 与功耗</a>
+</script>
   <script src="./js/site.js"></script>
 </body>
 </html>
-<!-- ymzhu 2026-09-20 10:09 -->
+<!-- ymzhu 2026-09-20 10:30 -->

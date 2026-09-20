@@ -29,41 +29,79 @@
     </div>
   </div>
   <script type="text/template" id="md">
+
 # 三、综合
 
-> 骨架页 + 一条本轮实证的关键认知（DC 分支纪律，详见 ch10 案例 4）。
+&gt; 本章是 1V11 的 DC 综合实践，与指南站同章结构对齐：UPF 与 Driver 类项目一样不做；重点在约束文件的多工具分支纪律与 don't touch。
 
-## 本章在 1V11 流程中的位置
+## 1. UPF（当前项目不做）
 
-DC 综合。约束主文件 `common/ip_cons/HK1V11_digital_top.tcl`；库与优化配置在 `common/tcl_dir/dc/`（`dont_use_all.tcl`、`design_rule.tcl`）。
+与指南站口径一致：1V11 是 Driver 类项目，**不做 UPF / lec_upf / genus_upf**；本节内容需要时看指南站 §1。
 
-## 关键检查点
+## 2. DC 综合
 
-- **约束文件是 dc_shell / pt_shell 共享资产，按综合后命名写的约束必须待在 pt_shell 分支**：
+```bash
+cd dc
+run_dc
+```
+
+前置条件：CKF / nLint 问题已清理。
+
+### 2.1 约束文件结构（1V11 实际）
+
+约束主文件：`SYNTHESIS/common/ip_cons/HK1V11_digital_top.tcl`（dc_shell / pt_shell **共享资产**）；库与优化配置在 `common/tcl_dir/dc/`（`dont_use_all.tcl`、`design_rule.tcl`）；周期源 `common/tcl_dir/common/clk_period.tcl` **保持原始零修改**。
+
+内容构成（与指南站 §2.1 的清单对应）：
+
+- `kv_clock` / `kv_reset` / `kv_inout` / `kv_2clklist_group_path`：时钟定义、复位、InOut、时钟组（clock 点全部落在 macro / standard cell pin 上）
+- G1~G8 系列多周期（配置位 → 各时钟域，mc 2/1）+ round5 / G9 / G11
+- G10：DPLC 静态配置位 `set_max_delay [expr $DPLC_CLKP*2]`（例外优先级陷阱的解法，见 <a href="./ch10-warstories.html">十、排障实录</a> 案例 8）
+- SD 输出接口 14 行（`set_max_delay 14` ×4 口 + MPW 2/0.73 分时钟族 14 行）
+- G13：DATA_POINT_LAT 扇出的 mc 2/1（**TEMPORARY**，RTL 打拍后删除）
+- `set_dont_touch [get_cells -hier *u_gate*]`：保护手搭时钟单元
+
+KEY: 下约束前必须非常了解 clock gen 的设计意图——1V11 的时钟树（RX_CLK → DCLK_DATA → NORMAL_CLK ÷2 → SD_CLK → INV → CLKA/CLKB）全部由 CLKGEN 的 u_gate_* 单元手搭，约束只有下对地方路径才能被全部 consume。
+
+### 2.2 dc_shell / pt_shell 双分支纪律（1V11 实战教训）
+
+约束文件被两个工具共享，**按综合后命名写的约束必须待在 pt_shell 分支**：
 
 ```tcl
-if {$synopsys_program_name != "pt_shell"} {
-    # DC 分支：RTL 族通配（elaborate 阶段没有位拆分名和 /D* 引脚）
+if {$synopsys_program_name == "pt_shell"} {
+    # PT 分支：网表名 + get_cells / get_pins（如 DATA_POINT_LAT_reg_* / ...reg/D）
 } else {
-    # PT 分支：网表名 + get_cells / get_pins
+    # DC 分支：RTL 族通配（elaborate 阶段没有位拆分名和 /D* 引脚）
 }
 ```
 
-逐条网表名约束写在公共区 → DC 侧失配丢约束（ch10 案例 4）。
+逐条网表名约束写在公共区 → DC 侧 get_cells 失配 → 约束静默丢失（ch10 案例 4）。族通配合并后 100+ 行收敛为约 30 行，DC 不再误读。
 
-- `set_dont_touch [get_cells -hier *u_gate*]` 保护手搭时钟单元（CLKGEN 的 u_gate_* 软 wrapper 在 post-route 网表实证存活，read_cons.log 零 SEL）
-- 时钟/模块改名后的残留自检（ch10 案例 5：clock list / pin 通配）
+### 2.3 don't touch 使用纪律
 
-## 📋 数据待补
+`set_dont_touch [get_cells -hier *u_gate*]` 只保护手搭时钟单元（CLKGEN 的 u_gate_* 软 wrapper 在 post-route 网表实证存活，read_cons.log 零 SEL）——与指南站"只对需要保留的时钟生成单元加、范围过大会吃掉优化空间"的纪律一致。
 
-- 1V11 DC qor（面积 / 时序 / 门控率）
+## 3. 检查项
+
+- `dc.log`：无 Error、无 unresolved
+- area / timing slack 符合预期（signoff 版本必须 slack ≥ 0）
+- constraint coverage：**unconstrained paths 必须清零**——1V11 在 prePT 的 `unconstrained_endpoints.rpt` 中查（交付 = 重大 bug，详见 <a href="./ch05-apr-signoff.html">五、APR SIGNOFF</a> §1.3）
+- **改名残留自检**：时钟/模块改名后，clock list / pin 通配 / 报告脚本 / skew 探针所有引用点过一遍 SEL 计数——read_tcl.log / read_cons.log 的 SEL-004/005 总数是回归指标，非零即回归（ch10 案例 5：18 条 SEL 三类成因）
+
+WARNING: DC 修不下去时会自动放弃，此时面积数据是假的——交付前必须清零 violation（与指南站同）。
+
+margin 口径：1V11 沿用 `MARGIN 0.80`（DC）/ `1.00`（PT），"对自己紧一点、对后端松一点"。
+
+## 4. 1V11 网表质量实证
+
+本轮实战中后端交付两版网表做了纯净 A/B 对比（约束 diff=0，唯一变量是网表）：按"签核 corner 加权 + 违例率 + 真违例净值 + 约束兼容性"四判据选 A（gating 违例率 31.9% vs 55.6%）——判网表质量的方法论全记录见 <a href="./ch10-warstories.html">十、排障实录</a> 案例 7。
 
 ## 交叉引用
 
-- 指南站同章：[综合](../synthesis-integration-flow-guide/synthesis-upf.html)
-- 相关排障：[十、排障实录](./ch10-warstories.html) 案例 4 / 案例 5
-  </script>
+- 指南站同章：<a href="../synthesis-integration-flow-guide/synthesis-upf.html" target="_blank">SYN_FLOW_GUIDE · 综合</a>（UPF 参考 / DC QoR 判读 / Genus）
+- 相关排障：<a href="./ch10-warstories.html">十、排障实录</a> 案例 4（双分支）/ 案例 5（改名残留）/ 案例 7（网表 A/B）/ 案例 8（max_delay 优先级）
+- 下一环：<a href="./ch04-lec.html">四、LEC 验证</a>
+</script>
   <script src="./js/site.js"></script>
 </body>
 </html>
-<!-- ymzhu 2026-09-20 10:09 -->
+<!-- ymzhu 2026-09-20 10:30 -->

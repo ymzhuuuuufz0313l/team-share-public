@@ -29,45 +29,83 @@
     </div>
   </div>
   <script type="text/template" id="md">
+
 # 一、环境与配置
 
-> 骨架页：只写"位置、检查点、交付物"，实测数据后续补录（见文末数据待补）。
+&gt; 综合开始之前，先准备好项目环境、正确配置 <code>design.set</code>，并管理好库与时钟周期源。1V11 沿用与指南站相同的 flow 骨架，本章补齐 1V11 的实际路径与口径。
 
-## 本章在 1V11 流程中的位置
+环境搭建的整体顺序：制程不变时从上一个已验证项目整包拷贝配置 → 换 top name → 检查工具版本 → 更新 filelist / common_db → CKF + nLint 验证通过即就绪（完整五步流程见 <a href="../synthesis-integration-flow-guide/environment.html" target="_blank">指南站同章</a>）。
 
-环境是流程起点：一套配置喂三个工具（DC / pre-PT / postPT），口径不一致 = 白跑。
+## 1. 环境准备
 
-| 对象 | 路径（相对 `SYNTHESIS/`） | 用途 |
+### 1.1 目录结构
+
+1V11 的综合环境位于 `SYNTHESIS/ip/syn_HK1V11_digital_top/`，主要子目录：
+
+| 目录 | 用途 | 1V11 现状 |
+|------|------|----------|
+| `ckf/` | RTL 连接性检查 | 报告在 `rep_dir/` |
+| `nlint/` | Lint 检查 | waive 清单在 `common/tcl_dir/nlint/` |
+| `dc/` | Design Compiler 综合 | 网表 A/B 两版实测（见 <a href="./ch10-warstories.html">十、排障实录</a> 案例 7） |
+| `lec/` | 形式验证 | 报告在 `rep_dir/` |
+| `pt/` + `top/sta/{pre,post}/pt/` | 时序分析 | pre/post 各一套 design.set |
+| `powerpro/` | PowerPro 功耗评估 | 目录已建（`WORK/`、`calypto/`），实测未跑 |
+| `power/` | PTPX 功耗仿真 | 待跑 |
+
+### 1.2 工具版本与环境 source
+
+- PT 版本 **M-2017.06-SP3-3**（pt1706 环境）。
+- DC / PT 与 Verdi / VCS 的版本冲突纪律与指南站一致：source cshrc 前先注释掉仿真工具行，遇到莫名报错先查 source 的工具版本。
+
+## 2. design.set 核心配置
+
+1V11 有**三份 design.set 需要保持口径一致**（pre-PT / post-PT / DC），这是本章最重要的纪律：
+
+| 份 | 路径（相对 `SYNTHESIS/`） | 关键字段 |
 |---|---|---|
-| pre-PT 配置 | `top/sta/pre/pt/design.set` | TOP_NAME / SDC_NAME / SDC_PATH / PR_PATH / VOLTAGE / POSTPT_EN |
-| post-PT 配置 | `top/sta/post/pt/design.set` | 同上；POSTPT_EN=1 走签核分支 |
-| 库配置 | `common/tcl_dir/common/common_db.tcl` | link_library / target_library（nexchip_145_9t） |
-| corner 开关 | `top/sta/post/pt/<corner>/corner_set.tcl` | CONS_CHECK / SI_CHECK / CORNER |
-| 时钟周期源 | `common/tcl_dir/common/clk_period.tcl` | RX_CLKP=3.81 / DPLC_CLKP=6.35 / OSC / I2C（MARGIN：DC×0.8 / PT×1.0） |
+| pre-PT | `top/sta/pre/pt/design.set` | TOP_NAME / SDC_NAME / SDC_PATH / PR_PATH / POSTPT_EN |
+| post-PT | `top/sta/post/pt/design.set` | 同上；**POSTPT_EN=1** 走签核分支 |
+| 综合 | `ip/syn_HK1V11_digital_top/design.set` | SYN_TOOL / CORNER / DERATE_VAL / LVT_EN / SVT_EN |
 
-## 关键检查点
+1V11 的两条关键路径（post-PT 侧实测）：
 
-- 换项目只动 `design.set`（TOP_NAME / SDC_NAME / SDC_PATH / PR_PATH）
-- **DC / prePT / postPT 三处 design.set 口径一致**（pre-PT `design.set` 的 POSTPT_EN 会改变 kv proc 是否注入 ideal_network，进而影响 write_sdc 内容——见 ch10 案例 1 的连锁证据）
-- corner 开关核对：`SI_CHECK=1`（串扰/skew 分析开启）
-- PT 版本：M-2017.06-SP3-3（pt1706 环境）
+| 变量 | 路径 | 内容 |
+|---|---|---|
+| `SDC_PATH` | `/XXW_PRJ01/HK1V11/DataBase/Digital/Release/Netlist/Prescan/HK1V11_digital_top_to_APR/latest` | `HK1V11_digital_top_postcts.sdc` |
+| `PR_PATH` | `/project/HK1V11/designer/AD/yzhao/release/HK1V11_digital_top/timing/latest` | 网表 `.v.gz` + spef `.spef.gz` |
 
-## 交付物 / 应看什么
+WARNING: <span class="badge badge-tx">必须</span> 三处 design.set 口径一致——pre-PT 的 <code>POSTPT_EN</code> 会改变 kv proc 是否注入 ideal_network，进而改变 <code>write_sdc</code> 的内容（<a href="./ch10-warstories.html">十、排障实录</a> 案例 1 的连锁证据）。网表与 spef 必须同源同版，异源 = 签核失真。
 
-- `design.set` 改动差分（前后对照）
-- `common_db.tcl` 的 link_library 与 release 库版本对应关系
-- 10 corner 的 `corner_set.tcl` 开关矩阵
+## 3. 库配置（common_db）
 
-## 📋 数据待补
+- 标准单元库 `nexchip_145_9t`，`common_db.tcl` 集中定义 link_library / target_library。
+- VT 开关在 `design.set`（`LVT_EN` / `SVT_EN`），生效逻辑在 `dont_use_all.tcl`——与指南站 HV2M23 的机制完全相同，细节见 <a href="../synthesis-integration-flow-guide/environment.html" target="_blank">指南站 §3</a>。
+- corner 开关：`top/sta/post/pt/<corner>/corner_set.tcl`（CONS_CHECK / SI_CHECK / CORNER）；SI_CHECK=1 全 corner 常开（保守口径，见指南站 POSTPT 页 §1.3）。
 
-- 1V11 环境实测：VT 库使用率、license 分布、单 corner 运行时长
-- 三处 design.set 逐参数快照
+## 4. clk_period.tcl：时钟周期源（1V11 特有口径）
+
+`common/tcl_dir/common/clk_period.tcl` 保持**原始五行**，零修改（终版定稿）：
+
+```tcl
+set MARGIN  0.80/1.00    ;# DC ×0.8（对 DC 加严）/ PT ×1.0
+set OSC_CLKP   20.00
+set I2C_CLKP   500.00    ;# I2C_CLK = 2M
+set RX_CLKP    3.81      ;# 5G*1.05/20 = 262.5M
+set DPLC_CLKP  6.35      ;# 3G*1.05/20 = 157.5M
+```
+
+KEY: 1V11 的设计是<strong>两档速率共存</strong>——RX_CLKP 3.81 管大部分 5G 路径、DPLC_CLKP 6.35 管 DPLC（3G）路径，同一次 run 各查各的。<strong>不要加 case/开关/if-else</strong>：演进中试过 DPLC_CASE 速率开关与 case_analysis 双开关，最终全部推翻（演进全程见 <a href="./ch10-warstories.html">十、排障实录</a> 案例 10~12）。速率-周期换算通式：`T = 20/(rate_G×1.05) ns`（5G→3.810 / 4.5G→4.233 / 4G→4.762 / 3G→6.350）。
+
+## 5. Filelist 管理
+
+与指南站规则一致：filelist 必须与 HDL 侧 `.f` 完全一致、支持嵌套、空文件也要占位。1V11 补充一条实证教训——**filelist/网表/RTL 版本错位的表现形式是"约束静默失效"而不是报错**（SDC 引用领先网表的 cell 名时 create_generated_clock 直接消失，见 <a href="./ch06-postpt.html">六、POSTPT</a> §7），所以每次换网表先核对时间戳与版本再开跑。
 
 ## 交叉引用
 
-- 指南站同章：[环境与配置](../synthesis-integration-flow-guide/environment.html)
-  </script>
+- 指南站同章：<a href="../synthesis-integration-flow-guide/environment.html" target="_blank">SYN_FLOW_GUIDE · 环境与配置</a>（gensyn / design.set 全字段 / VT 库换库史 / filelist 八条建议）
+- 下一环：<a href="./ch02-rtl-check.html">二、RTL 检查</a>
+</script>
   <script src="./js/site.js"></script>
 </body>
 </html>
-<!-- ymzhu 2026-09-20 10:09 -->
+<!-- ymzhu 2026-09-20 10:30 -->

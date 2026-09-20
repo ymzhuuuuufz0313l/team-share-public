@@ -29,33 +29,69 @@
     </div>
   </div>
   <script type="text/template" id="md">
-# 二、RTL 检查
 
-> 骨架页：位置、检查点、交付物；数据待补。
+# 二、RTL 质量检查
 
-## 本章在 1V11 流程中的位置
+&gt; 启动综合之前，必须先通过 CKF 和 nLint 清理 RTL 中的连接性、语法和可综合性问题。两工具并行执行、互为补充。
 
-综合前的 RTL 质量门：连接性与可综合性检查。
+CKF 与 nLint 的分工（与指南站一致）：
 
-| 对象 | 路径（相对 `SYNTHESIS/`） | 用途 |
-|---|---|---|
-| CKF 报告 | `ip/syn_HK1V11_digital_top/ckf/` | 连接性检查产物 |
-| nLint 配置 | `common/tcl_dir/nlint/`（`nlint_waive.list` / `cat_nlint_waive.list`） | 语法/风格检查与豁免清单 |
+| 工具 | 侧重 | 典型检查项 |
+|------|------|-----------|
+| CKF | 浅层：环境配置、filelist 链接、环境变量 | 连接性、Floating、black box |
+| nLint | 深层：设计本身的问题 | multi-driver、wire floating 等 |
 
-## 关键检查点
+经验：CKF 跑得快适合快速过筛；很多错误 CKF 全过、nLint 一跑报一堆——**两个工具缺一不可**。KEY: DC 不是语法检查工具，断线在 nLint 是 error、在 DC 里可能直接被优化掉只报一条 warning，不要指望用 DC 替代 RTL 检查。
 
-- CKF 报告无悬空连接 / 位宽失配
-- nLint waive 清单随 RTL 迭代维护，不做无记录的堆砌
+## 1. CKF（连接性检查）
 
-## 📋 数据待补
+```bash
+cd ckf
+run_ckf        # bsub 提交必须带参数：bsub -Ip run_ckf 1（batch 模式约定）
+```
 
-- 1V11 最新 CKF / nLint 报告结论与 waive 条数
+1V11 产物路径：`SYNTHESIS/ip/syn_HK1V11_digital_top/ckf/`（报告在 `rep_dir/`）。
+
+检查项（与指南站一致）：
+
+- `ckf.rpt` 无 Error，**Floating 清零**
+- `black box` 逐一确认为真实的 analog / memory / digital macro
+- `Latch` 只允许来自统一库或配合 analog 的调用，其余查 RTL
+
+结果处理：Error 全部清零；Warning 逐条人工确认后才放行。
+
+## 2. nLint
+
+```bash
+cd nlint
+run_nlint
+```
+
+1V11 的豁免清单（与指南站同机制、项目内维护）：
+
+| 文件 | 用途 |
+|---|---|
+| `SYNTHESIS/common/tcl_dir/nlint/nlint_waive.list` | 公共 waive list（确认无风险的条目） |
+| `SYNTHESIS/common/tcl_dir/nlint/cat_nlint_waive.list` | 分类 waive 清单 |
+
+规则：
+
+- 加 waive 前必须逐条确认确实无风险；两工具重复报的已知非风险问题才可加入
+- nLint 报的 Error 很多是缺标准单元库（Compilation & Elaboration 阶段）导致，与功能无关，确认后可 waive
+- <span class="badge badge-tx">必须</span> waive 清单随 RTL 迭代维护，**不做无记录的堆砌**——每条 waive 要能说出理由
+
+## 3. 1V11 流程位置与检查点
+
+- CKF / nLint 是综合前的 RTL 质量门：**CKF 无悬空连接 / 位宽失配、nLint error 清零**后才能进 DC。
+- 正确顺序：CKF + nLint 一起跑 → 确认无语法错误 → 才能跑综合（与指南站一致）。
+- 1V11 最新一轮 CKF / nLint 的具体报告结论与 waive 条数：随每轮 run 归档在各 run 目录，交接时以 `rep_dir/` 最新一份为准（本章不复制数字，避免双源失同步）。
 
 ## 交叉引用
 
-- 指南站同章：[RTL 检查](../synthesis-integration-flow-guide/rtl-check.html)
-  </script>
+- 指南站同章：<a href="../synthesis-integration-flow-guide/rtl-check.html" target="_blank">SYN_FLOW_GUIDE · RTL 质量检查</a>（bsub 参数约定 / waive 纪律全文）
+- 下一环：<a href="./ch03-synthesis.html">三、综合</a>
+</script>
   <script src="./js/site.js"></script>
 </body>
 </html>
-<!-- ymzhu 2026-09-20 10:09 -->
+<!-- ymzhu 2026-09-20 10:30 -->
