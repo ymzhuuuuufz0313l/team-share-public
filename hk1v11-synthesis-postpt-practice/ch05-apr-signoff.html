@@ -22,38 +22,129 @@
     <div class="content">
       <article class="article" id="article"></article>
       <div class="page-nav" id="page-nav"></div>
-      <div class="footer">HK1V11 SYNTHESIS / SIGNOFF PRACTICE · AUTHOR ymzhuuuu · UPDATED 2026-09-16</div>
+      <div class="footer">HK1V11 SYNTHESIS / SIGNOFF PRACTICE · AUTHOR ymzhuuuu · UPDATED 2026-09-20</div>
     </div>
   </div>
   <script type="text/template" id="md">
-# 五、APR SIGNOFF
+# 五、APR SIGNOFF（Signoff、时序与流程依赖）
 
-> 骨架页 + 两个本轮实证的检查点（postcts.sdc 内容、网表/spef 同源）。
+&gt; 综合和 LEC 通过后，进入 signoff、时序分析和 APR 交付阶段。本章是 1V11 实际跑通版本，与指南站同章（<a href="../synthesis-integration-flow-guide/signoff-timing.html" target="_blank">SYN_FLOW_GUIDE · APR SIGNOFF</a>）结构对齐，差异点用 badge 标注。整个流程同样是**两个阶段的 signoff**：第一阶段 **APR SIGNOFF**（本章）；第二阶段 **TO SIGNOFF**（见 <a href="./ch09-to-signoff.html">九、TO SIGNOFF</a>）。
 
-## 本章在 1V11 流程中的位置
+## 1. Signoff 检查与交付
 
-APR 交付 = POSTPT 的输入。两个关键路径定义在 `top/sta/post/pt/design.set:8-10`：
+### 1.1 Signoff 检查
+
+1V11 的 signoff 检查链与指南站一致：收集 CKF / nLint / DC / LEC 各环节 log 与 report，做**版本一致性检查**（确保所有步骤基于同一 RTL 版本），输出 `signoff.rpt`，逐项报错都要求修掉，全部通过后自动 release 并指向 `latest`。
+
+1V11 实际执行时序侧的 signoff 动作（本章重点）按固定四步循环：
+
+```bash
+PREPT → DATABASE → POSTPT → run_summary
+```
+
+| 步骤 | 做什么 | 产出 |
+|---|---|---|
+| PREPT | pre-PT：读约束（clk_period.tcl + ip_cons），跑 DC 网表时序，`write_sdc` 物化约束 | `sdc_pr/HK1V11_digital_top.tcl`、`read_cons.log`、`unconstrained_endpoints.rpt` |
+| DATABASE | 换用 APR 返回的网表 + spef（`latest` 指向） | 链接就绪的 post-route 数据库 |
+| POSTPT | post-PT：10 个 corner 全跑（setup/hold/MPW/skew） | `pt/<corner>/latest/rpt/` 全套报表 |
+| run_summary | 汇总各 corner setup/hold 总账 | `summary/latest/report_setup.csv` 等 |
+
+KEY: **PREPT 的 `read_cons.log` 是约束生效的唯一裁判**。每轮更新约束后必查三个数：`SEL-004/005` 警告数（应为 0）、新约束行是否出现在 SDC 清单里、`unconstrained_endpoints` 是否清零。本轮实战教训：`create_generated_clock` 引用了 RTL 新增但网表尚未更新的 cell 名时，pre-PT 静默失败、`write_sdc` 不物化——表面上看不出问题，POSTPT 却没有这个时钟（详见 <a href="./ch10-warstories.html">十、排障实录</a>）。
+
+WARNING: <span class="badge badge-rtl">严禁</span> 在没查 `read_cons.log` 的情况下直接看 POSTPT 结果——约束没生效的 run 的所有时序数字都是错的。
+
+### 1.2 交付物示例
+
+POSTPT 读取的两个关键路径定义在 `top/sta/post/pt/design.set`：
 
 | 变量 | 路径 | 内容 |
 |---|---|---|
 | `SDC_PATH` | `/XXW_PRJ01/HK1V11/DataBase/Digital/Release/Netlist/Prescan/HK1V11_digital_top_to_APR/latest` | `HK1V11_digital_top_postcts.sdc` |
 | `PR_PATH` | `/project/HK1V11/designer/AD/yzhao/release/HK1V11_digital_top/timing/latest` | 网表 `.v.gz` + spef `.spef.gz` |
 
-## 关键检查点
+交付 APR 的内容与指南站一致：netlist、SDC（`*_postcts.sdc`，APR 返回版本）、dont_touch 列表。本轮实践补充两条纪律：
 
-- **postcts.sdc 是否包含最新一轮约束**（约束链见 ch10 案例 1：`grep -c` 自检）
-- **网表与 spef 同源同版**（异源 = 签核失真）
-- 生成时钟节点在 post-route 网表的存活：`read_cons.log` 的 SEL-004/005 计数（本轮实测零告警：`u_gate_*/CG_CELL/Q`、`u_gate_*/CLKMUX2X2/O` 全部命中）
+- **约束文件单点维护**：`ip_cons/HK1V11_digital_top.tcl` 是唯一约束源，`clk_period.tcl` 保持原始（只放 MARGIN/OSC/I2C/RX_CLKP/DPLC_CLKP 五个周期变量）。任何约束变更只改 ip_cons，替换到服务器后必须整链重跑（PREPT → DATABASE → POSTPT），不能只跑 POSTPT。
+- **网表与 spef 同源同版**：异源 = 签核失真。每轮 package 回来先核对网表/spef 的时间戳与版本再开跑。
 
-## 📋 数据待补
+### 1.3 交付前检查要点
 
-- APR 交付清单快照与版本对应表
+与指南站同源：跨部门交付 APR 前 pre-delivery check 必须做足，APR 开工后发现问题会直接找回来。
+
+KEY: unconstrained（未约束）路径交付 = 重大 bug。1V11 在 `prePT` 的 `unconstrained_endpoints.rpt` 中查，要求清零。
+
+1V11 本轮实操中沉淀的交付前检查清单（每轮 run 后逐项过）：
+
+- [ ] `read_cons.log`：SEL-004/005 = 0，新约束行全部在 SDC 清单中
+- [ ] MPW 报表 0 违例（`trans/report_constraint_pulse_width.rpt`，`-all_violators` 为空）
+- [ ] setup 总账与上一轮可比（总违例数、worst slack 不劣化；已知违例逐条归类：true path / 待 mc / 待 RTL）
+- [ ] hold 总账与上一轮**逐条相同**（hold 是既有 P0：~1742 条/corner、worst -5.1，独立专项跟进，交付说明中注明）
+- [ ] skew 报表全部有数：clk 报表无 "(Path is unconstrained)"、slack (MET)、`sd_busskew.csv` 无全空行
+- [ ] DC 和 PT 均无 violation 才能交付
+
+### 1.4 交付落盘：DataBase 目录与 update_latest
+
+与指南站流程一致，1V11 的实际路径：
+
+**① 开通目录权限**：DataBase 目录默认无写权限，联系 DataBase 管理员开通后 `newgrp` 提权：
+
+```bash
+newgrp HK1V11_adm
+```
+
+**② 交付目录**（每项目一个 `<TOP>_to_APR` 目录）：
+
+```bash
+cd /XXW_PRJ01/HK1V11/DataBase/Digital/Release/Netlist/Prescan/HK1V11_digital_top_to_APR
+```
+
+**③ 运行 `update_latest`** 刷新 `latest` 指向。跑完后 `latest/` 下应看到 `HK1V11_digital_top_postcts.sdc` 等完整交付清单，缺任何一样说明 release 流程没走完。
+
+**④ 本地留档（1V11 特有）**：每轮 run 结束打包 `PACK_TAR_<日期>V<n>.tar.gz` 下载回本地，解压到 `script/_syn_<tag>/`（已 gitignore），与本工作区做 diff 后整包覆盖 `SYNTHESIS/` 并 commit——保证工作区永远是"服务器超集"。
+
+## 2. 时序分析（PrimeTime）
+
+&gt; prePT / postPT 的运行配置（corner 矩阵、约束链、report 解读）与 postPT 方法论（MPW/skew/例外优先级）集中在 <a href="./ch06-postpt.html">六、POSTPT</a> 章，此处只列与 APR 交付强相关的纪律。
+
+1V11 的 corner 矩阵（POSTPT 每轮全跑）：`wc_cbest_125` / `wc_cworst_125` / `wc_typical_125` / `lt_cbest_m40` / `lt_cworst_m40` / `lt_typical_m40` / `ml_cbest_125` / `tt_cbest_25` / `tt_cworst_25` / `tt_typical_25` 共 10 个 corner。setup 看点：**wc_cworst_125 / wc_cbest_125**（本轮实测 wc_cworst 更紧，29 条；wc_cbest 受 SI 影响大）；hold 全 corner 同量级（~1500-1800 条，P0）。
+
+交付纪律（保留备查）：
+
+- 交付 APR 前确认 unconstrained 清零（见 §1.3）
+- DC 和 PT 均无 violation 才能交付；已知 true-path 违例需逐条给出处置结论（APR 修线 / mc 豁免 / RTL 排期），不得留"待分析"
+
+## 3. 流程依赖关系
+
+各步骤的并行与串行关系（1V11 实测口径）：
+
+- CKF、nLint、LEC、DC 原则上可并行；DC 需在 CKF / nLint 之后（版本一致性检查要求）
+- PREPT 与 LEC 可并行
+- 时序约束迭代与 POSTPT 验证强耦合：**改约束必须整链重跑**，不能只跑 POSTPT
+
+整体执行顺序：CKF + nLint → DC → LEC + PREPT → 逐个 report 确认无 error → signoff → 交付 APR（DATABASE + update_latest）→ APR → postPT。
+
+```mermaid
+flowchart TD
+  CKF["CKF 连接检查"] -->|"需先通过"| SYN["DC/Genus 综合"]
+  LINT["nLint 语法检查"] -->|"需先通过"| SYN
+  SYN --> LEC["LEC"]
+  SYN --> PRE["PREPT（pre-PT + write_sdc）"]
+  LEC --> RPT["逐个看 report：SEL=0 / unconstrained=0"]
+  PRE --> RPT
+  RPT --> SO["signoff"]
+  SO --> DB["DATABASE + update_latest 交付 APR"]
+  DB --> APR["APR 布局布线"]
+  APR --> POST["POSTPT 10 corner 全跑"]
+  POST --> SUM["run_summary 总账对账"]
+```
 
 ## 交叉引用
 
-- 指南站同章：[APR SIGNOFF](../synthesis-integration-flow-guide/signoff-timing.html)
-- 相关排障：[十、排障实录](./ch10-warstories.html) 案例 1
+- 指南站同章：<a href="../synthesis-integration-flow-guide/signoff-timing.html" target="_blank">SYN_FLOW_GUIDE · APR SIGNOFF</a>（通用流程与 2M23 经验）
+- 时序方法细节：<a href="./ch06-postpt.html">六、POSTPT</a>
+- 本轮实战排障：<a href="./ch10-warstories.html">十、排障实录</a>（约束链断裂 / write_sdc 静默失败 / 网表-RTL 名字错位三连）
   </script>
   <script src="./js/site.js"></script>
 </body>
 </html>
+<!-- ymzhu 2026-09-20 10:30 -->
