@@ -883,7 +883,22 @@ V3/V6 为切换过渡态：修复全部入库、V6 已验证清零；MPW 37 条�
 | DPLC_CASE=1（3G）签核 run：`clk_period.tcl` 速率开关已备（RX_CLKP 6.35/3.81），待 jjlu 确认出货模式后跑 | ⏳ |
 | G10 `2×DPLC_CLKP=12.7` 表达式在 5G/3G 速率切换下的语义复核 | ⏳ 复核项 |
   </script>
-  <script src="./js/site.js"></script>
+  <script src="./js/site.js">
+## 案例 18：setup.rpt 双重计数——把 report 汇总行当分组加总
+
+**症状**：0920V6 评估时我把 setup 总数算成 99 条，实际应为 49 条。
+
+**根因**：
+- report_setup.csv 每 corner 有 4 行：RX_CLK（路径组）、gating（路径组）、setup.rpt（report 级汇总=总数）、其他
+- setup.rpt 行**就是总数**（49），不是第四个分组
+- 我误把 35（RX_CLK）+15（gating）+49（setup.rpt）当成 99
+
+**证据**：0916 邮件的 64 条就是 setup.rpt 行口径——64 才是正确答案，之后所有轮次的 129/103/99 全是双重计数错误。
+
+**修法**：数字读法：读 setup.rpt 行，不是分组加总。邮件 md 和汇报图已全部修正（99→49），图副标题写明口径。
+
+**教训（心法 25）**：读总数读 setup.rpt 行，不是分组加总——分组行之间有重叠（一条路径可能同时属于 RX_CLK 和 gating 组）。连续三轮犯同一个错误，用户抓出来的。
+</script>
 </body>
 </html>
-<!-- ymzhu 2026-09-20 16:29 -->
+<!-- ymzhu 2026-09-20 17:16 -->
