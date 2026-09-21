@@ -25,7 +25,7 @@
     <div class="content">
       <article class="article" id="article"></article>
       <div class="page-nav" id="page-nav"></div>
-      <div class="footer">HK1V11 SYNTHESIS / SIGNOFF PRACTICE · AUTHOR ymzhuuuu · UPDATED 2026-09-16</div>
+      <div class="footer">HK1V11 SYNTHESIS / SIGNOFF PRACTICE · AUTHOR ymzhuuuu · UPDATED 2026-09-21</div>
     </div>
   </div>
   <script type="text/template" id="md">
@@ -783,24 +783,6 @@ setup **~40-50 真路径** · gating **~6** · hold **~1746 基线** · MPW **0*
 V3 数字是切换过渡态一次性暴露——邮件重点给 V5 预期轨迹和已确认成果（MPW 清零、K4_FIND 结构消失、DPLC 首次可测、毯子），不渲染"问题扩大"。
 
 **补充教训**（合并自第二份重复写入）：网表切换轮的爆炸要先假设**既有约束缺口被暴露**，逐族定位归因，不要先怀疑网表；过渡态 ≠ 回归（换网表+补约束同轮发生时，逐族分辨"新暴露的旧缺口"与"真新问题"，本例 100% 是前者）。
-
-### 案例 21：mc 修饰符选择——四轮弯路的教训
-
-**症状**：R_REG00_L → UTC_FRM_CNT 跨时钟路径 slack -0.542ns，经过 mc2→mc3→mc2→mc3 四轮才修对。
-
-**根本原因（从报告提取）**：
-launch 时钟树延迟 3.575ns 几乎吃掉一个完整 RX_CLK 周期（3.81ns），mc2 -end 窗口只剩 1.363ns，数据路径需要 1.438ns。**问题不在 mc 数字，在时钟树太长。**
-
-**三个错误**：
-1. 推荐 mc3 -start（跨时钟 -start 被 PT 边沿展开吃掉窗口）
-2. mc3 只改 DC 分支，PT 分支还是 mc2（POSTPT 从未收到）
-3. 不看报告猜了四轮——报告里 launch_CK/capture_CK/数据路径三个数字一目了然
-
-**正确修法**：mc3 -end（capture 窗口 3×3.81=11.43ns，launch 5.715 → 剩 5.715ns > 数据 5.013ns → MET）
-
-**心法 29**：修 mc 前先读报告的 launch_CK / capture_CK / 数据路径三个数字——缺口来源一目了然，不要猜
-
-**心法 30**：跨时钟 mc 选 -end（扩 capture 窗口），不要用 -start（会被边沿展开吃掉）；数字 = ceil((launch_clk_tree + data_path) / capture_period)
 ## 心法清单
 
 1. **先同 corner 对齐，再谈工具差异**（案例 2 第一步省掉半天弯路）
@@ -830,6 +812,7 @@ launch 时钟树延迟 3.575ns 几乎吃掉一个完整 RX_CLK 周期（3.81ns�
 26. **MPW 伪影的正解是移检查点，不用 case**：时钟对象级 MPW 在无 case 多分支传播下不可计算（worst-case 开沿慢分支 + 闭沿快分支配对），把检查钉在时钟生成点（mux 输出 pin）——每条腿自己的上升/下降沿同一条路，自洽可查（案例 19 后续）
 27. **块替换后必须 diff 验证**：行数对照 + 关键行存在性检查——"替换成功"≠"内容完整"（案例 19）
 28. **-through 对 gating 检查可能不生效；准静态寄存器用 -from 更保险**——gating 终点是门控单元不是 D pin，-through 匹配的是数据路径经过的 pin；-from 从寄存器出发对全部终点类型生效（案例 20）
+29. **跨网表传递的约束 `-to` 用时钟对象不用寄存器**（-from 落 /CK 稳定，-to 落数据脚 D/D1/D2 随 DC 映射变化）；约束"不生效"先查三件套（SEL-004 / report_exceptions.rpt / capture 边沿第几拍）；冲突判定看 write_sdc 落地对象集合是否相交（`*` 跨 `/`，`R_REG*_F_reg*` 匹配不到 `_L_`）；max_delay 的 `-to 层级/*` 与 `/*/D*` 是两种检查，固定值对深时钟树结构性必爆——改完约束 diff 落地产物再跑（案例 21）
 
 
 ## 案例 17：0920V6——修复全部生效，假违例清零；MPW 37 条伪影为唯一残留
@@ -885,8 +868,46 @@ V3/V6 为切换过渡态：修复全部入库、V6 已验证清零；MPW 37 条�
 | DPLC_MODE（R_REG06_F[2]）：当前零违例未放松，冒头按 G10 同模式处理 | 🟢 观察 |
 | DPLC_CASE=1（3G）签核 run：`clk_period.tcl` 速率开关已备（RX_CLKP 6.35/3.81），待 jjlu 确认出货模式后跑 | ⏳ |
 | G10 `2×DPLC_CLKP=12.7` 表达式在 5G/3G 速率切换下的语义复核 | ⏳ 复核项 |
-  </script>
-  <script src="./js/site.js">
+
+## 案例 21：约束明明写了却"不生效"——三个真凶都在落地环节，不在语法（0921 POSTPT）
+
+### 背景
+
+UTC_FRM_CNT 计数器路径（发射寄存器 `LC_CPUWR/R_REG00_L_reg_0_`，时钟 `WCLK1_A_CHPI_DCLK_SHORT` 5.715ns；捕获 `UTC_FRM_CNT_reg_4_`，时钟 RX_CLK 3.81ns）违例 **−0.369**，但约束文件里明明有对应 multicycle——约束"写了"和约束"生效"之间，隔着整条落地链。
+
+### 真凶一（主案例）：`-to` 写寄存器 pattern，write_sdc 落成 DC 网表的数据脚名，APR 网表没有 → 异常被静默丢弃
+
+- ip_cons 里写 `-to .../SHORT_ENCODING_ERROR_CTRL/*UTC_FRM_CNT_*`，PREPT 的 write_sdc 把它展开成 `[get_pins {.../UTC_FRM_CNT_reg_5_/D1 .../D2}]` 共 16 个脚。
+- 为什么是 D1/D2：**DC 网表里该寄存器是复合单元** `AND2DFFRBQX1AL9 (.D1() .D2())`；**APR 网表里是普通** `DFFRBQX1AL9 ... /D`。
+- POSTPT 读 postcts.sdc 时报 `Warning: No pin objects matched '...UTC_FRM_CNT_reg_5_/D1' (SEL-004)` ×16，该 exception 匹配 0 个对象被丢弃；`report_exceptions.rpt` 里只剩一条 `/latch/E` 的 clock-gating 异常，数据端一条都没有 → 路径退回单周期检查（capture 边沿 7.620 = 2×3.81）→ 违例。
+- 同类受害者：G9 约束 `bcc_rx_reply_prdata_reg_0..4,9` 的 `/D1,/D2` 同样被丢（同一份 log 里 **56 条 SEL-004**）。
+- 修复：**`-to` 一律用时钟对象**（如 `-to RX_CLK`），clock 对象落地为 `[get_clocks {RX_CLK}]`，与网表版本无关。证据：`-from R_REG*_F_reg* -to RX_CLK` 落地后在 report_exceptions.rpt 里表现为 `... } * RX_CLK cycles=2(start)`，正常生效。
+
+### 真凶二：怀疑"两条 multicycle 一个 -start 一个 -end 冲突"——先用落地对象证伪
+
+- 用户怀疑 `-from R_REG*_F_reg* -to RX_CLK`（mc2 -start）与 UTC 专用 mc（-end）冲突。
+- 实测（read_cons.log 落地结果）：前者 -from 是 **346 个 pin 全部为 `_F_` 银行**，`R_REG00_L` 出现 **0 次**；后者 -from 恰是 **8 个 `R_REG00_L_reg_*/CK`**。两个集合完全不相交，不可能有路径同时匹配 → **不是冲突**。
+
+### 真凶三：if/else 合并时丢了 `/D*` 端点限定，max_delay 抓进内部节点 → 伪违例 −3.8
+
+- DPLC 数据发生器约束原为 pt_shell 分支 `set_max_delay $DPLC_CLKP -to .../U_DPLC_DATA_GEN/*/D*`（6.35ns，只查寄存器 D 脚）；合并/回退时 `/D*` 丢失，变成 `-to .../U_DPLC_DATA_GEN/*`，层级内部中间节点（如 `data_copy`，报告显示 "internal path endpoint"）也成了检查点。
+- 这种内部端点 required 是裸 6.35，arrival 却含 6.819ns 发射时钟树 → **结构性必爆 −3.815**，而正式 run 的 worst 其实只有 −0.4 左右。
+- 修复：恢复 `/*/D*` 与 `data_out_tmp*/D*`。
+
+### 收尾状态
+
+约束文件收敛为：一个 `R_REG*` 组（F+L 银行）× 4 个 `-to`（RX_CLK / OSC_CLK / DCLK_DATA_* / SD_CLK_INV_*）共 8 行 mc，全文件所有 multicycle 统一 `2 -start -setup` + `1 -start -hold`，无数值冲突。旧的 "R_REG* 爆炸"（289~1000+ 条违例）是**无 `-to` 的裸 blanket** 所致，与带明确 `-to` 的组约束不是一回事。
+
+### 心法 29
+
+**`-from <寄存器>` 落成 /CK 脚（稳定），`-to <寄存器>` 落成数据脚（D / D1/D2，随 DC 映射单元变化）——跨网表传递的约束，-to 要用时钟，不要用寄存器。**
+
+配套三句话：
+
+1. 约束"不生效"先查三件套：**read_cons.log 里的 SEL-004 警告、report_exceptions.rpt 里异常在不在、report_timing 里 capture 边沿是第几拍**。异常被丢是静默的，不报错。
+2. 判断约束冲突不要看源码猜，**看 write_sdc 落地后的对象集合是否相交**；Synopsys 通配符 `*` 会跨 `/`，`R_REG*_F_reg*` 字面含 `_F_reg`，永远匹配不到 `_L_` 寄存器。
+3. `set_max_delay` 的 arrival 含发射时钟树延迟，固定值对深时钟树的结构性必爆；**`-to <层级>/*` 和 `-to <层级>/*/D*` 是两种完全不同的检查**。每次改完约束，**diff 一遍 write_sdc 的落地产物再跑**。
+
 ## 案例 18：setup.rpt 双重计数——把 report 汇总行当分组加总
 
 **症状**：0920V6 评估时我把 setup 总数算成 99 条，实际应为 49 条。
@@ -954,8 +975,8 @@ CPUWR 毯子用的是 `-through u_.../LC_CPUWR/R_*`——但 clock-gating 检查
 ### 心法 28
 
 **`-through` 对 gating 检查可能不生效；准静态寄存器用 `-from` 更保险**——gating 终点是门控单元不是 D pin，-through 匹配的是数据路径经过的 pin；-from 从寄存器出发对全部终点类型生效。用户一次纠正省掉了三轮"分 bit 补丁→跑→再补"的循环。
-
 </script>
+  <script src="./js/site.js"></script>
 </body>
 </html>
-<!-- ymzhu 2026-09-21 10:51 -->
+<!-- ymzhu 2026-09-21 16:00 -->
