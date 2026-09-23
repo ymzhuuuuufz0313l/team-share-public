@@ -410,16 +410,17 @@
 
   <div class="container">
     <div class="latest">
+      <!-- LATEST 卡维护规则：任何章节（ch01~ch10）页面更新后，同步刷新本卡日期与要点（2~3 条 bullet） -->
       <div class="badge">
         <span class="tag">LATEST</span>
         <span class="num">0922</span>
       </div>
       <div class="body">
-        <div class="t">0922 · 408bit 对抗复核 + 毯子收窄（10 分区排除）+ CDR_CRC_DET 525M what-if 定量</div>
+        <div class="t">0922 · 408bit 对抗复核 + 毯子收窄（10 分区排除）+ CDR_CRC_DET 525M what-if 定量（需求已 cut）</div>
         <ul>
           <li>bit 级审计三路对抗复核：17 bit 改判、B 类 12→24 bit/10 分区（新增 R_REG34/40/41/46/47_F），组毯子收窄落地（逐分区注释 RTL 证据）</li>
           <li>multicycle 逐跳审查揪出四类错位：DPLC 无 <code>-from</code> max_delay 放宽每拍像素管线（3.81→6.35）、K1 只罩死 SHORT 实例（活 LONG +0.187 已补对）、G1/G2 BKDU 地雷注释、G13 论据勘误</li>
-          <li>CDR_CRC_DET 525M what-if（CDR_2X multiply_by 2）：比较锥 setup <b>−0.879</b> 真 path，hold 批量为 CDC 假违例（缺 false_path）——结论：RTL 打拍或 525M 重综合</li>
+          <li>CDR_CRC_DET 525M what-if（CDR_2X multiply_by 2）：比较锥 setup <b>−0.879</b> 真 path，hold 批量为 CDC 假违例（缺 false_path）——<b>需求已 cut：模块不再倍频</b>，what-if 方法学（交互会话建派生钟→过滤报表）保留备用</li>
         </ul>
       </div>
       <a class="more" href="./ch10-warstories.html">排障实录 →</a>
