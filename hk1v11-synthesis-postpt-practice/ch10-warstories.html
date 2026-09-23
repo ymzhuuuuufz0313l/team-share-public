@@ -31,7 +31,7 @@
   <script type="text/template" id="md">
 # 十、问题解决心路历程（排障实录）
 
-> 全站唯一有实质内容的一章。收录 0915~0916 两天里 POSTPT 签核与 skew 汇总的九段真实排障，每段按「现象 → 定位思路 → 证据链 → 处理 → 结论/遗留」展开。**结论先行：两天的主线只有一条——约束的生效链是 `ip_cons → pre-PT write_sdc → APR → postcts.sdc → POSTPT`；而 "read_cons.log / read_tcl.log 的 SEL-004/005 计数" 是这条链上唯一可靠的回归指标。**
+> 全站唯一有实质内容的一章。收录 0915~0922 一周里 POSTPT 签核、skew 汇总与约束收窄的二十一段真实排障，每段按「现象 → 定位思路 → 证据链 → 处理 → 结论/遗留」展开。**结论先行：一周的主线只有一条——约束的生效链是 `ip_cons → pre-PT write_sdc → APR → postcts.sdc → POSTPT`；而 "read_cons.log / read_tcl.log 的 SEL-004/005 计数 + report_exceptions 的 applied 标志（o/p/po）" 是这条链上唯一可靠的回归指标。**
 
 ## 收敛仪表盘
 
