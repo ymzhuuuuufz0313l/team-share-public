@@ -8,4 +8,4 @@
 - [HK1V11 420b 长编码验证体系](https://ymzhuuuuufz0313l.github.io/team-share-public/hk1v11-longcode-420b-verification/)
 - [ASIC IP Synthesis & Integration Flow 工具使用指南](https://ymzhuuuuufz0313l.github.io/team-share-public/synthesis-integration-flow-guide/)
 - [进阶设计实验室 · 模式相关时序约束的拆与合](https://ymzhuuuuufz0313l.github.io/team-share-public/advanced-design/)
-- [HK1V11 综合/后仿 PT 排障实践（13 案例 + 心法）](https://ymzhuuuuufz0313l.github.io/team-share-public/hk1v11-synthesis-postpt-practice/)
+- [HK1V11 综合/后仿 PT 排障实践（21 案例 + 心法 29，收录 0915~0922：约束生效链三真凶 / 408bit 审计 / 毯子收窄 / CDR_CRC_DET 525M what-if）](https://ymzhuuuuufz0313l.github.io/team-share-public/hk1v11-synthesis-postpt-practice/)
