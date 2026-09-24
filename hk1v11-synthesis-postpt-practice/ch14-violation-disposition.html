@@ -33,8 +33,10 @@
 
 > **个人工作表 · 0922 收窄后新 DC（`rep_dir_0922_1456`）违例逐组归因 · 供逐条仔细思考**
 >
-> 用法：先看每组的 **Δ 变化**（旧约束干了什么 → 现在是什么）→ 看 **结论** → 看 **建议处置** → 打开 **file:line** 那一行仔细想。
-> 约束基线：旧 = `79ef0030`（收窄前），新 = `61eb5605`（收窄后）。约束文件：`SYNTHESIS/common/ip_cons/HK1V11_digital_top.tcl`（615 行）。
+> 用法：先看每组的 **Δ 变化**（旧约束干了什么 → 现在是什么）→ 看 **结论** → 看 **建议处置** → 打开 **file:line**（约束 / RTL / DC 报告）那一行仔细想。
+> 约束基线：旧 = `79ef0030`（收窄前），新 = `61eb5605`（收窄后）。
+> 约束文件：`SYNTHESIS/common/ip_cons/HK1V11_digital_top.tcl`（615 行）。
+> DC 报告：`SYNTHESIS/ip/syn_HK1V11_digital_top/dc/rep_dir_0922_1456/`（`HK1V11_digital_top.rpt` 主报告 + `HK1V11_digital_top_max.rpt` 全路径）。
 
 ---
 
@@ -66,6 +68,8 @@
 | 9 | hold（4 组） | 30 | **-4.19** | 未覆盖 | 未覆盖 | **从未约束** | 生成时钟结构 hold + IO 输入 hold | P1 |
 
 > 合计 482 条 = setup 452（89+15+41+139+139+23+4+2）+ hold 30。**"收窄报出来的"只有 106 条（组1 89 + 组2 15 + 组8 2，均 Δ=约束→删除）；其余 376 条（78%）从未被任何约束覆盖，与收窄无关。**
+>
+> 注：QoR 表里 RX_CLK 计 287（含 3 条 clock-gating 检查口径），逐路径全扫为 284，差 3 条属口径差异。
 
 ---
 
@@ -101,7 +105,7 @@
 - 组 mc 还在（对剩余对象生效）：`ip_cons` **L425-432**（-to RX_CLK / DCLK_DATA_* / SD_CLK_INV_* 三对）
 - 逐分区"为什么剔"的理由注释：`ip_cons` **L385-412**（每个分区的 RTL file:line 都写在这）
 - 最深那条（-1.45）：`CHPI_SD_CTRL.v:180-201`（HIZ_MIN_SEL/VAL → TP 计数器）
-- DC 报告代表路径：`HK1V11_digital_top_max.rpt` **L39120**（R_REG47_F_reg_1_ → CS_SIG_ORG_reg/D，12 级组合）
+- DC 报告：worst 路径 startpoint `max.rpt` **L39120**（R_REG47_F_reg_1_），slack `max.rpt` **L39209**；QoR 汇总 `.rpt` **L20314**
 
 ---
 
@@ -120,7 +124,7 @@
 **你应该看的 file:line**：
 - G13 注释本体：`ip_cons` **L329-330**
 - G13 审计注释（为什么留 OFF）：`ip_cons` **L321-328**
-- DC 报告代表路径：`max.rpt` **L39296**（DATA_POINT_LAT_reg_13_ → CG latch，约 11 级）
+- DC 报告：代表路径 startpoint `max.rpt` **L39296**（DATA_POINT_LAT_reg_13_）
 
 ---
 
@@ -139,7 +143,7 @@
 **你应该看的 file:line**：
 - G13 pattern（看它为什么匹配不到 D1）：`ip_cons` **L329**（`DATA_POINT_LAT_reg*`——注意 `_reg` 前没有 `*`，中间插不进 `_D1`）
 - 审计更正注释：`ip_cons` **L322-327**
-- DC 报告代表路径：`max.rpt` **L39374**（endpoint 同样是 `SNPS_CG_CELL_DCLK_DATA_POINT_LAT_TMP_reg_0/latch`）
+- DC 报告：代表路径 startpoint `max.rpt` **L39374**（DATA_POINT_LAT_D1_reg_10_）
 
 ---
 
@@ -153,18 +157,18 @@
 
 **结论**：RX 域内部真实关键路径（理想时钟即违例），与收窄**完全无关**，需综合策略/RTL 优化。
 
-| startpoint 模式 | 模块 | 条数 | worst |
-|---|---|---|---|
-| `o_keep_reg_*` | LONG_ENCODING_DESCRAMBLE | 60 | -0.60 |
-| `rx_bit_cnt_reg_*` | LONG_ENCODING_DECODE | 46 | -0.85 |
-| `boe_bcc_prescale(_cnt)_reg_*` | BOE_AUTO_EQ_BCC_CTRL/u_boe_rx_bcc_decoder | 26 | -1.14 |
-| 其他（CS_SIG_ORG / bcc_receive_state / cnt_7b / o_raw_idx） | 各 1~3 | 6 | -0.51 |
+| startpoint 模式 | 模块 | 条数 | worst | DC 报告 startpoint 行 |
+|---|---|---|---|---|
+| `o_keep_reg_*` | LONG_ENCODING_DESCRAMBLE | 60 | -0.60 | `max.rpt` **L44108** |
+| `rx_bit_cnt_reg_*` | LONG_ENCODING_DECODE | 46 | -0.85 | `max.rpt` **L40964** |
+| `boe_bcc_prescale(_cnt)_reg_*` | BOE_AUTO_EQ_BCC_CTRL/u_boe_rx_bcc_decoder | 26 | -1.14 | `max.rpt` **L39458** |
+| 其他（CS_SIG_ORG / bcc_receive_state / cnt_7b / o_raw_idx） | 各 1~3 | 6 | -0.51 | — |
 
 **建议处置**：交综合（ungroup / retime / 大小 cell 重映射）或 RTL 流水。
 
 **你应该看的 file:line**：
 - 这类 startpoint **没有任何 waiver**——在 `ip_cons` 里 grep 不到对应 `-from`（这正是"从未约束"的证据）
-- DC 报告代表路径：`max.rpt` **L44108**（o_keep_reg_2_ → BIT_COUNT_reg_6_）、**L40964**（rx_bit_cnt_reg_3_ → o_data_reg_12_）、**L39458**（boe_bcc_prescale_reg_2_ → sample_mask_cnt_reg_5_）
+- DC 报告：worst 整组 startpoint `max.rpt` **L39120** 起（RX_CLK 块），上表逐模块 startpoint 行已列
 
 ---
 
@@ -182,7 +186,7 @@
 
 **你应该看的 file:line**：
 - 死约束删除注明：`ip_cons` **L332-337**（看它为什么"删了但无影响"）
-- DC 报告代表路径：`CONFIG_DATA_reg_2_(DCLK_CONFIG_MUX) → LC_CHPI_DECODE U38/U18 → CHPI_CONFIG_L0 U15 → LC_CPUWR U28 → R_REG*_reg/D (WCLK1)`
+- DC 报告：worst 路径 startpoint `max.rpt` **L154274**（CONFIG_DATA_reg_2_，RX_CLK 域起点），slack `max.rpt` **L154346**（-0.11）；QoR 汇总 `.rpt` **L20418**
 
 ---
 
@@ -200,7 +204,7 @@
 
 **你应该看的 file:line**：
 - G1/G2 注释（看它的 -to 范围为什么罩不到本组）：基线 diff 里被删的 `-from R_REG03_L_reg* -to {PIX_CLK_EN_reg* PIX_DATA_reg*}` 4 对
-- DC 报告代表路径：`SHORT_ENCODING_OUTPUT/PIX_DATA_reg_9_ → CENTER1/DTCTL/PIX_DATA_D_reg_* (DCLK_DATA_MUX)`
+- DC 报告：worst 路径 startpoint `max.rpt` **L17593**（PIX_DATA_reg_9_），slack `max.rpt` **L17659**（-0.43）；QoR 汇总 `.rpt` **L20236**
 
 ---
 
@@ -218,7 +222,7 @@
 
 **你应该看的 file:line**：
 - 这类 startpoint 在 `ip_cons` 里无对应 waiver（从未约束证据）
-- DC 报告：`DTCTL/data_cnt_pre_reg_4_ → 门控使能 n751 → C2282/I2`
+- DC 报告：worst 路径 startpoint `max.rpt` **L111894**（data_cnt_pre_reg_4_），slack `max.rpt` **L111944**（-0.36）；QoR 汇总 `.rpt` **L20327**
 
 ---
 
@@ -237,7 +241,7 @@
 **你应该看的 file:line**：
 - G14 DPLC_MODE 注释对：`ip_cons` **L351-352**
 - G14 审计注释（为什么注释 + 回归口）：`ip_cons` **L339-347**
-- DC 报告代表路径：`max.rpt` **L31466**
+- DC 报告：worst 路径 startpoint `max.rpt` **L31466**（R_REG06_F_reg_2_），slack `max.rpt` **L31538**（-0.38）；QoR 汇总 `.rpt` **L20249**
 
 ---
 
@@ -249,20 +253,22 @@
 
 **Δ**：**从未约束**（与收窄无关）。
 
-| 子组 | endpoint | 条数/worst | 定性 |
+| 子组 | endpoint（`.rpt` 行） | 条数/worst | 定性 |
 |---|---|---|---|
-| SD_CLK_INV_SHORT | `DTCTL/C2272/C2277/C2278/C2283` I2（SD_CLK_INV 门控 AND，I1=SD_CLK_INV，I2=n751/n759 来自 U1186/U1194 半加器链，data_cnt 驱动） | 4 / **-4.19** | 生成时钟（反相+分频）hold 需求 4.97ns，**结构性** |
-| SD_CLK_INV_LONG | 同上 | 4 / -2.66 | 同上（需求 3.45） |
-| DPLC_CLK_SHORT | `DTCTL/C2276/C2282` I2 | 2 / -1.14 | 同族 |
-| RX_CLK | `BUFFER_I/INDATA_SYNC_reg_0_..19_/D`（20bit 输入同步器） | 20 / -0.39 | IO 输入 hold：`set_input_delay -min` 使 arrival -0.28 < required 0.11 |
+| SD_CLK_INV_SHORT | `DTCTL/C2272/I2`（`.rpt` **L7513**）、C2277(L7515)、C2278(L7517)、C2283(L7519) | 4 / **-4.19** | 生成时钟（反相+分频）hold 需求 4.97ns，**结构性** |
+| SD_CLK_INV_LONG | `DTCTL/C2272/I2`（`.rpt` **L7498**）、C2277(L7500)、C2278(L7502)、C2283(L7504) | 4 / -2.66 | 同上（需求 3.45） |
+| DPLC_CLK_SHORT | `DTCTL/C2276/I2`（`.rpt` **L7440**）、C2282(L7442) | 2 / -1.14 | 同族 |
+| RX_CLK | `BUFFER_I/INDATA_SYNC_reg_0_..19_/D`（`.rpt` **L7451-7490**） | 20 / -0.39 | IO 输入 hold：`set_input_delay -min` 使 arrival -0.28 < required 0.11 |
+
+> hold 段是 per-endpoint 汇总（Required / Actual Path Delay / Slack），**无逐跳明细、无 startpoint**——要看逐跳得反查 `.gv` 网表或重跑 `report_timing -hold -nworst`。
 
 **结论**：DTCTL 的 SD/DPLC 门控 hold 是时钟生成结构问题（反相+分频组合出的 SD_CLK_INV vs DPLC 生成时钟边沿关系）；INDATA_SYNC 是 IO 约束/板上关系问题。**都不是收窄责任**。
 
 **建议处置**：DTCTL 门控换 ICG 或对 n751/n759 加同步，APR 后用真实时钟树复核；INDATA_SYNC 复核 `set_input_delay -min` 与板上 RX_CLK skew 预算。
 
 **你应该看的 file:line**：
-- 输入延迟约束：`ip_cons` **L318** 一带（`set_input_delay -clock RX_CLK -min -0.3` 族，核对 INDATA_SYNC 对应的端口 -min 值）
-- hold 无逐跳明细：DC 只在 `.rpt` 输出汇总表，endpoint 反查 `.gv` 网表
+- 输入延迟约束：`ip_cons` **L318** 一带（`set_input_delay -clock RX_CLK -min -0.3` 族，核对 INDATA_SYNC 对应端口 -min 值）
+- DC 报告：4 个 hold 组头 `.rpt` **L7435 / L7446 / L7493 / L7508**，worst endpoint 行见上表；QoR 汇总 `.rpt` **L20262 / L20314 / L20353 / L20366**
 
 ---
 
@@ -302,6 +308,53 @@
 | R_REG56_F[0:3] | UTC 阈值 vs 活计数器 | `LONG_ENCODING_ERROR_CTRL.v:227-260` |
 | R_REG57_F[0:2] | UTC 阈值（同链） | `LONG_ENCODING_ERROR_CTRL.v:227-260` |
 
+### 3.3 DC 报告行号索引（`rep_dir_0922_1456`）
+
+> 两个文件：**主报告** `HK1V11_digital_top.rpt`（20541 行，含 QoR 汇总 + hold 段）；**全路径** `HK1V11_digital_top_max.rpt`（206423 行，setup 逐跳路径）。
+
+**A. QoR 汇总表**（主报告 `Report : qor` 段，从 **L20190** 起，每块 13 行）
+
+| 组 | QoR 块行 | setup 条数/worst | hold 条数/worst |
+|---|---|---|---|
+| DCLK_DATA_MUX_SHORT（组6） | `.rpt` **L20236** | 23 / -0.43 | — |
+| DPLC_CLK_LONG（组8） | `.rpt` **L20249** | 2 / -0.38 | — |
+| DPLC_CLK_SHORT（组9） | `.rpt` **L20262** | — | 2 / -1.14 |
+| RX_CLK（组1+2+3+4） | `.rpt` **L20314** | 287 / -1.45 | 20 / -0.39 |
+| SD_CLK_INV_DPLC_LONG（组7） | `.rpt` **L20327** | 4 / -0.36 | — |
+| SD_CLK_INV_LONG（组9） | `.rpt` **L20353** | — | 4 / -2.66 |
+| SD_CLK_INV_SHORT（组9） | `.rpt` **L20366** | — | 4 / -4.19 |
+| WCLK1_A_DCLK_SHORT（组5） | `.rpt` **L20418** | 139 / -0.11 | — |
+
+**B. setup 逐跳路径**（全路径报告 `max.rpt`，worst 整组 + 各子组 startpoint）
+
+| 组/子组 | startpoint 行 | startpoint 寄存器 | slack 行 | worst |
+|---|---|---|---|---|
+| 组1 RX_CLK worst | `max.rpt` **L39120** | R_REG47_F_reg_1_（HIZ） | **L39209** | -1.45 |
+| 组1 R_REG40_F（DBC） | `max.rpt` **L40104** | R_REG40_F_reg_1_ | — | -1.00 |
+| 组1 R_REG03_L（BKDU） | `max.rpt` **L12869** | R_REG03_L_reg_2_ | — | -0.16 |
+| 组1 R_REG56_F（UTC） | `max.rpt` **L48542** | R_REG56_F_reg_3_ | — | -0.36 |
+| 组1 R_REG33_F（UTC） | `max.rpt` **L48730** | R_REG33_F_reg_4_ | — | -0.34 |
+| 组2 G13 | `max.rpt` **L39296** | DATA_POINT_LAT_reg_13_ | — | -1.31 |
+| 组3 G13-D1 | `max.rpt` **L39374** | DATA_POINT_LAT_D1_reg_10_ | — | -1.31 |
+| 组4 o_keep | `max.rpt` **L44108** | o_keep_reg_2_ | — | -0.60 |
+| 组4 rx_bit_cnt | `max.rpt` **L40964** | rx_bit_cnt_reg_3_ | — | -0.85 |
+| 组4 boe_bcc | `max.rpt` **L39458** | boe_bcc_prescale_reg_2_ | — | -1.14 |
+| 组5 WCLK1 | `max.rpt` **L154274** | CONFIG_DATA_reg_2_ | **L154346** | -0.11 |
+| 组6 PIX_DATA | `max.rpt` **L17593** | PIX_DATA_reg_9_ | **L17659** | -0.43 |
+| 组7 gating | `max.rpt` **L111894** | data_cnt_pre_reg_4_ | **L111944** | -0.36 |
+| 组8 DPLC_MODE | `max.rpt` **L31466** | R_REG06_F_reg_2_ | **L31538** | -0.38 |
+
+**C. hold 段**（主报告 `.rpt`，`min_delay/hold` per-endpoint 汇总，无逐跳）
+
+| 子组 | 组头行 | worst endpoint 行 | worst |
+|---|---|---|---|
+| DPLC_CLK_SHORT | `.rpt` **L7435** | C2276/I2 **L7440** | -1.14 |
+| RX_CLK（INDATA_SYNC） | `.rpt` **L7446** | INDATA_SYNC_reg_0_/D **L7451**（_0_~_19_ 共 20 行 L7451-7490） | -0.39 |
+| SD_CLK_INV_LONG | `.rpt` **L7493** | C2272/I2 **L7498** | -2.66 |
+| SD_CLK_INV_SHORT | `.rpt` **L7508** | C2272/I2 **L7513** | **-4.19** |
+
+> 行号以 `rep_dir_0922_1456` 本次报告为准；重跑后行号会漂移，但"QoR 块 / startpoint / endpoint"的相对结构不变，按组名搜即可定位。
+
 ---
 
 ## 4. 优先级处置清单（建议顺序）
@@ -320,9 +373,9 @@
 
 ---
 
-*本文档基于 HK1V11 0922 收窄实际约束 diff（`79ef0030`→`61eb5605`）+ 新 DC（`rep_dir_0922_1456`）违例 + 五模型交叉核对 + `script/mc_audit_0921/` 审计撰写。所有 ip_cons 行号、RTL file:line 均来自实读文件；行号以 `61eb5605` 版本为准，后续改动会漂移。*
+*本文档基于 HK1V11 0922 收窄实际约束 diff（`79ef0030`→`61eb5605`）+ 新 DC（`rep_dir_0922_1456`）违例 + 五模型交叉核对 + `script/mc_audit_0921/` 审计撰写。所有 ip_cons 行号、RTL file:line、DC 报告行号均来自实读文件；行号以 `61eb5605` 版本 + `rep_dir_0922_1456` 报告为准，后续改动会漂移。*
   </script>
   <script src="./js/site.js"></script>
 </body>
 </html>
-<!-- ymzhu 2026-09-24 16:32 -->
+<!-- ymzhu 2026-09-24 16:52 -->
