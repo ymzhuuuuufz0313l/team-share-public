@@ -101,8 +101,9 @@
 **结论**：形式上 100% 是"收窄暴露"。但这 24 bit 是审计**有意**挑出来的 B 类（裸 per-beat 消费者、无同步器），收窄是收紧不是 bug。其中要**逐 bit 二选一**：
 - **一次性/准静态配置**（HIZ 类 `R_REG47_F`、DBC 类 `R_REG40_F`）：写入窗口远离工作拍 → 可恢复窄 `-to` 豁免。
 - **每拍活消费**（UTC 比较 `R_REG33/56/57`、BKDU `R_REG03_L[2]`）：恢复豁免 = 放走真违例 → **只能 RTL 加同步/门控**。
+  - **BKDU `R_REG03_L[2]`（G1/G2）：0924 ymzhu 确认不能恢复（不能加 waiver）**——0922 run 中 24 条 BKDU→PIX_DATA 路径是活的（0921V3 曾被综合剪掉标 `p` 空转，现已复活），worst −0.16；R_BKDU 裸跨域进 DCLK 域像素逻辑无同步器 = 真实 CDC 亚稳态风险，waiver 只放宽 STA、治不了跨域。修复 = 把 `LC_REG_MAPPING` `BKDU_SYNC` 由单级扩两级并接像素路径（`LONG_ENCODING_OUTPUT.v:333/397`）。
 
-**建议处置**：不要一刀切恢复 blanket。逐 bit：准静态的恢复窄 mc；UTC 比较类保留单周期 + RTL 修。
+**建议处置**：不要一刀切恢复 blanket。逐 bit：准静态的恢复窄 mc；UTC 比较类保留单周期 + RTL 修；**BKDU 0924 已确认走 RTL 两级同步器**。
 
 **你应该看的 file:line**：
 - 约束剔除本体：`ip_cons` **L413-424**（`get_cells R_REG*` + `remove_from_collection` 10 分区）
@@ -392,7 +393,7 @@
 
 | 优先级 | 动作 | 消多少 | 风险 |
 |---|---|---|---|
-| **P0** | 组 1 逐 bit 评审：准静态（HIZ/DBC）恢复窄 `-to` 豁免；UTC 比较/BKDU 保留单周期 + RTL 加同步 | 89（部分） | 高（逐 bit，别一刀切） |
+| **P0** | 组 1 逐 bit 评审：准静态（HIZ/DBC）恢复窄 `-to` 豁免；UTC 比较/BKDU 保留单周期 + RTL 加同步（**BKDU/G1G2 0924 ymzhu 确认不能恢复**，修复=RTL 两级同步器） | 89（部分） | 高（逐 bit，别一刀切） |
 | **P1** | 组 2+3：G13 重写为 `-from {DATA_POINT_LAT_reg*  DATA_POINT_LAT_D1_reg*}`（先确认准静态语义） | 56 | 低 |
 | **P1** | 组 8：恢复 G14 `R_REG06_F_reg_2_` 对（DC 用 `reg_2_`） | 2 | 低 |
 | **P1** | 组 9：DTCTL 门控换 ICG / 使能同步；复核 INDATA_SYNC `set_input_delay -min` | 30 | 中（结构） |
@@ -409,4 +410,4 @@
   <script src="./js/site.js"></script>
 </body>
 </html>
-<!-- ymzhu 2026-09-24 17:10 -->
+<!-- ymzhu 2026-09-24 17:35 -->

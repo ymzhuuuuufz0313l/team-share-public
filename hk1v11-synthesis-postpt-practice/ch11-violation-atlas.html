@@ -685,7 +685,7 @@ R_REG06_F_reg_2_/Q
 |--------|------|------|------|------|
 | **1** | DPLC_MODE（2 条 -0.38） | 2 | 恢复 G14 的 `R_REG06_F_reg_2_` 对（DC 下用 `reg_2_` 形式），或并入 G10 类 `set_max_delay` | 低风险（一次性模式 bit） |
 | **2** | DATA_POINT_LAT 家族（15+41 条，worst -1.31） | 56 | 与设计师确认准静态语义后，把 G13 重写为 `-from` 同时列 `DATA_POINT_LAT_reg*` 与 `DATA_POINT_LAT_D1_reg*`（覆盖 SHORT/LONG 两实例），一次消 56 条 | 中（需设计确认） |
-| **3** | 89 条 R_REG* (A) 类 | 89 | 逐 bit 评审：R_REG40_F(HIZ_SEL/DBC)/R_REG47_F(HIZ_MIN)/R_REG03_L(BKDU) 若确认写入窗口远离工作拍，恢复该 bit 到指定 endpoint 时钟的窄 mc；R_REG33/56/57(UTC 比较) 保留单周期并 RTL 加门控/同步，否则改 UTC 比较结构 | 高（需逐 bit 设计确认） |
+| **3** | 89 条 R_REG* (A) 类 | 89 | 逐 bit 评审：R_REG40_F(HIZ_SEL/DBC)/R_REG47_F(HIZ_MIN) 若确认写入窗口远离工作拍，恢复该 bit 到指定 endpoint 时钟的窄 mc；**R_REG03_L(BKDU) 0924 ymzhu 确认不能恢复（G1/G2），修复=RTL 两级同步器**；R_REG33/56/57(UTC 比较) 保留单周期并 RTL 加门控/同步，否则改 UTC 比较结构 | 高（需逐 bit 设计确认） |
 | **4** | RX 数据通路 139 + WCLK1 139 + PIX_DATA 23 | 301 | 真实问题，交综合（ungroup/retime/大小 cell 重映射，尤其 CHPI_SD_CTRL 12 级组合链、LC_CPUWR 写通路）或 RTL 流水；WCLK1 仅 -0.11，DC 优化裕量大概率够 | 中（综合迭代） |
 | **5** | DTCTL SD/DPLC 门控 hold（-4.19 结构性） | 10 | 时钟生成结构问题，考虑 gating cell 换 ICG 或在门控前对 n751/n759 加同步；APR 后用真实时钟树复核 | 高（RTL 改动） |
 | **6** | INDATA_SYNC hold 20 条 | 20 | 核对 `set_input_delay -min -0.3` 与板上 RX_CLK skew 预算，必要时调 min 值或加 pad delay | 低（约束调整） |
@@ -840,4 +840,4 @@ rep_dir_0922_1456/  新 DC 跑输出目录
   <script src="./js/site.js"></script>
 </body>
 </html>
-<!-- ymzhu 2026-09-24 16:52 -->
+<!-- ymzhu 2026-09-24 17:35 -->

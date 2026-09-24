@@ -851,7 +851,7 @@ V3/V6 为切换过渡态：修复全部入库、V6 已验证清零；MPW 37 条�
 | 项 | 状态 |
 |---|---|
 | 网表 A/B 选定：已选 A（gating=15）；翻转条件见案例 7 | ✅ 09/16 |
-| G2（R_BKDU→BK_ST_reg）：已启用，K2-BKDU 间隙待 jjlu 确认 | 🟡 |
+| G2（R_BKDU→BK_ST_reg）：0916 启用、K2-BKDU 间隙待 jjlu；**0922 收窄注释，0924 ymzhu 确认不能恢复**（24 条 BKDU→PIX_DATA 活路径 −0.16、R_BKDU 裸跨域真实 CDC 风险，修复=RTL 两级同步器非 waiver） | 🟢 |
 | G9 TRAINING_RESULT / G11 SMT_CS mc：已并入 pending bundle，待 jjlu 评审 | 🟡 |
 | G10 DPLC_GROUP max_delay 2×：待 jjlu 评审 + POSTPT 验证（组 108→0、required 显示 12.7） | 🟡 |
 | round5 K1 mc：已生效（96→3），头部标 NOT-YET-CONFIRMED 待评审 | 🟡 |
@@ -979,4 +979,4 @@ CPUWR 毯子用的是 `-through u_.../LC_CPUWR/R_*`——但 clock-gating 检查
   <script src="./js/site.js"></script>
 </body>
 </html>
-<!-- ymzhu 2026-09-21 16:00 -->
+<!-- ymzhu 2026-09-24 17:35 -->

@@ -782,7 +782,7 @@ grep -n "\-to [a-zA-Z_u].*reg" SYNTHESIS/common/ip_cons/HK1V11_digital_top.tcl  
 
 **真实审计证据（`script/mc_audit_0921/`，三路独立审查，bit 级 A212 / B24 / C160 / ?12）**：
 
-- **G1/G2（`R_REG03_L[2]` → `PIX_CLK_EN` / `BK_ST`）是 B 类"地雷"**（`multicycle逐条审查.md` 判定）：mc2 放宽的是 `PIX_CLK_EN` 使能 / `BK_ST` 解码 FSM 的**真实单周期检查**；V3 里这两条是 `p`（pruned——综合把 `R_REG*_L`→G 终点的组合锥裁掉了），当前**空转**，但**路径一复活就被静默放 2 倍周期**。tcl 0922 已把它们注释，留待 jjlu 对 K2-vs-BKDU 时间窗表态。
+- **G1/G2（`R_REG03_L[2]` → `PIX_CLK_EN` / `BK_ST`）是 B 类"地雷"**（`multicycle逐条审查.md` 判定）：mc2 放宽的是 `PIX_CLK_EN` 使能 / `BK_ST` 解码 FSM 的**真实单周期检查**；V3 里这两条是 `p`（pruned——综合把 `R_REG*_L`→G 终点的组合锥裁掉了），当前**空转**，但**路径一复活就被静默放 2 倍周期**。tcl 0922 已把它们注释，留待 jjlu 对 K2-vs-BKDU 时间窗表态。**0924 ymzhu 确认不能恢复**：0922 run 中 24 条 BKDU→PIX_DATA 路径是活的（worst −0.16），R_BKDU 裸跨域进 DCLK 域像素逻辑无同步器 = 真实 CDC 亚稳态风险，waiver 治不了跨域——修复走 RTL 两级同步器（`LC_REG_MAPPING` `BKDU_SYNC` 扩两级），非 STA waiver。
 - **G8 / G11 冻名损失**：`POL1_SYNC_reg_1_/D1,D2`、`FLAG_1H_L2H` 分支被 `write_sdc` 冻名丢掉（SEL-004），轻微但真实——豁免名单"少了一角"。
 - **K1 覆盖错位（最重要）**：`-from SHORT_ENCODING_ALIGN/K1_FIND_LATCH` 在 V3 是死实例（`po`）；**活路径 = `LONG_ENCODING_ALIGN/K1_FIND_LATCH → R_REG06_F_reg_6_`（WCLK1_A_DCLK_SHORT，+0.187 MET，余量仅 0.19ns）**，换 corner/ECO 极易翻负——这正是 tcl 0922 补上 LONG 实例那对 multicycle 的原因。
 - **独立违例**：`LD_F_SYNC` 门控检查 **−0.0126 VIOLATED**（`INDATA_SYNC_D2` 起点，mc 不覆盖），与 G 约束无关，需单独 waiver/修复。
@@ -1161,4 +1161,4 @@ report_min_pulse_width [get_clocks DCLK_DATA_LONG]
   <script src="./js/site.js"></script>
 </body>
 </html>
-<!-- ymzhu 2026-09-24 16:40 -->
+<!-- ymzhu 2026-09-24 17:35 -->
