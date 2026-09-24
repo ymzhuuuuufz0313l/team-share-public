@@ -349,6 +349,29 @@
       margin-left: 6px;
       vertical-align: 2px;
     }
+    /* 个人学习资料卡：非正式章节，无编号，虚线边框区分 */
+    .grid-sep {
+      grid-column: 1 / -1;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-top: 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .grid-sep::before { content: ""; width: 24px; height: 1px; background: var(--line); }
+    .chapter-card.study { border-style: dashed; background: transparent; }
+    .chapter-card.study .tag-study {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--muted);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 1px 8px;
+      margin-bottom: 10px;
+    }
 
     /* flow overview (copied from synthesis-integration-flow-guide design system) */
     .flow { display: flex; gap: 10px; align-items: stretch; flex-wrap: wrap; margin: 18px 0; }
@@ -500,6 +523,23 @@
         <div class="num">十</div>
         <div class="title">问题解决心路历程<span class="star">有货</span></div>
         <div class="desc">二十一段真实排障：约束链认知坑、-0.588 跨域 mc 缺口、skew -900、DC 双分支陷阱、网表 A/B 审判、max_delay 优先级、-900 定案、MPW 规格、DPLC_CASE 速率开关、跨网表 SEL-004 三真凶、毯子收窄、525M what-if</div>
+      </a>
+
+      <div class="grid-sep">个人学习资料 · 非正式章节</div>
+      <a class="chapter-card study" href="./ch11-violation-atlas.html">
+        <div class="tag-study">学</div>
+        <div class="title">违例归因实战</div>
+        <div class="desc">0922 约束收窄 vs DC 违例逐路径精读：五模型交叉核对、逐跳归因、三分类、12 条心法</div>
+      </a>
+      <a class="chapter-card study" href="./ch12-constraint-tutorial.html">
+        <div class="tag-study">学</div>
+        <div class="title">时序约束入门教学</div>
+        <div class="desc">从真实 ip_cons 讲"为什么这么设 / 为什么不能那样设"：multicycle、CDC、skew、生效链，小白版</div>
+      </a>
+      <a class="chapter-card study" href="./ch13-toolchain-map.html">
+        <div class="tag-study">学</div>
+        <div class="title">目录结构与工具链</div>
+        <div class="desc">lint / DC / LEC / PowerPro / PT 每个工具吃什么、吐什么、脚本包括什么、怎么连</div>
       </a>
     </div>
 
