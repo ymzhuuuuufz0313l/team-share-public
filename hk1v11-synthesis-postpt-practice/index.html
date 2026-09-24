@@ -458,6 +458,7 @@
           <li><b>482 条违例归因定案</b>（5 模型 × 2 批独立全量分析，106 条被全部锁定且路径集合相同）：<b>106 收窄暴露</b>（10 分区 89 + G13 DATA_POINT_LAT 15 + G14 DPLC_MODE 2，worst RX_CLK <b>−1.45</b> = R_REG47_F HIZ_MIN→TP 计数器）+ <b>335 真实</b>（WCLK1 配置写 139 + RX 数据通路 139 + PIX_DATA 23 + DTCTL 门控 hold 30）+ <b>41 从未约束</b>（G13 pattern 从未命中 DATA_POINT_LAT_D1）。结论：收窄是有意收紧而非约束 bug，逐 bit 处置——准静态位恢复窄豁免，per-beat 消费者（BKDU/UTC 比较）改 RTL 同步</li>
           <li><b>代际验证纪律定案</b>：PT（09-21 15:24）早于新 DC（09-22 14:22，svn.info 锚点）→ 现 PT 数字是<b>旧代基线</b>，新约束真实 STA 图景待下一轮 PT；robocopy 重置时间戳，代际判定用报告头 Date / write_sdc 时间戳 / dc.log 标记串三方对齐</li>
           <li><b>三个学习页上线</b>（非正式章节，首页网格"学"徽章）：ch11 违例归因实战（逐路径精读）、ch12 时序约束入门教学（为什么这么设/不能那样设）、ch13 目录结构与工具链（每个工具吃什么/吐什么/脚本包括什么）；K3-256K 严格 review 修订 26 处 + 补证 5 处</li>
+          <li><b>0924 逐 bit 处置定案</b>：BKDU（R_REG03_L[2]/G1G2）确认<b>不能恢复</b>（24 条活路径 −0.16、R_BKDU 裸跨域 = 真实 CDC 风险，修复 = RTL 两级同步器非 waiver）；AABB（R_REG40_F[0:1]）确认一次性 I2C 初始化配置，<b>mc2/1（-to RX_CLK）已加</b>，21 条 HSR/STB/SCHOP 端点闭环</li>
         </ul>
       </div>
       <a class="more" href="./ch11-violation-atlas.html">违例归因实战 →</a>
@@ -618,4 +619,4 @@
   </script>
 </body>
 </html>
-<!-- ymzhu 2026-09-20 10:09 -->
+<!-- ymzhu 2026-09-24 18:09 -->

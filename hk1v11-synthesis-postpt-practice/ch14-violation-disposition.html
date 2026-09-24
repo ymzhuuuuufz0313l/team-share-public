@@ -90,20 +90,20 @@
 | 分区 | bit | 条数 | worst | 下游消费者（无同步器） | RTL file:line |
 |---|---|---|---|---|---|
 | R_REG03_L | [2] BKDU | 24 | -0.16 | 像素数据通路/对齐使能 | `DATA16TO24.v:198`、`CHPI_KCODE_ALIGN_L0.v:265`、`ANCTL.v:162,168,336-342` |
-| R_REG40_F | [7] DBC_VBK_ON | 23 | -1.00 | HSR_ACTIVE 裸项 | `LC_REG_MAPPING.v:331` |
+| R_REG40_F | [0:1] AABB（+[6] VPS_EN_0） | 23 | -1.00 | HSR_W_cnt/HSR 装载使能（`STB_B & HSR_ACTIVE`）+ STB_DLY/SCHOP-CG | `CHPI_SD_CTRL.v:567`、`ANCTL.v:171/189/205` |
 | R_REG47_F | [1:6] HIZ_MIN | 13 | **-1.45** | TP 计数器直喂 | `CHPI_SD_CTRL.v:180-201` |
 | R_REG33_F | [4:6] UTC/FRM_CHK | 12 | -0.34 | 比较活 UTC 计数器 | `CHPI_UTC_CHK.v:27-31`、`SHORT_ENCODING_ERROR_CTRL.v:27` |
 | R_REG56_F | [0:3] UTC 阈值 | 11 | -0.36 | 活计数器比较 | `LONG_ENCODING_ERROR_CTRL.v:227-260` |
 | R_REG57_F | [0:2] UTC 阈值 | 6 | -0.88 | 同 R_REG56_F 链 | `LONG_ENCODING_ERROR_CTRL.v:227-260` |
 
-> 注：`ANCTL.v` BKDU 消费点为 L162（`DRA_CS`）、L168（`CS_VCOM`）、L336-342（`POFF_CH*` 族）；`LC_REG_MAPPING.v:331` = `assign HSR_ACTIVE = (R_HSR_BLANK_ON | ~BKDU_SYNC) & R_HSR_EN`。原 `ip_cons` L385-412 审计注释里的 `ANCTL.v:147,153`/`LC_REG_MAPPING.v:322` 为漂移行号（见 §3.4）。
+> 注：`ANCTL.v` BKDU 消费点为 L162（`DRA_CS`）、L168（`CS_VCOM`）、L336-342（`POFF_CH*` 族）；`LC_REG_MAPPING.v:331` = `assign HSR_ACTIVE = (R_HSR_BLANK_ON | ~BKDU_SYNC) & R_HSR_EN`。原 `ip_cons` L385-412 审计注释里的 `ANCTL.v:147,153`/`LC_REG_MAPPING.v:322` 为漂移行号（见 §3.4）。另：`R_REG40_F[7]` DBC_VBK_ON 是本分区审计 B 类锚点（`HSR_ACTIVE` 裸项，per-beat），但本 run 它 **0 条违例**——23 条全来自 `[0:1]` AABB（21）+ `[6]` VPS_EN_0（2）。
 
 **结论**：形式上 100% 是"收窄暴露"。但这 24 bit 是审计**有意**挑出来的 B 类（裸 per-beat 消费者、无同步器），收窄是收紧不是 bug。其中要**逐 bit 二选一**：
-- **一次性/准静态配置**（HIZ 类 `R_REG47_F`、DBC 类 `R_REG40_F`）：写入窗口远离工作拍 → 可恢复窄 `-to` 豁免。
+- **一次性/准静态配置**（HIZ 类 `R_REG47_F`、AABB 类 `R_REG40_F[0:1]`）：写入窗口远离工作拍 → 可恢复窄 `-to` 豁免。**AABB `R_REG40_F[0:1]`：0924 ymzhu 确认一次性 I2C 初始化配置、显示期稳定几百拍 → 已加 mc2/1（`-to RX_CLK`）**，闭环 21 条 HSR/STB/SCHOP 端点（worst −1.00）；同分区 `[7]` DBC_VBK_ON 为 B 类 per-beat 保持单拍、`[6]` VPS_EN_0 无消费。
 - **每拍活消费**（UTC 比较 `R_REG33/56/57`、BKDU `R_REG03_L[2]`）：恢复豁免 = 放走真违例 → **只能 RTL 加同步/门控**。
   - **BKDU `R_REG03_L[2]`（G1/G2）：0924 ymzhu 确认不能恢复（不能加 waiver）**——0922 run 中 24 条 BKDU→PIX_DATA 路径是活的（0921V3 曾被综合剪掉标 `p` 空转，现已复活），worst −0.16；R_BKDU 裸跨域进 DCLK 域像素逻辑无同步器 = 真实 CDC 亚稳态风险，waiver 只放宽 STA、治不了跨域。修复 = 把 `LC_REG_MAPPING` `BKDU_SYNC` 由单级扩两级并接像素路径（`LONG_ENCODING_OUTPUT.v:333/397`）。
 
-**建议处置**：不要一刀切恢复 blanket。逐 bit：准静态的恢复窄 mc；UTC 比较类保留单周期 + RTL 修；**BKDU 0924 已确认走 RTL 两级同步器**。
+**建议处置**：不要一刀切恢复 blanket。逐 bit：准静态的恢复窄 mc（**AABB `R_REG40_F[0:1]` 0924 已确认、mc2/1 已加**）；UTC 比较类保留单周期 + RTL 修；**BKDU 0924 已确认走 RTL 两级同步器**。
 
 **你应该看的 file:line**：
 - 约束剔除本体：`ip_cons` **L413-424**（`get_cells R_REG*` + `remove_from_collection` 10 分区）
@@ -393,7 +393,7 @@
 
 | 优先级 | 动作 | 消多少 | 风险 |
 |---|---|---|---|
-| **P0** | 组 1 逐 bit 评审：准静态（HIZ/DBC）恢复窄 `-to` 豁免；UTC 比较/BKDU 保留单周期 + RTL 加同步（**BKDU/G1G2 0924 ymzhu 确认不能恢复**，修复=RTL 两级同步器） | 89（部分） | 高（逐 bit，别一刀切） |
+| **P0** | 组 1 逐 bit 评审：准静态恢复窄 `-to` 豁免（**AABB R_REG40_F[0:1] 0924 已确认、mc2/1 已加，21 条闭环**）；UTC 比较/BKDU 保留单周期 + RTL 加同步（**BKDU/G1G2 0924 ymzhu 确认不能恢复**，修复=RTL 两级同步器） | 89（部分） | 高（逐 bit，别一刀切） |
 | **P1** | 组 2+3：G13 重写为 `-from {DATA_POINT_LAT_reg*  DATA_POINT_LAT_D1_reg*}`（先确认准静态语义） | 56 | 低 |
 | **P1** | 组 8：恢复 G14 `R_REG06_F_reg_2_` 对（DC 用 `reg_2_`） | 2 | 低 |
 | **P1** | 组 9：DTCTL 门控换 ICG / 使能同步；复核 INDATA_SYNC `set_input_delay -min` | 30 | 中（结构） |
@@ -410,4 +410,4 @@
   <script src="./js/site.js"></script>
 </body>
 </html>
-<!-- ymzhu 2026-09-24 17:35 -->
+<!-- ymzhu 2026-09-24 18:09 -->
