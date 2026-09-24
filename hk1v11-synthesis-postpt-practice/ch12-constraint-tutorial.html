@@ -711,6 +711,17 @@ report_timing -from u_LOGIC_CENTER/LINK_LOGIC/LINK_CONFIG_CTRL/LC_CPUWR/R_REG05_
 
 > **为什么不能那样设**：把 `-to` 写成 `-to u_LOGIC_CENTER/.../LC_CPUWR/R_REG05_F_reg_6_`（寄存器名）——pre-PT 看似正常，`write_sdc` 后悄悄变成 pin 名，POSTPT 报 SEL-004 把它丢了，你以为约束在、其实不在。这就是"改了约束、POSTPT 数字没变"的一种来源（配合第 14 块一起看）。
 
+**真实证据（0924v0 实测，`SYNTHESIS/top/sta/post/pt/wc_typical_125/latest/log/read_cons.log`）**：该日志头部写 `# Created by PrimeTime write_sdc on Mon Sep 21 15:24:21 2026`，全文 **`SEL-004` 恰好 23 条、`SEL-005` 0 条**，全是"冻名成 DC pin 名、APR 网表对不上被丢"。真实几例：
+
+```
+Warning: No pin objects matched 'u_LOGIC_CENTER/CENTER1/DTCTL/data_out_tmp1_reg_7_/D1' (SEL-004)
+Warning: No pin objects matched 'u_LOGIC_CENTER/CENTER1/ANCTL/POL1_SYNC_reg_1_/D2' (SEL-004)
+Warning: No pin objects matched 'u_LOGIC_CENTER/LINK_LOGIC/LINK_CONFIG_CTRL/LC_CPUWR/R_REG41_F_reg_1_/RB' (SEL-004)
+Warning: No pin objects matched 'u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/BOE_AUTO_EQ_BCC_CTRL/u_boe_rx_switch_to_bus8/bcc_rx_reply_prdata_reg_9_/D1' (SEL-004)
+```
+
+对应关系：`data_out_tmp1_reg_*/D1/D2` 是 DPLC 的 `-thr .../data_out_tmp*/D*`（第 12 块）；`POL1_SYNC_reg_1_/D1/D2` 是 G8 POL 同步（第 11 块）；`bcc_rx_reply_prdata_reg_9_/D1` 是 G9——审计（`script/mc_audit_0921/multicycle逐条审查.md`）统计 G9 **丢 12 脚、6/10 bit 豁免未达 APR**（当前仍 ≥+0.2 MET，没炸但豁免已不完整）。这就是"SEL-004 静默丢弃"的**活体标本**：约束你以为在，其实这几条 endpoint 在 APR 里没了。
+
 **自检方法**：
 ```csh
 # 1) 在 postcts.sdc / read_cons.log 里查 SEL-004 / SEL-005，统计被丢弃的约束条数
@@ -753,6 +764,13 @@ grep -n "\-to [a-zA-Z_u].*reg" SYNTHESIS/common/ip_cons/HK1V11_digital_top.tcl  
 | `R_REG57_F_reg*` | 同 R_REG56_F 链 | UTC 阈值 |
 
 （上面 RTL 行号是我逐文件确认过的：`CHPI_SD_CTRL.v` 的 `PSR_LINE_CNT`(73)/`TP_WIDTH_CNT`(64-66)、`ANCTL.v` 的 `LD_F_ECO`(133)、`LC_REG_MAPPING.v` 的 `HSR_ACTIVE`(331)、`CHPI_UTC_CHK.v` 的 `UTC_FRM_CNT`(19) 都真实存在。）
+
+**真实审计证据（`script/mc_audit_0921/`，三路独立审查，bit 级 A212 / B24 / C160 / ?12）**：
+
+- **G1/G2（`R_REG03_L[2]` → `PIX_CLK_EN` / `BK_ST`）是 B 类"地雷"**（`multicycle逐条审查.md` 判定）：mc2 放宽的是 `PIX_CLK_EN` 使能 / `BK_ST` 解码 FSM 的**真实单周期检查**；V3 里这两条是 `p`（pruned——综合把 `R_REG*_L`→G 终点的组合锥裁掉了），当前**空转**，但**路径一复活就被静默放 2 倍周期**。tcl 0922 已把它们注释，留待 jjlu 对 K2-vs-BKDU 时间窗表态。
+- **G8 / G11 冻名损失**：`POL1_SYNC_reg_1_/D1,D2`、`FLAG_1H_L2H` 分支被 `write_sdc` 冻名丢掉（SEL-004），轻微但真实——豁免名单"少了一角"。
+- **K1 覆盖错位（最重要）**：`-from SHORT_ENCODING_ALIGN/K1_FIND_LATCH` 在 V3 是死实例（`po`）；**活路径 = `LONG_ENCODING_ALIGN/K1_FIND_LATCH → R_REG06_F_reg_6_`（WCLK1_A_DCLK_SHORT，+0.187 MET，余量仅 0.19ns）**，换 corner/ECO 极易翻负——这正是 tcl 0922 补上 LONG 实例那对 multicycle 的原因。
+- **独立违例**：`LD_F_SYNC` 门控检查 **−0.0126 VIOLATED**（`INDATA_SYNC_D2` 起点，mc 不覆盖），与 G 约束无关，需单独 waiver/修复。
 
 ### 11.3 为什么不能"一刀切恢复 blanket 豁免"
 
@@ -827,6 +845,21 @@ if {$synopsys_program_name != "pt_shell"} {
 
 > **为什么不能那样设**：图省事写 `-to X/*`，在 pt（netlist）阶段内部节点暴露出来，max_delay 会去检查"到某个内部组合节点"的路径，报出 -3.8 这种假违例，误导你去"修"一个不存在的电路问题。规则：**max_delay 的 `-to` 层级端点，尽量精确到 `/*/D*`，不要裸 `/*`。**
 
+### 12.4 审计更正：真正危险的不是"配置位"，是**无 `-from`** 的那两条
+
+`script/mc_audit_0921/multicycle逐条审查.md` 逐条审查后判定：**`HK1V11_digital_top.tcl:364-365`（dc 分支 357-358）两条**没有 `-from` 的 `set_max_delay` 是本项目**唯一确认的 💀 掩盖真 path**：
+
+```tcl
+set_max_delay $DPLC_CLKP -to U_DPLC_DATA_GEN/*/D*            # 无 -from → 罩住全部 D 端点
+set_max_delay $DPLC_CLKP -thr U_DPLC_DATA_GEN/* -to data_out_tmp*/D*
+```
+
+- 无 `-from` = 覆盖 `U_DPLC_DATA_GEN` 内**全部 D 端点**：`PIX_DATA_DD/DDD`、`p0~p2_{r,g,b,w}`、`*_1d/_2d`、`DPLC_DATA_T`、`data_out_tmp0~5`——也就是 **PIX_DATA→打拍→加权平均→DPLC_DATA→data_out_tmp 的每拍像素数据通路**（`DPLC_DATA_GEN.v`、`DTCTL.v:538-595`）。
+- GEN 时钟 = `PIX_CLK = DCLK_DATA`（`CENTER1.v:235`）→ 真实单周期 **3.81（LONG）/ 5.715（SHORT）**。max_delay 6.35 = **LONG 腿被放宽 2.54ns**、SHORT 腿放宽 0.635ns → 每拍 path 可被掩盖。
+- 这是原厂 0909 初版就有的约束，疑似"DPLC 显示模式数据率"的有意预算——**处置需 ymzhu/jjlu 拍板**：要么加 `-from LC_CPUWR 配置寄存器`（让带 `-from` 的 `R_REG48_F` / `R_REG06_F` / `R_REG00_F` 那三条承担配置路径），要么确认 DPLC 显示模式预算意图后保留并写明依据。
+
+> **修正 12.1/12.2 的说法**：DPLC max_delay 里，**带 `-from R_REG48_F`（12.7）/ 带 `-from R_REG06_F`、`R_REG00_F`（G10，12.7）** 的才是"配置路径"（审计判定 ✅）；真正危险的是**无 `-from`、罩住 per-beat 管线**的那两条。这也是第 10 块"端点要框准"的又一例：max_delay 漏了 `-from` 等于"无边界放宽"（同 from-only）。
+
 **自检方法**：
 ```csh
 # 确认 max_delay 的 -to 端点只落在 D 脚
@@ -888,6 +921,10 @@ if {$synopsys_program_name == "pt_shell"} {
 
 > **为什么不能那样设**：肉眼觉得"我写了 DATA_POINT_LAT，应该能罩住它"，但工具做的是**前缀匹配**，`DATA_POINT_LAT_reg*` 只匹配"以 DATA_POINT_LAT_reg 开头"的名字，`DATA_POINT_LAT_D1_reg_*` 不匹配。**任何 pattern 写完，必须 `get_cells -quiet <pattern>` 实测返回的对象数 / 名字**，确认匹配到了你以为的那些对象，再进约束文件。
 
+**真实计数（`mc_audit_0921`）**：G13 那 20 条近边界路径里，**19 条 startpoint = `DATA_POINT_LAT_D1_reg_3_`**（`DATA_POINT_LAT_reg*` 前缀匹配不到 `_D1_reg_*`）、1 条在 SHORT 分支 → G13 在 V3 **实际一条都没覆盖**，"删掉即 -3.5 违例"的前提根本不成立。
+
+**另一个"端点选错"的真实教训（`修改记录/skew_sd_busskew_minus900_rootcause_20260916.md`）**：skew 报表脚本的 `-from` 给了一个**不是合法起点**的对象（`CENTER1/DTCTL/u_gate_INV_SD_CLK_INV/O*`，而该反相器其实不在 DTCTL 下、在 `LC_CLK_RST_GEN/CLKGEN/`），pt_shell 报 `There is 1 invalid start point. (UITE-416)` 后**回退**成"所有终点为 CLKA_R/CLKB_L 的路径"，于是把**数据路径**（11~12ns 的 `R_REG06_F_reg_7_` 等）当成了"时钟到达时间"——看似有数、实则全假。教训：pattern/端点写错有两种后果——**匹配不到**（SEL-004，显式警告）或**回退成错误路径集**（UITE-416，更隐蔽，数字看起来很合理）。
+
 **自检方法**：
 ```csh
 # 在 dc_shell / pt_shell 里实测 pattern 匹配（两种工具各跑一次）
@@ -946,6 +983,8 @@ POSTPT（PrimeTime signoff）
 > | 服务器 POSTPT 报告 | **09-21 15:25**（旧代！） |
 >
 > 结论：PT 报告比新 DC 还早一天 → 这批 PT 数字是旧代基线，不能用来评估新约束。
+
+**可复现证据（最新 0924v0 run）**：`SYNTHESIS/top/sta/post/pt/wc_typical_125/latest/log/read_cons.log`（文件 mtime **09-24 10:38**，是工作区最新的一轮 POSTPT）头部写 `# Created by PrimeTime write_sdc on Mon Sep 21 15:24:21 2026` → 这轮 POSTPT 吃的 `postcts.sdc` 生成于 **09-21**，**早于 0922 收窄**。也就是说：即便目录名叫 `0924v0`，它用的约束仍是 0922 之前那代——"改了 ip_cons 但 POSTPT 没吃到"在这里是**可复现、可核对**的，不是推测。
 
 ### 14.3 死约束：`-through .../R_` 字面名从 0 匹配，删了无影响
 
@@ -1036,6 +1075,17 @@ set_min_pulse_width -low -high 2    [get_clocks SD_CLK_INV_LONG]
 
 > **DC 的 `ccopt_inst` 链就是 CTS 树**：你在 DC 网表里看到一串 `ccopt_buf_...` / `ccopt_inv_...` 从时钟 root 排开，那不是"普通 buffer"，那是 CTS 插的时钟树单元。看 hold 违例时，launch/capture 的"时钟 arrival time"差异，本质就是这棵树的 skew。
 
+### 15.4 skew / busskew 报告里的"大负数"可能是**哨兵**，不是 STA 结果（真实教训）
+
+本项目**没有**在 ip_cons 里写 `set_bus_skew`（见 15.2），但**有**一套 skew/busskew **报告脚本**（`SYNTHESIS/top/sta/post/common/report_timing_skew_sd.tcl` + `get_sd_busskew.pl`），它真实踩过一个坑（`修改记录/skew_sd_busskew_minus900_rootcause_20260916.md`）：
+
+- `summary/latest/report_sd_busskew.csv` 里 `sd_l_1p_margin_a_max = -993.56 ~ -998.09`（每个 corner 都"负 900 多"）——**这不是时序结果**。
+- 根因：时钟探测点写错层级（脚本用 `u_LOGIC_CENTER/CENTER1/DTCTL/u_gate_INV_SD_CLK_INV/O*`，但 SD 反相器在 `LC_CLK_RST_GEN/CLKGEN/` 下）→ `report_timing_sd_l_1p_clk_a.rpt` 变成**空报表**（只有 SEL-003/005 报错、0 行 `data arrival time`）→ `get_sd_busskew.pl` 的哨兵初值 `$min=1000` 没被覆盖 → `margin = 6.44 − 1000 = -993.5`。
+- 更隐蔽的是**同一次 run 的另外 3 个时钟报表**：`-from` 给了非法起点，pt_shell 报 `invalid start point (UITE-416)` 后回退成"终点为 CLKA/CLKB 的全部数据路径"，把 11~12ns 的数据路径当"时钟到达时间"，其中一条 `sd_r_1p_margin_b_max = +2.84` 恰好落在合格窗内**最危险**（看起来 PASS，实则假）。
+- 修复：探测点改到 **CLKGEN 的分叉点**（= SDC 里 `create_generated_clock` 的那两个 pin，`ip_cons:...:54-55,60-68`），并去掉 0/1000 哨兵、测不到就输出空白 + 打 WARNING。
+
+> **教学点**：skew/busskew 报告里出现"巨大负数"，先怀疑**报表是不是空的 / 回退的**（SEL-003/005 + 哨兵值），而不是真去"修 skew"。判断时钟探测点是否合法的标准 = "它是不是 SDC 里定义 generated clock 的那个 pin"（本项目 = `LC_CLK_RST_GEN/CLKGEN/` 下的 buffer/mux 输出）。
+
 **自检方法**：
 ```csh
 # 看某时钟的 skew 分布（postPT 才有真实 SPEF）
@@ -1085,10 +1135,15 @@ report_min_pulse_width [get_clocks DCLK_DATA_LONG]
 | `HDL/.../SMT_CS.v` | `FLAG_1H_H2L`/`FLAG_1H_L2H` |
 | `HDL/.../bcc_ctrl/boe_rx_switch_to_bus8.v` | `bcc_rx_reply_prdata` |
 | `HDL/.../bcc_ctrl/AUTO_EQ_TRAINIG_JUDGE.v` | `TRAINING_RESULT` |
+| `SYNTHESIS/top/sta/post/pt/<corner>/latest/log/read_cons.log` | POSTPT 约束落地：`write_sdc` 时间戳 + SEL-004/005 计数（0924v0 实测 **23 条 SEL-004**） |
+| `SYNTHESIS/top/sta/pre/pt/pt_rpt/read_tcl.log` + `SYNTHESIS/top/sta/pre/sdc_pr/` | pre-PT 约束读取 / `write_sdc` 物化产物（`postcts.sdc` 祖先） |
+| `SYNTHESIS/ip/syn_HK1V11_digital_top/dc/rep_dir_*/dc.log` | DC 侧约束落地标记（`cpuwr_reg_grp`、排除标记、CMD-036） |
+| `script/mc_audit_0921/`（`multicycle逐条审查.md`、`寄存器bit级追踪.md` 99KB、`寄存器mc审计表.md`） | 0922 收窄的 bit 级审计（A212/B24/C160/?12）与逐条判定 |
+| `修改记录/skew_sd_busskew_minus900_rootcause_20260916.md` | skew/busskew 报告 "-900 哨兵" 根因与修复（第 15.4 块） |
 
-<!-- ymzhu 2026-09-24 15:59 -->
+<!-- ymzhu 2026-09-24 16:09 -->
   </script>
   <script src="./js/site.js"></script>
 </body>
 </html>
-<!-- ymzhu 2026-09-24 16:05 -->
+<!-- ymzhu 2026-09-24 16:10 -->
