@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>十四、违例分组处置 · HK1V11 综合/签核流程实践</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./css/style.css">
+  <script src="./js/marked.min.js"></script>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a class="navbar-brand" href="./">HK1V11_FLOW_PRACTICE</a>
+      <div class="navbar-links" id="navbar-links"></div>
+    </div>
+  </nav>
+  <div class="container with-toc">
+    <aside class="toc-wrapper"><div class="toc" id="toc"></div></aside>
+    <div class="content">
+      <article class="article" id="article"></article>
+      <div class="page-nav" id="page-nav"></div>
+      <div class="footer">HK1V11 SYNTHESIS / SIGNOFF PRACTICE · AUTHOR ymzhuuuu · UPDATED 2026-09-24</div>
+    </div>
+  </div>
+  <script type="text/template" id="md">
+# 十四、违例分组处置 · 新旧约束逐组对照（精确 file:line 索引）
+
+> **个人工作表 · 0922 收窄后新 DC（`rep_dir_0922_1456`）违例逐组归因 · 供逐条仔细思考**
+>
+> 用法：先看每组的 **Δ 变化**（旧约束干了什么 → 现在是什么）→ 看 **结论** → 看 **建议处置** → 打开 **file:line** 那一行仔细想。
+> 约束基线：旧 = `79ef0030`（收窄前），新 = `61eb5605`（收窄后）。约束文件：`SYNTHESIS/common/ip_cons/HK1V11_digital_top.tcl`（615 行）。
+
+---
+
+## 0. Δ 变化分类图例
+
+| Δ 类型 | 含义 | 违例性质 |
+|---|---|---|
+| **约束→删除** | 旧约束覆盖，现在被删除/注释/剔除 | narrowing_exposed（假 path 或有意收紧） |
+| **从未约束** | 新旧两版都没覆盖 | genuine（真实违例）或历史遗留 |
+| **未约束→新增** | 旧版无，新版新增约束 | （本次无） |
+| **仍约束** | 新旧都覆盖 | （本次无违例） |
+
+> 关键判别：**一条违例是不是"收窄报出来的"，只看它的 startpoint 在旧版是否落在某个 waiver 的匹配集内、在新版是否被剔除/注释**。不看感觉，看 get_cells 实际匹配（教训：G13 的 `DATA_POINT_LAT_reg_*` 永远匹配不到 `DATA_POINT_LAT_D1_reg_*`）。
+
+---
+
+## 1. 总览表（9 组一眼看完）
+
+| # | 组 | 条数 | worst | 旧约束干了什么 | 现在是什么 | Δ | 结论 | 优先级 |
+|---|---|---|---|---|---|---|---|---|
+| 1 | RX_CLK setup | 89 | **-1.45** | 宽 `R_REG*` 组 mc2 -to RX_CLK 全覆盖 | 组剔除 10 分区（24 B 类 bit） | **约束→删除** | B 类裸消费，有意收紧；逐 bit 二选一 | P0 |
+| 2 | RX_CLK setup | 15 | -1.31 | G13 mc2 from-only 覆盖 | G13 注释 | **约束→删除** | 准静态，恢复 G13 即消 | P1 |
+| 3 | RX_CLK setup | 41 | -1.31 | G13 pattern 从未匹配 `_D1` | G13 注释（pattern 仍窄） | **从未约束** | G13 pattern 缺陷，扩 pattern 消 56 | P1 |
+| 4 | RX_CLK setup | 139 | -0.85 | 未覆盖（不在 cpuwr/G13/G14） | 未覆盖 | **从未约束** | RX 域真实关键路径 | P2 |
+| 5 | WCLK1_A_DCLK_SHORT | 139 | -0.11 | 唯一沾边的 `-through R_` 是死约束(0匹配) | 未覆盖 | **从未约束** | CHPI 配置写通路，真实(轻微) | P2 |
+| 6 | DCLK_DATA_MUX_SHORT | 23 | -0.43 | G1/G2 只对 R_REG03_L 起点生效 | 未覆盖 | **从未约束** | 像素同域数据通路，真实 | P2 |
+| 7 | SD_CLK_INV_DPLC_LONG | 4 | -0.36 | 未覆盖（G14 只管 config bit） | 未覆盖 | **从未约束** | 活计数器→生成时钟门控 | P2 |
+| 8 | DPLC_CLK_LONG | 2 | -0.38 | G14 mc2 from-only 覆盖 | G14 注释+移入 pt_shell guard | **约束→删除** | DPLC_MODE 一次性配置，可恢复 | P1 |
+| 9 | hold（4 组） | 30 | **-4.19** | 未覆盖 | 未覆盖 | **从未约束** | 生成时钟结构 hold + IO 输入 hold | P1 |
+
+> 合计 482 条 = setup 452（89+15+41+139+139+23+4+2）+ hold 30。**"收窄报出来的"只有 106 条（组1 89 + 组2 15 + 组8 2，均 Δ=约束→删除）；其余 376 条（78%）从未被任何约束覆盖，与收窄无关。**
+
+---
+
+## 2. 逐组详析（旧 → 新 → 结论 → 建议 → file:line）
+
+### 2.1 组 1 · RX_CLK setup · 89 条（收窄剔除的 10 分区）· worst **-1.45**（全局 WNS）
+
+**旧约束干了什么**：基线里 `cpuwr_reg_grp` = 宽泛的**全部** `R_REG*`（F+L 全含），对它下 `mc 2 -start -setup / 1 -start -hold -to RX_CLK`。这 89 条 startpoint 全部在宽组里 → 被 mc2 豁免，按 2 个 launch 周期检查，**不报违例**。
+
+**现在是什么**：`cpuwr_reg_grp` 用 `remove_from_collection` 剔除了 10 个分区（24 个 bit 级审计判定的 B 类"裸 per-beat 消费者"），这 89 条 startpoint 退出组 → 失去 mc2 → **按单周期报 setup 违例**。同时 G1/G2（BKDU→PIX 的 4 对）也被注释，R_REG03_L[2] 的额外豁免也没了。
+
+**Δ**：约束→删除（组覆盖被剔除）。
+
+**逐分区拆解**（条数 / worst / 消费点 RTL file:line）：
+
+| 分区 | bit | 条数 | worst | 下游消费者（无同步器） | RTL file:line |
+|---|---|---|---|---|---|
+| R_REG03_L | [2] BKDU | 24 | -0.16 | 像素数据通路/对齐使能 | `DATA16TO24.v:198`、`CHPI_KCODE_ALIGN_L0.v:265`、`ANCTL.v:147,153` |
+| R_REG40_F | [7] DBC_VBK_ON | 23 | -1.00 | HSR_ACTIVE 裸项 | `LC_REG_MAPPING.v:322` |
+| R_REG47_F | [1:6] HIZ_MIN | 13 | **-1.45** | TP 计数器直喂 | `CHPI_SD_CTRL.v:180-201` |
+| R_REG33_F | [4:6] UTC/FRM_CHK | 12 | -0.34 | 比较活 UTC 计数器 | `CHPI_UTC_CHK.v:27-31`、`SHORT_ENCODING_ERROR_CTRL.v:27` |
+| R_REG56_F | [0:3] UTC 阈值 | 11 | -0.36 | 活计数器比较 | `LONG_ENCODING_ERROR_CTRL.v:227-260` |
+| R_REG57_F | [0:2] UTC 阈值 | 6 | -0.88 | 同 R_REG56_F 链 | `LONG_ENCODING_ERROR_CTRL.v:227-260` |
+
+**结论**：形式上 100% 是"收窄暴露"。但这 24 bit 是审计**有意**挑出来的 B 类（裸 per-beat 消费者、无同步器），收窄是收紧不是 bug。其中要**逐 bit 二选一**：
+- **一次性/准静态配置**（HIZ 类 `R_REG47_F`、DBC 类 `R_REG40_F`）：写入窗口远离工作拍 → 可恢复窄 `-to` 豁免。
+- **每拍活消费**（UTC 比较 `R_REG33/56/57`、BKDU `R_REG03_L[2]`）：恢复豁免 = 放走真违例 → **只能 RTL 加同步/门控**。
+
+**建议处置**：不要一刀切恢复 blanket。逐 bit：准静态的恢复窄 mc；UTC 比较类保留单周期 + RTL 修。
+
+**你应该看的 file:line**：
+- 约束剔除本体：`ip_cons` **L413-424**（`get_cells R_REG*` + `remove_from_collection` 10 分区）
+- 组 mc 还在（对剩余对象生效）：`ip_cons` **L425-432**（-to RX_CLK / DCLK_DATA_* / SD_CLK_INV_* 三对）
+- 逐分区"为什么剔"的理由注释：`ip_cons` **L385-412**（每个分区的 RTL file:line 都写在这）
+- 最深那条（-1.45）：`CHPI_SD_CTRL.v:180-201`（HIZ_MIN_SEL/VAL → TP 计数器）
+- DC 报告代表路径：`HK1V11_digital_top_max.rpt` **L39120**（R_REG47_F_reg_1_ → CS_SIG_ORG_reg/D，12 级组合）
+
+---
+
+### 2.2 组 2 · RX_CLK setup · 15 条（G13 DATA_POINT_LAT）· worst -1.31
+
+**旧约束干了什么**：G13 = `mc 2 -start -setup / 1 -start -hold -from .../LONG_ENCODING_ALIGN/DATA_POINT_LAT_reg_*`（from-only，覆盖一切 endpoint 含 clock-gating 检查）。基线里**激活**。
+
+**现在是什么**：G13 整对**注释掉**（`ip_cons` L329-330），只留审计注释。
+
+**Δ**：约束→删除（G13 注释）。
+
+**结论**：准静态 `DATA_POINT_LAT`，G13 注释**直接暴露**这 15 条（含 RX_CLK 的 clock-gating 检查）。代表路径 endpoint 是 `SNPS_CG_CELL_DCLK_DATA_POINT_LAT_reg_0/latch`（gating check）。
+
+**建议处置**：与组 3 一起处理——把 G13 重写成覆盖本尊 + `_D1`（见 2.3），一次消 15+41=56 条。
+
+**你应该看的 file:line**：
+- G13 注释本体：`ip_cons` **L329-330**
+- G13 审计注释（为什么留 OFF）：`ip_cons` **L321-328**
+- DC 报告代表路径：`max.rpt` **L39296**（DATA_POINT_LAT_reg_13_ → CG latch，约 11 级）
+
+---
+
+### 2.3 组 3 · RX_CLK setup · 41 条（G13 的 `_D1` 漏配）· worst -1.31
+
+**旧约束干了什么**：G13 的 pattern 是 `DATA_POINT_LAT_reg_*`——它**从未匹配过** `DATA_POINT_LAT_D1_reg_*`（名字里多了 `_D1`）。所以这 41 条在**旧版就没被 G13 覆盖**（新旧两版都是单周期）。
+
+**现在是什么**：G13 注释（pattern 仍窄）。这 41 条依旧无豁免，只是这次 RTL/综合结果恶化到违例。
+
+**Δ**：**从未约束**（不是收窄造成的——是 G13 pattern 本身有缺陷）。
+
+**结论**：C 类。0922 审计已写明：0921V3 那 20 条近限路径里 **19 条 startpoint = `DATA_POINT_LAT_D1_reg_3_`**，`NOT matched by this waiver's pattern`。旧版"看起来对"其实是 waiver 没打中目标。
+
+**建议处置**：把 G13 重写为 `-from { .../DATA_POINT_LAT_reg*  .../DATA_POINT_LAT_D1_reg* }`（覆盖 SHORT/LONG 两实例），先与设计师确认 D1 与本尊同为准静态。一次消 56 条。
+
+**你应该看的 file:line**：
+- G13 pattern（看它为什么匹配不到 D1）：`ip_cons` **L329**（`DATA_POINT_LAT_reg*`——注意 `_reg` 前没有 `*`，中间插不进 `_D1`）
+- 审计更正注释：`ip_cons` **L322-327**
+- DC 报告代表路径：`max.rpt` **L39374**（endpoint 同样是 `SNPS_CG_CELL_DCLK_DATA_POINT_LAT_TMP_reg_0/latch`）
+
+---
+
+### 2.4 组 4 · RX_CLK setup · 139 条（纯数据通路寄存器）· worst -0.85
+
+**旧约束干了什么**：这些 startpoint（`o_keep_reg_*`、`rx_bit_cnt_reg_*`、`boe_bcc_prescale_reg_*` 等）**不在** cpuwr_reg_grp、不在 G13/G14 → 旧版就没覆盖。
+
+**现在是什么**：仍未覆盖。
+
+**Δ**：**从未约束**（真实违例）。
+
+**结论**：RX 域内部真实关键路径（理想时钟即违例），与收窄**完全无关**，需综合策略/RTL 优化。
+
+| startpoint 模式 | 模块 | 条数 | worst |
+|---|---|---|---|
+| `o_keep_reg_*` | LONG_ENCODING_DESCRAMBLE | 60 | -0.60 |
+| `rx_bit_cnt_reg_*` | LONG_ENCODING_DECODE | 46 | -0.85 |
+| `boe_bcc_prescale(_cnt)_reg_*` | BOE_AUTO_EQ_BCC_CTRL/u_boe_rx_bcc_decoder | 26 | -1.14 |
+| 其他（CS_SIG_ORG / bcc_receive_state / cnt_7b / o_raw_idx） | 各 1~3 | 6 | -0.51 |
+
+**建议处置**：交综合（ungroup / retime / 大小 cell 重映射）或 RTL 流水。
+
+**你应该看的 file:line**：
+- 这类 startpoint **没有任何 waiver**——在 `ip_cons` 里 grep 不到对应 `-from`（这正是"从未约束"的证据）
+- DC 报告代表路径：`max.rpt` **L44108**（o_keep_reg_2_ → BIT_COUNT_reg_6_）、**L40964**（rx_bit_cnt_reg_3_ → o_data_reg_12_）、**L39458**（boe_bcc_prescale_reg_2_ → sample_mask_cnt_reg_5_）
+
+---
+
+### 2.5 组 5 · WCLK1_A_DCLK_SHORT · 139 条（CONFIG_DATA）· worst -0.11
+
+**旧约束干了什么**：唯一可能沾边的是基线里的 `-through .../LC_CPUWR/R_` blanket mc——但 `"R_"` 是**字面名（无通配符）**，在每一版 flow 里都**匹配 0 个对象**（write_sdc 0 条 -through，dc_shell 报 CMD-036 Can't find objects）。所以它从第一天就是**死约束**，从未真正覆盖过这 139 条。
+
+**现在是什么**：死约束已删除（`ip_cons` L332-337 注明）。这 139 条依旧无豁免。
+
+**Δ**：**从未约束**（真实，但轻微 -0.11）。
+
+**结论**：CHPI 配置写通路——`CONFIG_DATA_reg_*`（DCLK_CONFIG 域）→ `LC_CHPI_DECODE` → `CHPI_CONFIG_L0` → `LC_CPUWR` → `R_REG*_reg/D`（WCLK1 域），跨 DCLK_CONFIG→WCLK1_A。真实 setup 问题，但 worst 仅 -0.11，DC 优化裕量大概率够。
+
+**建议处置**：交 DC 优化；若仍超，考虑对该写通路加窄 mc（确认是低频配置写）。
+
+**你应该看的 file:line**：
+- 死约束删除注明：`ip_cons` **L332-337**（看它为什么"删了但无影响"）
+- DC 报告代表路径：`CONFIG_DATA_reg_2_(DCLK_CONFIG_MUX) → LC_CHPI_DECODE U38/U18 → CHPI_CONFIG_L0 U15 → LC_CPUWR U28 → R_REG*_reg/D (WCLK1)`
+
+---
+
+### 2.6 组 6 · DCLK_DATA_MUX_SHORT · 23 条（PIX_DATA）· worst -0.43
+
+**旧约束干了什么**：G1/G2（R_REG03_L→PIX_DATA 的 4 对）的 `-to PIX_DATA_reg*` **只对 R_REG03_L 起点生效**，与本组 startpoint（`PIX_DATA_reg_8_/9_/14_/18_`，来自 SHORT/LONG_ENCODING_OUTPUT）无关 → 旧版就没覆盖。
+
+**现在是什么**：G1/G2 已注释，仍未覆盖。
+
+**Δ**：**从未约束**（真实）。
+
+**结论**：像素同域数据通路（`PIX_DATA_reg_*` → `CENTER1/DTCTL/PIX_DATA_D_reg_*`，DCLK_DATA_MUX 同域），真实数据延迟超标。
+
+**建议处置**：K1 式流水或让 DC retime。
+
+**你应该看的 file:line**：
+- G1/G2 注释（看它的 -to 范围为什么罩不到本组）：基线 diff 里被删的 `-from R_REG03_L_reg* -to {PIX_CLK_EN_reg* PIX_DATA_reg*}` 4 对
+- DC 报告代表路径：`SHORT_ENCODING_OUTPUT/PIX_DATA_reg_9_ → CENTER1/DTCTL/PIX_DATA_D_reg_* (DCLK_DATA_MUX)`
+
+---
+
+### 2.7 组 7 · SD_CLK_INV_DPLC_LONG · 4 条（data_cnt_pre 门控）· worst -0.36
+
+**旧约束干了什么**：未覆盖（G14 只管 config bit 起点，不管活计数器）。
+
+**现在是什么**：未覆盖。
+
+**Δ**：**从未约束**（真实）。
+
+**结论**：`DTCTL/data_cnt_pre_reg_3_/4_`（DCLK_DATA_MUX 活计数器）→ `DTCTL/C2282/C2276`（DPLC_CLK 的 clock-gating AND 使能脚 I2）。数据计数器对生成时钟的门控 setup 检查。
+
+**建议处置**：换 ICG 或在门控前对使能加同步。
+
+**你应该看的 file:line**：
+- 这类 startpoint 在 `ip_cons` 里无对应 waiver（从未约束证据）
+- DC 报告：`DTCTL/data_cnt_pre_reg_4_ → 门控使能 n751 → C2282/I2`
+
+---
+
+### 2.8 组 8 · DPLC_CLK_LONG · 2 条（G14 R_REG06_F[2] DPLC_MODE）· worst -0.38
+
+**旧约束干了什么**：G14 = `mc 2 -start -setup / 1 -start -hold -from .../R_REG06_F_reg_2_`（from-only，覆盖 gating check 的一切 endpoint）。基线里**激活**。
+
+**现在是什么**：G14 三对**注释掉**并移入 `pt_shell` guard（`ip_cons` L351-352 是 DPLC_MODE 那对）。DC 下本来也无法生效（reg[2] 命名）。
+
+**Δ**：约束→删除（G14 注释）。
+
+**结论**：`R_REG06_F[2]`（R_DPLC_MODE）是一次性模式配置 bit，路径 `R_REG06_F_reg_2_/Q → LC_REG_MAPPING/U24 → R_DPLC_MODE → CENTER1/DTCTL U326→…→U184（8 级）→ C2282/I2`。属可豁免候选。
+
+**建议处置**：恢复 G14 的 `R_REG06_F_reg_2_` 对（DC 下用 `reg_2_` 形式避免 reg[2] 报错），或并入 G10 类 `set_max_delay`。低风险。
+
+**你应该看的 file:line**：
+- G14 DPLC_MODE 注释对：`ip_cons` **L351-352**
+- G14 审计注释（为什么注释 + 回归口）：`ip_cons` **L339-347**
+- DC 报告代表路径：`max.rpt` **L31466**
+
+---
+
+### 2.9 组 9 · hold 30 条（结构性 / IO）· worst **-4.19**
+
+**旧约束干了什么**：未覆盖（multicycle 主要影响 setup，hold 通常不受 mc 收窄影响）。
+
+**现在是什么**：未覆盖。
+
+**Δ**：**从未约束**（与收窄无关）。
+
+| 子组 | endpoint | 条数/worst | 定性 |
+|---|---|---|---|
+| SD_CLK_INV_SHORT | `DTCTL/C2272/C2277/C2278/C2283` I2（SD_CLK_INV 门控 AND，I1=SD_CLK_INV，I2=n751/n759 来自 U1186/U1194 半加器链，data_cnt 驱动） | 4 / **-4.19** | 生成时钟（反相+分频）hold 需求 4.97ns，**结构性** |
+| SD_CLK_INV_LONG | 同上 | 4 / -2.66 | 同上（需求 3.45） |
+| DPLC_CLK_SHORT | `DTCTL/C2276/C2282` I2 | 2 / -1.14 | 同族 |
+| RX_CLK | `BUFFER_I/INDATA_SYNC_reg_0_..19_/D`（20bit 输入同步器） | 20 / -0.39 | IO 输入 hold：`set_input_delay -min` 使 arrival -0.28 < required 0.11 |
+
+**结论**：DTCTL 的 SD/DPLC 门控 hold 是时钟生成结构问题（反相+分频组合出的 SD_CLK_INV vs DPLC 生成时钟边沿关系）；INDATA_SYNC 是 IO 约束/板上关系问题。**都不是收窄责任**。
+
+**建议处置**：DTCTL 门控换 ICG 或对 n751/n759 加同步，APR 后用真实时钟树复核；INDATA_SYNC 复核 `set_input_delay -min` 与板上 RX_CLK skew 预算。
+
+**你应该看的 file:line**：
+- 输入延迟约束：`ip_cons` **L318** 一带（`set_input_delay -clock RX_CLK -min -0.3` 族，核对 INDATA_SYNC 对应的端口 -min 值）
+- hold 无逐跳明细：DC 只在 `.rpt` 输出汇总表，endpoint 反查 `.gv` 网表
+
+---
+
+## 3. file:line 速查表
+
+### 3.1 ip_cons 当前版（`61eb5605`）关键行
+
+| 行 | 内容 | 角色 |
+|---|---|---|
+| **L329-330** | `#set_multicycle_path ... DATA_POINT_LAT_reg*` | G13（注释）→ 组2/3 |
+| **L332-337** | `-through R_` REMOVED 注释 | 死约束删除（组5 相关） |
+| **L339-347** | G14 审计注释 | G14 为什么注释 + 回归口 |
+| **L349-354** | G14 三对（注释，pt_shell guard 内） | 组8（L351-352 = DPLC_MODE） |
+| **L358-359** | `set_max_delay $DPLC_CLKP -to U_DPLC_DATA_GEN/*`（DC 分支，无 -from，`*`） | DPLC max_delay（DC 侧用 `*`，罩内部节点） |
+| **L362** | `set_max_delay [expr $DPLC_CLKP*2] -from R_REG48_F_reg* -to ...`（DC） | DPLC mc2（DC 侧） |
+| **L365-373** | AUDIT NOTE：两条 no-from set_max_delay 覆盖 per-beat 像素管线 | **重点思考**：GEN=PIX_CLK=DCLK_DATA(`CENTER1.v:235`)，6.35 放宽 LONG 腿 2.54ns，意图未文档化，pending jjlu |
+| **L374-375** | `set_max_delay $DPLC_CLKP -to .../U_DPLC_DATA_GEN/*/D*`（PT 分支，无 -from，`*/D*`） | DPLC max_delay（PT 侧用 `*/D*`，正确 D 脚） |
+| **L377** | `set_max_delay [expr $DPLC_CLKP*2] -from R_REG48_F_reg*/CK -to ...`（PT） | DPLC mc2（PT 侧） |
+| **L385-412** | cpuwr_reg_grp 剔除 10 分区的**逐分区理由 + RTL file:line** | 组1 的"为什么剔"证据 |
+| **L413-424** | `set cpuwr_reg_grp [get_cells R_REG*]` + `remove_from_collection` 10 分区 | 组1 收窄本体 |
+| **L425-432** | 组 mc 三对（-to RX_CLK / DCLK_DATA_* / SD_CLK_INV_*） | 组 mc（对剩余对象生效） |
+| **L427-428** | `-to OSC_CLK` 对删除注明 | 空对删除（无影响） |
+| **L447-452** | R_REG00_L（FSYNC）mc：-to ANCTL/*L_CNT*、*F_CNT*、RX_CLK | 新增（RX_CLK 用时钟对象） |
+| **L609-612** | G10 max_delay 4 对（R_REG06_F_reg_7* / R_REG00_F_reg_6*，pt_shell guard，bit-exact） | G10（DC 下匹配不到，无变化） |
+
+### 3.2 RTL 消费点（组 1 逐分区，来自 ip_cons L385-412 审计注释）
+
+| 分区 bit | 消费点 | file:line |
+|---|---|---|
+| R_REG03_L[2] BKDU | 像素通路/对齐使能（无同步） | `DATA16TO24.v:198`、`CHPI_KCODE_ALIGN_L0.v:265`、`ANCTL.v:147,153` |
+| R_REG33_F[4:6] | 比较活 UTC 计数器 | `CHPI_UTC_CHK.v:27-31`、`SHORT_ENCODING_ERROR_CTRL.v:27` |
+| R_REG34_F[0] HIZ_SEL | 组合门控 LD_F_ECO | `ANCTL.v:130` |
+| R_REG40_F[7] DBC_VBK_ON | HSR_ACTIVE 裸项 | `LC_REG_MAPPING.v:322` |
+| R_REG41_F[0:2] DBC | HSR_W_target 活计数器目标 | `CHPI_SD_CTRL.v:514-522` |
+| R_REG46_F[3] TP_F_AHEAD | 活 TP_WIDTH_CNT 比较阈值 | `CHPI_SD_CTRL.v:196,443` |
+| R_REG47_F[1:6] HIZ_MIN | TP 计数器直喂（无同步） | `CHPI_SD_CTRL.v:180-201` |
+| R_REG56_F[0:3] | UTC 阈值 vs 活计数器 | `LONG_ENCODING_ERROR_CTRL.v:227-260` |
+| R_REG57_F[0:2] | UTC 阈值（同链） | `LONG_ENCODING_ERROR_CTRL.v:227-260` |
+
+---
+
+## 4. 优先级处置清单（建议顺序）
+
+| 优先级 | 动作 | 消多少 | 风险 |
+|---|---|---|---|
+| **P0** | 组 1 逐 bit 评审：准静态（HIZ/DBC）恢复窄 `-to` 豁免；UTC 比较/BKDU 保留单周期 + RTL 加同步 | 89（部分） | 高（逐 bit，别一刀切） |
+| **P1** | 组 2+3：G13 重写为 `-from {DATA_POINT_LAT_reg*  DATA_POINT_LAT_D1_reg*}`（先确认准静态语义） | 56 | 低 |
+| **P1** | 组 8：恢复 G14 `R_REG06_F_reg_2_` 对（DC 用 `reg_2_`） | 2 | 低 |
+| **P1** | 组 9：DTCTL 门控换 ICG / 使能同步；复核 INDATA_SYNC `set_input_delay -min` | 30 | 中（结构） |
+| **P2** | 组 4/5/6/7：交综合（retime/流水）或 RTL 优化；WCLK1(-0.11) 大概率 DC 收敛 | 305 | 低 |
+
+> **两条独立于 482 条归因、但审计挖出的额外问题（建议一并纳入思考）：**
+> 1. **`ip_cons` L358-359（DC 分支）的 no-from `set_max_delay -to U_DPLC_DATA_GEN/*`**：用 `*`（罩内部节点），而 PT 分支 L374-375 用 `*/D*`（正确 D 脚）——DC/PT 两侧端点口径不一致，且无 `-from` 覆盖 per-beat 像素管线（放宽 LONG 腿 2.54ns）。**看 L358 vs L374 的差异，思考 DC 侧该不该也改成 `*/D*` + 加 `-from`。**
+> 2. **K1 覆盖错位**（`script/mc_audit_0921/` 判定）：活路径 LONG `K1_FIND_LATCH`→`R_REG06_F_reg_6_` +0.187 裸奔，是覆盖错位而非收窄造成。
+
+---
+
+*本文档基于 HK1V11 0922 收窄实际约束 diff（`79ef0030`→`61eb5605`）+ 新 DC（`rep_dir_0922_1456`）违例 + 五模型交叉核对 + `script/mc_audit_0921/` 审计撰写。所有 ip_cons 行号、RTL file:line 均来自实读文件；行号以 `61eb5605` 版本为准，后续改动会漂移。*
+  </script>
+  <script src="./js/site.js"></script>
+</body>
+</html>
+<!-- ymzhu 2026-09-24 16:32 -->
