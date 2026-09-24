@@ -370,16 +370,16 @@ set_multicycle_path 1 -start -hold  -from [get_cells -hier -filter {name =~ *LON
 
 | 分区 | 时钟域 | B 类 bit 数 | 功能描述 |
 |------|--------|-----------|----------|
-| `R_REG00_L` | L (Low) | 2 | ANCTL 计数相关 |
-| `R_REG03_L` | L (Low) | 2 | BKDU（bare per-beat 消费者） |
-| `R_REG33_F` | F (Fast) | 3 | UTC 比较（R_UTC/R_FRM_CHK_MODE） |
-| `R_REG34_F` | F (Fast) | 2 | UTC 比较 |
-| `R_REG40_F` | F (Fast) | 2 | HIZ_SEL / R_DBC_VBK_ON（B 类锚点） |
-| `R_REG41_F` | F (Fast) | 2 | HIZ 类 |
-| `R_REG46_F` | F (Fast) | 2 | UTC 阈值 |
-| `R_REG47_F` | F (Fast) | 2 | HIZ_MIN_SEL/VAL（裸进 TP 计数器） |
-| `R_REG56_F` | F (Fast) | 3 | UTC 阈值 |
-| `R_REG57_F` | F (Fast) | 2 | UTC 阈值 |
+| `R_REG00_L` | L (Low) | 1 | ANCTL 计数相关（[0]） |
+| `R_REG03_L` | L (Low) | 1 | BKDU（bare per-beat 消费者，[2]） |
+| `R_REG33_F` | F (Fast) | 3 | UTC 比较（R_UTC/R_FRM_CHK_MODE，[4:6]） |
+| `R_REG34_F` | F (Fast) | 1 | HIZ_SEL（组合门控 LD_F_ECO，[0]） |
+| `R_REG40_F` | F (Fast) | 1 | R_DBC_VBK_ON（B 类锚点） |
+| `R_REG41_F` | F (Fast) | 3 | DBC / R_DBC_WIDTH_OPT（HSR 活计数器目标，[0:2]） |
+| `R_REG46_F` | F (Fast) | 1 | TP_F_AHEAD（活 TP_WIDTH_CNT 比较阈值，[3]） |
+| `R_REG47_F` | F (Fast) | 6 | HIZ_MIN_SEL/VAL（裸进 TP 计数器，[1:6]） |
+| `R_REG56_F` | F (Fast) | 4 | UTC 阈值（[0:3]） |
+| `R_REG57_F` | F (Fast) | 3 | UTC 阈值（[0:2]） |
 | **合计** | — | **24** | — |
 
 ---
@@ -840,4 +840,4 @@ rep_dir_0922_1456/  新 DC 跑输出目录
   <script src="./js/site.js"></script>
 </body>
 </html>
-<!-- ymzhu 2026-09-24 18:09 -->
+<!-- ymzhu 2026-09-24 18:36 -->

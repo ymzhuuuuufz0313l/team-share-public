@@ -99,7 +99,7 @@
 > 注：`ANCTL.v` BKDU 消费点为 L162（`DRA_CS`）、L168（`CS_VCOM`）、L336-342（`POFF_CH*` 族）；`LC_REG_MAPPING.v:331` = `assign HSR_ACTIVE = (R_HSR_BLANK_ON | ~BKDU_SYNC) & R_HSR_EN`。原 `ip_cons` L385-412 审计注释里的 `ANCTL.v:147,153`/`LC_REG_MAPPING.v:322` 为漂移行号（见 §3.4）。另：`R_REG40_F[7]` DBC_VBK_ON 是本分区审计 B 类锚点（`HSR_ACTIVE` 裸项，per-beat），但本 run 它 **0 条违例**——23 条全来自 `[0:1]` AABB（21）+ `[6]` VPS_EN_0（2）。
 
 **结论**：形式上 100% 是"收窄暴露"。但这 24 bit 是审计**有意**挑出来的 B 类（裸 per-beat 消费者、无同步器），收窄是收紧不是 bug。其中要**逐 bit 二选一**：
-- **一次性/准静态配置**（HIZ 类 `R_REG47_F`、AABB 类 `R_REG40_F[0:1]`）：写入窗口远离工作拍 → 可恢复窄 `-to` 豁免。**AABB `R_REG40_F[0:1]`：0924 ymzhu 确认一次性 I2C 初始化配置、显示期稳定几百拍 → 已加 mc2/1（`-to RX_CLK`）**，闭环 21 条 HSR/STB/SCHOP 端点（worst −1.00）；同分区 `[7]` DBC_VBK_ON 为 B 类 per-beat 保持单拍、`[6]` VPS_EN_0 无消费。
+- **一次性/准静态配置**（HIZ 类 `R_REG47_F`、AABB 类 `R_REG40_F[0:1]`）：写入窗口远离工作拍 → 可恢复窄 `-to` 豁免。**AABB `R_REG40_F[0:1]`：0924 ymzhu 确认一次性 I2C 初始化配置、显示期稳定几百拍 → 已加 mc2/1（`-to RX_CLK`）**，闭环 21 条 HSR/STB/SCHOP 端点（worst −1.00）；同分区 `[7]` DBC_VBK_ON 为 B 类 per-beat 保持单拍、`[6]` VPS_EN_0 **有真实消费**（`PWRC_DOWN = R_BKDU & VPS_EN_0` 裸项，LC_REG_MAPPING.v:221/251/263 → R_PWRCP_COP/R_PWRCN_COP，与 BKDU 同 CDC 根因），2 条暂保持单拍待确认。
 - **每拍活消费**（UTC 比较 `R_REG33/56/57`、BKDU `R_REG03_L[2]`）：恢复豁免 = 放走真违例 → **只能 RTL 加同步/门控**。
   - **BKDU `R_REG03_L[2]`（G1/G2）：0924 ymzhu 确认不能恢复（不能加 waiver）**——0922 run 中 24 条 BKDU→PIX_DATA 路径是活的（0921V3 曾被综合剪掉标 `p` 空转，现已复活），worst −0.16；R_BKDU 裸跨域进 DCLK 域像素逻辑无同步器 = 真实 CDC 亚稳态风险，waiver 只放宽 STA、治不了跨域。修复 = 把 `LC_REG_MAPPING` `BKDU_SYNC` 由单级扩两级并接像素路径（`LONG_ENCODING_OUTPUT.v:333/397`）。
 
@@ -341,7 +341,7 @@
 | 组/子组 | startpoint 行 | startpoint 寄存器 | slack 行 | worst |
 |---|---|---|---|---|
 | 组1 RX_CLK worst | `max.rpt` **L39120** | R_REG47_F_reg_1_（HIZ） | **L39209** | -1.45 |
-| 组1 R_REG40_F（DBC） | `max.rpt` **L40104** | R_REG40_F_reg_1_ | — | -1.00 |
+| 组1 R_REG40_F（AABB） | `max.rpt` **L40104** | R_REG40_F_reg_1_ | — | -1.00 |
 | 组1 R_REG03_L（BKDU） | `max.rpt` **L12869** | R_REG03_L_reg_2_ | — | -0.16 |
 | 组1 R_REG56_F（UTC） | `max.rpt` **L48542** | R_REG56_F_reg_3_ | — | -0.36 |
 | 组1 R_REG33_F（UTC） | `max.rpt` **L48730** | R_REG33_F_reg_4_ | — | -0.34 |
@@ -410,4 +410,4 @@
   <script src="./js/site.js"></script>
 </body>
 </html>
-<!-- ymzhu 2026-09-24 18:09 -->
+<!-- ymzhu 2026-09-24 18:36 -->
