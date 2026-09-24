@@ -37,6 +37,8 @@
 > 约束基线：旧 = `79ef0030`（收窄前），新 = `61eb5605`（收窄后）。
 > 约束文件：`SYNTHESIS/common/ip_cons/HK1V11_digital_top.tcl`（615 行）。
 > DC 报告：`SYNTHESIS/ip/syn_HK1V11_digital_top/dc/rep_dir_0922_1456/`（`HK1V11_digital_top.rpt` 主报告 + `HK1V11_digital_top_max.rpt` 全路径）。
+>
+> **K3-256K 审查修订（2026-09-24）**：K3 逐项核对后判定行号体系（ip_cons / DC 报告）几乎全部精确命中，但纠正了本版的若干内容错误与 RTL file:line 过时项（§3.2 原值转录自 `ip_cons` L385-412 审计注释，而该注释的行号本身已漂移；本版全部改为实读核实的行号，并在 §3.4 列出修订清单）。
 
 ---
 
@@ -60,7 +62,7 @@
 | 1 | RX_CLK setup | 89 | **-1.45** | 宽 `R_REG*` 组 mc2 -to RX_CLK 全覆盖 | 组剔除 10 分区（24 B 类 bit） | **约束→删除** | B 类裸消费，有意收紧；逐 bit 二选一 | P0 |
 | 2 | RX_CLK setup | 15 | -1.31 | G13 mc2 from-only 覆盖 | G13 注释 | **约束→删除** | 准静态，恢复 G13 即消 | P1 |
 | 3 | RX_CLK setup | 41 | -1.31 | G13 pattern 从未匹配 `_D1` | G13 注释（pattern 仍窄） | **从未约束** | G13 pattern 缺陷，扩 pattern 消 56 | P1 |
-| 4 | RX_CLK setup | 139 | -0.85 | 未覆盖（不在 cpuwr/G13/G14） | 未覆盖 | **从未约束** | RX 域真实关键路径 | P2 |
+| 4 | RX_CLK setup | 139 | **-1.14** | 未覆盖（不在 cpuwr/G13/G14） | 未覆盖 | **从未约束** | RX 域真实关键路径 | P2 |
 | 5 | WCLK1_A_DCLK_SHORT | 139 | -0.11 | 唯一沾边的 `-through R_` 是死约束(0匹配) | 未覆盖 | **从未约束** | CHPI 配置写通路，真实(轻微) | P2 |
 | 6 | DCLK_DATA_MUX_SHORT | 23 | -0.43 | G1/G2 只对 R_REG03_L 起点生效 | 未覆盖 | **从未约束** | 像素同域数据通路，真实 | P2 |
 | 7 | SD_CLK_INV_DPLC_LONG | 4 | -0.36 | 未覆盖（G14 只管 config bit） | 未覆盖 | **从未约束** | 活计数器→生成时钟门控 | P2 |
@@ -69,7 +71,7 @@
 
 > 合计 482 条 = setup 452（89+15+41+139+139+23+4+2）+ hold 30。**"收窄报出来的"只有 106 条（组1 89 + 组2 15 + 组8 2，均 Δ=约束→删除）；其余 376 条（78%）从未被任何约束覆盖，与收窄无关。**
 >
-> 注：QoR 表里 RX_CLK 计 287（含 3 条 clock-gating 检查口径），逐路径全扫为 284，差 3 条属口径差异。
+> 注：QoR 表里 RX_CLK 计 287，逐路径全扫为 284，差 3 条——归因为 clock-gating 检查口径（**推断，未实锤**；要确证需 `report_timing -check_type clock_gating` 或 `report_exceptions`）。
 
 ---
 
@@ -79,20 +81,22 @@
 
 **旧约束干了什么**：基线里 `cpuwr_reg_grp` = 宽泛的**全部** `R_REG*`（F+L 全含），对它下 `mc 2 -start -setup / 1 -start -hold -to RX_CLK`。这 89 条 startpoint 全部在宽组里 → 被 mc2 豁免，按 2 个 launch 周期检查，**不报违例**。
 
-**现在是什么**：`cpuwr_reg_grp` 用 `remove_from_collection` 剔除了 10 个分区（24 个 bit 级审计判定的 B 类"裸 per-beat 消费者"），这 89 条 startpoint 退出组 → 失去 mc2 → **按单周期报 setup 违例**。同时 G1/G2（BKDU→PIX 的 4 对）也被注释，R_REG03_L[2] 的额外豁免也没了。
+**现在是什么**：`cpuwr_reg_grp` 用 `remove_from_collection` 剔除了 10 个分区（24 个 bit 级审计判定的 B 类"裸 per-beat 消费者"），这 89 条 startpoint 退出组 → 失去 mc2 → **按单周期报 setup 违例**。同时 G1/G2（R_REG03_L→PIX 的 2 对/4 行）也被注释，R_REG03_L[2] 的额外豁免也没了。
 
 **Δ**：约束→删除（组覆盖被剔除）。
 
-**逐分区拆解**（条数 / worst / 消费点 RTL file:line）：
+**逐分区拆解**（条数 / worst / 消费点 RTL file:line，**行号已实读核实**）：
 
 | 分区 | bit | 条数 | worst | 下游消费者（无同步器） | RTL file:line |
 |---|---|---|---|---|---|
-| R_REG03_L | [2] BKDU | 24 | -0.16 | 像素数据通路/对齐使能 | `DATA16TO24.v:198`、`CHPI_KCODE_ALIGN_L0.v:265`、`ANCTL.v:147,153` |
-| R_REG40_F | [7] DBC_VBK_ON | 23 | -1.00 | HSR_ACTIVE 裸项 | `LC_REG_MAPPING.v:322` |
+| R_REG03_L | [2] BKDU | 24 | -0.16 | 像素数据通路/对齐使能 | `DATA16TO24.v:198`、`CHPI_KCODE_ALIGN_L0.v:265`、`ANCTL.v:162,168,336-342` |
+| R_REG40_F | [7] DBC_VBK_ON | 23 | -1.00 | HSR_ACTIVE 裸项 | `LC_REG_MAPPING.v:331` |
 | R_REG47_F | [1:6] HIZ_MIN | 13 | **-1.45** | TP 计数器直喂 | `CHPI_SD_CTRL.v:180-201` |
 | R_REG33_F | [4:6] UTC/FRM_CHK | 12 | -0.34 | 比较活 UTC 计数器 | `CHPI_UTC_CHK.v:27-31`、`SHORT_ENCODING_ERROR_CTRL.v:27` |
 | R_REG56_F | [0:3] UTC 阈值 | 11 | -0.36 | 活计数器比较 | `LONG_ENCODING_ERROR_CTRL.v:227-260` |
 | R_REG57_F | [0:2] UTC 阈值 | 6 | -0.88 | 同 R_REG56_F 链 | `LONG_ENCODING_ERROR_CTRL.v:227-260` |
+
+> 注：`ANCTL.v` BKDU 消费点为 L162（`DRA_CS`）、L168（`CS_VCOM`）、L336-342（`POFF_CH*` 族）；`LC_REG_MAPPING.v:331` = `assign HSR_ACTIVE = (R_HSR_BLANK_ON | ~BKDU_SYNC) & R_HSR_EN`。原 `ip_cons` L385-412 审计注释里的 `ANCTL.v:147,153`/`LC_REG_MAPPING.v:322` 为漂移行号（见 §3.4）。
 
 **结论**：形式上 100% 是"收窄暴露"。但这 24 bit 是审计**有意**挑出来的 B 类（裸 per-beat 消费者、无同步器），收窄是收紧不是 bug。其中要**逐 bit 二选一**：
 - **一次性/准静态配置**（HIZ 类 `R_REG47_F`、DBC 类 `R_REG40_F`）：写入窗口远离工作拍 → 可恢复窄 `-to` 豁免。
@@ -103,7 +107,7 @@
 **你应该看的 file:line**：
 - 约束剔除本体：`ip_cons` **L413-424**（`get_cells R_REG*` + `remove_from_collection` 10 分区）
 - 组 mc 还在（对剩余对象生效）：`ip_cons` **L425-432**（-to RX_CLK / DCLK_DATA_* / SD_CLK_INV_* 三对）
-- 逐分区"为什么剔"的理由注释：`ip_cons` **L385-412**（每个分区的 RTL file:line 都写在这）
+- 逐分区"为什么剔"的理由注释：`ip_cons` **L385-412**（注意：该注释里的部分 RTL 行号已漂移，以本表 §3.2 实读核实值为准）
 - 最深那条（-1.45）：`CHPI_SD_CTRL.v:180-201`（HIZ_MIN_SEL/VAL → TP 计数器）
 - DC 报告：worst 路径 startpoint `max.rpt` **L39120**（R_REG47_F_reg_1_），slack `max.rpt` **L39209**；QoR 汇总 `.rpt` **L20314**
 
@@ -130,9 +134,9 @@
 
 ### 2.3 组 3 · RX_CLK setup · 41 条（G13 的 `_D1` 漏配）· worst -1.31
 
-**旧约束干了什么**：G13 的 pattern 是 `DATA_POINT_LAT_reg_*`——它**从未匹配过** `DATA_POINT_LAT_D1_reg_*`（名字里多了 `_D1`）。所以这 41 条在**旧版就没被 G13 覆盖**（新旧两版都是单周期）。
+**旧约束干了什么**：G13 的 pattern 是 `DATA_POINT_LAT_reg_*`——它**从未匹配过** `DATA_POINT_LAT_D1_reg_*`（名字里多了 `_D1`，且 SHORT/LONG 实例层级也不同）。所以这 41 条在**旧版就没被 G13 覆盖**（新旧两版都是单周期）。
 
-**现在是什么**：G13 注释（pattern 仍窄）。这 41 条依旧无豁免，只是这次 RTL/综合结果恶化到违例。
+**现在是什么**：G13 注释（pattern 仍窄）。这 41 条依旧无豁免，只是这次 RTL/综合结果恶化到违例（SHORT 实例 21 + LONG 实例 20）。
 
 **Δ**：**从未约束**（不是收窄造成的——是 G13 pattern 本身有缺陷）。
 
@@ -147,7 +151,7 @@
 
 ---
 
-### 2.4 组 4 · RX_CLK setup · 139 条（纯数据通路寄存器）· worst -0.85
+### 2.4 组 4 · RX_CLK setup · 139 条（纯数据通路寄存器）· worst **-1.14**
 
 **旧约束干了什么**：这些 startpoint（`o_keep_reg_*`、`rx_bit_cnt_reg_*`、`boe_bcc_prescale_reg_*` 等）**不在** cpuwr_reg_grp、不在 G13/G14 → 旧版就没覆盖。
 
@@ -155,14 +159,17 @@
 
 **Δ**：**从未约束**（真实违例）。
 
-**结论**：RX 域内部真实关键路径（理想时钟即违例），与收窄**完全无关**，需综合策略/RTL 优化。
+**结论**：RX 域内部真实关键路径（理想时钟即违例），与收窄**完全无关**，需综合策略/RTL 优化。整组 worst 是 `boe_bcc_prescale_reg_2_` 的 **-1.14**。
 
 | startpoint 模式 | 模块 | 条数 | worst | DC 报告 startpoint 行 |
 |---|---|---|---|---|
 | `o_keep_reg_*` | LONG_ENCODING_DESCRAMBLE | 60 | -0.60 | `max.rpt` **L44108** |
 | `rx_bit_cnt_reg_*` | LONG_ENCODING_DECODE | 46 | -0.85 | `max.rpt` **L40964** |
-| `boe_bcc_prescale(_cnt)_reg_*` | BOE_AUTO_EQ_BCC_CTRL/u_boe_rx_bcc_decoder | 26 | -1.14 | `max.rpt` **L39458** |
-| 其他（CS_SIG_ORG / bcc_receive_state / cnt_7b / o_raw_idx） | 各 1~3 | 6 | -0.51 | — |
+| `boe_bcc_prescale_reg_*` | BOE_AUTO_EQ_BCC_CTRL/u_boe_rx_bcc_decoder | 20 | **-1.14** | `max.rpt` **L39458** |
+| `boe_bcc_prescale_cnt_reg_*` | 同上 | 6 | -0.53 | — |
+| 其他（bcc_rx_reply_time_cnt / cnt_7b / o_raw_idx / CS_SIG_ORG / bcc_receive_state） | 各 | 7 | -0.51 | — |
+
+> 合计 60+46+20+6+7 = **139**。
 
 **建议处置**：交综合（ungroup / retime / 大小 cell 重映射）或 RTL 流水。
 
@@ -180,30 +187,30 @@
 
 **Δ**：**从未约束**（真实，但轻微 -0.11）。
 
-**结论**：CHPI 配置写通路——`CONFIG_DATA_reg_*`（DCLK_CONFIG 域）→ `LC_CHPI_DECODE` → `CHPI_CONFIG_L0` → `LC_CPUWR` → `R_REG*_reg/D`（WCLK1 域），跨 DCLK_CONFIG→WCLK1_A。真实 setup 问题，但 worst 仅 -0.11，DC 优化裕量大概率够。
+**结论**：CHPI 配置写通路——`CONFIG_DATA_reg_*`（**RX_CLK 域**起点）→ `LC_CHPI_DECODE` → `CHPI_CONFIG_L0` → `LC_CPUWR` → `R_REG*_reg/D`（**WCLK1_A_DCLK_SHORT 域**），跨 **RX_CLK → WCLK1_A**。139 条 startpoint 全部是 `CONFIG_DATA_reg_*`。真实 setup 问题，但 worst 仅 -0.11，DC 优化裕量大概率够。
 
 **建议处置**：交 DC 优化；若仍超，考虑对该写通路加窄 mc（确认是低频配置写）。
 
 **你应该看的 file:line**：
 - 死约束删除注明：`ip_cons` **L332-337**（看它为什么"删了但无影响"）
-- DC 报告：worst 路径 startpoint `max.rpt` **L154274**（CONFIG_DATA_reg_2_，RX_CLK 域起点），slack `max.rpt` **L154346**（-0.11）；QoR 汇总 `.rpt` **L20418**
+- DC 报告：worst 路径 startpoint `max.rpt` **L154274**（`CONFIG_DATA_reg_2_`，"clocked by RX_CLK"），slack `max.rpt` **L154346**（-0.11）；endpoint 为 `R_REG30_F_reg_2_`（"clocked by WCLK1_A_DCLK_SHORT"）；QoR 汇总 `.rpt` **L20418**
 
 ---
 
 ### 2.6 组 6 · DCLK_DATA_MUX_SHORT · 23 条（PIX_DATA）· worst -0.43
 
-**旧约束干了什么**：G1/G2（R_REG03_L→PIX_DATA 的 4 对）的 `-to PIX_DATA_reg*` **只对 R_REG03_L 起点生效**，与本组 startpoint（`PIX_DATA_reg_8_/9_/14_/18_`，来自 SHORT/LONG_ENCODING_OUTPUT）无关 → 旧版就没覆盖。
+**旧约束干了什么**：G1/G2（R_REG03_L→PIX_DATA 的 2 对/4 行）的 `-to PIX_DATA_reg*` **只对 R_REG03_L 起点生效**，与本组 startpoint（`PIX_DATA_reg_*`，来自 SHORT/LONG_ENCODING_OUTPUT）无关 → 旧版就没覆盖。
 
 **现在是什么**：G1/G2 已注释，仍未覆盖。
 
 **Δ**：**从未约束**（真实）。
 
-**结论**：像素同域数据通路（`PIX_DATA_reg_*` → `CENTER1/DTCTL/PIX_DATA_D_reg_*`，DCLK_DATA_MUX 同域），真实数据延迟超标。
+**结论**：像素同域数据通路（`PIX_DATA_reg_*` → `CENTER1/DTCTL/PIX_DATA_D_reg_*`，DCLK_DATA_MUX 同域），真实数据延迟超标。23 条 startpoint 全部是 `PIX_DATA_reg_*`。
 
 **建议处置**：K1 式流水或让 DC retime。
 
 **你应该看的 file:line**：
-- G1/G2 注释（看它的 -to 范围为什么罩不到本组）：基线 diff 里被删的 `-from R_REG03_L_reg* -to {PIX_CLK_EN_reg* PIX_DATA_reg*}` 4 对
+- G1/G2 注释（看它的 -to 范围为什么罩不到本组）：基线 diff 里被删的 `-from R_REG03_L_reg* -to {PIX_CLK_EN_reg* PIX_DATA_reg*}` 一对 + `-to BK_ST_reg*` 一对（共 2 对/4 行）
 - DC 报告：worst 路径 startpoint `max.rpt` **L17593**（PIX_DATA_reg_9_），slack `max.rpt` **L17659**（-0.43）；QoR 汇总 `.rpt` **L20236**
 
 ---
@@ -216,13 +223,14 @@
 
 **Δ**：**从未约束**（真实）。
 
-**结论**：`DTCTL/data_cnt_pre_reg_3_/4_`（DCLK_DATA_MUX 活计数器）→ `DTCTL/C2282/C2276`（DPLC_CLK 的 clock-gating AND 使能脚 I2）。数据计数器对生成时钟的门控 setup 检查。
+**结论**：`DTCTL/data_cnt_pre_reg_3_/4_`（DCLK_DATA_MUX 活计数器）→ `DTCTL` 的 SD_CLK_INV_DPLC 门控 AND 使能脚 I2（**C2272 / C2277 / C2278 / C2283**，每 counter 各 2 条）。数据计数器对生成时钟的门控 setup 检查。
 
 **建议处置**：换 ICG 或在门控前对使能加同步。
 
 **你应该看的 file:line**：
 - 这类 startpoint 在 `ip_cons` 里无对应 waiver（从未约束证据）
 - DC 报告：worst 路径 startpoint `max.rpt` **L111894**（data_cnt_pre_reg_4_），slack `max.rpt` **L111944**（-0.36）；QoR 汇总 `.rpt` **L20327**
+- （注意：C2282/C2276 是组 8 DPLC_CLK_LONG 的 endpoint，不是本组——本组是 C2272/C2277/C2278/C2283）
 
 ---
 
@@ -234,7 +242,7 @@
 
 **Δ**：约束→删除（G14 注释）。
 
-**结论**：`R_REG06_F[2]`（R_DPLC_MODE）是一次性模式配置 bit，路径 `R_REG06_F_reg_2_/Q → LC_REG_MAPPING/U24 → R_DPLC_MODE → CENTER1/DTCTL U326→…→U184（8 级）→ C2282/I2`。属可豁免候选。
+**结论**：`R_REG06_F[2]`（R_DPLC_MODE）是一次性模式配置 bit，路径 `R_REG06_F_reg_2_/Q → LC_REG_MAPPING/U24 → R_DPLC_MODE → CENTER1/DTCTL … → C2282/C2276/I2`（endpoint 为 C2282/C2276，DPLC_CLK_LONG 域）。属可豁免候选。
 
 **建议处置**：恢复 G14 的 `R_REG06_F_reg_2_` 对（DC 下用 `reg_2_` 形式避免 reg[2] 报错），或并入 G10 类 `set_max_delay`。低风险。
 
@@ -252,6 +260,7 @@
 **现在是什么**：未覆盖。
 
 **Δ**：**从未约束**（与收窄无关）。
+> 注：hold 段（`.rpt`）是 per-endpoint 汇总、**无 startpoint**，故 INDATA_SYNC 20 条（IO 输入）可确证未被覆盖；DTCTL 10 条门控 hold 的"从未约束"是基于结构定性推断（旧版 G14 from-only 是否覆盖这些门控 hold 不可考）。
 
 | 子组 | endpoint（`.rpt` 行） | 条数/worst | 定性 |
 |---|---|---|---|
@@ -267,7 +276,7 @@
 **建议处置**：DTCTL 门控换 ICG 或对 n751/n759 加同步，APR 后用真实时钟树复核；INDATA_SYNC 复核 `set_input_delay -min` 与板上 RX_CLK skew 预算。
 
 **你应该看的 file:line**：
-- 输入延迟约束：`ip_cons` **L318** 一带（`set_input_delay -clock RX_CLK -min -0.3` 族，核对 INDATA_SYNC 对应端口 -min 值）
+- 输入延迟约束：`ip_cons` **L311-312**（`set_input_delay -clock RX_CLK 0.3` / `-min -0.3` `[get_ports dout_lane*]`，核对 INDATA_SYNC 对应端口 -min 值）
 - DC 报告：4 个 hold 组头 `.rpt` **L7435 / L7446 / L7493 / L7508**，worst endpoint 行见上表；QoR 汇总 `.rpt` **L20262 / L20314 / L20353 / L20366**
 
 ---
@@ -278,39 +287,40 @@
 
 | 行 | 内容 | 角色 |
 |---|---|---|
+| **L311-312** | `set_input_delay -clock RX_CLK 0.3 / -min -0.3 [get_ports dout_lane*]` | inout delay（组9 INDATA_SYNC 相关） |
 | **L329-330** | `#set_multicycle_path ... DATA_POINT_LAT_reg*` | G13（注释）→ 组2/3 |
 | **L332-337** | `-through R_` REMOVED 注释 | 死约束删除（组5 相关） |
 | **L339-347** | G14 审计注释 | G14 为什么注释 + 回归口 |
 | **L349-354** | G14 三对（注释，pt_shell guard 内） | 组8（L351-352 = DPLC_MODE） |
 | **L358-359** | `set_max_delay $DPLC_CLKP -to U_DPLC_DATA_GEN/*`（DC 分支，无 -from，`*`） | DPLC max_delay（DC 侧用 `*`，罩内部节点） |
 | **L362** | `set_max_delay [expr $DPLC_CLKP*2] -from R_REG48_F_reg* -to ...`（DC） | DPLC mc2（DC 侧） |
-| **L365-373** | AUDIT NOTE：两条 no-from set_max_delay 覆盖 per-beat 像素管线 | **重点思考**：GEN=PIX_CLK=DCLK_DATA(`CENTER1.v:235`)，6.35 放宽 LONG 腿 2.54ns，意图未文档化，pending jjlu |
+| **L365-373** | AUDIT NOTE：两条 no-from set_max_delay 覆盖 per-beat 像素管线 | **重点思考**：GEN=PIX_CLK=DCLK_DATA（`CENTER1.v:239/241`），6.35 放宽 LONG 腿 2.54ns，意图未文档化，pending jjlu |
 | **L374-375** | `set_max_delay $DPLC_CLKP -to .../U_DPLC_DATA_GEN/*/D*`（PT 分支，无 -from，`*/D*`） | DPLC max_delay（PT 侧用 `*/D*`，正确 D 脚） |
 | **L377** | `set_max_delay [expr $DPLC_CLKP*2] -from R_REG48_F_reg*/CK -to ...`（PT） | DPLC mc2（PT 侧） |
-| **L385-412** | cpuwr_reg_grp 剔除 10 分区的**逐分区理由 + RTL file:line** | 组1 的"为什么剔"证据 |
+| **L385-412** | cpuwr_reg_grp 剔除 10 分区的**逐分区理由 + RTL file:line** | 组1 的"为什么剔"证据（**注意：此注释部分 RTL 行号已漂移，以 §3.2 为准**） |
 | **L413-424** | `set cpuwr_reg_grp [get_cells R_REG*]` + `remove_from_collection` 10 分区 | 组1 收窄本体 |
 | **L425-432** | 组 mc 三对（-to RX_CLK / DCLK_DATA_* / SD_CLK_INV_*） | 组 mc（对剩余对象生效） |
 | **L427-428** | `-to OSC_CLK` 对删除注明 | 空对删除（无影响） |
 | **L447-452** | R_REG00_L（FSYNC）mc：-to ANCTL/*L_CNT*、*F_CNT*、RX_CLK | 新增（RX_CLK 用时钟对象） |
 | **L609-612** | G10 max_delay 4 对（R_REG06_F_reg_7* / R_REG00_F_reg_6*，pt_shell guard，bit-exact） | G10（DC 下匹配不到，无变化） |
 
-### 3.2 RTL 消费点（组 1 逐分区，来自 ip_cons L385-412 审计注释）
+### 3.2 RTL 消费点（组 1 逐分区，**实读核实**）
 
 | 分区 bit | 消费点 | file:line |
 |---|---|---|
-| R_REG03_L[2] BKDU | 像素通路/对齐使能（无同步） | `DATA16TO24.v:198`、`CHPI_KCODE_ALIGN_L0.v:265`、`ANCTL.v:147,153` |
+| R_REG03_L[2] BKDU | 像素通路/对齐使能（无同步） | `DATA16TO24.v:198`、`CHPI_KCODE_ALIGN_L0.v:265`、`ANCTL.v:162,168,336-342` |
 | R_REG33_F[4:6] | 比较活 UTC 计数器 | `CHPI_UTC_CHK.v:27-31`、`SHORT_ENCODING_ERROR_CTRL.v:27` |
-| R_REG34_F[0] HIZ_SEL | 组合门控 LD_F_ECO | `ANCTL.v:130` |
-| R_REG40_F[7] DBC_VBK_ON | HSR_ACTIVE 裸项 | `LC_REG_MAPPING.v:322` |
-| R_REG41_F[0:2] DBC | HSR_W_target 活计数器目标 | `CHPI_SD_CTRL.v:514-522` |
-| R_REG46_F[3] TP_F_AHEAD | 活 TP_WIDTH_CNT 比较阈值 | `CHPI_SD_CTRL.v:196,443` |
+| R_REG34_F[0] HIZ_SEL | 组合门控 LD_F_ECO | `ANCTL.v:133` |
+| R_REG40_F[7] DBC_VBK_ON | HSR_ACTIVE 裸项 | `LC_REG_MAPPING.v:331` |
+| R_REG41_F[0:2] DBC | HSR_W_target 活计数器目标 | `CHPI_SD_CTRL.v:551-559`（case R_HSR_W_SEL）+ L568/578（装载） |
+| R_REG46_F[3] TP_F_AHEAD | 活 TP_WIDTH_CNT 比较阈值 | `CHPI_SD_CTRL.v:203,466` |
 | R_REG47_F[1:6] HIZ_MIN | TP 计数器直喂（无同步） | `CHPI_SD_CTRL.v:180-201` |
 | R_REG56_F[0:3] | UTC 阈值 vs 活计数器 | `LONG_ENCODING_ERROR_CTRL.v:227-260` |
 | R_REG57_F[0:2] | UTC 阈值（同链） | `LONG_ENCODING_ERROR_CTRL.v:227-260` |
 
 ### 3.3 DC 报告行号索引（`rep_dir_0922_1456`）
 
-> 两个文件：**主报告** `HK1V11_digital_top.rpt`（20541 行，含 QoR 汇总 + hold 段）；**全路径** `HK1V11_digital_top_max.rpt`（206423 行，setup 逐跳路径）。
+> 两个文件：**主报告** `HK1V11_digital_top.rpt`（20540 行，含 QoR 汇总 + hold 段）；**全路径** `HK1V11_digital_top_max.rpt`（228116 行，setup 逐跳路径）。
 
 **A. QoR 汇总表**（主报告 `Report : qor` 段，从 **L20190** 起，每块 13 行）
 
@@ -338,8 +348,8 @@
 | 组3 G13-D1 | `max.rpt` **L39374** | DATA_POINT_LAT_D1_reg_10_ | — | -1.31 |
 | 组4 o_keep | `max.rpt` **L44108** | o_keep_reg_2_ | — | -0.60 |
 | 组4 rx_bit_cnt | `max.rpt` **L40964** | rx_bit_cnt_reg_3_ | — | -0.85 |
-| 组4 boe_bcc | `max.rpt` **L39458** | boe_bcc_prescale_reg_2_ | — | -1.14 |
-| 组5 WCLK1 | `max.rpt` **L154274** | CONFIG_DATA_reg_2_ | **L154346** | -0.11 |
+| 组4 boe_bcc（worst） | `max.rpt` **L39458** | boe_bcc_prescale_reg_2_ | — | **-1.14** |
+| 组5 WCLK1 | `max.rpt` **L154274** | CONFIG_DATA_reg_2_（RX_CLK 域） | **L154346** | -0.11 |
 | 组6 PIX_DATA | `max.rpt` **L17593** | PIX_DATA_reg_9_ | **L17659** | -0.43 |
 | 组7 gating | `max.rpt` **L111894** | data_cnt_pre_reg_4_ | **L111944** | -0.36 |
 | 组8 DPLC_MODE | `max.rpt` **L31466** | R_REG06_F_reg_2_ | **L31538** | -0.38 |
@@ -354,6 +364,27 @@
 | SD_CLK_INV_SHORT | `.rpt` **L7508** | C2272/I2 **L7513** | **-4.19** |
 
 > 行号以 `rep_dir_0922_1456` 本次报告为准；重跑后行号会漂移，但"QoR 块 / startpoint / endpoint"的相对结构不变，按组名搜即可定位。
+
+### 3.4 K3 审查修订清单（本版相对首版改了什么）
+
+| 项 | 首版 | 修订为 | 依据 |
+|---|---|---|---|
+| 组4 worst | -0.85 | **-1.14**（boe_bcc_prescale_reg_2_） | max.rpt 全扫，原值与自身子表矛盾 |
+| 组5 时钟域 | "DCLK_CONFIG 域 / DCLK_CONFIG→WCLK1_A" | **RX_CLK 域 / RX_CLK→WCLK1_A** | max.rpt L154275 startpoint "clocked by RX_CLK" |
+| 组7 endpoint | C2282/C2276 | **C2272/C2277/C2278/C2283** | C2282/C2276 实为组8 endpoint |
+| R_REG03_L BKDU | ANCTL.v:147,153 | **ANCTL.v:162,168,336-342** | 实读（147/153 无 BKDU） |
+| R_REG34_F HIZ_SEL | ANCTL.v:130 | **ANCTL.v:133** | 实读（L133 = LD_F_ECO） |
+| R_REG40_F DBC_VBK | LC_REG_MAPPING.v:322 | **LC_REG_MAPPING.v:331** | 实读（L331 = HSR_ACTIVE） |
+| R_REG41_F DBC | CHPI_SD_CTRL.v:514-522 | **CHPI_SD_CTRL.v:551-559** | 实读（case R_HSR_W_SEL） |
+| R_REG46_F TP_F_AHEAD | CHPI_SD_CTRL.v:196,443 | **CHPI_SD_CTRL.v:203,466** | 实读（R_TP_F_AHEAD 仅 L203/466） |
+| 组4 "其他" 条数 | 6 | **7**（补 bcc_rx_reply_time_cnt×3），合计 139 | max.rpt 全扫 |
+| max.rpt 行数 | 206423 | **228116** | 字节级统计（引用行号仍命中） |
+| .rpt 行数 | 20541 | **20540** | 字节级统计 |
+| G1/G2 对数 | "4 对" | **2 对/4 行** | git diff 实为 {PIX}+{BK_ST} 各 1 对 |
+| set_input_delay 行 | L318 一带 | **L311-312** | 实读（L318 是 G13 注释） |
+| CENTER1.v PIX_CLK | :235 | **:239/241** | 实读（L235 是 DTCTL 实例化起始） |
+
+> **根因**：§3.2 的 RTL 行号首版转录自 `ip_cons` L385-412 审计注释，而该注释的行号在 RTL 后续改动后已漂移。**`ip_cons` L385-412 注释本身也需同步修订**（属 HK1V11 约束文件改动，另行处理）。
 
 ---
 
@@ -373,9 +404,9 @@
 
 ---
 
-*本文档基于 HK1V11 0922 收窄实际约束 diff（`79ef0030`→`61eb5605`）+ 新 DC（`rep_dir_0922_1456`）违例 + 五模型交叉核对 + `script/mc_audit_0921/` 审计撰写。所有 ip_cons 行号、RTL file:line、DC 报告行号均来自实读文件；行号以 `61eb5605` 版本 + `rep_dir_0922_1456` 报告为准，后续改动会漂移。*
+*本文档基于 HK1V11 0922 收窄实际约束 diff（`79ef0030`→`61eb5605`）+ 新 DC（`rep_dir_0922_1456`）违例 + 五模型交叉核对 + `script/mc_audit_0921/` 审计撰写，并经 K3-256K 逐项审查修订。所有 ip_cons 行号、RTL file:line、DC 报告行号均实读核实；行号以 `61eb5605` 版本 + `rep_dir_0922_1456` 报告为准，后续改动会漂移。*
   </script>
   <script src="./js/site.js"></script>
 </body>
 </html>
-<!-- ymzhu 2026-09-24 16:52 -->
+<!-- ymzhu 2026-09-24 17:10 -->
