@@ -1,0 +1,1453 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>十三、目录结构与工具链 · HK1V11 综合/签核流程实践</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./css/style.css">
+  <script src="./js/marked.min.js"></script>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a class="navbar-brand" href="./">HK1V11_FLOW_PRACTICE</a>
+      <div class="navbar-links" id="navbar-links"></div>
+    </div>
+  </nav>
+  <div class="container with-toc">
+    <aside class="toc-wrapper"><div class="toc" id="toc"></div></aside>
+    <div class="content">
+      <article class="article" id="article"></article>
+      <div class="page-nav" id="page-nav"></div>
+      <div class="footer">HK1V11 SYNTHESIS / SIGNOFF PRACTICE · AUTHOR ymzhuuuu · UPDATED 2026-09-24</div>
+    </div>
+  </div>
+  <script type="text/template" id="md">
+# 十三、目录结构与工具链教学 · 用 HK1V11 真实目录讲"每个工具吃什么、吐什么、怎么连"
+
+> 个人学习资料 · 数字后端流程入门 · 面向刚接触后端流程的小白
+> 本章以 HK1V11 工作区（`E:\project\HK1V11`）的**真实目录结构**为锚点，把"每个工具阶段的输入 → 脚本 → 产物 → 连到下一阶段"讲清楚。
+> 所有脚本名、路径、产物名均来自实探结果，不存在的阶段诚实标注"本地不可见"。
+> 约束方法论见 ch12，POSTPT 实操见 ch06，排障案例见 ch10/ch11。
+
+---
+
+## 0. 这一章怎么用
+
+先说清楚三个"读者约定"：
+
+- **结论先行**：每块开头一句话把"这个阶段到底在干什么"讲完，再展开。
+- **真实锚点**：目录树 / 脚本清单 / 产物名全部来自实探 `E:\project\HK1V11\SYNTHESIS` 和 `HDL` 目录的结果，不存在的不编。
+- **小白自检 3 问**：每块末尾给 3 个可自测的问题，确认你"真的看懂了"。
+
+本章共 **14 个块**：
+
+| # | 块 | 一句话 |
+|---|------|--------|
+| 1 | 全景地图 | 目录树 + 流程顺序图，先画全局 |
+| 2 | 设计配置（design.set） | 所有工具阶段的"总开关" |
+| 3 | Lint（nLint + SpyGlass） | 综合前静态检查 RTL 编码规范/CDC |
+| 4 | DC 综合 | 把 RTL 翻译成门级网表 |
+| 5 | LEC（逻辑等价检查） | 综合前后对比，确认没跑偏 |
+| 6 | PowerPro（功耗分析） | 算功耗 + 找优化点 |
+| 7 | Pre-PT（综合后时序） | 综合网表 + 约束 → 时序报告 |
+| 8 | SDC 传递链（sdc_pr） | 约束怎么从综合流到 APR 再到 POSTPT |
+| 9 | POSTPT（布局布线后时序） | 有 SPEF 的真实时序验证，10 corner |
+| 10 | 跨阶段纪律 | 约束生效链 + 代际验证法 |
+| 11 | DV_TCON_C 验证简介 | 验证目录结构 + 和后端流程的关系 |
+| 12 | 公共脚本层 | common/ 里跨阶段复用的脚本 |
+| 13 | 其他 IP 综合（LINK_LOGIC / LOGIC_CENTER） | 多 IP 独立综合的模式 |
+| 14 | 心法 | 12 条可操作教训 |
+
+---
+
+## 1. 全景地图：HK1V11 工作区目录树 + 流程顺序图
+
+> **一句话**：后端流程就是"RTL + 约束 → 一系列 EDA 工具 → 最终网表 + 时序报告"，每个工具吃上一阶段的产物做输入，吐自己的产物给下一阶段。
+
+### 1.1 工作区目录树（真实，3 层深度）
+
+```
+HK1V11/
+├── AGENTS.md                          # 项目上下文（本文件的读者先读它）
+├── HDL/                               # ━━ RTL 源码 ━━
+│   ├── TOP/
+│   │   ├── HK1V11.v                   # 全芯片顶层（数字 + 模拟 macro）
+│   │   ├── HK1V11_digital_top.v       # 数字顶层（后端流程的入口）
+│   │   └── MACRO_TOP_1V11.v           # 模拟 macro 顶层
+│   ├── HK1V11_digital_top/            # 数字 core 子模块
+│   │   ├── LOGIC_CENTER.f             # 子模块文件列表
+│   │   ├── seperated_code/            # 分离后的 RTL（LC_CPUWR 等）
+│   │   ├── long_encoding/             # 编码相关
+│   │   ├── chpi_rx_413b420b/          # CHPI RX
+│   │   └── rx_phy/                    # RX PHY 相关
+│   ├── clk_rst/                       # 时钟/复位生成
+│   ├── STD_IP/                        # 标准 IP
+│   ├── file_list/                     # 文件列表
+│   │   ├── HK1V11_digital_top.f       # 数字顶层文件列表（综合用）
+│   │   ├── macro.f                    # macro 文件列表
+│   │   └── ...
+│   └── code_comment/                  # 注释版本 RTL
+├── SYNTHESIS/                         # ━━ 后端流程主目录 ━━
+│   ├── common/
+│   │   ├── ip_cons/                   # 各 IP 的时序约束（tcl）
+│   │   │   ├── HK1V11_digital_top.tcl # 数字顶层约束（615 行，核心！）
+│   │   │   ├── LINK_LOGIC.tcl
+│   │   │   └── LOGIC_CENTER.tcl
+│   │   ├── top_cons/
+│   │   │   └── add_on.tcl             # 顶层附加约束（APR 用）
+│   │   ├── tcl_dir/                   # 公共 tcl 脚本
+│   │   │   ├── common/
+│   │   │   │   ├── clk_period.tcl     # 时钟周期定义（DC/PT 共享）
+│   │   │   │   ├── common_cons.tcl    # 公共约束
+│   │   │   │   ├── common_cons_postpt.tcl
+│   │   │   │   ├── common_db.tcl      # 库文件定义（lib）
+│   │   │   │   ├── common_db_pvt.tcl  # PVT 条件
+│   │   │   │   └── kv_clkio.tcl       # 时钟/IO 约束
+│   │   │   ├── dc/
+│   │   │   │   ├── basic_setup_all.tcl# DC 基础设置
+│   │   │   │   ├── dc_user_proc.tcl   # DC 用户自定义 proc
+│   │   │   │   ├── design_rule.tcl    # 设计规则
+│   │   │   │   └── dont_use_all.tcl   # 禁用 cell
+│   │   │   ├── genus/                 # Genus 综合（备选）
+│   │   │   ├── lec/
+│   │   │   │   └── lib_common_lec.do  # LEC 公共库加载
+│   │   │   ├── nlint/
+│   │   │   │   ├── nlint_rules.rs     # nLint 规则集（190KB）
+│   │   │   │   └── nlint_waive.list   # 豁免列表
+│   │   │   ├── pt/
+│   │   │   │   ├── common_pt.tcl      # PT 公共脚本
+│   │   │   │   ├── common_pt_for_pr.tcl # POSTPT 公共脚本
+│   │   │   │   ├── common_pwr.tcl     # 功耗分析
+│   │   │   │   ├── pt_check_design.tcl
+│   │   │   │   ├── pt_report.tcl      # PT 报告生成
+│   │   │   │   └── timing.tcl
+│   │   │   ├── powerpro/              # （空，PowerPro 用 common/tcl_dir 里的脚本）
+│   │   │   └── spy/                   # （空，SpyGlass 用 ip 目录里的脚本）
+│   │   ├── template/
+│   │   │   └── syn_ip/
+│   │   │       ├── design.set         # 模板 design.set
+│   │   │       └── Readme
+│   │   ├── script/                    # 公共辅助脚本
+│   │   │   ├── genfilelist            # 生成展开文件列表
+│   │   │   ├── gensyn                 # 生成综合目录
+│   │   │   ├── signoff                # signoff 检查
+│   │   │   ├── signoff_dc
+│   │   │   ├── nlint_filter.pl        # nLint 报告过滤
+│   │   │   └── ...
+│   │   └── upf/                       # UPF 低功耗（当前 USE_UPF=0，未启用）
+│   ├── ip/                            # 各 IP 综合目录
+│   │   ├── syn_HK1V11_digital_top/    # ★ 主 IP（数字顶层）
+│   │   │   ├── design.set             # 设计配置（总开关）
+│   │   │   ├── rtl_file_list.f        # RTL 文件列表
+│   │   │   ├── filelist/              # 展开后的文件列表
+│   │   │   │   ├── HK1V11_digital_top.f
+│   │   │   │   └── HK1V11_digital_top.sv.f
+│   │   │   ├── ckf/                   # CKF 检查（LEC 类）
+│   │   │   │   ├── run_ckf
+│   │   │   │   └── rtl_ckf.do
+│   │   │   ├── nlint/                 # nLint
+│   │   │   │   ├── run_nlint
+│   │   │   │   ├── nlint_dummy.f
+│   │   │   │   └── no_check_module.f
+│   │   │   ├── dc/                    # DC 综合
+│   │   │   │   ├── run_dc             # 启动脚本
+│   │   │   │   ├── compile_dc.tcl     # DC 主流程脚本
+│   │   │   │   ├── command.log        # DC 命令记录
+│   │   │   │   └── rep_dir/           # ★ 产物目录
+│   │   │   │       ├── dc.log
+│   │   │   │       ├── HK1V11_digital_top.gv       # 综合网表
+│   │   │   │       ├── HK1V11_digital_top.gv_org
+│   │   │   │       ├── HK1V11_digital_top.sdc      # 写出的 SDC
+│   │   │   │       ├── HK1V11_digital_top.ddc      # DDC 约束
+│   │   │   │       ├── HK1V11_digital_top.rpt
+│   │   │   │       └── HK1V11_digital_top.chk_design
+│   │   │   ├── genus/                 # Genus 综合（备选，当前 SYN_TOOL=dc）
+│   │   │   │   ├── run_genus
+│   │   │   │   └── compile_genus.tcl
+│   │   │   ├── lec/                   # LEC
+│   │   │   │   ├── run_lec
+│   │   │   │   └── rtl_gate.do        # LEC 主 dofile
+│   │   │   ├── lec_upf/              # LEC + UPF 低功耗
+│   │   │   │   ├── run_lec_lp
+│   │   │   │   └── dofile_lp_check.tcl
+│   │   │   ├── powerpro/             # ★ PowerPro 功耗
+│   │   │   │   ├── run               # 入口（bsub -Ip run_power_opt）
+│   │   │   │   ├── run_power_opt     # 启动脚本
+│   │   │   │   ├── compile_powerpro_opt.tcl  # 主流程（804 行）
+│   │   │   │   ├── powerpro_script.py # 报告提取
+│   │   │   │   ├── powerpro_chk.py   # 指标占比检查
+│   │   │   │   ├── pwr2.py           # 另一份检查脚本
+│   │   │   │   ├── user_dont_use.tcl # 功耗优化 dont_use
+│   │   │   │   ├── user_matched_dont_use.tcl
+│   │   │   │   ├── user_comb_dont_use.tcl
+│   │   │   │   ├── hier_pwr.csv      # ★ 层级功耗
+│   │   │   │   ├── hierarchical_power.csv
+│   │   │   │   ├── cg_pwr.csv        # 时钟门控功耗
+│   │   │   │   ├── ncef_pwr.csv
+│   │   │   │   ├── ctds_pwr.csv
+│   │   │   │   ├── powerpro.log      # 完整日志（878KB）
+│   │   │   │   ├── report_info       # 汇总报告
+│   │   │   │   ├── report_module_toggle.csv
+│   │   │   │   ├── report_register_toggle_0bit.csv
+│   │   │   │   ├── report_register_toggle_dtcs.csv
+│   │   │   │   └── rep_dir/          # ★ PowerPro 产物
+│   │   │   │       ├── hier_pwr_detail.csv
+│   │   │   │       ├── Dashboard.txt
+│   │   │   │       ├── Total_Hierarchical_Power.txt
+│   │   │   │       ├── Peak_Power.txt
+│   │   │   │       ├── Clock_Gating.txt
+│   │   │   │       ├── kpi.json
+│   │   │   │       └── ...
+│   │   │   ├── pt/                    # IP 级 PT（综合后）
+│   │   │   │   ├── run_pt
+│   │   │   │   └── pt_setup.tcl
+│   │   │   └── spy/                   # SpyGlass CDC
+│   │   │       ├── run_spy
+│   │   │       ├── spy.set
+│   │   │       └── spy_setup.tcl
+│   │   ├── syn_LINK_LOGIC/            # LINK_LOGIC IP 综合
+│   │   └── syn_LOGIC_CENTER/          # LOGIC_CENTER IP 综合
+│   ├── top/                           # 顶层 STA
+│   │   └── sta/
+│   │       ├── pre/                   # ★ Pre-PT（综合后时序）
+│   │       │   ├── common/
+│   │       │   │   └── pt_setup.tcl   # Pre-PT 主脚本
+│   │       │   ├── pt/
+│   │       │   │   ├── run_pt
+│   │       │   │   ├── design.set
+│   │       │   │   ├── read_design.tcl  # 指定读哪个网表
+│   │       │   │   └── pt_rpt/        # 报告产物
+│   │       │   │       ├── HK1V11_digital_top_timing.rpt
+│   │       │   │       ├── HK1V11_digital_top_cons.rpt
+│   │       │   │       ├── HK1V11_digital_top_coverage.rpt
+│   │       │   │       ├── report_timing.rpt
+│   │       │   │       └── ...
+│   │       │   └── sdc_pr/           # ★ SDC 传递目录
+│   │       │       └── HK1V11_digital_top.tcl  # write_sdc 产出
+│   │       └── post/                 # ★ POSTPT（布局布线后）
+│   │           ├── common/
+│   │           │   ├── pt_setup.tcl   # POSTPT 主脚本（352 行）
+│   │           │   ├── report_timing_prj.tcl
+│   │           │   ├── report_timing_skew_sd.tcl
+│   │           │   ├── report_timing_skew_io.tcl
+│   │           │   ├── report_timing_skew_isprx.tcl
+│   │           │   ├── report_timing_trans.tcl
+│   │           │   ├── report_clock_path.tcl
+│   │           │   ├── get_violate.pl
+│   │           │   └── ...
+│   │           └── pt/
+│   │               ├── design.set    # POSTPT 设计配置
+│   │               ├── wc_typical_125/    # ★ 10 corner 之一
+│   │               │   ├── run_pt
+│   │               │   ├── corner_set.tcl
+│   │               │   ├── latest/      # 符号链接 → history/最新
+│   │               │   │   ├── log/
+│   │               │   │   ├── rpt/
+│   │               │   │   │   ├── summary/
+│   │               │   │   │   ├── setup/
+│   │               │   │   │   ├── hold/
+│   │               │   │   │   ├── skew/
+│   │               │   │   │   ├── trans/
+│   │               │   │   │   └── clock_path.rpt
+│   │               │   │   └── whole_session/
+│   │               │   └── history/
+│   │               ├── wc_cworst_125/
+│   │               ├── wc_cbest_125/
+│   │               ├── tt_typical_25/
+│   │               ├── tt_cworst_25/
+│   │               ├── tt_cbest_25/
+│   │               ├── lt_typical_m40/
+│   │               ├── lt_cworst_m40/
+│   │               ├── lt_cbest_m40/
+│   │               ├── ml_cbest_125/
+│   │               └── summary/
+│   ├── powerpro_deploy/               # PowerPro 部署工具
+│   │   ├── deploy_powerpro.py
+│   │   ├── setup_hk11_powerpro.py
+│   │   └── gen_deploy_powerpro.py
+│   └── deploy_pt_history.py           # PT history 骨架部署
+├── DV_TCON_C/                         # ━━ 数字验证 ━━
+│   ├── script/
+│   │   ├── makefile
+│   │   ├── run_tc.sh
+│   │   ├── merge_coverage.py
+│   │   └── produce_checker1.py
+│   └── top/
+│       ├── tb/                        # testbench
+│       │   ├── chip_tb_top.sv
+│       │   ├── base_test.sv
+│       │   └── intf_connect.sv
+│       ├── agents/                    # UVM agent
+│       │   ├── i2c_sv/
+│       │   └── isprx_env/
+│       ├── tests/                     # 测试用例
+│       ├── vseq/                      # 虚拟序列
+│       ├── filelist/
+│       ├── regression/
+│       ├── reg_csv/
+│       └── ...
+├── 修改记录/                           # 变更日志
+├── script/                             # 项目杂项脚本
+└── *.tar.gz                           # 服务器回传包
+```
+
+### 1.2 流程顺序图（文字版）
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                        HK1V11 后端流程顺序                              │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                       │
+│  HDL/TOP/HK1V11_digital_top.v                                         │
+│  + ip_cons/HK1V11_digital_top.tcl（约束）                              │
+│  + clk_period.tcl（时钟周期）                                          │
+│  + common_db.tcl（库）                                                │
+│         │                                                             │
+│         ▼                                                             │
+│  ┌──────────┐    ┌──────────┐    ┌──────────┐                        │
+│  │  nLint   │───▶│  SpyGlass│───▶│  DC 综合 │                        │
+│  │(编码检查) │    │ (CDC 检查)│    │(RTL→网表)│                        │
+│  └──────────┘    └──────────┘    └────┬─────┘                        │
+│                                       │                               │
+│              ┌────────────────────────┼────────────────────────┐     │
+│              │                        │                        │     │
+│              ▼                        ▼                        ▼     │
+│       ┌──────────┐             ┌──────────┐             ┌──────────┐ │
+│       │ LEC      │             │ Pre-PT   │             │PowerPro  │ │
+│       │(RTL vs   │             │(综合网表  │             │(功耗分析  │ │
+│       │ 网表对比) │             │ + SDC)   │             │ + 优化)  │ │
+│       └──────────┘             └─────┬────┘             └──────────┘ │
+│                                     │                                │
+│                                     ▼                                │
+│                         sdc_pr/HK1V11_digital_top.tcl               │
+│                          （write_sdc 产出，交给 APR）                 │
+│                                     │                                │
+│                                     ▼                                │
+│                         ┌─────────────────────┐                     │
+│                         │  APR / CTS（布局布线）│  ← 本地不可见       │
+│                         │  （服务器上跑）       │                     │
+│                         └──────────┬──────────┘                     │
+│                                    │                                │
+│                          postcts.sdc + SPEF                         │
+│                                    │                                │
+│                                    ▼                                │
+│                         ┌─────────────────────┐                     │
+│                         │  POSTPT（10 corner） │                     │
+│                         │  有 SPEF 的真实时序   │                     │
+│                         └─────────────────────┘                     │
+│                                                                     │
+│  LEC 挂在 DC 之后（RTL vs 综合网表对比）                             │
+│  PowerPro 挂在 DC 之后（读 FSDB 波形 + RTL → 功耗）                  │
+│  SpyGlass 挂在 Lint 阶段（CDC 检查，独立于 DC）                      │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+**每个阶段"吃什么、吐什么"速查表：**
+
+| 阶段 | 输入（吃什么） | 输出（吐什么） |
+|------|--------------|--------------|
+| nLint | RTL 文件列表 (.f) | nlint.log / nlint.rpt |
+| SpyGlass | RTL 文件列表 (.f) | spy.log / CDC 报告 |
+| DC | RTL + 约束 (ip_cons + clk_period + common_cons) + 库 | 网表 (.gv) + SDC + rpt + dc.log |
+| LEC | RTL (.f) + 综合网表 (.gv) | non_eq.rpt / unmapped.rpt / lec.log |
+| PowerPro | RTL + FSDB 波形 + SDC | hier_pwr.csv + 各 txt 报告 + powerpro.log |
+| Pre-PT | 综合网表 (.gv) + 约束 | timing.rpt / cons.rpt / coverage.rpt + write_sdc → sdc_pr |
+| APR/CTS | sdc_pr + 物理约束 | postcts.sdc + SPEF（本地不可见） |
+| POSTPT | APR 网表 + SPEF + postcts.sdc | 10 corner × (setup/hold/skew/trans 报告) |
+
+### 1.3 小白自检 3 问
+
+1. `SYNTHESIS/ip/syn_HK1V11_digital_top/` 下有哪些子目录？每个对应什么工具？
+2. DC 综合的网表产物在哪个路径？Pre-PT 怎么找到它？
+3. POSTPT 的 10 个 corner 目录在哪个路径下？
+
+---
+
+## 2. 设计配置（design.set）：所有工具阶段的"总开关"
+
+> **一句话**：`design.set` 是整个综合目录的"配置中心"，每个工具脚本启动时第一件事就是 `source design.set`，从里面读变量。
+
+### 2.1 真实文件
+
+路径：`SYNTHESIS/ip/syn_HK1V11_digital_top/design.set`（107 行）
+
+### 2.2 关键变量解释
+
+| 变量 | 值 | 含义 |
+|------|------|------|
+| `TOP_NAME` | `HK1V11_digital_top` | 顶层模块名，所有脚本用它定位文件 |
+| `SDC_NAME` | `HK1V11_digital_top` | 约束文件基名 |
+| `PROJECT_PATH` | `$env(PROJECT_PATH)` | 项目根目录（服务器环境变量） |
+| `TCL_DIR` | `.../SYNTHESIS/common/tcl_dir` | 公共 tcl 脚本目录 |
+| `IP_CONS_DIR` | `.../SYNTHESIS/common/ip_cons` | IP 约束目录 |
+| `LINK_LIB` / `TAR_LIB` | `nexchip_145_9t` | 链接库 / 目标库 |
+| `NET_DEFINE` | `[list "NETLIST" "nexchip_145_9t"]` | 编译宏定义 |
+| `SYN_TOOL` | `"dc"` | 综合工具（dc 或 genus） |
+| `CORNER` | `"wcl_cmax_m40_setup"` | 综合时序 corner |
+| `DERATE_VAL` | `1.07` | 时序 derate 系数 |
+| `SCAN_EN` | `0` | 是否启用 scan（当前关闭） |
+| `USE_UPF` | `0` | 是否启用 UPF 低功耗（当前关闭） |
+| `POSTPT_EN` | `0` | IP 级是否跑 POSTPT（IP 级关闭） |
+| `POWERPRO_CORNER` | `"tt_typ"` | PowerPro 用的 corner |
+| `FSDB_FILE` | `"fsdb/power_4k180.fsdb"` | PowerPro 用的波形文件 |
+| `FSDB_HIER` | `"chip_tb_top.u_HK1V11.u_HK1V11_digital_top"` | 波形层级路径 |
+| `CLOCK_MCP_CASE_SDC` | `"./sdc/${SDC_NAME}.tcl"` | PowerPro 读 SDC 的路径 |
+
+### 2.3 为什么需要这个文件
+
+所有工具阶段（DC、LEC、nLint、PT、PowerPro）的启动脚本都从 `design.set` 里 grep 出 `TOP_NAME` 和 `TCL_DIR`，用来定位：
+- 文件列表在哪（`../filelist/${TOP_NAME}.f`）
+- 公共约束在哪（`$IP_CONS_DIR/${TOP_NAME}.tcl`）
+- 库文件在哪（`$TCL_DIR/common/common_db.tcl`）
+
+**换项目 / 换 IP，只需要改这一个文件 + 对应的 `ip_cons/*.tcl`。**
+
+### 2.4 小白自检 3 问
+
+1. `SYN_TOOL` 改成 `"genus"` 会怎样？哪个脚本会读它？
+2. `TAR_LIB` 和 `LINK_LIB` 的区别是什么？
+3. PowerPro 的 corner（`tt_typ`）和综合的 corner（`wcl_cmax_m40_setup`）为什么不同？
+
+---
+
+## 3. Lint：nLint + SpyGlass
+
+> **一句话**：Lint 是"代码风格检查"，在综合**之前**跑，目的是抓 RTL 编码问题（不综合、不跑仿真）。
+
+### 3.1 nLint（编码规范检查）
+
+**干什么**：检查 Verilog/SystemVerilog 编码规范（命名、宽度、敏感列表、latch 推断等）。
+
+**物理直觉**：就像写论文前的格式检查——不检查内容对不对，只检查格式规不规范。
+
+**输入**：
+- RTL 文件列表：`../filelist/HK1V11_digital_top.f`（展开后的）
+- macro 文件列表：`$PROJECT_PATH/HDL/file_list/macro.f`
+- nLint 规则集：`$TCL_DIR/nlint/nlint_rules.rs`（190KB，定义所有规则）
+- 豁免列表：`./nlint_dummy.f`、`./no_check_module.f`
+
+**脚本清单**：
+
+| 文件 | 路径 | 角色 |
+|------|------|------|
+| `run_nlint` | `ip/syn_HK1V11_digital_top/nlint/run_nlint` | **主启动脚本**（csh），调用 nLint 命令 + 过滤 |
+| `nlint_rules.rs` | `common/tcl_dir/nlint/nlint_rules.rs` | nLint 规则集（190KB，定义检查项） |
+| `nlint_waive.list` | `common/tcl_dir/nlint/nlint_waive.list` | 全局豁免（当前 0 字节） |
+| `cat_nlint_waive.list` | `common/tcl_dir/nlint/cat_nlint_waive.list` | 类别豁免 |
+| `nlint_dummy.f` | `ip/syn_HK1V11_digital_top/nlint/nlint_dummy.f` | 本 IP 的 dummy 文件列表 |
+| `no_check_module.f` | `ip/syn_HK1V11_digital_top/nlint/no_check_module.f` | 不检查的模块列表 |
+| `nlint_filter.pl` | `common/script/nlint_filter.pl` | **后处理**：过滤 nLint 原始报告 |
+
+**产出**：
+- `rep_dir/nlint.log` —— nLint 完整日志
+- `rep_dir/nlint_org.rpt` —— 原始报告
+- `rep_dir/nlint.rpt` —— 过滤后报告
+- `rep_dir/nlint.rpt.sort` —— 排序后报告
+- `rep_dir/svn.info` —— 跑的时间 + svn 版本
+
+**`run_nlint` 脚本核心逻辑**（58 行 csh）：
+```csh
+# 1. 清 rep_dir
+# 2. 从 design.set 读 TOP_NAME 和 TCL_DIR
+# 3. genfilelist 展开文件列表
+# 4. 调 nLint：
+nLint \
+  -f ../filelist/$top_name.f \
+  -f $PROJECT_PATH/HDL/file_list/macro.f \
+  -rs ${tcl_dir}/nlint/nlint_rules.rs \
+  -logfile ./rep_dir/nlint.log \
+  -top $top_name -lint -lintTop $top_name \
+  -out ./rep_dir/nlint_org.rpt
+# 5. nlint_filter.pl 过滤
+# 6. 排序
+```
+
+### 3.2 SpyGlass（CDC 检查）
+
+**干什么**：检查跨时钟域（CDC）设计问题——哪个信号从时钟 A 域跨到时钟 B 域有没有同步器。
+
+**物理直觉**：两个不同频的时钟之间传数据，必须加"两级同步器"，否则数据可能采到半中间。SpyGlass 就是自动检查"哪些地方该加同步器但没加"。
+
+**输入**：
+- RTL 文件列表：`../filelist/${TOP_NAME}.f` + `.sv.f`
+- 配置：`spy.set`（goals、RESET 策略）
+- 设计配置：`../design.set`
+
+**脚本清单**：
+
+| 文件 | 路径 | 角色 |
+|------|------|------|
+| `run_spy` | `ip/syn_HK1V11_digital_top/spy/run_spy` | **主启动脚本**（csh），调 sg_shell |
+| `spy.set` | `ip/syn_HK1V11_digital_top/spy/spy.set` | SpyGlass 配置（goals、waiver） |
+| `spy_setup.tcl` | `ip/syn_HK1V11_digital_top/spy/spy_setup.tcl` | **主流程 tcl**（152 行） |
+
+**`spy.set` 关键配置**：
+```tcl
+set goals "cdc/cdc_verify_struct cdc/cdc_verify"
+set RESET "sync"
+set VOLTAGE 0p9
+```
+
+**产出**：
+- `rep_dir/spy.log` —— SpyGlass 日志
+- `rep_dir/<date>/` —— CDC 报告目录（本地不可见，在服务器上）
+
+**注意**：SpyGlass 环境版本是 `/eda/env/spyglass2016.cshrc`（老版本），和 DC/PT 的版本不同。
+
+### 3.3 CKF（也属于 Lint 类）
+
+`ckf/` 目录里有一个类似 LEC 的检查，用 `lec` 工具做 RTL vs RTL 的对比检查（gold vs rev 都是 RTL），检查"RTL 自身有没有不可达逻辑"。
+
+| 文件 | 路径 | 角色 |
+|------|------|------|
+| `run_ckf` | `ip/syn_HK1V11_digital_top/ckf/run_ckf` | 启动脚本 |
+| `rtl_ckf.do` | `ip/syn_HK1V11_digital_top/ckf/rtl_ckf.do` | LEC dofile（gold=RTL, rev=RTL） |
+
+### 3.4 小白自检 3 问
+
+1. nLint 和 SpyGlass 分别在什么时候跑？谁先谁后？
+2. `nlint_rules.rs` 是做什么的？如果项目要加一条新规则，改哪个文件？
+3. CKF 和 LEC 的区别是什么？（提示：gold 和 rev 分别是什么）
+
+---
+
+## 4. DC 综合：把 RTL 翻译成门级网表
+
+> **一句话**：DC（Design Compiler）把 RTL（Verilog）翻译成"门级网表"（一堆与门/或门/触发器），同时做时序优化和约束检查。
+
+### 4.1 物理直觉
+
+RTL 是"行为描述"（`if (a && b) c = 1`），综合后是"电路"（一个 AND 门 + 一个 OR 门 + 一个 D 触发器）。DC 的工作就是：
+1. 把 RTL 映射到标准单元库（`nexchip_145_9t`）的 cell
+2. 在满足时序约束（setup/hold）的前提下，优化面积/功耗/时序
+3. 输出门级网表 + 时序报告
+
+### 4.2 输入
+
+| 输入 | 来源 | 说明 |
+|------|------|------|
+| RTL 文件列表 | `../filelist/HK1V11_digital_top.f`（由 `genfilelist` 从 `HDL/file_list/HK1V11_digital_top.f` 展开） | 所有 .v/.sv 文件 |
+| 库文件 | `$TCL_DIR/common/common_db.tcl`（定义 lib 路径） | `nexchip_145_9t` |
+| 时钟周期 | `$TCL_DIR/common/clk_period.tcl` | OSC_CLKP=20ns, RX_CLKP=3.81ns 等 |
+| IP 约束 | `$IP_CONS_DIR/HK1V11_digital_top.tcl`（615 行） | 时钟定义、false_path、multicycle |
+| 公共约束 | `$TCL_DIR/common/common_cons.tcl` | 公共 false_path、IO 延迟 |
+| 设计规则 | `$TCL_DIR/dc/design_rule.tcl` | max_fanout、max_cap 等 |
+| 禁用 cell | `$TCL_DIR/dc/dont_use_all.tcl`（59KB） | 哪些 cell 不能用 |
+| 时钟/IO | `$TCL_DIR/common/kv_clkio.tcl`（20KB） | 时钟/IO 约束 |
+| UPF | `$UPF_DIR/HK1V11_digital_top.upf`（当前 USE_UPF=0） | 低功耗（未启用） |
+
+### 4.3 脚本清单
+
+| 文件 | 路径 | 角色 |
+|------|------|------|
+| `run_dc` | `ip/syn_HK1V11_digital_top/dc/run_dc` | **主启动脚本**（csh），调 dc_shell |
+| `compile_dc.tcl` | `ip/syn_HK1V11_digital_top/dc/compile_dc.tcl` | **DC 主流程脚本**（139 行） |
+| `basic_setup_all.tcl` | `common/tcl_dir/dc/basic_setup_all.tcl` | DC 基础设置（目录、库、host options） |
+| `dc_user_proc.tcl` | `common/tcl_dir/dc/dc_user_proc.tcl`（495 行） | 用户自定义 proc（读文件列表、报告 VT 等） |
+| `design_rule.tcl` | `common/tcl_dir/dc/design_rule.tcl` | 设计规则约束 |
+| `dont_use_all.tcl` | `common/tcl_dir/dc/dont_use_all.tcl`（59KB） | 禁用 cell 列表 |
+| `genfilelist` | `common/script/genfilelist` | **辅助**：展开文件列表（perl） |
+
+### 4.4 `compile_dc.tcl` 流程（139 行）
+
+```
+1. source design.set              ← 读配置
+2. source dc_user_proc.tcl        ← 加载用户 proc
+3. source basic_setup_all.tcl     ← 基础设置
+4. read_filelist_all              ← 读 RTL
+5. link                           ← 关联库
+6. check_design                   ← 基本检查
+7. source design_rule.tcl         ← 设计规则
+8. source dont_use_all.tcl        ← 禁用 cell
+9. source clk_period.tcl          ← 时钟周期
+10. source kv_clkio.tcl           ← 时钟/IO
+11. source ip_cons/HK1V11_digital_top.tcl  ← ★ IP 约束
+12. source common_cons.tcl        ← 公共约束
+13. report_port / report_design   ← 综合前报告
+14. compile_ultra                 ← ★ 综合！
+15. report_timing / report_area   ← 综合后报告
+16. write_verilog (.gv)           ← ★ 写网表
+17. write_sdc                     ← ★ 写 SDC
+18. write_ddc                     ← ★ 写 DDC
+```
+
+### 4.5 产出（rep_dir/）
+
+| 产物 | 说明 |
+|------|------|
+| `HK1V11_digital_top.gv` | ★ 综合网表（Verilog，给 LEC/Pre-PT 用） |
+| `HK1V11_digital_top.gv_org` | 原始网表（未做 verilogout 格式转换） |
+| `HK1V11_digital_top.sdc` | ★ DC 写出的 SDC（约束快照） |
+| `HK1V11_digital_top.ddc` | DDC 约束（Design Data Constraints） |
+| `HK1V11_digital_top.rpt` | 综合报告（时序、面积、功耗） |
+| `HK1V11_digital_top.chk_design` | check_design 报告 |
+| `HK1V11_digital_top.pre_compile` | 综合前端口/设计报告 |
+| `HK1V11_digital_top_max.rpt` | 最大时序路径报告（20MB！） |
+| `dc.log` | ★ DC 完整日志（1.6MB） |
+| `dont_touch.tcl` | dont_touch 约束记录 |
+| `svn.info` | 跑的时间 + svn 版本 |
+
+### 4.6 `run_dc` 脚本核心逻辑（35 行 csh）
+
+```csh
+# 1. 建 rep_dir
+# 2. 从 design.set 读 TOP_NAME
+# 3. genfilelist 展开文件列表
+# 4. 写 svn.info（时间 + 版本）
+# 5. source 环境（/eda/env/syn1709.cshrc）
+# 6. 调 dc_shell：
+dc_shell-t -64bit -f compile_dc.tcl -x "set exit_flag 0" | tee ./rep_dir/dc.log
+```
+
+### 4.7 Q&A
+
+**Q：DC 和 PT 都会跑时序，为什么都要？**
+A：DC 综合时做时序分析是为了**驱动优化**（"这条路径不满足，我换个更快的 cell / 加一级缓冲"）；PT 做时序分析是为了**报告验证**（"最终结果到底满不满足"）。DC 的分析精度低（没有布局、没有真实 RC），PT 的分析精度高（可以读 SPEF、可以做 SI）。
+
+**Q：为什么有 `SYN_TOOL` 可以选 dc 或 genus？**
+A：DC 是 Synopsys 的老牌综合工具，Genus 是新一代（支持增量综合、更好的功耗优化）。本项目当前 `SYN_TOOL="dc"`，genus 目录里有对应的脚本但没在用。
+
+**Q：`DERATE_VAL 1.07` 是什么意思？**
+A：综合时给时序加 7% 的余量（derate），相当于"我把周期缩短 7% 来优化"，这样综合出来的网表到 PT 阶段更不容易违例。
+
+### 4.8 小白自检 3 问
+
+1. `compile_dc.tcl` 里 `source` 的约束顺序是什么？（先 clk_period 还是先 ip_cons？）
+2. DC 的网表产物 `.gv` 和 `.gv_org` 有什么区别？
+3. 如果 DC 报 `write_verilog` 失败，最可能是什么问题？
+
+---
+
+## 5. LEC（逻辑等价检查）
+
+> **一句话**：LEC（Logic Equivalence Checking）对比"综合前 RTL"和"综合后网表"，确认综合没有改变设计逻辑。
+
+### 5.1 物理直觉
+
+综合是个"黑箱"：你喂进去 RTL，它吐出来网表。你怎么知道它没有偷偷改逻辑？LEC 就是把两个设计**逐 pin 对比**：
+- Gold（金色参考）= 综合前的 RTL
+- Rev（被审查）= 综合后的网表
+- 如果所有输入/输出/内部寄存器都能一一映射且逻辑等价 → PASS
+- 如果有 "non-equivalent"（不等价）点 → 综合可能改了你不想改的逻辑
+
+### 5.2 输入
+
+| 输入 | 来源 | 说明 |
+|------|------|------|
+| Gold RTL | `../filelist/HK1V11_digital_top.f` + `.sv.f` | 综合前的 RTL |
+| Rev 网表 | `../dc/rep_dir/HK1V11_digital_top.gv_org` | DC 综合产物 |
+| 库 | `$TCL_DIR/lec/lib_common_lec.do` → `common_db.tcl` | 标准单元库 |
+| 设计配置 | `../design.set` | TOP_NAME、SYN_TOOL |
+
+### 5.3 脚本清单
+
+| 文件 | 路径 | 角色 |
+|------|------|------|
+| `run_lec` | `ip/syn_HK1V11_digital_top/lec/run_lec` | **主启动脚本**（csh），调 `lec -xl -64` |
+| `rtl_gate.do` | `ip/syn_HK1V11_digital_top/lec/rtl_gate.do`（157 行） | **LEC 主 dofile** |
+| `lib_common_lec.do` | `common/tcl_dir/lec/lib_common_lec.do` | 公共库加载（Verilog 格式 stdcell） |
+| `run_lec_lp` | `ip/syn_HK1V11_digital_top/lec_upf/run_lec_lp` | LEC + UPF 低功耗版（perl） |
+| `dofile_lp_check.tcl` | `ip/syn_HK1V11_digital_top/lec_upf/dofile_lp_check.tcl` | UPF LEC dofile |
+
+### 5.4 `rtl_gate.do` 流程（157 行）
+
+```
+1. reset + tclmode
+2. source design.set
+3. 读库（lib_common_lec.do → 读 Verilog 格式 stdcell）
+4. read_design Gold RTL（.f + .sv.f）
+5. read_design Rev 网表（../dc/rep_dir/xxx.gv_org）
+6. set_root_module
+7. set_flatten_model（序列常数、gated clock 处理）
+8. set_system_mode lec
+9. analyze_setup → map_key_point → analyze_datapath
+10. add_compared_points -all
+11. compare -NONEQ_stop 999
+12. 报告：unmapped.rpt / unreach.rpt / non_eq.rpt / abort.rpt
+13. 如果有 nonequivalent → 打开 GUI 让用户看
+```
+
+### 5.5 产出
+
+| 产物 | 说明 |
+|------|------|
+| `rep_dir/non_eq.rpt` | ★ 不等价点报告（**这是最关键的**） |
+| `rep_dir/unmapped.rpt` | 未映射点报告 |
+| `rep_dir/unreach.rpt` | 不可达点报告 |
+| `rep_dir/abort.rpt` | abort 点报告 |
+| `rep_dir/r2g_bbox.rpt` | 黑盒报告 |
+| `rep_dir/lec.log` | LEC 完整日志 |
+
+### 5.6 Q&A
+
+**Q：LEC 检查什么？**
+A：检查"综合前后的设计逻辑是否完全等价"。具体来说：
+- 所有输入端口 → 输出端口的映射关系是否一致
+- 所有内部寄存器（DFF）是否一一对应
+- 组合逻辑（与门、或门、mux）是否等价
+- 时钟/复位是否一致
+
+**Q：non_eq 不为 0 就一定是综合 bug 吗？**
+A：不一定。常见原因：
+- RTL 里有 `(* dont_touch *)` 但 DC 还是优化了
+- LEC 映射策略不对（比如 `set_flatten_model` 参数没设对）
+- 有些黑盒（black box）LEC 看不到内部
+- 需要看 unmapped.rpt 和 unreach.rpt 辅助判断
+
+**Q：本项目为什么用 `gv_org` 而不是 `gv`？**
+A：`gv_org` 是 DC `write_verilog` 的原始输出，`gv` 可能经过格式转换。LEC 用 `gv_org` 保证和 DC 输出完全一致，避免格式差异导致误判。
+
+### 5.7 小白自检 3 问
+
+1. LEC 的 Gold 和 Rev 分别是什么文件？
+2. 如果 LEC 报 3 个 nonequivalent，你第一步看什么？
+3. `set_flatten_model -seq_constant` 是做什么的？
+
+---
+
+## 6. PowerPro（功耗分析）
+
+> **一句话**：PowerPro 读 RTL + 仿真波形（FSDB），算出每个模块的功耗，找出"谁在浪费电"，指导综合/布局阶段做功耗优化。
+
+### 6.1 物理直觉
+
+芯片功耗 = 动态功耗（开关活动）+ 静态功耗（漏电流）。PowerPro 的工作：
+1. 读仿真波形（FSDB），知道每个信号在什么时候翻转
+2. 读 RTL，知道每个模块里有什么 cell
+3. 算出每个模块的翻转率（toggle rate）
+4. 用库的功耗模型算出每个模块的功耗
+5. 找出"高翻转但功能不重要"的信号 → 推荐优化
+
+### 6.2 输入
+
+| 输入 | 来源 | 说明 |
+|------|------|------|
+| RTL 文件列表 | `../filelist/HK1V11_digital_top.f` | 同 DC |
+| FSDB 波形 | `fsdb/power_4k180.fsdb`（本地不可见，在服务器上） | 仿真波形（4096×180 帧） |
+| FSDB 层级 | `chip_tb_top.u_HK1V11.u_HK1V11_digital_top` | 波形里的 DUT 路径 |
+| SDC | `./sdc/HK1V11_digital_top.tcl` | 时钟约束 |
+| 库 | `$TCL_DIR/common/common_db.tcl` | 标准单元库 |
+| dont_use | `user_dont_use.tcl`（34KB） | 功耗优化时禁用的 cell |
+
+### 6.3 脚本清单
+
+| 文件 | 路径 | 角色 |
+|------|------|------|
+| `run` | `ip/syn_HK1V11_digital_top/powerpro/run` | **入口**（2 行：`bsub -Ip run_power_opt`） |
+| `run_power_opt` | `ip/syn_HK1V11_digital_top/powerpro/run_power_opt`（27 行） | **启动脚本**，source 环境 + 调 powerpro |
+| `compile_powerpro_opt.tcl` | `ip/syn_HK1V11_digital_top/powerpro/compile_powerpro_opt.tcl`（804 行） | **主流程脚本** |
+| `powerpro_script.py` | `ip/syn_HK1V11_digital_top/powerpro/powerpro_script.py`（164 行） | **后处理**：从 powerpro.log 提取关键信息到 report_info |
+| `powerpro_chk.py` | `ip/syn_HK1V11_digital_top/powerpro/powerpro_chk.py`（72 行） | **后处理**：计算指标占比 |
+| `pwr2.py` | `ip/syn_HK1V11_digital_top/powerpro/pwr2.py` | 另一份检查脚本 |
+| `user_dont_use.tcl` | `ip/syn_HK1V11_digital_top/powerpro/user_dont_use.tcl`（34KB） | 功耗优化 dont_use |
+| `user_matched_dont_use.tcl` | `ip/syn_HK1V11_digital_top/powerpro/user_matched_dont_use.tcl` | 匹配 dont_use |
+| `user_comb_dont_use.tcl` | `ip/syn_HK1V11_digital_top/powerpro/user_comb_dont_use.tcl`（0 字节） | 组合 dont_use |
+
+### 6.4 `compile_powerpro_opt.tcl` 关键配置（前 60 行）
+
+```tcl
+set OPT  1              # 是否做功耗优化
+set RPT_PWR 1           # 1=有向量（FSDB）, 0=无向量
+set FSDB 1              # 用 FSDB 格式波形
+set MODULE_TOP ${TOP_NAME}
+set STB_OBJ area        # 稳定性目标：面积
+set ZWLM 1              # 1=用 wire load model, 0=用物理模型
+```
+
+### 6.5 产出
+
+| 产物 | 说明 |
+|------|------|
+| `hier_pwr.csv` | ★ 层级功耗表（CSV，可导入 Excel） |
+| `hierarchical_power.csv` | 层级功耗（另一格式） |
+| `cg_pwr.csv` | 时钟门控功耗 |
+| `ncef_pwr.csv` | 非组合使能 flop 功耗 |
+| `ctds_pwr.csv` | 时钟 toggle-data stable 功耗 |
+| `report_module_toggle.csv` | 模块翻转率 |
+| `report_register_toggle_0bit.csv` | 寄存器 0bit 翻转 |
+| `report_register_toggle_dtcs.csv` | 寄存器 toggle（data-toggle-cg-stable） |
+| `report_info` | ★ 汇总报告（由 powerpro_script.py 生成） |
+| `powerpro.log` | ★ 完整日志（878KB） |
+| `rep_dir/Dashboard.txt` | 仪表板 |
+| `rep_dir/Total_Hierarchical_Power.txt` | 总层级功耗 |
+| `rep_dir/Peak_Power.txt` | 峰值功耗 |
+| `rep_dir/Clock_Gating.txt` | 时钟门控报告 |
+| `rep_dir/hier_pwr_detail.csv` | ★ 层级功耗明细 |
+| `rep_dir/kpi.json` | KPI 数据 |
+
+### 6.6 Q&A
+
+**Q：PowerPro 的数据从哪来？**
+A：三个来源：
+1. **RTL**（文件列表）→ 知道电路结构
+2. **FSDB 波形**（仿真产物）→ 知道信号什么时候翻转
+3. **标准单元库**（.db）→ 知道每个 cell 的功耗模型
+
+三者结合才能算出功耗。没有波形就只能做"无向量"分析（默认翻转率 50%），精度差很多。
+
+**Q：PowerPro 和 DC 的功耗报告有什么区别？**
+A：DC 的功耗是"估算"（基于默认翻转率），PowerPro 是"精确"（基于真实仿真波形）。DC 告诉你"大概多少"，PowerPro 告诉你"到底多少"。
+
+**Q：为什么 PowerPro 要用 `tt_typ` corner 而不是综合的 `wcl_cmax_m40_setup`？**
+A：功耗分析通常用典型条件（typical），因为你要知道"正常使用时的功耗"。综合用 worst-case 是因为要保证"最坏情况下时序也满足"。两者目标不同。
+
+### 6.7 小白自检 3 问
+
+1. PowerPro 的 `run` 文件只有 2 行，它做了什么？
+2. `hier_pwr.csv` 和 `rep_dir/hier_pwr_detail.csv` 有什么区别？
+3. 如果 PowerPro 报 "FSDB file not found"，最可能是什么问题？
+
+---
+
+## 7. Pre-PT（综合后时序）
+
+> **一句话**：Pre-PT 读综合网表 + 约束，做静态时序分析（STA），确认"综合后的网表时序满足要求"。
+
+### 7.1 物理直觉
+
+DC 综合时虽然做了时序优化，但它的分析精度有限（没有真实 RC、没有布局）。Pre-PT 用 PrimeTime（更精确的 STA 引擎）重新分析一遍，给出"综合后到底满不满足时序"的可靠报告。
+
+### 7.2 输入
+
+| 输入 | 来源 | 说明 |
+|------|------|------|
+| 综合网表 | `$PROJECT_PATH/SYNTHESIS/ip/syn_HK1V11_digital_top/dc/rep_dir_0922_1456/HK1V11_digital_top.gv` | DC 产物（`read_design.tcl` 里指定） |
+| 库 | `$TCL_DIR/common/common_db.tcl` | `nexchip_145_9t` |
+| 时钟周期 | `$TCL_DIR/common/clk_period.tcl` | 同 DC |
+| IP 约束 | `$IP_CONS_DIR/HK1V11_digital_top.tcl` | 同 DC |
+| 公共约束 | `$TCL_DIR/common/common_cons.tcl` | 同 DC |
+| 时钟/IO | `$TCL_DIR/common/kv_clkio.tcl` | 同 DC |
+
+### 7.3 脚本清单
+
+| 文件 | 路径 | 角色 |
+|------|------|------|
+| `run_pt` | `top/sta/pre/pt/run_pt`（12 行） | **主启动脚本**，调 `pt_shell` |
+| `pt_setup.tcl` | `top/sta/pre/common/pt_setup.tcl`（121 行） | **Pre-PT 主流程脚本** |
+| `design.set` | `top/sta/pre/pt/design.set`（91 行） | Pre-PT 设计配置 |
+| `read_design.tcl` | `top/sta/pre/pt/read_design.tcl`（4 行） | **指定读哪个网表** |
+| `common_db.tcl` | `common/tcl_dir/common/common_db.tcl`（87KB） | 库定义 |
+| `common_pt.tcl` | `common/tcl_dir/pt/common_pt.tcl`（93 行） | PT 公共脚本（IP 级用） |
+| `pt_report.tcl` | `common/tcl_dir/pt/pt_report.tcl`（19 行） | 报告生成 |
+| `pt_check_design.tcl` | `common/tcl_dir/pt/pt_check_design.tcl` | 浮空/短路检查 |
+
+### 7.4 `read_design.tcl`（最关键的一行）
+
+```tcl
+read_verilog $PROJECT_PATH/SYNTHESIS/ip/syn_HK1V11_digital_top/dc/rep_dir_0922_1456/HK1V11_digital_top.gv
+```
+
+**注意**：这里写死了 `rep_dir_0922_1456`（日期目录），每次 DC 重跑后需要改这个路径！
+
+### 7.5 `pt_setup.tcl` 流程（121 行）
+
+```
+1. sh date
+2. set_host_options -max_cores 4
+3. source design.set
+4. 设置各种 timing options
+5. source common_db.tcl        ← 读库
+6. source read_design.tcl      ← ★ 读网表
+7. current_design + link_design
+8. source clk_period.tcl       ← 时钟
+9. source kv_clkio.tcl
+10. source ip_cons/HK1V11_digital_top.tcl  ← ★ IP 约束
+11. source common_cons.tcl
+12. update_timing              ← ★ 跑时序
+13. source pt_report.tcl       ← 生成报告
+14. report_timing              ← 时序报告
+15. write_sdc ../sdc_pr/HK1V11_digital_top.tcl  ← ★★ 写 SDC 给 APR！
+16. pt_check_design            ← 浮空/短路检查
+```
+
+### 7.6 产出
+
+| 产物 | 说明 |
+|------|------|
+| `pt_rpt/HK1V11_digital_top_timing.rpt` | ★ 时序报告（含 constraint + clock + coverage） |
+| `pt_rpt/HK1V11_digital_top_cons.rpt` | 约束报告 |
+| `pt_rpt/HK1V11_digital_top_coverage.rpt` | 覆盖率报告 |
+| `pt_rpt/report_timing.rpt` | 完整时序路径 |
+| `pt_rpt/report_timing_min.rpt` | hold 时序路径 |
+| `pt_rpt/pt.log` | PT 完整日志 |
+| `pt_rpt/read_sdc.log` | 读约束日志 |
+| `pt_rpt/read_verilog.log` | 读网表日志 |
+| `pt_rpt/link_design.log` | link 日志 |
+| `update_timing.log` | update_timing 日志 |
+| `pt_rpt/pt_input_float.log` | 浮空输入检查 |
+| `pt_rpt/pt_output_short.log` | 输出短路检查 |
+| `../sdc_pr/HK1V11_digital_top.tcl` | ★★ write_sdc 产出（290 行，给 APR 用） |
+
+### 7.7 Q&A
+
+**Q：Pre-PT 和 IP 级 PT（`ip/syn_HK1V11_digital_top/pt/`）有什么区别？**
+A：
+- **IP 级 PT**（`ip/.../pt/`）：用 `common_pt.tcl`，读 DC 网表（`.gv_org`），输出在 `rep_dir/`，比较轻量。
+- **Pre-PT**（`top/sta/pre/pt/`）：用独立的 `pt_setup.tcl`，读 DC 网表（通过 `read_design.tcl` 指定），输出在 `pt_rpt/`，更完整（有 write_sdc 给 APR）。
+
+实际上两者做的事情类似，Pre-PT 是"正式"的，IP 级 PT 是"调试"用的。
+
+**Q：`write_sdc` 是做什么的？**
+A：把当前 PT session 里所有生效的约束（create_clock、set_false_path、set_multicycle_path 等）**原样导出**成一个 .tcl 文件，给 APR（布局布线）用。APR 会 `read_sdc` 这个文件，确保布局布线时的约束和综合时一致。
+
+### 7.8 小白自检 3 问
+
+1. `read_design.tcl` 里写死了网表路径，如果 DC 重跑了，需要改哪里？
+2. Pre-PT 的 `write_sdc` 输出到哪个路径？这个文件给谁用？
+3. `CK_TIM_EN` 和 `CK_FLT_EN` 分别控制什么？
+
+---
+
+## 8. SDC 传递链（sdc_pr）
+
+> **一句话**：`sdc_pr/HK1V11_digital_top.tcl` 是 Pre-PT `write_sdc` 的产物，是"综合约束"传递给 APR 的桥梁。
+
+### 8.1 文件内容
+
+路径：`SYNTHESIS/top/sta/pre/sdc_pr/HK1V11_digital_top.tcl`（290 行）
+
+```tcl
+# Created by PrimeTime write_sdc on Tue Sep 22 14:54:32 2026
+
+set sdc_version 2.1
+set_units -time ns -capacitance pF -current mA -voltage V -resistance kOhm
+set_operating_conditions -analysis_type on_chip_variation -library [...]
+
+# 主时钟
+create_clock -name RX_CLK -period 3.81 -waveform {0 1.905} [get_ports {clk_lane}]
+create_clock -name OSC_CLK -period 20 -waveform {0 10} [get_ports {OSC_CLK_I}]
+create_clock -name I2C_CLK -period 500 -waveform {0 250} [get_ports {SCL_I}]
+
+# 派生时钟
+create_generated_clock -name WCLK1_A_I2C -source [get_ports {SCL_I}] -divide_by 1 -add -master_clock [get_clocks {I2C_CLK}] [get_pins {u_LOGIC_CENTER/...}]
+...
+
+# false_path / multicycle / IO delay
+...
+```
+
+### 8.2 约束生效链
+
+```
+ip_cons/HK1V11_digital_top.tcl（人写的约束）
+    + clk_period.tcl（时钟周期）
+    + common_cons.tcl（公共约束）
+    + kv_clkio.tcl（时钟/IO）
+        │
+        ▼  （DC 综合时 source）
+    DC session 里的约束
+        │
+        ▼  （DC write_sdc → rep_dir/xxx.sdc）
+    DC 的 SDC 快照
+        │
+        ▼  （Pre-PT source 同样的约束文件）
+    PT session 里的约束
+        │
+        ▼  （PT write_sdc → sdc_pr/HK1V11_digital_top.tcl）
+    ★ sdc_pr 文件（给 APR）
+        │
+        ▼  （APR read_sdc）
+    APR session 里的约束
+        │
+        ▼  （APR 输出 postcts.sdc）
+    postcts.sdc（CTS 后的约束，含 propagated clock）
+        │
+        ▼  （POSTPT source）
+    POSTPT session 里的约束
+```
+
+**关键原则**：`sdc_pr` 里的内容必须和 `ip_cons` 里的一致。如果 `ip_cons` 改了但没重跑 Pre-PT，`sdc_pr` 就是旧的，APR 会用旧约束 → POSTPT 数字不可信。
+
+### 8.3 小白自检 3 问
+
+1. `sdc_pr` 文件是谁生成的？什么时候生成？
+2. 如果改了 `ip_cons` 里的一个 `set_false_path`，哪些阶段需要重跑？
+3. `sdc_pr` 里的 `create_clock -period 3.81` 和 `clk_period.tcl` 里的 `RX_CLKP 3.81` 是什么关系？
+
+---
+
+## 9. POSTPT（布局布线后时序）
+
+> **一句话**：POSTPT 读 APR 产出的网表 + SPEF（真实寄生参数）+ postcts.sdc，做最终时序验证，跑 10 个 corner。
+
+### 9.1 物理直觉
+
+Pre-PT 用 wire load model（估算的线延迟），POSTPT 用 SPEF（布局布线后真实的线延迟 + 电容 + 耦合电容）。POSTPT 的数字才是"最终能不能 tape out"的依据。
+
+### 9.2 输入
+
+| 输入 | 来源 | 说明 |
+|------|------|------|
+| APR 网表 | `/project/HK1V11/designer/AD/hmnie/release/HK1V11_digital_top/timing/20260916_6/HK1V11_digital_top.v.gz` | APR 产出的压缩网表（本地不可见） |
+| SPEF | `${PR_PATH}/${TOP_NAME}_${RC_FILE}.spef.gz` | 寄生参数（按 corner 不同） |
+| 约束 | `clk_period.tcl` + `kv_clkio_postpt.tcl` + `postcts.sdc` | postcts.sdc 来自 APR SDC_PATH |
+| 库 | `$TCL_DIR/common/common_db.tcl` | 同前 |
+
+### 9.3 10 个 corner
+
+| 目录名 | CORNER 变量 | RC_FILE | 含义 |
+|--------|------------|---------|------|
+| `wc_typical_125` | `wc_typ` | `typical_125c` | worst-case 典型 125°C |
+| `wc_cworst_125` | `wc_cworst` | `cworst_125c` | worst-case RC worst 125°C |
+| `wc_cbest_125` | `wc_cbest` | `cbest_125c` | worst-case RC best 125°C |
+| `tt_typical_25` | `tt_typ` | `typical_25c` | typical 典型 25°C |
+| `tt_cworst_25` | `tt_cworst` | `cworst_25c` | typical RC worst 25°C |
+| `tt_cbest_25` | `tt_cbest` | `cbest_25c` | typical RC best 25°C |
+| `lt_typical_m40` | `lt_typ` | `typical_m40c` | low-temperature 典型 -40°C |
+| `lt_cworst_m40` | `lt_cworst` | `cworst_m40c` | low-temp RC worst -40°C |
+| `lt_cbest_m40` | `lt_cbest` | `cbest_m40c` | low-temp RC best -40°C |
+| `ml_cbest_125` | `ml_cbest` | `cbest_125c` | mid-low RC best 125°C |
+
+### 9.4 脚本清单
+
+| 文件 | 路径 | 角色 |
+|------|------|------|
+| `run_pt` | `top/sta/post/pt/<corner>/run_pt`（25 行） | **启动脚本**（每个 corner 一份） |
+| `corner_set.tcl` | `top/sta/post/pt/<corner>/corner_set.tcl`（14 行） | **corner 参数** |
+| `pt_setup.tcl` | `top/sta/post/common/pt_setup.tcl`（352 行） | **POSTPT 主流程脚本** |
+| `design.set` | `top/sta/post/pt/design.set`（50 行） | POSTPT 设计配置 |
+| `report_timing_prj.tcl` | `top/sta/post/common/report_timing_prj.tcl` | 项目时序报告 |
+| `report_timing_skew_sd.tcl` | `top/sta/post/common/report_timing_skew_sd.tcl` | SD bus skew |
+| `report_timing_skew_io.tcl` | `top/sta/post/common/report_timing_skew_io.tcl` | IO skew |
+| `report_timing_skew_isprx.tcl` | `top/sta/post/common/report_timing_skew_isprx.tcl` | ISPRX skew |
+| `report_timing_trans.tcl` | `top/sta/post/common/report_timing_trans.tcl` | 转换/电容报告 |
+| `report_clock_path.tcl` | `top/sta/post/common/report_clock_path.tcl` | 时钟路径 |
+| `get_violate.pl` | `top/sta/post/common/get_violate.pl` | 提取违例 |
+| `get_violate_trans.pl` | `top/sta/post/common/get_violate_trans.pl` | 提取转换违例 |
+| `merge_violate.pl` | `top/sta/post/common/merge_violate.pl` | 合并违例 |
+| `archive_pt_history.py` | `top/sta/post/pt/archive_pt_history.py` | 归档历史 |
+| `pararrel_run_pt.py` | `top/sta/post/pt/pararrel_run_pt.py` | 并行跑 10 corner |
+| `deploy_pt_history.py` | `SYNTHESIS/deploy_pt_history.py` | 部署 PT history 骨架 |
+
+### 9.5 `corner_set.tcl`（每个 corner 一份，14 行）
+
+```tcl
+set CONS_CHECK 1
+set SI_CHECK 1
+set EARLY_DERATING 1
+set LATE_DERATING 0
+set CORNER "wc_typ"       ← 每个 corner 不同
+set DUMP_SDF 0
+set QUIT 0
+source ../../common/pt_setup.tcl -echo
+```
+
+### 9.6 `pt_setup.tcl` 流程（352 行）
+
+```
+1. source design.set
+2. 确定 run_id（从 PT_RUN_ID 环境变量）
+3. 建目录：history/<run_id>/{log,rpt,whole_session}
+4. 设置 timing options
+5. SI 设置（si_enable_analysis 等）
+6. source common_db.tcl
+7. read_verilog（APR 网表 .v.gz）
+8. link_design
+9. 根据 CORNER 设 RC_FILE + operating_conditions
+10. read_parasitic（SPEF）
+11. source clk_period.tcl + kv_clkio_postpt.tcl
+12. source postcts.sdc
+13. set_propagated_clock [all_clocks]
+14. update_timing
+15. check_timing
+16. 各种 report_timing
+17. source report_timing_prj.tcl
+18. source report_timing_trans.tcl
+19. source report_timing_skew_*.tcl（max + min）
+20. source report_clock_path.tcl
+21. save_session
+```
+
+### 9.7 产出（每个 corner）
+
+```
+top/sta/post/pt/<corner>/
+├── history/
+│   └── <run_id>/
+│       ├── pt.log                    # PT 日志
+│       ├── log/
+│       │   ├── read_design.log
+│       │   ├── link_design.log
+│       │   ├── read_spef.log
+│       │   ├── read_cons.log
+│       │   ├── check_timing.log
+│       │   ├── report_timing.rpt
+│       │   ├── report_global_timing.rpt
+│       │   ├── report_analysis_coverage.rpt
+│       │   ├── report_exceptions.rpt
+│       │   └── ...
+│       ├── rpt/
+│       │   ├── summary/
+│       │   │   ├── HK1V11_digital_top_timing.rpt
+│       │   │   ├── HK1V11_digital_top_cons.rpt
+│       │   │   └── HK1V11_digital_top_coverage.rpt
+│       │   ├── setup/               # 每个时钟的 setup 报告
+│       │   │   ├── report_timing_setup.rpt
+│       │   │   ├── report_timing_RX_CLK_setup.rpt
+│       │   │   └── ...（20+ 个时钟）
+│       │   ├── hold/                # 每个时钟的 hold 报告
+│       │   │   ├── report_timing_hold.rpt
+│       │   │   ├── report_timing_RX_CLK_hold.rpt
+│       │   │   └── ...
+│       │   ├── skew/                # bus skew 报告
+│       │   │   ├── report_timing_sd_l_1p_a.rpt
+│       │   │   └── ...
+│       │   ├── trans/               # 转换/电容报告
+│       │   │   ├── trans_slack.rpt
+│       │   │   └── ...
+│       │   ├── clock_path.rpt
+│       │   └── HK1V11_digital_top.clk.sum.rpt
+│       └── whole_session/           # PT session（可恢复）
+└── latest -> history/<run_id>       # 符号链接
+```
+
+### 9.8 Q&A
+
+**Q：为什么 POSTPT 要跑 10 个 corner？**
+A：芯片在不同温度、电压、工艺偏差下的时序表现不同：
+- **wc（worst-case）**：最慢条件 → 查 setup（会不会太慢）
+- **lt（low-temperature）**：低温 → 查 hold（会不会太快）
+- **typical / cworst / cbest**：不同 RC 条件 → 覆盖耦合电容影响
+
+10 个 corner 的笛卡尔积 = 温度(3) × RC(3) × 电压偏差(wc/tt/lt) 的组合，确保"任何条件下时序都满足"。
+
+**Q：`set_propagated_clock [all_clocks]` 是做什么的？**
+A：POSTPT 里时钟已经经过 CTS（时钟树综合），时钟路径有真实的延迟。`set_propagated_clock` 告诉 PT"把时钟当真实路径分析"（而不是理想时钟），这样 skew 才能被正确计算。
+
+**Q：`SI_CHECK 1` 是做什么的？**
+A：开启信号完整性（SI）分析——考虑相邻线之间的耦合电容（crosstalk），分析"邻近信号翻转时会不会影响这条路径的延迟"。这是 POSTPT 独有的分析维度。
+
+### 9.9 小白自检 3 问
+
+1. POSTPT 的网表输入和 Pre-PT 的网表输入有什么区别？
+2. `latest` 符号链接的作用是什么？
+3. 如果 10 个 corner 里只有 `lt_cworst_m40` 有 hold 违例，说明什么？
+
+---
+
+## 10. 跨阶段纪律：约束生效链 + 代际验证法
+
+> **一句话**：后端流程最大的坑不是"工具报错"，而是"用了旧文件但以为是新的"。
+
+### 10.1 约束生效链（任何阶段断代，后面的数字都不可信）
+
+```
+ip_cons/HK1V11_digital_top.tcl（源头）
+    │
+    │  DC source
+    ▼
+DC session ──→ write_sdc → dc/rep_dir/xxx.sdc
+    │
+    │  LEC 用 .gv_org（网表，不用 SDC）
+    ▼
+LEC（只验证逻辑等价，不验证约束）
+    │
+    │  Pre-PT source 同样的 ip_cons
+    ▼
+PT session ──→ write_sdc → sdc_pr/xxx.tcl
+    │
+    │  APR read_sdc
+    ▼
+APR ──→ postcts.sdc
+    │
+    │  POSTPT source postcts.sdc
+    ▼
+POSTPT（最终报告）
+```
+
+**纪律**：
+- 改了 `ip_cons` → 必须重跑 DC → LEC → Pre-PT → APR → POSTPT
+- 改了 `clk_period.tcl` → 同上
+- 改了 `common_cons.tcl` → 同上
+- 只改了 `design.set` 里的 `TAR_LIB` → 至少重跑 DC → LEC → Pre-PT
+- APR 重跑了但没改约束 → 只需重跑 POSTPT
+
+### 10.2 代际验证法（怎么确认"我跑的是最新的"）
+
+**方法 1：robocopy 重置文件时间戳**
+```csh
+robocopy <源目录> <目标目录> /MIR /XF *.bak*
+```
+`/MIR` 镜像复制会更新所有文件的时间戳，让"文件时间"反映"真实跑的时间"。
+
+**方法 2：看报告头的 Date**
+每个工具的报告/log 开头都有时间戳：
+- `dc.log` 第一行：`sh date` 的输出
+- `pt.log` 第一行：`sh date` 的输出
+- `lec.log` 第一行：`date` 的输出
+- `powerpro.log`：有 "Date: ..." 行
+
+**方法 3：看 `rep_dir/svn.info`**
+每个 `run_*` 脚本都会写：
+```
+Date is 20260922145432
+<svn info 输出>
+```
+这是最可靠的"这组产物是什么时候、什么版本跑出来的"。
+
+**方法 4：看 `read_cons.log` 的 `write_sdc` 时间戳**
+Pre-PT 的 `read_cons.log` 里会记录 source 了哪些约束文件，如果里面有 `write_sdc` 的行，说明 PT 确实更新了 SDC。
+
+**方法 5：看 `dc.log` 的标记串**
+DC 的 `dc.log` 里搜 `compile_ultra`，看它后面有没有报错。如果 `compile_ultra` 后面直接就是 `write_verilog`，说明综合成功了。
+
+### 10.3 小白自检 3 问
+
+1. 如果改了 `ip_cons` 里的一个 `set_multicycle_path`，最少需要重跑哪些阶段？
+2. `rep_dir/svn.info` 里的 "Date is" 是什么意思？谁写的？
+3. 为什么 POSTPT 的 `design.set` 里 `SDC_PATH` 写死了一个服务器路径？
+
+---
+
+## 11. DV_TCON_C 验证简介
+
+> **一句话**：DV（Design Verification）用 RTL 跑仿真 case，验证"功能对不对"；后端流程用综合后网表跑 STA，验证"时序/功耗对不对"。两者输入同源（都是 `HDL/` 下的 RTL），但工具和目标完全不同。
+
+### 11.1 目录结构
+
+```
+DV_TCON_C/
+├── script/
+│   ├── makefile               # 编译仿真
+│   ├── run_tc.sh              # 跑 test case
+│   ├── merge_coverage.py      # 合并覆盖率
+│   └── produce_checker1.py    # 生成 checker
+└── top/
+    ├── tb/                    # Testbench
+    │   ├── chip_tb_top.sv     # ★ 顶层 testbench
+    │   ├── base_test.sv       # 基础 test
+    │   └── intf_connect.sv    # 接口连接
+    ├── agents/                # UVM agent
+    │   ├── i2c_sv/            # I2C agent
+    │   └── isprx_env/         # ISPRX 环境
+    ├── tests/                 # 测试用例
+    │   ├── case_list.txt      # case 列表
+    │   ├── create_new_case.sh # 创建新 case
+    │   └── ...
+    ├── vseq/                  # 虚拟序列
+    ├── filelist/              # 文件列表
+    ├── regression/            # 回归测试
+    ├── reg_csv/               # 寄存器 CSV
+    ├── regdir_20260414_134223/ # 寄存器目录
+    └── HK1V11_Register_20260407.xlsx  # 寄存器表
+```
+
+### 11.2 和后端流程的关系
+
+| 维度 | DV（验证） | 后端（综合/STA） |
+|------|-----------|----------------|
+| 输入 | RTL（`HDL/`）+ testbench | RTL（`HDL/`）+ 约束 + 库 |
+| 工具 | VCS / Xcelium（仿真器） | DC / PT / PowerPro |
+| 目标 | 功能对不对（case pass/fail） | 时序/面积/功耗对不对 |
+| 产物 | 波形（FSDB）+ 覆盖率 | 网表 + 时序报告 |
+| 运行位置 | 服务器 | 服务器 |
+| 交叉点 | DV 的 FSDB 波形 → PowerPro 的输入 | DC 的网表 → LEC 的 Rev |
+
+**关键交叉点**：
+- PowerPro 的 `FSDB_FILE`（`fsdb/power_4k180.fsdb`）就是 DV 仿真产生的波形
+- `FSDB_HIER`（`chip_tb_top.u_HK1V11.u_HK1V11_digital_top`）就是 DV testbench 的层级路径
+
+### 11.3 小白自检 3 问
+
+1. DV 的 `chip_tb_top.sv` 和后端流程有什么关系？
+2. PowerPro 的 FSDB 文件是谁产生的？
+3. 如果 DV 的 case 改了（加了新信号），后端流程需要做什么？
+
+---
+
+## 12. 公共脚本层（common/）
+
+> **一句话**：`SYNTHESIS/common/` 是所有 IP 共享的"公共库"，换 IP 不用改这里，只需要改 `ip/` 下的 `design.set` 和 `filelist/`。
+
+### 12.1 公共脚本清单
+
+| 文件 | 路径 | 角色 |
+|------|------|------|
+| `genfilelist` | `common/script/genfilelist`（178 行 perl） | 展开文件列表（递归解析 `-f`） |
+| `gensyn` | `common/script/gensyn`（24KB） | 生成综合目录结构 |
+| `signoff` | `common/script/signoff`（55KB） | Signoff 检查（综合+LEC+CKF 全通过才 pass） |
+| `signoff_dc` | `common/script/signoff_dc`（35KB） | DC signoff 检查 |
+| `signoff_check` | `common/script/signoff_check`（2.4KB） | signoff 辅助检查 |
+| `nlint_filter.pl` | `common/script/nlint_filter.pl`（4.4KB） | nLint 报告过滤 |
+| `gen_memlist.pl` | `common/script/gen_memlist.pl` | 生成 memory 列表 |
+| `multi_wire_check.pl` | `common/script/multi_wire_check.pl` | 多驱动检查 |
+| `netlist_reform.pl` | `common/script/netlist_reform.pl` | 网表格式转换 |
+| `reg_check.pl` | `common/script/reg_check.pl` | 寄存器检查 |
+| `tkdiff` | `common/script/tkdiff`（341KB） | 文本 diff 工具（二进制） |
+
+### 12.2 `genfilelist` 的作用
+
+```
+genfilelist HK1V11_digital_top.f ./advanced
+```
+
+读入 `HK1V11_digital_top.f`（里面可能有 `-f` 嵌套引用），递归展开成"平铺"的文件列表，输出到 `./advanced/` 目录。所有工具（DC/LEC/nLint）都先跑 `genfilelist` 再读展开后的列表。
+
+### 12.3 跨阶段公共文件
+
+| 文件 | 被谁 source | 作用 |
+|------|-----------|------|
+| `clk_period.tcl` | DC、Pre-PT、POSTPT、IP-PT | 时钟周期定义（所有阶段共享） |
+| `common_cons.tcl` | DC、Pre-PT | 公共约束 |
+| `kv_clkio.tcl` | DC、Pre-PT、IP-PT | 时钟/IO 约束 |
+| `kv_clkio_postpt.tcl` | POSTPT | POSTPT 专用 IO 约束 |
+| `common_cons_postpt.tcl` | POSTPT | POSTPT 专用公共约束 |
+| `common_db.tcl` | DC、LEC、PT、PowerPro | 库文件定义（87KB！） |
+| `common_db_pvt.tcl` | IP-PT | PVT 条件（69KB） |
+| `common_pt.tcl` | IP-PT | PT 公共流程 |
+| `common_pt_for_pr.tcl` | POSTPT | POSTPT 公共流程 |
+
+### 12.4 小白自检 3 问
+
+1. `genfilelist` 为什么要递归展开？直接读原始 .f 不行吗？
+2. `common_db.tcl` 有 87KB，里面大概有什么？
+3. 如果加一个新的 IP（比如 `syn_NEW_IP`），需要改 `common/` 里的哪些文件？（答案：通常不用改）
+
+---
+
+## 13. 其他 IP 综合（LINK_LOGIC / LOGIC_CENTER）
+
+> **一句话**：HK1V11 有三个独立综合的 IP，模式完全相同（每个 IP 有自己的 `design.set` + 各工具子目录）。
+
+### 13.1 三个 IP
+
+| IP | 目录 | 说明 |
+|----|------|------|
+| `HK1V11_digital_top` | `ip/syn_HK1V11_digital_top/` | ★ 主 IP（数字顶层） |
+| `LINK_LOGIC` | `ip/syn_LINK_LOGIC/` | 链路逻辑 IP |
+| `LOGIC_CENTER` | `ip/syn_LOGIC_CENTER/` | 逻辑中心 IP |
+
+### 13.2 目录结构（完全相同）
+
+```
+ip/syn_<IP_NAME>/
+├── design.set
+├── filelist/
+├── ckf/
+├── nlint/
+├── dc/
+├── genus/
+├── lec/
+├── lec_upf/
+├── pt/
+└── spy/
+```
+
+**区别只在**：
+- `design.set` 里的 `TOP_NAME` 不同
+- `filelist/` 里的文件列表不同
+- `common/ip_cons/<IP_NAME>.tcl` 里的约束不同
+
+### 13.3 小白自检 3 问
+
+1. 三个 IP 的 `run_dc` 脚本内容一样吗？（提示：读 `design.set` 里的 `TOP_NAME`）
+2. 如果 `LINK_LOGIC` 的 RTL 改了，需要重跑哪些阶段？
+3. `LOGIC_CENTER.tcl`（ip_cons）和 `HK1V11_digital_top.tcl`（ip_cons）的区别是什么？
+
+---
+
+## 14. 心法：12 条可操作教训
+
+> 每条一句话，从"流程视角"总结。
+
+1. **改约束必重跑全链**：`ip_cons` / `clk_period.tcl` / `common_cons.tcl` 任何一个改了，DC → LEC → Pre-PT → APR → POSTPT 全部重跑，否则后面的数字全是旧的。
+
+2. **`read_design.tcl` 是手工炸弹**：Pre-PT 的网表路径写死了（`rep_dir_0922_1456`），DC 重跑后必须手动改，忘了改就会用旧网表。
+
+3. **看 `svn.info` 确认代际**：每个 `rep_dir/svn.info` 里有 "Date is xxx" + svn 版本，这是"这组产物什么时候跑出来的"最可靠证据。
+
+4. **LEC 的 non_eq ≠ 综合 bug**：可能是映射策略问题（`set_flatten_model` 参数）、黑盒、或 `dont_touch` 没生效。先看 `unmapped.rpt` 再看 `non_eq.rpt`。
+
+5. **POSTPT 的 `latest` 符号链接是"当前有效"的指针**：`ls -la` 看它指向哪个 `history/<run_id>`，就知道"最新一次 POSTPT 是什么时候跑的"。
+
+6. **PowerPro 的 FSDB 是 DV 的产物**：`fsdb/power_4k180.fsdb` 不在 `SYNTHESIS/` 里，在 DV 的仿真输出里。如果 DV 没跑，PowerPro 跑不了。
+
+7. **`design.set` 是"总开关"**：换库、换 corner、换工具（dc/genus），都改这一个文件。但 `SYN_TOOL` 改了之后，LEC 的 `read_design` 路径也会变（dc 用 `.gv_org`，genus 用 `.gv`）。
+
+8. **`write_sdc` 是"约束快照"**：Pre-PT 的 `write_sdc` 输出到 `sdc_pr/`，APR 读的就是这个。如果 Pre-PT 没重跑，APR 用的就是旧约束 → POSTPT 数字不可信。
+
+9. **10 corner 不是"跑 10 遍"那么简单**：每个 corner 的 `RC_FILE`、`operating_conditions`、`derate` 都不同，`SI_CHECK` 也不同。不能只跑一个 corner 就下结论。
+
+10. **`genfilelist` 是所有工具的前置**：DC/LEC/nLint/PowerPro 都先跑 `genfilelist` 展开文件列表。如果 `HDL/file_list/*.f` 加了新文件但没重跑 `genfilelist`，综合就看不到新文件。
+
+11. **`common/` 里的文件改一个影响所有 IP**：`clk_period.tcl` 改了，三个 IP 的 DC/PT/POSTPT 全部受影响。改公共文件前必须评估影响范围。
+
+12. **"本地不可见"不代表"不存在"**：APR 网表、SPEF、FSDB、`postcts.sdc` 都在服务器上（`/project/HK1V11/` 或 `/XXW_PRJ01/`），本地只有脚本和报告。如果本地看不到某个文件，去服务器上看。
+
+### 小白终极自检 3 问
+
+1. 你刚改了 `ip_cons` 里的一个 `set_false_path`，列出最少需要重跑的阶段顺序。
+2. POSTPT 的 `design.set` 里 `PR_PATH` 指向哪个路径？如果 APR 重跑了，这个路径会变吗？
+3. 三个 IP（HK1V11_digital_top / LINK_LOGIC / LOGIC_CENTER）的综合流程有什么区别？（提示：流程完全一样，区别在哪？）
+
+---
+
+## 附录 A：本地不可见清单（诚实声明）
+
+以下路径在本地工作区**不存在**（在服务器上），本文档只引用了脚本中引用的路径名：
+
+| 路径 | 说明 |
+|------|------|
+| `/project/HK1V11/designer/AD/hmnie/release/HK1V11_digital_top/timing/20260916_6/` | APR 网表 + SPEF |
+| `/XXW_PRJ01/HK1V11/DataBase/Digital/Release/Netlist/Prescan/HK1V11_digital_top_to_APR/20260921_9/` | APR SDC（postcts.sdc） |
+| `/eda/env/*.cshrc` | EDA 环境（DC/PT/LEC/PowerPro/SpyGlass） |
+| `fsdb/power_4k180.fsdb` | PowerPro 用的仿真波形 |
+| `/eda/process/015/ENEXCHIP/standcell/...` | 标准单元库（Verilog 格式） |
+| `SYNTHESIS/ip/syn_HK1V11_digital_top/genus/rep_dir/` | Genus 综合产物（未用） |
+| `SYNTHESIS/ip/syn_HK1V11_digital_top/lec/rep_dir/` | LEC 产物（服务器跑） |
+| `SYNTHESIS/ip/syn_HK1V11_digital_top/nlint/rep_dir/` | nLint 产物（服务器跑） |
+| `SYNTHESIS/top/sta/post/pt/<corner>/history/` | POSTPT 历史（部分在本地 `wc_typical_125`） |
+
+## 附录 B：工具版本（从脚本中读到）
+
+| 工具 | 版本 | 来源 |
+|------|------|------|
+| DC | `syn1709` | `run_dc`: `source /eda/env/syn1709.cshrc` |
+| PT | `pt1706`（IP 级）/ `pt1806`（Pre-PT） | `run_pt` |
+| LEC | `confrml17` | `run_lec` / `run_ckf` |
+| PowerPro | `powerpro2024.2.1` | `run_power_opt`: `source /eda/env/NEXT/powerpro2024.2.1.cshrc` |
+| SpyGlass | `spyglass2016` | `run_spy`: `source /eda/env/spyglass2016.cshrc` |
+| Genus | （未用，版本不可见） | `run_genus` |
+
+## 附录 C：流程 Readme（来自 `Readme` 文件）
+
+`SYNTHESIS/ip/syn_HK1V11_digital_top/Readme` 原文（24 行）：
+
+```
+SYNTHESIS FLOW  ver.2.1
+1.  modify TOP_DESIGN_NAME                file : design.set
+2.  select lib, netlist_define etc..      file : design.set
+3.  modify filelist                       file : ./filelist/xx.f
+                                                  ./filelist/xx.sv.f
+                                                  ./filelist/advanced/xx.ddc_dc.f
+                                                  ./filelist/advanced/xx.vhdl_dc.f
+                                                  ./filelist/advanced/xx.vhdl_lec.f
+                                                  ./filelist/advanced/xx.dummy_lec.f
+4.  updated you constraint                file : $PROJECT_PATH/SYNTHESIS/common/ip_cons/xx.tcl
+5.  run_ckf   & check ckf   rpt           file : ./ckf/run_ckf         ./ckf/rep_dir/ckf.rpt
+6.  run_nlint & check nlint rpt           file : ./nlint/run_nlint     ./nlint/rep_dir/nlint.log
+                                                                        ./nlint/rep_dir/compiler.log
+                                                                        ./nlint/rep_dir/nlint.rpt
+7.  run_dc    & check dc    rpt           file : ./dc/run_dc           ./dc/rep_dir/*
+8.  run_genus & check genus rpt           file : ./genus/run_genus     ./genus/rep_dir/*
+9.  run_lec   & check lec   rpt           file : ./lec/run_lec         ./lec/rep_dir/*
+10. signoff                               signoff_target_dir : $PROJECT_PATH/Release/netlist/prescan/xx/latest/dc/
+                                                                $PROJECT_PATH/Release/netlist/prescan/xx/latest/lec/
+                                                                $PROJECT_PATH/Release/netlist/prescan/xx/latest/ckf/
+                                                                $PROJECT_PATH/Release/netlist/prescan/xx/latest/signoff.rpt
+                                           If your rpt have error the signoff will not pass !!!
+```
+
+<!-- ymzhu 2026-09-24 15:30 -->
+  </script>
+  <script src="./js/site.js"></script>
+</body>
+</html>
+<!-- ymzhu 2026-09-24 16:18 -->
