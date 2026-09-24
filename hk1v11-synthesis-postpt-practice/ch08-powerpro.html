@@ -103,15 +103,17 @@ WARNING: PowerPro 读取的 RTL 必须是可综合代码，无法综合会 inter
 | t_8b1lane | 2.97G | 145 | 294907 | 1L | **21.08** |
 | 4K180 | 4.47G | 145 | 294907 | 1L | **37.9** |
 
+> DPLC 开启实测 **21.36 mW**（0923 powerpro.log Initial Design，21358.6 µW）。
+
 > 功耗随速率：4K180 (4.47G) 是 t_8b1lane (2.97G) 的 **1.80×**，而速率只 **1.50×**——高频下 clock_network + register 切换非线性增长。
 
-### 4.2 跨项目对比（HK1V11 vs HV2M23 / HV3310B1 / HV1V21 / HV1V31 / HV1V22）
+### 4.2 跨项目对比（HK1V11 vs HV2M23 / HV3310B1 / HV1V21 / HV1V22）
 
 ![HK1V11 vs 其他项目 PowerPro 功耗对比](./power_compare_hk11.png)
 
-> 数据源：HV2M23/3310B1/1V21 = back_ppt（PowerPro LVT）；**HV1V31/HV1V22 = 新数据（t_8b1lane，速率/工艺/面积未知→'-'，AutoEQ 忽略，DPLC 取 AutoEQ_EN=0 基线）**。
+> 数据源：HV2M23/3310B1/1V21 = back_ppt（PowerPro LVT）；**HV1V22 = Nexchip 145nm 实测（Normal=4G 不开 DPLC 15.8，DPLC=3G 开 14.8）**；HV1V31 数据暂缺已移除。HK1V11 含 **DPLC 开 21.36**（0923 powerpro.log Initial Design）。
 
-> ⚠️ HK1V11 功耗绝对值偏高**主因速率更高**（2.97G/4.47G vs 其他 1.8G/0.9G），**非同速率对比**，直接比 mW 会偏（HV1V31/1V22 速率未知，对比更需注意口径）。
+> ⚠️ HK1V11 功耗绝对值偏高**主因速率更高**（2.97G/4.47G vs 其他 1.8G/0.9G），**非同速率对比**，直接比 mW 会偏（HV1V22 为 4G/3G，对比注意口径）。
 
 ### 4.3 4K180 lane = 1L 判定（从 case 配置）
 

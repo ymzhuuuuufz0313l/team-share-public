@@ -418,7 +418,7 @@
       <div class="body">
         <div class="t">0923 · PowerPro 服务器首跑出数 + 408bit 对抗复核 + 毯子收窄 + CDR_CRC_DET 525M what-if（需求已 cut）</div>
         <ul>
-          <li><b>PowerPro 首跑出数</b>：t_8b1lane 2.97G/1L=21.08mW、4K180 4.47G/1L=37.9mW（Initial Design）；数据率因子=20bit 定案（RX 通路位宽）；剩反标率 100% + X 态清理验收</li>
+          <li><b>PowerPro 首跑出数 + DPLC 数据</b>：t_8b1lane 2.97G/1L=21.08mW、4K180 4.47G/1L=37.9mW、<b>DPLC 开 21.36mW</b>（Initial Design）；数据率因子=20bit 定案；对比图更新（1V22 4G/15.8 + DPLC 3G/14.8，1V31 移除）；剩反标率 100% + X 态清理验收</li>
           <li>bit 级审计三路对抗复核：17 bit 改判、B 类 12→24 bit/10 分区（新增 R_REG34/40/41/46/47_F），组毯子收窄落地（逐分区注释 RTL 证据）</li>
           <li>multicycle 逐跳审查揪出四类错位：DPLC 无 <code>-from</code> max_delay 放宽每拍像素管线（3.81→6.35）、K1 只罩死 SHORT 实例（活 LONG +0.187 已补对）、G1/G2 BKDU 地雷注释、G13 论据勘误</li>
           <li>CDR_CRC_DET 525M what-if（CDR_2X multiply_by 2）：比较锥 setup <b>−0.879</b> 真 path，hold 批量为 CDC 假违例（缺 false_path）——<b>需求已 cut：模块不再倍频</b>，what-if 方法学（交互会话建派生钟→过滤报表）保留备用</li>
