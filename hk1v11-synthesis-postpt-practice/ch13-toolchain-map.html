@@ -555,43 +555,47 @@ RTL 是"行为描述"（`if (a && b) c = 1`），综合后是"电路"（一个 A
 | `dont_use_all.tcl` | `common/tcl_dir/dc/dont_use_all.tcl`（59KB） | 禁用 cell 列表 |
 | `genfilelist` | `common/script/genfilelist` | **辅助**：展开文件列表（perl） |
 
-### 4.4 `compile_dc.tcl` 流程（139 行）
+### 4.4 `compile_dc.tcl` 流程（139 行，行号实测）
 
 ```
-1. source design.set              ← 读配置
-2. source dc_user_proc.tcl        ← 加载用户 proc
-3. source basic_setup_all.tcl     ← 基础设置
-4. read_filelist_all              ← 读 RTL
-5. link                           ← 关联库
-6. check_design                   ← 基本检查
-7. source design_rule.tcl         ← 设计规则
-8. source dont_use_all.tcl        ← 禁用 cell
-9. source clk_period.tcl          ← 时钟周期
-10. source kv_clkio.tcl           ← 时钟/IO
-11. source ip_cons/HK1V11_digital_top.tcl  ← ★ IP 约束
-12. source common_cons.tcl        ← 公共约束
-13. report_port / report_design   ← 综合前报告
-14. compile_ultra                 ← ★ 综合！
-15. report_timing / report_area   ← 综合后报告
-16. write_verilog (.gv)           ← ★ 写网表
-17. write_sdc                     ← ★ 写 SDC
-18. write_ddc                     ← ★ 写 DDC
+1.  sh date + source ../design.set          ← 读配置（:1-3）
+2.  source dc_user_proc.tcl + basic_setup_all.tcl   ← 用户 proc + 基础设置（:6-7）
+3.  read_filelist_all → current_design → link       ← 读 RTL + 关联库（:10-25）
+4.  check_design                                     ← 基本检查（:27）
+5.  source design_rule.tcl + dont_use_all.tcl        ← 设计规则 + 禁用 cell（:34-35）
+6.  source clk_period.tcl → kv_clkio.tcl → ip_cons/HK1V11_digital_top.tcl → common_cons.tcl
+                                                     ← 约束顺序：先周期、再 kv 时钟/IO、再 IP 约束、再公共约束（:39-42）
+7.  report_port / report_design / report_clock / check_timing
+                                                     ← 综合前报告 → .pre_compile（:46-57）
+8.  kv_compile_unltra $INCR_OPT $USE_SAIF $BOND_OPT  ← ★ 综合！（用户 proc，封装 compile_ultra，:61）
+9.  kv_report_non_scan + kv_change_names             ← 名字规整（reg[n]→_reg_n_ 等，:64-66）
+10. write -format verilog → .gv_org                  ← ★ 原始网表（:68）
+11. write ddc → .ddc；write verilog → .gv；write verilog → _onlytop.v；write_sdc → .sdc
+                                                     ← ★ 四个写出（:77-80）
+12. report_area / report_power / report_clock_gating / report_constraints / report_timing
+                                                     ← 综合后报告 → .rpt / _max.rpt（:83-108）
+13. kv_report_dff_num / kv_report_all_latch / 导出 dont_touch.tcl（:115-121）
+14. exec netlist_reform.pl                           ← ★ 最后清理 .gv（去 assign 等，:132）
 ```
+
+> 注意顺序：**先 write 网表/SDC（10-11），再出报告（12）**；`.gv_org` 在 `netlist_reform.pl` 之前写出，所以它是"未经清理的原始网表"，LEC 用它做 Rev（第 5 块）。
 
 ### 4.5 产出（rep_dir/）
 
 | 产物 | 说明 |
 |------|------|
-| `HK1V11_digital_top.gv` | ★ 综合网表（Verilog，给 LEC/Pre-PT 用） |
-| `HK1V11_digital_top.gv_org` | 原始网表（未做 verilogout 格式转换） |
+| `HK1V11_digital_top.gv` | ★ 综合网表（Verilog，给 LEC/Pre-PT 用；**末尾经过 `netlist_reform.pl` 清理 assign**） |
+| `HK1V11_digital_top.gv_org` | 原始网表（DC `write` 直接输出，**未过 netlist_reform.pl**） |
 | `HK1V11_digital_top.sdc` | ★ DC 写出的 SDC（约束快照） |
 | `HK1V11_digital_top.ddc` | DDC 约束（Design Data Constraints） |
+| `HK1V11_digital_top_onlytop.v` | 仅顶层的网表（`write -format verilog -o $NETLIST_FILE_TOP`） |
 | `HK1V11_digital_top.rpt` | 综合报告（时序、面积、功耗） |
 | `HK1V11_digital_top.chk_design` | check_design 报告 |
 | `HK1V11_digital_top.pre_compile` | 综合前端口/设计报告 |
+| `HK1V11_digital_top.scan_cell` | scan cell 清单 |
 | `HK1V11_digital_top_max.rpt` | 最大时序路径报告（20MB！） |
 | `dc.log` | ★ DC 完整日志（1.6MB） |
-| `dont_touch.tcl` | dont_touch 约束记录 |
+| `dont_touch.tcl` | dont_touch 约束记录（compile_dc.tcl:118-121 导出 `*u_gate*` 清单） |
 | `svn.info` | 跑的时间 + svn 版本 |
 
 ### 4.6 `run_dc` 脚本核心逻辑（35 行 csh）
@@ -702,7 +706,7 @@ A：不一定。常见原因：
 - 需要看 unmapped.rpt 和 unreach.rpt 辅助判断
 
 **Q：本项目为什么用 `gv_org` 而不是 `gv`？**
-A：`gv_org` 是 DC `write_verilog` 的原始输出，`gv` 可能经过格式转换。LEC 用 `gv_org` 保证和 DC 输出完全一致，避免格式差异导致误判。
+A：`gv_org` 是 DC `write -format verilog` 的原始输出；`compile_dc.tcl` 末尾（:132）还会 `exec netlist_reform.pl` 对 `.gv` 做清理（去 assign 等格式规整）。LEC 用 `gv_org` 保证和 DC 原始输出完全一致，避免后处理差异导致误判。
 
 ### 5.7 小白自检 3 问
 
@@ -744,7 +748,7 @@ A：`gv_org` 是 DC `write_verilog` 的原始输出，`gv` 可能经过格式转
 | `run_power_opt` | `ip/syn_HK1V11_digital_top/powerpro/run_power_opt`（27 行） | **启动脚本**，source 环境 + 调 powerpro |
 | `compile_powerpro_opt.tcl` | `ip/syn_HK1V11_digital_top/powerpro/compile_powerpro_opt.tcl`（804 行） | **主流程脚本** |
 | `powerpro_script.py` | `ip/syn_HK1V11_digital_top/powerpro/powerpro_script.py`（164 行） | **后处理**：从 powerpro.log 提取关键信息到 report_info |
-| `powerpro_chk.py` | `ip/syn_HK1V11_digital_top/powerpro/powerpro_chk.py`（72 行） | **后处理**：计算指标占比 |
+| `powerpro_chk.py` | `ip/syn_HK1V11_digital_top/powerpro/powerpro_chk.py`（69 行） | **后处理**：计算指标占比 |
 | `pwr2.py` | `ip/syn_HK1V11_digital_top/powerpro/pwr2.py` | 另一份检查脚本 |
 | `user_dont_use.tcl` | `ip/syn_HK1V11_digital_top/powerpro/user_dont_use.tcl`（34KB） | 功耗优化 dont_use |
 | `user_matched_dont_use.tcl` | `ip/syn_HK1V11_digital_top/powerpro/user_matched_dont_use.tcl` | 匹配 dont_use |
@@ -880,7 +884,7 @@ read_verilog $PROJECT_PATH/SYNTHESIS/ip/syn_HK1V11_digital_top/dc/rep_dir_0922_1
 | `pt_rpt/read_sdc.log` | 读约束日志 |
 | `pt_rpt/read_verilog.log` | 读网表日志 |
 | `pt_rpt/link_design.log` | link 日志 |
-| `update_timing.log` | update_timing 日志 |
+| `update_timing.log` | update_timing 日志（注意：在 `pt/` 目录下，**不在** `pt_rpt/`） |
 | `pt_rpt/pt_input_float.log` | 浮空输入检查 |
 | `pt_rpt/pt_output_short.log` | 输出短路检查 |
 | `../sdc_pr/HK1V11_digital_top.tcl` | ★★ write_sdc 产出（290 行，给 APR 用） |
@@ -987,7 +991,7 @@ Pre-PT 用 wire load model（估算的线延迟），POSTPT 用 SPEF（布局布
 |------|------|------|
 | APR 网表 | `/project/HK1V11/designer/AD/hmnie/release/HK1V11_digital_top/timing/20260916_6/HK1V11_digital_top.v.gz` | APR 产出的压缩网表（本地不可见） |
 | SPEF | `${PR_PATH}/${TOP_NAME}_${RC_FILE}.spef.gz` | 寄生参数（按 corner 不同） |
-| 约束 | `clk_period.tcl` + `kv_clkio_postpt.tcl` + `postcts.sdc` | postcts.sdc 来自 APR SDC_PATH |
+| 约束 | `clk_period.tcl` + `kv_clkio_postpt.tcl` + `${SDC_PATH}/HK1V11_digital_top_postcts.sdc` | postcts.sdc 来自 APR SDC_PATH（`design.set` 里写死 `.../20260921_9`；`pt_setup.tcl:286-292` source 这三个） |
 | 库 | `$TCL_DIR/common/common_db.tcl` | 同前 |
 
 ### 9.3 10 个 corner
@@ -1105,7 +1109,7 @@ top/sta/post/pt/<corner>/
 │       │   ├── clock_path.rpt
 │       │   └── HK1V11_digital_top.clk.sum.rpt
 │       └── whole_session/           # PT session（可恢复）
-└── latest -> history/<run_id>       # 符号链接
+└── latest -> history/<run_id>       # 符号链接（服务器上由 pt_setup.tcl:85 `sh ln -s` 建；本地是 robocopy 拷贝回来的实体目录）
 ```
 
 ### 9.8 Q&A
@@ -1116,7 +1120,7 @@ A：芯片在不同温度、电压、工艺偏差下的时序表现不同：
 - **lt（low-temperature）**：低温 → 查 hold（会不会太快）
 - **typical / cworst / cbest**：不同 RC 条件 → 覆盖耦合电容影响
 
-10 个 corner 的笛卡尔积 = 温度(3) × RC(3) × 电压偏差(wc/tt/lt) 的组合，确保"任何条件下时序都满足"。
+注意这 10 个**不是**"温度×RC×电压的全笛卡尔积"（那会是几十上百个），而是**精选子集**：PVT 角 {wc, tt, lt, ml} × RC 角 {typical, cworst, cbest} × 温度 {125/25/-40} 里挑出对签核最有意义的 10 个组合（每个 corner 目录的 `corner_set.tcl` 设 `CORNER`，`pt_setup.tcl:183-259` 把它映射成 `RC_FILE` + operating conditions）。少跑一个 corner，就少覆盖一种物理条件。
 
 **Q：`set_propagated_clock [all_clocks]` 是做什么的？**
 A：POSTPT 里时钟已经经过 CTS（时钟树综合），时钟路径有真实的延迟。`set_propagated_clock` 告诉 PT"把时钟当真实路径分析"（而不是理想时钟），这样 skew 才能被正确计算。
@@ -1193,7 +1197,7 @@ Date is 20260922145432
 这是最可靠的"这组产物是什么时候、什么版本跑出来的"。
 
 **方法 4：看 `read_cons.log` 的 `write_sdc` 时间戳**
-Pre-PT 的 `read_cons.log` 里会记录 source 了哪些约束文件，如果里面有 `write_sdc` 的行，说明 PT 确实更新了 SDC。
+POSTPT 的 `<corner>/latest/log/read_cons.log` 里回显了 source 进来的约束文件内容，`postcts.sdc` 头部的 `Created by PrimeTime write_sdc on <时间戳>` 说明这份 SDC 是哪一代 Pre-PT 物化的（当前本地实测：`wc_typical_125/latest/log/read_cons.log:399` = `Mon Sep 21 15:24:21 2026`）。Pre-PT 侧对应的约束读取日志是 `pt_rpt/read_tcl.log` / `read_sdc.log`，名字别搞混。
 
 **方法 5：看 `dc.log` 的标记串**
 DC 的 `dc.log` 里搜 `compile_ultra`，看它后面有没有报错。如果 `compile_ultra` 后面直接就是 `write_verilog`，说明综合成功了。
@@ -1396,14 +1400,14 @@ ip/syn_<IP_NAME>/
 | 路径 | 说明 |
 |------|------|
 | `/project/HK1V11/designer/AD/hmnie/release/HK1V11_digital_top/timing/20260916_6/` | APR 网表 + SPEF |
-| `/XXW_PRJ01/HK1V11/DataBase/Digital/Release/Netlist/Prescan/HK1V11_digital_top_to_APR/20260921_9/` | APR SDC（postcts.sdc） |
+| `/XXW_PRJ01/HK1V11/DataBase/Digital/Release/Netlist/Prescan/HK1V11_digital_top_to_APR/20260921_9/` | APR SDC（实际文件名 `HK1V11_digital_top_postcts.sdc`，`pt_setup.tcl:292` source 它） |
 | `/eda/env/*.cshrc` | EDA 环境（DC/PT/LEC/PowerPro/SpyGlass） |
 | `fsdb/power_4k180.fsdb` | PowerPro 用的仿真波形 |
-| `/eda/process/015/ENEXCHIP/standcell/...` | 标准单元库（Verilog 格式） |
+| `/eda/process/015/ENEXCHIP/standcell/...` | 标准单元库（nexchip_145_9t = M31HSSC900EL150SL/SS，`common_db.tcl:743-746`，ccs .db/.lib.gz 格式） |
 | `SYNTHESIS/ip/syn_HK1V11_digital_top/genus/rep_dir/` | Genus 综合产物（未用） |
-| `SYNTHESIS/ip/syn_HK1V11_digital_top/lec/rep_dir/` | LEC 产物（服务器跑） |
-| `SYNTHESIS/ip/syn_HK1V11_digital_top/nlint/rep_dir/` | nLint 产物（服务器跑） |
-| `SYNTHESIS/top/sta/post/pt/<corner>/history/` | POSTPT 历史（部分在本地 `wc_typical_125`） |
+| `SYNTHESIS/top/sta/post/pt/<corner>/history/` | POSTPT 历史归档（10 个 corner 的 `latest/` 本地都在；`history/` 归档在服务器上，本地无） |
+
+> 更正记录（2026-09-24 复审）：`nlint/rep_dir/` 与 `lec/rep_dir/` **本地其实存在**（`nlint.log`/`nlint.rpt`、`lec.log`/`non_eq.rpt` 等产物齐全），早前版本误列入本表，已移除。
 
 ## 附录 B：工具版本（从脚本中读到）
 
@@ -1414,7 +1418,7 @@ ip/syn_<IP_NAME>/
 | LEC | `confrml17` | `run_lec` / `run_ckf` |
 | PowerPro | `powerpro2024.2.1` | `run_power_opt`: `source /eda/env/NEXT/powerpro2024.2.1.cshrc` |
 | SpyGlass | `spyglass2016` | `run_spy`: `source /eda/env/spyglass2016.cshrc` |
-| Genus | （未用，版本不可见） | `run_genus` |
+| Genus | `genus1723` | `run_genus`: `source /eda/env/genus1723.cshrc`（当前 `SYN_TOOL=dc`，未启用） |
 
 ## 附录 C：流程 Readme（来自 `Readme` 文件）
 
@@ -1426,10 +1430,10 @@ SYNTHESIS FLOW  ver.2.1
 2.  select lib, netlist_define etc..      file : design.set
 3.  modify filelist                       file : ./filelist/xx.f
                                                   ./filelist/xx.sv.f
-                                                  ./filelist/advanced/xx.ddc_dc.f
-                                                  ./filelist/advanced/xx.vhdl_dc.f
-                                                  ./filelist/advanced/xx.vhdl_lec.f
-                                                  ./filelist/advanced/xx.dummy_lec.f
+                                                  ./filelist/advanced/xx.ddc_dc.f    if you have ddc file in dc
+                                                  ./filelist/advanced/xx.vhdl_dc.f   if you have vhdl file in dc
+                                                  ./filelist/advanced/xx.vhdl_lec.f  if you have vhdl file in lec
+                                                  ./filelist/advanced/xx.dummy_lec.f if you need dummy some file in lec
 4.  updated you constraint                file : $PROJECT_PATH/SYNTHESIS/common/ip_cons/xx.tcl
 5.  run_ckf   & check ckf   rpt           file : ./ckf/run_ckf         ./ckf/rep_dir/ckf.rpt
 6.  run_nlint & check nlint rpt           file : ./nlint/run_nlint     ./nlint/rep_dir/nlint.log
@@ -1445,9 +1449,9 @@ SYNTHESIS FLOW  ver.2.1
                                            If your rpt have error the signoff will not pass !!!
 ```
 
-<!-- ymzhu 2026-09-24 15:30 -->
+<!-- ymzhu 2026-09-24 16:35 -->
   </script>
   <script src="./js/site.js"></script>
 </body>
 </html>
-<!-- ymzhu 2026-09-24 16:18 -->
+<!-- ymzhu 2026-09-24 16:40 -->

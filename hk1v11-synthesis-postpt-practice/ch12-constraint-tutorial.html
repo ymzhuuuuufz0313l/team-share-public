@@ -41,7 +41,7 @@
 先说清楚三个"读者约定"，后面每一块都按这个套路走：
 
 - **结论先行**：每块开头一句话把"这条约束到底在干什么"讲完，再展开。
-- **真实锚点**：本项目 tcl 片段 + RTL 里真实存在的模块名 / 信号名（都来自实际读到的文件）。RTL 都在 `HDL/HK1V11_digital_top/seperated_code/` 下。
+- **真实锚点**：本项目 tcl 片段 + RTL 里真实存在的模块名 / 信号名（都来自实际读到的文件）。RTL 在 `HDL/HK1V11_digital_top/` 下（主体在 `seperated_code/`，LONG 编码相关在 `long_encoding/`）。
 - **两问**：每块必答"为什么这么设"和"为什么不能那样设"（后者是这个项目真实踩过的坑）。
 
 每块末尾给 **自检方法**（1~3 条可复制的命令 / 检查步骤），让你能确认约束"真的生效了"。
@@ -162,9 +162,9 @@ LINK_PANEL_CTRL.v:200 AUTO_EQ_TRAINIG_JUDGE AUTO_EQ_TRAINIG_JUDGE(
 
 | kv_ 包装 | 等价标准命令 | 本项目用途 |
 |----------|--------------|------------|
-| `kv_clock NAME PERIOD PIN` | `create_clock` | 定义主时钟（RX_CLK / OSC_CLK / I2C_CLK） |
-| `kv_genclock ...` | `create_generated_clock` | 生成时钟 |
-| `kv_reset PIN` | `create_reset` | 复位引脚 |
+| `kv_clock NAME PERIOD PIN` | `create_clock`（外加 `set_clock_uncertainty` / `set_max_transition -clock_path` / ideal+dont_touch network，见 `kv_clkio.tcl:88-106`） | 定义主时钟（RX_CLK / OSC_CLK / I2C_CLK） |
+| `kv_genclock ...` | `create_generated_clock`（同样自动带 uncertainty） | 生成时钟 |
+| `kv_reset PIN` | `set_false_path -thr PIN`（外加 ideal/dont_touch network，见 `kv_clkio.tcl:33-37`）——**注意：不是** `create_reset`（SDC 里没有这个命令），它本质是"复位路径豁免" | 复位引脚 |
 | `kv_interclk_group_path A logically` | `set_clock_groups -logically_exclusive` | 同域互斥时钟成组 |
 | `kv_2clklist_group_path A B` | `set_clock_groups -asynchronous` | 两个异步时钟族成组 |
 
@@ -173,8 +173,8 @@ LINK_PANEL_CTRL.v:200 AUTO_EQ_TRAINIG_JUDGE AUTO_EQ_TRAINIG_JUDGE(
 **自检方法**：
 ```csh
 # 确认顶层端口/位宽（20-bit RX）
-grep -n "input \[19:0\]" HDL/HK1V11_digital_top/HK1V11_digital_top.v   # 应为 dout_lane
-grep -n "input \[19:0\]  INDATA" HDL/HK1V11_digital_top/seperated_code/LINK_LOGIC.v
+grep -n "input *\[19:0\]" HDL/TOP/HK1V11_digital_top.v          # 应为 :430 dout_lane
+grep -n "input *\[19:0\]" HDL/HK1V11_digital_top/seperated_code/LINK_LOGIC.v   # 应为 :14 ,input [19:0] INDATA
 ```
 
 ---
@@ -198,14 +198,14 @@ launch FF ──data──► [组合逻辑: delay = Tdata] ──► capture FF
     └─────────────── 数据要"跑完全程并留出 setup" ──┘
 ```
 
-setup 检查的式子（数据在 t1 之前要跑完）：
+setup 检查的式子（单周期、同钟：capture 沿 = launch 沿 + 1 个周期 T）：
 
 ```
-t_launch + Tclk + Tdata + tSU + tCO ≤ t_capture
-  ↑出发   ↑一个周期  ↑跑路    ↑稳定    ↑出发延迟
+t_launch + tCO + Tdata + tSU ≤ t_capture = t_launch + T
+   ↑出发沿   ↑FF出数  ↑跑路  ↑稳定        ↑同一时钟的下一个沿
 ```
 
-其中 `tCO`（clock-to-output）是 launch FF 的"数据出来要多快"。
+也就是"数据从 launch FF 出来（tCO）、跑完组合逻辑（Tdata）、再提前 setup 时间（tSU）站好"，全部必须发生在下一个时钟沿之前。其中 `tCO`（clock-to-output）是 launch FF 的"数据出来要多快"。hold 检查则看**同一个沿**：新数据不能比 capture 沿 + tH 更早窜到。
 
 ### 2.2 hold：沿之后别再跳
 
@@ -240,7 +240,7 @@ hold 的物理来源和 setup 相反：它怕的是"数据**太快**"（新数�
 report_timing -delay_type max -path_type full -max_paths 5 > rpt_setup.txt
 report_timing -delay_type min -path_type full -max_paths 5 > rpt_hold.txt
 # 在报告里确认 "Startpoint: ...  (rising edge)" 与 "Endpoint: ... (rising edge)"
-# 数一下 capture 沿：multicycle 生效时 capture 边沿号会跳到第 2 个周期（见第 14 块）
+# 数一下 capture 沿：multicycle 生效时 capture 边沿号会跳到第 2 个周期（见第 9 块）
 ```
 
 ---
@@ -251,11 +251,12 @@ report_timing -delay_type min -path_type full -max_paths 5 > rpt_hold.txt
 
 ### 3.1 本项目的主时钟定义
 
-`HK1V11_digital_top.tcl:94-99`：
+`HK1V11_digital_top.tcl:94-99`（第 96 行 `I2C_CLK_INV_PIN` 定义此处省略）：
 
 ```tcl
 set  OSC_CLK_PIN      [get_ports OSC_CLK_I]
 set  I2C_CLK_PIN      [get_ports SCL_I]
+...
 
 kv_clock  OSC_CLK     $OSC_CLKP  $OSC_CLK_PIN
 kv_clock  I2C_CLK     $I2C_CLKP  $I2C_CLK_PIN
@@ -272,20 +273,28 @@ kv_clock  RX_CLK  $RX_CLKP  $RX_CLK_PIN
 
 ### 3.2 周期从哪来：clk_period.tcl（关键换算）
 
-`SYNTHESIS/common/tcl_dir/common/clk_period.tcl`（全文，20 行）：
+`SYNTHESIS/common/tcl_dir/common/clk_period.tcl`（全文，20 行，逐字照抄）：
 
 ```tcl
 if {$synopsys_program_name != "pt_shell"} {
   set MARGIN 0.80
 } else {
-  set MARGIN 1.00
+  set MARGIN 1.00 
 }
-set OSC_CLKP   [expr  20.00*$MARGIN ]   # Spec 2.4M set as 50M -> 这里用 20ns
-set I2C_CLKP   [expr  500.00*$MARGIN ]  # I2C_CLK = 2M
+
+#set APB_CLKP	   [expr  3.08*$MARGIN	   ]
+#Spec 2.4M set as 50M 
+set OSC_CLKP	   [expr  20.00*$MARGIN	   ]
+
+# I2C_CLK = 2M
+set I2C_CLKP       [expr  500.00*$MARGIN   ]
+
 # 5G*1.05/20 = 262.5 M
-set RX_CLKP    [expr  3.81*$MARGIN     ]
-# 3G*1.05/20 = 157.5 M
-set DPLC_CLKP  [expr  6.35*$MARGIN     ]
+set RX_CLKP        [expr  3.81*$MARGIN	   ]
+#set RX_CLKP        [expr  4.00*$MARGIN	   ]
+
+# 3G*1.05/20 = 157.5 M 
+set DPLC_CLKP      [expr  6.35*$MARGIN	   ]
 ```
 
 拆成一张表：
@@ -294,7 +303,7 @@ set DPLC_CLKP  [expr  6.35*$MARGIN     ]
 |------|--------------------------|--------------------------|------|
 | `RX_CLKP` | 3.048 ns | **3.81 ns** | 名义 262.5 MHz |
 | `DPLC_CLKP` | 5.08 ns | **6.35 ns** | 名义 157.5 MHz |
-| `OSC_CLKP` | 16 ns | 20 ns | 20 MHz 级 |
+| `OSC_CLKP` | 16 ns | 20 ns | 50 MHz（20ns；注释：spec 2.4M 按 50M 约束，留大量裕量） |
 | `I2C_CLKP` | 400 ns | 500 ns | 2 MHz |
 
 **三个必须分清的"因子"**（这是本章的核心理解点）：
@@ -307,10 +316,13 @@ set DPLC_CLKP  [expr  6.35*$MARGIN     ]
 
 ### 3.3 clock uncertainty（时钟不确定度）
 
-`set_clock_uncertainty`（或 `create_clock` 里的 `-uncertainty`）表达的是：时钟沿**不是精确的**，有 jitter / skew / OCV，给 setup 和 hold 各留一点。
+`set_clock_uncertainty` 表达的是：时钟沿**不是精确的**，有 jitter / skew / OCV，给 setup 和 hold 各留一点。
 
-- 它对 **setup** 是"再扣一点"（更严），对 **hold** 是"加一点裕量"（更严）。
-- 本项目主时钟的 uncertainty 主要靠工艺/库的 SDC 默认 + APR 阶段的 skew 数据（`.sdf`/SPEF），ip_cons 里没手写一堆 `set_clock_uncertainty`，因为真正的 skew 是 **CTS 之后**才知道的（第 15 块）。
+- 它对 **setup** 是"再扣一点"（更严），对 **hold** 是"加一点"（同样更严）。
+- **本项目的 uncertainty 不是"没设"，而是藏在 `kv_clock` / `kv_genclock` 包装里自动设的**（`kv_clkio.tcl:101-102`）：每次 `kv_clock` 都执行 `set_clock_uncertainty -setup [kv_uncertainty $period $setup_uncty]` 和 `-hold $hold_uncty`。
+- 数值（`kv_clkio.tcl:3-6`）：DC 阶段 `setup_uncty=0.400`、`hold_uncty=0.150`；POSTPT 走 `kv_clkio_postpt.tcl:3-6`：`setup_uncty=0.10`、`hold_uncty=0.07`。
+- `kv_uncertainty` proc（`kv_clkio.tcl:39-69`）还有一个 PT 专用规则：pt_shell 下取 `max(5% × period, margin)`、封顶 2.0ns——所以慢时钟（I2C 500ns）在 PT 里 uncertainty 会被按比例放大。
+- 真实的 clock skew 数据则要靠 **CTS 之后**（APR，本地不可见）才进网表，POSTPT 里通过 `set_propagated_clock [all_clocks]` + SPEF 体现（第 15 块）。
 
 **自检方法**：
 ```csh
@@ -396,7 +408,7 @@ create_generated_clock -name DPLC_CLK_SHORT -divide_by 1 -source $DPLC_SHORT_PIN
 > **为什么不能那样设**：如果只定义一条腿，换编码（SP 翻转）后约束就对不上网表了，会报"找不到这个时钟/这个 pin 上没有时钟"。而且**漏定义的腿不会自动消失**——它会让下游路径"没有 capture 时钟"，表现为 unconstrained 或错误时钟归属。
 
 **自检方法**：
-```csl
+```csh
 # 列出某 pin 上挂的所有时钟（验证 -add 生效）
 get_clocks -of_pins [get_pins u_LOGIC_CENTER/LC_CLK_RST_GEN/CLKGEN/u_gate_MUX_SD_CLK/CLKMUX2X2/O]
 # 应看到 NORMAL_CLK / SD_CLK 等多个；再核对每个的 period/edges 是否如你所设
@@ -477,11 +489,14 @@ set_false_path  -from u_LOGIC_CENTER/LINK_LOGIC/LC_CHPI_DECODE/LONG_ENCODING/LON
 跨域最安全的做法是**两级（或多级）触发器同步**：第一个 FF 负责"吸收亚稳态"，第二个 FF 负责"读出一个确定值"。本项目有真实例：
 
 ```verilog
-// LC_REG_MAPPING.v:322-328 —— BKDU_SYNC（R_BKDU 跨域同步/拷贝）
-reg BKDU_SYNC;
-always @(posedge DCLK or negedge RSTN) begin
-    if (!RSTN)      BKDU_SYNC <= 1'b0;
-    else            BKDU_SYNC <= R_BKDU;   // R_BKDU 来自 RX 域配置
+// LC_REG_MAPPING.v:322-328 —— BKDU_SYNC（R_BKDU 跨域同步/拷贝，带使能）
+reg     BKDU_SYNC;
+always  @(posedge DCLK or negedge RSTN)
+begin
+if (!RSTN)
+BKDU_SYNC <= #`FF_DLY 1'b0;
+else if (BIT_ALIGN_PT)              // 注意：有使能条件，不是无条件打拍
+BKDU_SYNC <= #`FF_DLY R_BKDU;       // R_BKDU 来自 RX 域配置
 end
 
 // BUFFER_I.v:4-6 —— INDATA_SYNC 20-bit 输入同步链（3 级）
@@ -558,7 +573,7 @@ kv_2clklist_group_path  $osc_clk_clklist    $iic_wclk_clklist
 
 翻译：**I2C 状态机被重构成用 `I2C_CLK_INV` 驱动，但这个新时钟漏了进异步分组清单** → 工具拿 `I2C_CLK_INV`（500ns 级）和 `WCLK1_A_DCLK`（3.81ns）去跨域检查 → 边沿数爆炸（"500ns-vs-3.81ns edge expansion"）→ 一轮跑出 **320 条假 setup（-6.865）+ 79 条 gating + 171 条 hold 假违例**。把 `I2C_CLK_INV` 补进 `iic_root_clklist` 后消失。
 
-> 同类真实教训（CDR_2X hold -1.67）：项目里新造的 CDR 2X 分频时钟，因为没进异步/豁免清单，产生了 hold 假违例 -1.67ns。**规律：新增时钟 = 必须同步更新所有相关 `get_clock [list ...]` 清单，否则 hold 假违例找上门。**
+> 同类真实教训（CDR_2X hold 假违例）：项目里新造的 CDR 2X 分频时钟，因为没进异步/豁免清单，产生了 hold 假违例（ch06 记录了这个坑，具体数值见当时 run 报告）。**规律：新增时钟 = 必须同步更新所有相关 `get_clock [list ...]` 清单，否则 hold 假违例找上门。**
 
 ### 7.3 为什么不能那样设
 
@@ -600,8 +615,8 @@ set_input_delay  -clock  RX_CLK  -min  -0.3  [get_ports  dout_lane*]
 
 ### 8.2 -max / -min 为什么方向相反
 
-- **setup（-max）**：给一个"截止时刻"——数据必须在这个时刻**之前**到位。`-max 0.3` 表示输入在 capture 沿后 0.3ns 才被允许变化，数据要更早。
-- **hold（-min）**：给一个"保护区"——数据在这个时刻**之前**不能变。`-min -0.3` 表示输入在 capture 沿前 0.3ns 就进入"不许变"区。
+- **setup（-max）**：描述的是"外部数据相对 **RX_CLK 的（源端）时钟沿**最晚什么时候才到达端口"。`-max 0.3` = 数据最晚在沿后 0.3ns 到达端口；它和芯片内部组合逻辑延迟相加后，必须赶在 capture 沿之前——所以 -max 越大，setup 越紧。
+- **hold（-min）**：描述的是"外部数据**最早**什么时候就可能变化"。`-min -0.3` = 数据最早在沿**前** 0.3ns 就可能已经变了；hold 检查要保证这个新数据不会撞进同一个 capture 沿的保持窗口。
 
 ### 8.3 -min 设错 → 输入 hold 假违例（本项目真实教训：INDATA_SYNC -0.39）
 
@@ -701,7 +716,7 @@ report_timing -from u_LOGIC_CENTER/LINK_LOGIC/LINK_CONFIG_CTRL/LC_CPUWR/R_REG05_
 2. 问题在于：**DC 映射用的单元**和 **APR 网表用的单元**不是同一个，数据脚名不一样（DC 给的是 `/D1`、`/D2`，APR 网表常是 `/D`）。
 3. 于是 `postcts.sdc` 里写的是 `/D1`，但 APR 网表里这个 pin 叫 `/D` → POSTPT 读 SDC 时报 **`SEL-004`（No objects matched）**，并且——**关键——它静默丢弃这条约束**（不报错、不中断，只是"这条约束没了"）。
 
-真实踩坑：**UTC_FRM_CNT -0.369ns 和 G9 两组**，都是 `-to` 填了寄存器 pattern，结果在 APR 网表里对不上、被静默丢弃，约束等于白写。
+真实踩坑：**UTC_FRM_CNT -0.369ns**（ch10 排障案例记录的实锤：`LC_CPUWR/R_REG00_L_reg_0_` → `UTC_FRM_CNT_reg_4_` 跨域违例）**和 G9 两组**（G9 经 0921 审计确认，见第 11 块），都是 `-to` 填了寄存器 pattern，结果在 APR 网表里对不上、被静默丢弃，约束等于白写。
 
 ### 10.3 规则（记住这一条能避免一大类问题）
 
@@ -763,7 +778,7 @@ grep -n "\-to [a-zA-Z_u].*reg" SYNTHESIS/common/ip_cons/HK1V11_digital_top.tcl  
 | `R_REG56_F_reg*` | `LONG_ENCODING_ERROR_CTRL.v:227-260` | UTC 阈值 vs 活计数器 |
 | `R_REG57_F_reg*` | 同 R_REG56_F 链 | UTC 阈值 |
 
-（上面 RTL 行号是我逐文件确认过的：`CHPI_SD_CTRL.v` 的 `PSR_LINE_CNT`(73)/`TP_WIDTH_CNT`(64-66)、`ANCTL.v` 的 `LD_F_ECO`(133)、`LC_REG_MAPPING.v` 的 `HSR_ACTIVE`(331)、`CHPI_UTC_CHK.v` 的 `UTC_FRM_CNT`(19) 都真实存在。）
+（行号口径说明：表里 `CHPI_SD_CTRL.v:274`、`ANCTL.v:130/147,153` 等是 **tcl 内嵌审计注释里的原引用行号**（写注释时的 RTL 行号，随 RTL 演进会有漂移）；本次复核重新实测的**声明处**行号为：`PSR_LINE_CNT`（CHPI_SD_CTRL.v:73）、`TP_WIDTH_CNT0/1`（:65-66）、`LD_F_ECO`（ANCTL.v:133）、`HSR_ACTIVE`（LC_REG_MAPPING.v:331）、`UTC_FRM_CNT`（CHPI_UTC_CHK.v:19）——信号都真实存在，消费关系成立。）
 
 **真实审计证据（`script/mc_audit_0921/`，三路独立审查，bit 级 A212 / B24 / C160 / ?12）**：
 
@@ -840,14 +855,14 @@ if {$synopsys_program_name != "pt_shell"} {
 **为什么 pt 分支要加 `/D*`**：
 
 - `-to X/*` 里的 `*` 会匹配 X 下**所有 pin**，包括**内部组合节点、时钟脚、使能脚**——这些不是触发器的 D 数据脚，对它们施加 max_delay 会产生**伪违例**。
-- 真实教训：用 `-to X/*`（罩住内部节点）跑出过 **max_delay 伪违例 -3.8ns**——那些"违例"根本不是数据路径，是约束把内部节点当端点了。
+- 真实教训（ch11 排障案例记录）：用 `-to X/*`（罩住内部节点）跑出过 **max_delay 伪违例 -3.8ns**——那些"违例"根本不是数据路径，是约束把内部节点当端点了。
 - `-to X/*/D*` 只匹配**每个寄存器的 D 脚**（`*` 匹配实例名，`D*` 匹配 D1/D2/D 等数据脚），把端点精确锁定在"真正的数据输入"上。
 
 > **为什么不能那样设**：图省事写 `-to X/*`，在 pt（netlist）阶段内部节点暴露出来，max_delay 会去检查"到某个内部组合节点"的路径，报出 -3.8 这种假违例，误导你去"修"一个不存在的电路问题。规则：**max_delay 的 `-to` 层级端点，尽量精确到 `/*/D*`，不要裸 `/*`。**
 
 ### 12.4 审计更正：真正危险的不是"配置位"，是**无 `-from`** 的那两条
 
-`script/mc_audit_0921/multicycle逐条审查.md` 逐条审查后判定：**`HK1V11_digital_top.tcl:364-365`（dc 分支 357-358）两条**没有 `-from` 的 `set_max_delay` 是本项目**唯一确认的 💀 掩盖真 path**：
+`script/mc_audit_0921/multicycle逐条审查.md` 逐条审查后判定：**两条没有 `-from` 的 `set_max_delay`** 是本项目**唯一确认的 💀 掩盖真 path**（审计文档写于 09-22，引用的行号 364-365（dc 357-358）对应当日版本；**当前文件里是 pt 分支 :374-375、dc 分支 :358-359**）：
 
 ```tcl
 set_max_delay $DPLC_CLKP -to U_DPLC_DATA_GEN/*/D*            # 无 -from → 罩住全部 D 端点
@@ -978,9 +993,9 @@ POSTPT（PrimeTime signoff）
 >
 > | 事件 | 时间 |
 > |------|------|
-> | 本地 ip_cons 0922 终版 | 09-22 14:18 |
-> | 新 DC 跑 | 09-22 14:37 |
-> | 服务器 POSTPT 报告 | **09-21 15:25**（旧代！） |
+> | 本地 ip_cons 0922 终版 | 09-22 14:18（tcl 文件尾签名行） |
+> | 新 DC 跑 | 09-22 14:22 起跑（`rep_dir_0922_1456/svn.info`："Date is 20260922142250"） |
+> | 服务器 POSTPT 报告 | **09-21 15:24**（`read_cons.log` 里 write_sdc 时间戳 15:24:21，旧代！） |
 >
 > 结论：PT 报告比新 DC 还早一天 → 这批 PT 数字是旧代基线，不能用来评估新约束。
 
@@ -1060,7 +1075,7 @@ set_min_pulse_width -low -high 2    [get_clocks SD_CLK_INV_LONG]
 
 **概念（小白版）**：
 
-- **时钟树综合（CTS）**：时钟从 root 到每个触发器的 CK 脚要走一段线，CTS 就是设计这棵树（插 buffer / inverter / 分配 skew）。DC 阶段 `ccopt_*` 生成的那串 buffer/inverter 链**就是 CTS 树的雏形**。
+- **时钟树综合（CTS）**：时钟从 root 到每个触发器的 CK 脚要走一段线，CTS 就是设计这棵树（插 buffer / inverter / 分配 skew）。**本项目的 CTS 在 APR 阶段做（服务器上，本地不可见）**；DC 网表里看到的时钟链单元是 `u_gate_*` 这族时钟 buffer/inverter/gating wrapper（`CLKGEN.v` 里手工例化、被 `set_dont_touch [get_cells -hier *u_gate*]` 保护，见 15.1）——注意它们**不是** CTS 插的，CTS 的树要 APR 之后才有。
 - **insertion delay**：时钟沿从 root 到某个 CK 脚花的时间（绝对 ns）。
 - **skew**：**两个** CK 脚的 insertion delay 之差。`skew = t_capture_arrival − t_launch_arrival`。
 - **balance**：让相关触发器对的 skew 落在"安全区"（setup 要 capture 别太早、hold 要 capture 别太晚）。
@@ -1073,7 +1088,7 @@ set_min_pulse_width -low -high 2    [get_clocks SD_CLK_INV_LONG]
 
 > 本项目相关：DPLC 静态配置位用 `set_max_delay`（第 12 块）部分原因就是它的延迟需求是**绝对 ns**（`$DPLC_CLKP`），而 DPLC 周期（6.35ns）和 RX 周期（3.81ns）不同，用 max_delay 能跨不同周期统一表达绝对预算。**换频率（改 `clk_period.tcl` 的 1.05 / 0.8）后，必须重跑 CTS，因为 skew 的绝对分布要按新周期重新 balance。**
 
-> **DC 的 `ccopt_inst` 链就是 CTS 树**：你在 DC 网表里看到一串 `ccopt_buf_...` / `ccopt_inv_...` 从时钟 root 排开，那不是"普通 buffer"，那是 CTS 插的时钟树单元。看 hold 违例时，launch/capture 的"时钟 arrival time"差异，本质就是这棵树的 skew。
+> **DC 网表里的时钟链 ≠ CTS 树**：本项目是 Synopsys 流程（DC + APR），DC 网表里**没有** `ccopt_*` 这类 CTS 单元名（那是 Cadence/Innovus 的命名，已在 `rep_dir_0922_1456/HK1V11_digital_top.gv` 里 grep 证实 0 命中）。看 hold 违例时 launch/capture 的"时钟 arrival time"差异，本质来自时钟网络延迟——DC 阶段是理想时钟/估算，真实 skew 只有 POSTPT（SPEF + `set_propagated_clock`）才准。
 
 ### 15.4 skew / busskew 报告里的"大负数"可能是**哨兵**，不是 STA 结果（真实教训）
 
@@ -1082,7 +1097,7 @@ set_min_pulse_width -low -high 2    [get_clocks SD_CLK_INV_LONG]
 - `summary/latest/report_sd_busskew.csv` 里 `sd_l_1p_margin_a_max = -993.56 ~ -998.09`（每个 corner 都"负 900 多"）——**这不是时序结果**。
 - 根因：时钟探测点写错层级（脚本用 `u_LOGIC_CENTER/CENTER1/DTCTL/u_gate_INV_SD_CLK_INV/O*`，但 SD 反相器在 `LC_CLK_RST_GEN/CLKGEN/` 下）→ `report_timing_sd_l_1p_clk_a.rpt` 变成**空报表**（只有 SEL-003/005 报错、0 行 `data arrival time`）→ `get_sd_busskew.pl` 的哨兵初值 `$min=1000` 没被覆盖 → `margin = 6.44 − 1000 = -993.5`。
 - 更隐蔽的是**同一次 run 的另外 3 个时钟报表**：`-from` 给了非法起点，pt_shell 报 `invalid start point (UITE-416)` 后回退成"终点为 CLKA/CLKB 的全部数据路径"，把 11~12ns 的数据路径当"时钟到达时间"，其中一条 `sd_r_1p_margin_b_max = +2.84` 恰好落在合格窗内**最危险**（看起来 PASS，实则假）。
-- 修复：探测点改到 **CLKGEN 的分叉点**（= SDC 里 `create_generated_clock` 的那两个 pin，`ip_cons:...:54-55,60-68`），并去掉 0/1000 哨兵、测不到就输出空白 + 打 WARNING。
+- 修复：探测点改到 **CLKGEN 的分叉点**（= SDC 里 `create_generated_clock` 的那两个 pin；修改记录文档引用的是 0916 时行号 `ip_cons:54-55,60-68`，**当前文件对应 :75-76 pin 定义 + :78-89 的 create_generated_clock**），并去掉 0/1000 哨兵、测不到就输出空白 + 打 WARNING。
 
 > **教学点**：skew/busskew 报告里出现"巨大负数"，先怀疑**报表是不是空的 / 回退的**（SEL-003/005 + 哨兵值），而不是真去"修 skew"。判断时钟探测点是否合法的标准 = "它是不是 SDC 里定义 generated clock 的那个 pin"（本项目 = `LC_CLK_RST_GEN/CLKGEN/` 下的 buffer/mux 输出）。
 
@@ -1141,9 +1156,9 @@ report_min_pulse_width [get_clocks DCLK_DATA_LONG]
 | `script/mc_audit_0921/`（`multicycle逐条审查.md`、`寄存器bit级追踪.md` 99KB、`寄存器mc审计表.md`） | 0922 收窄的 bit 级审计（A212/B24/C160/?12）与逐条判定 |
 | `修改记录/skew_sd_busskew_minus900_rootcause_20260916.md` | skew/busskew 报告 "-900 哨兵" 根因与修复（第 15.4 块） |
 
-<!-- ymzhu 2026-09-24 16:09 -->
+<!-- ymzhu 2026-09-24 16:35 -->
   </script>
   <script src="./js/site.js"></script>
 </body>
 </html>
-<!-- ymzhu 2026-09-24 16:10 -->
+<!-- ymzhu 2026-09-24 16:40 -->
