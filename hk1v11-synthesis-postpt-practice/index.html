@@ -376,6 +376,19 @@
       font-size: 12px;
       letter-spacing: 0.06em;
     }
+    .study-footnote {
+      text-align: center;
+      margin-top: 22px;
+      font-size: 12.5px;
+      color: var(--muted);
+    }
+    .study-footnote a {
+      color: var(--muted);
+      text-decoration: none;
+      border-bottom: 1px dotted var(--line);
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .study-footnote a:hover { color: var(--accent); border-color: var(--accent); }
   </style>
 </head>
 <body>
@@ -526,6 +539,10 @@
         <div class="title">Fusion Compiler 引入评估实录</div>
         <div class="desc">在 DC 流程基线上平行引入 FC：两天从踩坑到 LEC 验收通过</div>
       </a>
+    </div>
+
+    <div class="study-footnote">
+      <a href="./ch11-violation-atlas.html">个人学习资料 · 违例归因实战（0922 约束收窄 vs DC 违例逐路径精读）</a>
     </div>
 
     <div class="footer">SHARED FROM TEAM KNOWLEDGE BASE</div>

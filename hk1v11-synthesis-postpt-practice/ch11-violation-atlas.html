@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>十一、违例归因实战 · HK1V11 综合/签核流程实践</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./css/style.css">
+  <script src="./js/marked.min.js"></script>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a class="navbar-brand" href="./">HK1V11_FLOW_PRACTICE</a>
+      <div class="navbar-links" id="navbar-links"></div>
+    </div>
+  </nav>
+  <div class="container with-toc">
+    <aside class="toc-wrapper"><div class="toc" id="toc"></div></aside>
+    <div class="content">
+      <article class="article" id="article"></article>
+      <div class="page-nav" id="page-nav"></div>
+      <div class="footer">HK1V11 SYNTHESIS / SIGNOFF PRACTICE · AUTHOR ymzhuuuu · UPDATED 2026-09-24</div>
+    </div>
+  </div>
+  <script type="text/template" id="md">
+# 十一、违例归因实战 · 0922 约束收窄 vs DC 违例逐路径精读
+
+> **个人学习资料 · 数字后端 / STA 约束工程 · HK1V11 项目 0922 约束收窄复盘**
+
+---
+
+## 0. 一周主线 / 核心结论
+
+**2026-09-22，HK1V11 完成 CPUWR 约束"收窄"重构（commit `79ef0030` → `61eb5605`），新 DC 跑（`rep_dir_0922_1456`）报出 482 条时序违例。逐路径归因后：106 条（22.0%）确属"收窄前被旧 multicycle 豁免、收窄后失去豁免、按单周期报出来"（narrowing_exposed）；335 条（69.5%）是真实违例（genuine），在旧约束下同样是单周期裸奔，与本次约束变化无关；41 条（8.5%）是"从未被任何约束覆盖"（never_constrained），因 G13 的 pattern 本身有缺陷、从未匹配到实际更差的 `DATA_POINT_LAT_D1_reg*`。核心教训有三：① 收窄是有意收紧而非约束 bug，恢复 blanket 豁免会掩盖真检查，需逐 bit 二选一处置；② 代际验证必须看报告头 Date 而非文件时间戳，robocopy 会重置 LastWriteTime；③ 约束 diff 后必须做"三方时间对齐"（本地约束修改时间 vs DC 跑时间 vs PT 报告时间），否则拿到的 PT 数字可能是旧代基线。**
+
+---
+
+## 1. 背景与时间线（代际验证——关键坑）
+
+### 1.1 事件
+
+2026-09-22，HK1V11 做了一次 CPUWR 约束"收窄"重构：将原来宽泛的 `R_REG*` multicycle 豁免组拆细，剔除 10 个分区共 24 个 B 类 bit（bit 级审计判定的"裸 per-beat 消费者、无同步器"位），同时注释掉 G13/G14 两组 from-only multicycle。收窄语义：真正失去豁免的只有三块——(a) 10 分区 24 bit 退出 `cpuwr_reg_grp`；(b) G13 注释；(c) G14 注释。其余删除项均为死约束或空对，功能无变化。
+
+### 1.2 关键时间线（必须强调"代际对齐"这个坑）
+
+| 事件 | 时间 | 证据位置 |
+|------|------|----------|
+| 本地 ip_cons 0922 终版修改 | 09-22 14:18 | 本地文件 mtime |
+| 新 DC 跑（`rep_dir_0922_1456`） | 09-22 14:37 | dc.log 中 `cpuwr_reg_grp` 出现 9 次、`R_REG` 排除标记 54 处、`COMMENTED OUT 2026-09-22` 签名 3 处 |
+| 服务器 POSTPT 报告 | **09-21 15:25** | `read_cons.log` 第 399 行：`Created by PrimeTime write_sdc on Mon Sep 21 15:24:21 2026` |
+| 结论 | PT 报告比新 DC 还早一天 | 这批 PT 数字是**旧代基线**，新约束的真实 STA 效果要等下一轮 PT |
+
+### 1.3 代际验证法（重点教训）
+
+**现象**：同步回传包后，用文件时间戳判断"这批报告是不是新约束跑出来的"——错。
+
+**定位思路**：robocopy（或任何跨机器同步）会重置文件 LastWriteTime 为同步时间，文件时间戳反映的是"文件被拷到本机的时间"，而非"文件被生成的时间"。
+
+**证据链**：
+- **真跑时间**：看报告文件头部。`HK1V11_digital_top.sum.rpt` / `.rpt` 头部有 `Date:` 行，记录的是 PrimeTime/DC 实际执行时间。
+- **PT 吃到哪代 SDC**：看 `read_cons.log` 中的 `Created by PrimeTime write_sdc on <timestamp>` 行。这是 PT 在读取 SDC 时打印的"SDC 文件内部时间戳"，由 `write_sdc` 命令在生成 SDC 时写入。
+- **DC 是否吃到某版约束**：看 `dc.log` 中的标记串——例如 `cpuwr_reg_grp` 出现次数、`COMMENTED OUT 2026-09-22` 日期签名、`R_REG` 排除标记出现次数。
+
+**处理**：每次同步包必须做**三方时间对齐**：
+
+```text
+本地约束修改时间  vs  DC 跑时间  vs  PT 报告时间
+   (14:18)          (14:37)       (09-21 15:25)
+```
+
+三者不在同一天 → PT 报告是旧代基线，不能用来评估新约束效果。
+
+**结论/遗留**：本案例中 PT 报告是旧代，所以本分析中所有 DC 侧数字（452 setup + 30 hold）来自新 DC 跑，而 PT 侧数字仅作旧代基线参照。新约束的真实 POSTPT 效果要等下一轮 PT 跑完。
+
+### 1.4 验证命令（可复制）
+
+```csh
+# 看 DC 是否吃到新约束（标记串出现次数）
+grep -c "cpuwr_reg_grp" rep_dir_0922_1456/dc.log
+grep -c "COMMENTED OUT 2026-09-22" rep_dir_0922_1456/dc.log
+grep -c "R_REG" rep_dir_0922_1456/dc.log
+
+# 看 PT 吃到哪代 SDC
+grep "Created by PrimeTime write_sdc on" read_cons.log
+
+# 看报告头 Date
+head -20 HK1V11_digital_top.sum.rpt | grep "Date:"
+```
+
+```powershell
+# PowerShell：列出同步包内文件时间戳（注意：这些是同步时间，不是生成时间！）
+Get-ChildItem -Recurse -Path .\server_sync\ | Select-Object Name, LastWriteTime | Sort-Object LastWriteTime -Descending | Select-Object -First 20
+```
+
+> **坑**：PowerShell `Get-ChildItem` 的 `LastWriteTime` 在 robocopy 同步后是同步时间，不是文件生成时间。必须用报告头 Date 或 log 中的时间戳。
+
+---
+
+## 2. 方法论（可迁移，重点）
+
+> 本节是全文核心。将"怎么把时序违例归因到约束变化"拆成六个可迁移步骤，每步讲清：怎么做、为什么、容易踩什么坑。这套方法适用于任何"约束变更后 QoR 突变"的排障场景，不限于 multicycle 收窄。
+
+### 2.1 归因分析总框架
+
+```text
+┌─────────────────────────────────────────────────────────────┐
+│  Step 1: 代际对齐                                            │
+│  确认"这批报告对应哪代约束"——三方时间对齐                      │
+│  ↓                                                          │
+│  Step 2: 约束 diff                                          │
+│  逐条列出约束变更（删除/新增/修改），标注每项影响面              │
+│  ↓                                                          │
+│  Step 3: 违例抽取                                            │
+│  从 DC/PT 报告中完整提取所有违例路径，按 startpoint 模式分组    │
+│  ↓                                                          │
+│  Step 4: 逐路径归因                                          │
+│  每条违例路径 → 检查旧版是否覆盖（有 waiver）→ 新版是否排除     │
+│  ↓                                                          │
+│  Step 5: 三分类汇总                                          │
+│  narrowing_exposed / genuine / never_constrained             │
+│  ↓                                                          │
+│  Step 6: 多模型交叉核对                                      │
+│  独立重做 + 比对，锁定主线结论                                 │
+└─────────────────────────────────────────────────────────────┘
+```
+
+**为什么这样排**：代际对齐是前提（如果报告是旧代的，后面全白做）；约束 diff 是"假设"（哪些约束变了）；违例抽取是"事实"（哪些路径违了）；逐路径归因是"匹配"（事实和假设的交集）；三分类是"归纳"；交叉核算是"验证"。
+
+### 2.2 Step 1：代际对齐
+
+**怎么做**：
+1. 确认本地约束文件的最后修改时间（`git log` 或文件 mtime）。
+2. 确认 DC 跑的时间（dc.log 头部或目录命名 `rep_dir_0922_1456`）。
+3. 确认 PT 报告的时间（报告头 `Date:` 行 + `read_cons.log` 中 `Created by PrimeTime write_sdc on` 行）。
+4. 三方对齐：约束修改时间 ≤ DC 跑时间 ≤ PT 报告时间。若 PT 报告时间 < 约束修改时间，则 PT 是旧代。
+
+**为什么**：约束工程是链路（ip_cons → write_sdc → sdc_pr → APR → postcts.sdc → POSTPT），任何一环断代，后面的数字都不反映你的修改。
+
+**坑**：
+- robocopy/scp 重置文件时间戳 → 看文件 mtime 判代际必错。
+- 服务器目录命名（如 `rep_dir_0922_1456`）只反映 DC 跑时间，不反映 PT 时间。
+- 一个同步包可能混多代报告（DC 是新的、PT 是旧的），必须逐文件检查。
+
+### 2.3 Step 2：约束 diff
+
+**怎么做**：
+1. `git diff 79ef0030 61eb5605 -- ip_cons/` 拿到约束文件逐行 diff。
+2. 逐条列出变更：删除项、新增项、修改项（含 `remove_from_collection`、`set_multicycle_path` 参数变化、`set_max_delay` 变化、`-through` 变化）。
+3. 每项标注：影响面（哪些 startpoint/endpoint 受影响）、是否死约束（从未匹配任何对象）、是否空对（约束组内 0 路径）。
+
+**为什么**：只有知道"什么变了"，才能判断"哪些违例可能因此出现"。约束 diff 是归因分析的假设来源。
+
+**坑**：
+- **死约束**：`-through .../R_` 这种字面名（无通配符）从未匹配任何对象（DC CMD-036 报错），write_sdc 0 条 `-through`——删了无影响，但 diff 里看起来像"删了一个约束"。必须检查 DC log 中该约束的匹配计数。
+- **空 mc 对**：`-to OSC_CLK` 空 multicycle 对，该组 No paths，从未生效——删了无影响。
+- **from-only vs to-only vs 双向**：from-only（无 `-to`）是全端点无边界放宽，影响面最大；to-only 只影响指定 endpoint 集合。
+- **`remove_from_collection` 不是删除约束**：是从 collection 中剔除对象，约束本身还在，只是作用域缩小。
+
+### 2.4 Step 3：违例抽取
+
+**怎么做**：
+1. **setup 违例**：解析 `HK1V11_digital_top_max.rpt`（约 228116 行），提取 `Startpoint` / `Path Group` / `slack (VIOLATED)` 三元组。
+2. **hold 违例**：解析 `HK1V11_digital_top.rpt` 的 `min_delay` 段，提取 `Endpoint` / `Path Group` / `slack` 三元组。
+3. 按 startpoint 模式（寄存器名 + 位宽通配）分组，统计每组条数、worst slack。
+4. 与 QoR 汇总表交叉核对（QoR 表按 path group 汇总，可能略差几条，属汇总口径差异）。
+
+**为什么**：完整、无遗漏的违例列表是归因分析的基础。漏掉任何一组都可能导致分类不完整。
+
+**坑**：
+- DC 的 `.rpt` 文件极大（22 万行），必须用脚本解析而非肉眼翻。
+- hold 违例：DC 只在 `.rpt` 输出汇总表（endpoint + slack），不输出逐跳明细——hold 归因需要反查 netlist（`.gv` 文件）确认 endpoint 的驱动源。
+- QoR 表与逐路径计数可能有 ±3 条差异，属汇总口径（如跨 path group 的路径在 QoR 中归入一个 group），不是漏计。
+
+**抽取脚本示例**：
+
+```csh
+# 从 max.rpt 提取 setup 违例（Startpoint / Path Group / slack）
+grep -A2 "VIOLATED" HK1V11_digital_top_max.rpt | \
+  grep -E "Startpoint:|Path Group:|slack" | \
+  awk '/Startpoint:/{sp=$2} /Path Group:/{pg=$3} /slack.*VIOLATED/{print sp, pg, $2}' > setup_violations.txt
+
+# 从 .rpt 提取 hold 违例（min_delay 段）
+sed -n '/min_delay/,/^$/p' HK1V11_digital_top.rpt | \
+  grep -E "Endpoint:|slack.*VIOLATED" | \
+  awk '/Endpoint:/{ep=$2} /slack.*VIOLATED/{print ep, $2}' > hold_violations.txt
+```
+
+```powershell
+# PowerShell：按 startpoint 模式分组统计
+Import-Csv .\setup_violations.txt | Group-Object { $_.Startpoint -replace '_\d+_.*$', '_*' } | Sort-Object Count -Descending | Format-Table Name, Count
+```
+
+### 2.5 Step 4：逐路径归因（核心）
+
+**怎么做**：对每条（或每组）违例路径，回答三个问题：
+
+1. **旧版是否覆盖？**（该 startpoint 在旧约束中是否被某条 multicycle/max_delay 豁免？）
+2. **新版是否排除？**（该 startpoint 在新约束中是否被 `remove_from_collection` 剔除 / 约束被注释？）
+3. **跨时钟关系**：launch clock → capture clock，旧版给几个 launch 周期？新版给几个？
+
+**判定规则**：
+- 旧版覆盖 + 新版排除 → **narrowing_exposed**（收窄暴露）
+- 旧版未覆盖 + 新版未覆盖 → **genuine**（真实违例）或 **never_constrained**（从未约束，视具体原因）
+- 旧版未覆盖 + 新版新增 → 不应出现（如果出现了，检查约束写错）
+
+**为什么**：只有逐路径确认"旧版确实豁免、新版确实排除"，才能定性为"收窄暴露"。否则就是真实违例或从未约束。
+
+**坑**：
+- **pattern 匹配陷阱**：`DATA_POINT_LAT_reg_*` 永远匹配不到 `DATA_POINT_LAT_D1_reg_*`（名字里多了 `_D1`）。旧版看起来"对"，其实是 waiver 没打中目标——这是 never_constrained 而非 genuine。必须用 DC 的 `get_pins` / `get_cells` 实际验证 pattern 匹配了哪些对象。
+- **from-only 的无边界性**：`set_multicycle_path 2 -start -from R_REG06_F_reg_2_`（无 `-to`）覆盖该 startpoint 的一切 endpoint，包括 clock-gating check。注释掉后，gating check 也失去豁免。
+- **`-through` 死约束**：`-through .../LC_CPUWR/R_` 是字面名，DC 报 CMD-036 "Can't find objects"，write_sdc 0 条——从未匹配任何对象，删了无影响。
+- **`-to` 寄存器命名差异**：DC 中 `-to` 寄存器被 `write_sdc` 落成数据脚（普通 DFF 是 `/D`，`AND2DFFRBQX` 是 `/D1`+`/D2`），APR 网表常为 `/D` → SEL-004 静默丢弃。规则：`-to` 用时钟对象形式（如 `-to RX_CLK`）而非寄存器名。
+
+**代表路径逐跳分析模板**：
+
+```text
+Path (max.rpt L39120):
+  Startpoint: R_REG47_F_reg_1_/CK (WCLK1_A_DCLK_SHORT, 4.57ns)
+  → Q (register output)
+  → U265 (CLKNAND2)          ← clock gating cell
+  → U266 (AND)
+  → R_HIZ_MIN_SEL (net)
+  → LINK_PANEL_CTRL / CHPI_SD_CTRL:
+    U140 → U161 → U190 → U252 → U192 → U330 → U331 → U52 →
+    U187 → U80 → U56 → U215 → U126   ← 12 级组合
+  → CS_SIG_ORG_reg / D (RX_CLK)
+  
+  跨时钟: launch WCLK1_A_DCLK_SHORT (4.57ns 边沿) → capture RX_CLK
+  旧版: mc2 -start → 给 2 个 launch 周期
+  新版: 单周期（失去 mc2）
+```
+
+### 2.6 Step 5：三分类汇总
+
+**怎么做**：将全部违例路径归入三类：
+
+| 分类 | 定义 | 判定依据 |
+|------|------|----------|
+| **(A) narrowing_exposed** 收窄暴露 | 旧版被 multicycle/max_delay 豁免，新版失去豁免 | 旧版覆盖证据 + 新版排除证据 |
+| **(B) genuine** 真实违例 | 新旧两版均无豁免，路径本身即违例 | 旧版无覆盖 + 新版无覆盖 + 路径在理想时钟下也违 |
+| **(C) never_constrained** 从未约束 | 约束 pattern 从未匹配到该 startpoint | pattern 匹配验证（`get_cells` 实际计数） |
+
+**为什么**：三分类直接决定处置策略——(A) 可能恢复窄豁免或 RTL 加同步；(B) 必须综合/RTL 优化；(C) 需要补约束（改 pattern）。一刀切"恢复所有豁免"会掩盖 (B) 类真实问题。
+
+**坑**：
+- (B) 和 (C) 的边界：如果旧版有一条"看似覆盖"的约束但 pattern 实际匹配不到目标对象，那就是 (C) 而非 (B)。必须验证 pattern 实际匹配。
+- hold 违例通常不参与收窄归因（multicycle 主要影响 setup），但需单独确认。
+- 30 条 hold 中，10 条是 DTCTL 门控 hold（结构性），20 条是 INDATA_SYNC 输入 hold（IO 约束）——均与收窄无关。
+
+### 2.7 Step 6：多模型交叉核对
+
+**怎么做**：
+1. 将同一份分析（约束 diff + 违例列表 + 报告片段）派给多个独立模型（跨批次），各自完整重做归因。
+2. 每个模型独立输出三分类计数。
+3. 主 agent 比对：(A) 类计数是否一致？路径集合是否相同？(B)/(C) 边界是否有分歧？
+
+**为什么**：归因分析中 (B) 和 (C) 的边界判定有主观性（"这条约束到底算不算覆盖？"），单模型可能系统性偏差。多模型独立重做可以锁定"主线结论"（(A) 类计数和路径集合），分歧只留在 (B)/(C) 边界。
+
+**坑**：
+- 不同模型对"是否计入 hold"的口径不同（有的计入 genuine，有的单独列），需在比对时统一口径。
+- 模型可能"顺着"你的假设走（如果你先给了"这 89 条是收窄暴露"的暗示），需确保每个模型拿到的是原始材料而非你的结论。
+- 批次效应：同一模型在不同批次中可能给出不同结果（如 Qwen3.8-27B 批1 给 169+，K3 批2 给 169），需关注批次内一致性。
+
+---
+
+## 3. 约束 diff（`79ef0030` 收窄前 → `61eb5605` 收窄后）
+
+### 3.1 逐条清单（共 12 项）
+
+| # | 变更项 | 类型 | 影响 |
+|---|--------|------|------|
+| 1 | `-through .../LC_CPUWR/R_` blanket mc2/1 | 删除 | **无影响**：`R_` 是字面名（无通配符），从未匹配任何对象（DC CMD-036 报错，write_sdc 0 条 `-through`），属死约束 |
+| 2 | `cpuwr_reg_grp`：宽 `R_REG*`（F+L 全含）→ `remove_from_collection` 剔除 10 个分区 | 收窄（核心动作） | **直接暴露 89 条 RX_CLK setup 违例**。保留三对 mc：`-to RX_CLK` / `-to DCLK_DATA_*` / `-to SD_CLK_INV_*`，均为 2 -start -setup / 1 -start -hold |
+| 3 | `-to OSC_CLK` 空 mc 对 | 删除 | **无影响**：0921V3 中该组 No paths，从未生效 |
+| 4 | G13 `DATA_POINT_LAT_reg_*` mc2/1（from-only） | 注释掉 | **暴露 15 条 RX_CLK setup 违例**（含 clock-gating 检查） |
+| 5 | G14 三对 from-only mc（`R_REG05_F[6]` CH_SEL / `R_REG06_F[2]` DPLC_MODE / `R_REG06_F[7]`），且移入 pt_shell guard | 注释掉 | **暴露 2 条 DPLC_CLK_LONG gating setup 违例**（`R_REG06_F[2]`→DTCTL 时钟门控） |
+| 6 | G1/G2：`R_REG03_L`(BKDU)→PIX_CLK_EN/PIX_DATA/BK_ST 四对 | 注释掉 | DC 侧影响并入第 2 项（`R_REG03_L` 已整组剔除）；BKDU 的 bare per-beat 消费链是审计认定的 B 类 |
+| 7 | `R_REG03_L`→BKDU_SYNC/CS_SYNC/R_PWRCP_COP + LD_F_SYNC | 保留，未变 | 无变化 |
+| 8 | `R_REG00_L`→ANCTL `*L_CNT*`/`*F_CNT*` | 保留，未变 | 无变化 |
+| 9 | `R_REG00_L` `-to RX_CLK`（时钟对象形式） | 新增 | write_sdc 兼容修复（避免冻 D1/D2 变 SEL-004）；覆盖面与旧等价；本次无相关违例，证明生效 |
+| 10 | K1 LONG 实例对（`LONG_ENCODING_ALIGN`/`K1_FIND_LATCH`→`R_REG*_F` 等） | 新增 | 补覆盖，无违例 |
+| 11 | DPLC no-from `set_max_delay` 两对（`-to U_DPLC_DATA_GEN/*/D*` 等） | 保留+审计注记 | pending 设计确认，非本次违例来源 |
+| 12 | G10 `max_delay`（`R_REG06_F_reg_7*` / `R_REG00_F_reg_6*`） | 保留，移入 pt_shell guard | DC 侧本来也匹配不到（`reg[n]` 命名），无变化 |
+
+### 3.2 收窄语义总结
+
+**真正失去豁免的只有三块**：
+
+| 块 | 涉及路径 | 来源变更项 |
+|----|----------|-----------|
+| (a) 10 分区 24 bit 退出 `cpuwr_reg_grp` | 89 条 RX_CLK setup | 第 2 项 |
+| (b) G13 注释 | 15 条 RX_CLK setup（DATA_POINT_LAT） | 第 4 项 |
+| (c) G14 注释 | 2 条 DPLC_CLK_LONG setup（R_REG06_F[2]） | 第 5 项 |
+
+其余删除项（第 1、3 项）均为死约束或空对，功能无变化。
+
+### 3.3 关键约束 Tcl 原文（diff 相关）
+
+```tcl
+# ===== 旧版（79ef0030）：宽 R_REG* 全含 =====
+set cpuwr_reg_grp [get_cells -hier -filter {name =~ *R_REG*}]
+# 覆盖 F+L 全部 R_REG 寄存器，约 60+ 个 bit
+
+set_multicycle_path 2 -start -setup -from $cpuwr_reg_grp -to [get_clocks RX_CLK]
+set_multicycle_path 1 -start -hold  -from $cpuwr_reg_grp -to [get_clocks RX_CLK]
+set_multicycle_path 2 -start -setup -from $cpuwr_reg_grp -to [get_clocks -of_objects [get_pins -hier -filter {name =~ *DCLK_DATA_*}]]
+set_multicycle_path 1 -start -hold  -from $cpuwr_reg_grp -to [get_clocks -of_objects [get_pins -hier -filter {name =~ *DCLK_DATA_*}]]
+set_multicycle_path 2 -start -setup -from $cpuwr_reg_grp -to [get_clocks -of_objects [get_pins -hier -filter {name =~ *SD_CLK_INV_*}]]
+set_multicycle_path 1 -start -hold  -from $cpuwr_reg_grp -to [get_clocks -of_objects [get_pins -hier -filter {name =~ *SD_CLK_INV_*}]]
+
+# G13: DATA_POINT_LAT from-only
+set_multicycle_path 2 -start -setup -from [get_cells -hier -filter {name =~ *DATA_POINT_LAT_reg*}]
+set_multicycle_path 1 -start -hold  -from [get_cells -hier -filter {name =~ *DATA_POINT_LAT_reg*}]
+
+# G14: R_REG06_F[2] DPLC_MODE from-only
+set_multicycle_path 2 -start -setup -from [get_cells -hier -filter {name =~ *R_REG06_F_reg_2_*}]
+set_multicycle_path 1 -start -hold  -from [get_cells -hier -filter {name =~ *R_REG06_F_reg_2_*}]
+
+# 死约束（从未匹配）
+set_multicycle_path 2 -start -setup -from [get_cells -hier -filter {name =~ *R_REG*}] -to [get_clocks RX_CLK] -through [get_pins -hier -filter {name =~ */LC_CPUWR/R_*}]
+```
+
+```tcl
+# ===== 新版（61eb5605）：收窄后 =====
+set cpuwr_reg_grp [get_cells -hier -filter {name =~ *R_REG*}]
+# 剔除 10 个分区（共 24 个 B 类 bit）
+remove_from_collection $cpuwr_reg_grp [get_cells -hier -filter {name =~ *R_REG00_L_*}]
+remove_from_collection $cpuwr_reg_grp [get_cells -hier -filter {name =~ *R_REG03_L_*}]
+remove_from_collection $cpuwr_reg_grp [get_cells -hier -filter {name =~ *R_REG33_F_*}]
+remove_from_collection $cpuwr_reg_grp [get_cells -hier -filter {name =~ *R_REG34_F_*}]
+remove_from_collection $cpuwr_reg_grp [get_cells -hier -filter {name =~ *R_REG40_F_*}]
+remove_from_collection $cpuwr_reg_grp [get_cells -hier -filter {name =~ *R_REG41_F_*}]
+remove_from_collection $cpuwr_reg_grp [get_cells -hier -filter {name =~ *R_REG46_F_*}]
+remove_from_collection $cpuwr_reg_grp [get_cells -hier -filter {name =~ *R_REG47_F_*}]
+remove_from_collection $cpuwr_reg_grp [get_cells -hier -filter {name =~ *R_REG56_F_*}]
+remove_from_collection $cpuwr_reg_grp [get_cells -hier -filter {name =~ *R_REG57_F_*}]
+
+# 保留三对 mc（仅对剩余对象生效）
+set_multicycle_path 2 -start -setup -from $cpuwr_reg_grp -to [get_clocks RX_CLK]
+set_multicycle_path 1 -start -hold  -from $cpuwr_reg_grp -to [get_clocks RX_CLK]
+set_multicycle_path 2 -start -setup -from $cpuwr_reg_grp -to [get_clocks -of_objects [get_pins -hier -filter {name =~ *DCLK_DATA_*}]]
+set_multicycle_path 1 -start -hold  -from $cpuwr_reg_grp -to [get_clocks -of_objects [get_pins -hier -filter {name =~ *DCLK_DATA_*}]]
+set_multicycle_path 2 -start -setup -from $cpuwr_reg_grp -to [get_clocks -of_objects [get_pins -hier -filter {name =~ *SD_CLK_INV_*}]]
+set_multicycle_path 1 -start -hold  -from $cpuwr_reg_grp -to [get_clocks -of_objects [get_pins -hier -filter {name =~ *SD_CLK_INV_*}]]
+
+# G13: 注释掉
+# set_multicycle_path 2 -start -setup -from [get_cells -hier -filter {name =~ *DATA_POINT_LAT_reg*}]
+# set_multicycle_path 1 -start -hold  -from [get_cells -hier -filter {name =~ *DATA_POINT_LAT_reg*}]
+
+# G14: 注释掉（移入 pt_shell guard）
+# set_multicycle_path 2 -start -setup -from [get_cells -hier -filter {name =~ *R_REG06_F_reg_2_*}]
+# set_multicycle_path 1 -start -hold  -from [get_cells -hier -filter {name =~ *R_REG06_F_reg_2_*}]
+
+# 新增：R_REG00_L -to RX_CLK（时钟对象形式，write_sdc 兼容修复）
+set_multicycle_path 2 -start -setup -from [get_cells -hier -filter {name =~ *R_REG00_L_reg*}] -to [get_clocks RX_CLK]
+set_multicycle_path 1 -start -hold  -from [get_cells -hier -filter {name =~ *R_REG00_L_reg*}] -to [get_clocks RX_CLK]
+
+# 新增：K1 LONG 实例对
+set_multicycle_path 2 -start -setup -from [get_cells -hier -filter {name =~ *LONG_ENCODING_ALIGN*K1_FIND_LATCH*}] -to [get_pins -hier -filter {name =~ *R_REG*_F_reg*_D*}]
+set_multicycle_path 1 -start -hold  -from [get_cells -hier -filter {name =~ *LONG_ENCODING_ALIGN*K1_FIND_LATCH*}] -to [get_pins -hier -filter {name =~ *R_REG*_F_reg*_D*}]
+```
+
+### 3.4 剔除的 10 个分区明细
+
+| 分区 | 时钟域 | B 类 bit 数 | 功能描述 |
+|------|--------|-----------|----------|
+| `R_REG00_L` | L (Low) | 2 | ANCTL 计数相关 |
+| `R_REG03_L` | L (Low) | 2 | BKDU（bare per-beat 消费者） |
+| `R_REG33_F` | F (Fast) | 3 | UTC 比较（R_UTC/R_FRM_CHK_MODE） |
+| `R_REG34_F` | F (Fast) | 2 | UTC 比较 |
+| `R_REG40_F` | F (Fast) | 2 | HIZ_SEL / R_DBC_VBK_ON（B 类锚点） |
+| `R_REG41_F` | F (Fast) | 2 | HIZ 类 |
+| `R_REG46_F` | F (Fast) | 2 | UTC 阈值 |
+| `R_REG47_F` | F (Fast) | 2 | HIZ_MIN_SEL/VAL（裸进 TP 计数器） |
+| `R_REG56_F` | F (Fast) | 3 | UTC 阈值 |
+| `R_REG57_F` | F (Fast) | 2 | UTC 阈值 |
+| **合计** | — | **24** | — |
+
+---
+
+## 4. 违例抽取方法与总量
+
+### 4.1 setup 违例
+
+来源：`HK1V11_digital_top_max.rpt`（约 228116 行）
+
+解析 `Startpoint` / `Path Group` / `slack (VIOLATED)` → **452 条**
+
+| Path Group | 条数 | 备注 |
+|------------|------|------|
+| RX_CLK | 284 | 含 89 条收窄暴露 + 15 条 G13 + 41 条 _D1 + 139 条真实数据通路 |
+| WCLK1_A_DCLK_SHORT | 139 | 全部真实 |
+| DCLK_DATA_MUX_SHORT | 23 | 全部真实 |
+| SD_CLK_INV_DPLC_LONG | 4 | 真实（gating check） |
+| DPLC_CLK_LONG | 2 | G14 收窄暴露 |
+| **合计** | **452** | 与 QoR 表 287 略差 3 条为汇总口径 |
+
+### 4.2 hold 违例
+
+来源：`HK1V11_digital_top.rpt` min_delay 段 → **30 条**
+
+| Path Group | 条数 | worst | 备注 |
+|------------|------|-------|------|
+| SD_CLK_INV_SHORT | 4 | -4.19 | DTCTL 门控 hold（结构性） |
+| SD_CLK_INV_LONG | 4 | -2.66 | 同上 |
+| DPLC_CLK_SHORT | 2 | -1.14 | 同族 |
+| RX_CLK | 20 | -0.39 | INDATA_SYNC 输入同步器 hold（IO 约束） |
+| **合计** | **30** | — | DC 未输出 hold 逐跳明细 |
+
+### 4.3 总计
+
+**482 条违例路径**（452 setup + 30 hold）
+
+---
+
+## 5. 逐路径归因
+
+### 5.1 RX_CLK 组（284 条）
+
+RX_CLK 组是本次收窄影响最大的组，284 条中：89 条收窄暴露 + 15 条 G13 + 41 条从未约束 + 139 条真实数据通路。
+
+#### 5.1.1 89 条 = 收窄剔除的 R_REG* 分区（全部 narrowing_exposed）
+
+**startpoint 模式均在 `LC_CPUWR` 下**：
+
+| startpoint 模式 | 条数 | worst | 旧版覆盖证据 | 新版排除证据 |
+|----------------|------|-------|-------------|-------------|
+| `R_REG03_L_reg_2_`（BKDU） | 24 | -0.16 | 旧 grp 为宽 `R_REG*`，mc2 -start -to RX_CLK 覆盖；另有 G1/G2 -to PIX_DATA/PIX_CLK_EN | 新版 `remove R_REG03_L_*`；G1/G2 注释 |
+| `R_REG40_F_reg_1_/_0_/_6_` | 23 | -1.00 | 旧宽组 mc2 | `remove R_REG40_F_reg*`（[7] R_DBC_VBK_ON 为审计 B 类锚点，整分区剔出） |
+| `R_REG47_F_reg_7_/_1_` | 13 | **-1.45**（全局 WNS） | 旧宽组 mc2 | `remove R_REG47_F_reg*`（HIZ_MIN_SEL/VAL 裸进 TP 计数器） |
+| `R_REG33_F_reg_6_/_4_` | 12 | -0.34 | 旧宽组 mc2 | `remove R_REG33_F_reg*`（R_UTC/R_FRM_CHK_MODE 比较活 UTC 计数器） |
+| `R_REG56_F_reg_1_/_3_` | 11 | -0.36 | 旧宽组 mc2 | `remove R_REG56_F_reg*`（UTC 阈值） |
+| `R_REG57_F_reg_1_` | 6 | -0.88 | 旧宽组 mc2 | `remove R_REG57_F_reg*`（UTC 阈值） |
+| **小计** | **89** | — | — | — |
+
+**代表路径（worst -1.45，max.rpt L39120）**：
+
+```text
+R_REG47_F_reg_1_/CK (WCLK1_A_DCLK_SHORT, 4.57ns)
+  → Q (register output)
+  → U265 (CLKNAND2)         ← clock gating cell
+  → U266 (AND)
+  → R_HIZ_MIN_SEL (net)
+  → LINK_PANEL_CTRL / CHPI_SD_CTRL:
+    U140 → U161 → U190 → U252 → U192 → U330 → U331 → U52 →
+    U187 → U80 → U56 → U215 → U126   ← 12 级组合
+  → CS_SIG_ORG_reg / D (RX_CLK)
+
+跨时钟: launch WCLK1_A_DCLK_SHORT (4.57ns 边沿) → capture RX_CLK
+旧版: mc2 -start → 给 2 个 launch 周期
+新版: 单周期（失去 mc2）→ 12 级组合在单周期内来不及
+```
+
+**定性**：形式上 100% 是收窄暴露。但 0921/0922 bit 级审计把这 24 bit 定为 B 类（裸 per-beat 消费者、无同步器），收窄是有意的收紧——其中相当一部分语义上是真检查（尤其 R_REG33/56/57 的 UTC 比较链、R_REG47 的 HIZ_MIN/TP 计数链），不是"变化之前是对的"。需逐 bit 由设计确认：
+- 一次性配置（HIZ 类）→ 恢复窄豁免
+- 运行时每拍消费（UTC 比较类）→ RTL 加同步/使能门控
+
+#### 5.1.2 15 条 DATA_POINT_LAT（G13 注释，narrowing_exposed）
+
+| 字段 | 值 |
+|------|-----|
+| startpoint 模式 | `DATA_POINT_LAT_reg_*` |
+| 条数 | 15 |
+| worst | -1.31 |
+| 旧版覆盖 | G13 mc2 -start -from `DATA_POINT_LAT_reg_*`（from-only，覆盖一切 endpoint 含 gating check） |
+| 新版排除 | 0922 注释掉 G13 |
+| 定性 | narrowing_exposed（G13 注释是有意动作，注释中预留了回归口） |
+
+**代表路径（L39296）**：
+
+```text
+DATA_POINT_LAT_reg_13_/Q
+  → U212 → U213 → U14 → U36 → U214 → U217 → U205 → U16 → U233 → U234 → U266
+  （约 11 级组合）
+  → SNPS_CG_CELL_DCLK_DATA_POINT_LAT_reg_0 / latch
+  （RX_CLK 的 clock-gating 检查）
+
+跨时钟: launch DCLK_DATA_POINT_LAT → capture RX_CLK（gating check）
+旧版: G13 from-only mc2 → 覆盖一切 endpoint
+新版: 注释 → 单周期
+```
+
+**回归口**：0922 注释中写明：
+> `if a next run shows violating paths whose startpoint matches LONG_ENCODING_ALIGN/DATA_POINT_LAT_reg*, reconsider`
+
+#### 5.1.3 41 条 DATA_POINT_LAT_D1（从未约束，C 类）
+
+| 字段 | 值 |
+|------|-----|
+| startpoint 模式 | `DATA_POINT_LAT_D1_reg_*`（SHORT_ENCODING_ALIGN 为主） |
+| 条数 | 41 |
+| worst | -1.31 |
+| 旧版覆盖 | **无**：G13 pattern `DATA_POINT_LAT_reg_*` 从未匹配过 `DATA_POINT_LAT_D1_reg_*`（名字里多了 `_D1`） |
+| 新版排除 | **无**（本来就没约束） |
+| 定性 | **never_constrained**（C 类） |
+
+**证据**：0922 注释中写明：
+> `0921V3 的 20 条近限路径是 _D1 起点且 NOT matched by this waiver pattern`
+
+即这 41 条在新旧两版都是单周期，只是这次 RTL/综合结果恶化到违例。若确认 D1 与本尊同为准静态，应把 waiver 改指 `_D1_reg*`（或 RTL 修）。
+
+**代表路径（L39374）**：endpoint 同样是 `SNPS_CG_CELL_DCLK_DATA_POINT_LAT_TMP_reg_0/latch`（gating check）。
+
+#### 5.1.4 139 条纯数据通路寄存器（真实违例 B 类）
+
+| startpoint 模式 | 模块 | 条数 | worst | 证据 |
+|----------------|------|------|-------|------|
+| `o_keep_reg_*` | LONG_ENCODING_DESCRAMBLE | 60 | -0.60 | L44108: `o_keep_reg_2_` → … → `BIT_COUNT_reg_6_(RX_CLK)`，同域解扰→输出计数，任何版本均无 waiver |
+| `rx_bit_cnt_reg_*` | LONG_ENCODING_DECODE | 46 | -0.85 | L40964: `rx_bit_cnt_reg_3_` → … → `o_data_reg_12_(RX_CLK)` |
+| `boe_bcc_prescale(_cnt)_reg_*` | BOE_AUTO_EQ_BCC_CTRL 的 `u_boe_rx_bcc_decoder` | 26 | -1.14 | L39458: `boe_bcc_prescale_reg_2_` → … → `sample_mask_cnt_reg_5_(RX_CLK)` |
+| `bcc_rx_reply_time_cnt` / `CS_SIG_ORG` / `bcc_receive_state` / `cnt_7b` / `o_raw_idx` | 各 | 1~3（合计 6） | -0.51 | 数据通路/状态机 |
+| **小计** | — | **139** | — | RX 域内部真实关键路径（理想时钟即违例），与收窄无关，需综合策略/RTL 优化 |
+
+### 5.2 WCLK1_A_DCLK_SHORT 139 条（真实违例）
+
+| 字段 | 值 |
+|------|-----|
+| startpoint | 全部 = `LONG_ENCODING_OUTPUT/CONFIG_DATA_reg_*`（配置包解码载荷，非 cpuwr 配置 bank） |
+| 条数 | 139（`CONFIG_DATA_reg_2_` 为主） |
+| worst | -0.11 |
+| 路径形态 | `CONFIG_DATA_reg_2_(DCLK_CONFIG_MUX)` → `LC_CHPI_DECODE` U38/U18 → `CHPI_CONFIG_L0` U15 → `LC_CPUWR` U28… → `R_REG*_reg/D (WCLK1_A)`，即 CHPI 配置写通路，跨 DCLK_CONFIG→WCLK1_A |
+| 旧版覆盖 | 唯一可能沾边的 `-through LC_CPUWR/R_` blanket 是死约束（0 匹配） |
+| 定性 | **genuine**（轻微，-0.11）setup 问题，新旧两版均无豁免 |
+
+### 5.3 DCLK_DATA_MUX_SHORT 23 条（真实违例）
+
+| 字段 | 值 |
+|------|-----|
+| startpoint | 全部 `PIX_DATA_reg_8_/9_/14_/18_`（SHORT/LONG_ENCODING_OUTPUT） |
+| endpoint | `CENTER1/DTCTL/PIX_DATA_D_reg_*`（DCLK_DATA_MUX 同域） |
+| 条数 | 23 |
+| worst | -0.43 |
+| 旧版覆盖 | 旧 G1/G2 的 `-to PIX_DATA_reg*` 只对 `R_REG03_L` 起点生效，与本组起点无关 → **从未豁免** |
+| 定性 | **genuine**，真实数据通路问题（可考虑 K1 式流水或让 DC retime） |
+
+### 5.4 SD_CLK_INV_DPLC_LONG 4 条（真实违例）
+
+| 字段 | 值 |
+|------|-----|
+| startpoint | `DTCTL/data_cnt_pre_reg_3_/4_`（DCLK_DATA_MUX 活计数器） |
+| endpoint | `DTCTL/C2282/C2276`（DPLC_CLK 的 clock-gating AND 使能脚 I2） |
+| 条数 | 4 |
+| worst | -0.36 |
+| 旧版覆盖 | 从未被任何 waiver 覆盖（G14 只管 config bit 起点） |
+| 定性 | **genuine**，数据计数器对生成时钟的门控 setup 检查 |
+
+### 5.5 DPLC_CLK_LONG 2 条（G14 注释，narrowing_exposed）
+
+| 字段 | 值 |
+|------|-----|
+| startpoint | `R_REG06_F_reg_2_`（R_DPLC_MODE） |
+| endpoint | `DTCTL/C2282`（DPLC_CLK_LONG gating element） |
+| 条数 | 2 |
+| worst | -0.38 |
+| 旧版覆盖 | G14 mc2 -start -from `R_REG06_F_reg_2_`（from-only，覆盖 gating check 的一切 endpoint） |
+| 新版排除 | 0922 注释并移入 pt_shell guard（DC 下本来也无法生效） |
+| 定性 | **narrowing_exposed**，DPLC_MODE 是一次性模式配置，属可豁免候选 |
+
+**代表路径（L31466）**：
+
+```text
+R_REG06_F_reg_2_/Q
+  → LC_REG_MAPPING/U24 (BUF)
+  → R_DPLC_MODE (net)
+  → CENTER1/DTCTL:
+    U326 → U341 → U327 → U162 → U271 → U531 → U559 → U184  ← 8 级
+  → C2282 / I2
+
+跨时钟: launch WCLK1_A_DCLK_SHORT → capture DPLC_CLK_LONG（gating check）
+旧版: G14 from-only mc2 → 覆盖一切 endpoint
+新版: 注释 → 单周期
+```
+
+### 5.6 hold 违例 30 条（结构性/IO 约束问题，与收窄无关）
+
+| 组 | endpoint | 条数与 worst | 定性 |
+|----|----------|-------------|------|
+| SD_CLK_INV_SHORT | DTCTL 的 C2272/C2277/C2278/C2283 的 I2（SD_CLK_INV 门控 AND 使能脚） | 4 条，worst **-4.19** | 生成时钟（反相+分频组合出的 SD_CLK_INV vs DPLC_CLK 关系边沿）hold 需求 4.97ns，结构性问题，新旧版均无豁免 |
+| SD_CLK_INV_LONG | 同上 | 4 条，-2.66 | 同上（需求 3.45ns） |
+| DPLC_CLK_SHORT | DTCTL 的 C2276/C2282 I2 | 2 条，-1.14 | 同族 |
+| RX_CLK | `BUFFER_I/INDATA_SYNC_reg_0_..19_/D`（20 bit 输入同步器） | 20 条，-0.39 | 输入路径 hold：`set_input_delay -clock RX_CLK -min -0.3` 使 data arrival -0.28 < required 0.11；属 IO 约束/板上关系问题，非收窄 |
+
+**hold 归因方法**：DC 只在 `.rpt` 输出汇总表（endpoint + slack），不输出逐跳明细。hold 归因需要：
+1. 从汇总表拿到 endpoint 列表。
+2. 反查 netlist（`.gv` 文件）确认 endpoint 的驱动源和时钟关系。
+3. 判断是结构性（时钟生成结构）还是 IO 约束（input_delay 设置）。
+
+**C2272/C2277/C2278/C2283 的 I2 反查结果**：
+- netlist 中 I1 脚 = SD_CLK_INV（时钟）
+- I2 脚 = n751/n759（数据）
+- n751/n759 来自 U1186/U1194 半加器链
+- 由 `data_cnt` 计数器驱动
+- → 数据计数器对生成时钟的门控 hold，结构性问题
+
+---
+
+## 6. 多模型交叉核对
+
+### 6.1 方法
+
+同一份分析（约束 diff + 违例列表 + 报告片段）派 5 个独立模型（跨 2 批运行）各自完整重做归因。主 agent 比对三分类计数和路径集合。
+
+### 6.2 结果
+
+| 模型（批次） | 收窄暴露 (A) | 真实 (B) | 从未约束 (C) | 非收窄合计 (B+C) |
+|-------------|-------------|----------|-------------|----------------|
+| Kimi HighSpeed（批1） | **106** | 0 | 约 346–376 | 约 352 |
+| GLM-5.3-flash（批1） | **约 106** | 约 325 | 约 40 | 约 365 |
+| Qwen3.8-27B（批1） | **约 106** | 约 169+ | 约 177+ | 约 346 |
+| K3-256K（批2） | **106** | 169 | 203 | 372 |
+| GLM-5.3（批2 重跑） | **106** | **335** | **41** | 376 |
+
+### 6.3 要点
+
+1. **收窄暴露 = 106 条被 5 个独立模型、2 批运行全部锁定**，且路径集合完全相同（10 分区 89 + G13 15 + G14 2）。这是主线结论，置信度极高。
+2. **非收窄大头各模型落在约 352–376**，差异只在：
+   - 真实 vs 从未约束的边界划分（如 `DATA_POINT_LAT_D1` 41 条归 B 还是归 C）
+   - 是否计入 30 条 hold（有的计入 genuine，有的单独列）
+   - 属判定口径，不影响主线结论。
+3. **K3 额外细化**：
+   - 全设计 WNS -1.45 精确定位在 `R_REG47_F_reg_1_`（HIZ_MIN）→ `CHPI_SD_CTRL/CS_SIG_ORG_reg`（`CHPI_SD_CTRL.v:180-201`，B 类无同步直喂 TP 计数器）。
+   - BKDU = `R_REG03_L[2]` 是 B 类 bare per-beat 消费者 = 真实单周期检查（`LONG_ENCODING_OUTPUT.v:329-338` PIX_CLK_EN），恢复豁免 = 错误，只能 RTL 加同步。
+
+### 6.4 交叉核对方法学总结
+
+| 步骤 | 做法 | 目的 |
+|------|------|------|
+| 材料准备 | 给每个模型：约束 diff 原文 + 违例列表 + 报告片段（不含你的结论） | 避免引导偏差 |
+| 独立重做 | 每个模型独立完成三分类 | 独立判定 |
+| 比对 | 主 agent 比对 (A) 计数 + 路径集合 + (B)/(C) 边界 | 锁定主线 |
+| 分歧处理 | (B)/(C) 边界分歧不否定主线；记录分歧点供后续人工裁决 | 不追求 100% 一致 |
+
+---
+
+## 7. 三分类汇总（482 条）
+
+| 分类 | 数量 | 占比 | 构成 |
+|------|------|------|------|
+| **(A) narrowing_exposed** 收窄暴露 | **106** | **22.0%** | R_REG* 被剔 10 分区 89（RX_CLK）+ G13 DATA_POINT_LAT 15（RX_CLK）+ G14 R_REG06_F[2] 2（DPLC_CLK_LONG） |
+| **(B) genuine** 真实违例 | **335** | **69.5%** | RX 数据通路 139（o_keep/rx_bit_cnt/boe_*）+ WCLK1 CONFIG_DATA 139 + PIX_DATA 23 + data_cnt_pre gating 4 + hold 30（SD/DPLC 门控 10 + INDATA_SYNC 20） |
+| **(C) never_constrained** 从未约束 | **41** | **8.5%** | DATA_POINT_LAT_D1（RX_CLK，G13 pattern 从未匹配） |
+| **合计** | **482** | **100%** | — |
+
+---
+
+## 8. 结论（回答核心问题：是不是收窄把假 path 报出来了）
+
+1. **是，但只占两成**：482 条中 106 条（22%）确实"收窄前被旧 `cpuwr_reg_grp`/G13/G14 豁免、收窄后失去 multicycle、按单周期报出来"。
+
+2. **但 (A) 类多数不是简单"假 path 该恢复豁免"**：89 条 R_REG* 起点正是 bit 级审计判为 B 类（裸 per-beat 消费者）的 24 bit，收窄是有意收紧，恢复 blanket 会掩盖真检查。需逐 bit 二选一：
+   - 一次性配置（HIZ/DPLC_MODE 类）→ 恢复窄 `-to` 豁免
+   - 每拍消费（UTC 比较类）→ 走 RTL 同步器
+
+3. **最大头（69.5%）与约束变化无关**：WCLK1 139、DCLK_MUX 23、RX 数据通路 139、DTCTL 门控 hold 30，在旧约束下同样是单周期裸奔（唯一疑似覆盖的 `-through LC_CPUWR/R_` 是从未匹配任何对象的死约束）。
+
+4. **G13 的 pattern 本身有缺陷**：`DATA_POINT_LAT_reg_*` 永远匹配不到实际更差的 `DATA_POINT_LAT_D1_reg_*`（41 条，C 类）——旧版看起来对，其实是 waiver 没打中目标。
+
+---
+
+## 9. 处置建议（按优先级）
+
+| 优先级 | 目标 | 条数 | 建议 | 风险 |
+|--------|------|------|------|------|
+| **1** | DPLC_MODE（2 条 -0.38） | 2 | 恢复 G14 的 `R_REG06_F_reg_2_` 对（DC 下用 `reg_2_` 形式），或并入 G10 类 `set_max_delay` | 低风险（一次性模式 bit） |
+| **2** | DATA_POINT_LAT 家族（15+41 条，worst -1.31） | 56 | 与设计师确认准静态语义后，把 G13 重写为 `-from` 同时列 `DATA_POINT_LAT_reg*` 与 `DATA_POINT_LAT_D1_reg*`（覆盖 SHORT/LONG 两实例），一次消 56 条 | 中（需设计确认） |
+| **3** | 89 条 R_REG* (A) 类 | 89 | 逐 bit 评审：R_REG40_F(HIZ_SEL/DBC)/R_REG47_F(HIZ_MIN)/R_REG03_L(BKDU) 若确认写入窗口远离工作拍，恢复该 bit 到指定 endpoint 时钟的窄 mc；R_REG33/56/57(UTC 比较) 保留单周期并 RTL 加门控/同步，否则改 UTC 比较结构 | 高（需逐 bit 设计确认） |
+| **4** | RX 数据通路 139 + WCLK1 139 + PIX_DATA 23 | 301 | 真实问题，交综合（ungroup/retime/大小 cell 重映射，尤其 CHPI_SD_CTRL 12 级组合链、LC_CPUWR 写通路）或 RTL 流水；WCLK1 仅 -0.11，DC 优化裕量大概率够 | 中（综合迭代） |
+| **5** | DTCTL SD/DPLC 门控 hold（-4.19 结构性） | 10 | 时钟生成结构问题，考虑 gating cell 换 ICG 或在门控前对 n751/n759 加同步；APR 后用真实时钟树复核 | 高（RTL 改动） |
+| **6** | INDATA_SYNC hold 20 条 | 20 | 核对 `set_input_delay -min -0.3` 与板上 RX_CLK skew 预算，必要时调 min 值或加 pad delay | 低（约束调整） |
+
+### 处置建议补充说明
+
+**优先级 1（DPLC_MODE）的 Tcl 修复**：
+
+```tcl
+# 恢复 G14 的 R_REG06_F_reg_2_ 对（DC 下用 reg_2_ 形式，避免 reg[2] 命名问题）
+set_multicycle_path 2 -start -setup -from [get_cells -hier -filter {name =~ *R_REG06_F_reg_2_*}] -to [get_clocks DPLC_CLK_LONG]
+set_multicycle_path 1 -start -hold  -from [get_cells -hier -filter {name =~ *R_REG06_F_reg_2_*}] -to [get_clocks DPLC_CLK_LONG]
+```
+
+**优先级 2（DATA_POINT_LAT 家族）的 Tcl 修复**：
+
+```tcl
+# G13 重写：覆盖本尊 + _D1
+set dplat_all [get_cells -hier -filter {name =~ *DATA_POINT_LAT_reg*}]
+set_multicycle_path 2 -start -setup -from $dplat_all
+set_multicycle_path 1 -start -hold  -from $dplat_all
+# 注意：_D1 的名字是 DATA_POINT_LAT_D1_reg_*，被 *DATA_POINT_LAT_reg* 匹配
+# 因为 *DATA_POINT_LAT_reg* 的 pattern 中 DATA_POINT_LAT 后面跟 *，能匹配 DATA_POINT_LAT_D1_reg
+# 需验证：get_cells -hier -filter {name =~ *DATA_POINT_LAT_reg*} | grep D1
+```
+
+> **注意**：`*DATA_POINT_LAT_reg*` 实际上能匹配 `DATA_POINT_LAT_D1_reg_*`（因为 `*` 可以匹配 `_D1_`）。如果旧版 G13 用的是 `DATA_POINT_LAT_reg_*`（`DATA_POINT_LAT` 后紧跟 `_reg`，无 `*` 间隔），则匹配不到 `_D1`。必须用 DC `get_cells` 实际验证。
+
+---
+
+## 10. 约束生效链与跨网表纪律（补充方法论）
+
+### 10.1 约束生效链
+
+```text
+ip_cons (本地 Tcl)
+  → pre-PT write_sdc (DC 阶段，生成 SDC 文件)
+    → sdc_pr (服务器预处理)
+      → APR (布局布线)
+        → postcts.sdc (POSTPT 阶段)
+          → POSTPT (PrimeTime 最终分析)
+```
+
+**任何"改了没生效"先沿链找断点**：
+1. 本地 ip_cons 改了吗？（git diff）
+2. DC 吃到了吗？（dc.log 标记串）
+3. write_sdc 输出了吗？（SDC 文件中搜索约束）
+4. APR 吃到了吗？（APR log）
+5. PT 吃到了吗？（read_cons.log）
+
+**回归自检**：改完用 `read_cons.log` / `read_tcl.log` 的 SEL-004/005 计数 + `report_exceptions` 的 applied 标志（`o`=被覆盖/`p`=路径不存在/`po`）做回归自检。
+
+### 10.2 跨网表（DC→APR）命名差异
+
+| 场景 | DC 中 | APR 网表中 | 问题 |
+|------|-------|----------|------|
+| `-from` 寄存器 | `write_sdc` 落成 `/CK` 脚 | 同 `/CK` | 稳定，无问题 |
+| `-to` 寄存器（普通 DFF） | `/D` | `/D` | 通常一致 |
+| `-to` 寄存器（AND2DFFRBQX） | `/D1` + `/D2` | `/D` | **SEL-004 静默丢弃** |
+
+**规则**：
+- `-to` 用**时钟对象**（如 `-to [get_clocks RX_CLK]`）而非寄存器名，避免脚名映射问题。
+- 层级 `-to X/*` 会罩内部节点（max_delay 伪违例 -3.8 教训）；`/*/D*` 才是寄存器 D 脚。
+- from-only（无 `-to`）是全端点无边界放宽，**B 类位禁止用**。
+
+### 10.3 工具命名差异
+
+| 阶段 | 命名形式 | 示例 |
+|------|---------|------|
+| dc_shell elaborate | `reg[n]` 方括号 | `R_REG06_F_reg[2]` |
+| 映射后网表 | `_reg_n_` 下划线 | `R_REG06_F_reg_2_` |
+| ip_cons 跨工具 pattern | `reg*`（不带下划线） | `R_REG06_F_reg*`（两种通吃） |
+| bit-exact 精确名 | 只放 pt_shell 分支 | `R_REG06_F_reg[2]`（否则 DC 报 CMD-036） |
+
+---
+
+## 11. 心法（编号教训清单）
+
+> 每条一句话可操作，聚焦个人能力提升。
+
+**心法 1：判定约束生效只看落地证据链，不看"我以为改了"。**
+沿 ip_cons → dc.log 标记串 → write_sdc 输出 → read_cons.log 的 SEL-004/005 计数 → report_exceptions applied 标志，逐环确认。任何一环断，约束就没生效。
+
+**心法 2：代际验证看报告头 Date，不看文件时间戳。**
+robocopy/scp 会重置 LastWriteTime。真跑时间看报告文件头部 `Date:` 行；PT 吃到哪代 SDC 看 `read_cons.log` 的 `Created by PrimeTime write_sdc on` 时间行。每次同步包必须做 DC 跑时间 vs PT 报告时间 vs 本地约束修改时间三方对齐。
+
+**心法 3：收窄后违例要逐 bit 分类，而非一刀切恢复。**
+narrowing_exposed ≠ 该恢复豁免。89 条 R_REG* 中，UTC 比较类是真实检查（恢复豁免 = 掩盖真问题），HIZ 类是一次性配置（可恢复窄豁免）。逐 bit 二选一：一次性配置 → 窄 mc；每拍消费 → RTL 加同步。
+
+**心法 4：约束 diff 后必须区分"死约束"和"活约束"。**
+`-through .../R_` 字面名从未匹配任何对象（DC CMD-036），删了无影响——但 diff 里看起来像"删了一个约束"。必须检查 DC log 中该约束的匹配计数（`write_sdc` 条数），避免把死约束的删除误判为功能变更。
+
+**心法 5：from-only multicycle 是无边界放宽，B 类位禁止用。**
+`set_multicycle_path 2 -start -from X`（无 `-to`）覆盖 X 的一切 endpoint，包括 clock-gating check。对裸 per-beat 消费者（B 类），from-only 等于关闭所有检查。收窄时注释 from-only 是正确动作，但必须确认哪些 endpoint 因此暴露。
+
+**心法 6：pattern 匹配必须用 `get_cells` 实际验证，不靠肉眼。**
+`DATA_POINT_LAT_reg_*` 看起来能覆盖"DATA_POINT_LAT 家族"，但 `DATA_POINT_LAT_D1_reg_*`（名字多了 `_D1`）是否被匹配取决于 pattern 中 `*` 的位置。41 条 never_constrained 就是因为 pattern 从未匹配到 `_D1`。每次写约束后，用 `get_cells -hier -filter {name =~ <pattern>}` 验证实际匹配对象数。
+
+**心法 7：hold 违例归因必须反查 netlist，DC 不输出逐跳明细。**
+DC 只在 `.rpt` 输出 hold 汇总表（endpoint + slack）。hold 归因需要：从汇总表拿 endpoint → 反查 `.gv` netlist 确认驱动源和时钟关系 → 判断是结构性（时钟生成结构）还是 IO 约束（input_delay 设置）。本案例 30 条 hold 中 10 条是 DTCTL 门控结构问题，20 条是 IO 约束问题，均与收窄无关。
+
+**心法 8：`-to` 用时钟对象，不用寄存器名。**
+DC 中 `-to` 寄存器被 `write_sdc` 落成数据脚（普通 DFF `/D`，AND2DFFRBQX `/D1`+`/D2`），APR 网表常为 `/D` → SEL-004 静默丢弃。规则：`-to [get_clocks RX_CLK]` 永远安全；`-to [get_pins .../D]` 有跨网表风险。
+
+**心法 9：多模型交叉核对锁定主线，不追求 100% 一致。**
+5 个独立模型、2 批运行全部锁定 (A) = 106 条，路径集合完全相同——这是主线结论。(B)/(C) 边界分歧（约 352–376）属判定口径，不影响主线。方法：给每个模型原始材料（不含你的结论），独立重做，主 agent 比对。
+
+**心法 10：约束注释中预留回归口，写明"如果下次跑出现 X 类违例则 reconsider"。**
+0922 注释 G13 时写明：`if a next run shows violating paths whose startpoint matches LONG_ENCODING_ALIGN/DATA_POINT_LAT_reg*, reconsider`。这不是废话——下次跑出现 15 条 DATA_POINT_LAT 违例，注释本身就是归因证据。没有回归口注释，下次就要从头查"为什么 G13 没了"。
+
+**心法 11：QoR 表与逐路径计数有 ±3 条差异是正常的，属汇总口径。**
+QoR 表按 path group 汇总，跨 path group 的路径可能被归入一个 group；逐路径解析按 startpoint 精确计数。差异 3 条以内不需追查，超过 5 条才需检查是否漏计。
+
+**心法 12：真实违例（genuine）的处置优先级看 worst slack，不是看条数。**
+WCLK1 139 条但 worst -0.11（DC 优化裕量大概率够）；CHPI_SD_CTRL 12 级组合链 worst -1.45（全局 WNS，必须修）。先修 worst 最深的，条数多的留到综合迭代中自然消化。
+
+---
+
+## 附录 A：本次分析涉及的文件与报告
+
+| 文件 | 用途 |
+|------|------|
+| `HK1V11_digital_top_max.rpt` | DC setup 违例报告（约 228116 行） |
+| `HK1V11_digital_top.rpt` | DC hold 违例报告（min_delay 段） |
+| `HK1V11_digital_top.sum.rpt` | QoR 汇总表 |
+| `dc.log`（`rep_dir_0922_1456/`） | DC 执行日志（约束标记串验证） |
+| `read_cons.log` | PT 读取 SDC 日志（代际验证） |
+| `ip_cons/`（git `79ef0030` → `61eb5605`） | 约束文件 diff |
+| `.gv` netlist | hold 违例 endpoint 反查 |
+
+## 附录 B：关键 commit 与目录
+
+```text
+79ef0030  收窄前（旧版约束）
+61eb5605  收窄后（0922 新版约束）
+rep_dir_0922_1456/  新 DC 跑输出目录
+```
+
+## 附录 C：三分类判定速查表
+
+| 你要问的问题 | 看什么 | 判定 |
+|-------------|--------|------|
+| 这条路径旧版有没有被豁免？ | 旧约束中该 startpoint 是否在 mc/max_delay 的 from/to 集合内 | 有 → 继续问下一行；无 → genuine 或 never_constrained |
+| 新版有没有排除？ | 新约束中该 startpoint 是否被 remove_from_collection / 约束被注释 | 有 → narrowing_exposed；无 → 回到上一行 |
+| 旧版 pattern 实际匹配到这个对象吗？ | `get_cells -hier -filter {name =~ <pattern>}` 实际计数 | 匹配 → genuine；不匹配 → never_constrained |
+| hold 违例跟收窄有关吗？ | multicycle 主要影响 setup，hold 通常不受影响 | 通常无关，单独确认 |
+
+---
+
+*本文档基于 HK1V11 项目 0922 约束收窄实际分析撰写，所有路径名、单元名、行号均来自真实报告。方法论部分（第 2 节）可迁移至任何"约束变更后 QoR 突变"的排障场景。*
+  </script>
+  <script src="./js/site.js"></script>
+</body>
+</html>
+<!-- ymzhu 2026-09-24 15:46 -->
