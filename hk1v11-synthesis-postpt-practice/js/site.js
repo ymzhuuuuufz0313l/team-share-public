@@ -42,6 +42,18 @@
     var toc = document.getElementById('toc');
     var headings = document.querySelectorAll('.article h2, .article h3');
     var tocLinks = [];
+    var h3ToH2 = {};   /* h3 id -> 父 h2 id（折叠组激活时高亮回父级） */
+    var usedIds = {};  /* 标题 id 去重（如 ch10 多个同名「现象」小节） */
+
+    /* 标题 id（去重）：首次出现用原名，之后同名追加 -2/-3，锚点语义不变 */
+    function makeId(h) {
+      var base = h.textContent.trim().replace(/\s+/g, '-').replace(/[^\w\u4e00-\u9fa5-]/g, '');
+      var id = base, n = 2;
+      while (usedIds[id]) { id = base + '-' + n; n++; }
+      usedIds[id] = true;
+      return id;
+    }
+    headings.forEach(function (h) { h.id = makeId(h); });
 
     /* 页标题作为左侧目录的第一条（对齐 cpuwr / longcode 站的 toc-h1 形式） */
     var pageH1 = document.querySelector('.article h1');
@@ -54,23 +66,65 @@
       toc.appendChild(t1);
     }
 
-    headings.forEach(function (h) {
-      var id = h.textContent.trim().replace(/\s+/g, '-').replace(/[^\w\u4e00-\u9fa5-]/g, '');
-      h.id = id;
+    /* h2/h3 层级缩进：带 h3 子标题的 h2 挂 ▸ 箭头（点击折叠/展开），h3 缩进成组跟随 */
+    headings.forEach(function (h, i) {
+      if (h.tagName !== 'H2') return;
+      var children = [];
+      var j = i + 1;
+      while (j < headings.length && headings[j].tagName === 'H3') { children.push(headings[j]); j++; }
+
       var a = document.createElement('a');
-      a.href = '#' + id;
+      a.href = '#' + h.id;
       a.textContent = h.textContent;
-      a.className = h.tagName === 'H2' ? 'toc-h2' : 'toc-h3';
+      a.className = 'toc-h2' + (children.length > 0 ? ' toc-parent' : '');
       toc.appendChild(a);
       tocLinks.push(a);
+      if (children.length === 0) return;
+
+      var group = document.createElement('div');
+      group.className = 'toc-h3-group';
+      group.setAttribute('data-parent', h.id);
+      children.forEach(function (c) {
+        h3ToH2[c.id] = h.id;
+        var link = document.createElement('a');
+        link.href = '#' + c.id;
+        link.textContent = c.textContent;
+        link.className = 'toc-h3';
+        group.appendChild(link);
+        tocLinks.push(link);
+      });
+      toc.appendChild(group);
+
+      var arrow = document.createElement('span');
+      arrow.className = 'toc-arrow';
+      arrow.textContent = '▸';
+      a.insertBefore(arrow, a.firstChild);
+      arrow.addEventListener('click', function (e) {
+        e.preventDefault(); /* 箭头 = 折叠/展开，不跳转 */
+        var nowCollapsed = a.classList.toggle('collapsed');
+        group.classList.toggle('collapsed', nowCollapsed);
+        if (nowCollapsed) { /* 折叠时高亮移回父 h2 */
+          var activeInGroup = group.querySelector('a.active');
+          if (activeInGroup) {
+            activeInGroup.classList.remove('active');
+            a.classList.add('active');
+          }
+        }
+      });
     });
 
     if (window.IntersectionObserver) {
       var observer = new IntersectionObserver(function (entries) {
         entries.forEach(function (entry) {
           if (!entry.isIntersecting) return;
+          var targetId = entry.target.id;
+          var parentId = h3ToH2[targetId];
+          if (parentId) {
+            var group = toc.querySelector('.toc-h3-group[data-parent="' + parentId + '"]');
+            if (group && group.classList.contains('collapsed')) targetId = parentId;
+          }
           tocLinks.forEach(function (l) { l.classList.remove('active'); });
-          var active = tocLinks.find(function (a) { return a.getAttribute('href') === '#' + entry.target.id; });
+          var active = tocLinks.find(function (x) { return x.getAttribute('href') === '#' + targetId; });
           if (active) active.classList.add('active');
         });
       }, { rootMargin: '-10% 0px -75% 0px' });
@@ -96,4 +150,4 @@
   }
 })();
 
-// ymzhu 2026-09-20 11:04
+// ymzhu 2026-09-24 16:45

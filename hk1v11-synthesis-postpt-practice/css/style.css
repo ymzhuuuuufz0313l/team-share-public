@@ -164,6 +164,7 @@ body {
 }
 .toc a.collapsed .toc-arrow { transform: translateY(-50%) rotate(0deg); }
 .toc .toc-arrow:hover { color: var(--accent); }
+.toc-h3-group.collapsed { display: none; } /* 折叠整组 h3 缩进项（箭头在父 a.toc-parent 内） */
 
 h2, h3 { scroll-margin-top: 76px; }
 .content { flex: 1; min-width: 0; }
@@ -619,3 +620,5 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
   a { color: #000; text-decoration: underline; }
   img { box-shadow: none; max-width: 100%; }
 }
+
+/* ymzhu 2026-09-24 16:45 */
