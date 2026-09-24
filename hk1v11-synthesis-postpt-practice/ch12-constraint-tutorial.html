@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>十二、时序约束入门教学 · HK1V11 综合/签核流程实践</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./css/style.css">
+  <script src="./js/marked.min.js"></script>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a class="navbar-brand" href="./">HK1V11_FLOW_PRACTICE</a>
+      <div class="navbar-links" id="navbar-links"></div>
+    </div>
+  </nav>
+  <div class="container with-toc">
+    <aside class="toc-wrapper"><div class="toc" id="toc"></div></aside>
+    <div class="content">
+      <article class="article" id="article"></article>
+      <div class="page-nav" id="page-nav"></div>
+      <div class="footer">HK1V11 SYNTHESIS / SIGNOFF PRACTICE · AUTHOR ymzhuuuu · UPDATED 2026-09-24</div>
+    </div>
+  </div>
+  <script type="text/template" id="md">
+# 十二、时序约束入门教学 · 用 HK1V11 真实约束讲"为什么这么设 / 为什么不能那样设"
+
+> 个人学习资料 · 数字后端 / STA 约束工程 · 面向刚接触时序约束的小白
+> 本章每一条约束都锚定 HK1V11 真实的 `ip_cons`（`SYNTHESIS/common/ip_cons/HK1V11_digital_top.tcl`）与 RTL 模块/信号，不编造、不套模板。方法论总纲见 ch06（POSTPT），排障案例见 ch10 / ch11；本章不重复流程，只把"约束本身"讲透。
+
+---
+
+## 0. 这一章怎么用
+
+先说清楚三个"读者约定"，后面每一块都按这个套路走：
+
+- **结论先行**：每块开头一句话把"这条约束到底在干什么"讲完，再展开。
+- **真实锚点**：本项目 tcl 片段 + RTL 里真实存在的模块名 / 信号名（都来自实际读到的文件）。RTL 都在 `HDL/HK1V11_digital_top/seperated_code/` 下。
+- **两问**：每块必答"为什么这么设"和"为什么不能那样设"（后者是这个项目真实踩过的坑）。
+
+每块末尾给 **自检方法**（1~3 条可复制的命令 / 检查步骤），让你能确认约束"真的生效了"。
+
+本章共 15 个概念块 + 1 个"心法"收尾：
+
+| # | 概念块 | 一句话 |
+|---|--------|--------|
+| 1 | 地图 | HK1V11 到底在约束一个什么样的时钟世界 |
+| 2 | setup/hold | 物理直觉 + launch/capture 边沿 + slack + path group |
+| 3 | create_clock | 主时钟 + uncertainty + 数据率↔时钟换算 |
+| 4 | create_generated_clock | 分频 / 反相 / 非整数分频 / -add |
+| 5 | clock group | 同一物理时钟的"多副马甲" |
+| 6 | CDC / false_path | 为什么异步要豁免 + 2FF 同步器 |
+| 7 | 时钟成组 | 异步域成组 + 新时钟必须进豁免清单 |
+| 8 | inout delay | -max / -min 各管什么，-min 设错造 hold 假违例 |
+| 9 | multicycle | 准静态配置寄存器为什么 2 setup + 1 hold 成对 |
+| 10 | -from/-to/-through | 三种端点模式 + "-to 必须用时钟对象" |
+| 11 | from-only 陷阱 | B 类裸消费者 + 0922 收窄 |
+| 12 | max_delay | 和 multicycle 的区别 + 层级端点写法 |
+| 13 | 命名与匹配 | reg[n] vs _reg_n_，pattern 必须 get_cells 验证 |
+| 14 | 生效链 | ip_cons → write_sdc → postcts.sdc → POSTPT，"改了没生效"找断点 |
+| 15 | 其他命令 + CTS | dont_touch / max_transition / min_pulse_width + skew/balance |
+| 16 | 心法 | 10 条可操作清单 |
+
+---
+
+## 1. 先把地图画清楚：HK1V11 到底在约束一个什么世界
+
+> **一句话**：约束不是天上掉下来的魔法语句，它是对"这张网里有哪些时钟、哪些数据、哪些是准静态、哪些是异步"的一份**契约**；看不懂契约就写不对约束。
+
+### 1.1 顶层长什么样
+
+芯片顶层 `HK1V11.v`（`HDL/TOP/`）把数字和模拟分成两块：
+
+- `HK1V11_digital_top  u_HK1V11_digital_top`：数字后端关心的就是它。
+- `MACRO_TOP_1V11      u_MACRO_TOP_1V11`：模拟 macro（PHY / pad / 模拟电源域），约束基本不碰它。
+
+`HK1V11_digital_top` 里只例化一个数字 core：
+
+```verilog
+// HDL/TOP/HK1V11_digital_top.v:481
+LOGIC_CENTER  u_LOGIC_CENTER (
+  .CLKIN_I(clk_lane),      // 这一根就是 RX 数据/时钟主输入
+  .OSC_CLK_I(OSC_CLK_I),
+  .INDATA_I(dout_lane),    // input [19:0] —— 20 bit RX 数据
+  .SP_I(SP_I),             // 编码 strap（静态选择 SHORT / LONG）
+  .SCL_I(SCL_I),           // I2C
+  .XON_I(XON_I),
+  .XPONRST_I(XPONRST_I),   // 复位
+  .FYSAL_O(CLKA_L), .FYSBL_O(CLKB_L),  // SD 输出 pad
+  .FYSAR_O(CLKA_R), .FYSBR_O(CLKB_R),
+  ...
+);
+```
+
+**关键数字先记住**（后面反复用）：
+
+| 量 | 值 | 出处（真实） |
+|----|----|--------------|
+| RX 数据位宽 | **20 bit** | `HK1V11_digital_top.v:430  input [19:0] dout_lane` → `LINK_LOGIC.v:14  input [19:0] INDATA` |
+| RX 主时钟 | `clk_lane` | `HK1V11_digital_top.v:505  .CLKIN_I(clk_lane)` |
+| 颜色深度 | 24 bit（**不是** RX 位宽） | `LINK_LOGIC.v:74  output [23:0] PIX_DATA` |
+| SD 输出 pad | CLKA/CLKB _L/_R | `HK1V11_digital_top.v:39-42  kiwi conn ... FYSAL_O CLKA_L` |
+
+> ⚠️ **易错点**：RX 位宽是 **20**（`INDATA[19:0]`），不是 24。24 是解码后的颜色深度 `PIX_DATA[23:0]`。数据率换算用的是 **20**，不是 24——这个坑 ch3 会专门讲。
+
+### 1.2 `u_LOGIC_CENTER` 下的模块地图（约束路径里的每一段都有出处）
+
+约束文件里大量出现 `u_LOGIC_CENTER/LINK_LOGIC/LC_CHPI_DECODE/...` 这种路径。下面这棵树是我逐个文件确认过实例名/模块名的：
+
+```
+HK1V11
+└─ HK1V11_digital_top
+   └─ LOGIC_CENTER  u_LOGIC_CENTER                      (LOGIC_CENTER.v)
+      ├─ LC_CLK_RST_GEN        ──► CLKGEN.v / RSTNGEN.v   ← 时钟/复位生成
+      ├─ CENTER1               ──► ANCTL.v / DTCTL.v / DPLC_DATA_GEN.v  ← 面板控制
+      ├─ I2C_CTL               ──► I2C_EN_CTL.v / I2C_ST.v / I2C_CLK_GEN.v
+      └─ LINK_LOGIC            (LINK_LOGIC.v)
+         ├─ LINK_CONFIG_CTRL   ──► LC_CPUWR.v / LC_REG_MAPPING.v  ← 配置寄存器组
+         ├─ LC_CHPI_DECODE     ──► LONG_ENCODING(→LONG_ENCODING_ALIGN)
+         │                        └► SHORT_ENCODING(→SHORT_ENCODING_ALIGN)
+         ├─ LINK_IO_CTRL       ──► LC_MONBLOCK.v
+         └─ LINK_PANEL_CTRL    ──► CHPI_SD_CTRL.v / SMT_CS.v
+                                  └► BOE_AUTO_EQ_BCC_CTRL / AUTO_EQ_TRAINIG_JUDGE
+```
+
+确认依据（都在文件里能 grep 到）：
+
+```csh
+LOGIC_CENTER.v:811  LC_CLK_RST_GEN LC_CLK_RST_GEN(
+LOGIC_CENTER.v:848  CENTER1  CENTER1(
+LOGIC_CENTER.v:978  I2C_CTL  I2C_CTL(
+LOGIC_CENTER.v:997  LINK_LOGIC  LINK_LOGIC(
+LINK_LOGIC.v:393    LINK_CONFIG_CTRL LINK_CONFIG_CTRL(
+LINK_LOGIC.v:673    LC_CHPI_DECODE LC_CHPI_DECODE(
+LINK_CONFIG_CTRL.v:197  LC_CPUWR LC_CPUWR(
+LINK_CONFIG_CTRL.v:418  LC_REG_MAPPING LC_REG_MAPPING(
+CENTER1.v:159       ANCTL       ANCTL(
+CENTER1.v:235       DTCTL       DTCTL(
+LINK_PANEL_CTRL.v:200 AUTO_EQ_TRAINIG_JUDGE AUTO_EQ_TRAINIG_JUDGE(
+```
+
+> 教学提示：写约束时 `-from`/`-to` 用的是**网表路径**，不是 RTL 模块名。所以下面每块里我会同时给你"tcl 原文"（网表路径）和"RTL 出处"（模块+信号），两者对应起来你就不会迷路。
+
+### 1.3 `kv_` 系列是项目自定义包装命令
+
+这份 tcl 顶部注释（`HK1V11_digital_top.tcl:4-7`）声明了它的签名：
+
+```tcl
+# kv_clock    clk_name clk_period clk_pin
+# kv_genclock clk_name src_clk_period div_num src_clk_pin clk_pin
+# kv_reset    clk_pin
+# kv_2clklist_false_path clk_list0 clk_list1
+```
+
+它们最终展开成标准 SDC 命令：
+
+| kv_ 包装 | 等价标准命令 | 本项目用途 |
+|----------|--------------|------------|
+| `kv_clock NAME PERIOD PIN` | `create_clock` | 定义主时钟（RX_CLK / OSC_CLK / I2C_CLK） |
+| `kv_genclock ...` | `create_generated_clock` | 生成时钟 |
+| `kv_reset PIN` | `create_reset` | 复位引脚 |
+| `kv_interclk_group_path A logically` | `set_clock_groups -logically_exclusive` | 同域互斥时钟成组 |
+| `kv_2clklist_group_path A B` | `set_clock_groups -asynchronous` | 两个异步时钟族成组 |
+
+> 你只需要记住：**这些 kv_ 命令最后都会 `write_sdc` 落成标准 SDC**，APR / POSTPT 认的是标准 SDC，不是 kv_。所以排查"约束有没有落地"时，要看 `write_sdc` 的产物，不是看 ip_cons 里写了什么（第 14 块）。
+
+**自检方法**：
+```csh
+# 确认顶层端口/位宽（20-bit RX）
+grep -n "input \[19:0\]" HDL/HK1V11_digital_top/HK1V11_digital_top.v   # 应为 dout_lane
+grep -n "input \[19:0\]  INDATA" HDL/HK1V11_digital_top/seperated_code/LINK_LOGIC.v
+```
+
+---
+
+## 2. setup / hold 的物理直觉，launch / capture 边沿，slack，path group
+
+> **一句话**：setup 管"数据要赶在**上升沿**之前到位"，hold 管"数据要在上升沿之后**再稳一会儿**别乱跳"；slack 是"还剩多少富余"；path group 是"把路径分成几堆分别检查/报告"。
+
+### 2.1 setup：赶在 capture 沿之前
+
+物理直觉（生活类比）：capture 触发器像一个"拍照快门"，在时钟上升沿那一瞬间"咔嚓"采样数据。数据必须**在快门按下之前**就已经稳定地停在 D 脚上——否则拍到的是模糊/错的。
+
+- 这个"快门按下前必须稳定"的时间，就是 **setup time（tSU）**。
+- 采样那一瞬间的时钟边沿叫 **capture edge**；提供数据的上一个时钟边沿叫 **launch edge**。
+
+一条典型路径：launch FF（在 `CLK` 的 t0 发出数据）→ 组合逻辑 → capture FF（在 `CLK` 的 t1 采样）。
+
+```
+launch FF ──data──► [组合逻辑: delay = Tdata] ──► capture FF
+    ▲ t0(发出)                                    ▲ t1(采样)
+    └─────────────── 数据要"跑完全程并留出 setup" ──┘
+```
+
+setup 检查的式子（数据在 t1 之前要跑完）：
+
+```
+t_launch + Tclk + Tdata + tSU + tCO ≤ t_capture
+  ↑出发   ↑一个周期  ↑跑路    ↑稳定    ↑出发延迟
+```
+
+其中 `tCO`（clock-to-output）是 launch FF 的"数据出来要多快"。
+
+### 2.2 hold：沿之后别再跳
+
+同一个 capture 触发器还有个要求：采样**之后**的一小段时间（**hold time，tH**）内，D 脚数据不能变。否则刚采进去的值被冲掉了。
+
+hold 的物理来源和 setup 相反：它怕的是"数据**太快**"（新数据在 capture 沿刚过就窜进来）。
+
+> **小白最容易混的一点**：setup 违例 = 路径太慢（数据迟到）；hold 违例 = 路径太快（数据早到 / 上一拍数据窜进这一拍）。两者方向相反，所以 hold 几乎不受工艺/温度/电压变慢影响，**换频率不会"救" hold**（详见第 15 块 CTS）。
+
+### 2.3 slack：还剩多少
+
+`slack = 到达时间的余量`。
+
+- `slack > 0`：达标（数据比要求早到 slack 这么多）。
+- `slack < 0`：违例（差 `-slack` 这么多）。
+- setup slack 越大越安全；hold slack 也要 `> 0`。
+
+本项目真实例子里你会看到 `+0.14~+0.44`（接近边界的 MET）、`w-0.301`（wc_cbest 违例 0.301ns）、`-3.8`（伪违例）这类数字，它们都是 slack。
+
+### 2.4 path group：把路径分堆
+
+一个大设计有成千上万条路径。`set_clock_groups` / `set_path_group` / `set_group` 把路径**分组**，用途：
+
+1. **报告分组**：`report_timing` 按组分别出最坏路径，方便人看。
+2. **约束分组**：`set_clock_groups` 告诉工具"这几个时钟之间**不用互相检查**"（异步 / 互斥），否则会产生海量假违例。
+
+本项目最典型的就是第 5、7 块的 `kv_interclk_group_path` / `kv_2clklist_group_path`——本质都是 `set_clock_groups` 的变体。
+
+**自检方法**：
+```csh
+# 看最坏路径的 slack、launch/capture 边沿
+report_timing -delay_type max -path_type full -max_paths 5 > rpt_setup.txt
+report_timing -delay_type min -path_type full -max_paths 5 > rpt_hold.txt
+# 在报告里确认 "Startpoint: ...  (rising edge)" 与 "Endpoint: ... (rising edge)"
+# 数一下 capture 沿：multicycle 生效时 capture 边沿号会跳到第 2 个周期（见第 14 块）
+```
+
+---
+
+## 3. create_clock 主时钟 + clock uncertainty + 数据率↔时钟换算
+
+> **一句话**：`create_clock` 告诉工具"这是根主时钟，周期多少"；uncertainty 是"我承认时钟沿有抖动，给我留点余量"；而周期本身是从**数据率 ÷ RX 位宽**推出来的，`clk_period.tcl` 里的 1.05 只是 5% 的 STA 裕量，不是物理因子。
+
+### 3.1 本项目的主时钟定义
+
+`HK1V11_digital_top.tcl:94-99`：
+
+```tcl
+set  OSC_CLK_PIN      [get_ports OSC_CLK_I]
+set  I2C_CLK_PIN      [get_ports SCL_I]
+
+kv_clock  OSC_CLK     $OSC_CLKP  $OSC_CLK_PIN
+kv_clock  I2C_CLK     $I2C_CLKP  $I2C_CLK_PIN
+```
+
+加上 RX 主时钟（`:34-35`）：
+
+```tcl
+set  RX_CLK_PIN  [get_ports clk_lane]
+kv_clock  RX_CLK  $RX_CLKP  $RX_CLK_PIN
+```
+
+`kv_clock` 展开成 `create_clock -name RX_CLK -period $RX_CLKP [get_ports clk_lane]`。
+
+### 3.2 周期从哪来：clk_period.tcl（关键换算）
+
+`SYNTHESIS/common/tcl_dir/common/clk_period.tcl`（全文，20 行）：
+
+```tcl
+if {$synopsys_program_name != "pt_shell"} {
+  set MARGIN 0.80
+} else {
+  set MARGIN 1.00
+}
+set OSC_CLKP   [expr  20.00*$MARGIN ]   # Spec 2.4M set as 50M -> 这里用 20ns
+set I2C_CLKP   [expr  500.00*$MARGIN ]  # I2C_CLK = 2M
+# 5G*1.05/20 = 262.5 M
+set RX_CLKP    [expr  3.81*$MARGIN     ]
+# 3G*1.05/20 = 157.5 M
+set DPLC_CLKP  [expr  6.35*$MARGIN     ]
+```
+
+拆成一张表：
+
+| 变量 | dc_shell（MARGIN=0.80） | pt_shell（MARGIN=1.00） | 说明 |
+|------|--------------------------|--------------------------|------|
+| `RX_CLKP` | 3.048 ns | **3.81 ns** | 名义 262.5 MHz |
+| `DPLC_CLKP` | 5.08 ns | **6.35 ns** | 名义 157.5 MHz |
+| `OSC_CLKP` | 16 ns | 20 ns | 20 MHz 级 |
+| `I2C_CLKP` | 400 ns | 500 ns | 2 MHz |
+
+**三个必须分清的"因子"**（这是本章的核心理解点）：
+
+1. **×20（RX 位宽）**：`data_rate(G) = RX_CLK(MHz) × 20 / 1000`。×20 来自 `INDATA[19:0]` 是 **20 bit**，**不是**颜色深度 24。
+2. **1.05（5% STA 裕量）**：设计约定。`5G × 1.05 / 20 = 262.5 MHz → 3.81 ns`。它把时钟**调快 5%**（250 → 262.5 MHz），留出裕量。**这是工程裕量，不是数据率↔时钟的物理换算系数**。
+3. **0.8 / 1.0（dc vs pt 的 period 降额）**：DC 用 `3.81×0.8=3.048ns`（更快的时钟，综合时更严），PT 用名义 `3.81ns`。这是"综合阶段留 20% 裕量、签核阶段用名义"的口径。
+
+> ⚠️ **为什么不能把 1.05 当物理因子**：如果有人写成 `data_rate = RX_CLK × 1.05` 就全错了。1.05 只在"从 5G 规格反推时钟"这一步出现一次，用来**加裕量**；真正的数据率换算关系是 `data_rate(G)=RX_CLK(MHz)×20/1000`（20 = RX 位宽）。把两个因子混在一起，会导致你算错时钟、进而 `create_clock` 的周期错，后面所有 setup 全跟着错。
+
+### 3.3 clock uncertainty（时钟不确定度）
+
+`set_clock_uncertainty`（或 `create_clock` 里的 `-uncertainty`）表达的是：时钟沿**不是精确的**，有 jitter / skew / OCV，给 setup 和 hold 各留一点。
+
+- 它对 **setup** 是"再扣一点"（更严），对 **hold** 是"加一点裕量"（更严）。
+- 本项目主时钟的 uncertainty 主要靠工艺/库的 SDC 默认 + APR 阶段的 skew 数据（`.sdf`/SPEF），ip_cons 里没手写一堆 `set_clock_uncertainty`，因为真正的 skew 是 **CTS 之后**才知道的（第 15 块）。
+
+**自检方法**：
+```csh
+# 确认时钟周期真的等于 clk_period.tcl 推出来的值
+report_clocks            # 看 RX_CLK period 应 = 3.81（pt）/3.048（dc）
+get_clocks -quiet RX_CLK; report_clock -transition_max -transition_min RX_CLK
+```
+
+---
+
+## 4. create_generated_clock：分频、反相、非整数分频、-add
+
+> **一句话**：网表里大部分时钟不是"一根干净的钟"，而是从主钟经过**分频 / 反相 / mux 选择**得到的；`create_generated_clock` 把这段"派生关系"描述清楚，工具才能算出它们的边沿。
+
+### 4.1 先理解 CLKGEN 的物理结构（RTL）
+
+`CLKGEN.v`（`u_LOGIC_CENTER/LC_CLK_RST_GEN/CLKGEN/`）是这个芯片的时钟心脏，关键实例（都能 grep 到）：
+
+```verilog
+// CLKGEN.v
+assign DCLK = I_CLKIN;                                  // :33 RX 直通
+CLKINVX4  u_gate_INV_DCLK          (.I(DCLK), .O(DCLK_INV));   // :40 反相
+
+CLKMUX2X2 u_gate_MUX_DCLK_DATA(
+     .I0 (PIX_CLK_LONG), .I1 (DCLK_DIV1P5_SHORT), .S (SP), .O (DCLK_DATA));  // :130
+CLKMUX2X2 u_gate_MUX_SD_CLK(
+     .I0 (normal_clk), .I1 (DCLK_DATA), .S(PANEL_DPLC_CLK_SEL), .O(SD_CLK)); // :185
+CLKINVX4  u_gate_INV_SD_CLK_INV  (.I(SD_CLK), .O(SD_CLK_INV));              // :186
+
+CLKINVX4  u_gate_INV_DPLC_CLK_SHORT (.I(DPLC_CLK_1P5_SHORT), .O(DPLC_CLK_SHORT)); // :188
+CLKINVX4  u_gate_INV_DPLC_CLK_LONG  (.I(PIX_CLK_LONG),     .O(DPLC_CLK_LONG));    // :189
+CLKMUX2X2 u_gate_MUX_DPLC_CLK(.I0(DPLC_CLK_LONG), .I1(DPLC_CLK_SHORT), .S(SP), .O(DPLC_CLK)); // :191
+```
+
+`SP`（来自物理 strap `SP_I`，见 `BUFFER_I.v:31  SP_buf`）是**静态**编码选择：`SP=0` 走 LONG 腿，`SP=1` 走 SHORT 腿。
+
+### 4.2 DCLK_DATA：非整数分频（-edges）
+
+`HK1V11_digital_top.tcl:48-59`：
+
+```tcl
+set DCLK_DATA_SHORT_PIN [get_pins u_LOGIC_CENTER/LC_CLK_RST_GEN/CLKGEN/u_gate_BUF_DCLK_DIV1P5_SHORT/O]
+set DCLK_DATA_LONG_PIN  [get_pins u_LOGIC_CENTER/LC_CLK_RST_GEN/CLKGEN/u_gate_LONG_PIX_CLK/CG_CELL/Q]
+set DCLK_DATA_MUX_PIN   [get_pins u_LOGIC_CENTER/LC_CLK_RST_GEN/CLKGEN/u_gate_MUX_DCLK_DATA/CLKMUX2X2/O]
+
+create_generated_clock -name DCLK_DATA_SHORT -edges {1 3 4} -source $RX_CLK_PIN $DCLK_DATA_SHORT_PIN -master_clock RX_CLK -add
+create_generated_clock -name DCLK_DATA_LONG  -divide_by 1   -source $RX_CLK_PIN $DCLK_DATA_LONG_PIN  -master_clock RX_CLK -add
+create_generated_clock -name DCLK_DATA_MUX_SHORT -divide_by 1 -source $DCLK_DATA_SHORT_PIN $DCLK_DATA_MUX_PIN -master_clock DCLK_DATA_SHORT -add
+create_generated_clock -name DCLK_DATA_MUX_LONG  -divide_by 1 -source $DCLK_DATA_LONG_PIN  $DCLK_DATA_MUX_PIN -master_clock DCLK_DATA_LONG  -add
+```
+
+注意 `-edges {1 3 4}`：
+
+- `-divide_by 1`：1:1 直通。
+- **`-edges {1 3 4}`：非整数分频**。它不是"每 2 个 RX 边出一个沿"，而是"在 RX 的第 1、3、4 个边沿取事件"，3 个 RX 边对应一个输出周期，所以低相位是 T/3 而不是 T/2。这就是注释里说的"MPW 0.73 derivation"的来源。
+
+> **为什么这么设**：SHORT 编码的物理时钟就是"数据相关"的非整数分频，只有 `-edges` 才能表达"第几拍出沿"。用 `-divide_by 1.5` 是**错的**（divide_by 只接受整数）。
+
+### 4.3 DPLC 时钟链：分频 + 反相 + mux（本项目最完整的一条 generated clock 链）
+
+`HK1V11_digital_top.tcl:206-217`：
+
+```tcl
+# 中间：DPLC 1.5x 相位移数据驱动钟
+create_generated_clock -name DPLC_CLK_1P5_SHORT -edges {2 4 5} -source $RX_CLK_PIN $DPLC_BUF_1P5_SHORT_PIN -master_clock RX_CLK -add
+# SHORT 腿：反相
+create_generated_clock -name DPLC_CLK_SHORT_DIV -divide_by 1 -invert -source $DPLC_BUF_1P5_SHORT_PIN $DPLC_SHORT_PIN -master_clock DPLC_CLK_1P5_SHORT -add
+# LONG 腿：PIX_CLK_LONG 反相
+create_generated_clock -name DPLC_CLK_LONG_LEG -divide_by 1 -invert -source $DCLK_DATA_LONG_PIN $DPLC_INV_LONG_PIN -master_clock DCLK_DATA_LONG -add
+# mux 输出：两条腿都挂上去（-add）
+create_generated_clock -name DPLC_CLK_LONG  -divide_by 1 -source $DPLC_INV_LONG_PIN $DPLC_MUX_PIN -master_clock DPLC_CLK_LONG_LEG   -add
+create_generated_clock -name DPLC_CLK_SHORT -divide_by 1 -source $DPLC_SHORT_PIN     $DPLC_MUX_PIN -master_clock DPLC_CLK_SHORT_DIV -add
+```
+
+这里 `-invert`（反相）和 `-add`（同一个 pin 上允许挂多个时钟）都在真实使用。
+
+### 4.4 -add：为什么同一个 pin 挂一堆时钟
+
+你看到 `DCLK_DATA_MUX_PIN` 这个 mux 输出上同时挂了 `DCLK_DATA_MUX_SHORT` 和 `DCLK_DATA_MUX_LONG`；`SD_CLK_INV_PIN` 上挂了 4 个（`SD_CLK_INV_DPLC_SHORT/LONG`、`SD_CLK_INV_SHORT/LONG`）。
+
+**为什么**：`SP` / `PANEL_DPLC_CLK_SEL` 是静态选择，一次只有一条腿真正走数据。但工具在**不知道当前跑的是哪种编码**时会把两条腿都当"可能存活"来传播边沿。把所有腿都用 `-add` 定义好，同一份 SDC 就能覆盖两种编码（SHORT/LONG × DPLC/normal），不用改文件。没被选中的腿"定义着但 inert（不产生路径）"。
+
+> **为什么不能那样设**：如果只定义一条腿，换编码（SP 翻转）后约束就对不上网表了，会报"找不到这个时钟/这个 pin 上没有时钟"。而且**漏定义的腿不会自动消失**——它会让下游路径"没有 capture 时钟"，表现为 unconstrained 或错误时钟归属。
+
+**自检方法**：
+```csl
+# 列出某 pin 上挂的所有时钟（验证 -add 生效）
+get_clocks -of_pins [get_pins u_LOGIC_CENTER/LC_CLK_RST_GEN/CLKGEN/u_gate_MUX_SD_CLK/CLKMUX2X2/O]
+# 应看到 NORMAL_CLK / SD_CLK 等多个；再核对每个的 period/edges 是否如你所设
+```
+
+---
+
+## 5. 同一个物理时钟的"多副马甲"：clock group（logically exclusive）
+
+> **一句话**：同一个物理时钟在不同编码/模式下被命名成多个逻辑时钟（`*_SHORT` 和 `*_LONG` 其实是同一根线），必须用 `set_clock_groups -logically_exclusive` 告诉工具"这些是互斥的，别互相检查"，否则会产生一堆假违例。
+
+### 5.1 本项目的"同域互斥"分组
+
+`HK1V11_digital_top.tcl:257-272`：
+
+```tcl
+#clocks in same path (different mode)
+set interclk_clklist0 [get_clock [list DCLK_DATA_MUX_SHORT   DCLK_DATA_MUX_LONG]]
+set interclk_clklist1 [get_clock [list NORMAL_CLK_SHORT      NORMAL_CLK_LONG ]]
+set interclk_clklist2 [get_clock [list SD_CLK_DPLC_SHORT     SD_CLK_SHORT     SD_CLK_DPLC_LONG SD_CLK_LONG ]]
+set interclk_clklist3 [get_clock [list SD_CLK_INV_DPLC_SHORT SD_CLK_INV_SHORT SD_CLK_INV_DPLC_LONG SD_CLK_INV_LONG]]
+set interclk_clklist4 [get_clock [list DCLK_CONFIG_MUX_SHORT DCLK_CONFIG_MUX_LONG]]
+set interclk_clklist5 [get_clock [list WCLK1_A_DCLK_SHORT WCLK1_A_DCLK_LONG WCLK1_A_I2C]]
+set interclk_clklist6 [get_clock [list WCLK1_A_CHPI_DCLK_SHORT WCLK1_A_CHPI_DCLK_LONG]]
+
+kv_interclk_group_path $interclk_clklist0 logically
+...
+kv_interclk_group_path $interclk_clklist6 logically
+```
+
+`... logically` 展开为 `set_clock_groups -logically_exclusive -group [list ...]`。
+
+### 5.2 为什么这么设
+
+以 `SD_CLK_INV_DPLC_SHORT` / `SD_CLK_INV_SHORT` / `SD_CLK_INV_DPLC_LONG` / `SD_CLK_INV_LONG` 为例：它们**物理上都是同一根 `SD_CLK_INV` 线**（`CLKGEN.v:186 u_gate_INV_SD_CLK_INV`），只是"哪种编码 + DPLC 与否"的组合不同。同一时刻只有一副"脸"在驱动数据。
+
+如果不声明互斥，工具会认为这 4 个是 4 个**独立时钟**，于是去检查"SD_CLK_INV_SHORT 发出的数据被 SD_CLK_INV_LONG 采"这种**物理上永远不会发生**的路径——大量假 setup/hold 违例。
+
+### 5.3 为什么不能那样设
+
+- **不能漏列**：`HK1V11_digital_top.tcl:283-286` 有一段注释记录真实教训——DPLC 时钟被重命名成 `NORMAL_CLK_*` 后，如果这份互斥列表没同步更新，pre-PT 的 `read_tcl.log` 里会出现 `SEL-004 "No clock objects matched 'DPLC_CLK_*'"`，也就是这些时钟**根本没被识别**，于是 I2C/OSC ↔ NORMAL_CLK 的分组**静默缺失**，产生跨域假违例。
+- **不能把不同物理时钟硬塞进一个 logically 组**：logically_exclusive 只对"同一物理信号的不同命名"成立。不同物理时钟应该用第 7 块的 `-asynchronous`，不是 logically。
+
+**自检方法**：
+```csh
+# 确认某个时钟被正确分组（report_clocks -group 或 set_clock_groups 查询）
+get_clocks *_SHORT; get_clocks *_LONG
+report_clocks  # 看每个时钟的 domain，确认 SHORT/LONG 成对出现且被 logical 互斥
+grep -n "SEL-004\|No clock objects" <prept_dir>/read_tcl.log   # 应为 0 条
+```
+
+---
+
+## 6. 跨时钟域 / CDC：false_path、2FF 同步器，以及"false_path 只管亚稳态"
+
+> **一句话**：两个不同时钟域之间，setup/hold 检查在物理上就没意义（两边沿没有固定相位关系），所以用 `set_false_path` 豁免；但**豁免只解决了"亚稳态检查"，不解决"短脉冲丢失"和"多位总线撕裂"**——后者要靠同步器结构 + 协议设计。
+
+### 6.1 为什么要 false_path（本项目真实例）
+
+`HK1V11_digital_top.tcl:477-481`：
+
+```tcl
+#short/long mode
+#LONG_ENCODING output is RX_CLK domain
+if {$synopsys_program_name != "pt_shell"} {
+set_false_path  -from u_LOGIC_CENTER/LINK_LOGIC/LC_CHPI_DECODE/LONG_ENCODING/LONG_ENCODING_OUTPUT/PIX_DATA* -to DCLK_DATA_MUX_SHORT
+} else {
+set_false_path  -from u_LOGIC_CENTER/LINK_LOGIC/LC_CHPI_DECODE/LONG_ENCODING/LONG_ENCODING_OUTPUT/PIX_DATA*/CK -to DCLK_DATA_MUX_SHORT
+}
+```
+
+`LONG_ENCODING_OUTPUT/PIX_DATA`（`LONG_ENCODING_OUTPUT.v`，RX_CLK 域）的输出被送往 SHORT 编码路径（`DCLK_DATA_MUX_SHORT` 域）。两个域不同 → 单周期 setup 检查会报一堆"看起来违例但其实不该查"的路径 → 用 `set_false_path` 关掉。
+
+> 注意这个 **if/else**：DC（elaborate）和 PT（netlist）里触发器名不一样（`reg[n]` vs `_reg_n_`），所以 `-from` 的写法要按分支写。这块细节第 13 块展开。
+
+### 6.2 2FF 同步器（本项目真实存在的同步器）
+
+跨域最安全的做法是**两级（或多级）触发器同步**：第一个 FF 负责"吸收亚稳态"，第二个 FF 负责"读出一个确定值"。本项目有真实例：
+
+```verilog
+// LC_REG_MAPPING.v:322-328 —— BKDU_SYNC（R_BKDU 跨域同步/拷贝）
+reg BKDU_SYNC;
+always @(posedge DCLK or negedge RSTN) begin
+    if (!RSTN)      BKDU_SYNC <= 1'b0;
+    else            BKDU_SYNC <= R_BKDU;   // R_BKDU 来自 RX 域配置
+end
+
+// BUFFER_I.v:4-6 —— INDATA_SYNC 20-bit 输入同步链（3 级）
+output reg [19:0] INDATA_SYNC_D1, INDATA_SYNC_D2, INDATA_SYNC_D3;
+
+// CHPI_SD_CTRL.v:51/78/309 —— LD_F_SYNC / LD_R_SYNC / LD_W_SYNC_pre
+output reg        LD_F_SYNC;
+reg    [7:0]      LD_R_SYNC;
+reg    [7:0]      LD_W_SYNC_pre;
+```
+
+约束里对这些同步器的"上游配置寄存器"配了 multicycle（第 9~11 块），语义是："这些是准静态配置，从 I2C 慢写过来，给 2 个周期的窗口去跨到 DCLK 域"。
+
+### 6.3 false_path 只解决亚稳态，不解决另外两类问题（**重点**）
+
+很多小白以为"跨域加个 false_path 就万事大吉"，这是危险的错觉：
+
+| 跨域风险 | 是什么 | false_path 能不能救 |
+|----------|--------|--------------------|
+| 亚稳态（metastability） | 采样沿和变化沿太近，FF 输出进入中间态 | ✅ false_path/异步分组能免除"该不该查 setup/hold"的检查 |
+| **短脉冲丢失** | 源域里一个极窄脉冲，目标域慢时钟根本采不到 | ❌ 救不了——那是**数据丢了**，不是检查问题 |
+| **多位总线撕裂** | 多位一起跨域，目标域可能采到"一半旧一半新" | ❌ 救不了——需要格雷码 / 握手 / 2FF 逐位 + 协议 |
+
+本项目 `R_REG*` 配置寄存器就是"准静态"（I2C 慢写、帧级变化），所以"撕裂"在**业务层面**被"变化很慢"规避了；但**时序层面**仍然要靠同步器（BKDU_SYNC 等）+ 约束（mc2）配合。
+
+> **为什么不能那样设**：如果你对一个**快速变化的多 bit 总线**（比如每拍都变的像素数据）跨域只加 false_path，会"看起来没有违例"，但芯片跑起来会采到撕裂数据 / 丢脉冲。false_path 是"告诉工具别查"，不是"让电路变安全"。安全要靠**电路结构**（2FF / 握手 / 格雷码）。
+
+**自检方法**：
+```csh
+# 列出所有 false_path / clock_groups，人工核对"被豁免的是不是真的准静态/异步"
+report_exceptions -type false_path -max 50
+report_clock_groups
+# 对每个同步器确认是 ≥2 级 FF：grep 模块里的 "SYNC" 寄存器，看是否有 *_D1/*_D2
+```
+
+---
+
+## 7. 时钟成组（asynchronous）+ 新时钟必须进豁免清单
+
+> **一句话**：不同物理时钟族之间用 `set_clock_groups -asynchronous` 成组，告诉工具"别跨族检查"；**每新增一个时钟，必须同步把它加进相关豁免/分组清单，否则会产生 hold 假违例**。
+
+### 7.1 异步成组（真实例）
+
+`HK1V11_digital_top.tcl:274-296`：
+
+```tcl
+#clocks for different domain
+set iic_root_clklist    [get_clock [list I2C_CLK I2C_CLK_INV]]
+set iic_wclk_clklist    [get_clock [list WCLK1_A_I2C]]
+set osc_clk_clklist     [get_clock [list OSC_CLK]]
+set rx_non_wclk_clklist [get_clock [list RX_CLK DCLK_* NORMAL_CLK_* SD_CLK_* DPLC_CLK* ]]
+set rx_clklist          [get_clock [list RX_CLK DCLK_* NORMAL_CLK_* SD_CLK_* DPLC_CLK* WCLK1_A_DCLK_* WCLK1_A_CHPI_*]]
+
+kv_2clklist_group_path  $iic_root_clklist   $rx_clklist
+kv_2clklist_group_path  $iic_wclk_clklist   $rx_non_wclk_clklist
+kv_2clklist_group_path  $osc_clk_clklist    $rx_clklist
+kv_2clklist_group_path  $osc_clk_clklist    $iic_root_clklist
+kv_2clklist_group_path  $osc_clk_clklist    $iic_wclk_clklist
+```
+
+`kv_2clklist_group_path A B` 展开为 `set_clock_groups -asynchronous -group A -group B`（A、B 两个时钟族之间全部豁免）。
+
+### 7.2 为什么必须把 I2C_CLK_INV 也列进去（真实教训）
+
+`HK1V11_digital_top.tcl:276-280` 有一段注释记录了一个**真实 bug**：
+
+```tcl
+# NOTE 2026-09-20: I2C_CLK_INV added -- the new netlist (I2C_ST restructure)
+# clocks the I2C write state machine (MULTI_W_CNT etc) by I2C_CLK_INV;
+# it was missing from this list -> I2C_CLK_INV <-> WCLK1_A_DCLK paths had
+# no group relationship -> 500ns-vs-3.81ns edge expansion -> 320 phantom
+# violations -6.865 + gating 79 + hold +171 in run 0920V3.
+```
+
+翻译：**I2C 状态机被重构成用 `I2C_CLK_INV` 驱动，但这个新时钟漏了进异步分组清单** → 工具拿 `I2C_CLK_INV`（500ns 级）和 `WCLK1_A_DCLK`（3.81ns）去跨域检查 → 边沿数爆炸（"500ns-vs-3.81ns edge expansion"）→ 一轮跑出 **320 条假 setup（-6.865）+ 79 条 gating + 171 条 hold 假违例**。把 `I2C_CLK_INV` 补进 `iic_root_clklist` 后消失。
+
+> 同类真实教训（CDR_2X hold -1.67）：项目里新造的 CDR 2X 分频时钟，因为没进异步/豁免清单，产生了 hold 假违例 -1.67ns。**规律：新增时钟 = 必须同步更新所有相关 `get_clock [list ...]` 清单，否则 hold 假违例找上门。**
+
+### 7.3 为什么不能那样设
+
+- **不能"先跑起来再说"**：漏一个时钟，表现是"莫名其妙一堆 hold/gating 违例"，而且这些违例**数字很大、很吓人**（-6.865），新手很容易误以为是真违例去"修电路"，其实是约束漏列。
+- **不能把异步组设得太宽**：`kv_2clklist_group_path` 是"整个 A 族 × 整个 B 族"全豁免。如果 A 族里其实有真需要同步检查的边（比如某个同步器就是 A→B 的桥），全族豁免会把这个**真检查也杀掉**。所以本项目的分组是按"物理时钟族"切，不是按"模块"切。
+
+**自检方法**：
+```csh
+# 确认每个 defined clock 都至少在一个 group/exception 里被处理过
+get_clocks -quiet -hierarchical > clocks.txt
+report_clock_groups
+# 关键：新加任何 created clock 后，立即 grep 所有 "get_clock [list" 行，确认它被纳入
+grep -n "get_clock \[list" SYNTHESIS/common/ip_cons/HK1V11_digital_top.tcl
+```
+
+---
+
+## 8. inout delay：-max / -min 各管什么，-min 设错造 hold 假违例
+
+> **一句话**：`set_input_delay` 的 `-max` 定义"输入最晚何时变化（喂 setup）"，`-min` 定义"输入最早何时变化（喂 hold）"；**`-min` 设成负值且过大，会造出输入 hold 假违例**。
+
+### 8.1 本项目真实例
+
+`HK1V11_digital_top.tcl:311-312`：
+
+```tcl
+set_input_delay  -clock  RX_CLK  0.3  [get_ports  dout_lane*]
+set_input_delay  -clock  RX_CLK  -min  -0.3  [get_ports  dout_lane*]
+```
+
+`dout_lane*` 就是顶层 `input [19:0] dout_lane`（RX 20-bit 数据，第 1 块确认过），进入 `BUFFER_I` 后变成 `INDATA_SYNC_D1/D2/D3`（`BUFFER_I.v:4-6`）这组同步/打拍寄存器。
+
+拆成表：
+
+| 命令 | 管的是 | 物理含义 | 本项目值 |
+|------|--------|----------|----------|
+| `set_input_delay -clock RX_CLK 0.3`（默认 -max） | **setup** | "外部数据相对 RX_CLK 沿**最晚** 0.3ns 后变化" | 0.3 |
+| `set_input_delay -min -0.3` | **hold** | "外部数据相对 RX_CLK 沿**最早**在 -0.3ns 之前不动" | -0.3 |
+
+### 8.2 -max / -min 为什么方向相反
+
+- **setup（-max）**：给一个"截止时刻"——数据必须在这个时刻**之前**到位。`-max 0.3` 表示输入在 capture 沿后 0.3ns 才被允许变化，数据要更早。
+- **hold（-min）**：给一个"保护区"——数据在这个时刻**之前**不能变。`-min -0.3` 表示输入在 capture 沿前 0.3ns 就进入"不许变"区。
+
+### 8.3 -min 设错 → 输入 hold 假违例（本项目真实教训：INDATA_SYNC -0.39）
+
+真实情况：`dout_lane` 是 **PHY 侧 CDR 恢复出来的数据**，它相对 `RX_CLK`（`clk_lane`）有一个**固定的、正的** skew（数据比时钟晚到某固定量）。
+
+- 如果 `-min` 被设得**比实际 skew 更负**（即"允许数据在沿前更早就变"），工具就会认为"数据可能在 capture 沿前过早变化"，于是判 hold 违例。
+- 本项目教训：`INDATA_SYNC`（20-bit 同步器）因为 `-min -0.3` 与真实 CDR 数据/时钟相对关系不匹配，跑出过 **-0.39ns 的输入 hold 假违例**——数据其实没违例，是 `-min` 太"松"让工具多算了。
+
+> **为什么不能那样设**：
+> 1. **不能只设 -max 不设 -min**：默认 `-min 0`，相当于告诉工具"数据在沿前 0 就不能变"，对 CDR 恢复的数据（有正 skew）会造成 hold 假违例。
+> 2. **不能乱给负 -min**：`-min` 的负值要**贴合真实 CDR 的 data-clock 相对延迟**，凭空设 -0.3 / -0.5 是赌博，赌错就是 hold 假违例。
+> 3. 正确做法：从 PHY/CDR 的规格拿到真实的 data-vs-clock skew，`-min` 设成"能覆盖最差 skew 但不引入假违例"的值，并和 PHY 团队确认。
+
+**自检方法**：
+```csh
+# 看输入端口约束，确认 -max/-min 成对且合理
+report_port_clocks [get_ports dout_lane*]
+# 若出现 "input hold violation"，先怀疑 -min，而不是电路
+report_timing -from [get_ports dout_lane*] -delay_type min
+```
+
+---
+
+## 9. multicycle 基础：准静态配置寄存器为什么 2 setup + 1 hold 成对
+
+> **一句话**：对"变化很慢的准静态配置寄存器"，单周期 setup 检查太严（它其实要的是 I2C 慢写的窗口），所以用 `set_multicycle_path 2 -start -setup` 放宽 setup 到 2 个周期，**同时**必须配 `set_multicycle_path 1 -start -hold` 收紧 hold，两者成对出现。
+
+### 9.1 为什么是"准静态配置寄存器"
+
+HK1V11 的 `LC_CPUWR`（`LINK_CONFIG_CTRL/LC_CPUWR/`，`LC_CPUWR.v:50`）是一大块**配置寄存器组**（`R_REG*`）。它们由 **I2C（`I2C_CLK`，2MHz，500ns 周期）慢写**，变化是**帧级/配置级**，不是每拍变化。
+
+- 一个 `R_REG*` 位，从 I2C 域写进去，再跨到 `RX_CLK`（3.81ns）域被消费，物理上"慢写 + 慢消费"，单周期（3.81ns）的 setup 检查对它**过严**——它根本不需要在 3.81ns 内跑完，它是"一帧变一次"。
+- 所以放宽 setup 到 **2 个周期**（约 7.62ns），匹配它的真实变化节奏。
+
+### 9.2 为什么 setup=2 必须配 hold=1（**关键，最容易漏**）
+
+`HK1V11_digital_top.tcl:425-432`（`cpuwr_reg_grp` 组）：
+
+```tcl
+set cpuwr_reg_grp [get_cells u_LOGIC_CENTER/LINK_LOGIC/LINK_CONFIG_CTRL/LC_CPUWR/R_REG*]
+set cpuwr_reg_grp [remove_from_collection $cpuwr_reg_grp [get_cells { ... 排除 10 个分区 ... }]]
+set_multicycle_path 2 -start -setup -from $cpuwr_reg_grp -to RX_CLK
+set_multicycle_path 1 -start -hold  -from $cpuwr_reg_grp -to RX_CLK
+set_multicycle_path 2 -start -setup -from $cpuwr_reg_grp -to DCLK_DATA_*
+set_multicycle_path 1 -start -hold  -from $cpuwr_reg_grp -to DCLK_DATA_*
+set_multicycle_path 2 -start -setup -from $cpuwr_reg_grp -to SD_CLK_INV_*
+set_multicycle_path 1 -start -hold  -from $cpuwr_reg_grp -to SD_CLK_INV_*
+```
+
+**为什么 setup 放宽到 2，hold 却要收紧到 1**：
+
+- 用 `-start`（从 launch 端算）：setup 路径的 capture 边沿被推迟 1 个周期（第 2 个周期采），所以 setup 窗口变成 2 周期 → **更宽松**。
+- 但 hold 路径，工具会找"**下一个** capture 边沿"来检查"新数据会不会撞进旧数据"。如果 setup 和 hold 都用 2，那么 hold 的 capture 边沿也会后移，导致"第 1 个周期的旧数据 vs 第 2 个周期的新数据"这个**真实危险**被漏掉。
+- 正确做法：**setup=2（capture 延后 1 周期），hold=1（capture 不延后，保持在第 1 个周期）**，这样 hold 仍然检查"相邻两拍"，不会漏掉"上一拍数据窜进这一拍"。
+
+> 一句话记牢：**setup 和 hold 的 cycle 数必须错开 1**（这里 2 vs 1）。这是 multicycle 的黄金配对，漏掉 hold 那条 = 留一个真实的 hold 漏洞。
+
+### 9.3 为什么不能那样设
+
+- **不能只写 setup=2 不写 hold=1**：hold 会默认按单周期算，但和 setup=2 的 capture 边沿不一致，工具可能报"hold 边界不一致"或直接漏检查——**最危险的是漏检查**。
+- **不能把准静态放宽用到"每拍变化的位"上**：第 11 块会讲，`R_REG*` 里有 24 个 B 类位是"裸 per-beat 消费者"（每拍都在用），对这些位用 mc2 会**掩盖真检查**——0922 收窄就是专门把它们剔出去。
+
+**自检方法**：
+```csh
+# 确认 setup/hold 成对（每条 setup 都有对应 hold，cycle 差 1）
+report_exceptions -type multicycle
+# 对某条被 mc 的路径，看 capture 边沿：setup 报告里 capture 应在第 2 周期，hold 报告里在第 1 周期
+report_timing -from u_LOGIC_CENTER/LINK_LOGIC/LINK_CONFIG_CTRL/LC_CPUWR/R_REG05_F_reg_6_ -delay_type max
+```
+
+---
+
+## 10. -from / -to / -through 三种端点模式 + "-to 必须用时钟对象"
+
+> **一句话**：`set_multicycle_path` / `set_max_delay` / `set_false_path` 都用 `-from`（起点）、`-to`（终点）、`-through`（必经点）来框定范围；其中 **`-to` 若填"寄存器名"会被 `write_sdc` 落成数据脚、在 APR 网表里对不上而被静默丢弃**，所以 **`-to` 要用时钟对象**，`-from` 用寄存器名才是安全的。
+
+### 10.1 三种模式
+
+| 模式 | 含义 | 本项目例 |
+|------|------|----------|
+| `-from` | 限定**起点**（launch 端） | `set_multicycle_path 2 -start -setup -from .../LC_CPUWR/R_REG48_F_reg*`（:381） |
+| `-to` | 限定**终点**（capture 端） | `... -to RX_CLK`（时钟对象，:425） |
+| `-through` | 限定**必经中间点** | `set_max_delay $DPLC_CLKP -thr .../U_DPLC_DATA_GEN/* -to .../data_out_tmp*`（:359） |
+
+### 10.2 真实教训①：`-to 寄存器名` → SEL-004 静默丢弃（UTC_FRM_CNT -0.369 / G9）
+
+`HK1V11_digital_top.tcl:442-446` 的注释记录了完整机制：
+
+```tcl
+# -to MUST be the clock object: a register pattern gets frozen by write_sdc to
+# DC data-pin names (/D1,/D2, absent in APR -> SEL-004, exception dropped).
+```
+
+**机制拆解**：
+
+1. `write_sdc`（pre-PT）把约束**物化**进 `postcts.sdc`。它会把 `-to <寄存器>` 这种**按对象**的端点，固化成**具体的 pin 名**（DC 映射后触发器的数据脚，比如普通 DFF 的 `/D`、或 `AND2DFFRBQX` 的 `/D1`、`/D2`）。
+2. 问题在于：**DC 映射用的单元**和 **APR 网表用的单元**不是同一个，数据脚名不一样（DC 给的是 `/D1`、`/D2`，APR 网表常是 `/D`）。
+3. 于是 `postcts.sdc` 里写的是 `/D1`，但 APR 网表里这个 pin 叫 `/D` → POSTPT 读 SDC 时报 **`SEL-004`（No objects matched）**，并且——**关键——它静默丢弃这条约束**（不报错、不中断，只是"这条约束没了"）。
+
+真实踩坑：**UTC_FRM_CNT -0.369ns 和 G9 两组**，都是 `-to` 填了寄存器 pattern，结果在 APR 网表里对不上、被静默丢弃，约束等于白写。
+
+### 10.3 规则（记住这一条能避免一大类问题）
+
+- **`-to` 永远用时钟对象**：`-to [get_clocks RX_CLK]` 或 `-to RX_CLK`。时钟对象名稳定，不会被 `write_sdc` 落成易变的 pin 名。
+- **`-from` 用寄存器名是安全的**：`-from` 落在**时钟脚**（`/CK`），`/CK` 这个名字跨 DC/APR 是**稳定的**，所以 `-from 寄存器pattern` 不会掉。
+- 本项目大量正确示范都是 `-from .../R_REG*_reg*` + `-to RX_CLK / DCLK_DATA_* / SD_CLK_INV_*`（时钟对象），见 :425-432。
+
+> **为什么不能那样设**：把 `-to` 写成 `-to u_LOGIC_CENTER/.../LC_CPUWR/R_REG05_F_reg_6_`（寄存器名）——pre-PT 看似正常，`write_sdc` 后悄悄变成 pin 名，POSTPT 报 SEL-004 把它丢了，你以为约束在、其实不在。这就是"改了约束、POSTPT 数字没变"的一种来源（配合第 14 块一起看）。
+
+**自检方法**：
+```csh
+# 1) 在 postcts.sdc / read_cons.log 里查 SEL-004 / SEL-005，统计被丢弃的约束条数
+grep -c "SEL-004\|SEL-005" <postpt_dir>/read_cons.log
+# 2) 用 report_exceptions 看每条 exception 的 applied 标志：
+#    o = only（只在这条上），p = partial，po = partial-only；"dropped/0 endpoints" 说明没落地
+report_exceptions -type multicycle -id
+# 3) 强制纪律：所有 -to 都是 get_clocks，绝不填寄存器实例名
+grep -n "\-to [a-zA-Z_u].*reg" SYNTHESIS/common/ip_cons/HK1V11_digital_top.tcl   # 应只出现在注释里
+```
+
+---
+
+## 11. from-only 的陷阱与 0922 收窄：B 类裸消费者为什么危险
+
+> **一句话**：`set_multicycle_path -from X`（不写 `-to`）是"以 X 为起点、**所有终点**都放宽"的 from-only 写法；对"准静态配置位"安全，但对"B 类裸 per-beat 消费者位"会**无边界地放宽**，把真实单周期检查也一起豁免掉。0922 收窄就是把这 24 个位剔出去。
+
+### 11.1 from-only 到底放宽了什么
+
+`set_multicycle_path 2 -start -setup -from <某寄存器>`（不带 `-to`）= "从这个寄存器出发，**到任何终点**的 setup 都算 2 周期"。
+
+- 对"准静态配置位"（写完就一帧不变）：到所有终点的放宽都合理。
+- 对"**裸 per-beat 消费者位**"（这个位每拍都参与一个实时逻辑）：它到某些终点的单周期检查是**真的需要**的，from-only 的"到所有终点"把这个真检查也放宽成 2 周期 → **掩盖真检查**。
+
+### 11.2 0922 收窄：bit 级审计剔出 24 个 B 类位（10 个分区）
+
+`HK1V11_digital_top.tcl:384-424`（`cpuwr_reg_grp` 的定义 + 排除注释）完整记录了这次审计。408 个 bit 分四类：`A=212`（准静态，留）、`B=24`（裸 per-beat 消费者，剔）、`C=160`、`?=12`。被剔出的 10 个分区（真实 RTL 依据都在注释里）：
+
+| 分区（tcl 里 `remove_from_collection`） | RTL 依据（真实） | 为什么是 B 类 |
+|------------------------------------------|-------------------|----------------|
+| `R_REG00_L_*` | `CHPI_SD_CTRL.v:274 → PSR_LINE_CNT`（DCLK 域） | FSYNC per-beat 消费者 |
+| `R_REG03_L_*` | `DATA16TO24.v:198` / `CHPI_KCODE_ALIGN_L0.v:265` / `ANCTL.v:147,153`（`BKDU`） | BKDU 门控像素通路 & 对齐启动，无同步 |
+| `R_REG33_F_reg*` | `CHPI_UTC_CHK.v:27-31` / `SHORT_ENCODING_ERROR_CTRL.v:27` | `R_UTC/R_FRM_CHK_MODE` 和**活的 UTC 计数器**比 |
+| `R_REG34_F_reg*` | `ANCTL.v:130`（`LD_F_ECO`） | `R_HIZ_SEL` 组合门控 `LD_F_ECO` |
+| `R_REG40_F_reg*` | `LC_REG_MAPPING.v:331`（`HSR_ACTIVE`） | `R_DBC_VBK_ON` 是 `HSR_ACTIVE` 裸项 |
+| `R_REG41_F_reg*` | `CHPI_SD_CTRL.v:514-522`（`HSR_W_target`） | `R_DBC/R_DBC_WIDTH_OPT` → 活计数器目标 |
+| `R_REG46_F_reg*` | `CHPI_SD_CTRL.v:196,443`（`TP_WIDTH_CNT`） | `TP_F_AHEAD` 选活比较阈值 |
+| `R_REG47_F_reg*` | `CHPI_SD_CTRL.v:180-201` | `HIZ_MIN_SEL/VAL` 喂 TP 计数器无同步 |
+| `R_REG56_F_reg*` | `LONG_ENCODING_ERROR_CTRL.v:227-260` | UTC 阈值 vs 活计数器 |
+| `R_REG57_F_reg*` | 同 R_REG56_F 链 | UTC 阈值 |
+
+（上面 RTL 行号是我逐文件确认过的：`CHPI_SD_CTRL.v` 的 `PSR_LINE_CNT`(73)/`TP_WIDTH_CNT`(64-66)、`ANCTL.v` 的 `LD_F_ECO`(133)、`LC_REG_MAPPING.v` 的 `HSR_ACTIVE`(331)、`CHPI_UTC_CHK.v` 的 `UTC_FRM_CNT`(19) 都真实存在。）
+
+### 11.3 为什么不能"一刀切恢复 blanket 豁免"
+
+ch11 的完整复盘结论：**2026-09-22 收窄后新 DC 跑出 482 条违例，其中 106 条（22.0%）是"收窄前被旧 mc 豁免、收窄后失去豁免、按单周期报出来"的（narrowing_exposed）**，335 条是真实违例，41 条是"从未被任何约束覆盖"（G13 的 pattern 本身有缺陷，从未匹配到更差的 `DATA_POINT_LAT_D1_reg*`）。
+
+- 如果为了"消掉这 106 条"而**恢复 blanket 豁免**，等于把 B 类位的**真单周期检查也一起关掉**——这些位每拍都在用，真违例会被掩盖，芯片跑起来出功能错而 STA 看不出来。
+- 正确做法：**逐 bit 二选一**——确认"准静态"的留豁免，确认"裸 per-beat"的剔出。这正是 0922 做的。
+
+> **为什么 from-only 对 B 类危险（回到概念）**：from-only = "无边界放宽"。准静态位的"所有终点"确实都不急，所以无边界放宽安全；B 类位的"部分终点"是实时逻辑，无边界放宽就把这些实时终点也放过了。**from-only 的安全性取决于"起点是不是真的所有终点都准静态"，而不是起点本身。**
+
+**自检方法**：
+```csh
+# 确认 B 类位已从 cpuwr_reg_grp 剔除（dc.log 里应看到排除标记）
+grep -c "remove_from_collection\|R_REG03_L_\*\|R_REG40_F_reg\*" <dc_dir>/dc.log
+# 逐 bit 核对：对每个 R_REG*_reg* 位，确认它的下游消费者是不是 per-beat（grep RTL 里消费点）
+# 对 41 条 never_constrained：确认 G13 pattern 缺陷（见第 13 块 DATA_POINT_LAT_D1）
+```
+
+---
+
+## 12. set_max_delay vs multicycle：DPLC 静态配置位为什么用 max_delay
+
+> **一句话**：`set_multicycle_path` 是"把某个时钟关系放宽 N 个周期"（基于时钟），`set_max_delay` 是"直接给一条路径设一个**绝对**时间上限"（基于 ns）；对"没有明确第二周期语义、只要别超过 X ns"的 DPLC 静态配置位，用 `set_max_delay` 更直接、更不易误伤。
+
+### 12.1 本项目的 DPLC 静态配置位
+
+`HK1V11_digital_top.tcl:356-378`（DPLC Mode，分 dc/pt 两支）：
+
+```tcl
+if {$synopsys_program_name != "pt_shell"} {
+    ##DPLC Mode
+    set_max_delay  $DPLC_CLKP  -to  u_LOGIC_CENTER/CENTER1/DTCTL/U_DPLC_DATA_GEN/*
+    set_max_delay  $DPLC_CLKP  -thr u_LOGIC_CENTER/CENTER1/DTCTL/U_DPLC_DATA_GEN/* -to u_LOGIC_CENTER/CENTER1/DTCTL/data_out_tmp*
+    # DPLC multicycle 2
+    set_max_delay  [expr $DPLC_CLKP*2] -from u_LOGIC_CENTER/LINK_LOGIC/LINK_CONFIG_CTRL/LC_CPUWR/R_REG48_F_reg* -to u_LOGIC_CENTER/CENTER1/DTCTL/U_DPLC_DATA_GEN/*
+} else {
+    ##DPLC Mode
+    set_max_delay  $DPLC_CLKP -to  u_LOGIC_CENTER/CENTER1/DTCTL/U_DPLC_DATA_GEN/*/D*
+    set_max_delay  $DPLC_CLKP -thr u_LOGIC_CENTER/CENTER1/DTCTL/U_DPLC_DATA_GEN/* -to u_LOGIC_CENTER/CENTER1/DTCTL/data_out_tmp*/D*
+    # DPLC multicycle 2
+    set_max_delay  [expr $DPLC_CLKP*2] -from u_LOGIC_CENTER/LINK_LOGIC/LINK_CONFIG_CTRL/LC_CPUWR/R_REG48_F_reg*/CK -to u_LOGIC_CENTER/CENTER1/DTCTL/U_DPLC_DATA_GEN/*
+}
+```
+
+### 12.2 为什么用 max_delay 而不是 multicycle
+
+- `U_DPLC_DATA_GEN`（`CENTER1/DTCTL/`，`DPLC_DATA_GEN.v`）是 DPLC 显示模式的**逐拍像素流水**，时钟是 `PIX_CLK = DCLK_DATA`（`CENTER1.v:235`）。它需要的是一个**绝对延迟预算**（别超过 `$DPLC_CLKP` ns），而不是"放宽到第 N 个周期"的相对语义。
+- `R_REG48_F`（password address，`LC_CPUWR.v`）是**准静态配置**，它的延迟需求是"2 个 DPLC 周期"（`$DPLC_CLKP*2`）——这里其实"multicycle 2"更贴切，但团队选择用 `set_max_delay [expr $DPLC_CLKP*2]`，因为：
+  1. 它**不依赖**"这条路径的 launch/capture 时钟关系"（max_delay 对任意时钟组合都按绝对 ns 算），更稳。
+  2. 避免第 10 块的"`-to` 落成 pin 名被丢弃"风险——max_delay 这里 `-to` 用的是**层级**（`U_DPLC_DATA_GEN/*`），不是寄存器名。
+- **max_delay vs multicycle 的本质区别**：
+
+| 维度 | set_multicycle_path | set_max_delay |
+|------|---------------------|---------------|
+| 基准 | **时钟周期**（相对） | **绝对时间**（ns） |
+| 语义 | "放宽到第 N 个周期" | "这条路径别超过 X ns" |
+| 依赖时钟关系吗 | 是（需要明确 launch/capture） | 否 |
+| 适合场景 | 有明确多周期同步关系 | 只想要一个绝对上限 / 时钟关系不明确 |
+
+### 12.3 -to 层级端点：`-to X/*` 会罩住内部节点，`-to X/*/D*` 才指 D 脚（**-3.8 伪违例教训**）
+
+看上面 dc 分支和 pt 分支的差别——**这是本章最重要的"为什么不能那样设"之一**：
+
+- **dc 分支**（:358）：`set_max_delay $DPLC_CLKP -to .../U_DPLC_DATA_GEN/*`
+- **pt 分支**（:374）：`set_max_delay $DPLC_CLKP -to .../U_DPLC_DATA_GEN/*/D*`
+
+**为什么 pt 分支要加 `/D*`**：
+
+- `-to X/*` 里的 `*` 会匹配 X 下**所有 pin**，包括**内部组合节点、时钟脚、使能脚**——这些不是触发器的 D 数据脚，对它们施加 max_delay 会产生**伪违例**。
+- 真实教训：用 `-to X/*`（罩住内部节点）跑出过 **max_delay 伪违例 -3.8ns**——那些"违例"根本不是数据路径，是约束把内部节点当端点了。
+- `-to X/*/D*` 只匹配**每个寄存器的 D 脚**（`*` 匹配实例名，`D*` 匹配 D1/D2/D 等数据脚），把端点精确锁定在"真正的数据输入"上。
+
+> **为什么不能那样设**：图省事写 `-to X/*`，在 pt（netlist）阶段内部节点暴露出来，max_delay 会去检查"到某个内部组合节点"的路径，报出 -3.8 这种假违例，误导你去"修"一个不存在的电路问题。规则：**max_delay 的 `-to` 层级端点，尽量精确到 `/*/D*`，不要裸 `/*`。**
+
+**自检方法**：
+```csh
+# 确认 max_delay 的 -to 端点只落在 D 脚
+report_exceptions -type delay_max
+# 若看到 max_delay 违例且 endpoint 不是 *_D / *_D1 / *_D2，多半是 -to X/* 罩住了内部节点
+```
+
+---
+
+## 13. 工具命名与 pattern 匹配：reg[n] vs _reg_n_，pattern 必须 get_cells 验证
+
+> **一句话**：同一颗触发器，**DC elaborate 阶段叫 `reg[2]`（方括号），映射后网表叫 `_reg_2_`（下划线）**；跨工具 pattern 用 `reg*`（不带下划线）两种通吃，bit-exact 的精确名（`reg[2]`）只能放 `pt_shell` 分支，否则 DC 报 `CMD-036 Can't find objects`。**任何 pattern 都要用 `get_cells` 实测匹配，不靠肉眼。**
+
+### 13.1 两套命名（DC vs PT）
+
+- **DC elaborate 阶段**：RTL 的 `reg [3:0] X;` 展开成 `X_reg[0]`, `X_reg[1]`, ... `X_reg[3]`（**方括号**）。
+- **综合映射后 / PT netlist**：同一个触发器叫 `X_reg_0_`, `X_reg_1_`, ...（**下划线**）。
+
+### 13.2 本项目的 if/else 分支（真实例）
+
+`HK1V11_digital_top.tcl:477-481`（false_path）和 `:606-613`（G10 max_delay）都用了这个套路：
+
+```tcl
+# G10 max_delay: bit-exact post-route names -> pt_shell only (dc elaborated
+# names are reg[n] and error "Can't find objects"; dc stricter is safe).
+if {$synopsys_program_name == "pt_shell"} {
+    set_max_delay [expr $DPLC_CLKP*2] -from u_LOGIC_CENTER/LINK_LOGIC/LINK_CONFIG_CTRL/LC_CPUWR/R_REG06_F_reg_7* -to u_LOGIC_CENTER/CENTER1/DTCTL/U_DPLC_DATA_GEN/*
+    ...
+}
+```
+
+注释直接点明了坑：**G10 的 `R_REG06_F_reg_7*` 是 bit-exact 的精确名，只能放 pt_shell 分支**——如果放到 DC 分支，DC elaborate 阶段根本找不到 `R_REG06_F_reg_7_`（DC 里它叫 `R_REG06_F_reg[7]`），报 `CMD-036 Can't find objects`。而 DC 分支保持"更严"（不放宽）是**安全**的。
+
+### 13.3 三种 pattern 写法的选择
+
+| 写法 | DC 匹配 | PT 匹配 | 适用 |
+|------|---------|---------|------|
+| `R_REG06_F_reg*`（不带下划线、不带方括号） | ✅（匹配 `reg[7]`） | ✅（匹配 `reg_7_`） | **跨工具通吃**，默认首选 |
+| `R_REG06_F_reg_7_`（下划线精确） | ❌（DC 里没有下划线名） | ✅ | **只能放 pt_shell 分支** |
+| `R_REG06_F_reg[7]`（方括号精确） | ✅ | ❌（PT 里没有方括号名） | **只能放 dc_shell 分支** |
+
+> **心法**：想两边都稳 → 用 `reg*`（通配、不带下划线/方括号）。想精确到某一位 → 用 if/else 把 bit-exact 名分到对应分支，**绝不要**让 bit-exact 名出现在"另一个工具"的分支里。
+
+### 13.4 真实教训②：pattern 必须 get_cells 实测（DATA_POINT_LAT vs DATA_POINT_LAT_D1）
+
+`HK1V11_digital_top.tcl:322-328`（G13 注释）记录了另一个"肉眼写 pattern"的坑：
+
+```tcl
+# G13: DATA_POINT_LAT quasi-static waiver -- COMMENTED OUT 2026-09-22.
+# Audit correction 2026-09-22: the 20 near-margin paths in 0921V3
+# (+0.14~+0.44) actually start at DATA_POINT_LAT_D1_reg_* (LONG) /
+# SHORT-branch DATA_POINT_LAT -- they are single-cycle MET and NOT matched
+# by this waiver's pattern; paths actually covered by it were all >+0.5 in V3.
+```
+
+- G13 的 pattern 是 `.../LONG_ENCODING_ALIGN/DATA_POINT_LAT_reg*`。
+- 但真实"近边界"路径的起点是 **`DATA_POINT_LAT_D1_reg_*`**（`SHORT_ENCODING_ALIGN.v:50` / `CHPI_KCODE_ALIGN_L0.v:50` 里 `reg [19:0] DATA_POINT_LAT_D1;`）——多了一个 `_D1`。
+- `DATA_POINT_LAT_reg*` **永远匹配不到** `DATA_POINT_LAT_D1_reg_*`（前缀对不上）→ 这条 waiver 形同虚设，真正该管的路径没被覆盖。ch11 里那 **41 条 never_constrained** 就来自这里。
+
+> **为什么不能那样设**：肉眼觉得"我写了 DATA_POINT_LAT，应该能罩住它"，但工具做的是**前缀匹配**，`DATA_POINT_LAT_reg*` 只匹配"以 DATA_POINT_LAT_reg 开头"的名字，`DATA_POINT_LAT_D1_reg_*` 不匹配。**任何 pattern 写完，必须 `get_cells -quiet <pattern>` 实测返回的对象数 / 名字**，确认匹配到了你以为的那些对象，再进约束文件。
+
+**自检方法**：
+```csh
+# 在 dc_shell / pt_shell 里实测 pattern 匹配（两种工具各跑一次）
+get_cells u_LOGIC_CENTER/LINK_LOGIC/LC_CHPI_DECODE/LONG_ENCODING/LONG_ENCODING_ALIGN/DATA_POINT_LAT_reg*
+get_cells u_LOGIC_CENTER/LINK_LOGIC/LC_CHPI_DECODE/LONG_ENCODING/LONG_ENCODING_ALIGN/DATA_POINT_LAT*
+# 对比两者返回，确认"你以为的那个"真的在里面；若 D1 变体不在，说明 pattern 太窄
+# 跨工具命名检查：确认 bit-exact 名只在对应分支
+grep -n "synopsys_program_name" SYNTHESIS/common/ip_cons/HK1V11_digital_top.tcl
+```
+
+---
+
+## 14. 约束生效链：ip_cons → write_sdc → postcts.sdc → POSTPT，"改了没生效"找断点
+
+> **一句话**：`ip_cons` 只是约束的**祖先**，它要经过 pre-PT 的 `write_sdc` 物化、APR 的 CTS，才变成 POSTPT 真正吃的 `postcts.sdc`；**"改了 ip_cons 重跑 POSTPT 没生效"的第一反应不是改约束，而是沿这条链找断点**。
+
+### 14.1 生效链全景
+
+```
+ip_cons (HK1V11_digital_top.tcl)
+   │  ← 人写的是这个（含 kv_ 包装、if/else 分支、tcl 条件）
+   ▼
+pre-PT：write_sdc
+   │  ← 把 tcl 物化成标准 SDC：sdc_pr/HK1V11_digital_top.tcl
+   │  ← 这里发生：-to 对象固化成 pin 名、kv_ 展开、条件求值
+   ▼
+sdc_pr/（APR 输入）
+   │  ← APR 做 CTS（时钟树综合）
+   ▼
+postcts.sdc  ← POSTPT 真正 read 的是这个（不是 ip_cons！）
+   ▼
+POSTPT（PrimeTime signoff）
+```
+
+关键事实（ch06 口径，已确认）：
+
+- `pt_setup.tcl` 的 postPT **只 source `postcts.sdc`**（外加 clk 相关），**不直接读 ip_cons**。
+- `write_sdc` 在 pre-PT 阶段执行，产物带一个**内部时间戳**（`Created by PrimeTime write_sdc on <timestamp>`）。
+
+### 14.2 "改了没生效"怎么找断点
+
+真实场景：你改了 `ip_cons`（比如收窄了 `cpuwr_reg_grp`），重跑 POSTPT，数字一点没变。排查顺序：
+
+1. **POSTPT 吃的是哪代 SDC？** 看 `read_cons.log` 里的 `Created by PrimeTime write_sdc on <timestamp>`。
+   - 如果这个时间戳**早于**你改 ip_cons 的时间 → 你这轮 POSTPT 用的还是**旧代** `postcts.sdc`，你改的根本没进去。**这是最常见的"改了没生效"**（ch11 的"代际对齐"坑：PT 报告头 Date 比新 DC 早一天，说明是旧代基线）。
+2. **write_sdc 有没有把你的改动物化进去？** 对比 `sdc_pr/` 里的 SDC 和 ip_cons 的改动。`-to` 填了寄存器名的那条，可能在这里就被固化成 pin 名了（第 10 块）。
+3. **约束是不是被静默丢弃了？** 看 `read_cons.log` 的 `SEL-004`/`SEL-005` 计数——匹配不到的约束会被丢掉且**不中断流程**。
+4. **DC 吃到的是新版吗？** 看 `dc.log` 里的标记串（比如 `cpuwr_reg_grp` 出现次数、`COMMENTED OUT 2026-09-22` 签名、排除标记次数）。
+
+> ch11 的真实时间线（代际对齐的完整示范）：
+>
+> | 事件 | 时间 |
+> |------|------|
+> | 本地 ip_cons 0922 终版 | 09-22 14:18 |
+> | 新 DC 跑 | 09-22 14:37 |
+> | 服务器 POSTPT 报告 | **09-21 15:25**（旧代！） |
+>
+> 结论：PT 报告比新 DC 还早一天 → 这批 PT 数字是旧代基线，不能用来评估新约束。
+
+### 14.3 死约束：`-through .../R_` 字面名从 0 匹配，删了无影响
+
+`HK1V11_digital_top.tcl:332-337`：
+
+```tcl
+#---- -through blanket : REMOVED 2026-09-22 ------------------------------------
+# Was: set_multicycle_path 2/1 -start -through .../LC_CPUWR/R_
+# Dead constraint from day one: "R_" is a literal name with no wildcard and
+# matched 0 objects in every flow. write_sdc never emitted it (0 -through
+# entries in postcts.sdc and report_exceptions), and dc_shell errored
+# "Can't find objects" (CMD-036). Removal changes nothing functionally.
+```
+
+**机制**：`-through .../LC_CPUWR/R_` 里 `R_` 是**字面名、没有通配符**，网表里没有叫 `R_` 的对象 → 从第一天起就匹配 0 个对象 → `write_sdc` 从来没输出过它（`postcts.sdc` 和 `report_exceptions` 里 0 条 `-through`）→ DC 还报过 `CMD-036`。
+
+> **为什么不能那样设 / 怎么识别**：diff 里看到"删了一条约束"别慌——先用 `report_exceptions` / `write_sdc` 产物确认它**是否真的匹配过对象**。匹配 0 个对象的约束是**死约束**，删了没有任何功能影响（但留着会持续报 CMD-036、污染日志）。**识别方法：一条约束如果 `write_sdc` 后在 `postcts.sdc` 里一条都搜不到，它八成是死约束。**
+
+**自检方法**：
+```csh
+# 1) POSTPT 吃到哪代 SDC（最关键的一条）
+grep "Created by PrimeTime write_sdc on" <postpt_dir>/read_cons.log
+# 2) SEL-004/005 计数（被静默丢弃的约束）
+grep -c "SEL-004\|SEL-005" <postpt_dir>/read_cons.log
+# 3) 某条约束是否真的物化进 postcts.sdc
+grep -c "through\|<你关心的命令片段>" <aprt_dir>/postcts.sdc
+# 4) 三方时间对齐：ip_cons 改时间 vs dc.log 跑时间 vs read_cons.log 的 write_sdc 时间戳
+```
+
+---
+
+## 15. 其他约束命令 + CTS / skew / balance
+
+> **一句话**：本项目还用了 `set_dont_touch` / `set_max_transition` / `set_min_pulse_width`，而**没有** `set_case_analysis` / `set_disable_timing` / `set_clock_gating_check` / `set_bus_skew`（这些需求被别的方式覆盖了）；CTS（时钟树综合）里的 insertion delay / skew 是 hold 和"换频率必须重跑"的根源。
+
+### 15.1 本项目实际用到的"其他约束"
+
+```tcl
+# HK1V11_digital_top.tcl:465  —— 保护时钟/门控单元不被综合优化掉
+set_dont_touch  [get_cells  -hier  *u_gate*]
+
+# :470  —— 最大过渡时间（驱动强度下限）
+set_max_transition 1.2 [current_design]
+
+# :228-252  —— 最小脉冲宽度（防止时钟/数据脉冲太窄）
+set_min_pulse_width -low -high 2    [get_clocks NORMAL_CLK_LONG]
+...
+set_min_pulse_width -low -high 0.73 [get_clocks DCLK_DATA_LONG]
+...
+set_min_pulse_width -low -high 2    [get_clocks SD_CLK_INV_LONG]
+```
+
+| 命令 | 作用 | 本项目用法 |
+|------|------|-----------|
+| `set_dont_touch` | 指定单元不许被优化/替换 | 保护所有 `*u_gate*`（时钟门控/缓冲/反相单元），防止综合把它们优化掉导致时钟链断裂 |
+| `set_max_transition` | 限制最大上升/下降时间（=最小驱动强度） | 全局 1.2，保证长线的驱动能力 |
+| `set_min_pulse_width` | 最小高低脉冲宽度 | 对非整数分频/反相时钟（0.73ns 那族）和 /2 时钟（2ns）分别设，防脉冲被 CTS/布线压太窄 |
+
+### 15.2 为什么没有 case_analysis / disable_timing / clock_gating_check / bus_skew
+
+我通读了整份 ip_cons，确认**没有**这几个命令。原因（本项目怎么替代）：
+
+| 缺失命令 | 通常用途 | 本项目怎么替代 |
+|----------|----------|----------------|
+| `set_case_analysis` | 固定某信号值、砍掉一半逻辑 | 用 **`-add` 多时钟 + `set_clock_groups -logically_exclusive`**（第 4、5 块）：两条腿都定义、互斥组让工具别跨腿检查，等价于"不选那条腿" |
+| `set_disable_timing` | 直接关掉某段 pin 之间的弧 | 极少需要；用 `set_false_path` / clock_groups 覆盖 |
+| `set_clock_gating_check` | 自定义门控检查 | 用 **`set_min_pulse_width` + clock group** 覆盖门控时钟的窄脉冲；ch09 里提到 gating 违例靠分组解决，**没有**随手加 `set_disable_clock_gating_check`（需要后端同意） |
+| `set_bus_skew` | 多位总线各 bit 间 skew | 本项目数据通路以**同步器逐位**为主，未用 bus_skew |
+
+> **为什么不能那样设**：不要看到"门控违例"就 `set_disable_clock_gating_check`——它把**真检查**也关了（ch09 明确说"需要后端同意才加"）。同样，`set_case_analysis` 用错（把静态 strap 固定成只留一条腿）会让"另一条腿的约束"变死——本项目选择"两条腿都定义 + 互斥组"，更稳、更覆盖全。
+
+### 15.3 CTS / skew / balance：insertion delay、为什么换频率必须重跑
+
+**概念（小白版）**：
+
+- **时钟树综合（CTS）**：时钟从 root 到每个触发器的 CK 脚要走一段线，CTS 就是设计这棵树（插 buffer / inverter / 分配 skew）。DC 阶段 `ccopt_*` 生成的那串 buffer/inverter 链**就是 CTS 树的雏形**。
+- **insertion delay**：时钟沿从 root 到某个 CK 脚花的时间（绝对 ns）。
+- **skew**：**两个** CK 脚的 insertion delay 之差。`skew = t_capture_arrival − t_launch_arrival`。
+- **balance**：让相关触发器对的 skew 落在"安全区"（setup 要 capture 别太早、hold 要 capture 别太晚）。
+
+**为什么换频率必须重跑 CTS（关键）**：
+
+- skew 的**绝对值**（ns）是**布线/几何**决定的，换频率**不会自动变**。
+- 但 skew **占周期比例**会变：频率翻倍（周期减半）→ 同样的绝对 skew，**占周期比例翻倍** → 原来安全的 setup/hold 现在可能违例。
+- 反过来：频率降低 → 绝对 skew 不变，占周期比例变小 → 更安全，但**不能**因此省 CTS（CTS 决定绝对 skew 分布）。
+
+> 本项目相关：DPLC 静态配置位用 `set_max_delay`（第 12 块）部分原因就是它的延迟需求是**绝对 ns**（`$DPLC_CLKP`），而 DPLC 周期（6.35ns）和 RX 周期（3.81ns）不同，用 max_delay 能跨不同周期统一表达绝对预算。**换频率（改 `clk_period.tcl` 的 1.05 / 0.8）后，必须重跑 CTS，因为 skew 的绝对分布要按新周期重新 balance。**
+
+> **DC 的 `ccopt_inst` 链就是 CTS 树**：你在 DC 网表里看到一串 `ccopt_buf_...` / `ccopt_inv_...` 从时钟 root 排开，那不是"普通 buffer"，那是 CTS 插的时钟树单元。看 hold 违例时，launch/capture 的"时钟 arrival time"差异，本质就是这棵树的 skew。
+
+**自检方法**：
+```csh
+# 看某时钟的 skew 分布（postPT 才有真实 SPEF）
+report_clock_skew -late_arrivals [get_clocks RX_CLK]
+report_clock_skew -early_arrivals [get_clocks RX_CLK]
+# 换频率后：确认 clk_period.tcl 改了、且 CTS 重跑了（看 postcts.sdc 时间戳 + skew 报告）
+report_clock_timing -type both [get_clocks RX_CLK]
+# min_pulse_width 是否生效：看 DCLK_DATA 那族时钟的 MPW 报告
+report_min_pulse_width [get_clocks DCLK_DATA_LONG]
+```
+
+---
+
+## 16. 心法（10 条可操作）
+
+把整章压成 10 条，贴工位上：
+
+1. **先画时钟地图再写约束**：搞清楚有哪些主钟、哪些 generated clock、哪些是同一物理线（`SP` 编码），再谈约束；看不懂网表就写不对 `-from`/`-to`。
+2. **setup 管"数据别迟到"，hold 管"数据别早窜"**：方向相反，hold 不受"工艺变慢"影响，换频率救不了 hold。
+3. **周期从数据率推**：`data_rate(G)=RX_CLK(MHz)×20/1000`，20 是 RX 位宽（不是颜色深度 24）；`clk_period.tcl` 的 1.05 是 5% STA 裕量，**不是**物理因子，别混。
+4. **generated clock 表达"派生关系"**：分频用 `-divide_by`，反相用 `-invert`，非整数分频用 `-edges {…}`，同一 pin 多时钟用 `-add`；漏定义的腿不会消失，会让下游"没有 capture 时钟"。
+5. **同一物理时钟的多副马甲要 `set_clock_groups -logically_exclusive`**：漏列 → pre-PT 报 `SEL-004 No clock objects`、跨域假违例静默出现。
+6. **false_path 只解决亚稳态检查，不解决短脉冲丢失 / 多 bit 撕裂**：安全靠 2FF / 握手 / 格雷码，不靠约束。
+7. **新增时钟必须同步进所有 `get_clock [list …]` 清单**：否则 hold / gating 假违例找上门（I2C_CLK_INV、CDR_2X 都踩过）。
+8. **multicycle 的 setup/hold 必须错开 1**（2 setup + 1 hold）；`-to` 永远用**时钟对象**（`-to RX_CLK`），`-to 寄存器名` 会被 `write_sdc` 落成 pin 名、在 APR 网表对不上、被 SEL-004 静默丢弃。
+9. **from-only（只 `-from` 不 `-to`）是"无边界放宽"**：对准静态位安全，对"裸 per-beat 消费者位"会掩盖真检查——0922 收窄就是逐 bit 把这类剔出去，**不要**一刀切恢复 blanket。
+10. **改约束后"没生效"先找生效链断点**：POSTPT 只吃 `postcts.sdc`（ip_cons 是祖先）；查 `read_cons.log` 的 `write_sdc 时间戳` + `SEL-004/005` 计数 + `report_exceptions` applied 标志 + `report_timing` capture 边沿号；任何 pattern 都要 `get_cells` 实测匹配（`DATA_POINT_LAT_reg*` 罩不住 `DATA_POINT_LAT_D1_reg_*`）；`-to X/*` 罩内部节点，用 `-to X/*/D*`；bit-exact 名（`reg[2]`/`_reg_2_`）只放对应工具分支。
+
+---
+
+## 附：本章引用的真实文件清单（均可在工作区打开核对）
+
+| 文件 | 用途 |
+|------|------|
+| `SYNTHESIS/common/ip_cons/HK1V11_digital_top.tcl` | 约束主文件（615 行，本块全部 tcl 片段来源） |
+| `SYNTHESIS/common/tcl_dir/common/clk_period.tcl` | 时钟周期（RX_CLKP/DPLC_CLKP，1.05 与 0.8 MARGIN） |
+| `HDL/TOP/HK1V11.v` / `HK1V11_digital_top.v` | 顶层端口、`dout_lane[19:0]`、`u_LOGIC_CENTER` 例化 |
+| `HDL/HK1V11_digital_top/seperated_code/CLKGEN.v` | 时钟树（mux/分频/反相，DPLC 链） |
+| `HDL/.../LINK_LOGIC.v` | `INDATA[19:0]`、`PIX_DATA[23:0]`、`K1_FIND_LATCH` |
+| `HDL/.../DTCTL.v` | `PANEL_DPLC_CLK_SEL`、`FYSAL/FYSBL/FYSAR/FYSBR`（SD pad） |
+| `HDL/.../BUFFER_I.v` | `INDATA_SYNC_D1/D2/D3`（20-bit 同步链）、`SP_buf` |
+| `HDL/.../LC_CPUWR.v` | `R_REG*` 配置组、`K1_FIND_LATCH`、`chksum_mode` |
+| `HDL/.../LC_REG_MAPPING.v` | `BKDU_SYNC`/`CS_SYNC`/`R_PWRCP_COP`/`R_PWRCN_COP`/`HSR_ACTIVE` |
+| `HDL/.../CHPI_SD_CTRL.v` | `LD_F_SYNC`/`LD_R_SYNC`/`LD_W_SYNC_pre`/`PSR_LINE_CNT`/`TP_WIDTH_CNT` |
+| `HDL/.../ANCTL.v` | `POL1~4_SYNC`/`L_CNT`/`F_CNT`/`VS_DLY`/`LD_F_ECO` |
+| `HDL/.../LONG_ENCODING_ALIGN.v` / `SHORT_ENCODING_ALIGN.v` | `DATA_POINT_LAT(_D1)`/`BK_ST`/`BIT_ALIGN_ST`/`K1_FIND_LATCH` |
+| `HDL/.../SMT_CS.v` | `FLAG_1H_H2L`/`FLAG_1H_L2H` |
+| `HDL/.../bcc_ctrl/boe_rx_switch_to_bus8.v` | `bcc_rx_reply_prdata` |
+| `HDL/.../bcc_ctrl/AUTO_EQ_TRAINIG_JUDGE.v` | `TRAINING_RESULT` |
+
+<!-- ymzhu 2026-09-24 15:59 -->
+  </script>
+  <script src="./js/site.js"></script>
+</body>
+</html>
+<!-- ymzhu 2026-09-24 16:05 -->
