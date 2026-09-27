@@ -19,11 +19,11 @@ aside.sidenav::-webkit-scrollbar{width:4px}aside.sidenav::-webkit-scrollbar-thum
 .side-foot{padding:16px 20px 0;color:#8b93a7;font-size:10px;font-family:"IBM Plex Mono",monospace;border-top:1px solid rgba(240,161,55,.18);margin-top:16px;line-height:1.6}
 /* ============ 主区 ============ */
 .layout{margin-left:var(--side-w)}
-main{max-width:1420px;margin:0 auto;padding:34px 32px 60px}
+main{max-width:min(96vw,1840px);margin:0 auto;padding:34px 32px 60px}
 .hometop{background:linear-gradient(135deg,var(--ink),var(--ink2));color:#e9e5d9;padding:54px 28px 78px;position:relative;overflow:hidden}
 .hometop::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent 0 55px,rgba(240,161,55,.05) 55px 56px),repeating-linear-gradient(90deg,transparent 0 55px,rgba(240,161,55,.05) 55px 56px)}
 .hometop::after{content:"";position:absolute;width:480px;height:480px;right:-140px;top:-180px;background:radial-gradient(circle,rgba(240,161,55,.18),transparent 65%)}
-.hometop .inner{max-width:1420px;margin:0 auto;position:relative;z-index:1}
+.hometop .inner{max-width:min(96vw,1840px);margin:0 auto;position:relative;z-index:1}
 .kicker{font-family:"IBM Plex Mono",monospace;color:#f0a137;letter-spacing:.2em;font-size:12px;text-transform:uppercase;margin-bottom:14px}
 .kicker::before{content:"—— "}
 h1.display{font-family:"Noto Serif SC",serif;font-weight:900;font-size:clamp(30px,5vw,50px);line-height:1.25;margin:0 0 14px}
@@ -33,7 +33,7 @@ h1.display .thin{color:#f0a137}
 .chips{margin-top:16px}
 .chip{display:inline-block;font-family:"IBM Plex Mono",monospace;font-size:11px;color:#f0a137;border:1px solid rgba(240,161,55,.45);background:rgba(240,161,55,.08);border-radius:99px;padding:3px 12px;margin:0 8px 8px 0;letter-spacing:.05em}
 /* 统计条 */
-.stats{max-width:1420px;margin:-54px auto 0;padding:0 28px;display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;position:relative;z-index:2}
+.stats{max-width:min(96vw,1840px);margin:-54px auto 0;padding:0 28px;display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;position:relative;z-index:2}
 .stat{background:var(--surface);border-radius:12px;box-shadow:var(--shadow);padding:16px 18px;border-left:4px solid var(--accent)}
 .stat .num{font-family:"IBM Plex Mono",monospace;font-size:21px;font-weight:600}
 .stat .num.pos{color:var(--pos)}.stat .num.neg{color:var(--neg)}
@@ -75,7 +75,7 @@ td.num,th.num{text-align:right;font-family:"IBM Plex Mono",monospace}
 .crumb a{color:var(--accent)}
 .crumb b{color:var(--text)}
 /* 文章 */
-article{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:30px 34px;box-shadow:var(--shadow);margin-bottom:24px}
+article{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:26px 30px;box-shadow:var(--shadow);margin-bottom:24px;overflow-x:auto}
 article h1{font-family:"Noto Serif SC",serif;font-size:25px;border-bottom:2px solid var(--line);padding-bottom:10px}
 article h2{font-family:"Noto Serif SC",serif;font-size:20px;margin-top:32px;border-left:4px solid var(--accent);padding-left:10px}
 article h3{font-family:"Noto Serif SC",serif;font-size:17px;margin-top:22px}
