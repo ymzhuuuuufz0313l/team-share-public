@@ -19,11 +19,11 @@ aside.sidenav::-webkit-scrollbar{width:4px}aside.sidenav::-webkit-scrollbar-thum
 .side-foot{padding:16px 20px 0;color:#8b93a7;font-size:10px;font-family:"IBM Plex Mono",monospace;border-top:1px solid rgba(240,161,55,.18);margin-top:16px;line-height:1.6}
 /* ============ 主区 ============ */
 .layout{margin-left:var(--side-w)}
-main{max-width:1000px;margin:0 auto;padding:34px 28px 60px}
+main{max-width:1420px;margin:0 auto;padding:34px 32px 60px}
 .hometop{background:linear-gradient(135deg,var(--ink),var(--ink2));color:#e9e5d9;padding:54px 28px 78px;position:relative;overflow:hidden}
 .hometop::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent 0 55px,rgba(240,161,55,.05) 55px 56px),repeating-linear-gradient(90deg,transparent 0 55px,rgba(240,161,55,.05) 55px 56px)}
 .hometop::after{content:"";position:absolute;width:480px;height:480px;right:-140px;top:-180px;background:radial-gradient(circle,rgba(240,161,55,.18),transparent 65%)}
-.hometop .inner{max-width:1000px;margin:0 auto;position:relative;z-index:1}
+.hometop .inner{max-width:1420px;margin:0 auto;position:relative;z-index:1}
 .kicker{font-family:"IBM Plex Mono",monospace;color:#f0a137;letter-spacing:.2em;font-size:12px;text-transform:uppercase;margin-bottom:14px}
 .kicker::before{content:"—— "}
 h1.display{font-family:"Noto Serif SC",serif;font-weight:900;font-size:clamp(30px,5vw,50px);line-height:1.25;margin:0 0 14px}
@@ -33,7 +33,7 @@ h1.display .thin{color:#f0a137}
 .chips{margin-top:16px}
 .chip{display:inline-block;font-family:"IBM Plex Mono",monospace;font-size:11px;color:#f0a137;border:1px solid rgba(240,161,55,.45);background:rgba(240,161,55,.08);border-radius:99px;padding:3px 12px;margin:0 8px 8px 0;letter-spacing:.05em}
 /* 统计条 */
-.stats{max-width:1000px;margin:-54px auto 0;padding:0 28px;display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;position:relative;z-index:2}
+.stats{max-width:1420px;margin:-54px auto 0;padding:0 28px;display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;position:relative;z-index:2}
 .stat{background:var(--surface);border-radius:12px;box-shadow:var(--shadow);padding:16px 18px;border-left:4px solid var(--accent)}
 .stat .num{font-family:"IBM Plex Mono",monospace;font-size:21px;font-weight:600}
 .stat .num.pos{color:var(--pos)}.stat .num.neg{color:var(--neg)}
@@ -59,7 +59,7 @@ h1.page{font-family:"Noto Serif SC",serif;font-weight:900;font-size:30px;margin:
 .list .d{display:block;font-size:13px;color:var(--muted);font-weight:400;margin-top:2px}
 /* 表格 */
 .tblwrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow)}
-table.data{border-collapse:collapse;width:100%;font-size:13px}
+table.data{border-collapse:collapse;width:100%;font-size:13.5px}
 table.data th{background:var(--ink);color:#e9e5d9;font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.05em;padding:10px 12px;position:sticky;top:0;cursor:pointer;white-space:nowrap;user-select:none}
 table.data th:hover{color:#f0a137}
 table.data th.sa::after{content:" ▲";color:#f0a137}
@@ -98,7 +98,7 @@ footer{border-top:1px solid var(--line);color:var(--muted);font-size:11.5px;text
   .sgroup a.active{border-bottom-color:#f0a137;background:none;color:#f0a137}
   .layout{margin-left:0}
 }
-</style></head><body><aside class="sidenav"><div class="side-brand"><div class="b1">TRADING·JOURNAL</div><div class="b2">五步法 × 资金流 × 纪律</div></div><div class="sgroup"><div class="gl">导航</div><a href="index.html">⌂ 总览</a><a href="gegu.html">★ 全部个股</a></div><div class="sgroup"><div class="gl">台账·规则</div><a href="规律手册.html">规律手册 v0.4</a><a href="工作流程.html">工作流程</a><a href="持仓逻辑档案.html">持仓逻辑档案</a><a href="主力资金CT-函数解读.html">主力资金CT解读</a><a href="冰封黄白线-函数解读.html">冰封黄白线解读</a></div><div class="sgroup"><div class="gl">台账·数据</div><a href="股票汇总.html">股票汇总</a><a href="持仓快照.html">持仓快照</a><a href="成交流水.html">成交流水</a><a href="已清仓全历史.html">已清仓 481 笔</a><a href="成交流水全历史.html">流水 3533 条</a><a href="账户总览.html">账户全史</a><a href="收益追踪.html">收益追踪</a><a href="研报候选池.html">研报候选池</a></div><div class="sgroup"><div class="gl">归档</div><a href="panzhong.html">盘中判定</a><a href="panhou.html">盘后复盘</a><a href="yanbao.html">研报审稿</a><a href="taizhang.html">交易台账</a></div><div class="side-foot">DECISION SUPPORT<br>NOT INVESTMENT ADVICE<br>SINCE 2020-01</div></aside><div class="layout"><main><p class="crumb"><a href="index.html">总览</a> / 交易台账 / <b>主力资金CT-函数解读</b></p><article><h1>主力资金CT · 函数解读与设计思想</h1>
+</style></head><body><aside class="sidenav"><div class="side-brand"><div class="b1">TRADING·JOURNAL</div><div class="b2">五步法 × 资金流 × 纪律</div></div><div class="sgroup"><div class="gl">导航</div><a href="index.html">⌂ 总览</a><a href="gegu.html">★ 全部个股</a></div><div class="sgroup"><div class="gl">台账·规则</div><a href="luojiku.html">股票逻辑库</a><a href="规律手册.html">规律手册 v0.4</a><a href="工作流程.html">工作流程</a><a href="持仓逻辑档案.html">持仓逻辑档案</a><a href="主力资金CT-函数解读.html">主力资金CT解读</a><a href="冰封黄白线-函数解读.html">冰封黄白线解读</a></div><div class="sgroup"><div class="gl">台账·数据</div><a href="股票汇总.html">股票汇总</a><a href="持仓快照.html">持仓快照</a><a href="成交流水.html">成交流水</a><a href="已清仓全历史.html">已清仓 481 笔</a><a href="成交流水全历史.html">流水 3533 条</a><a href="账户总览.html">账户全史</a><a href="收益追踪.html">收益追踪</a><a href="研报候选池.html">研报候选池</a></div><div class="sgroup"><div class="gl">归档</div><a href="panzhong.html">盘中判定</a><a href="panhou.html">盘后复盘</a><a href="yanbao.html">研报审稿</a><a href="taizhang.html">交易台账</a></div><div class="side-foot">DECISION SUPPORT<br>NOT INVESTMENT ADVICE<br>SINCE 2020-01</div></aside><div class="layout"><main><p class="crumb"><a href="index.html">总览</a> / 交易台账 / <b>主力资金CT-函数解读</b></p><article><h1>主力资金CT · 函数解读与设计思想</h1>
 <blockquote>
 <p>用户的通达信 L2 资金流指标，五步法中 ymz（主力资金/主动买盘/动向比/主力占比）与 ZJLX（近5日/近10日流向）两行的数据来源。归档于 2026-09-27。</p>
 </blockquote>
