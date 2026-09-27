@@ -99,6 +99,25 @@ footer{border-top:1px solid var(--line);color:var(--muted);font-size:11.5px;text
   .sgroup a.active{border-bottom-color:#f0a137;background:none;color:#f0a137}
   .layout{margin-left:0}
 }
+</style><style>
+/* 股票弹窗 */
+.stk{cursor:pointer;border-bottom:1px dashed var(--accent)}
+.stk:hover{color:var(--accent);background:var(--accent-soft)}
+.smodal{position:fixed;inset:0;background:rgba(13,21,38,.66);display:none;align-items:flex-start;justify-content:center;z-index:300;padding:36px 16px;overflow-y:auto}
+.smodal.open{display:flex}
+.spanel{background:var(--surface);width:100%;max-width:760px;border-radius:14px;border-top:5px solid var(--accent);box-shadow:0 24px 64px rgba(0,0,0,.4);padding:22px 28px;position:relative}
+.smodal-x{position:absolute;top:8px;right:14px;background:none;border:none;font-size:24px;color:var(--muted);cursor:pointer}
+.smodal-x:hover{color:var(--neg)}
+.scode{font-family:"IBM Plex Mono",monospace;color:var(--accent);font-size:12px;letter-spacing:.15em}
+.sname{font-family:"Noto Serif SC",serif;font-weight:900;font-size:26px;margin:2px 0 8px}
+.schips{margin:4px 0 10px}
+.schips .chip{display:inline-block;font-family:"IBM Plex Mono",monospace;font-size:11px;background:var(--chip);color:var(--accent-strong);border-radius:99px;padding:2px 10px;margin:0 8px 6px 0}
+.ssec{margin:14px 0 4px;font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--accent);letter-spacing:.12em}
+.sbody{font-size:14px}
+.sbody p{margin:6px 0}
+.sbody ul{margin:6px 0;padding-left:20px}
+.sbody li{margin:3px 0}
+.sfoot{margin-top:16px;color:var(--muted);font-size:11px;font-family:"IBM Plex Mono",monospace;border-top:1px dashed var(--line);padding-top:8px}
 </style></head><body><aside class="sidenav"><div class="side-brand"><div class="b1">TRADING·JOURNAL</div><div class="b2">五步法 × 资金流 × 纪律</div></div><div class="sgroup"><div class="gl">导航</div><a href="index.html">⌂ 总览</a><a href="gegu.html">★ 全部个股</a></div><div class="sgroup"><div class="gl">台账·规则</div><a href="luojiku.html">股票逻辑库</a><a href="规律手册.html">规律手册 v0.4</a><a href="工作流程.html">工作流程</a><a href="持仓逻辑档案.html">持仓逻辑档案</a><a href="主力资金CT-函数解读.html">主力资金CT解读</a><a href="冰封黄白线-函数解读.html">冰封黄白线解读</a></div><div class="sgroup"><div class="gl">台账·数据</div><a href="股票汇总.html">股票汇总</a><a href="持仓快照.html">持仓快照</a><a href="成交流水.html">成交流水</a><a href="已清仓全历史.html">已清仓 481 笔</a><a href="成交流水全历史.html">流水 3533 条</a><a href="账户总览.html">账户全史</a><a href="收益追踪.html">收益追踪</a><a href="研报候选池.html">研报候选池</a></div><div class="sgroup"><div class="gl">归档</div><a href="panzhong.html">盘中判定</a><a href="panhou.html">盘后复盘</a><a href="yanbao.html">研报审稿</a><a href="taizhang.html">交易台账</a></div><div class="side-foot">DECISION SUPPORT<br>NOT INVESTMENT ADVICE<br>SINCE 2020-01</div></aside><div class="layout"><main><p class="crumb"><a href="index.html">总览</a> / 盘中判定 / <b>判断记录</b></p><article><h1>五步判定记录</h1>
 <blockquote>
 <p>盘中判定逐条追加；每个判定在之后的晚复盘中回填"验证"结果（对/错/待定 + 后续走势简述）。
@@ -128,7 +147,7 @@ footer{border-top:1px solid var(--line);color:var(--muted);font-size:11.5px;text
 </tr>
 <tr>
 <td>历史案例回填进度</td>
-<td>1/9（永鼎：弱兑现；斯迪克已验证）</td>
+<td>1/9（永鼎：弱兑现；<span class="stk" data-code="300806">斯迪克</span>已验证）</td>
 </tr>
 <tr>
 <td>规律手册升级条件</td>
@@ -154,31 +173,31 @@ footer{border-top:1px solid var(--line);color:var(--muted);font-size:11.5px;text
 <td>已回填：8/24建仓→9/2清仓 +0.75%（跑输大盘0.18pct）；信号弱兑现，快出保住本金</td>
 </tr>
 <tr>
-<td>斯迪克</td>
+<td><span class="stk" data-code="300806">斯迪克</span></td>
 <td>⚠️→✅ 持有</td>
 <td>早期信号→箱体放量突破确认</td>
 <td>已验证：143天 +73%</td>
 </tr>
 <tr>
-<td>博杰股份</td>
+<td><span class="stk" data-code="002975">博杰股份</span></td>
 <td>❌ 回避</td>
 <td>高位+假脉冲+双负</td>
 <td>待回填</td>
 </tr>
 <tr>
-<td>兴森科技 9/7</td>
+<td><span class="stk" data-code="002436">兴森科技</span> 9/7</td>
 <td>⚠️ 小仓试</td>
 <td>低位首板强信号但累计大负，等确认</td>
 <td>待回填</td>
 </tr>
 <tr>
-<td>兴森科技 9/8</td>
+<td><span class="stk" data-code="002436">兴森科技</span> 9/8</td>
 <td>⚠️ 减半仓</td>
 <td>巨量分歧、主买加速流出、主力占比骤降</td>
 <td>待回填</td>
 </tr>
 <tr>
-<td>兴森科技 9/9</td>
+<td><span class="stk" data-code="002436">兴森科技</span> 9/9</td>
 <td>❌ 回避</td>
 <td>双青+撞60日线</td>
 <td>待回填</td>
@@ -204,7 +223,7 @@ footer{border-top:1px solid var(--line);color:var(--muted);font-size:11.5px;text
 </tbody>
 </table>
 <h2>新判定（2026-09-27 建档后）</h2>
-<h3>【五步判定】博杰股份 002975 · 2026-09-24 收盘数据（示例判定，20:24 截图）</h3>
+<h3>【五步判定】<span class="stk" data-code="002975">博杰股份</span> <span class="stk" data-code="002975">002975</span> · 2026-09-24 收盘数据（示例判定，20:24 截图）</h3>
 <p>① 位置:  不过（临界） —— 自 69.34 低点反弹约 +60%，逼近"大涨50%+"否决线；处反弹后箱体上沿，非低位、未突破
 ② 共振:  不过 —— ZJLX 主买净额 -5526.59（青）vs ymz 主力资金 +4150.97（红），一红一青打架 → 当天放弃（一票否决）
 ③ 成色:  不过 —— 黄/红 = 2134.66/4150.97 ≈ 0.51（勉强过线）；动向比 0.75 &lt; 1 → 一票否决；主力占比 2.27（正但不高）
@@ -228,7 +247,7 @@ footer{border-top:1px solid var(--line);color:var(--muted);font-size:11.5px;text
 支撑: 支撑1=…；支撑2=…；硬止损=…
 矛盾与风险: …
 验证: （次日复盘回填：对/错/待定 + 走势简述）
-</code></pre></article></main></div><footer>BUILT 2026-09-27 · 数据以私有仓库为准 · 决策辅助非投资建议</footer>
+</code></pre></article></main></div><footer>BUILT 2026-09-28 · 数据以私有仓库为准 · 决策辅助非投资建议</footer>
 <script>
 document.querySelectorAll('table.data').forEach(function(tb){
   var head = tb.querySelector('thead');
@@ -259,5 +278,59 @@ document.querySelectorAll('.search').forEach(function(inp){
     });
   });
 });
+</script>
+
+<div id="smodal" class="smodal"><div class="spanel">
+<button class="smodal-x" title="关闭">×</button>
+<div class="scode" id="sm-code"></div>
+<div class="sname" id="sm-name"></div>
+<div class="schips"><span class="chip" id="sm-status"></span></div>
+<div class="schips" id="sm-chips"></div>
+<div id="sm-body"></div>
+<div class="sfoot">按 Esc 或点击空白处关闭 · 决策辅助非投资建议</div>
+</div></div>
+<script src="assets/stocks.js"></script>
+<script>
+(function(){
+  var close=function(){var m=document.getElementById('smodal');if(m)m.classList.remove('open')};
+  document.addEventListener('click',function(e){
+    var el=e.target.closest?e.target.closest('.stk'):null;
+    if(el){var d=(window.STOCK_DB||{})[el.getAttribute('data-code')];if(!d)return;
+      document.getElementById('sm-code').textContent=d.code;
+      document.getElementById('sm-name').textContent=d.name;
+      var st=document.getElementById('sm-status');st.textContent=d.status||'';
+      st.style.borderColor = d.status.indexOf('持仓')>-1 ? 'var(--pos)' : 'var(--line)';
+      document.getElementById('sm-chips').innerHTML=[d.board,d.ind].filter(Boolean).map(function(x){return '<span class="chip">'+x+'</span>'}).join('');
+      var b=document.getElementById('sm-body');b.innerHTML='';
+      (d.sections||[]).forEach(function(s){
+        var h=document.createElement('div');
+        h.innerHTML='<div class="ssec">'+s[0]+'</div><div class="sbody">'+s[1]+'</div>';
+        b.appendChild(h);
+      });
+      var m=document.getElementById('smodal');m.classList.add('open');m.scrollTop=0;
+      return;
+    }
+    if(e.target.id==='smodal'||e.target.classList.contains('smodal-x'))close();
+  });
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')close()});
+})();
+</script>
+
+<script>
+(function(){var close=function(){var m=document.getElementById('smodal');if(m)m.classList.remove('open')};
+document.addEventListener('click',function(e){
+  var el=e.target.closest?e.target.closest('.stk'):null;
+  if(el){var d=(window.STOCK_DB||{})[el.getAttribute('data-code')];if(!d)return;
+    document.getElementById('sm-code').textContent=d.code;
+    document.getElementById('sm-name').textContent=d.name;
+    var st=document.getElementById('sm-status');st.textContent=d.status||'';
+    st.style.borderColor=d.status.indexOf('持仓')>-1?'var(--pos)':'var(--line)';
+    document.getElementById('sm-chips').innerHTML=[d.board,d.ind].filter(Boolean).map(function(x){return '<span class="chip">'+x+'</span>'}).join('');
+    var b=document.getElementById('sm-body');b.innerHTML='';
+    (d.sections||[]).forEach(function(s){var h=document.createElement('div');h.innerHTML='<div class="ssec">'+s[0]+'</div><div class="sbody">'+s[1]+'</div>';b.appendChild(h);});
+    var m=document.getElementById('smodal');m.classList.add('open');m.scrollTop=0;return;}
+  if(e.target.id==='smodal'||e.target.classList&&e.target.classList.contains('smodal-x'))close();
+});
+document.addEventListener('keydown',function(e){if(e.key==='Escape')close()});})();
 </script>
 </body></html>
