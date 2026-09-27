@@ -159,6 +159,36 @@ table.data tbody tr:has(.stk){cursor:pointer}
 .tmini th{background:var(--chip);color:var(--accent-strong);padding:4px 8px;text-align:left}
 .tmini td{border-bottom:1px solid var(--line);padding:4px 8px}
 .pos{color:var(--pos);font-weight:600}.neg{color:var(--neg);font-weight:600}
+.starget{background:var(--accent-soft);border:1px dashed var(--accent);border-radius:10px;padding:9px 14px;margin:10px 0 4px;font-size:13px;line-height:1.7;color:var(--accent-strong)}
+.sfoot{margin-top:16px;color:var(--muted);font-size:11px;font-family:"IBM Plex Mono",monospace;border-top:1px dashed var(--line);padding-top:8px}
+/* 手机端弹窗：限高滚动 + 收窄留白（后注入，天然压过基础 .spanel 规则） */
+@media(max-width:700px){.spanel{max-height:92vh;overflow-y:auto;padding:18px}.sname{font-size:21px}}
+</style><style>
+/* 股票弹窗 */
+.stk{cursor:pointer;border-bottom:1px solid var(--accent)}
+.stk-h{cursor:pointer;border-bottom:1px solid var(--text)}
+.stk-h:hover{color:var(--accent);background:var(--accent-soft)}
+.stk:hover{color:var(--accent);background:var(--accent-soft)}
+table.data tbody tr:has(.stk){cursor:pointer}
+.smodal{position:fixed;inset:0;background:rgba(13,21,38,.66);display:none;align-items:flex-start;justify-content:center;z-index:300;padding:36px 16px;overflow-y:auto}
+.smodal.open{display:flex}
+.spanel{background:var(--surface);width:100%;max-width:780px;border-radius:14px;border-top:5px solid var(--accent);box-shadow:0 24px 64px rgba(0,0,0,.4);padding:22px 28px;position:relative}
+.smodal-x{position:absolute;top:8px;right:14px;background:none;border:none;font-size:24px;color:var(--muted);cursor:pointer}
+.smodal-x:hover{color:var(--neg)}
+.scode{font-family:"IBM Plex Mono",monospace;color:var(--accent);font-size:12px;letter-spacing:.15em}
+.sname{font-family:"Noto Serif SC",serif;font-weight:900;font-size:26px;margin:2px 0 8px}
+.schips{margin:4px 0 10px}
+.schips .chip{display:inline-block;font-family:"IBM Plex Mono",monospace;font-size:11px;background:var(--chip);color:var(--accent-strong);border-radius:99px;padding:2px 10px;margin:0 8px 6px 0}
+.ssec{margin:14px 0 4px;font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--accent);letter-spacing:.12em}
+.sbody{font-size:14px}
+.sbody p{margin:6px 0}
+.sbody ul{margin:6px 0;padding-left:20px}
+.sbody li{margin:3px 0}
+.tmini{width:100%;border-collapse:collapse;font-size:12px;font-family:"IBM Plex Mono",monospace}
+.tmini th{background:var(--chip);color:var(--accent-strong);padding:4px 8px;text-align:left}
+.tmini td{border-bottom:1px solid var(--line);padding:4px 8px}
+.pos{color:var(--pos);font-weight:600}.neg{color:var(--neg);font-weight:600}
+.starget{background:var(--accent-soft);border:1px dashed var(--accent);border-radius:10px;padding:9px 14px;margin:10px 0 4px;font-size:13px;line-height:1.7;color:var(--accent-strong)}
 .sfoot{margin-top:16px;color:var(--muted);font-size:11px;font-family:"IBM Plex Mono",monospace;border-top:1px dashed var(--line);padding-top:8px}
 /* 手机端弹窗：限高滚动 + 收窄留白（后注入，天然压过基础 .spanel 规则） */
 @media(max-width:700px){.spanel{max-height:92vh;overflow-y:auto;padding:18px}.sname{font-size:21px}}
@@ -169,9 +199,9 @@ table.data tbody tr:has(.stk){cursor:pointer}
 </blockquote>
 <h2>一、盈亏归因</h2>
 <ul>
-<li>当日（9/24）：-22,873。拖累前二：<span class="stk" data-code="688627">精智达</span> -12,448、<span class="stk" data-code="688037">芯源微</span> -2,795。当日净换仓（卖<span class="stk" data-code="688037">芯源微</span>/<span class="stk" data-code="688627">精智达</span>/臻宝，买安集/正帆/和林/KC），卖出端与买入端同板块。</li>
+<li>当日（9/24）：-22,873。拖累前二：<span class="stk" data-code="688627"><span class="stk" data-code="688627">精智达</span></span> -12,448、<span class="stk" data-code="688037"><span class="stk" data-code="688037">芯源微</span></span> -2,795。当日净换仓（卖<span class="stk" data-code="688037"><span class="stk" data-code="688037">芯源微</span></span>/<span class="stk" data-code="688627"><span class="stk" data-code="688627">精智达</span></span>/臻宝，买安集/正帆/和林/KC），卖出端与买入端同板块。</li>
 <li>9月已清仓 24 笔合计 <strong>+12,471</strong>（已实现）。</li>
-<li>当前持仓剔除<span class="stk" data-code="300806">斯迪克</span>后，其余 9 只浮亏合计 <strong>-44,941</strong>（+88,161 − <span class="stk" data-code="300806">斯迪克</span> +133,102）——做出来的利润大部分搬回了浮亏里。</li>
+<li>当前持仓剔除<span class="stk" data-code="300806"><span class="stk" data-code="300806">斯迪克</span></span>后，其余 9 只浮亏合计 <strong>-44,941</strong>（+88,161 − <span class="stk" data-code="300806"><span class="stk" data-code="300806">斯迪克</span></span> +133,102）——做出来的利润大部分搬回了浮亏里。</li>
 <li>本周 -57,857 vs 本月 +41,021：回吐速度是积累速度的 1.4 倍。</li>
 </ul>
 <h2>二、9月交易统计（首份真实数据）</h2>
@@ -201,12 +231,12 @@ table.data tbody tr:has(.stk){cursor:pointer}
 </tr>
 <tr>
 <td>最大盈利</td>
-<td><span class="stk" data-code="688627">精智达</span> +6,935（+7.64%，3天）</td>
+<td><span class="stk" data-code="688627"><span class="stk" data-code="688627">精智达</span></span> +6,935（+7.64%，3天）</td>
 <td>止盈能力没问题</td>
 </tr>
 <tr>
 <td>最大亏损</td>
-<td><span class="stk-h" data-code="002028">思源电气</span> -3,092（-17.95%，6天）</td>
+<td><span class="stk-h" data-code="002028"><span class="stk-h" data-code="002028">思源电气</span></span> -3,092（-17.95%，6天）</td>
 <td>纪律缺失实锤</td>
 </tr>
 <tr>
@@ -218,34 +248,34 @@ table.data tbody tr:has(.stk){cursor:pointer}
 </table>
 <p>结论：50% 胜率 + 2.0 盈亏比 = 数学上能赚钱。漏利润的是三件事：
 1. <strong>止损缺失</strong>：思源 -17.95% 拖 6 天、联得 -8.76% 拖 10 天（同期大盘 +2.5%）
-2. <strong>卖赢接回</strong>：<span class="stk" data-code="688627">精智达</span> 9/17 @488.54 止盈 → 9/21~23 @486/489/476 三笔接回 800 股 → 现价 458 全套
+2. <strong>卖赢接回</strong>：<span class="stk" data-code="688627"><span class="stk" data-code="688627">精智达</span></span> 9/17 @488.54 止盈 → 9/21~23 @486/489/476 三笔接回 800 股 → 现价 458 全套
 3. <strong>下跌日接飞刀</strong>：9/24 净买入安集/正帆/和林/臻宝/KC，持仓 1~2 天全部浮亏</p>
-<p><span class="stk" data-code="300806">斯迪克</span> 9/21 兑现 8,000 股（+73% 大方向正确）；错在同日 57 元上方买回 1,800 股、次日 55.9-56.3 卖出，高买低卖往返。</p>
+<p><span class="stk" data-code="300806"><span class="stk" data-code="300806">斯迪克</span></span> 9/21 兑现 8,000 股（+73% 大方向正确）；错在同日 57 元上方买回 1,800 股、次日 55.9-56.3 卖出，高买低卖往返。</p>
 <h2>三、持仓体检</h2>
 <ul>
-<li>⚠️ <span class="stk" data-code="688627">精智达</span> 37.6% 仓位违规（第2次提醒）：减回 20% 以内 或 440 硬止损，二选一，9/28 执行</li>
-<li>⚠️ <span class="stk" data-code="589020">KC半导体</span> -11.34% 还在加码（9/23-24 买入 48,500 股）：亏损仓加码 + L2 盲区，需明确处理方案</li>
+<li>⚠️ <span class="stk" data-code="688627"><span class="stk" data-code="688627">精智达</span></span> 37.6% 仓位违规（第2次提醒）：减回 20% 以内 或 440 硬止损，二选一，9/28 执行</li>
+<li>⚠️ <span class="stk" data-code="589020"><span class="stk" data-code="589020">KC半导体</span></span> -11.34% 还在加码（9/23-24 买入 48,500 股）：亏损仓加码 + L2 盲区，需明确处理方案</li>
 <li>⚠️ 安集/正帆/和林/臻宝：持仓 1~2 天浮亏，先标出各买入日最低价（破位→无条件走）</li>
-<li>✓ <span class="stk" data-code="300806">斯迪克</span>：200 股负成本，无风险</li>
+<li>✓ <span class="stk" data-code="300806"><span class="stk" data-code="300806">斯迪克</span></span>：200 股负成本，无风险</li>
 <li>✓ 博杰：用户 9/24 自行清仓 +1.28%，与"不碰"判定一致</li>
 </ul>
 <h2>四、验证回填</h2>
 <ul>
-<li><span class="stk-h" data-code="600105">永鼎股份</span>（案例库✅买）：8/24→9/2 清仓 +0.75%，跑输大盘 → 已回填"信号弱兑现，快出保本金"</li>
+<li><span class="stk-h" data-code="600105"><span class="stk-h" data-code="600105">永鼎股份</span></span>（案例库✅买）：8/24→9/2 清仓 +0.75%，跑输大盘 → 已回填"信号弱兑现，快出保本金"</li>
 <li>博杰"不碰"：待 9/28 收盘后回填</li>
 <li>已回填 1 例；规律手册升级还差 9~14 例</li>
 </ul>
 <h2>周一（9/28）三件事</h2>
 <ol>
-<li><span class="stk" data-code="688627">精智达</span>减仓或设 440 止损（仓位闸未修好前，买入信号只提示不执行）</li>
-<li><span class="stk" data-code="589020">KC半导体</span>明确处理方案（摊薄 or 割，不悬着）</li>
+<li><span class="stk" data-code="688627"><span class="stk" data-code="688627">精智达</span></span>减仓或设 440 止损（仓位闸未修好前，买入信号只提示不执行）</li>
+<li><span class="stk" data-code="589020"><span class="stk" data-code="589020">KC半导体</span></span>明确处理方案（摊薄 or 割，不悬着）</li>
 <li>盘中想动手前，先看 9/24 接飞刀那批票的样子</li>
 </ol>
 <hr />
 <h2>修正（2026-09-27 用户反馈）</h2>
 <ul>
-<li>单股仓位上限修正为 <strong>35%</strong>（30~35% 可接受）→ <span class="stk" data-code="688627">精智达</span> 37.6% 由"违规"改判"轻微超限 2.6pct"，减仓建议降级为可选</li>
-<li><span class="stk" data-code="589020">KC半导体</span> 9/23-24 买入改判为 <strong>ETF 换仓回补</strong>（此前换入个股时卖出过 ETF 份额），撤销"亏损仓加码"定性，处理优先级下调</li>
+<li>单股仓位上限修正为 <strong>35%</strong>（30~35% 可接受）→ <span class="stk" data-code="688627"><span class="stk" data-code="688627">精智达</span></span> 37.6% 由"违规"改判"轻微超限 2.6pct"，减仓建议降级为可选</li>
+<li><span class="stk" data-code="589020"><span class="stk" data-code="589020">KC半导体</span></span> 9/23-24 买入改判为 <strong>ETF 换仓回补</strong>（此前换入个股时卖出过 ETF 份额），撤销"亏损仓加码"定性，处理优先级下调</li>
 <li>已同步：规律手册 v0.4 + 三个 skill 仓位数字</li>
 </ul></article></main></div><footer>BUILT 2026-09-28 · 数据以私有仓库为准 · 决策辅助非投资建议</footer><button id="toTop" title="回到顶部">↑</button>
 <script>
@@ -314,13 +344,15 @@ document.querySelectorAll('.search').forEach(function(inp){
   }
 })();
 </script>
-<script>if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(function(e){})</script><script src="assets/stocks.js"></script>
+<script>if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(function(e){})</script>
+
+<script src="assets/stocks.js"></script>
 <div id="smodal" class="smodal"><div class="spanel">
 <button class="smodal-x" title="关闭">×</button>
 <div class="scode" id="sm-code"></div>
 <div class="sname" id="sm-name"></div>
 <div class="schips"><span class="chip" id="sm-status"></span></div>
-<div class="schips" id="sm-chips"></div>
+<div class="schips" id="sm-chips"></div><div id="sm-target" style="display:none"></div>
 <div id="sm-body"></div>
 <div class="sfoot">按 Esc 或点击空白处关闭 · 决策辅助非投资建议</div>
 </div></div>
@@ -340,6 +372,8 @@ document.addEventListener('click',function(e){
     var chips=[d.board,d.ind].filter(Boolean).map(function(x){return '<span class="chip">'+x+'</span>'}).join('');
     if(T&&T.n>0){chips+='<span class="chip">成交'+T.n+'笔</span><span class="chip">首次 '+(T.first||'?')+'</span><span class="chip">最近 '+(T.last||'?')+'</span>';}
     document.getElementById('sm-chips').innerHTML=chips;
+    var tg=document.getElementById('sm-target');
+    if(tg){tg.innerHTML=(d.target||[]).map(function(x){return '🎯 '+x}).join('<br>');tg.style.display=(d.target&&d.target.length)?'block':'none';}
     var b=document.getElementById('sm-body');b.innerHTML='';
     (d.sections||[]).forEach(function(s){var h=document.createElement('div');h.innerHTML='<div class="ssec">'+s[0]+'</div><div class="sbody">'+s[1]+'</div>';b.appendChild(h);});
     if(T&&T.n>0){
