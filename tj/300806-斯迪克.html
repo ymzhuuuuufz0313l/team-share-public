@@ -105,7 +105,7 @@ footer{border-top:1px solid var(--line);color:var(--muted);font-size:11.5px;text
 .stk:hover{color:var(--accent);background:var(--accent-soft)}
 .smodal{position:fixed;inset:0;background:rgba(13,21,38,.66);display:none;align-items:flex-start;justify-content:center;z-index:300;padding:36px 16px;overflow-y:auto}
 .smodal.open{display:flex}
-.spanel{background:var(--surface);width:100%;max-width:760px;border-radius:14px;border-top:5px solid var(--accent);box-shadow:0 24px 64px rgba(0,0,0,.4);padding:22px 28px;position:relative}
+.spanel{background:var(--surface);width:100%;max-width:780px;border-radius:14px;border-top:5px solid var(--accent);box-shadow:0 24px 64px rgba(0,0,0,.4);padding:22px 28px;position:relative}
 .smodal-x{position:absolute;top:8px;right:14px;background:none;border:none;font-size:24px;color:var(--muted);cursor:pointer}
 .smodal-x:hover{color:var(--neg)}
 .scode{font-family:"IBM Plex Mono",monospace;color:var(--accent);font-size:12px;letter-spacing:.15em}
@@ -117,6 +117,10 @@ footer{border-top:1px solid var(--line);color:var(--muted);font-size:11.5px;text
 .sbody p{margin:6px 0}
 .sbody ul{margin:6px 0;padding-left:20px}
 .sbody li{margin:3px 0}
+.tmini{width:100%;border-collapse:collapse;font-size:12px;font-family:"IBM Plex Mono",monospace}
+.tmini th{background:var(--chip);color:var(--accent-strong);padding:4px 8px;text-align:left}
+.tmini td{border-bottom:1px solid var(--line);padding:4px 8px}
+.pos{color:var(--pos);font-weight:600}.neg{color:var(--neg);font-weight:600}
 .sfoot{margin-top:16px;color:var(--muted);font-size:11px;font-family:"IBM Plex Mono",monospace;border-top:1px dashed var(--line);padding-top:8px}
 </style></head><body><aside class="sidenav"><div class="side-brand"><div class="b1">TRADING·JOURNAL</div><div class="b2">五步法 × 资金流 × 纪律</div></div><div class="sgroup"><div class="gl">导航</div><a href="index.html">⌂ 总览</a><a href="gegu.html">★ 全部个股</a></div><div class="sgroup"><div class="gl">台账·规则</div><a href="luojiku.html">股票逻辑库</a><a href="规律手册.html">规律手册 v0.4</a><a href="工作流程.html">工作流程</a><a href="持仓逻辑档案.html">持仓逻辑档案</a><a href="主力资金CT-函数解读.html">主力资金CT解读</a><a href="冰封黄白线-函数解读.html">冰封黄白线解读</a></div><div class="sgroup"><div class="gl">台账·数据</div><a href="股票汇总.html">股票汇总</a><a href="持仓快照.html">持仓快照</a><a href="成交流水.html">成交流水</a><a href="已清仓全历史.html">已清仓 481 笔</a><a href="成交流水全历史.html">流水 3533 条</a><a href="账户总览.html">账户全史</a><a href="收益追踪.html">收益追踪</a><a href="研报候选池.html">研报候选池</a></div><div class="sgroup"><div class="gl">归档</div><a href="panzhong.html">盘中判定</a><a href="panhou.html">盘后复盘</a><a href="yanbao.html">研报审稿</a><a href="taizhang.html">交易台账</a></div><div class="side-foot">DECISION SUPPORT<br>NOT INVESTMENT ADVICE<br>SINCE 2020-01</div></aside><div class="layout"><main><p class="crumb"><a href="index.html">总览</a> / 股票逻辑库 / <b><span class="stk" data-code="300806">300806</span>-<span class="stk" data-code="300806">斯迪克</span></b></p><article><h1><span class="stk" data-code="300806">斯迪克</span>（<span class="stk" data-code="300806">300806</span>）</h1>
 <blockquote>
@@ -345,45 +349,32 @@ document.querySelectorAll('.search').forEach(function(inp){
 <div id="sm-body"></div>
 <div class="sfoot">按 Esc 或点击空白处关闭 · 决策辅助非投资建议</div>
 </div></div>
-<script src="assets/stocks.js"></script>
-<script>
-(function(){
-  var close=function(){var m=document.getElementById('smodal');if(m)m.classList.remove('open')};
-  document.addEventListener('click',function(e){
-    var el=e.target.closest?e.target.closest('.stk'):null;
-    if(el){var d=(window.STOCK_DB||{})[el.getAttribute('data-code')];if(!d)return;
-      document.getElementById('sm-code').textContent=d.code;
-      document.getElementById('sm-name').textContent=d.name;
-      var st=document.getElementById('sm-status');st.textContent=d.status||'';
-      st.style.borderColor = d.status.indexOf('持仓')>-1 ? 'var(--pos)' : 'var(--line)';
-      document.getElementById('sm-chips').innerHTML=[d.board,d.ind].filter(Boolean).map(function(x){return '<span class="chip">'+x+'</span>'}).join('');
-      var b=document.getElementById('sm-body');b.innerHTML='';
-      (d.sections||[]).forEach(function(s){
-        var h=document.createElement('div');
-        h.innerHTML='<div class="ssec">'+s[0]+'</div><div class="sbody">'+s[1]+'</div>';
-        b.appendChild(h);
-      });
-      var m=document.getElementById('smodal');m.classList.add('open');m.scrollTop=0;
-      return;
-    }
-    if(e.target.id==='smodal'||e.target.classList.contains('smodal-x'))close();
-  });
-  document.addEventListener('keydown',function(e){if(e.key==='Escape')close()});
-})();
-</script>
 
 <script>
 (function(){var close=function(){var m=document.getElementById('smodal');if(m)m.classList.remove('open')};
 document.addEventListener('click',function(e){
   var el=e.target.closest?e.target.closest('.stk'):null;
-  if(el){var d=(window.STOCK_DB||{})[el.getAttribute('data-code')];if(!d)return;
+  if(el){var code=el.getAttribute('data-code');
+    var d=(window.STOCK_DB||{})[code];if(!d)return;
+    var T=(window.STOCK_TRADES||{})[code]||null;
     document.getElementById('sm-code').textContent=d.code;
     document.getElementById('sm-name').textContent=d.name;
     var st=document.getElementById('sm-status');st.textContent=d.status||'';
     st.style.borderColor=d.status.indexOf('持仓')>-1?'var(--pos)':'var(--line)';
-    document.getElementById('sm-chips').innerHTML=[d.board,d.ind].filter(Boolean).map(function(x){return '<span class="chip">'+x+'</span>'}).join('');
+    var chips=[d.board,d.ind].filter(Boolean).map(function(x){return '<span class="chip">'+x+'</span>'}).join('');
+    if(T&&T.n>0){chips+='<span class="chip">成交'+T.n+'笔</span><span class="chip">首次 '+(T.first||'?')+'</span><span class="chip">最近 '+(T.last||'?')+'</span>';}
+    document.getElementById('sm-chips').innerHTML=chips;
     var b=document.getElementById('sm-body');b.innerHTML='';
     (d.sections||[]).forEach(function(s){var h=document.createElement('div');h.innerHTML='<div class="ssec">'+s[0]+'</div><div class="sbody">'+s[1]+'</div>';b.appendChild(h);});
+    if(T&&T.n>0){
+      var th='<div class="ssec">我与它的交易足迹</div><div class="sbody"><table class="tmini"><tr><th>日期</th><th>方向</th><th>价格</th><th>数量</th><th>金额</th></tr>';
+      (T.rows||[]).forEach(function(r){var cls=r[1]==='买入'?' class="pos"':' class="neg"';
+        th+='<tr><td>'+r[0]+'</td><td'+cls+'>'+r[1]+'</td><td>'+r[2]+'</td><td>'+r[3]+'</td><td>'+r[4]+'</td></tr>';});
+      th+='</table><p>买入 '+T.buys+' 笔 / 卖出 '+T.sells+' 笔 · 买入额 '+T.buy_amt+' · 卖出额 '+T.sell_amt+(T.more?' · 仅显示最近 15 笔':'')+'</p></div>';
+      b.insertAdjacentHTML('beforeend',th);
+    } else if(T && T.n===0 && d.status && d.status.indexOf('已清仓')<0){
+      b.insertAdjacentHTML('beforeend','<div class="ssec">我与它的交易足迹</div><div class="sbody">流水档案中未找到成交记录（早于 2020-01 或未导入）。</div>');
+    }
     var m=document.getElementById('smodal');m.classList.add('open');m.scrollTop=0;return;}
   if(e.target.id==='smodal'||e.target.classList&&e.target.classList.contains('smodal-x'))close();
 });
