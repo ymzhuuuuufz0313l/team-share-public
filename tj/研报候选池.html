@@ -1,50 +1,63 @@
 <!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>研报候选池 · 交易复盘系统</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet"><style>
-:root{--bg:#f4f1ea;--surface:#fffdf7;--text:#1c2534;--muted:#667180;--accent:#b45309;--accent-strong:#92400e;--accent-soft:#f7e8d4;--ink:#0d1526;--ink2:#131f38;--line:#ddd6c8;--chip:#efe9db;--shadow:0 12px 32px rgba(28,37,52,.10);--pos:#15803d;--neg:#dc2626}
+:root{--bg:#f4f1ea;--surface:#fffdf7;--text:#1c2534;--muted:#667180;--accent:#b45309;--accent-strong:#92400e;--accent-soft:#f7e8d4;--ink:#0d1526;--ink2:#131f38;--line:#ddd6c8;--chip:#efe9db;--shadow:0 12px 32px rgba(28,37,52,.10);--pos:#15803d;--neg:#dc2626;--side-w:236px}
 @media(prefers-color-scheme:dark){:root{--bg:#0e1420;--surface:#161f31;--text:#e9e5d9;--muted:#9aa4b5;--accent:#f0a137;--accent-strong:#f6b95c;--accent-soft:#3a2f1a;--line:#2b3852;--chip:#1e2a44;--shadow:0 12px 32px rgba(0,0,0,.45);--pos:#4ade80;--neg:#f87171}}
 *{box-sizing:border-box}html{scroll-behavior:smooth}
 body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;font-size:16px;line-height:1.75}
 a{color:var(--accent)}a:hover{color:var(--accent-strong)}
-nav{position:sticky;top:0;z-index:50;background:var(--ink);display:flex;gap:2px;padding:0 16px;align-items:center;overflow-x:auto;box-shadow:0 2px 12px rgba(0,0,0,.25)}
-nav .brand{color:#f0a137;font-weight:600;padding:12px 12px 12px 4px;white-space:nowrap;font-family:"IBM Plex Mono",monospace;letter-spacing:.08em}
-nav a{color:#c8cede;text-decoration:none;padding:12px 11px;white-space:nowrap;font-size:13.5px;border-radius:8px 8px 0 0}
-nav a:hover{color:#fff}
-nav a.active{background:var(--accent);color:#fff}
-.hero{background:linear-gradient(135deg,var(--ink),var(--ink2));color:#e9e5d9;padding:58px 24px 76px;position:relative;overflow:hidden}
-.hero::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent 0 55px,rgba(240,161,55,.05) 55px 56px),repeating-linear-gradient(90deg,transparent 0 55px,rgba(240,161,55,.05) 55px 56px)}
-.hero::after{content:"";position:absolute;width:460px;height:460px;right:-130px;top:-170px;background:radial-gradient(circle,rgba(240,161,55,.18),transparent 65%)}
-.hero .inner{max-width:1020px;margin:0 auto;position:relative;z-index:1}
+.mono{font-family:"IBM Plex Mono","SFMono-Regular",Consolas,monospace}
+/* ============ 左侧导航 ============ */
+aside.sidenav{position:fixed;top:0;left:0;bottom:0;width:var(--side-w);background:linear-gradient(180deg,var(--ink),var(--ink2));overflow-y:auto;z-index:60;padding:22px 0 30px;scrollbar-width:thin}
+aside.sidenav::-webkit-scrollbar{width:4px}aside.sidenav::-webkit-scrollbar-thumb{background:rgba(240,161,55,.3);border-radius:2px}
+.side-brand{padding:0 20px 16px;border-bottom:1px solid rgba(240,161,55,.18);margin-bottom:12px}
+.side-brand .b1{font-family:"IBM Plex Mono",monospace;color:#f0a137;font-weight:600;letter-spacing:.12em;font-size:14px}
+.side-brand .b2{color:#9aa4b5;font-size:11px;font-family:"IBM Plex Mono",monospace;letter-spacing:.06em;margin-top:3px}
+.sgroup{margin:14px 0 4px}
+.sgroup .gl{font-family:"IBM Plex Mono",monospace;font-size:10px;color:#8b93a7;letter-spacing:.22em;padding:4px 20px;text-transform:uppercase}
+.sgroup a{display:block;color:#c8cede;text-decoration:none;font-size:13px;padding:7px 20px 7px 24px;border-left:3px solid transparent;transition:all .15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sgroup a:hover{color:#fff;background:rgba(240,161,55,.08);border-left-color:rgba(240,161,55,.5)}
+.sgroup a.active{color:#0d1526;background:#f0a137;border-left-color:#fff;font-weight:600}
+.side-foot{padding:16px 20px 0;color:#8b93a7;font-size:10px;font-family:"IBM Plex Mono",monospace;border-top:1px solid rgba(240,161,55,.18);margin-top:16px;line-height:1.6}
+/* ============ 主区 ============ */
+.layout{margin-left:var(--side-w)}
+main{max-width:1000px;margin:0 auto;padding:34px 28px 60px}
+.hometop{background:linear-gradient(135deg,var(--ink),var(--ink2));color:#e9e5d9;padding:54px 28px 78px;position:relative;overflow:hidden}
+.hometop::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent 0 55px,rgba(240,161,55,.05) 55px 56px),repeating-linear-gradient(90deg,transparent 0 55px,rgba(240,161,55,.05) 55px 56px)}
+.hometop::after{content:"";position:absolute;width:480px;height:480px;right:-140px;top:-180px;background:radial-gradient(circle,rgba(240,161,55,.18),transparent 65%)}
+.hometop .inner{max-width:1000px;margin:0 auto;position:relative;z-index:1}
 .kicker{font-family:"IBM Plex Mono",monospace;color:#f0a137;letter-spacing:.2em;font-size:12px;text-transform:uppercase;margin-bottom:14px}
 .kicker::before{content:"—— "}
-h1.display{font-family:"Noto Serif SC",serif;font-weight:900;font-size:clamp(30px,5vw,52px);line-height:1.25;margin:0 0 14px}
+h1.display{font-family:"Noto Serif SC",serif;font-weight:900;font-size:clamp(30px,5vw,50px);line-height:1.25;margin:0 0 14px}
 h1.display .thin{color:#f0a137}
 .lead{color:#c8cede;max-width:680px;margin:0 0 18px}
 .meta{font-family:"IBM Plex Mono",monospace;color:#9aa4b5;font-size:12px;letter-spacing:.08em}
 .chips{margin-top:16px}
 .chip{display:inline-block;font-family:"IBM Plex Mono",monospace;font-size:11px;color:#f0a137;border:1px solid rgba(240,161,55,.45);background:rgba(240,161,55,.08);border-radius:99px;padding:3px 12px;margin:0 8px 8px 0;letter-spacing:.05em}
-.stats{max-width:1020px;margin:-54px auto 0;padding:0 24px;display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;position:relative;z-index:2}
+/* 统计条 */
+.stats{max-width:1000px;margin:-54px auto 0;padding:0 28px;display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;position:relative;z-index:2}
 .stat{background:var(--surface);border-radius:12px;box-shadow:var(--shadow);padding:16px 18px;border-left:4px solid var(--accent)}
 .stat .num{font-family:"IBM Plex Mono",monospace;font-size:21px;font-weight:600}
 .stat .num.pos{color:var(--pos)}.stat .num.neg{color:var(--neg)}
 .stat .lbl{color:var(--muted);font-size:12px;margin-top:2px}
-main{max-width:1020px;margin:0 auto;padding:36px 24px 64px}
+/* 章节卡片（学习参考站） */
+h2.sec{font-family:"IBM Plex Mono",monospace;font-size:13px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin:40px 0 16px}
+h2.sec::after{content:"";display:inline-block;width:110px;height:1px;background:var(--line);margin-left:12px;vertical-align:middle}
 h1.page{font-family:"Noto Serif SC",serif;font-weight:900;font-size:30px;margin:0 0 6px}
-h2.sec{font-family:"IBM Plex Mono",monospace;font-size:13px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin:38px 0 14px}
-h2.sec::after{content:"";display:inline-block;width:120px;height:1px;background:var(--line);margin-left:12px;vertical-align:middle}
-.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px 20px;transition:transform .15s,box-shadow .15s,border-color .15s}
-.card:hover{transform:translateY(-3px);box-shadow:var(--shadow);border-color:var(--accent)}
-.card .no{font-family:"IBM Plex Mono",monospace;color:var(--accent);font-size:12px;letter-spacing:.15em}
-.card .t{font-weight:700;font-size:16px;margin:4px 0}
-.card .d{color:var(--muted);font-size:13px}
-.card a{color:inherit;text-decoration:none}
-.card a:hover{color:var(--accent)}
+.sub{color:var(--muted);margin-top:0}
+.chapter-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(285px,1fr));gap:14px}
+.chapter-card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 18px;transition:transform .18s,box-shadow .18s,border-color .18s;text-decoration:none;color:var(--text);display:block;position:relative;overflow:hidden}
+.chapter-card::before{content:"";position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--accent);opacity:0;transition:opacity .18s}
+.chapter-card:hover{transform:translateY(-3px);box-shadow:var(--shadow);border-color:var(--accent)}
+.chapter-card:hover::before{opacity:1}
+.chapter-card .num{font-family:"IBM Plex Mono",monospace;color:var(--accent);font-size:11px;letter-spacing:.18em}
+.chapter-card .title{font-weight:700;font-size:15.5px;margin:4px 0 4px}
+.chapter-card .desc{color:var(--muted);font-size:12.5px;line-height:1.55}
 .list{list-style:none;padding:0;margin:0}
 .list li{background:var(--surface);border:1px solid var(--line);border-radius:10px;margin:10px 0;transition:transform .15s,box-shadow .15s}
-.list li:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
-.list a{display:block;padding:14px 18px;color:var(--text);text-decoration:none;font-weight:600}
+.list li:hover{transform:translateY(-2px);box-shadow:var(--shadow);border-color:var(--accent)}
+.list a{display:block;padding:13px 18px;color:var(--text);text-decoration:none;font-weight:600}
 .list a:hover{color:var(--accent-strong)}
 .list .d{display:block;font-size:13px;color:var(--muted);font-weight:400;margin-top:2px}
-.pill{display:inline-block;font-family:"IBM Plex Mono",monospace;font-size:11px;background:var(--chip);color:var(--accent-strong);border-radius:99px;padding:2px 10px;margin-left:8px}
+/* 表格 */
 .tblwrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow)}
 table.data{border-collapse:collapse;width:100%;font-size:13px}
 table.data th{background:var(--ink);color:#e9e5d9;font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.05em;padding:10px 12px;position:sticky;top:0;cursor:pointer;white-space:nowrap;user-select:none}
@@ -56,15 +69,15 @@ table.data tbody tr:nth-child(even) td{background:rgba(0,0,0,.02)}
 table.data tbody tr:hover td{background:var(--accent-soft)}
 td.num,th.num{text-align:right;font-family:"IBM Plex Mono",monospace}
 .pos{color:var(--pos);font-weight:600}.neg{color:var(--neg);font-weight:600}
-.bar{height:6px;background:var(--accent-soft);border-radius:4px;min-width:60px}
-.bar i{display:block;height:6px;border-radius:4px;background:var(--accent)}
-.search{width:100%;max-width:340px;padding:9px 16px;border:1px solid var(--line);border-radius:99px;background:var(--surface);color:var(--text);font-size:14px;margin:0 0 14px;display:block}
+.search{width:100%;max-width:360px;padding:9px 16px;border:1px solid var(--line);border-radius:99px;background:var(--surface);color:var(--text);font-size:14px;margin:6px 0 14px;display:block}
 .search:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
-.crumb{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--muted);margin:18px 0 10px;padding:0 24px;max-width:1020px}
+.crumb{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--muted);margin:0 0 14px}
 .crumb a{color:var(--accent)}
-article{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:28px 30px;box-shadow:var(--shadow);margin-bottom:24px}
+.crumb b{color:var(--text)}
+/* 文章 */
+article{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:30px 34px;box-shadow:var(--shadow);margin-bottom:24px}
 article h1{font-family:"Noto Serif SC",serif;font-size:25px;border-bottom:2px solid var(--line);padding-bottom:10px}
-article h2{font-family:"Noto Serif SC",serif;font-size:20px;margin-top:30px;border-left:4px solid var(--accent);padding-left:10px}
+article h2{font-family:"Noto Serif SC",serif;font-size:20px;margin-top:32px;border-left:4px solid var(--accent);padding-left:10px}
 article h3{font-family:"Noto Serif SC",serif;font-size:17px;margin-top:22px}
 article table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px}
 article th,article td{border:1px solid var(--line);padding:7px 10px;text-align:left}
@@ -73,8 +86,19 @@ article code{font-family:"IBM Plex Mono",monospace;background:var(--chip);color:
 article pre{background:var(--ink);color:#e9e5d9;padding:14px 16px;border-radius:10px;overflow-x:auto}
 article pre code{background:none;color:inherit}
 article blockquote{border-left:4px solid var(--accent);margin:12px 0;padding:6px 16px;background:var(--accent-soft);border-radius:0 8px 8px 0}
-footer{border-top:1px solid var(--line);color:var(--muted);font-size:12px;text-align:center;padding:22px;font-family:"IBM Plex Mono",monospace;margin-top:30px}
-</style></head><body><nav><span class="brand">TRADING·JOURNAL</span><a href="index.html">总览</a><a href="taizhang.html">交易台账</a><a href="规律手册.html">规律手册</a><a href="gegu.html">全部个股</a><a href="股票汇总.html">股票汇总</a><a href="持仓逻辑档案.html">持仓逻辑</a><a href="panzhong.html">盘中判定</a><a href="panhou.html">盘后复盘</a><a href="yanbao.html">研报审稿</a><a href="收益追踪.html">收益追踪</a><a href="账户总览.html">账户全史</a><a href="已清仓全历史.html">清仓历史</a><a href="成交流水全历史.html">流水</a></nav><p class="crumb" style="padding-left:24px"><a href="index.html">总览</a> / <a href='index.html'>总览</a> / 交易台账 / <b style="color:var(--text)">研报候选池</b></p><main><article><h1>研报候选池</h1>
+footer{border-top:1px solid var(--line);color:var(--muted);font-size:11.5px;text-align:center;padding:20px;font-family:"IBM Plex Mono",monospace;margin-top:26px}
+/* 移动端：侧栏折叠为顶部横向 */
+@media(max-width:900px){
+  :root{--side-w:0px}
+  aside.sidenav{position:sticky;width:100%;bottom:auto;height:auto;padding:0;display:flex;overflow-x:auto}
+  .side-brand{display:none}.side-foot{display:none}
+  .sgroup{display:flex;margin:0}
+  .sgroup .gl{display:none}
+  .sgroup a{padding:12px 14px;border-left:none;border-bottom:3px solid transparent;white-space:nowrap}
+  .sgroup a.active{border-bottom-color:#f0a137;background:none;color:#f0a137}
+  .layout{margin-left:0}
+}
+</style></head><body><aside class="sidenav"><div class="side-brand"><div class="b1">TRADING·JOURNAL</div><div class="b2">五步法 × 资金流 × 纪律</div></div><div class="sgroup"><div class="gl">导航</div><a href="index.html">⌂ 总览</a><a href="gegu.html">★ 全部个股</a></div><div class="sgroup"><div class="gl">台账·规则</div><a href="规律手册.html">规律手册 v0.4</a><a href="工作流程.html">工作流程</a><a href="持仓逻辑档案.html">持仓逻辑档案</a><a href="主力资金CT-函数解读.html">主力资金CT解读</a><a href="冰封黄白线-函数解读.html">冰封黄白线解读</a></div><div class="sgroup"><div class="gl">台账·数据</div><a href="股票汇总.html">股票汇总</a><a href="持仓快照.html">持仓快照</a><a href="成交流水.html">成交流水</a><a href="已清仓全历史.html">已清仓 481 笔</a><a href="成交流水全历史.html">流水 3533 条</a><a href="账户总览.html">账户全史</a><a href="收益追踪.html">收益追踪</a><a href="研报候选池.html">研报候选池</a></div><div class="sgroup"><div class="gl">归档</div><a href="panzhong.html">盘中判定</a><a href="panhou.html">盘后复盘</a><a href="yanbao.html">研报审稿</a><a href="taizhang.html">交易台账</a></div><div class="side-foot">DECISION SUPPORT<br>NOT INVESTMENT ADVICE<br>SINCE 2020-01</div></aside><div class="layout"><main><p class="crumb"><a href="index.html">总览</a> / 交易台账 / <b>研报候选池</b></p><article><h1>研报候选池</h1>
 <blockquote>
 <p>报告 → 提取候选 → 审稿结论 → 补图判定 → 结果追踪。
 铁律：<strong>报告决定"看什么"，五步法决定"买不买"</strong>——逻辑层永远不越过执行层。</p>
@@ -185,7 +209,7 @@ footer{border-top:1px solid var(--line);color:var(--muted);font-size:12px;text-a
 <h2>报告档案索引</h2>
 <ul>
 <li>2026-0924-每日逻辑.md —— 每日逻辑日报 2026-09-24 晚；10只个股；事实核验3/3通过</li>
-</ul></article></main><footer>DECISION SUPPORT ONLY · NOT INVESTMENT ADVICE · BUILT 2026-09-27</footer>
+</ul></article></main></div><footer>BUILT 2026-09-27 · 数据以私有仓库为准 · 决策辅助非投资建议</footer>
 <script>
 document.querySelectorAll('table.data').forEach(function(tb){
   var head = tb.querySelector('thead');
