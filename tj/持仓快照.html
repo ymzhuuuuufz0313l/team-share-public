@@ -1,0 +1,81 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>持仓快照 · 交易复盘系统</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet"><style>
+:root{--bg:#f4f1ea;--surface:#fffdf7;--text:#1c2534;--muted:#667180;--accent:#b45309;--accent-strong:#92400e;--accent-soft:#f7e8d4;--ink:#0d1526;--ink2:#131f38;--line:#ddd6c8;--chip:#efe9db;--shadow:0 12px 32px rgba(28,37,52,.10)}
+@media(prefers-color-scheme:dark){:root{--bg:#0e1420;--surface:#161f31;--text:#e9e5d9;--muted:#9aa4b5;--accent:#f0a137;--accent-strong:#f6b95c;--accent-soft:#3a2f1a;--line:#2b3852;--chip:#1e2a44;--shadow:0 12px 32px rgba(0,0,0,.45)}}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;font-size:16px;line-height:1.75}
+.mono{font-family:"IBM Plex Mono","SFMono-Regular",Consolas,monospace}
+a{color:var(--accent)}a:hover{color:var(--accent-strong)}
+nav{position:sticky;top:0;z-index:50;background:var(--ink);display:flex;gap:4px;padding:0 16px;align-items:center;overflow-x:auto}
+nav .brand{color:#f0a137;font-weight:600;padding:12px 10px;white-space:nowrap}
+nav a{color:#c8cede;text-decoration:none;padding:12px 12px;white-space:nowrap;font-size:14px}
+nav a.active{background:var(--accent);color:#fff;border-radius:6px 6px 0 0}
+.hero{background:linear-gradient(135deg,var(--ink),var(--ink2));color:#e9e5d9;padding:56px 24px 72px;position:relative;overflow:hidden}
+.hero::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent 0 55px,rgba(240,161,55,.05) 55px 56px),repeating-linear-gradient(90deg,transparent 0 55px,rgba(240,161,55,.05) 55px 56px)}
+.hero::after{content:"";position:absolute;width:420px;height:420px;right:-120px;top:-160px;background:radial-gradient(circle,rgba(240,161,55,.18),transparent 65%)}
+.hero .inner{max-width:920px;margin:0 auto;position:relative;z-index:1}
+.kicker{font-family:"IBM Plex Mono",monospace;color:#f0a137;letter-spacing:.2em;font-size:12px;text-transform:uppercase;margin-bottom:14px}
+.kicker::before{content:"—— "}
+h1.display{font-family:"Noto Serif SC",serif;font-weight:900;font-size:clamp(30px,5vw,52px);line-height:1.25;margin:0 0 14px}
+h1.display .thin{color:#f0a137}
+.lead{color:#c8cede;max-width:640px;margin:0 0 18px}
+.meta{font-family:"IBM Plex Mono",monospace;color:#9aa4b5;font-size:12px;letter-spacing:.08em}
+.stats{max-width:920px;margin:-52px auto 0;padding:0 24px;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;position:relative;z-index:2}
+.stat{background:var(--surface);border-radius:12px;box-shadow:var(--shadow);padding:16px 18px;border-left:4px solid var(--accent)}
+.stat .num{font-family:"IBM Plex Mono",monospace;font-size:22px;font-weight:600}
+.stat .lbl{color:var(--muted);font-size:12px;margin-top:2px}
+main{max-width:920px;margin:0 auto;padding:36px 24px 64px}
+h2.sec{font-family:"IBM Plex Mono",monospace;font-size:13px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin:40px 0 14px}
+h2.sec::after{content:"";display:inline-block;width:120px;height:1px;background:var(--line);margin-left:12px;vertical-align:middle}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px 20px;transition:transform .15s,box-shadow .15s,border-color .15s;text-decoration:none;color:var(--text);display:block}
+.card:hover{transform:translateY(-3px);box-shadow:var(--shadow);border-color:var(--accent)}
+.card .no{font-family:"IBM Plex Mono",monospace;color:var(--accent);font-size:12px;letter-spacing:.15em}
+.card .t{font-weight:700;font-size:16px;margin:4px 0}
+.card .d{color:var(--muted);font-size:13px}
+.list{list-style:none;padding:0;margin:0}
+.list li{background:var(--surface);border:1px solid var(--line);border-radius:10px;margin:10px 0;transition:transform .15s,box-shadow .15s}
+.list li:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+.list a{display:block;padding:14px 18px;color:var(--text);text-decoration:none;font-weight:600}
+.list a:hover{color:var(--accent-strong)}
+.list .d{display:block;font-size:13px;color:var(--muted);font-weight:400;margin-top:2px}
+.pill{display:inline-block;font-family:"IBM Plex Mono",monospace;font-size:11px;background:var(--chip);color:var(--accent-strong);border-radius:99px;padding:2px 10px;margin-left:8px}
+article{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:28px 30px;box-shadow:var(--shadow)}
+article h1,article h2,article h3{font-family:"Noto Serif SC",serif}
+article h1{font-size:26px;border-bottom:2px solid var(--line);padding-bottom:10px}
+article h2{font-size:21px;margin-top:30px;border-left:4px solid var(--accent);padding-left:10px}
+article h3{font-size:17px;margin-top:22px}
+article table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px}
+article th,article td{border:1px solid var(--line);padding:7px 10px;text-align:left}
+article th{background:var(--chip);font-family:"IBM Plex Mono",monospace;font-size:12px}
+article tr:nth-child(even) td{background:rgba(0,0,0,.02)}
+article code{font-family:"IBM Plex Mono",monospace;background:var(--chip);color:var(--accent-strong);padding:1px 6px;border-radius:4px;font-size:.9em}
+article pre{background:var(--ink);color:#e9e5d9;padding:14px 16px;border-radius:10px;overflow-x:auto}
+article pre code{background:none;color:inherit}
+article blockquote{border-left:4px solid var(--accent);margin:12px 0;padding:6px 16px;background:var(--accent-soft);border-radius:0 8px 8px 0}
+.tblwrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow)}
+table.data{border-collapse:collapse;width:100%;font-size:13px}
+table.data th{background:var(--ink);color:#e9e5d9;font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.06em;padding:9px 10px;position:sticky;top:0;cursor:pointer;white-space:nowrap}
+table.data td{border-bottom:1px solid var(--line);padding:7px 10px;white-space:nowrap}
+table.data tr:hover td{background:var(--accent-soft)}
+.pos{color:#1a7f4b;font-weight:600}.neg{color:#c0392b;font-weight:600}
+@media(prefers-color-scheme:dark){.pos{color:#4ade80}.neg{color:#f87171}}
+footer{border-top:1px solid var(--line);color:var(--muted);font-size:12px;text-align:center;padding:22px;font-family:"IBM Plex Mono",monospace}
+.crumb{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--muted);margin-bottom:16px}
+.crumb a{color:var(--accent)}
+</style></head><body><nav><span class="brand">TRADING·JOURNAL</span><a href="index.html">总览</a><a href="taizhang.html">交易台账</a><a href="规律手册.html">规律手册</a><a href="股票汇总.html">股票汇总</a><a href="持仓逻辑档案.html">持仓逻辑</a><a href="panzhong.html">盘中判定</a><a href="panhou.html">盘后复盘</a><a href="yanbao.html">研报审稿</a><a href="收益追踪.html">收益追踪</a><a href="账户总览.html">账户全史</a><a href="已清仓全历史.html">清仓历史</a><a href="成交流水全历史.html">流水</a></nav><p class='crumb'><a href='index.html'>总览</a> / 交易台账 / 持仓快照</p><main><div class='tblwrap'><table class='data'><thead><tr><th>日期</th><th>代码</th><th>名称</th><th>持有金额</th><th>当日盈亏</th><th>当日盈亏率</th><th>持有盈亏</th><th>持有盈亏率</th><th>累计盈亏</th><th>累计盈亏率</th><th>本周盈亏</th><th>本月盈亏</th><th>今年盈亏</th><th>仓位占比</th><th>持有数量</th><th>持仓天数</th><th>最新价</th><th>单位成本</th></tr></thead><tbody><tr><td>2026-09-24</td><td>688627</td><td>精智达</td><td>274830.00</td><td class="neg">-12447.71</td><td>-3.26%</td><td class="neg">-19952.29</td><td>-6.77%</td><td class="neg">-13017.01</td><td>-4.42%</td><td class="neg">-19952.29</td><td class="neg">-13017.01</td><td class="neg">-13017.01</td><td>37.61%</td><td>600</td><td>4</td><td>458.05</td><td>491.304</td></tr><tr><td>2026-09-24</td><td>688019</td><td>安集科技</td><td>105834.54</td><td class="neg">-1768.49</td><td>-1.64%</td><td class="neg">-1757.31</td><td>-1.63%</td><td class="neg">-1757.31</td><td></td><td class="neg">-1757.31</td><td class="neg">-1757.31</td><td class="neg">-1757.31</td><td>14.48%</td><td>469</td><td>2</td><td>225.66</td><td>229.407</td></tr><tr><td>2026-09-24</td><td>688596</td><td>正帆科技</td><td>56344.99</td><td class="neg">-1460.40</td><td>-2.53%</td><td class="neg">-1460.50</td><td>-2.53%</td><td class="neg">-1460.50</td><td></td><td class="neg">-1460.50</td><td class="neg">-1460.50</td><td class="neg">-1460.50</td><td>7.71%</td><td>871</td><td>1</td><td>64.69</td><td>66.367</td></tr><tr><td>2026-09-24</td><td>688797</td><td>聚宝科技</td><td>55236.00</td><td class="neg">-693.29</td><td>-0.62%</td><td class="neg">-1330.12</td><td>-2.35%</td><td class="neg">-1330.12</td><td></td><td class="neg">-1330.12</td><td class="neg">-1330.12</td><td class="neg">-1330.12</td><td>7.56%</td><td>200</td><td>4</td><td>276.18</td><td>282.831</td></tr><tr><td>2026-09-24</td><td>688037</td><td>芯源微</td><td>86245.00</td><td class="neg">-2795.28</td><td>-1.59%</td><td class="neg">-3461.20</td><td>-3.86%</td><td class="neg">-3461.20</td><td></td><td class="neg">-3461.20</td><td class="neg">-3461.20</td><td class="neg">-3461.20</td><td>11.80%</td><td>250</td><td>4</td><td>344.98</td><td>358.825</td></tr><tr><td>2026-09-24</td><td>688661</td><td>和林微纳</td><td>81692.50</td><td class="neg">-1995.80</td><td>-2.38%</td><td class="neg">-292.30</td><td>-0.36%</td><td class="pos">+705.69</td><td>+0.86%</td><td class="neg">-292.30</td><td class="pos">+705.69</td><td class="pos">+705.69</td><td>11.18%</td><td>797</td><td>4</td><td>102.50</td><td>102.867</td></tr><tr><td>2026-09-24</td><td>589020</td><td>KC半导体</td><td>58316.00</td><td class="neg">-1205.11</td><td>-2.02%</td><td class="neg">-7456.99</td><td>-11.34%</td><td class="neg">-5796.66</td><td>-8.81%</td><td class="neg">-1100.91</td><td class="neg">-8765.19</td><td class="neg">-5796.66</td><td>7.98%</td><td>48800</td><td>27</td><td>1.195</td><td>1.348</td></tr><tr><td>2026-09-24</td><td>300806</td><td>斯迪克</td><td>10690.00</td><td class="neg">-466.00</td><td>-4.18%</td><td class="pos">+133101.71</td><td>--</td><td class="pos">+140729.90</td><td>+73.06%</td><td class="neg">-28497.45</td><td class="pos">+78546.71</td><td class="pos">+140726.60</td><td>1.46%</td><td>200</td><td>143</td><td>53.45</td><td class="neg">-612.059</td></tr><tr><td>2026-09-24</td><td>588080</td><td>科创板50</td><td>332.40</td><td class="neg">-7.60</td><td>-2.24%</td><td class="neg">-5060.03</td><td>-93.84%</td><td class="neg">-29499.05</td><td>-2.49%</td><td class="neg">-6.20</td><td class="neg">-3688.78</td><td class="neg">-29499.05</td><td>0.05%</td><td>200</td><td>26</td><td>1.662</td><td>26.962</td></tr><tr><td>2026-09-24</td><td>588780</td><td>芯片设计</td><td>1186.80</td><td class="neg">-33.60</td><td>-2.75%</td><td class="neg">-4170.38</td><td>-77.85%</td><td class="neg">-8753.94</td><td>-8.90%</td><td class="pos">+1.20</td><td class="neg">-4751.00</td><td class="neg">-8753.94</td><td>0.16%</td><td>1200</td><td>25</td><td>0.989</td><td>4.464</td></tr><tr><td>2026-09-24</td><td>汇总</td><td>全部持仓</td><td>730708.23</td><td class="neg">-22873.28</td><td>-3.04%</td><td class="pos">+88160.59</td><td>-5.87%</td><td></td><td></td><td></td><td></td><td class="neg">-57857.08</td><td class="pos">+41021.29</td><td class="pos">+76356.50</td><td>99.99%</td><td></td><td></td><td></td><td></td><td></td></tr></tbody></table></div>
+<script>
+document.querySelectorAll('table.data th').forEach(function(th,col){
+  th.addEventListener('click',function(){
+    var tbody=this.closest('table').querySelector('tbody');
+    var rows=[].slice.call(tbody.rows), dir=th.dataset.dir=-(th.dataset.dir||-1), i=0;
+    rows.sort(function(a,b){
+      var x=a.cells[col].textContent.trim().replace(/[+,]/g,''), y=b.cells[col].textContent.trim().replace(/[+,]/g,'');
+      var nx=parseFloat(x), ny=parseFloat(y);
+      if(!isNaN(nx)&&!isNaN(ny)) return (nx-ny)*dir;
+      return x.localeCompare(y,'zh')*dir;
+    });
+    for(;i<rows.length;i++) tbody.appendChild(rows[i]);
+  });
+});
+</script>
+</main><footer>DECISION SUPPORT ONLY · NOT INVESTMENT ADVICE · BUILT 2026-09-27</footer></body></html>

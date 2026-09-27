@@ -1,0 +1,271 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>收益追踪 · 交易复盘系统</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet"><style>
+:root{--bg:#f4f1ea;--surface:#fffdf7;--text:#1c2534;--muted:#667180;--accent:#b45309;--accent-strong:#92400e;--accent-soft:#f7e8d4;--ink:#0d1526;--ink2:#131f38;--line:#ddd6c8;--chip:#efe9db;--shadow:0 12px 32px rgba(28,37,52,.10)}
+@media(prefers-color-scheme:dark){:root{--bg:#0e1420;--surface:#161f31;--text:#e9e5d9;--muted:#9aa4b5;--accent:#f0a137;--accent-strong:#f6b95c;--accent-soft:#3a2f1a;--line:#2b3852;--chip:#1e2a44;--shadow:0 12px 32px rgba(0,0,0,.45)}}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;font-size:16px;line-height:1.75}
+.mono{font-family:"IBM Plex Mono","SFMono-Regular",Consolas,monospace}
+a{color:var(--accent)}a:hover{color:var(--accent-strong)}
+nav{position:sticky;top:0;z-index:50;background:var(--ink);display:flex;gap:4px;padding:0 16px;align-items:center;overflow-x:auto}
+nav .brand{color:#f0a137;font-weight:600;padding:12px 10px;white-space:nowrap}
+nav a{color:#c8cede;text-decoration:none;padding:12px 12px;white-space:nowrap;font-size:14px}
+nav a.active{background:var(--accent);color:#fff;border-radius:6px 6px 0 0}
+.hero{background:linear-gradient(135deg,var(--ink),var(--ink2));color:#e9e5d9;padding:56px 24px 72px;position:relative;overflow:hidden}
+.hero::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent 0 55px,rgba(240,161,55,.05) 55px 56px),repeating-linear-gradient(90deg,transparent 0 55px,rgba(240,161,55,.05) 55px 56px)}
+.hero::after{content:"";position:absolute;width:420px;height:420px;right:-120px;top:-160px;background:radial-gradient(circle,rgba(240,161,55,.18),transparent 65%)}
+.hero .inner{max-width:920px;margin:0 auto;position:relative;z-index:1}
+.kicker{font-family:"IBM Plex Mono",monospace;color:#f0a137;letter-spacing:.2em;font-size:12px;text-transform:uppercase;margin-bottom:14px}
+.kicker::before{content:"—— "}
+h1.display{font-family:"Noto Serif SC",serif;font-weight:900;font-size:clamp(30px,5vw,52px);line-height:1.25;margin:0 0 14px}
+h1.display .thin{color:#f0a137}
+.lead{color:#c8cede;max-width:640px;margin:0 0 18px}
+.meta{font-family:"IBM Plex Mono",monospace;color:#9aa4b5;font-size:12px;letter-spacing:.08em}
+.stats{max-width:920px;margin:-52px auto 0;padding:0 24px;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;position:relative;z-index:2}
+.stat{background:var(--surface);border-radius:12px;box-shadow:var(--shadow);padding:16px 18px;border-left:4px solid var(--accent)}
+.stat .num{font-family:"IBM Plex Mono",monospace;font-size:22px;font-weight:600}
+.stat .lbl{color:var(--muted);font-size:12px;margin-top:2px}
+main{max-width:920px;margin:0 auto;padding:36px 24px 64px}
+h2.sec{font-family:"IBM Plex Mono",monospace;font-size:13px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin:40px 0 14px}
+h2.sec::after{content:"";display:inline-block;width:120px;height:1px;background:var(--line);margin-left:12px;vertical-align:middle}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px 20px;transition:transform .15s,box-shadow .15s,border-color .15s;text-decoration:none;color:var(--text);display:block}
+.card:hover{transform:translateY(-3px);box-shadow:var(--shadow);border-color:var(--accent)}
+.card .no{font-family:"IBM Plex Mono",monospace;color:var(--accent);font-size:12px;letter-spacing:.15em}
+.card .t{font-weight:700;font-size:16px;margin:4px 0}
+.card .d{color:var(--muted);font-size:13px}
+.list{list-style:none;padding:0;margin:0}
+.list li{background:var(--surface);border:1px solid var(--line);border-radius:10px;margin:10px 0;transition:transform .15s,box-shadow .15s}
+.list li:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+.list a{display:block;padding:14px 18px;color:var(--text);text-decoration:none;font-weight:600}
+.list a:hover{color:var(--accent-strong)}
+.list .d{display:block;font-size:13px;color:var(--muted);font-weight:400;margin-top:2px}
+.pill{display:inline-block;font-family:"IBM Plex Mono",monospace;font-size:11px;background:var(--chip);color:var(--accent-strong);border-radius:99px;padding:2px 10px;margin-left:8px}
+article{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:28px 30px;box-shadow:var(--shadow)}
+article h1,article h2,article h3{font-family:"Noto Serif SC",serif}
+article h1{font-size:26px;border-bottom:2px solid var(--line);padding-bottom:10px}
+article h2{font-size:21px;margin-top:30px;border-left:4px solid var(--accent);padding-left:10px}
+article h3{font-size:17px;margin-top:22px}
+article table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px}
+article th,article td{border:1px solid var(--line);padding:7px 10px;text-align:left}
+article th{background:var(--chip);font-family:"IBM Plex Mono",monospace;font-size:12px}
+article tr:nth-child(even) td{background:rgba(0,0,0,.02)}
+article code{font-family:"IBM Plex Mono",monospace;background:var(--chip);color:var(--accent-strong);padding:1px 6px;border-radius:4px;font-size:.9em}
+article pre{background:var(--ink);color:#e9e5d9;padding:14px 16px;border-radius:10px;overflow-x:auto}
+article pre code{background:none;color:inherit}
+article blockquote{border-left:4px solid var(--accent);margin:12px 0;padding:6px 16px;background:var(--accent-soft);border-radius:0 8px 8px 0}
+.tblwrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow)}
+table.data{border-collapse:collapse;width:100%;font-size:13px}
+table.data th{background:var(--ink);color:#e9e5d9;font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.06em;padding:9px 10px;position:sticky;top:0;cursor:pointer;white-space:nowrap}
+table.data td{border-bottom:1px solid var(--line);padding:7px 10px;white-space:nowrap}
+table.data tr:hover td{background:var(--accent-soft)}
+.pos{color:#1a7f4b;font-weight:600}.neg{color:#c0392b;font-weight:600}
+@media(prefers-color-scheme:dark){.pos{color:#4ade80}.neg{color:#f87171}}
+footer{border-top:1px solid var(--line);color:var(--muted);font-size:12px;text-align:center;padding:22px;font-family:"IBM Plex Mono",monospace}
+.crumb{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--muted);margin-bottom:16px}
+.crumb a{color:var(--accent)}
+</style></head><body><nav><span class="brand">TRADING·JOURNAL</span><a href="index.html">总览</a><a href="taizhang.html">交易台账</a><a href="规律手册.html">规律手册</a><a href="股票汇总.html">股票汇总</a><a href="持仓逻辑档案.html">持仓逻辑</a><a href="panzhong.html">盘中判定</a><a href="panhou.html">盘后复盘</a><a href="yanbao.html">研报审稿</a><a href="收益追踪.html">收益追踪</a><a href="账户总览.html">账户全史</a><a href="已清仓全历史.html">清仓历史</a><a href="成交流水全历史.html">流水</a></nav><p class='crumb'><a href='index.html'>总览</a> / 交易台账 / 收益追踪</p><main><article><h1>收益追踪（收益分析板块）</h1>
+<blockquote>
+<p>数据源：投资账本 APP 收益分析页（本月/近三月盈亏、金额与收益率日历、同期指数、击败分位、回撤曲线）。
+每次上传追加：当日/当月日历行 + 月度汇总行。
+口径警示：APP 会因大额银证转账导致收益金额/收益率失真（2026-09-27 近三月页有官方提示）；热力图百分比与已清仓实现口径有出入。<strong>本表收益率数字带此保留度，盈亏金额以持仓快照/成交流水为准。</strong></p>
+</blockquote>
+<h2>2026年9月（26.09.01–26.09.27）</h2>
+<ul>
+<li>本月盈亏 <strong>+28,184.19（+5.12%）</strong>；同期上证 <strong>-2.46%</strong>；超额 <strong>+7.58pct</strong>；击败 <strong>90%</strong> 股民</li>
+<li>近三月（07.01–09.27）：金额 +23,353.61 但收益率 <strong>-9.51%</strong>；同期上证 -5.03%；<strong>跑输 -4.48pct</strong>；仅击败 <strong>42%</strong></li>
+<li>近三月回撤曲线：7-8 月累计最低约 <strong>-25.8%</strong>（8 月初），9 月修复中；本月峰值 <strong>+15.35%</strong>（9/16）→ 月末 +5.12%，<strong>月内回吐 10.2pct</strong></li>
+<li>日历合计核验：18 个交易日逐日加总 = +28,181 ≈ APP +28,184（显示四舍五入，核验通过 ✓）</li>
+</ul>
+<h3>9月日历（金额 / 组合% / 上证% / 超额）</h3>
+<table>
+<thead>
+<tr>
+<th>日期</th>
+<th>金额</th>
+<th>组合%</th>
+<th>上证%</th>
+<th>超额</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>09-01</td>
+<td>-25,869</td>
+<td>-4.01</td>
+<td>+0.16</td>
+<td>-4.17</td>
+</tr>
+<tr>
+<td>09-02</td>
+<td>-4,173</td>
+<td>-0.68</td>
+<td>-0.97</td>
+<td>+0.29</td>
+</tr>
+<tr>
+<td>09-03</td>
+<td>-1,263</td>
+<td>-0.21</td>
+<td>+0.02</td>
+<td>-0.23</td>
+</tr>
+<tr>
+<td>09-04</td>
+<td>-17,294</td>
+<td>-2.82</td>
+<td>-0.30</td>
+<td>-2.52</td>
+</tr>
+<tr>
+<td>09-07</td>
+<td>+21,273</td>
+<td>+3.57</td>
+<td>+0.07</td>
+<td>+3.50</td>
+</tr>
+<tr>
+<td>09-08</td>
+<td>-15,036</td>
+<td>-2.43</td>
+<td>-0.20</td>
+<td>-2.23</td>
+</tr>
+<tr>
+<td>09-09</td>
+<td>+31,047</td>
+<td>+5.15</td>
+<td>+0.28</td>
+<td>+4.87</td>
+</tr>
+<tr>
+<td>09-10</td>
+<td>+32,269</td>
+<td>+5.09</td>
+<td>-0.43</td>
+<td>+5.52</td>
+</tr>
+<tr>
+<td>09-11</td>
+<td>-13,322</td>
+<td>-2.00</td>
+<td>-1.18</td>
+<td>-0.82</td>
+</tr>
+<tr>
+<td>09-14</td>
+<td>+4,947</td>
+<td>+0.76</td>
+<td>-0.07</td>
+<td>+0.83</td>
+</tr>
+<tr>
+<td>09-15</td>
+<td>+54,992</td>
+<td>+9.38</td>
+<td>-0.54</td>
+<td>+9.92</td>
+</tr>
+<tr>
+<td>09-16</td>
+<td>+30,364</td>
+<td>+4.40</td>
+<td>+0.71</td>
+<td>+3.69</td>
+</tr>
+<tr>
+<td>09-17</td>
+<td>-15,551</td>
+<td>-2.15</td>
+<td>-0.41</td>
+<td>-1.74</td>
+</tr>
+<tr>
+<td>09-18</td>
+<td>+642</td>
+<td>+0.09</td>
+<td>+0.94</td>
+<td>-0.85</td>
+</tr>
+<tr>
+<td>09-21</td>
+<td>-23,123</td>
+<td>-2.93</td>
+<td>+0.97</td>
+<td>-3.90</td>
+</tr>
+<tr>
+<td>09-22</td>
+<td>-9,712</td>
+<td>-1.26</td>
+<td>+0.06</td>
+<td>-1.32</td>
+</tr>
+<tr>
+<td>09-23</td>
+<td>+122</td>
+<td>+0.02</td>
+<td>-0.39</td>
+<td>+0.41</td>
+</tr>
+<tr>
+<td>09-24</td>
+<td>-22,132</td>
+<td>-2.94</td>
+<td>-1.22</td>
+<td>-1.72</td>
+</tr>
+</tbody>
+</table>
+<h3>9月收益质量统计</h3>
+<ul>
+<li>组合日胜率 <strong>8/18 = 44.4%</strong>；日均盈利 +21,957 vs 日均亏损 -14,748（<strong>日盈亏比 1.49</strong>）</li>
+<li>超额胜率 <strong>8/18</strong>：跑赢指数 8 天、跑输 10 天——但凭 9/10(+5.52)、9/15(+9.92)、9/9(+4.87) 三个大超额日撑起 +7.58pct</li>
+<li>单日极端值：最好 +9.38%（9/15，斯迪克主推），最差 -4.01%（9/1）；组合单日波动常为上证的 <strong>3~20 倍</strong>（9/15 达 17 倍）＝高集中半导体 beta</li>
+<li>月内节奏：9/14–16 三天 +90,303（主升段）→ 9/17–24 六天 -70,376（回吐段）；9/21（卖斯迪克买精智达当天）-23,123、9/24 -22,132 是两笔最大回吐日</li>
+<li>反差结论：<strong>月度击败 90%，三月度只击败 42%</strong>——一个月的好不构成系统证据，三个月的坑（-25.8% 回撤）才是要修的东西</li>
+</ul>
+<h2>月度汇总表（持续追加）</h2>
+<table>
+<thead>
+<tr>
+<th>月份</th>
+<th>月盈亏</th>
+<th>组合%</th>
+<th>上证%</th>
+<th>超额</th>
+<th>击败分位</th>
+<th>备注</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2026-09（至9/27）</td>
+<td>+28,184</td>
+<td>+5.12%</td>
+<td>-2.46%</td>
+<td>+7.58pct</td>
+<td>90%</td>
+<td>利润主体=斯迪克；月内峰值回吐10.2pct</td>
+</tr>
+<tr>
+<td>2026-07~09（近三月）</td>
+<td>+23,354</td>
+<td>-9.51%</td>
+<td>-5.03%</td>
+<td>-4.48pct</td>
+<td>42%</td>
+<td>大额转账致口径失真；7-8月最大回撤约-25.8%</td>
+</tr>
+</tbody>
+</table>
+<h2>待记录项</h2>
+<ul>
+<li>[ ] 大额银证转账的日期与金额（用户补录后可修正收益率口径）</li>
+<li>[ ] 10月起每月初补上月完整月度行</li>
+</ul>
+<h2>转账口径修正（2026-09-27 全量导入后定位）</h2>
+<ul>
+<li>历史资金进出（2020-2026 全部 486 笔转账）：银行→证券 <strong>+1,385,345</strong>（194笔）；证券→银行 <strong>-731,123</strong>（292笔）；<strong>净投入 +654,222 元</strong></li>
+<li>这解释了"金额为正、收益率为负"的背离（近三月 +23,354 但 -9.51%）：金额含新投入本金</li>
+<li>逐笔转账明细在 <code>成交流水全历史.csv</code>（交易类别=证券转银行/银行转证券）。如需精确时间加权收益率，可基于转账日期+金额计算（待做）</li>
+<li><strong>胜率与盈亏比的全历史基线</strong>：481 笔清仓，胜率 63.4%、盈亏比 0.38、净 -92,162 → 9 月的 50%/2.04/+12,295 是六年来少见的"高盈亏比"月份，若能连续 2-3 个月维持，即为系统转正的证据（对照：持仓天数分桶，见 账户总览.md）</li>
+</ul></article></main><footer>DECISION SUPPORT ONLY · NOT INVESTMENT ADVICE · BUILT 2026-09-27</footer></body></html>

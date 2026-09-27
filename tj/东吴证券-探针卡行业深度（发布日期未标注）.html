@@ -1,0 +1,87 @@
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>东吴证券-探针卡行业深度（发布日期未标注） · 交易复盘系统</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet"><style>
+:root{--bg:#f4f1ea;--surface:#fffdf7;--text:#1c2534;--muted:#667180;--accent:#b45309;--accent-strong:#92400e;--accent-soft:#f7e8d4;--ink:#0d1526;--ink2:#131f38;--line:#ddd6c8;--chip:#efe9db;--shadow:0 12px 32px rgba(28,37,52,.10)}
+@media(prefers-color-scheme:dark){:root{--bg:#0e1420;--surface:#161f31;--text:#e9e5d9;--muted:#9aa4b5;--accent:#f0a137;--accent-strong:#f6b95c;--accent-soft:#3a2f1a;--line:#2b3852;--chip:#1e2a44;--shadow:0 12px 32px rgba(0,0,0,.45)}}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;font-size:16px;line-height:1.75}
+.mono{font-family:"IBM Plex Mono","SFMono-Regular",Consolas,monospace}
+a{color:var(--accent)}a:hover{color:var(--accent-strong)}
+nav{position:sticky;top:0;z-index:50;background:var(--ink);display:flex;gap:4px;padding:0 16px;align-items:center;overflow-x:auto}
+nav .brand{color:#f0a137;font-weight:600;padding:12px 10px;white-space:nowrap}
+nav a{color:#c8cede;text-decoration:none;padding:12px 12px;white-space:nowrap;font-size:14px}
+nav a.active{background:var(--accent);color:#fff;border-radius:6px 6px 0 0}
+.hero{background:linear-gradient(135deg,var(--ink),var(--ink2));color:#e9e5d9;padding:56px 24px 72px;position:relative;overflow:hidden}
+.hero::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent 0 55px,rgba(240,161,55,.05) 55px 56px),repeating-linear-gradient(90deg,transparent 0 55px,rgba(240,161,55,.05) 55px 56px)}
+.hero::after{content:"";position:absolute;width:420px;height:420px;right:-120px;top:-160px;background:radial-gradient(circle,rgba(240,161,55,.18),transparent 65%)}
+.hero .inner{max-width:920px;margin:0 auto;position:relative;z-index:1}
+.kicker{font-family:"IBM Plex Mono",monospace;color:#f0a137;letter-spacing:.2em;font-size:12px;text-transform:uppercase;margin-bottom:14px}
+.kicker::before{content:"—— "}
+h1.display{font-family:"Noto Serif SC",serif;font-weight:900;font-size:clamp(30px,5vw,52px);line-height:1.25;margin:0 0 14px}
+h1.display .thin{color:#f0a137}
+.lead{color:#c8cede;max-width:640px;margin:0 0 18px}
+.meta{font-family:"IBM Plex Mono",monospace;color:#9aa4b5;font-size:12px;letter-spacing:.08em}
+.stats{max-width:920px;margin:-52px auto 0;padding:0 24px;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;position:relative;z-index:2}
+.stat{background:var(--surface);border-radius:12px;box-shadow:var(--shadow);padding:16px 18px;border-left:4px solid var(--accent)}
+.stat .num{font-family:"IBM Plex Mono",monospace;font-size:22px;font-weight:600}
+.stat .lbl{color:var(--muted);font-size:12px;margin-top:2px}
+main{max-width:920px;margin:0 auto;padding:36px 24px 64px}
+h2.sec{font-family:"IBM Plex Mono",monospace;font-size:13px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin:40px 0 14px}
+h2.sec::after{content:"";display:inline-block;width:120px;height:1px;background:var(--line);margin-left:12px;vertical-align:middle}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px 20px;transition:transform .15s,box-shadow .15s,border-color .15s;text-decoration:none;color:var(--text);display:block}
+.card:hover{transform:translateY(-3px);box-shadow:var(--shadow);border-color:var(--accent)}
+.card .no{font-family:"IBM Plex Mono",monospace;color:var(--accent);font-size:12px;letter-spacing:.15em}
+.card .t{font-weight:700;font-size:16px;margin:4px 0}
+.card .d{color:var(--muted);font-size:13px}
+.list{list-style:none;padding:0;margin:0}
+.list li{background:var(--surface);border:1px solid var(--line);border-radius:10px;margin:10px 0;transition:transform .15s,box-shadow .15s}
+.list li:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+.list a{display:block;padding:14px 18px;color:var(--text);text-decoration:none;font-weight:600}
+.list a:hover{color:var(--accent-strong)}
+.list .d{display:block;font-size:13px;color:var(--muted);font-weight:400;margin-top:2px}
+.pill{display:inline-block;font-family:"IBM Plex Mono",monospace;font-size:11px;background:var(--chip);color:var(--accent-strong);border-radius:99px;padding:2px 10px;margin-left:8px}
+article{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:28px 30px;box-shadow:var(--shadow)}
+article h1,article h2,article h3{font-family:"Noto Serif SC",serif}
+article h1{font-size:26px;border-bottom:2px solid var(--line);padding-bottom:10px}
+article h2{font-size:21px;margin-top:30px;border-left:4px solid var(--accent);padding-left:10px}
+article h3{font-size:17px;margin-top:22px}
+article table{border-collapse:collapse;width:100%;margin:14px 0;font-size:14px}
+article th,article td{border:1px solid var(--line);padding:7px 10px;text-align:left}
+article th{background:var(--chip);font-family:"IBM Plex Mono",monospace;font-size:12px}
+article tr:nth-child(even) td{background:rgba(0,0,0,.02)}
+article code{font-family:"IBM Plex Mono",monospace;background:var(--chip);color:var(--accent-strong);padding:1px 6px;border-radius:4px;font-size:.9em}
+article pre{background:var(--ink);color:#e9e5d9;padding:14px 16px;border-radius:10px;overflow-x:auto}
+article pre code{background:none;color:inherit}
+article blockquote{border-left:4px solid var(--accent);margin:12px 0;padding:6px 16px;background:var(--accent-soft);border-radius:0 8px 8px 0}
+.tblwrap{overflow-x:auto;background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow)}
+table.data{border-collapse:collapse;width:100%;font-size:13px}
+table.data th{background:var(--ink);color:#e9e5d9;font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.06em;padding:9px 10px;position:sticky;top:0;cursor:pointer;white-space:nowrap}
+table.data td{border-bottom:1px solid var(--line);padding:7px 10px;white-space:nowrap}
+table.data tr:hover td{background:var(--accent-soft)}
+.pos{color:#1a7f4b;font-weight:600}.neg{color:#c0392b;font-weight:600}
+@media(prefers-color-scheme:dark){.pos{color:#4ade80}.neg{color:#f87171}}
+footer{border-top:1px solid var(--line);color:var(--muted);font-size:12px;text-align:center;padding:22px;font-family:"IBM Plex Mono",monospace}
+.crumb{font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--muted);margin-bottom:16px}
+.crumb a{color:var(--accent)}
+</style></head><body><nav><span class="brand">TRADING·JOURNAL</span><a href="index.html">总览</a><a href="taizhang.html">交易台账</a><a href="规律手册.html">规律手册</a><a href="股票汇总.html">股票汇总</a><a href="持仓逻辑档案.html">持仓逻辑</a><a href="panzhong.html">盘中判定</a><a href="panhou.html">盘后复盘</a><a href="yanbao.html">研报审稿</a><a href="收益追踪.html">收益追踪</a><a href="账户总览.html">账户全史</a><a href="已清仓全历史.html">清仓历史</a><a href="成交流水全历史.html">流水</a></nav><p class='crumb'><a href='index.html'>总览</a> / 研报文章 / 东吴证券-探针卡行业深度（发布日期未标注）</p><main><article><h1>东吴证券《探针卡行业深度》归档（发布日期未标注，数据截至 2025H1）</h1>
+<ul>
+<li>来源：慧博投研（手机截图 6 页，投资要点+技术框架已读）</li>
+<li>关联持仓：<strong>和林微纳（重点推荐）、精智达（建议关注）</strong>——均已登记《持仓逻辑档案》</li>
+<li>关联未上市：强一股份（重点推荐，报告核心案例）、道格特/韬盛电子/泽丰半导体（未上市）</li>
+</ul>
+<h2>行业要点</h2>
+<ol>
+<li><strong>探针卡 = 晶圆测试（CP）核心耗材</strong>：测试机(ATE)+探针台(Prober)+探针卡三单元；探针直接接触晶圆焊盘，磨损快、随新芯片开发与产品迭代持续复购（三重需求：开发→量产增配→更新）</li>
+<li><strong>MEMS 成为高端测试主流</strong>：2024 年 MEMS 探针卡占全球市场 <strong>69.8%</strong>，存储领域 <strong>94.5%</strong>；2D MEMS 主攻先进逻辑（SoC/CPU/GPU，50μm 以下间距、上万针），2.5D/3D MEMS 主攻存储（DRAM/NAND/HBM/高端 CIS，整片晶圆同测、针数数十万、MLC 空间转接基板键合）</li>
+<li><strong>量价齐升标尺（强一股份）</strong>：2D/2.5D MEMS 探针卡平均针数 2021 年 3,179 支 → 2025H1 <strong>13,297 支</strong>；均价 23.2 万 → <strong>81.8 万元/张</strong></li>
+<li><strong>HBM/存储增量</strong>：DRAM/NAND 高并测；海外成熟 DRAM 探针卡单次接触 &gt;3,000 个 Site；HBM 堆叠提升残缺损失 → KGD 筛选成新增应用；光互连 200G/lane + CPO → 高频光电协同测试</li>
+<li><strong>市场空间</strong>：2028 年国内存储+逻辑探针卡市场有望超 <strong>200 亿元</strong></li>
+<li><strong>格局</strong>：海外龙头主导（2.5D 天花板：FormFactor、Technoprobe 少数厂商）；国产替代进入加速期</li>
+<li><strong>技术结构</strong>：探针与空间转接基板各占探针卡价值量约 50%；接触电阻&lt;0.5Ω、镀层≥8μm、硬度≥390Hv；薄膜探针卡向 110GHz+ 演进（光电子测试）</li>
+<li><strong>供给瓶颈</strong>：单张 8 英寸探针晶圆仅产 3~8 千支（2.5D，2D 为 1~3 万支）→ 良率与成本压力</li>
+</ol>
+<h2>投资建议（报告版）</h2>
+<ul>
+<li>重点推荐：<strong>强一股份</strong>（自主 MEMS 探针+整卡制造，2.5D 与高频薄膜拓展存储/光通信）、<strong>和林微纳</strong>（MEMS 探针卡验证及量产）</li>
+<li>建议关注：<strong>精智达</strong>（存储测试设备+探针卡协同）、道格特（未上市）、韬盛电子（未上市）、泽丰半导体（未上市）</li>
+<li>风险提示：下游需求及扩产不及预期；新产品研发与客户验证不及预期；技术路线及测试方案变化</li>
+</ul></article></main><footer>DECISION SUPPORT ONLY · NOT INVESTMENT ADVICE · BUILT 2026-09-27</footer></body></html>
