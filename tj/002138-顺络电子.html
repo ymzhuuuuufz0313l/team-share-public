@@ -1,10 +1,13 @@
-<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>002138-顺络电子 · 交易复盘系统</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet"><style>
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>002138-顺络电子 · 交易复盘系统</title><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23b45309'/%3E%3Ctext x='32' y='43' font-family='Menlo,Consolas,monospace' font-size='27' font-weight='700' fill='%23fff' text-anchor='middle'%3ETJ%3C/text%3E%3C/svg%3E"><script>try{var _tj=localStorage.getItem('tj-theme');if(_tj==='dark'||_tj==='light')document.documentElement.setAttribute('data-theme',_tj)}catch(e){}</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet"><style>
 :root{--bg:#f4f1ea;--surface:#fffdf7;--text:#1c2534;--muted:#667180;--accent:#b45309;--accent-strong:#92400e;--accent-soft:#f7e8d4;--ink:#0d1526;--ink2:#131f38;--line:#ddd6c8;--chip:#efe9db;--shadow:0 12px 32px rgba(28,37,52,.10);--pos:#15803d;--neg:#dc2626;--side-w:236px}
 @media(prefers-color-scheme:dark){:root{--bg:#0e1420;--surface:#161f31;--text:#e9e5d9;--muted:#9aa4b5;--accent:#f0a137;--accent-strong:#f6b95c;--accent-soft:#3a2f1a;--line:#2b3852;--chip:#1e2a44;--shadow:0 12px 32px rgba(0,0,0,.45);--pos:#4ade80;--neg:#f87171}}
+/* 手动主题覆盖：dark 复制深色媒体查询变量，light 回落浅色（覆盖深色系统） */
+html[data-theme=dark]{--bg:#0e1420;--surface:#161f31;--text:#e9e5d9;--muted:#9aa4b5;--accent:#f0a137;--accent-strong:#f6b95c;--accent-soft:#3a2f1a;--line:#2b3852;--chip:#1e2a44;--shadow:0 12px 32px rgba(0,0,0,.45);--pos:#4ade80;--neg:#f87171}
+html[data-theme=light]{--bg:#f4f1ea;--surface:#fffdf7;--text:#1c2534;--muted:#667180;--accent:#b45309;--accent-strong:#92400e;--accent-soft:#f7e8d4;--ink:#0d1526;--ink2:#131f38;--line:#ddd6c8;--chip:#efe9db;--shadow:0 12px 32px rgba(28,37,52,.10);--pos:#15803d;--neg:#dc2626}
 *{box-sizing:border-box}html{scroll-behavior:smooth}
 body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;font-size:16px;line-height:1.75}
 a{color:var(--accent)}a:hover{color:var(--accent-strong)}
-.mono{font-family:"IBM Plex Mono","SFMono-Regular",Consolas,monospace}
+.mono{font-family:"IBM Plex Mono","SFMono-Regular",Consolas,monospace;font-variant-numeric:tabular-nums}
 /* ============ 左侧导航 ============ */
 aside.sidenav{position:fixed;top:0;left:0;bottom:0;width:var(--side-w);background:linear-gradient(180deg,var(--ink),var(--ink2));overflow-y:auto;z-index:60;padding:22px 0 30px;scrollbar-width:thin}
 aside.sidenav::-webkit-scrollbar{width:4px}aside.sidenav::-webkit-scrollbar-thumb{background:rgba(240,161,55,.3);border-radius:2px}
@@ -36,7 +39,7 @@ h1.display .thin{color:#f0a137}
 .stats{max-width:min(96vw,1840px);margin:-54px auto 0;padding:0 28px;display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;position:relative;z-index:2}
 .wide main,.wide .stats,.wide .hometop .inner{max-width:min(98.5vw,2400px)}
 .stat{background:var(--surface);border-radius:12px;box-shadow:var(--shadow);padding:16px 18px;border-left:4px solid var(--accent)}
-.stat .num{font-family:"IBM Plex Mono",monospace;font-size:21px;font-weight:600}
+.stat .num{font-family:"IBM Plex Mono",monospace;font-size:21px;font-weight:600;font-variant-numeric:tabular-nums}
 .stat .num.pos{color:var(--pos)}.stat .num.neg{color:var(--neg)}
 .stat .lbl{color:var(--muted);font-size:12px;margin-top:2px}
 /* 章节卡片（学习参考站） */
@@ -68,7 +71,7 @@ table.data th.sd::after{content:" ▼";color:#f0a137}
 table.data td{border-bottom:1px solid var(--line);padding:8px 12px;white-space:nowrap}
 table.data tbody tr:nth-child(even) td{background:rgba(0,0,0,.02)}
 table.data tbody tr:hover td{background:var(--accent-soft)}
-td.num,th.num{text-align:right;font-family:"IBM Plex Mono",monospace}
+td.num,th.num{text-align:right;font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums}
 .pos{color:var(--pos);font-weight:600}.neg{color:var(--neg);font-weight:600}
 .search{width:100%;max-width:360px;padding:9px 16px;border:1px solid var(--line);border-radius:99px;background:var(--surface);color:var(--text);font-size:14px;margin:6px 0 14px;display:block}
 .search:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft)}
@@ -92,17 +95,33 @@ footer{border-top:1px solid var(--line);color:var(--muted);font-size:11.5px;text
 @media(max-width:900px){
   :root{--side-w:0px}
   aside.sidenav{position:sticky;width:100%;bottom:auto;height:auto;padding:0;display:flex;overflow-x:auto}
-  .side-brand{display:none}.side-foot{display:none}
+  .side-brand{display:none}.side-foot{display:none}.theme-toggle{display:none}
   .sgroup{display:flex;margin:0}
   .sgroup .gl{display:none}
   .sgroup a{padding:12px 14px;border-left:none;border-bottom:3px solid transparent;white-space:nowrap}
   .sgroup a.active{border-bottom-color:#f0a137;background:none;color:#f0a137}
   .layout{margin-left:0}
 }
+/* ============ 视觉精修 v0.4 ============ */
+/* 主题切换按钮（side-foot 上方） */
+.theme-toggle{display:block;width:calc(100% - 40px);margin:16px 20px 0;padding:8px 0;background:rgba(240,161,55,.10);border:1px solid rgba(240,161,55,.35);border-radius:8px;color:#f0a137;font-family:"IBM Plex Mono",monospace;font-size:12px;letter-spacing:.08em;cursor:pointer;transition:background .15s,border-color .15s;white-space:nowrap}
+.theme-toggle:hover{background:rgba(240,161,55,.22);border-color:#f0a137}
+/* 回到顶部 */
+#toTop{position:fixed;right:26px;bottom:26px;width:44px;height:44px;border-radius:50%;border:2px solid var(--accent);background:var(--surface);color:var(--accent);font-family:"IBM Plex Mono",monospace;font-size:18px;line-height:1;cursor:pointer;box-shadow:var(--shadow);opacity:0;visibility:hidden;transform:translateY(10px);transition:opacity .25s,transform .25s,visibility .25s;z-index:200}
+#toTop.show{opacity:1;visibility:visible;transform:none}
+#toTop:hover{background:var(--accent);color:var(--surface)}
+/* 微淡入 */
+@keyframes fadeup{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+main,.stats{animation:fadeup .4s ease both}
+@media(prefers-reduced-motion:reduce){main,.stats{animation:none}}
+/* hero 版本水印（移动端隐藏） */
+.hero-mark{position:absolute;right:20px;top:8px;font-family:"IBM Plex Mono",monospace;font-size:clamp(38px,6vw,76px);font-weight:600;color:#f0a137;opacity:.08;letter-spacing:.04em;pointer-events:none;user-select:none;white-space:nowrap;z-index:1}
+@media(max-width:900px){.hero-mark{display:none}}
 </style><style>
 /* 股票弹窗 */
 .stk{cursor:pointer;border-bottom:1px dashed var(--accent)}
 .stk:hover{color:var(--accent);background:var(--accent-soft)}
+table.data tbody tr:has(.stk){cursor:pointer}
 .smodal{position:fixed;inset:0;background:rgba(13,21,38,.66);display:none;align-items:flex-start;justify-content:center;z-index:300;padding:36px 16px;overflow-y:auto}
 .smodal.open{display:flex}
 .spanel{background:var(--surface);width:100%;max-width:780px;border-radius:14px;border-top:5px solid var(--accent);box-shadow:0 24px 64px rgba(0,0,0,.4);padding:22px 28px;position:relative}
@@ -122,7 +141,31 @@ footer{border-top:1px solid var(--line);color:var(--muted);font-size:11.5px;text
 .tmini td{border-bottom:1px solid var(--line);padding:4px 8px}
 .pos{color:var(--pos);font-weight:600}.neg{color:var(--neg);font-weight:600}
 .sfoot{margin-top:16px;color:var(--muted);font-size:11px;font-family:"IBM Plex Mono",monospace;border-top:1px dashed var(--line);padding-top:8px}
-</style></head><body><aside class="sidenav"><div class="side-brand"><div class="b1">TRADING·JOURNAL</div><div class="b2">五步法 × 资金流 × 纪律</div></div><div class="sgroup"><div class="gl">导航</div><a href="index.html">⌂ 总览</a><a href="gegu.html">★ 全部个股</a><a href="持仓快照.html">⚡ 持仓快照</a></div><div class="sgroup"><div class="gl">台账·规则</div><a href="luojiku.html">股票逻辑库</a><a href="规律手册.html">规律手册 v0.4</a><a href="工作流程.html">工作流程</a><a href="持仓逻辑档案.html">持仓逻辑档案</a><a href="主力资金CT-函数解读.html">主力资金CT解读</a><a href="冰封黄白线-函数解读.html">冰封黄白线解读</a></div><div class="sgroup"><div class="gl">台账·数据</div><a href="股票汇总.html">股票汇总</a><a href="成交流水.html">成交流水</a><a href="已清仓全历史.html">已清仓 481 笔</a><a href="成交流水全历史.html">流水 3533 条</a><a href="账户总览.html">账户全史</a><a href="收益追踪.html">收益追踪</a><a href="研报候选池.html">研报候选池</a></div><div class="sgroup"><div class="gl">归档</div><a href="panzhong.html">盘中判定</a><a href="panhou.html">盘后复盘</a><a href="yanbao.html">研报审稿</a><a href="taizhang.html">交易台账</a></div><div class="side-foot">DECISION SUPPORT<br>NOT INVESTMENT ADVICE<br>SINCE 2020-01</div></aside><div class="layout"><main><p class="crumb"><a href="index.html">总览</a> / 股票逻辑库 / <b>002138-顺络电子</b></p><article><h1>顺络电子（002138）</h1>
+</style><style>
+/* 股票弹窗 */
+.stk{cursor:pointer;border-bottom:1px dashed var(--accent)}
+.stk:hover{color:var(--accent);background:var(--accent-soft)}
+table.data tbody tr:has(.stk){cursor:pointer}
+.smodal{position:fixed;inset:0;background:rgba(13,21,38,.66);display:none;align-items:flex-start;justify-content:center;z-index:300;padding:36px 16px;overflow-y:auto}
+.smodal.open{display:flex}
+.spanel{background:var(--surface);width:100%;max-width:780px;border-radius:14px;border-top:5px solid var(--accent);box-shadow:0 24px 64px rgba(0,0,0,.4);padding:22px 28px;position:relative}
+.smodal-x{position:absolute;top:8px;right:14px;background:none;border:none;font-size:24px;color:var(--muted);cursor:pointer}
+.smodal-x:hover{color:var(--neg)}
+.scode{font-family:"IBM Plex Mono",monospace;color:var(--accent);font-size:12px;letter-spacing:.15em}
+.sname{font-family:"Noto Serif SC",serif;font-weight:900;font-size:26px;margin:2px 0 8px}
+.schips{margin:4px 0 10px}
+.schips .chip{display:inline-block;font-family:"IBM Plex Mono",monospace;font-size:11px;background:var(--chip);color:var(--accent-strong);border-radius:99px;padding:2px 10px;margin:0 8px 6px 0}
+.ssec{margin:14px 0 4px;font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--accent);letter-spacing:.12em}
+.sbody{font-size:14px}
+.sbody p{margin:6px 0}
+.sbody ul{margin:6px 0;padding-left:20px}
+.sbody li{margin:3px 0}
+.tmini{width:100%;border-collapse:collapse;font-size:12px;font-family:"IBM Plex Mono",monospace}
+.tmini th{background:var(--chip);color:var(--accent-strong);padding:4px 8px;text-align:left}
+.tmini td{border-bottom:1px solid var(--line);padding:4px 8px}
+.pos{color:var(--pos);font-weight:600}.neg{color:var(--neg);font-weight:600}
+.sfoot{margin-top:16px;color:var(--muted);font-size:11px;font-family:"IBM Plex Mono",monospace;border-top:1px dashed var(--line);padding-top:8px}
+</style></head><body><aside class="sidenav"><div class="side-brand"><div class="b1">TRADING·JOURNAL</div><div class="b2">五步法 × 资金流 × 纪律</div></div><div class="sgroup"><div class="gl">导航</div><a href="index.html">⌂ 总览</a><a href="gegu.html">★ 全部个股</a><a href="持仓快照.html">⚡ 持仓快照</a></div><div class="sgroup"><div class="gl">台账·规则</div><a href="luojiku.html">股票逻辑库</a><a href="规律手册.html">规律手册 v0.4</a><a href="工作流程.html">工作流程</a><a href="持仓逻辑档案.html">持仓逻辑档案</a><a href="主力资金CT-函数解读.html">主力资金CT解读</a><a href="冰封黄白线-函数解读.html">冰封黄白线解读</a></div><div class="sgroup"><div class="gl">台账·数据</div><a href="股票汇总.html">股票汇总</a><a href="成交流水.html">成交流水</a><a href="已清仓全历史.html">已清仓 481 笔</a><a href="成交流水全历史.html">流水 3533 条</a><a href="账户总览.html">账户全史</a><a href="收益追踪.html">收益追踪</a><a href="研报候选池.html">研报候选池</a></div><div class="sgroup"><div class="gl">归档</div><a href="panzhong.html">盘中判定</a><a href="panhou.html">盘后复盘</a><a href="yanbao.html">研报审稿</a><a href="taizhang.html">交易台账</a></div><button id="themeToggle" class="theme-toggle" title="切换深浅色主题">◐ 主题</button><div class="side-foot">DECISION SUPPORT<br>NOT INVESTMENT ADVICE<br>SINCE 2020-01</div></aside><div class="layout"><main><p class="crumb"><a href="index.html">总览</a> / 股票逻辑库 / <b>002138-顺络电子</b></p><article><h1>顺络电子（002138）</h1>
 <blockquote>
 <p>板块：主板-深 ｜ 行业：电子元件-片式电感 ｜ 状态：<strong>观察-B类</strong> ｜ 首次登记：2026-09-27
 清仓不删档：本档案永久保留，状态随操作变更（观察→持仓中→已清仓…）。
@@ -144,7 +187,7 @@ footer{border-top:1px solid var(--line);color:var(--muted);font-size:11.5px;text
 <h2>逻辑失效条件</h2>
 <p>消费电子/汽车基本盘走弱；AI 电感导入不及预期；对日替代被村田/TDK 降价反制；钽电容第三曲线不成立</p>
 <h2>操作历史摘要</h2>
-<p>用户 <strong>2026 年 9 月曾操作，+190 小赚</strong>（已清仓）；历史判定以五步法为准</p></article></main></div><footer>BUILT 2026-09-28 · 数据以私有仓库为准 · 决策辅助非投资建议</footer>
+<p>用户 <strong>2026 年 9 月曾操作，+190 小赚</strong>（已清仓）；历史判定以五步法为准</p></article></main></div><footer>BUILT 2026-09-28 · 数据以私有仓库为准 · 决策辅助非投资建议</footer><button id="toTop" title="回到顶部">↑</button>
 <script>
 document.querySelectorAll('table.data').forEach(function(tb){
   var head = tb.querySelector('thead');
@@ -177,6 +220,43 @@ document.querySelectorAll('.search').forEach(function(inp){
 });
 </script>
 
+<script>
+(function(){
+  var b=document.getElementById('themeToggle');
+  function cur(){var t=document.documentElement.getAttribute('data-theme');if(t)return t;return (window.matchMedia&&matchMedia('(prefers-color-scheme:dark)').matches)?'dark':'light'}
+  if(b){
+    function paint(){b.textContent=cur()==='dark'?'\u2600 \u6d45\u8272\u6a21\u5f0f':'\ud83c\udf19 \u6df1\u8272\u6a21\u5f0f'}
+    paint();
+    b.addEventListener('click',function(){
+      var n=cur()==='dark'?'light':'dark';
+      document.documentElement.setAttribute('data-theme',n);
+      try{localStorage.setItem('tj-theme',n)}catch(e){}
+      paint();
+    });
+  }
+  var tt=document.getElementById('toTop');
+  if(tt){
+    var sync=function(){tt.classList.toggle('show',(window.pageYOffset||document.documentElement.scrollTop)>600)};
+    window.addEventListener('scroll',sync,{passive:true});sync();
+    tt.addEventListener('click',function(){window.scrollTo({top:0,behavior:'smooth'})});
+  }
+  if(document.querySelector('.hometop')&&!(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)){
+    document.querySelectorAll('.stats .num').forEach(function(el){
+      var m=(el.textContent||'').trim().match(/^([+\-\u2212]?)([\d,]+(?:\.\d+)?)(%?)$/);
+      if(!m)return;
+      var sg=m[1]==='\u2212'?'-':m[1],tv=parseFloat(m[2].replace(/,/g,'')),pc=m[3];
+      var dec=m[2].indexOf('.')>-1?m[2].length-m[2].indexOf('.')-1:0;
+      function f(v){return sg+v.toLocaleString('en-US',{minimumFractionDigits:dec,maximumFractionDigits:dec})+pc}
+      el.textContent=f(0);var t0=null;
+      function step(t){if(t0===null)t0=t;var p=Math.min((t-t0)/800,1);var e=1-Math.pow(1-p,3);el.textContent=f(tv*e);if(p<1)requestAnimationFrame(step)}
+      requestAnimationFrame(step);
+    });
+  }
+})();
+</script>
+
+
+<script src="assets/stocks.js"></script>
 <div id="smodal" class="smodal"><div class="spanel">
 <button class="smodal-x" title="关闭">×</button>
 <div class="scode" id="sm-code"></div>
@@ -191,6 +271,7 @@ document.querySelectorAll('.search').forEach(function(inp){
 (function(){var close=function(){var m=document.getElementById('smodal');if(m)m.classList.remove('open')};
 document.addEventListener('click',function(e){
   var el=e.target.closest?e.target.closest('.stk'):null;
+  if(!el){var tr=e.target.closest?e.target.closest('tr'):null;if(tr&&tr.querySelector)el=tr.querySelector('.stk')}
   if(el){var code=el.getAttribute('data-code');
     var d=(window.STOCK_DB||{})[code];if(!d)return;
     var T=(window.STOCK_TRADES||{})[code]||null;
@@ -212,7 +293,10 @@ document.addEventListener('click',function(e){
     } else if(T && T.n===0 && d.status && d.status.indexOf('已清仓')<0){
       b.insertAdjacentHTML('beforeend','<div class="ssec">我与它的交易足迹</div><div class="sbody">流水档案中未找到成交记录（早于 2020-01 或未导入）。</div>');
     }
-    var m=document.getElementById('smodal');m.classList.add('open');m.scrollTop=0;return;}
+    var m=document.getElementById('smodal');
+    var pn=m.querySelector('.spanel');
+    if(pn)pn.style.borderTopColor=(d.status.indexOf('持仓')>-1)?'var(--pos)':((d.status.indexOf('清仓')>-1)?'var(--neg)':'var(--accent)');
+    m.classList.add('open');m.scrollTop=0;return;}
   if(e.target.id==='smodal'||e.target.classList&&e.target.classList.contains('smodal-x'))close();
 });
 document.addEventListener('keydown',function(e){if(e.key==='Escape')close()});})();
