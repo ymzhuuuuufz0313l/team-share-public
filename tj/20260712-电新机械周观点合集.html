@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>20260712-电新机械周观点合集 · 交易复盘系统</title><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23b45309'/%3E%3Ctext x='32' y='43' font-family='Menlo,Consolas,monospace' font-size='27' font-weight='700' fill='%23fff' text-anchor='middle'%3ETJ%3C/text%3E%3C/svg%3E"><script>try{var _tj=localStorage.getItem('tj-theme');if(_tj==='dark'||_tj==='light')document.documentElement.setAttribute('data-theme',_tj)}catch(e){}</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet"><style>
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>20260712-电新机械周观点合集 · 交易复盘系统</title><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23b45309'/%3E%3Ctext x='32' y='43' font-family='Menlo,Consolas,monospace' font-size='27' font-weight='700' fill='%23fff' text-anchor='middle'%3ETJ%3C/text%3E%3C/svg%3E"><script>try{var _tj=localStorage.getItem('tj-theme');if(_tj==='dark'||_tj==='light')document.documentElement.setAttribute('data-theme',_tj)}catch(e){}</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0d1526"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><link rel="apple-touch-icon" href="assets/icon-192.png"><style>
 :root{--bg:#f4f1ea;--surface:#fffdf7;--text:#1c2534;--muted:#667180;--accent:#b45309;--accent-strong:#92400e;--accent-soft:#f7e8d4;--ink:#0d1526;--ink2:#131f38;--line:#ddd6c8;--chip:#efe9db;--shadow:0 12px 32px rgba(28,37,52,.10);--pos:#15803d;--neg:#dc2626;--side-w:236px}
 @media(prefers-color-scheme:dark){:root{--bg:#0e1420;--surface:#161f31;--text:#e9e5d9;--muted:#9aa4b5;--accent:#f0a137;--accent-strong:#f6b95c;--accent-soft:#3a2f1a;--line:#2b3852;--chip:#1e2a44;--shadow:0 12px 32px rgba(0,0,0,.45);--pos:#4ade80;--neg:#f87171}}
 /* 手动主题覆盖：dark 复制深色媒体查询变量，light 回落浅色（覆盖深色系统） */
@@ -117,6 +117,23 @@ main,.stats{animation:fadeup .4s ease both}
 /* hero 版本水印（移动端隐藏） */
 .hero-mark{position:absolute;right:20px;top:8px;font-family:"IBM Plex Mono",monospace;font-size:clamp(38px,6vw,76px);font-weight:600;color:#f0a137;opacity:.08;letter-spacing:.04em;pointer-events:none;user-select:none;white-space:nowrap;z-index:1}
 @media(max-width:900px){.hero-mark{display:none}}
+/* ============ 移动端阅读优化（≤700px 手机） ============ */
+@media(max-width:700px){
+  body{font-size:15px}
+  main{padding:16px 14px}
+  .stats{grid-template-columns:repeat(2,1fr);padding:0 14px}
+  .chapter-grid{grid-template-columns:1fr}
+  .search{max-width:none;width:100%}
+  table.data{font-size:12.5px}
+  table.data td{padding:7px 9px}
+  /* 首列固定：大表右滑时代码/名称列始终可见 */
+  table.data th:first-child,table.data td:first-child{position:sticky;left:0;z-index:1}
+  table.data td:first-child{background:var(--surface)}
+  table.data th:first-child{background:var(--ink);z-index:2}
+  /* 压过斑马纹/悬停行对首列底色的覆盖（保持不透明，遮住滑过的内容） */
+  table.data tbody tr:nth-child(even) td:first-child{background:var(--surface)}
+  table.data tbody tr:hover td:first-child{background:var(--surface)}
+}
 </style><style>
 /* 股票弹窗 */
 .stk{cursor:pointer;border-bottom:1px dashed var(--accent)}
@@ -141,36 +158,14 @@ table.data tbody tr:has(.stk){cursor:pointer}
 .tmini td{border-bottom:1px solid var(--line);padding:4px 8px}
 .pos{color:var(--pos);font-weight:600}.neg{color:var(--neg);font-weight:600}
 .sfoot{margin-top:16px;color:var(--muted);font-size:11px;font-family:"IBM Plex Mono",monospace;border-top:1px dashed var(--line);padding-top:8px}
-</style><style>
-/* 股票弹窗 */
-.stk{cursor:pointer;border-bottom:1px dashed var(--accent)}
-.stk:hover{color:var(--accent);background:var(--accent-soft)}
-table.data tbody tr:has(.stk){cursor:pointer}
-.smodal{position:fixed;inset:0;background:rgba(13,21,38,.66);display:none;align-items:flex-start;justify-content:center;z-index:300;padding:36px 16px;overflow-y:auto}
-.smodal.open{display:flex}
-.spanel{background:var(--surface);width:100%;max-width:780px;border-radius:14px;border-top:5px solid var(--accent);box-shadow:0 24px 64px rgba(0,0,0,.4);padding:22px 28px;position:relative}
-.smodal-x{position:absolute;top:8px;right:14px;background:none;border:none;font-size:24px;color:var(--muted);cursor:pointer}
-.smodal-x:hover{color:var(--neg)}
-.scode{font-family:"IBM Plex Mono",monospace;color:var(--accent);font-size:12px;letter-spacing:.15em}
-.sname{font-family:"Noto Serif SC",serif;font-weight:900;font-size:26px;margin:2px 0 8px}
-.schips{margin:4px 0 10px}
-.schips .chip{display:inline-block;font-family:"IBM Plex Mono",monospace;font-size:11px;background:var(--chip);color:var(--accent-strong);border-radius:99px;padding:2px 10px;margin:0 8px 6px 0}
-.ssec{margin:14px 0 4px;font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--accent);letter-spacing:.12em}
-.sbody{font-size:14px}
-.sbody p{margin:6px 0}
-.sbody ul{margin:6px 0;padding-left:20px}
-.sbody li{margin:3px 0}
-.tmini{width:100%;border-collapse:collapse;font-size:12px;font-family:"IBM Plex Mono",monospace}
-.tmini th{background:var(--chip);color:var(--accent-strong);padding:4px 8px;text-align:left}
-.tmini td{border-bottom:1px solid var(--line);padding:4px 8px}
-.pos{color:var(--pos);font-weight:600}.neg{color:var(--neg);font-weight:600}
-.sfoot{margin-top:16px;color:var(--muted);font-size:11px;font-family:"IBM Plex Mono",monospace;border-top:1px dashed var(--line);padding-top:8px}
+/* 手机端弹窗：限高滚动 + 收窄留白（后注入，天然压过基础 .spanel 规则） */
+@media(max-width:700px){.spanel{max-height:92vh;overflow-y:auto;padding:18px}.sname{font-size:21px}}
 </style></head><body><aside class="sidenav"><div class="side-brand"><div class="b1">TRADING·JOURNAL</div><div class="b2">五步法 × 资金流 × 纪律</div></div><div class="sgroup"><div class="gl">导航</div><a href="index.html">⌂ 总览</a><a href="gegu.html">★ 全部个股</a><a href="持仓快照.html">⚡ 持仓快照</a></div><div class="sgroup"><div class="gl">台账·规则</div><a href="luojiku.html">股票逻辑库</a><a href="规律手册.html">规律手册 v0.4</a><a href="工作流程.html">工作流程</a><a href="持仓逻辑档案.html">持仓逻辑档案</a><a href="主力资金CT-函数解读.html">主力资金CT解读</a><a href="冰封黄白线-函数解读.html">冰封黄白线解读</a></div><div class="sgroup"><div class="gl">台账·数据</div><a href="股票汇总.html">股票汇总</a><a href="成交流水.html">成交流水</a><a href="已清仓全历史.html">已清仓 481 笔</a><a href="成交流水全历史.html">流水 3533 条</a><a href="账户总览.html">账户全史</a><a href="收益追踪.html">收益追踪</a><a href="研报候选池.html">研报候选池</a></div><div class="sgroup"><div class="gl">归档</div><a href="panzhong.html">盘中判定</a><a href="panhou.html">盘后复盘</a><a href="yanbao.html">研报审稿</a><a href="taizhang.html">交易台账</a></div><button id="themeToggle" class="theme-toggle" title="切换深浅色主题">◐ 主题</button><div class="side-foot">DECISION SUPPORT<br>NOT INVESTMENT ADVICE<br>SINCE 2020-01</div></aside><div class="layout"><main><p class="crumb"><a href="index.html">总览</a> / 研报文章 / <b>20260712-电新机械周观点合集</b></p><article><h1>电新+机械周观点合集归档（ZX电新 + 广发机械）</h1>
 <ul>
 <li>发布：2026-07-12 · 周观点合集 · 电新（电力设备新能源）+ 机械（自动化设备）</li>
 <li>来源：ZX电新团队周观点 + 广发机械团队周观点（20260712）</li>
 <li>关联候选池：2026-09-27 测试产业链批量入池（广发机械·半导体设备条线与本池同源）</li>
-<li>关联持仓：<strong><span class="stk" data-code="688627"><span class="stk" data-code="688627">精智达</span></span></strong>（广发机械半导体设备推荐标的之一）</li>
+<li>关联持仓：<strong><span class="stk" data-code="688627">精智达</span></strong>（广发机械半导体设备推荐标的之一）</li>
 </ul>
 <blockquote>
 <p>⚠️ 日期混乱提示：报告标注 20260712，但内文混有 9 月事件（焦炭 9/3、村田 10/1 涨价、珠海航展 12/7）与 8 月 ADP 数据——按"7 月周报 + 近期产业信息混编"处理，具体事件时点以疑点标注节为准。</p>
@@ -180,7 +175,7 @@ table.data tbody tr:has(.stk){cursor:pointer}
 <ul>
 <li>事件锚：PJM 限电（北美区域电网容量紧张）</li>
 <li>高压设备推荐：<strong>华明装备 / 中国西电 / 特变电工 / 特锐德</strong>；关注：安靠 / 白云电器</li>
-<li>燃机推荐：<strong>杰瑞股份 / 东方电气 / 应流股份 / 万泽股份 / 联德股份 / 上海电气</strong></li>
+<li>燃机推荐：<strong>杰瑞股份 / 东方电气 / 应流股份 / 万泽股份 / <span class="stk" data-code="605060">联德股份</span> / 上海电气</strong></li>
 </ul>
 <h3>2. 太空光伏</h3>
 <ul>
@@ -196,7 +191,7 @@ table.data tbody tr:has(.stk){cursor:pointer}
 <ul>
 <li>涨价约 20%，全品类（PSU 顺价、格局逻辑）</li>
 </ul>
-<h3>5. 阳光电源 SST（AIDC 电源）</h3>
+<h3>5. <span class="stk" data-code="300274">阳光电源</span> SST（AIDC 电源）</h3>
 <ul>
 <li>AIDC 产品：10-13.8kV / 800VDC、3MW 效率 98.5%；27Q2 出 35kV / 6MW</li>
 <li>客户：东阳光 / 中联数据 / NVIDIA / Google / AWS / 阿里云</li>
@@ -205,7 +200,7 @@ table.data tbody tr:has(.stk){cursor:pointer}
 <h3>1. 半导体设备</h3>
 <ul>
 <li>长鑫科技 7/16 申购；26H1 收入 1100-1200 亿 / 净利 500-570 亿</li>
-<li>推荐：<strong><span class="stk" data-code="300604"><span class="stk" data-code="300604">长川科技</span></span> / <span class="stk" data-code="TBD-强一股份"><span class="stk" data-code="TBD-强一股份">强一股份</span></span> / 联讯仪器 / <span class="stk" data-code="688627"><span class="stk" data-code="688627">精智达</span></span></strong></li>
+<li>推荐：<strong><span class="stk" data-code="300604">长川科技</span> / <span class="stk" data-code="TBD-强一股份">强一股份</span> / 联讯仪器 / <span class="stk" data-code="688627">精智达</span></strong></li>
 </ul>
 <h3>2. PCB 设备</h3>
 <ul>
@@ -224,8 +219,8 @@ table.data tbody tr:has(.stk){cursor:pointer}
 </ul>
 <h3>5. "冲击千亿四大标的 / 三千亿标的"（卖方造势话术）</h3>
 <ul>
-<li>千亿四标的：<strong>芯碁微装 / 中国动力 / <span class="stk" data-code="TBD-强一股份"><span class="stk" data-code="TBD-强一股份">强一股份</span></span> / 银轮股份</strong></li>
-<li>三千亿标的：<strong><span class="stk" data-code="300604"><span class="stk" data-code="300604">长川科技</span></span> / 松发股份 / 杰瑞股份 / 鼎泰高科</strong></li>
+<li>千亿四标的：<strong>芯碁微装 / 中国动力 / <span class="stk" data-code="TBD-强一股份">强一股份</span> / 银轮股份</strong></li>
+<li>三千亿标的：<strong><span class="stk" data-code="300604">长川科技</span> / 松发股份 / 杰瑞股份 / 鼎泰高科</strong></li>
 </ul>
 <h2>三、疑点标注</h2>
 <ol>
@@ -234,9 +229,9 @@ table.data tbody tr:has(.stk){cursor:pointer}
 </ol>
 <h2>四、与本库的对照</h2>
 <ul>
-<li><span class="stk" data-code="688627"><span class="stk" data-code="688627">精智达</span></span>（持仓）：出现在广发机械半导体设备推荐名单（长鑫链），与《<span class="stk" data-code="688627"><span class="stk" data-code="688627">688627</span></span>-<span class="stk" data-code="688627"><span class="stk" data-code="688627">精智达</span></span>.md》"长鑫业绩股"逻辑同源。</li>
-<li><span class="stk" data-code="300604"><span class="stk" data-code="300604">长川科技</span></span> / <span class="stk" data-code="688200"><span class="stk" data-code="688200">华峰测控</span></span> / <span class="stk" data-code="688372"><span class="stk" data-code="688372">伟测科技</span></span> / <span class="stk" data-code="TBD-强一股份"><span class="stk" data-code="TBD-强一股份">强一股份</span></span>：已按 2026-09-27 测试产业链批量入池（观察-B类），详见《研报候选池.md》。</li>
-<li>电新出海主题与<strong><span class="stk" data-code="301581"><span class="stk" data-code="301581">明阳电气</span></span></strong>同源呼应，但 ZX 电新推荐标的中<strong>无<span class="stk" data-code="301581"><span class="stk" data-code="301581">明阳电气</span></span></strong>——注意明阳逻辑独立，不构成本报告背书。</li>
+<li><span class="stk" data-code="688627">精智达</span>（持仓）：出现在广发机械半导体设备推荐名单（长鑫链），与《<span class="stk" data-code="688627">688627</span>-<span class="stk" data-code="688627">精智达</span>.md》"长鑫业绩股"逻辑同源。</li>
+<li><span class="stk" data-code="300604">长川科技</span> / <span class="stk" data-code="688200">华峰测控</span> / <span class="stk" data-code="688372">伟测科技</span> / <span class="stk" data-code="TBD-强一股份">强一股份</span>：已按 2026-09-27 测试产业链批量入池（观察-B类），详见《研报候选池.md》。</li>
+<li>电新出海主题与<strong><span class="stk" data-code="301291">明阳电气</span></strong>同源呼应，但 ZX 电新推荐标的中<strong>无<span class="stk" data-code="301291">明阳电气</span></strong>——注意明阳逻辑独立，不构成本报告背书。</li>
 <li>其余热点（钧达股份 / 东方日升 / 芯碁微装 / 松发股份 / 杰瑞股份等）：仅记档不建池。</li>
 </ul></article></main></div><footer>BUILT 2026-09-28 · 数据以私有仓库为准 · 决策辅助非投资建议</footer><button id="toTop" title="回到顶部">↑</button>
 <script>
@@ -305,9 +300,7 @@ document.querySelectorAll('.search').forEach(function(inp){
   }
 })();
 </script>
-
-
-<script src="assets/stocks.js"></script>
+<script>if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(function(e){})</script><script src="assets/stocks.js"></script>
 <div id="smodal" class="smodal"><div class="spanel">
 <button class="smodal-x" title="关闭">×</button>
 <div class="scode" id="sm-code"></div>
