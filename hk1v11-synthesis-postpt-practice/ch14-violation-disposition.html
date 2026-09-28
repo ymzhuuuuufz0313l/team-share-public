@@ -60,8 +60,8 @@
 | # | 组 | 条数 | worst | 旧约束干了什么 | 现在是什么 | Δ | 结论 | 优先级 |
 |---|---|---|---|---|---|---|---|---|
 | 1 | RX_CLK setup | 89 | **-1.45** | 宽 `R_REG*` 组 mc2 -to RX_CLK 全覆盖 | 组剔除 10 分区（24 B 类 bit） | **约束→删除** | B 类裸消费，有意收紧；逐 bit 二选一；**R_REG47_F 13 条 0928 mc 闭环（全局 WNS −1.45 消失）** | P0 |
-| 2 | RX_CLK setup | 15 | -1.31 | G13 mc2 from-only 覆盖 | G13 注释 | **约束→删除** | 准静态，恢复 G13 即消 | P1 |
-| 3 | RX_CLK setup | 41 | -1.31 | G13 pattern 从未匹配 `_D1` | G13 注释（pattern 仍窄） | **从未约束** | G13 pattern 缺陷，扩 pattern 消 56 | P1 |
+| 2 | RX_CLK setup | 15 | -1.31 | G13 mc2 from-only 覆盖 | G13 注释 | **约束→删除** | ~~准静态，恢复 G13 即消~~ 0928 重分类：真实数据通路，交综合/RTL 重构 | P1 |
+| 3 | RX_CLK setup | 41 | -1.31 | G13 pattern 从未匹配 `_D1` | G13 注释（pattern 仍窄） | **从未约束** | ~~扩 pattern 消 56~~ 0928 重分类：真实，同上 | P1 |
 | 4 | RX_CLK setup | 139 | **-1.14** | 未覆盖（不在 cpuwr/G13/G14） | 未覆盖 | **从未约束** | RX 域真实关键路径 | P2 |
 | 5 | WCLK1_A_DCLK_SHORT | 139 | -0.11 | 唯一沾边的 `-through R_` 是死约束(0匹配) | 未覆盖 | **从未约束** | CHPI 配置写通路，真实(轻微) | P2 |
 | 6 | DCLK_DATA_MUX_SHORT | 23 | -0.43 | G1/G2 只对 R_REG03_L 起点生效 | 未覆盖 | **从未约束** | 像素同域数据通路，真实 | P2 |
@@ -123,9 +123,9 @@
 
 **Δ**：约束→删除（G13 注释）。
 
-**结论**：准静态 `DATA_POINT_LAT`，G13 注释**直接暴露**这 15 条（含 RX_CLK 的 clock-gating 检查）。代表路径 endpoint 是 `SNPS_CG_CELL_DCLK_DATA_POINT_LAT_reg_0/latch`（gating check）。
+**结论**：准静态 `DATA_POINT_LAT`，G13 注释**直接暴露**这 15 条（含 RX_CLK 的 clock-gating 检查）。代表路径 endpoint 是 `SNPS_CG_CELL_DCLK_DATA_POINT_LAT_reg_0/latch`（gating check）。**0928 审查修订（`_g13_datapoint_audit.md`）**："准静态"定性被推翻——DATA_POINT_LAT/_D1 是解串器位对齐桶形移位选择寄存器（K 码事件装载、更新→消费 0 拍、消费者无使能、漏 K1/K4 不自愈），双判据全不过 → ❌ 不可恢复 mc，**重分类为真实数据通路**。
 
-**建议处置**：与组 3 一起处理——把 G13 重写成覆盖本尊 + `_D1`（见 2.3），一次消 15+41=56 条。
+**建议处置**：~~与组 3 一起把 G13 重写覆盖本尊+`_D1`~~（0928 否决）→ **交综合（retime/upsizing 桶形+20bit 比较锥）或 RTL 预相移重构（mux 移到 1bit 结果侧）**，与组 3 及 139 条 CONFIG_DATA 同桶。
 
 **你应该看的 file:line**：
 - G13 注释本体：`ip_cons` **L329-330**
@@ -144,7 +144,7 @@
 
 **结论**：C 类。0922 审计已写明：0921V3 那 20 条近限路径里 **19 条 startpoint = `DATA_POINT_LAT_D1_reg_3_`**，`NOT matched by this waiver's pattern`。旧版"看起来对"其实是 waiver 没打中目标。
 
-**建议处置**：把 G13 重写为 `-from { .../DATA_POINT_LAT_reg*  .../DATA_POINT_LAT_D1_reg* }`（覆盖 SHORT/LONG 两实例），先与设计师确认 D1 与本尊同为准静态。一次消 56 条。
+**建议处置**：~~把 G13 重写覆盖本尊+`_D1`~~（0928 审查否决——D1 与本尊同为位对齐桶形移位选择寄存器，非准静态，❌ 不可恢复 mc）→ **交综合（retime/upsizing）或 RTL 预相移重构**，与组 2 及 139 条 CONFIG_DATA 同桶。
 
 **你应该看的 file:line**：
 - G13 pattern（看它为什么匹配不到 D1）：`ip_cons` **L329**（`DATA_POINT_LAT_reg*`——注意 `_reg` 前没有 `*`，中间插不进 `_D1`）
@@ -395,7 +395,7 @@
 | 优先级 | 动作 | 消多少 | 风险 |
 |---|---|---|---|
 | **P0** | 组 1：**0928 终局——9 分区逐 bit 翻案审查后整组回归组宽 mc，78 条闭环 + G14 两条 DPLC_CLK 窄 mc 闭环**（含 R_REG00_L 回组、休眠 B 类锚点含 HIZ_MIN_VAL[6:2] 全翻案，remove 10→1）；BKDU 保留单周期 + RTL 加同步（**BKDU/G1G2 0924 ymzhu 确认不能恢复**，修复=RTL 两级同步器） | 89（剩 BKDU 24 待 RTL） | 高 |
-| **P1** | 组 2+3：G13 重写为 `-from {DATA_POINT_LAT_reg*  DATA_POINT_LAT_D1_reg*}`（先确认准静态语义） | 56 | 低 |
+| **P1** | 组 2+3：~~G13 重写扩 pattern~~ 0928 审查否决（位对齐桶形移位选择寄存器，非准静态，❌ 不可 mc）→ **重分类真实数据通路：交综合 retime/upsizing 或 RTL 预相移重构**（与 139 CONFIG_DATA 同桶） | 56 | 高 |
 | **P1** | 组 8：恢复 G14 `R_REG06_F_reg_2_` 对（DC 用 `reg_2_`） | 2 | 低 |
 | **P1** | 组 9：DTCTL 门控换 ICG / 使能同步；复核 INDATA_SYNC `set_input_delay -min` | 30 | 中（结构） |
 | **P2** | 组 4/5/6/7：交综合（retime/流水）或 RTL 优化；WCLK1(-0.11) 大概率 DC 收敛 | 305 | 低 |
@@ -411,4 +411,4 @@
   <script src="./js/site.js"></script>
 </body>
 </html>
-<!-- ymzhu 2026-09-28 13:48 -->
+<!-- ymzhu 2026-09-28 14:58 -->
