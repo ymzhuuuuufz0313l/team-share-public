@@ -92,18 +92,19 @@
 | R_REG03_L | [2] BKDU | 24 | -0.16 | 像素数据通路/对齐使能 | `DATA16TO24.v:198`、`CHPI_KCODE_ALIGN_L0.v:265`、`ANCTL.v:162,168,336-342` |
 | R_REG40_F | [0:1] AABB（+[6] VPS_EN_0） | 23 | -1.00 | HSR_W_cnt/HSR 装载使能（`STB_B & HSR_ACTIVE`）+ STB_DLY/SCHOP-CG | `CHPI_SD_CTRL.v:567`、`ANCTL.v:171/189/205` |
 | R_REG47_F | [1:6] HIZ_MIN（+reg_7_ LD_D_OPT） | 13 | **-1.45** | TP 计数器直喂；**0928 ymzhu 确认 mc2/1（-to RX_CLK）已加，13 条全闭环** | `CHPI_SD_CTRL.v:180-201` |
-| R_REG33_F | [4:6] UTC/FRM_CHK | 12 | -0.34 | 比较活 UTC 计数器 | `CHPI_UTC_CHK.v:27-31`、`SHORT_ENCODING_ERROR_CTRL.v:27` |
-| R_REG56_F | [0:3] UTC 阈值 | 11 | -0.36 | 活计数器比较 | `LONG_ENCODING_ERROR_CTRL.v:227-260` |
-| R_REG57_F | [0:2] UTC 阈值 | 6 | -0.88 | 同 R_REG56_F 链 | `LONG_ENCODING_ERROR_CTRL.v:227-260` |
+| R_REG33_F | [4:6] UTC/FRM_CHK | 12 | -0.34 | 比较活 UTC 计数器；**✅ 0928 mc 闭环（1c447cd1）：[4] 4 条（−0.34）+ [6] 8 条（−0.09）** | `CHPI_UTC_CHK.v:27-31`、`SHORT_ENCODING_ERROR_CTRL.v:27` |
+| R_REG56_F | [0:3] UTC 阈值 | 11 | -0.36 | 活计数器比较；**✅ 0928 mc 闭环（1c447cd1）：[3] 5 条（−0.36）+ [1] 6 条（−0.17）** | `LONG_ENCODING_ERROR_CTRL.v:227-260` |
+| R_REG57_F | [0:2] UTC 阈值 | 6 | -0.88 | 同 R_REG56_F 链；**✅ 0928 mc 闭环（1c447cd1）：[1] 6 条（−0.88，9 级锥）** | `LONG_ENCODING_ERROR_CTRL.v:227-260` |
 
 > 注：`ANCTL.v` BKDU 消费点为 L162（`DRA_CS`）、L168（`CS_VCOM`）、L336-342（`POFF_CH*` 族）；`LC_REG_MAPPING.v:331` = `assign HSR_ACTIVE = (R_HSR_BLANK_ON | ~BKDU_SYNC) & R_HSR_EN`。原 `ip_cons` L385-412 审计注释里的 `ANCTL.v:147,153`/`LC_REG_MAPPING.v:322` 为漂移行号（见 §3.4）。另：`R_REG40_F[7]` DBC_VBK_ON 是本分区审计 B 类锚点（`HSR_ACTIVE` 裸项，per-beat），但本 run 它 **0 条违例**——23 条全来自 `[0:1]` AABB（21）+ `[6]` VPS_EN_0（2），且两组均已确认加 mc（0924/0928，见下）。
 
 **结论**：形式上 100% 是"收窄暴露"。但这 24 bit 是审计**有意**挑出来的 B 类（裸 per-beat 消费者、无同步器），收窄是收紧不是 bug。其中要**逐 bit 二选一**：
 - **一次性/准静态配置**（HIZ 类 `R_REG47_F`、AABB 类 `R_REG40_F[0:1]`）：写入窗口远离工作拍 → 可恢复窄 `-to` 豁免。**AABB `R_REG40_F[0:1]`：0924 ymzhu 确认一次性 I2C 初始化配置、显示期稳定几百拍 → 已加 mc2/1（`-to RX_CLK`）**，闭环 21 条 HSR/STB/SCHOP 端点（worst −1.00）；同分区 `[7]` DBC_VBK_ON 为 B 类 per-beat 保持单拍；`[6]` VPS_EN_0 **0928 ymzhu 确认一次性初始化写、已追加进 mc `-from`，2 条闭环**——消费者 R_PWRCP_COP/R_PWRCN_COP 仅 `STB_PE_DLY` 拍装载（`LC_REG_MAPPING.v:281`，配置期不装载，与 AABB 同构），安全前提 = 写入时 R_BKDU=0（此时 casex 输出与 VPS_EN_0 无关）。**R_REG40_F 分区 23 条至此全闭环。** **R_REG47_F（HIZ_MIN_SEL 3 条 + LD_D_OPT 10 条）0928 ymzhu 确认 mc2/1（`-to RX_CLK`，`-from {R_REG47_F_reg_1_ R_REG47_F_reg_7_}`，镜像 AABB/VPS_EN_0 块结构）已加，13 条闭环（worst −1.45 = 原全局 WNS，现已消失）**：初判 B 类（组合选通进逐拍比较锥，`CHPI_SD_CTRL.v:187`）后经 SET 路径分析翻案——TP_ACT0_SET_OK 不含 HIZ 锥（`CHPI_SD_CTRL.v:201/:177`），垃圾值不可能造假脉冲，唯一危害是写入拍 ±2 撞上活动行脉冲；ymzhu 确认仅寄存器配置阶段写、运行期不热改 → 垃圾窗落在无人消费时段 → mc 安全。**方法论：'配置末尾写 + 立马生效'不能 mc（BKDU 反例）；'配置中段写 + 消费者后级才激活 / 帧相位门控'可以 mc。**
-- **每拍活消费**（UTC 比较 `R_REG33/56/57`、BKDU `R_REG03_L[2]`）：恢复豁免 = 放走真违例 → **只能 RTL 加同步/门控**。
+- **每拍活消费**（UTC 比较 `R_REG33/56/57`、BKDU `R_REG03_L[2]`）：恢复豁免 = 放走真违例 → **只能 RTL 加同步/门控**（**0928 修订：UTC 三分区 29 条已定案 mc 闭环、无需 RTL 改动**，见下）。
+  - **UTC 三分区 29 条：0928 ymzhu 定案 mc 闭环（commit 1c447cd1）**——同一对 mc2/1（`-to RX_CLK`），bit-exact `-from` 5 bit（R_REG57_F[1] 6 条 −0.88 + R_REG33_F[4] 4 条 −0.34 + R_REG33_F[6] 8 条 −0.09 + R_REG56_F[3] 5 条 −0.36 + R_REG56_F[1] 6 条 −0.17），bit 精确不加宽（R_MON_DC_VOL 未验不罩）。判据：① ymzhu 时序版——寄存器帧 3 地址/拍写入，0x21/0x38/0x39 = 行 33/56/57、FBANK 收尾 0x44 = 行 68，均非最后一拍；② "钳死"结构——UTC 计数器使能关时恒清零（`SHORT_ENCODING_ERROR_CTRL.v:33/76-79`、`LONG_ENCODING_ERROR_CTRL.v:193-218`），CNT=0 < 最小 THD(2) → mc 垃圾窗内比较输出恒 0，不可能假脉冲。分析报告：`_reg33/56/57_mc_analysis.md`、`_hiz_min_sel_mc_phase_analysis.md`。
   - **BKDU `R_REG03_L[2]`（G1/G2）：0924 ymzhu 确认不能恢复（不能加 waiver）**——0922 run 中 24 条 BKDU→PIX_DATA 路径是活的（0921V3 曾被综合剪掉标 `p` 空转，现已复活），worst −0.16；R_BKDU 裸跨域进 DCLK 域像素逻辑无同步器 = 真实 CDC 亚稳态风险，waiver 只放宽 STA、治不了跨域。修复 = 把 `LC_REG_MAPPING` `BKDU_SYNC` 由单级扩两级并接像素路径（`LONG_ENCODING_OUTPUT.v:333/397`）。
 
-**建议处置**：不要一刀切恢复 blanket。逐 bit：准静态的恢复窄 mc（**AABB `R_REG40_F[0:1]` 0924 + VPS_EN_0 `[6]` 0928 均已确认、mc2/1 已加，23 条全闭环；R_REG47_F 0928 mc 已加，13 条闭环**）；UTC 比较类保留单周期 + RTL 修；**BKDU 0924 已确认走 RTL 两级同步器**。
+**建议处置**：不要一刀切恢复 blanket。逐 bit：准静态的恢复窄 mc（**AABB `R_REG40_F[0:1]` 0924 + VPS_EN_0 `[6]` 0928 均已确认、mc2/1 已加，23 条全闭环；R_REG47_F 0928 mc 已加，13 条闭环**）；UTC 比较类 **0928 已定案 mc 闭环（commit 1c447cd1，29 条全闭环，判据 = 非最后一拍写入 + 计数器钳死结构）**；**BKDU 0924 已确认走 RTL 两级同步器**。至此收窄暴露 89 条仅剩 BKDU 24 条待 RTL 实施。
 
 **你应该看的 file:line**：
 - 约束剔除本体：`ip_cons` **L413-424**（`get_cells R_REG*` + `remove_from_collection` 10 分区）
@@ -393,7 +394,7 @@
 
 | 优先级 | 动作 | 消多少 | 风险 |
 |---|---|---|---|
-| **P0** | 组 1 逐 bit 评审：准静态恢复窄 `-to` 豁免（**AABB R_REG40_F[0:1] 0924 + VPS_EN_0 [6] 0928 均已确认、mc2/1 已加，23 条全闭环**）；UTC 比较/BKDU 保留单周期 + RTL 加同步（**BKDU/G1G2 0924 ymzhu 确认不能恢复**，修复=RTL 两级同步器） | 89（部分） | 高（逐 bit，别一刀切） |
+| **P0** | 组 1 逐 bit 评审：准静态恢复窄 `-to` 豁免（**AABB R_REG40_F[0:1] 0924 + VPS_EN_0 [6] 0928 均已确认、mc2/1 已加，23 条全闭环；R_REG47_F 0928 mc 已加，13 条闭环；UTC R_REG33/56/57 0928 定案 mc 闭环（commit 1c447cd1），29 条全闭环**）；BKDU 保留单周期 + RTL 加同步（**BKDU/G1G2 0924 ymzhu 确认不能恢复**，修复=RTL 两级同步器） | 89（剩 BKDU 24 待 RTL） | 高（逐 bit，别一刀切） |
 | **P1** | 组 2+3：G13 重写为 `-from {DATA_POINT_LAT_reg*  DATA_POINT_LAT_D1_reg*}`（先确认准静态语义） | 56 | 低 |
 | **P1** | 组 8：恢复 G14 `R_REG06_F_reg_2_` 对（DC 用 `reg_2_`） | 2 | 低 |
 | **P1** | 组 9：DTCTL 门控换 ICG / 使能同步；复核 INDATA_SYNC `set_input_delay -min` | 30 | 中（结构） |
@@ -410,4 +411,4 @@
   <script src="./js/site.js"></script>
 </body>
 </html>
-<!-- ymzhu 2026-09-28 11:11 -->
+<!-- ymzhu 2026-09-28 11:17 -->

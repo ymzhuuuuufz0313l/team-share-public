@@ -434,9 +434,11 @@ RX_CLK 组是本次收窄影响最大的组，284 条中：89 条收窄暴露 + 
 | `R_REG03_L_reg_2_`（BKDU） | 24 | -0.16 | 旧 grp 为宽 `R_REG*`，mc2 -start -to RX_CLK 覆盖；另有 G1/G2 -to PIX_DATA/PIX_CLK_EN | 新版 `remove R_REG03_L_*`；G1/G2 注释 |
 | `R_REG40_F_reg_1_/_0_/_6_` | 23 | -1.00 | 旧宽组 mc2 | `remove R_REG40_F_reg*`（[7] R_DBC_VBK_ON 为审计 B 类锚点，整分区剔出）；**[0:1] AABB 0924 + [6] VPS_EN_0 0928 均确认一次性初始化配置，mc2/1（-to RX_CLK）已加，23 条全闭环** |
 | `R_REG47_F_reg_7_/_1_` | 13 | **-1.45**（原全局 WNS） | 旧宽组 mc2 | `remove R_REG47_F_reg*`（HIZ_MIN_SEL/VAL 裸进 TP 计数器）；**0928 ymzhu 确认 mc2/1（-to RX_CLK）已加，13 条全闭环，全局 WNS −1.45 消失** |
-| `R_REG33_F_reg_6_/_4_` | 12 | -0.34 | 旧宽组 mc2 | `remove R_REG33_F_reg*`（R_UTC/R_FRM_CHK_MODE 比较活 UTC 计数器） |
-| `R_REG56_F_reg_1_/_3_` | 11 | -0.36 | 旧宽组 mc2 | `remove R_REG56_F_reg*`（UTC 阈值） |
-| `R_REG57_F_reg_1_` | 6 | -0.88 | 旧宽组 mc2 | `remove R_REG57_F_reg*`（UTC 阈值） |
+| `R_REG33_F_reg_6_/_4_` | 12 | -0.34 | 旧宽组 mc2 | `remove R_REG33_F_reg*`（R_UTC/R_FRM_CHK_MODE 比较活 UTC 计数器）；**✅ 0928 mc 闭环 12 条（commit 1c447cd1）：[4] 4 条（worst −0.34）+ [6] 8 条（worst −0.09），mc2/1 -to RX_CLK，bit-exact -from** |
+| `R_REG56_F_reg_1_/_3_` | 11 | -0.36 | 旧宽组 mc2 | `remove R_REG56_F_reg*`（UTC 阈值）；**✅ 0928 mc 闭环 11 条（commit 1c447cd1）：[3] 5 条（worst −0.36）+ [1] 6 条（worst −0.17），同上 mc 对** |
+| `R_REG57_F_reg_1_` | 6 | -0.88 | 旧宽组 mc2 | `remove R_REG57_F_reg*`（UTC 阈值）；**✅ 0928 mc 闭环 6 条（commit 1c447cd1）：[1] 6 条（worst −0.88，9 级锥），同上 mc 对** |
+
+> **UTC 29 条 0928 mc 闭环判据（commit 1c447cd1）**：同一对 mc2/1（`-to RX_CLK`），bit-exact `-from` 共 5 bit（R_REG57_F[1]、R_REG33_F[4]/[6]、R_REG56_F[3]/[1]，bit 精确不加宽——R_MON_DC_VOL 未验不罩）。双重判据：① ymzhu 时序版——寄存器帧以 3 地址/拍写入，0x21/0x38/0x39 = 行 33/56/57、FBANK 收尾 0x44 = 行 68，均非最后一拍（对比 BKDU 反例的"配置末尾写"）；② "钳死"结构——UTC 计数器使能关时恒清零（`SHORT_ENCODING_ERROR_CTRL.v:33/76-79`、`LONG_ENCODING_ERROR_CTRL.v:193-218`），CNT=0 < 最小 THD(2) → mc 垃圾窗内比较输出恒 0，不可能假脉冲。至此 89 条收窄暴露仅剩 BKDU 24 条（定案不加 mc、走 RTL 两级同步器，待实施）。分析报告：`_reg33/56/57_mc_analysis.md`、`_hiz_min_sel_mc_phase_analysis.md`。
 | **小计** | **89** | — | — | — |
 
 **报告定位（89 条逐条行号）**：全部 89 条都在同一个文件——
@@ -475,7 +477,7 @@ R_REG47_F_reg_1_/CK (WCLK1_A_DCLK_SHORT, 4.57ns)
 
 **定性**：形式上 100% 是收窄暴露。但 0921/0922 bit 级审计把这 24 bit 定为 B 类（裸 per-beat 消费者、无同步器），收窄是有意的收紧——其中相当一部分语义上是真检查（尤其 R_REG33/56/57 的 UTC 比较链、R_REG47 的 HIZ_MIN/TP 计数链），不是"变化之前是对的"。需逐 bit 由设计确认：
 - 一次性配置（HIZ 类）→ 恢复窄豁免（**R_REG47_F 已 0928 定案并实施 mc2/1（-to RX_CLK），13 条闭环**：初判 B 类后经 SET 路径分析翻案——TP_ACT0_SET_OK 不含 HIZ 锥（`CHPI_SD_CTRL.v:201/:177`），垃圾值不可能造假脉冲，唯一危害是写入拍 ±2 撞上活动行脉冲，而 HIZ 仅寄存器配置阶段写、运行期不热改 → 垃圾窗落在无人消费时段，mc 安全）
-- 运行时每拍消费（UTC 比较类）→ RTL 加同步/使能门控
+- 运行时每拍消费（UTC 比较类）→ RTL 加同步/使能门控（**0928 更新：UTC 三分区 29 条已定案 mc 闭环（commit 1c447cd1），走的是"帧相位门控 + 钳死结构"路线而非 RTL 改动**——写窗非最后一拍 + 计数器使能关时恒清零使垃圾窗比较输出恒 0，见 5.1.1 判据块）
 
 > 方法论（0928 定案）：**"配置末尾写 + 立马生效"不能 mc（BKDU 反例）；"配置中段写 + 消费者后级才激活 / 帧相位门控"可以 mc**。
 
@@ -644,6 +646,7 @@ R_REG06_F_reg_2_/Q
 3. **K3 额外细化**：
    - 全设计 WNS -1.45 精确定位在 `R_REG47_F_reg_1_`（HIZ_MIN）→ `CHPI_SD_CTRL/CS_SIG_ORG_reg`（`CHPI_SD_CTRL.v:180-201`，B 类无同步直喂 TP 计数器）。**0928 更新：该全局 WNS 已由 R_REG47_F mc2/1（-to RX_CLK）消除，13 条全闭环**。
    - BKDU = `R_REG03_L[2]` 是 B 类 bare per-beat 消费者 = 真实单周期检查（`LONG_ENCODING_OUTPUT.v:329-338` PIX_CLK_EN），恢复豁免 = 错误，只能 RTL 加同步。
+   - **0928 更新**：R_REG33/56/57（UTC）29 条已定案 mc 闭环（commit 1c447cd1，判据见 5.1.1）；收窄暴露 89 条仅剩 BKDU 24 条待 RTL 两级同步器实施。
 
 ### 6.4 交叉核对方法学总结
 
@@ -674,6 +677,8 @@ R_REG06_F_reg_2_/Q
 2. **但 (A) 类多数不是简单"假 path 该恢复豁免"**：89 条 R_REG* 起点正是 bit 级审计判为 B 类（裸 per-beat 消费者）的 24 bit，收窄是有意收紧，恢复 blanket 会掩盖真检查。需逐 bit 二选一：
    - 一次性配置（HIZ/DPLC_MODE 类）→ 恢复窄 `-to` 豁免
    - 每拍消费（UTC 比较类）→ 走 RTL 同步器
+   
+   **0928 进度**：89 条中 R_REG40_F 23 条（AABB+VPS_EN_0）、R_REG47_F 13 条、UTC 29 条（commit 1c447cd1）均已 mc 闭环，仅剩 BKDU 24 条定案走 RTL 两级同步器（待实施）。
 
 3. **最大头（69.5%）与约束变化无关**：WCLK1 139、DCLK_MUX 23、RX 数据通路 139、DTCTL 门控 hold 30，在旧约束下同样是单周期裸奔（唯一疑似覆盖的 `-through LC_CPUWR/R_` 是从未匹配任何对象的死约束）。
 
@@ -687,7 +692,7 @@ R_REG06_F_reg_2_/Q
 |--------|------|------|------|------|
 | **1** | DPLC_MODE（2 条 -0.38） | 2 | 恢复 G14 的 `R_REG06_F_reg_2_` 对（DC 下用 `reg_2_` 形式），或并入 G10 类 `set_max_delay` | 低风险（一次性模式 bit） |
 | **2** | DATA_POINT_LAT 家族（15+41 条，worst -1.31） | 56 | 与设计师确认准静态语义后，把 G13 重写为 `-from` 同时列 `DATA_POINT_LAT_reg*` 与 `DATA_POINT_LAT_D1_reg*`（覆盖 SHORT/LONG 两实例），一次消 56 条 | 中（需设计确认） |
-| **3** | 89 条 R_REG* (A) 类 | 89 | 逐 bit 评审：**R_REG40_F[0:1](AABB) 0924 + [6](VPS_EN_0) 0928 ymzhu 确认一次性 I2C 初始化配置，mc2/1（-to RX_CLK）已加，23 条全闭环**；**R_REG47_F(HIZ_MIN/LD_D_OPT) 0928 ymzhu 确认 mc2/1（-to RX_CLK）已加，13 条闭环（判定翻案：SET 路径不含 HIZ 锥，仅寄存器配置阶段写、运行期不热改，垃圾窗落在无人消费时段）**；R_REG34_F(HIZ_SEL) 若确认写入窗口远离工作拍，恢复该 bit 到指定 endpoint 时钟的窄 mc；**R_REG03_L(BKDU) 0924 ymzhu 确认不能恢复（G1/G2），修复=RTL 两级同步器**；R_REG33/56/57(UTC 比较) 保留单周期并 RTL 加门控/同步，否则改 UTC 比较结构 | 高（需逐 bit 设计确认） |
+| **3** | 89 条 R_REG* (A) 类 | 89 | 逐 bit 评审：**R_REG40_F[0:1](AABB) 0924 + [6](VPS_EN_0) 0928 ymzhu 确认一次性 I2C 初始化配置，mc2/1（-to RX_CLK）已加，23 条全闭环**；**R_REG47_F(HIZ_MIN/LD_D_OPT) 0928 ymzhu 确认 mc2/1（-to RX_CLK）已加，13 条闭环（判定翻案：SET 路径不含 HIZ 锥，仅寄存器配置阶段写、运行期不热改，垃圾窗落在无人消费时段）**；R_REG34_F(HIZ_SEL) 若确认写入窗口远离工作拍，恢复该 bit 到指定 endpoint 时钟的窄 mc；**R_REG03_L(BKDU) 0924 ymzhu 确认不能恢复（G1/G2），修复=RTL 两级同步器**；**R_REG33/56/57（UTC）0928 ymzhu 定案 mc 闭环（commit 1c447cd1）：29 条全闭环（R_REG57_F[1] 6 条 −0.88 + R_REG33_F[4] 4 条 −0.34 + [6] 8 条 −0.09 + R_REG56_F[3] 5 条 −0.36 + [1] 6 条 −0.17），判据 = 寄存器帧非最后一拍写入 + UTC 计数器使能关时恒清零（钳死结构，垃圾窗比较输出恒 0）**，详见 5.1.1 | 高（需逐 bit 设计确认） |
 | **4** | RX 数据通路 139 + WCLK1 139 + PIX_DATA 23 | 301 | 真实问题，交综合（ungroup/retime/大小 cell 重映射，尤其 CHPI_SD_CTRL 12 级组合链、LC_CPUWR 写通路）或 RTL 流水；WCLK1 仅 -0.11，DC 优化裕量大概率够 | 中（综合迭代） |
 | **5** | DTCTL SD/DPLC 门控 hold（-4.19 结构性） | 10 | 时钟生成结构问题，考虑 gating cell 换 ICG 或在门控前对 n751/n759 加同步；APR 后用真实时钟树复核 | 高（RTL 改动） |
 | **6** | INDATA_SYNC hold 20 条 | 20 | 核对 `set_input_delay -min -0.3` 与板上 RX_CLK skew 预算，必要时调 min 值或加 pad delay | 低（约束调整） |
@@ -842,4 +847,4 @@ rep_dir_0922_1456/  新 DC 跑输出目录
   <script src="./js/site.js"></script>
 </body>
 </html>
-<!-- ymzhu 2026-09-28 11:11 -->
+<!-- ymzhu 2026-09-28 11:17 -->
