@@ -104,7 +104,7 @@
   - **UTC 三分区 29 条：0928 ymzhu 定案 mc 闭环（commit 1c447cd1）**——同一对 mc2/1（`-to RX_CLK`），bit-exact `-from` 5 bit（R_REG57_F[1] 6 条 −0.88 + R_REG33_F[4] 4 条 −0.34 + R_REG33_F[6] 8 条 −0.09 + R_REG56_F[3] 5 条 −0.36 + R_REG56_F[1] 6 条 −0.17），bit 精确不加宽（R_MON_DC_VOL 未验不罩）。判据：① ymzhu 时序版——寄存器帧 3 地址/拍写入，0x21/0x38/0x39 = 行 33/56/57、FBANK 收尾 0x44 = 行 68，均非最后一拍；② "钳死"结构——UTC 计数器使能关时恒清零（`SHORT_ENCODING_ERROR_CTRL.v:33/76-79`、`LONG_ENCODING_ERROR_CTRL.v:193-218`），CNT=0 < 最小 THD(2) → mc 垃圾窗内比较输出恒 0，不可能假脉冲。分析报告：`_reg33/56/57_mc_analysis.md`、`_hiz_min_sel_mc_phase_analysis.md`。
   - **BKDU `R_REG03_L[2]`（G1/G2）：0924 ymzhu 确认不能恢复（不能加 waiver）**——0922 run 中 24 条 BKDU→PIX_DATA 路径是活的（0921V3 曾被综合剪掉标 `p` 空转，现已复活），worst −0.16；R_BKDU 裸跨域进 DCLK 域像素逻辑无同步器 = 真实 CDC 亚稳态风险，waiver 只放宽 STA、治不了跨域。修复 = 把 `LC_REG_MAPPING` `BKDU_SYNC` 由单级扩两级并接像素路径（`LONG_ENCODING_OUTPUT.v:333/397`）。
 
-**建议处置**：不要一刀切恢复 blanket。逐 bit：准静态的恢复窄 mc（**AABB `R_REG40_F[0:1]` 0924 + VPS_EN_0 `[6]` 0928 均已确认、mc2/1 已加，23 条全闭环；R_REG47_F 0928 mc 已加，13 条闭环**）；UTC 比较类 **0928 已定案 mc 闭环（commit 1c447cd1，29 条全闭环，判据 = 非最后一拍写入 + 计数器钳死结构）**；**BKDU 0924 已确认走 RTL 两级同步器**。至此收窄暴露 89 条仅剩 BKDU 24 条待 RTL 实施。**0928 终态结构简化（commit 6b5a2394）：7 分区（R_REG33/34/40/41/46/56/57_F）经 `_group_rejoin_audit.md` 逐 bit 翻案审查后整组回归 `cpuwr_reg_grp` 宽 mc——remove 列表 10→3（仅剩 R_REG00_L / R_REG03_L / R_REG47_F），AABB/UTC 两组窄 mc 块删除（组通配 `R_REG*` 顺带消除 bit 精确名 DC 分支失配风险）；休眠 B 类锚点（DBC_VBK_ON 经端口换名进 HSR_ACTIVE、HIZ_SEL、DBC、TP_F_AHEAD）全部翻案为 AABB 同构门控结构。回归检查点：下次 run BKDU 24 条必须仍单拍违例可见 + SEL-004 无新增。**
+**建议处置**：不要一刀切恢复 blanket。逐 bit：准静态的恢复窄 mc（**AABB `R_REG40_F[0:1]` 0924 + VPS_EN_0 `[6]` 0928 均已确认、mc2/1 已加，23 条全闭环；R_REG47_F 0928 mc 已加，13 条闭环**）；UTC 比较类 **0928 已定案 mc 闭环（commit 1c447cd1，29 条全闭环，判据 = 非最后一拍写入 + 计数器钳死结构）**；**BKDU 0924 已确认走 RTL 两级同步器**。至此收窄暴露 89 条仅剩 BKDU 24 条待 RTL 实施。**0928 终态结构简化（commit 6b5a2394 + 769b213f）：8 分区（R_REG33/34/40/41/46/47/56/57_F）经逐 bit 翻案审查（`_group_rejoin_audit.md` + `_reg47_rejoin_audit.md`）后整组回归 `cpuwr_reg_grp` 宽 mc——remove 列表 10→2（仅剩 R_REG00_L / R_REG03_L），AABB/UTC/R_REG47_F 三组窄 mc 块全删（文件中 bit 精确名清零，DC 分支失配风险消除）；休眠 B 类锚点（DBC_VBK_ON 经端口换名进 HSR_ACTIVE、HIZ_SEL、DBC、TP_F_AHEAD、HIZ_MIN_VAL[6:2]——SET 锥不含 HIZ、>= 自愈、锥活防 PVT 复发）全部翻案为 AABB 同构门控结构。回归检查点：下次 run BKDU 24 条必须仍单拍违例可见 + 其余 78 条全消 + SEL-004 无新增。**
 
 **你应该看的 file:line**：
 - 约束剔除本体：`ip_cons` **L413-424**（`get_cells R_REG*` + `remove_from_collection` 10 分区）
@@ -394,7 +394,7 @@
 
 | 优先级 | 动作 | 消多少 | 风险 |
 |---|---|---|---|
-| **P0** | 组 1：**0928 终态——7 分区逐 bit 翻案审查后整组回归组宽 mc，65 条闭环**（AABB/VPS_EN_0 23 + R_REG47_F 13 + UTC 29；休眠 B 类锚点全翻案为 AABB 同构门控结构，remove 10→3）；BKDU 保留单周期 + RTL 加同步（**BKDU/G1G2 0924 ymzhu 确认不能恢复**，修复=RTL 两级同步器） | 89（剩 BKDU 24 待 RTL） | 高 |
+| **P0** | 组 1：**0928 终态——8 分区逐 bit 翻案审查后整组回归组宽 mc，78 条闭环**（AABB/VPS_EN_0 23 + R_REG47_F 13 + UTC 29 + 同锥休眠位；休眠 B 类锚点含 HIZ_MIN_VAL[6:2] 全翻案，remove 10→2）；BKDU 保留单周期 + RTL 加同步（**BKDU/G1G2 0924 ymzhu 确认不能恢复**，修复=RTL 两级同步器） | 89（剩 BKDU 24 待 RTL） | 高 |
 | **P1** | 组 2+3：G13 重写为 `-from {DATA_POINT_LAT_reg*  DATA_POINT_LAT_D1_reg*}`（先确认准静态语义） | 56 | 低 |
 | **P1** | 组 8：恢复 G14 `R_REG06_F_reg_2_` 对（DC 用 `reg_2_`） | 2 | 低 |
 | **P1** | 组 9：DTCTL 门控换 ICG / 使能同步；复核 INDATA_SYNC `set_input_delay -min` | 30 | 中（结构） |
@@ -411,4 +411,4 @@
   <script src="./js/site.js"></script>
 </body>
 </html>
-<!-- ymzhu 2026-09-28 12:24 -->
+<!-- ymzhu 2026-09-28 12:44 -->

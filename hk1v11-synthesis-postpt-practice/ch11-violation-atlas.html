@@ -433,14 +433,14 @@ RX_CLK 组是本次收窄影响最大的组，284 条中：89 条收窄暴露 + 
 |----------------|------|-------|-------------|-------------|
 | `R_REG03_L_reg_2_`（BKDU） | 24 | -0.16 | 旧 grp 为宽 `R_REG*`，mc2 -start -to RX_CLK 覆盖；另有 G1/G2 -to PIX_DATA/PIX_CLK_EN | 新版 `remove R_REG03_L_*`；G1/G2 注释 |
 | `R_REG40_F_reg_1_/_0_/_6_` | 23 | -1.00 | 旧宽组 mc2 | `remove R_REG40_F_reg*`（[7] R_DBC_VBK_ON 为审计 B 类锚点，整分区剔出）；**[0:1] AABB 0924 + [6] VPS_EN_0 0928 确认一次性初始化配置 → 逐 bit 翻案审查通过，0928 整分区回归组宽 mc（remove 10→3，窄 mc 块删除），23 条全闭环** |
-| `R_REG47_F_reg_7_/_1_` | 13 | **-1.45**（原全局 WNS） | 旧宽组 mc2 | `remove R_REG47_F_reg*`（HIZ_MIN_SEL/VAL 裸进 TP 计数器）；**0928 ymzhu 确认 mc2/1（-to RX_CLK）已加，13 条全闭环，全局 WNS −1.45 消失** |
+| `R_REG47_F_reg_7_/_1_` | 13 | **-1.45**（原全局 WNS） | 旧宽组 mc2 | `remove R_REG47_F_reg*`（HIZ_MIN_SEL/VAL 裸进 TP 计数器）；**0928 ymzhu 确认 mc2/1（-to RX_CLK）已加，13 条全闭环，全局 WNS −1.45 消失；随后 [6:2] HIZ_MIN_VAL 补审翻案（`_reg47_rejoin_audit.md`：SET 锥不含 HIZ、>= 自愈、锥活防 PVT 复发）→ 整分区回归组宽 mc（commit 769b213f），窄 mc 块删除** |
 | `R_REG33_F_reg_6_/_4_` | 12 | -0.34 | 旧宽组 mc2 | `remove R_REG33_F_reg*`（R_UTC/R_FRM_CHK_MODE 比较活 UTC 计数器）；**✅ 0928 mc 闭环 12 条（[4]×4 worst −0.34 + [6]×8 worst −0.09）→ 翻案后整分区回归组宽 mc** |
 | `R_REG56_F_reg_1_/_3_` | 11 | -0.36 | 旧宽组 mc2 | `remove R_REG56_F_reg*`（UTC 阈值）；**✅ 0928 mc 闭环 11 条（[3]×5 worst −0.36 + [1]×6 worst −0.17）→ 翻案后整分区回归组宽 mc** |
 | `R_REG57_F_reg_1_` | 6 | -0.88 | 旧宽组 mc2 | `remove R_REG57_F_reg*`（UTC 阈值）；**✅ 0928 mc 闭环 6 条（[1]×6 worst −0.88，9 级锥）→ 翻案后整分区回归组宽 mc** |
 
 > **UTC 29 条 0928 mc 闭环判据（commit 1c447cd1）**：同一对 mc2/1（`-to RX_CLK`），bit-exact `-from` 共 5 bit（R_REG57_F[1]、R_REG33_F[4]/[6]、R_REG56_F[3]/[1]，bit 精确不加宽——R_MON_DC_VOL 未验不罩）。双重判据：① ymzhu 时序版——寄存器帧以 3 地址/拍写入，0x21/0x38/0x39 = 行 33/56/57、FBANK 收尾 0x44 = 行 68，均非最后一拍（对比 BKDU 反例的"配置末尾写"）；② "钳死"结构——UTC 计数器使能关时恒清零（`SHORT_ENCODING_ERROR_CTRL.v:33/76-79`、`LONG_ENCODING_ERROR_CTRL.v:193-218`），CNT=0 < 最小 THD(2) → mc 垃圾窗内比较输出恒 0，不可能假脉冲。至此 89 条收窄暴露仅剩 BKDU 24 条（定案不加 mc、走 RTL 两级同步器，待实施）。分析报告：`_reg33/56/57_mc_analysis.md`、`_hiz_min_sel_mc_phase_analysis.md`。
 
-> **0928 终态（结构简化，commit 6b5a2394）**：7 分区（R_REG33/34/40/41/46/56/57_F）经 `_group_rejoin_audit.md` 逐 bit 翻案审查后**整组回归 `cpuwr_reg_grp` 宽 mc**——remove 列表 10→3（仅剩 R_REG00_L / R_REG03_L-BKDU / R_REG47_F），AABB/UTC 两组窄 mc 块删除（组通配 `R_REG*` 两种命名通吃，顺带消除 bit 精确名 DC 分支失配风险）。休眠 B 类锚点（DBC_VBK_ON/HIZ_SEL/DBC/TP_F_AHEAD）全部翻案：实为端口换名/门控装载/配置期钳制的 AABB 同构结构。回归检查点：下次 run **BKDU 24 条必须仍单拍违例可见** + SEL-004 无新增。
+> **0928 终态（结构简化，commit 6b5a2394 + 769b213f）**：8 分区（R_REG33/34/40/41/46/47/56/57_F）经逐 bit 翻案审查（`_group_rejoin_audit.md` + `_reg47_rejoin_audit.md`）后**整组回归 `cpuwr_reg_grp` 宽 mc**——remove 列表 10→**2**（仅剩 R_REG00_L / R_REG03_L-BKDU），AABB/UTC/R_REG47_F 三组窄 mc 块全删（文件中不再有 bit 精确名，DC 分支失配风险清零）。休眠 B 类锚点（DBC_VBK_ON/HIZ_SEL/DBC/TP_F_AHEAD/HIZ_MIN_VAL）全部翻案：实为端口换名/门控装载/配置期钳制的 AABB 同构结构。回归检查点：下次 run **BKDU 24 条必须仍单拍违例可见 + 其余 78 条全消** + SEL-004 无新增。
 | **小计** | **89** | — | — | — |
 
 **报告定位（89 条逐条行号）**：全部 89 条都在同一个文件——
@@ -694,7 +694,7 @@ R_REG06_F_reg_2_/Q
 |--------|------|------|------|------|
 | **1** | DPLC_MODE（2 条 -0.38） | 2 | 恢复 G14 的 `R_REG06_F_reg_2_` 对（DC 下用 `reg_2_` 形式），或并入 G10 类 `set_max_delay` | 低风险（一次性模式 bit） |
 | **2** | DATA_POINT_LAT 家族（15+41 条，worst -1.31） | 56 | 与设计师确认准静态语义后，把 G13 重写为 `-from` 同时列 `DATA_POINT_LAT_reg*` 与 `DATA_POINT_LAT_D1_reg*`（覆盖 SHORT/LONG 两实例），一次消 56 条 | 中（需设计确认） |
-| **3** | 89 条 R_REG* (A) 类 | 89 | **0928 终态：逐 bit 翻案审查（`_group_rejoin_audit.md`）后 7 分区整组回归组宽 mc，65 条闭环**（AABB/VPS_EN_0 23 + R_REG47_F 13 窄 mc + UTC 29；休眠 B 类锚点 DBC_VBK_ON/HIZ_SEL/DBC/TP_F_AHEAD 全部翻案为 AABB 同构门控结构）；**仅剩 R_REG03_L(BKDU) 24 条**——0924 ymzhu 确认不能恢复（L 配置末拍写+像素通路立即消费），修复=RTL 两级同步器；remove 列表 10→3（R_REG00_L/R_REG03_L/R_REG47_F） | 高（需逐 bit 设计确认） |
+| **3** | 89 条 R_REG* (A) 类 | 89 | **0928 终态：逐 bit 翻案审查后 8 分区整组回归组宽 mc，78 条闭环**（AABB/VPS_EN_0 23 + R_REG47_F 13 + UTC 29 + 同锥休眠位；休眠 B 类锚点 DBC_VBK_ON/HIZ_SEL/DBC/TP_F_AHEAD/HIZ_MIN_VAL 全部翻案为 AABB 同构门控结构）；**仅剩 R_REG03_L(BKDU) 24 条**——0924 ymzhu 确认不能恢复（L 配置末拍写+像素通路立即消费），修复=RTL 两级同步器；remove 列表 10→**2**（R_REG00_L/R_REG03_L） | 高（需逐 bit 设计确认） |
 | **4** | RX 数据通路 139 + WCLK1 139 + PIX_DATA 23 | 301 | 真实问题，交综合（ungroup/retime/大小 cell 重映射，尤其 CHPI_SD_CTRL 12 级组合链、LC_CPUWR 写通路）或 RTL 流水；WCLK1 仅 -0.11，DC 优化裕量大概率够 | 中（综合迭代） |
 | **5** | DTCTL SD/DPLC 门控 hold（-4.19 结构性） | 10 | 时钟生成结构问题，考虑 gating cell 换 ICG 或在门控前对 n751/n759 加同步；APR 后用真实时钟树复核 | 高（RTL 改动） |
 | **6** | INDATA_SYNC hold 20 条 | 20 | 核对 `set_input_delay -min -0.3` 与板上 RX_CLK skew 预算，必要时调 min 值或加 pad delay | 低（约束调整） |
@@ -849,4 +849,4 @@ rep_dir_0922_1456/  新 DC 跑输出目录
   <script src="./js/site.js"></script>
 </body>
 </html>
-<!-- ymzhu 2026-09-28 12:24 -->
+<!-- ymzhu 2026-09-28 12:44 -->
