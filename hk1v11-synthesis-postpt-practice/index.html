@@ -461,6 +461,7 @@
           <li><b>0924 逐 bit 处置定案</b>：BKDU（R_REG03_L[2]/G1G2）确认<b>不能恢复</b>（24 条活路径 −0.16、R_BKDU 裸跨域 = 真实 CDC 风险，修复 = RTL 两级同步器非 waiver）；AABB（R_REG40_F[0:1]）确认一次性 I2C 初始化配置，<b>mc2/1（-to RX_CLK）已加</b>，21 条 HSR/STB/SCHOP 端点闭环；<b>0928 VPS_EN_0[6] 追加进 mc</b>（仅初始化写、前提 R_BKDU=0，消费者仅 STB_PE_DLY 拍装载）——R_REG40_F 分区 23 条全闭环</li>
           <li><b>0928 R_REG47_F 13 条 mc 闭环（全局 WNS −1.45 消失）</b>：HIZ_MIN_SEL 3 条（worst −1.45）+ LD_D_OPT 10 条（worst −0.65），ip_cons 新增 mc2/1（`-start -to RX_CLK`，`-from {R_REG47_F_reg_1_ R_REG47_F_reg_7_}`）。判定有教学价值：初判 B 类（组合选通进逐拍比较锥），经 SET 路径分析翻案——TP_ACT0_SET_OK 不含 HIZ 锥，垃圾值不可能造假脉冲，唯一危害是写入拍 ±2 撞活动行脉冲；仅配置阶段写、运行期不热改 → mc 安全。方法论：<b>"配置末尾写+立马生效"不能 mc（BKDU 反例）；"配置中段写+消费者后级才激活/帧相位门控"可以 mc</b>。收窄暴露三大分区：R_REG40_F 23 条（AABB+VPS mc）✅、R_REG47_F 13 条（本次 mc）✅；剩 R_REG03_L BKDU 24 条=定案 RTL 两级同步（非 waiver）、R_REG33/56/57 UTC 29 条待清</li>
           <li><b>0928 UTC 29 条 mc 闭环（commit 1c447cd1）——收窄暴露 89 条仅剩 BKDU 24 条待 RTL</b>：R_REG57_F[1] 6 条（−0.88，9 级锥）+ R_REG33_F[4] 4 条（−0.34）+ R_REG33_F[6] 8 条（−0.09）+ R_REG56_F[3] 5 条（−0.36）+ R_REG56_F[1] 6 条（−0.17），同一对 mc2/1（`-to RX_CLK`），bit-exact 5 bit 不加宽（R_MON_DC_VOL 未验不罩）。判据（每拍活消费分区靠判据而非 RTL 改动闭环）：① ymzhu 时序版——寄存器帧 3 地址/拍写入，0x21/0x38/0x39=行 33/56/57、FBANK 收尾 0x44=行 68，均非最后一拍；② "钳死"结构——UTC 计数器使能关时恒清零（`SHORT_ENCODING_ERROR_CTRL.v:33/76-79`、`LONG_ENCODING_ERROR_CTRL.v:193-218`），CNT=0 &lt; 最小 THD(2) → mc 垃圾窗内比较输出恒 0，不可能假脉冲。与 REG47 13 条（ea32da01）合计 0928 共 42 条 mc 闭环；剩 BKDU（R_REG03_L[2]）24 条定案不加 mc、走 RTL 两级同步器待实施</li>
+          <li><b>0928 终态结构简化（commit 6b5a2394）</b>：7 分区（R_REG33/34/40/41/46/56/57_F）经逐 bit 翻案审查（`_group_rejoin_audit.md`，双判据：配置中段写 + 消费者配置期门控/钳制）后<b>整组回归 cpuwr_reg_grp 宽 mc</b>——remove 列表 10→3（仅 R_REG00_L / R_REG03_L-BKDU / R_REG47_F），AABB/UTC 两组窄 mc 块删除（组通配顺带消除 bit 精确名 DC 分支失配风险）；休眠 B 类锚点（DBC_VBK_ON 经端口换名进 HSR_ACTIVE、HIZ_SEL、DBC、TP_F_AHEAD）全部翻案为 AABB 同构门控结构。回归检查点：下次 run BKDU 24 条必须仍单拍违例可见 + SEL-004 无新增</li>
         </ul>
       </div>
       <a class="more" href="./ch11-violation-atlas.html">违例归因实战 →</a>
@@ -621,4 +622,4 @@
   </script>
 </body>
 </html>
-<!-- ymzhu 2026-09-28 11:17 -->
+<!-- ymzhu 2026-09-28 12:24 -->
