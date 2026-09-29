@@ -127,6 +127,8 @@
 
 **建议处置**：~~与组 3 一起把 G13 重写覆盖本尊+`_D1`~~（0928 否决）→ **交综合（retime/upsizing 桶形+20bit 比较锥）或 RTL 预相移重构（mux 移到 1bit 结果侧）**，与组 3 及 139 条 CONFIG_DATA 同桶。
 
+**0929 进展：SHORT 侧 RTL 打一拍已落地（df3e7d32），SHORT 实例的 ICG 使能环在 DATA_ALIGN_PRE_D 处切断为两段各 ≤13 级；LONG 侧并行实施中**
+
 **你应该看的 file:line**：
 - G13 注释本体：`ip_cons` **L329-330**
 - G13 审计注释（为什么留 OFF）：`ip_cons` **L321-328**
@@ -145,6 +147,8 @@
 **结论**：C 类。0922 审计已写明：0921V3 那 20 条近限路径里 **19 条 startpoint = `DATA_POINT_LAT_D1_reg_3_`**，`NOT matched by this waiver's pattern`。旧版"看起来对"其实是 waiver 没打中目标。
 
 **建议处置**：~~把 G13 重写覆盖本尊+`_D1`~~（0928 审查否决——D1 与本尊同为位对齐桶形移位选择寄存器，非准静态，❌ 不可恢复 mc）→ **交综合（retime/upsizing）或 RTL 预相移重构**，与组 2 及 139 条 CONFIG_DATA 同桶。
+
+**0929 进展：SHORT 侧 RTL 打一拍已落地（df3e7d32），SHORT 实例的 ICG 使能环在 DATA_ALIGN_PRE_D 处切断为两段各 ≤13 级；LONG 侧并行实施中**
 
 **你应该看的 file:line**：
 - G13 pattern（看它为什么匹配不到 D1）：`ip_cons` **L329**（`DATA_POINT_LAT_reg*`——注意 `_reg` 前没有 `*`，中间插不进 `_D1`）
@@ -395,7 +399,7 @@
 | 优先级 | 动作 | 消多少 | 风险 |
 |---|---|---|---|
 | **P0** | 组 1：**0928 终局——9 分区逐 bit 翻案审查后整组回归组宽 mc，78 条闭环 + G14 两条 DPLC_CLK 窄 mc 闭环**（含 R_REG00_L 回组、休眠 B 类锚点含 HIZ_MIN_VAL[6:2] 全翻案，remove 10→1）；BKDU 保留单周期 + RTL 加同步（**BKDU/G1G2 0924 ymzhu 确认不能恢复**，修复=RTL 两级同步器） | 89（剩 BKDU 24 待 RTL） | 高 |
-| **P1** | 组 2+3：~~G13 重写扩 pattern~~ 0928 审查否决（位对齐桶形移位选择寄存器，非准静态，❌ 不可 mc）→ **重分类真实数据通路：交综合 retime/upsizing 或 RTL 预相移重构**（与 139 CONFIG_DATA 同桶） | 56 | 高 |
+| **P1** | 组 2+3：~~G13 重写扩 pattern~~ 0928 审查否决（位对齐桶形移位选择寄存器，非准静态，❌ 不可 mc）→ **重分类真实数据通路：交综合 retime/upsizing 或 RTL 预相移重构**（与 139 CONFIG_DATA 同桶）；**0929：SHORT 侧打一拍已落地（df3e7d32）+ upsize 最坏 X4 兜底定案；LONG 侧并行实施中，下次 DC run 验收** | 56 | 高 |
 | **P1** | 组 8：恢复 G14 `R_REG06_F_reg_2_` 对（DC 用 `reg_2_`） | 2 | 低 |
 | **P1** | 组 9：DTCTL 门控换 ICG / 使能同步；复核 INDATA_SYNC `set_input_delay -min` | 30 | 中（结构） |
 | **P2** | 组 4/5/6/7：交综合（retime/流水）或 RTL 优化；WCLK1(-0.11) 大概率 DC 收敛 | 305 | 低 |
@@ -411,4 +415,4 @@
   <script src="./js/site.js"></script>
 </body>
 </html>
-<!-- ymzhu 2026-09-28 14:58 -->
+<!-- ymzhu 2026-09-29 14:05 -->

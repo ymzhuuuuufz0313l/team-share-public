@@ -91,7 +91,7 @@ KEY: <strong>PREPT 的 <code>read_cons.log</code> 是约束生效的唯一裁判
 | MPW DPLC_CLK 链 | DPLC_CLK_1P5_SHORT / DPLC_CLK_SHORT_DIV / DPLC_CLK | 0.73 |
 | G1~G8 / round5 / G9 / G11 | 配置位 mc 2/1（dc_shell / pt_shell 双分支） | — |
 | G10 | DPLC 静态配置位 `set_max_delay 2×DPLC_CLKP=12.7` | 例外优先级解法（案例 8） |
-| G13 | DATA_POINT_LAT 扇出 mc 2/1（**TEMPORARY**，RTL 打拍后删） | 覆盖 24 条 worst −0.496 |
+| G13 | DATA_POINT_LAT 扇出 mc 2/1（**TEMPORARY**，RTL 打拍后删；0929 SHORT 侧已落地 df3e7d32，LONG 侧并行中） | 覆盖 24 条 worst −0.496 |
 
 KEY: <strong>MPW 值跟速率轴（2 vs 0.73），不跟编码轴（SHORT/LONG 同值）</strong>——SHORT 链低相 = T/3 = 1.905 与 LONG 的 T/2 数字恰好相同、来历不同。<strong>pulse = 半周期只对 50% 占空比成立</strong>（`edges {1 3 4}` 非对称链低相是 T/3）；MPW 查的是较短相。
 
@@ -213,4 +213,4 @@ Balance 的实质：**离源近的树枝多绕几级缓冲、离源远的少绕�
   <script src="./js/site.js"></script>
 </body>
 </html>
-<!-- ymzhu 2026-09-20 10:30 -->
+<!-- ymzhu 2026-09-29 14:05 -->
