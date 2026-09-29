@@ -127,7 +127,7 @@
 
 **建议处置**：~~与组 3 一起把 G13 重写覆盖本尊+`_D1`~~（0928 否决）→ **交综合（retime/upsizing 桶形+20bit 比较锥）或 RTL 预相移重构（mux 移到 1bit 结果侧）**，与组 3 及 139 条 CONFIG_DATA 同桶。
 
-**0929 进展：SHORT 侧 RTL 打一拍已落地（df3e7d32），SHORT 实例的 ICG 使能环在 DATA_ALIGN_PRE_D 处切断为两段各 ≤13 级；LONG 侧并行实施中**
+**0929 进展：SHORT 侧 RTL 打一拍已落地（df3e7d32）；LONG 侧 v3 终版已落地（92fc5793，509 行）**——+102bit FF（I_INDATA_D3/D4、POINT_0/1_D、PRE_D、PE_D2）；桶形#1 参考 {D2,D3}、桶形#2 参考 {D3,D4}（防丢字：LAT_D1 选择码晚 2 拍，首作用拍须参考 W_{T+1}）；事件域随域 + L-11 TOTAL 反极性回波抑制（K1/K4 次字反极性游程比事件晚 1 拍，打拍后屏蔽路径多 1 级 FF，用 ~PE_D1 对通道恰盖回波拍，修 F-NEW）。方案演进 v1→v2（丢字修复）→v3（回波抑制），两个方案级致命 bug 各被 6 路评审中恰好 1 路发现。验证三关：iverilog 双对照 0 警告 / 6 路对抗审真实 diff（4 交付一致"实施正确" 0 缺陷）/ 顶层 13 项消费者审计（无绝对相位假设；DATA_ALIGN/DATA_POINT_LAT 顶层 dangling）。**待下次 DC：56 条清零 + ICG gate check 13 路径复核（L-11 使 PE_D1 入 TOTAL 使能锥）+ upsize X4 兜底（⑤族 20 条 −0.31）**
 
 **你应该看的 file:line**：
 - G13 注释本体：`ip_cons` **L329-330**
@@ -148,7 +148,7 @@
 
 **建议处置**：~~把 G13 重写覆盖本尊+`_D1`~~（0928 审查否决——D1 与本尊同为位对齐桶形移位选择寄存器，非准静态，❌ 不可恢复 mc）→ **交综合（retime/upsizing）或 RTL 预相移重构**，与组 2 及 139 条 CONFIG_DATA 同桶。
 
-**0929 进展：SHORT 侧 RTL 打一拍已落地（df3e7d32），SHORT 实例的 ICG 使能环在 DATA_ALIGN_PRE_D 处切断为两段各 ≤13 级；LONG 侧并行实施中**
+**0929 进展：SHORT 侧已落地（df3e7d32）、LONG 侧 v3 已落地（92fc5793）——SHORT 实例 ICG 使能环在 DATA_ALIGN_PRE_D 处切断为两段各 ≤13 级；LONG 侧 `_D1` 与本尊同随事件域整体 +2 拍平移，(find,data) 配对保持（详见组 2 条目）**
 
 **你应该看的 file:line**：
 - G13 pattern（看它为什么匹配不到 D1）：`ip_cons` **L329**（`DATA_POINT_LAT_reg*`——注意 `_reg` 前没有 `*`，中间插不进 `_D1`）
@@ -415,4 +415,4 @@
   <script src="./js/site.js"></script>
 </body>
 </html>
-<!-- ymzhu 2026-09-29 14:05 -->
+<!-- ymzhu 2026-09-29 14:38 -->
