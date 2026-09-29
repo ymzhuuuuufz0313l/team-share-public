@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>研报文章 · 交易复盘系统</title><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23b45309'/%3E%3Ctext x='32' y='43' font-family='Menlo,Consolas,monospace' font-size='27' font-weight='700' fill='%23fff' text-anchor='middle'%3ETJ%3C/text%3E%3C/svg%3E"><script>try{var _tj=localStorage.getItem('tj-theme');if(_tj==='dark'||_tj==='light')document.documentElement.setAttribute('data-theme',_tj)}catch(e){}</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0d1526"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><link rel="apple-touch-icon" href="assets/icon-192.png"><style>
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>工作流程 · 交易复盘系统</title><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23b45309'/%3E%3Ctext x='32' y='43' font-family='Menlo,Consolas,monospace' font-size='27' font-weight='700' fill='%23fff' text-anchor='middle'%3ETJ%3C/text%3E%3C/svg%3E"><script>try{var _tj=localStorage.getItem('tj-theme');if(_tj==='dark'||_tj==='light')document.documentElement.setAttribute('data-theme',_tj)}catch(e){}</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0d1526"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><link rel="apple-touch-icon" href="assets/icon-192.png"><style>
 :root{--bg:#f4f1ea;--surface:#fffdf7;--text:#1c2534;--muted:#667180;--accent:#b45309;--accent-strong:#92400e;--accent-soft:#f7e8d4;--ink:#0d1526;--ink2:#131f38;--line:#ddd6c8;--chip:#efe9db;--shadow:0 12px 32px rgba(28,37,52,.10);--pos:#15803d;--neg:#dc2626;--side-w:236px}
 @media(prefers-color-scheme:dark){:root{--bg:#0e1420;--surface:#161f31;--text:#e9e5d9;--muted:#9aa4b5;--accent:#f0a137;--accent-strong:#f6b95c;--accent-soft:#3a2f1a;--line:#2b3852;--chip:#1e2a44;--shadow:0 12px 32px rgba(0,0,0,.45);--pos:#4ade80;--neg:#f87171}}
 /* 手动主题覆盖：dark 复制深色媒体查询变量，light 回落浅色（覆盖深色系统） */
@@ -163,7 +163,72 @@ table.data tbody tr:has(.stk){cursor:pointer}
 .sfoot{margin-top:16px;color:var(--muted);font-size:11px;font-family:"IBM Plex Mono",monospace;border-top:1px dashed var(--line);padding-top:8px}
 /* 手机端弹窗：限高滚动 + 收窄留白（后注入，天然压过基础 .spanel 规则） */
 @media(max-width:700px){.spanel{max-height:92vh;overflow-y:auto;padding:18px}.sname{font-size:21px}}
-</style></head><body><aside class="sidenav"><div class="side-brand"><div class="b1">TRADING·JOURNAL</div><div class="b2">五步法 × 资金流 × 纪律</div></div><div class="sgroup"><div class="gl">导航</div><a href="index.html">⌂ 总览</a><a href="gegu.html">★ 全部个股</a><a href="持仓快照.html">⚡ 持仓快照</a></div><div class="sgroup"><div class="gl">台账·规则</div><a href="luojiku.html">股票逻辑库</a><a href="规律手册.html">规律手册 v0.4</a><a href="工作流程.html">工作流程</a><a href="持仓逻辑档案.html">持仓逻辑档案</a><a href="主力资金CT-函数解读.html">主力资金CT解读</a><a href="冰封黄白线-函数解读.html">冰封黄白线解读</a></div><div class="sgroup"><div class="gl">台账·数据</div><a href="股票汇总.html">股票汇总</a><a href="成交流水.html">成交流水</a><a href="已清仓全历史.html">已清仓 481 笔</a><a href="成交流水全历史.html">流水 3533 条</a><a href="账户总览.html">账户全史</a><a href="收益追踪.html">收益追踪</a><a href="研报候选池.html">研报候选池</a></div><div class="sgroup"><div class="gl">归档</div><a href="panzhong.html">盘中判定</a><a href="panhou.html">盘后复盘</a><a href="yanbao.html" class="active">研报审稿</a><a href="taizhang.html">交易台账</a></div><button id="themeToggle" class="theme-toggle" title="切换深浅色主题">◐ 主题</button><div class="side-foot">DECISION SUPPORT<br>NOT INVESTMENT ADVICE<br>SINCE 2020-01</div></aside><div class="layout"><main><p class="crumb"><a href="index.html">总览</a> / <b>研报文章</b></p><h1 class="page">研报文章</h1><p class="sub">按产业链大分类 · 来源附带</p><h2 class="sec">测试链</h2><div class="chapter-grid"><a class="chapter-card" href="20260927-芯片测试产业链三篇合集.html"><div class="num">ARCH-03-113</div><div class="title">20260927-芯片测试产业链三篇合集</div><div class="desc">研报文章</div></a><a class="chapter-card" href="东吴证券-探针卡行业深度（发布日期未标注）.html"><div class="num">ARCH-03-116</div><div class="title">东吴证券-探针卡行业深度（发布日期未标注）</div><div class="desc">研报文章</div></a></div><h2 class="sec">先进封装·韬定律·磷化铟</h2><div class="chapter-grid"><a class="chapter-card" href="20260804-西部-博杰股份深度.html"><div class="num">ARCH-03-204</div><div class="title">20260804-西部-<span class="stk" data-code="002975">博杰股份</span>深度</div><div class="desc">研报文章</div></a><a class="chapter-card" href="20260821-天风-博杰股份速评-鼎泰芯源并表.html"><div class="num">ARCH-03-205</div><div class="title">20260821-天风-<span class="stk" data-code="002975">博杰股份</span>速评-鼎泰芯源并表</div><div class="desc">研报文章</div></a><a class="chapter-card" href="20260921-华创-先进封装材料行业深度.html"><div class="num">ARCH-03-206</div><div class="title">20260921-华创-先进封装材料行业深度</div><div class="desc">研报文章</div></a><a class="chapter-card" href="20260927-韬定律与逻辑折叠合集.html"><div class="num">ARCH-03-214</div><div class="title">20260927-韬定律与逻辑折叠合集</div><div class="desc">研报文章</div></a></div><h2 class="sec">CPU·存储·华为链</h2><div class="chapter-grid"><a class="chapter-card" href="20260927-CPU产业链梳理与韬定律电话会.html"><div class="num">ARCH-03-307</div><div class="title">20260927-CPU产业链梳理与韬定律电话会</div><div class="desc">研报文章</div></a><a class="chapter-card" href="20260927-CPU存力与存储链观点合集.html"><div class="num">ARCH-03-308</div><div class="title">20260927-CPU存力与存储链观点合集</div><div class="desc">研报文章</div></a></div><h2 class="sec">材料·CCL·PTFE·电源散热</h2><div class="chapter-grid"><a class="chapter-card" href="20260927-PTFE之争与算力材料观点合集.html"><div class="num">ARCH-03-409</div><div class="title">20260927-PTFE之争与算力材料观点合集</div><div class="desc">研报文章</div></a></div><h2 class="sec">策略·拥挤度·电新出海</h2><div class="chapter-grid"><a class="chapter-card" href="2026-0924-每日逻辑-审稿报告.html"><div class="num">ARCH-03-501</div><div class="title">2026-0924-每日逻辑-审稿报告</div><div class="desc">研报文章</div></a><a class="chapter-card" href="2026-0924-每日逻辑.html"><div class="num">ARCH-03-502</div><div class="title">2026-0924-每日逻辑</div><div class="desc">研报文章</div></a><a class="chapter-card" href="20260712-电新机械周观点合集.html"><div class="num">ARCH-03-503</div><div class="title">20260712-电新机械周观点合集</div><div class="desc">研报文章</div></a><a class="chapter-card" href="20260927-策略与行业观点合集三.html"><div class="num">ARCH-03-511</div><div class="title">20260927-策略与行业观点合集三</div><div class="desc">研报文章</div></a><a class="chapter-card" href="20260927-策略与行业观点合集二.html"><div class="num">ARCH-03-512</div><div class="title">20260927-策略与行业观点合集二</div><div class="desc">研报文章</div></a></div><h2 class="sec">板块强call与杂项</h2><div class="chapter-grid"><a class="chapter-card" href="20260927-半导体自主可控强call-来源不明.html"><div class="num">ARCH-03-610</div><div class="title">20260927-半导体自主可控强call-来源不明</div><div class="desc">研报文章</div></a></div><h2 class="sec">其他</h2><div class="chapter-grid"><a class="chapter-card" href="20260929-每日逻辑-CPO设备与节前调整.html"><div class="num">ARCH-03-X01</div><div class="title">20260929-每日逻辑-CPO设备与节前调整</div><div class="desc">研报文章</div></a></div></main></div><footer>BUILT 2026-09-29 · 数据以私有仓库为准 · 决策辅助非投资建议</footer><button id="toTop" title="回到顶部">↑</button>
+</style></head><body><aside class="sidenav"><div class="side-brand"><div class="b1">TRADING·JOURNAL</div><div class="b2">五步法 × 资金流 × 纪律</div></div><div class="sgroup"><div class="gl">导航</div><a href="index.html">⌂ 总览</a><a href="gegu.html">★ 全部个股</a><a href="持仓快照.html">⚡ 持仓快照</a></div><div class="sgroup"><div class="gl">台账·规则</div><a href="luojiku.html">股票逻辑库</a><a href="规律手册.html">规律手册 v0.4</a><a href="工作流程.html">工作流程</a><a href="持仓逻辑档案.html">持仓逻辑档案</a><a href="主力资金CT-函数解读.html">主力资金CT解读</a><a href="冰封黄白线-函数解读.html">冰封黄白线解读</a></div><div class="sgroup"><div class="gl">台账·数据</div><a href="股票汇总.html">股票汇总</a><a href="成交流水.html">成交流水</a><a href="已清仓全历史.html">已清仓 481 笔</a><a href="成交流水全历史.html">流水 3533 条</a><a href="账户总览.html">账户全史</a><a href="收益追踪.html">收益追踪</a><a href="研报候选池.html">研报候选池</a></div><div class="sgroup"><div class="gl">归档</div><a href="panzhong.html">盘中判定</a><a href="panhou.html">盘后复盘</a><a href="yanbao.html">研报审稿</a><a href="taizhang.html">交易台账</a></div><button id="themeToggle" class="theme-toggle" title="切换深浅色主题">◐ 主题</button><div class="side-foot">DECISION SUPPORT<br>NOT INVESTMENT ADVICE<br>SINCE 2020-01</div></aside><div class="layout"><main><p class="crumb"><a href="index.html">总览</a> / 交易台账 / <b>工作流程</b></p><article><h1>协作工作流程</h1>
+<h2>档案结构（2026-09-27 定稿）</h2>
+<pre><code>工作区/
+├── 交易台账/            ← 底账（跨场景共用）
+│   ├── 持仓快照.csv        每日持仓逐只数据
+│   ├── 成交流水.csv        每笔买卖（可排序）
+│   ├── 股票汇总.csv        按股票聚合：笔数/胜负/已实现/持有盈亏（可排序）
+│   ├── 账户总览.md         账户级指标累计索引
+│   ├── 收益追踪.md         收益分析板块：月度盈亏/日历/对指数超额/击败分位
+│   ├── 规律手册.md         规则基线 + 校准点 + 已固化规律
+│   ├── 主力资金CT-函数解读.md / 冰封黄白线-函数解读.md
+│   └── 研报候选池.md       候选池状态表
+├── 盘中判定/            ← 日内总结归档
+│   ├── 判断记录.md         索引（含历史案例表）
+│   └── 2026-MMDD-名称-代码-结论.md  每笔判定独立存档
+├── 盘后复盘/            ← 每日复盘归档
+│   └── 2026-MMDD-盘后复盘.md
+├── 研报文章/            ← 报告归档与审稿
+│   └── YYYYMMDD-来源.md
+└── tdx_review/          ← 你9月9-10日的旧档案（脚本/提示词），保留未动
+</code></pre>
+<h2>每晚复盘（收盘后）</h2>
+<p><strong>你发</strong>：
+1. 持仓截图（像 9/27 那样的持仓列表）
+2. 交易记录页截图（当日成交明细）
+3. 有清仓的话，"已清仓"页截图
+4. 收益分析页截图（本月/近三月盈亏、日历、击败分位）——可选，用于收益质量追踪</p>
+<p><strong>我做</strong>：更新 <code>持仓快照.csv</code> / <code>成交流水.csv</code> / <code>账户总览.md</code> / <code>收益追踪.md</code>，然后输出：
+1. 当日盈亏归因：哪些票贡献、哪些拖累，和昨天对比的变化
+2. 持仓逐只体检：按你的卖出纪律逐项检查每只（近5日流向、红柱状态、动向比、止损位距离），标出已触发出场信号的
+3. 行为统计（随积累）：胜率、盈亏比、平均持仓天数、止损执行率、买入理由兑现率
+4. 收益质量（有收益分析截图时）：对上证超额、日胜率、组合波动/指数波动倍数、击败分位变化
+5. 新现象 → 记入规律手册"微操校准点"</p>
+<h2>盘中判定（交易时段）</h2>
+<p><strong>你发</strong>（每只股票 4 张图，尽量同一时点截取）：
+1. 日线 K 线：含 MA5/10/20/60、成交量，近 60 根可见
+2. 分时图
+3. ZJLX 指标副图（主买净额 / 近5日 / 近10日流向）
+4. ymz 指标副图（主力资金红柱 / 主动买盘黄柱 / 动向比 / 主力占比）</p>
+<p>并说明：是<strong>新候选</strong>（问能不能买）还是<strong>持仓中</strong>（问持有还是卖）。</p>
+<p><strong>我做</strong>：按五步法固定格式输出判定（五步逐项过/不过 + 结论 + 买点类型 + 支撑与硬止损 + 建议仓位），写入 <code>tdx_review/判断记录.md</code>。</p>
+<h2>判定闭环（规律总结的原料）</h2>
+<p>每个盘中判定，在之后的晚复盘中<strong>回填验证</strong>：次日及随后几日走势 vs 判定结论 → 对 / 错 / 待定。
+每积累 10~15 个已验证判定（或你说一声"总结"），我更新一版规律手册：反复被验证的信号写进"已固化规律"，失灵的阈值降级或修改，版本号 +0.1。</p>
+<h2>报告分析模式（进阶）</h2>
+<p><strong>你发</strong>：几千~几万字的完整报告。直接粘贴即可（太长就分几条消息发我拼起来）；也可以存成 txt/md 文件放进工作区的 <code>研报/</code> 文件夹再告诉我文件名。</p>
+<p><strong>我做四步</strong>：</p>
+<ol>
+<li><strong>提取</strong>：把报告里所有股票扒出来列成候选清单（代码/名称/核心逻辑/关键数据/目标价），报告本身编号存档。</li>
+<li><strong>审稿</strong>：逐只核对描述是否合理——</li>
+<li><em>数据自洽</em>：数字前后矛盾、单位/比例对不上、增速与基数不符</li>
+<li><em>逻辑完整</em>：利好是否已兑现（利好出尽）、逻辑能否被证伪、假设链哪一环最弱</li>
+<li><em>话术红旗</em>：绝密/稳赚/翻倍/催促建仓、无风险提示、"深度报告"配合近期暴涨</li>
+<li><em>公开事实核验</em>：涉及公告/业绩类陈述可尝试联网查证，但以报告原文+你的图为准</li>
+<li><em>价格位置类描述</em>：一律标"待补图核实"——我看不到实时行情</li>
+<li><strong>初筛</strong>：A类（逻辑+数据自洽，值得补图判定）/ B类（纯叙事先观察）/ C类（有硬伤或红旗，直接弃并写明原因）</li>
+<li><strong>补图判定</strong>：A类名单给你 → 你补 日线K线+ZJLX+ymz 截图 → 逐只跑五步判定，照常入 <code>tdx_review/判断记录.md</code></li>
+</ol>
+<p><strong>铁律：报告决定"看什么"，五步法决定"买不买"。</strong> 报告吹得再好，五步不过就不碰（对应你的原则1：位置决定信号性质）。审稿结论全部记入 <code>研报候选池.md</code>。</p>
+<h2>边界说明</h2>
+<ul>
+<li>所有结论立足于"按你的标准"，是决策辅助，不是投资建议；下单永远你决定。</li>
+<li>判定质量取决于截图数值完整清晰；缺行先要补图，不猜数值。</li>
+<li>ETF 等无 L2 数据的品种处于指标盲区，判定会明确标注"盲区"，这类票按你的纪律另行处理。</li>
+<li>盘中指标数值是当日实时累计，越接近收盘越可靠；早盘信号天然噪声大（校准点 #4）。</li>
+</ul></article></main></div><footer>BUILT 2026-09-29 · 数据以私有仓库为准 · 决策辅助非投资建议</footer><button id="toTop" title="回到顶部">↑</button>
 <script>
 document.querySelectorAll('table.data').forEach(function(tb){
   var head = tb.querySelector('thead');

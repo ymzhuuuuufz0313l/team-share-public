@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>研报文章 · 交易复盘系统</title><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23b45309'/%3E%3Ctext x='32' y='43' font-family='Menlo,Consolas,monospace' font-size='27' font-weight='700' fill='%23fff' text-anchor='middle'%3ETJ%3C/text%3E%3C/svg%3E"><script>try{var _tj=localStorage.getItem('tj-theme');if(_tj==='dark'||_tj==='light')document.documentElement.setAttribute('data-theme',_tj)}catch(e){}</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0d1526"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><link rel="apple-touch-icon" href="assets/icon-192.png"><style>
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>持仓逻辑档案 · 交易复盘系统</title><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23b45309'/%3E%3Ctext x='32' y='43' font-family='Menlo,Consolas,monospace' font-size='27' font-weight='700' fill='%23fff' text-anchor='middle'%3ETJ%3C/text%3E%3C/svg%3E"><script>try{var _tj=localStorage.getItem('tj-theme');if(_tj==='dark'||_tj==='light')document.documentElement.setAttribute('data-theme',_tj)}catch(e){}</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0d1526"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><link rel="apple-touch-icon" href="assets/icon-192.png"><style>
 :root{--bg:#f4f1ea;--surface:#fffdf7;--text:#1c2534;--muted:#667180;--accent:#b45309;--accent-strong:#92400e;--accent-soft:#f7e8d4;--ink:#0d1526;--ink2:#131f38;--line:#ddd6c8;--chip:#efe9db;--shadow:0 12px 32px rgba(28,37,52,.10);--pos:#15803d;--neg:#dc2626;--side-w:236px}
 @media(prefers-color-scheme:dark){:root{--bg:#0e1420;--surface:#161f31;--text:#e9e5d9;--muted:#9aa4b5;--accent:#f0a137;--accent-strong:#f6b95c;--accent-soft:#3a2f1a;--line:#2b3852;--chip:#1e2a44;--shadow:0 12px 32px rgba(0,0,0,.45);--pos:#4ade80;--neg:#f87171}}
 /* 手动主题覆盖：dark 复制深色媒体查询变量，light 回落浅色（覆盖深色系统） */
@@ -163,7 +163,146 @@ table.data tbody tr:has(.stk){cursor:pointer}
 .sfoot{margin-top:16px;color:var(--muted);font-size:11px;font-family:"IBM Plex Mono",monospace;border-top:1px dashed var(--line);padding-top:8px}
 /* 手机端弹窗：限高滚动 + 收窄留白（后注入，天然压过基础 .spanel 规则） */
 @media(max-width:700px){.spanel{max-height:92vh;overflow-y:auto;padding:18px}.sname{font-size:21px}}
-</style></head><body><aside class="sidenav"><div class="side-brand"><div class="b1">TRADING·JOURNAL</div><div class="b2">五步法 × 资金流 × 纪律</div></div><div class="sgroup"><div class="gl">导航</div><a href="index.html">⌂ 总览</a><a href="gegu.html">★ 全部个股</a><a href="持仓快照.html">⚡ 持仓快照</a></div><div class="sgroup"><div class="gl">台账·规则</div><a href="luojiku.html">股票逻辑库</a><a href="规律手册.html">规律手册 v0.4</a><a href="工作流程.html">工作流程</a><a href="持仓逻辑档案.html">持仓逻辑档案</a><a href="主力资金CT-函数解读.html">主力资金CT解读</a><a href="冰封黄白线-函数解读.html">冰封黄白线解读</a></div><div class="sgroup"><div class="gl">台账·数据</div><a href="股票汇总.html">股票汇总</a><a href="成交流水.html">成交流水</a><a href="已清仓全历史.html">已清仓 481 笔</a><a href="成交流水全历史.html">流水 3533 条</a><a href="账户总览.html">账户全史</a><a href="收益追踪.html">收益追踪</a><a href="研报候选池.html">研报候选池</a></div><div class="sgroup"><div class="gl">归档</div><a href="panzhong.html">盘中判定</a><a href="panhou.html">盘后复盘</a><a href="yanbao.html" class="active">研报审稿</a><a href="taizhang.html">交易台账</a></div><button id="themeToggle" class="theme-toggle" title="切换深浅色主题">◐ 主题</button><div class="side-foot">DECISION SUPPORT<br>NOT INVESTMENT ADVICE<br>SINCE 2020-01</div></aside><div class="layout"><main><p class="crumb"><a href="index.html">总览</a> / <b>研报文章</b></p><h1 class="page">研报文章</h1><p class="sub">按产业链大分类 · 来源附带</p><h2 class="sec">测试链</h2><div class="chapter-grid"><a class="chapter-card" href="20260927-芯片测试产业链三篇合集.html"><div class="num">ARCH-03-113</div><div class="title">20260927-芯片测试产业链三篇合集</div><div class="desc">研报文章</div></a><a class="chapter-card" href="东吴证券-探针卡行业深度（发布日期未标注）.html"><div class="num">ARCH-03-116</div><div class="title">东吴证券-探针卡行业深度（发布日期未标注）</div><div class="desc">研报文章</div></a></div><h2 class="sec">先进封装·韬定律·磷化铟</h2><div class="chapter-grid"><a class="chapter-card" href="20260804-西部-博杰股份深度.html"><div class="num">ARCH-03-204</div><div class="title">20260804-西部-<span class="stk" data-code="002975">博杰股份</span>深度</div><div class="desc">研报文章</div></a><a class="chapter-card" href="20260821-天风-博杰股份速评-鼎泰芯源并表.html"><div class="num">ARCH-03-205</div><div class="title">20260821-天风-<span class="stk" data-code="002975">博杰股份</span>速评-鼎泰芯源并表</div><div class="desc">研报文章</div></a><a class="chapter-card" href="20260921-华创-先进封装材料行业深度.html"><div class="num">ARCH-03-206</div><div class="title">20260921-华创-先进封装材料行业深度</div><div class="desc">研报文章</div></a><a class="chapter-card" href="20260927-韬定律与逻辑折叠合集.html"><div class="num">ARCH-03-214</div><div class="title">20260927-韬定律与逻辑折叠合集</div><div class="desc">研报文章</div></a></div><h2 class="sec">CPU·存储·华为链</h2><div class="chapter-grid"><a class="chapter-card" href="20260927-CPU产业链梳理与韬定律电话会.html"><div class="num">ARCH-03-307</div><div class="title">20260927-CPU产业链梳理与韬定律电话会</div><div class="desc">研报文章</div></a><a class="chapter-card" href="20260927-CPU存力与存储链观点合集.html"><div class="num">ARCH-03-308</div><div class="title">20260927-CPU存力与存储链观点合集</div><div class="desc">研报文章</div></a></div><h2 class="sec">材料·CCL·PTFE·电源散热</h2><div class="chapter-grid"><a class="chapter-card" href="20260927-PTFE之争与算力材料观点合集.html"><div class="num">ARCH-03-409</div><div class="title">20260927-PTFE之争与算力材料观点合集</div><div class="desc">研报文章</div></a></div><h2 class="sec">策略·拥挤度·电新出海</h2><div class="chapter-grid"><a class="chapter-card" href="2026-0924-每日逻辑-审稿报告.html"><div class="num">ARCH-03-501</div><div class="title">2026-0924-每日逻辑-审稿报告</div><div class="desc">研报文章</div></a><a class="chapter-card" href="2026-0924-每日逻辑.html"><div class="num">ARCH-03-502</div><div class="title">2026-0924-每日逻辑</div><div class="desc">研报文章</div></a><a class="chapter-card" href="20260712-电新机械周观点合集.html"><div class="num">ARCH-03-503</div><div class="title">20260712-电新机械周观点合集</div><div class="desc">研报文章</div></a><a class="chapter-card" href="20260927-策略与行业观点合集三.html"><div class="num">ARCH-03-511</div><div class="title">20260927-策略与行业观点合集三</div><div class="desc">研报文章</div></a><a class="chapter-card" href="20260927-策略与行业观点合集二.html"><div class="num">ARCH-03-512</div><div class="title">20260927-策略与行业观点合集二</div><div class="desc">研报文章</div></a></div><h2 class="sec">板块强call与杂项</h2><div class="chapter-grid"><a class="chapter-card" href="20260927-半导体自主可控强call-来源不明.html"><div class="num">ARCH-03-610</div><div class="title">20260927-半导体自主可控强call-来源不明</div><div class="desc">研报文章</div></a></div><h2 class="sec">其他</h2><div class="chapter-grid"><a class="chapter-card" href="20260929-每日逻辑-CPO设备与节前调整.html"><div class="num">ARCH-03-X01</div><div class="title">20260929-每日逻辑-CPO设备与节前调整</div><div class="desc">研报文章</div></a></div></main></div><footer>BUILT 2026-09-29 · 数据以私有仓库为准 · 决策辅助非投资建议</footer><button id="toTop" title="回到顶部">↑</button>
+</style></head><body><aside class="sidenav"><div class="side-brand"><div class="b1">TRADING·JOURNAL</div><div class="b2">五步法 × 资金流 × 纪律</div></div><div class="sgroup"><div class="gl">导航</div><a href="index.html">⌂ 总览</a><a href="gegu.html">★ 全部个股</a><a href="持仓快照.html">⚡ 持仓快照</a></div><div class="sgroup"><div class="gl">台账·规则</div><a href="luojiku.html">股票逻辑库</a><a href="规律手册.html">规律手册 v0.4</a><a href="工作流程.html">工作流程</a><a href="持仓逻辑档案.html">持仓逻辑档案</a><a href="主力资金CT-函数解读.html">主力资金CT解读</a><a href="冰封黄白线-函数解读.html">冰封黄白线解读</a></div><div class="sgroup"><div class="gl">台账·数据</div><a href="股票汇总.html">股票汇总</a><a href="成交流水.html">成交流水</a><a href="已清仓全历史.html">已清仓 481 笔</a><a href="成交流水全历史.html">流水 3533 条</a><a href="账户总览.html">账户全史</a><a href="收益追踪.html">收益追踪</a><a href="研报候选池.html">研报候选池</a></div><div class="sgroup"><div class="gl">归档</div><a href="panzhong.html">盘中判定</a><a href="panhou.html">盘后复盘</a><a href="yanbao.html">研报审稿</a><a href="taizhang.html">交易台账</a></div><button id="themeToggle" class="theme-toggle" title="切换深浅色主题">◐ 主题</button><div class="side-foot">DECISION SUPPORT<br>NOT INVESTMENT ADVICE<br>SINCE 2020-01</div></aside><div class="layout"><main><p class="crumb"><a href="index.html">总览</a> / 交易台账 / <b>持仓逻辑档案</b></p><article><h1>持仓逻辑档案（当前持仓视图 · 自动生成）</h1>
+<blockquote>
+<p><strong>母库已升级</strong>：全部股票逻辑（持仓/已清仓/观察/从未买过，清仓不删档）统一存放于
+<strong><code>交易台账/股票逻辑库/</code></strong>（<code>索引.csv</code> 总索引 + 每股 <code>&lt;代码&gt;-&lt;名称&gt;.md</code> 档案，按板块/行业/状态分类）。
+本文件只列<strong>当前持仓</strong>，盘后复盘时由母库重新生成；个股详情一律以母库档案为准。</p>
+</blockquote>
+<h2>当前持仓（16 只 · 2026-09-29 快照）</h2>
+<table>
+<thead>
+<tr>
+<th>代码</th>
+<th>名称</th>
+<th>板块</th>
+<th>一句话逻辑</th>
+<th>档案</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="stk" data-code="300806">300806</span></td>
+<td><span class="stk" data-code="300806">斯迪克</span></td>
+<td>创业板</td>
+<td>华为磁电存储MED独家涂布伙伴+16.52亿扩产BOPET基膜切入MLCC离型膜</td>
+<td>股票逻辑库/<span class="stk" data-code="300806">300806</span>-<span class="stk" data-code="300806">斯迪克</span>.md</td>
+</tr>
+<tr>
+<td><span class="stk" data-code="688627">688627</span></td>
+<td><span class="stk" data-code="688627">精智达</span></td>
+<td><span class="stk-h" data-code="588090">科创板</span></td>
+<td>存储测试设备+探针卡"设备+耗材"协同（东吴建议关注）+HBM测试机批量出货·长鑫业绩股</td>
+<td>股票逻辑库/<span class="stk" data-code="688627">688627</span>-<span class="stk" data-code="688627">精智达</span>.md</td>
+</tr>
+<tr>
+<td><span class="stk" data-code="688037">688037</span></td>
+<td><span class="stk" data-code="688037">芯源微</span></td>
+<td><span class="stk-h" data-code="588090">科创板</span></td>
+<td>待登记</td>
+<td>股票逻辑库/<span class="stk" data-code="688037">688037</span>-<span class="stk" data-code="688037">芯源微</span>.md</td>
+</tr>
+<tr>
+<td><span class="stk" data-code="688019">688019</span></td>
+<td><span class="stk" data-code="688019">安集科技</span></td>
+<td><span class="stk-h" data-code="588090">科创板</span></td>
+<td>混合键合/TSV工艺增量放大CMP与电镀液需求</td>
+<td>股票逻辑库/<span class="stk" data-code="688019">688019</span>-<span class="stk" data-code="688019">安集科技</span>.md</td>
+</tr>
+<tr>
+<td><span class="stk" data-code="688797">688797</span></td>
+<td><span class="stk" data-code="688797">臻宝科技</span></td>
+<td><span class="stk-h" data-code="588090">科创板</span></td>
+<td>待登记</td>
+<td>股票逻辑库/<span class="stk" data-code="688797">688797</span>-<span class="stk" data-code="688797">臻宝科技</span>.md</td>
+</tr>
+<tr>
+<td><span class="stk" data-code="688008">688008</span></td>
+<td><span class="stk" data-code="688008">澜起科技</span></td>
+<td><span class="stk-h" data-code="588090">科创板</span></td>
+<td>CPU端存力三曲线：DDR5 RCD子代升级+MRDIMM（1 MRCD+10 MDB）/CXL全球领先+PCIe Retimer国内主供·无替代品属性</td>
+<td>股票逻辑库/<span class="stk" data-code="688008">688008</span>-<span class="stk" data-code="688008">澜起科技</span>.md</td>
+</tr>
+<tr>
+<td><span class="stk" data-code="002409">002409</span></td>
+<td><span class="stk" data-code="002409">雅克科技</span></td>
+<td>主板-深</td>
+<td>待登记（新买入·前驱体/球硅，逻辑待补）</td>
+<td>股票逻辑库/<span class="stk" data-code="002409">002409</span>-<span class="stk" data-code="002409">雅克科技</span>.md</td>
+</tr>
+<tr>
+<td><span class="stk" data-code="688372">688372</span></td>
+<td><span class="stk" data-code="688372">伟测科技</span></td>
+<td><span class="stk-h" data-code="588090">科创板</span></td>
+<td>测试需求回流大陆·华为基本盘+国产算力覆盖高（卖方口径）</td>
+<td>股票逻辑库/<span class="stk" data-code="688372">688372</span>-<span class="stk" data-code="688372">伟测科技</span>.md</td>
+</tr>
+<tr>
+<td><span class="stk" data-code="688652">688652</span></td>
+<td><span class="stk" data-code="688652">京仪装备</span></td>
+<td><span class="stk-h" data-code="588090">科创板</span></td>
+<td>待登记（新买入·半导体温控设备，逻辑待补）</td>
+<td>股票逻辑库/<span class="stk" data-code="688652">688652</span>-<span class="stk" data-code="688652">京仪装备</span>.md</td>
+</tr>
+<tr>
+<td><span class="stk" data-code="688220">688220</span></td>
+<td><span class="stk" data-code="688220">翱捷科技</span></td>
+<td><span class="stk-h" data-code="588090">科创板</span></td>
+<td>待登记（新买入·<span class="stk" data-code="588780">芯片设计</span>-基带，逻辑待补）</td>
+<td>股票逻辑库/<span class="stk" data-code="688220">688220</span>-<span class="stk" data-code="688220">翱捷科技</span>.md</td>
+</tr>
+<tr>
+<td><span class="stk" data-code="688257">688257</span></td>
+<td><span class="stk" data-code="688257">新锐股份</span></td>
+<td><span class="stk-h" data-code="588090">科创板</span></td>
+<td>待登记（新买入·硬质合金刀具，逻辑待补）</td>
+<td>股票逻辑库/<span class="stk" data-code="688257">688257</span>-<span class="stk" data-code="688257">新锐股份</span>.md</td>
+</tr>
+<tr>
+<td>002384</td>
+<td>东山精密</td>
+<td>主板-深</td>
+<td>待登记</td>
+<td>股票逻辑库/002384-东山精密.md（待建档）</td>
+</tr>
+<tr>
+<td><span class="stk-h" data-code="600105">600105</span></td>
+<td><span class="stk-h" data-code="600105">永鼎股份</span></td>
+<td>主板-沪</td>
+<td>待登记</td>
+<td>股票逻辑库/<span class="stk-h" data-code="600105">600105</span>-<span class="stk-h" data-code="600105">永鼎股份</span>.md（待建档）</td>
+</tr>
+<tr>
+<td><span class="stk" data-code="588780">588780</span></td>
+<td><span class="stk" data-code="588780">芯片设计</span></td>
+<td>ETF-科创</td>
+<td>僵尸仓待定处理</td>
+<td>股票逻辑库/<span class="stk" data-code="588780">588780</span>-<span class="stk" data-code="588780">芯片设计</span>.md</td>
+</tr>
+<tr>
+<td><span class="stk" data-code="588080">588080</span></td>
+<td><span class="stk" data-code="588080">科创板50</span></td>
+<td>ETF-科创</td>
+<td>僵尸仓待定处理</td>
+<td>股票逻辑库/<span class="stk" data-code="588080">588080</span>-<span class="stk" data-code="588080">科创板50</span>.md</td>
+</tr>
+<tr>
+<td><span class="stk" data-code="589020">589020</span></td>
+<td><span class="stk" data-code="589020">KC半导体</span></td>
+<td>ETF-科创</td>
+<td>ETF换仓回补（2026-09-27澄清非亏损加码）</td>
+<td>股票逻辑库/<span class="stk" data-code="589020">589020</span>-<span class="stk" data-code="589020">KC半导体</span>.md</td>
+</tr>
+</tbody>
+</table>
+<p>快照日 2026-09-29 · 持有盈亏列待 APP 持仓页截图补全（当日仅成交截图，无逐只盈亏）</p>
+<h2>维护规则（盘后复盘执行）</h2>
+<ol>
+<li>新股票（不管买没买）→ 建档 <code>股票逻辑库/&lt;代码&gt;-&lt;名称&gt;.md</code> + 索引.csv 加行（板块按代码前缀自动判，行业按研究报告/用户输入填）</li>
+<li>清仓 → <strong>档案不删</strong>，状态改为"已清仓"，操作历史摘要补最后一笔</li>
+<li>重新买入 → 状态改回"持仓中"，档案续写（历史逻辑全部保留）</li>
+<li>本视图按最新持仓快照重新生成</li>
+</ol></article></main></div><footer>BUILT 2026-09-29 · 数据以私有仓库为准 · 决策辅助非投资建议</footer><button id="toTop" title="回到顶部">↑</button>
 <script>
 document.querySelectorAll('table.data').forEach(function(tb){
   var head = tb.querySelector('thead');

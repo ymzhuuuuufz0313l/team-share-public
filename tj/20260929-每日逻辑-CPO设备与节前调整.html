@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>研报文章 · 交易复盘系统</title><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23b45309'/%3E%3Ctext x='32' y='43' font-family='Menlo,Consolas,monospace' font-size='27' font-weight='700' fill='%23fff' text-anchor='middle'%3ETJ%3C/text%3E%3C/svg%3E"><script>try{var _tj=localStorage.getItem('tj-theme');if(_tj==='dark'||_tj==='light')document.documentElement.setAttribute('data-theme',_tj)}catch(e){}</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0d1526"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><link rel="apple-touch-icon" href="assets/icon-192.png"><style>
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>20260929-每日逻辑-CPO设备与节前调整 · 交易复盘系统</title><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23b45309'/%3E%3Ctext x='32' y='43' font-family='Menlo,Consolas,monospace' font-size='27' font-weight='700' fill='%23fff' text-anchor='middle'%3ETJ%3C/text%3E%3C/svg%3E"><script>try{var _tj=localStorage.getItem('tj-theme');if(_tj==='dark'||_tj==='light')document.documentElement.setAttribute('data-theme',_tj)}catch(e){}</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0d1526"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><link rel="apple-touch-icon" href="assets/icon-192.png"><style>
 :root{--bg:#f4f1ea;--surface:#fffdf7;--text:#1c2534;--muted:#667180;--accent:#b45309;--accent-strong:#92400e;--accent-soft:#f7e8d4;--ink:#0d1526;--ink2:#131f38;--line:#ddd6c8;--chip:#efe9db;--shadow:0 12px 32px rgba(28,37,52,.10);--pos:#15803d;--neg:#dc2626;--side-w:236px}
 @media(prefers-color-scheme:dark){:root{--bg:#0e1420;--surface:#161f31;--text:#e9e5d9;--muted:#9aa4b5;--accent:#f0a137;--accent-strong:#f6b95c;--accent-soft:#3a2f1a;--line:#2b3852;--chip:#1e2a44;--shadow:0 12px 32px rgba(0,0,0,.45);--pos:#4ade80;--neg:#f87171}}
 /* 手动主题覆盖：dark 复制深色媒体查询变量，light 回落浅色（覆盖深色系统） */
@@ -163,7 +163,64 @@ table.data tbody tr:has(.stk){cursor:pointer}
 .sfoot{margin-top:16px;color:var(--muted);font-size:11px;font-family:"IBM Plex Mono",monospace;border-top:1px dashed var(--line);padding-top:8px}
 /* 手机端弹窗：限高滚动 + 收窄留白（后注入，天然压过基础 .spanel 规则） */
 @media(max-width:700px){.spanel{max-height:92vh;overflow-y:auto;padding:18px}.sname{font-size:21px}}
-</style></head><body><aside class="sidenav"><div class="side-brand"><div class="b1">TRADING·JOURNAL</div><div class="b2">五步法 × 资金流 × 纪律</div></div><div class="sgroup"><div class="gl">导航</div><a href="index.html">⌂ 总览</a><a href="gegu.html">★ 全部个股</a><a href="持仓快照.html">⚡ 持仓快照</a></div><div class="sgroup"><div class="gl">台账·规则</div><a href="luojiku.html">股票逻辑库</a><a href="规律手册.html">规律手册 v0.4</a><a href="工作流程.html">工作流程</a><a href="持仓逻辑档案.html">持仓逻辑档案</a><a href="主力资金CT-函数解读.html">主力资金CT解读</a><a href="冰封黄白线-函数解读.html">冰封黄白线解读</a></div><div class="sgroup"><div class="gl">台账·数据</div><a href="股票汇总.html">股票汇总</a><a href="成交流水.html">成交流水</a><a href="已清仓全历史.html">已清仓 481 笔</a><a href="成交流水全历史.html">流水 3533 条</a><a href="账户总览.html">账户全史</a><a href="收益追踪.html">收益追踪</a><a href="研报候选池.html">研报候选池</a></div><div class="sgroup"><div class="gl">归档</div><a href="panzhong.html">盘中判定</a><a href="panhou.html">盘后复盘</a><a href="yanbao.html" class="active">研报审稿</a><a href="taizhang.html">交易台账</a></div><button id="themeToggle" class="theme-toggle" title="切换深浅色主题">◐ 主题</button><div class="side-foot">DECISION SUPPORT<br>NOT INVESTMENT ADVICE<br>SINCE 2020-01</div></aside><div class="layout"><main><p class="crumb"><a href="index.html">总览</a> / <b>研报文章</b></p><h1 class="page">研报文章</h1><p class="sub">按产业链大分类 · 来源附带</p><h2 class="sec">测试链</h2><div class="chapter-grid"><a class="chapter-card" href="20260927-芯片测试产业链三篇合集.html"><div class="num">ARCH-03-113</div><div class="title">20260927-芯片测试产业链三篇合集</div><div class="desc">研报文章</div></a><a class="chapter-card" href="东吴证券-探针卡行业深度（发布日期未标注）.html"><div class="num">ARCH-03-116</div><div class="title">东吴证券-探针卡行业深度（发布日期未标注）</div><div class="desc">研报文章</div></a></div><h2 class="sec">先进封装·韬定律·磷化铟</h2><div class="chapter-grid"><a class="chapter-card" href="20260804-西部-博杰股份深度.html"><div class="num">ARCH-03-204</div><div class="title">20260804-西部-<span class="stk" data-code="002975">博杰股份</span>深度</div><div class="desc">研报文章</div></a><a class="chapter-card" href="20260821-天风-博杰股份速评-鼎泰芯源并表.html"><div class="num">ARCH-03-205</div><div class="title">20260821-天风-<span class="stk" data-code="002975">博杰股份</span>速评-鼎泰芯源并表</div><div class="desc">研报文章</div></a><a class="chapter-card" href="20260921-华创-先进封装材料行业深度.html"><div class="num">ARCH-03-206</div><div class="title">20260921-华创-先进封装材料行业深度</div><div class="desc">研报文章</div></a><a class="chapter-card" href="20260927-韬定律与逻辑折叠合集.html"><div class="num">ARCH-03-214</div><div class="title">20260927-韬定律与逻辑折叠合集</div><div class="desc">研报文章</div></a></div><h2 class="sec">CPU·存储·华为链</h2><div class="chapter-grid"><a class="chapter-card" href="20260927-CPU产业链梳理与韬定律电话会.html"><div class="num">ARCH-03-307</div><div class="title">20260927-CPU产业链梳理与韬定律电话会</div><div class="desc">研报文章</div></a><a class="chapter-card" href="20260927-CPU存力与存储链观点合集.html"><div class="num">ARCH-03-308</div><div class="title">20260927-CPU存力与存储链观点合集</div><div class="desc">研报文章</div></a></div><h2 class="sec">材料·CCL·PTFE·电源散热</h2><div class="chapter-grid"><a class="chapter-card" href="20260927-PTFE之争与算力材料观点合集.html"><div class="num">ARCH-03-409</div><div class="title">20260927-PTFE之争与算力材料观点合集</div><div class="desc">研报文章</div></a></div><h2 class="sec">策略·拥挤度·电新出海</h2><div class="chapter-grid"><a class="chapter-card" href="2026-0924-每日逻辑-审稿报告.html"><div class="num">ARCH-03-501</div><div class="title">2026-0924-每日逻辑-审稿报告</div><div class="desc">研报文章</div></a><a class="chapter-card" href="2026-0924-每日逻辑.html"><div class="num">ARCH-03-502</div><div class="title">2026-0924-每日逻辑</div><div class="desc">研报文章</div></a><a class="chapter-card" href="20260712-电新机械周观点合集.html"><div class="num">ARCH-03-503</div><div class="title">20260712-电新机械周观点合集</div><div class="desc">研报文章</div></a><a class="chapter-card" href="20260927-策略与行业观点合集三.html"><div class="num">ARCH-03-511</div><div class="title">20260927-策略与行业观点合集三</div><div class="desc">研报文章</div></a><a class="chapter-card" href="20260927-策略与行业观点合集二.html"><div class="num">ARCH-03-512</div><div class="title">20260927-策略与行业观点合集二</div><div class="desc">研报文章</div></a></div><h2 class="sec">板块强call与杂项</h2><div class="chapter-grid"><a class="chapter-card" href="20260927-半导体自主可控强call-来源不明.html"><div class="num">ARCH-03-610</div><div class="title">20260927-半导体自主可控强call-来源不明</div><div class="desc">研报文章</div></a></div><h2 class="sec">其他</h2><div class="chapter-grid"><a class="chapter-card" href="20260929-每日逻辑-CPO设备与节前调整.html"><div class="num">ARCH-03-X01</div><div class="title">20260929-每日逻辑-CPO设备与节前调整</div><div class="desc">研报文章</div></a></div></main></div><footer>BUILT 2026-09-29 · 数据以私有仓库为准 · 决策辅助非投资建议</footer><button id="toTop" title="回到顶部">↑</button>
+</style></head><body><aside class="sidenav"><div class="side-brand"><div class="b1">TRADING·JOURNAL</div><div class="b2">五步法 × 资金流 × 纪律</div></div><div class="sgroup"><div class="gl">导航</div><a href="index.html">⌂ 总览</a><a href="gegu.html">★ 全部个股</a><a href="持仓快照.html">⚡ 持仓快照</a></div><div class="sgroup"><div class="gl">台账·规则</div><a href="luojiku.html">股票逻辑库</a><a href="规律手册.html">规律手册 v0.4</a><a href="工作流程.html">工作流程</a><a href="持仓逻辑档案.html">持仓逻辑档案</a><a href="主力资金CT-函数解读.html">主力资金CT解读</a><a href="冰封黄白线-函数解读.html">冰封黄白线解读</a></div><div class="sgroup"><div class="gl">台账·数据</div><a href="股票汇总.html">股票汇总</a><a href="成交流水.html">成交流水</a><a href="已清仓全历史.html">已清仓 481 笔</a><a href="成交流水全历史.html">流水 3533 条</a><a href="账户总览.html">账户全史</a><a href="收益追踪.html">收益追踪</a><a href="研报候选池.html">研报候选池</a></div><div class="sgroup"><div class="gl">归档</div><a href="panzhong.html">盘中判定</a><a href="panhou.html">盘后复盘</a><a href="yanbao.html">研报审稿</a><a href="taizhang.html">交易台账</a></div><button id="themeToggle" class="theme-toggle" title="切换深浅色主题">◐ 主题</button><div class="side-foot">DECISION SUPPORT<br>NOT INVESTMENT ADVICE<br>SINCE 2020-01</div></aside><div class="layout"><main><p class="crumb"><a href="index.html">总览</a> / 研报文章 / <b>20260929-每日逻辑-CPO设备与节前调整</b></p><article><h1>研报归档：每日逻辑 · 2026-09-29 晚（CPO 设备与节前调整）</h1>
+<blockquote>
+<p>来源：用户提供的"每日逻辑"晚报（2026-09-29 周一晚）
+报告时点：2026-09-29（周一）晚间，覆盖 9/29 A股收盘 + 周一美股收盘
+原文要点存档如下；<strong>本档全部内容均为卖方/纪要口径·未核验</strong>；审稿结论见 <code>研报候选池.md</code>
+核验等级说明：本期未做当日联网逐条核验（低于 0924 期的 3/3 核验标准），疑点见文末</p>
+</blockquote>
+<h2>一、盘面定性（卖方口径·未核验）</h2>
+<ul>
+<li>周一 A股普跌，创业板 <strong>-4%</strong> 领跌；算力硬件/光通信/PCB 大幅回调；<strong>缩量</strong>，无新增阶段新高</li>
+<li>定性：<strong>"利好兑现 + 长假避险 + 制裁传闻"三因素情绪共振，非基本面恶化</strong></li>
+<li>佐证：野村半导体短缺指数新高；AI 订单/扩产/涨价逻辑未变</li>
+</ul>
+<h2>二、CPO 设备缺货（本期核心增量）</h2>
+<ul>
+<li>台湾<strong>高精度运动平台/自动化光耦合</strong>订单能见度到 <strong>2027Q2</strong>，厂商已在扩产</li>
+<li>与"CPO 大规模量产推迟至 2028"（ECOC 口径）对照——<strong>量产推迟但设备先行</strong>：下游锁产能需<strong>提前一年以上</strong>采购设备</li>
+<li>投资节奏三段：</li>
+<li><strong>高精度运动平台/自动光耦合/晶圆级测试</strong>最先兑现</li>
+<li>CW 光源/AWG/MPO</li>
+<li>可插拔在 NPO 过渡期仍是主力</li>
+<li>A 股标的稀缺：跟踪<strong>实拿海外/台系订单</strong>者，<strong>规避纯概念</strong></li>
+</ul>
+<h2>三、AI 研发自动化与海外产业动态</h2>
+<ul>
+<li>四大 AI 企业 20 余名研究员联名警示"智能爆炸"</li>
+<li>英伟达推 <strong>OpenShell + Sentry 双层 Agent 安全系统</strong></li>
+<li>Anthropic 云合同超 <strong>1800 亿美元</strong></li>
+<li>OpenAI 推"o"对标 Meta Muse</li>
+<li>三星电机 <strong>4.27 万亿韩元</strong>扩封装基板</li>
+</ul>
+<h2>四、国内产业与政策</h2>
+<ul>
+<li><strong>长鑫科技：349 亿投入扩产</strong>（高端研发 + 存储晶圆后道测试基地二期）</li>
+<li>七部门《新型电池产业发展十五五规划》：<strong>2030 全固态初步规模化</strong>、锂电池循环 <strong>15000 次</strong></li>
+<li>国常会：地方债结存约 <strong>1.2 万亿</strong>稳内需</li>
+<li>中美互降关税清单落地：<strong>77 中 / 1619 美产品</strong>、约 <strong>90% 下调至最惠国</strong>、美方设"安全池"</li>
+<li>京沪现房销售细则</li>
+</ul>
+<h2>五、美伊与外围</h2>
+<ul>
+<li>美伊：卡塔尔斡旋"伊朗 7 天重开霍尔木兹"方案；特朗普否认制裁豁免</li>
+<li>周一美股：<strong>道指 -0.67% / 纳指 -0.92% / 标普 -0.77%</strong>；ARM/CREDO/英特尔/SK存储回调、光通信普跌；<strong>英伟达靠 1500 亿回购逆势 +1.68%</strong></li>
+<li>油价走高 + 美债收益率新高，压制高估值</li>
+</ul>
+<h2>六、节前暴跌观点（策略层·荐股口径）</h2>
+<ul>
+<li>三因素拆解：利好兑现（元首会晤落地）+ 季节效应（<strong>国庆前一周上证历史下跌概率 87.5%</strong>）+ 传闻扰动（光模块制裁提案实际影响 <strong>&lt;5%</strong>）</li>
+<li>判断：<strong>节后修复概率大</strong></li>
+<li>操作建议：重仓者用煤炭/银行/高股息过渡；轻仓者视<strong>光模块/存储/PCB/CPO设备</strong>回调为节后布局窗口；跟踪<strong>三季报兑现 + 假期海外走势</strong></li>
+</ul>
+<h2>疑点标注</h2>
+<ol>
+<li><strong>"国庆前一周上证下跌概率 87.5%"未给样本口径</strong>（年份区间/统计定义均不明）</li>
+<li>个股精选为<strong>荐股列表性质</strong>（深南电路/中际旭创/<span class="stk-h" data-code="300620">光库科技</span>/北方华创/先导智能/美的集团/陕西煤业/<span class="stk-h" data-code="600036">招商银行</span>/当升科技/通富微电），无独立数据论证</li>
+<li>"制裁提案影响 &lt;5%"与"ECOC 2028 CPO 量产推迟"两个关键判断<strong>出处未注明</strong></li>
+</ol>
+<p>（原文全文由用户消息留存，此处存要点；股票逻辑库新增 6 档 + 追加 3 档，候选池见 2026-09-29 节）</p></article></main></div><footer>BUILT 2026-09-29 · 数据以私有仓库为准 · 决策辅助非投资建议</footer><button id="toTop" title="回到顶部">↑</button>
 <script>
 document.querySelectorAll('table.data').forEach(function(tb){
   var head = tb.querySelector('thead');

@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>研报文章 · 交易复盘系统</title><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23b45309'/%3E%3Ctext x='32' y='43' font-family='Menlo,Consolas,monospace' font-size='27' font-weight='700' fill='%23fff' text-anchor='middle'%3ETJ%3C/text%3E%3C/svg%3E"><script>try{var _tj=localStorage.getItem('tj-theme');if(_tj==='dark'||_tj==='light')document.documentElement.setAttribute('data-theme',_tj)}catch(e){}</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0d1526"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><link rel="apple-touch-icon" href="assets/icon-192.png"><style>
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>账户总览 · 交易复盘系统</title><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23b45309'/%3E%3Ctext x='32' y='43' font-family='Menlo,Consolas,monospace' font-size='27' font-weight='700' fill='%23fff' text-anchor='middle'%3ETJ%3C/text%3E%3C/svg%3E"><script>try{var _tj=localStorage.getItem('tj-theme');if(_tj==='dark'||_tj==='light')document.documentElement.setAttribute('data-theme',_tj)}catch(e){}</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0d1526"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><link rel="apple-touch-icon" href="assets/icon-192.png"><style>
 :root{--bg:#f4f1ea;--surface:#fffdf7;--text:#1c2534;--muted:#667180;--accent:#b45309;--accent-strong:#92400e;--accent-soft:#f7e8d4;--ink:#0d1526;--ink2:#131f38;--line:#ddd6c8;--chip:#efe9db;--shadow:0 12px 32px rgba(28,37,52,.10);--pos:#15803d;--neg:#dc2626;--side-w:236px}
 @media(prefers-color-scheme:dark){:root{--bg:#0e1420;--surface:#161f31;--text:#e9e5d9;--muted:#9aa4b5;--accent:#f0a137;--accent-strong:#f6b95c;--accent-soft:#3a2f1a;--line:#2b3852;--chip:#1e2a44;--shadow:0 12px 32px rgba(0,0,0,.45);--pos:#4ade80;--neg:#f87171}}
 /* 手动主题覆盖：dark 复制深色媒体查询变量，light 回落浅色（覆盖深色系统） */
@@ -163,7 +163,226 @@ table.data tbody tr:has(.stk){cursor:pointer}
 .sfoot{margin-top:16px;color:var(--muted);font-size:11px;font-family:"IBM Plex Mono",monospace;border-top:1px dashed var(--line);padding-top:8px}
 /* 手机端弹窗：限高滚动 + 收窄留白（后注入，天然压过基础 .spanel 规则） */
 @media(max-width:700px){.spanel{max-height:92vh;overflow-y:auto;padding:18px}.sname{font-size:21px}}
-</style></head><body><aside class="sidenav"><div class="side-brand"><div class="b1">TRADING·JOURNAL</div><div class="b2">五步法 × 资金流 × 纪律</div></div><div class="sgroup"><div class="gl">导航</div><a href="index.html">⌂ 总览</a><a href="gegu.html">★ 全部个股</a><a href="持仓快照.html">⚡ 持仓快照</a></div><div class="sgroup"><div class="gl">台账·规则</div><a href="luojiku.html">股票逻辑库</a><a href="规律手册.html">规律手册 v0.4</a><a href="工作流程.html">工作流程</a><a href="持仓逻辑档案.html">持仓逻辑档案</a><a href="主力资金CT-函数解读.html">主力资金CT解读</a><a href="冰封黄白线-函数解读.html">冰封黄白线解读</a></div><div class="sgroup"><div class="gl">台账·数据</div><a href="股票汇总.html">股票汇总</a><a href="成交流水.html">成交流水</a><a href="已清仓全历史.html">已清仓 481 笔</a><a href="成交流水全历史.html">流水 3533 条</a><a href="账户总览.html">账户全史</a><a href="收益追踪.html">收益追踪</a><a href="研报候选池.html">研报候选池</a></div><div class="sgroup"><div class="gl">归档</div><a href="panzhong.html">盘中判定</a><a href="panhou.html">盘后复盘</a><a href="yanbao.html" class="active">研报审稿</a><a href="taizhang.html">交易台账</a></div><button id="themeToggle" class="theme-toggle" title="切换深浅色主题">◐ 主题</button><div class="side-foot">DECISION SUPPORT<br>NOT INVESTMENT ADVICE<br>SINCE 2020-01</div></aside><div class="layout"><main><p class="crumb"><a href="index.html">总览</a> / <b>研报文章</b></p><h1 class="page">研报文章</h1><p class="sub">按产业链大分类 · 来源附带</p><h2 class="sec">测试链</h2><div class="chapter-grid"><a class="chapter-card" href="20260927-芯片测试产业链三篇合集.html"><div class="num">ARCH-03-113</div><div class="title">20260927-芯片测试产业链三篇合集</div><div class="desc">研报文章</div></a><a class="chapter-card" href="东吴证券-探针卡行业深度（发布日期未标注）.html"><div class="num">ARCH-03-116</div><div class="title">东吴证券-探针卡行业深度（发布日期未标注）</div><div class="desc">研报文章</div></a></div><h2 class="sec">先进封装·韬定律·磷化铟</h2><div class="chapter-grid"><a class="chapter-card" href="20260804-西部-博杰股份深度.html"><div class="num">ARCH-03-204</div><div class="title">20260804-西部-<span class="stk" data-code="002975">博杰股份</span>深度</div><div class="desc">研报文章</div></a><a class="chapter-card" href="20260821-天风-博杰股份速评-鼎泰芯源并表.html"><div class="num">ARCH-03-205</div><div class="title">20260821-天风-<span class="stk" data-code="002975">博杰股份</span>速评-鼎泰芯源并表</div><div class="desc">研报文章</div></a><a class="chapter-card" href="20260921-华创-先进封装材料行业深度.html"><div class="num">ARCH-03-206</div><div class="title">20260921-华创-先进封装材料行业深度</div><div class="desc">研报文章</div></a><a class="chapter-card" href="20260927-韬定律与逻辑折叠合集.html"><div class="num">ARCH-03-214</div><div class="title">20260927-韬定律与逻辑折叠合集</div><div class="desc">研报文章</div></a></div><h2 class="sec">CPU·存储·华为链</h2><div class="chapter-grid"><a class="chapter-card" href="20260927-CPU产业链梳理与韬定律电话会.html"><div class="num">ARCH-03-307</div><div class="title">20260927-CPU产业链梳理与韬定律电话会</div><div class="desc">研报文章</div></a><a class="chapter-card" href="20260927-CPU存力与存储链观点合集.html"><div class="num">ARCH-03-308</div><div class="title">20260927-CPU存力与存储链观点合集</div><div class="desc">研报文章</div></a></div><h2 class="sec">材料·CCL·PTFE·电源散热</h2><div class="chapter-grid"><a class="chapter-card" href="20260927-PTFE之争与算力材料观点合集.html"><div class="num">ARCH-03-409</div><div class="title">20260927-PTFE之争与算力材料观点合集</div><div class="desc">研报文章</div></a></div><h2 class="sec">策略·拥挤度·电新出海</h2><div class="chapter-grid"><a class="chapter-card" href="2026-0924-每日逻辑-审稿报告.html"><div class="num">ARCH-03-501</div><div class="title">2026-0924-每日逻辑-审稿报告</div><div class="desc">研报文章</div></a><a class="chapter-card" href="2026-0924-每日逻辑.html"><div class="num">ARCH-03-502</div><div class="title">2026-0924-每日逻辑</div><div class="desc">研报文章</div></a><a class="chapter-card" href="20260712-电新机械周观点合集.html"><div class="num">ARCH-03-503</div><div class="title">20260712-电新机械周观点合集</div><div class="desc">研报文章</div></a><a class="chapter-card" href="20260927-策略与行业观点合集三.html"><div class="num">ARCH-03-511</div><div class="title">20260927-策略与行业观点合集三</div><div class="desc">研报文章</div></a><a class="chapter-card" href="20260927-策略与行业观点合集二.html"><div class="num">ARCH-03-512</div><div class="title">20260927-策略与行业观点合集二</div><div class="desc">研报文章</div></a></div><h2 class="sec">板块强call与杂项</h2><div class="chapter-grid"><a class="chapter-card" href="20260927-半导体自主可控强call-来源不明.html"><div class="num">ARCH-03-610</div><div class="title">20260927-半导体自主可控强call-来源不明</div><div class="desc">研报文章</div></a></div><h2 class="sec">其他</h2><div class="chapter-grid"><a class="chapter-card" href="20260929-每日逻辑-CPO设备与节前调整.html"><div class="num">ARCH-03-X01</div><div class="title">20260929-每日逻辑-CPO设备与节前调整</div><div class="desc">研报文章</div></a></div></main></div><footer>BUILT 2026-09-29 · 数据以私有仓库为准 · 决策辅助非投资建议</footer><button id="toTop" title="回到顶部">↑</button>
+</style></head><body><aside class="sidenav"><div class="side-brand"><div class="b1">TRADING·JOURNAL</div><div class="b2">五步法 × 资金流 × 纪律</div></div><div class="sgroup"><div class="gl">导航</div><a href="index.html">⌂ 总览</a><a href="gegu.html">★ 全部个股</a><a href="持仓快照.html">⚡ 持仓快照</a></div><div class="sgroup"><div class="gl">台账·规则</div><a href="luojiku.html">股票逻辑库</a><a href="规律手册.html">规律手册 v0.4</a><a href="工作流程.html">工作流程</a><a href="持仓逻辑档案.html">持仓逻辑档案</a><a href="主力资金CT-函数解读.html">主力资金CT解读</a><a href="冰封黄白线-函数解读.html">冰封黄白线解读</a></div><div class="sgroup"><div class="gl">台账·数据</div><a href="股票汇总.html">股票汇总</a><a href="成交流水.html">成交流水</a><a href="已清仓全历史.html">已清仓 481 笔</a><a href="成交流水全历史.html">流水 3533 条</a><a href="账户总览.html">账户全史</a><a href="收益追踪.html">收益追踪</a><a href="研报候选池.html">研报候选池</a></div><div class="sgroup"><div class="gl">归档</div><a href="panzhong.html">盘中判定</a><a href="panhou.html">盘后复盘</a><a href="yanbao.html">研报审稿</a><a href="taizhang.html">交易台账</a></div><button id="themeToggle" class="theme-toggle" title="切换深浅色主题">◐ 主题</button><div class="side-foot">DECISION SUPPORT<br>NOT INVESTMENT ADVICE<br>SINCE 2020-01</div></aside><div class="layout"><main><p class="crumb"><a href="index.html">总览</a> / 交易台账 / <b>账户总览</b></p><article><h1>账户总览（每日更新）</h1>
+<blockquote>
+<p>数据来源：用户每日提供的投资账本截图。个股明细见同目录 <code>持仓快照.csv</code>。</p>
+</blockquote>
+<h2>2026-09-24 收盘（09-27 20:16 上传）</h2>
+<h3>账户级指标</h3>
+<table>
+<thead>
+<tr>
+<th>指标</th>
+<th>数值</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>总资产</td>
+<td>730,774.01</td>
+</tr>
+<tr>
+<td>当日盈亏</td>
+<td>-22,873.28（-3.04%）</td>
+</tr>
+<tr>
+<td>本周盈亏（持仓合计）</td>
+<td>-57,857.08</td>
+</tr>
+<tr>
+<td>本月盈亏</td>
+<td>+41,021.29（+2.81万 / +5.12%）</td>
+</tr>
+<tr>
+<td>今年盈亏</td>
+<td>+43,600（+4.36万 / +8.68%）</td>
+</tr>
+<tr>
+<td>现金比例</td>
+<td>≈0%（仓位占比合计 99.99%）</td>
+</tr>
+</tbody>
+</table>
+<h3>结构</h3>
+<ul>
+<li>半导体产业链（<span class="stk" data-code="688627">精智达</span>/安集/<span class="stk" data-code="688037">芯源微</span>/<span class="stk" data-code="688661">和林微纳</span>/正帆/臻宝 + <span class="stk" data-code="589020">KC半导体</span>ETF + <span class="stk" data-code="588780">芯片设计</span>ETF + <span class="stk" data-code="588080">科创板50</span>ETF）≈ 98.5%</li>
+<li><span class="stk" data-code="300806">斯迪克</span>（消费电子材料）1.46%</li>
+</ul>
+<h3>本期关键观察（首次建档）</h3>
+<ol>
+<li><strong>单票过重</strong>：<span class="stk" data-code="688627">精智达</span> 37.61% 仓位（27.5万），持有仅 4 天，浮亏 -19,952（-6.77%）。</li>
+<li><strong>短线追高被套</strong>：6 只科创个股持仓 1~4 天，全部浮亏，且当日 10 只持仓全线下跌。</li>
+<li><strong>利润来源单一</strong>：今年持仓累计 +76,356 中，<span class="stk" data-code="300806">斯迪克</span>一只票贡献 +140,727；<strong>其余 9 只合计 -64,370</strong>。</li>
+<li><strong>推算已清仓部分今年约 -3.3 万</strong>：账户今年 +4.36万 &lt; 持仓累计 +7.64万。</li>
+<li><strong>赢利兑现过快</strong>：<span class="stk" data-code="300806">斯迪克</span> 143 天 +73%，但仓位只剩 1.46%，负成本 -612/股；本周又 -28,497（高位套现部分接回半导体后回吐）。</li>
+<li><strong>不止损</strong>：<span class="stk" data-code="589020">KC半导体</span> ETF 持有 27 天 -11.34% 未处理；<span class="stk" data-code="588080">科创板50</span> / <span class="stk" data-code="588780">芯片设计</span>两只 ETF 为"僵尸仓"（合计约 1,519 元，持有盈亏率 -93.84% / -77.85%，疑似经历份额折算）。</li>
+<li>本月 +4.1万 的利润，本周已回吐 -5.79万。</li>
+</ol>
+<h3>待办/建议跟踪</h3>
+<ul>
+<li>[ ] <span class="stk" data-code="688627">精智达</span>减仓至 ≤20% 或设定 440 一线硬止损（成本 491.304，回本需 +7.26%）</li>
+<li>[ ] 清理 <span class="stk" data-code="588080">588080</span> / <span class="stk" data-code="588780">588780</span> 僵尸仓</li>
+<li>[ ] 建立单票 ≤15~20% 仓位上限 + 个股 -8% 止损纪律</li>
+<li>[ ] 保留 10~15% 现金</li>
+</ul>
+<hr />
+<h2>2026-09-24 盘后补充（09-27 晚补录：已清仓 24 笔 + 9/17~24 成交明细 54 笔）</h2>
+<h3>数据核验（成交反推持仓，全部通过）</h3>
+<ul>
+<li><span class="stk" data-code="688627">精智达</span> 400+200+203−203=600股 ✓，均价≈491.1（含费=491.304）✓；安集 200+269=469 ✓；和林 389+500−389−300+297+300=797 ✓；正帆 500+371=871 ✓；<span class="stk" data-code="688037">芯源微</span> 200−200+218+281−249=250 ✓；臻宝 200 ✓</li>
+<li><span class="stk" data-code="589020">KC半导体</span> 9月买入 48,500 股 vs 持仓 48,800 → 差 300 股为 8 月建仓（与持仓 27 天吻合）✓</li>
+<li><span class="stk" data-code="300806">斯迪克</span> 9/18~24 往返 20+ 笔后余 200 股 ✓</li>
+</ul>
+<h3>9月已清仓统计（24 笔，首份真实数据）</h3>
+<ul>
+<li>胜/负 12/12，<strong>胜率 50%</strong>；平均盈利 +2,040 vs 平均亏损 −999，<strong>盈亏比 2.04</strong></li>
+<li>净实现盈亏 <strong>+12,471</strong>；交易费用约 1,309；平均持仓 <strong>6.4 天</strong></li>
+<li>最大盈利：<span class="stk" data-code="688627">精智达</span> +6,935（+7.64%，3天）；最大亏损：<span class="stk-h" data-code="002028">思源电气</span> <strong>−3,092（−17.95%</strong>，6天）</li>
+<li>对照：剔除<span class="stk" data-code="300806">斯迪克</span>后其余持仓持有盈亏 <strong>−44,941</strong>（+88,161 − <span class="stk" data-code="300806">斯迪克</span> +133,102）</li>
+</ul>
+<h3>行为画像</h3>
+<ol>
+<li><strong>卖赢接回</strong>：<span class="stk" data-code="688627">精智达</span> 9/17 于 488.54 止盈（+7.64%，教科书操作）→ 9/21~23 以 486.0/489.2/475.9 三笔接回 → 9/24 卖 203@464.1，余 600 股 −6.77%。赢利票在自己卖点上方接回。</li>
+<li><strong><span class="stk" data-code="300806">斯迪克</span> 9/18~22 高频往返</strong>：9/21 卖 8,000 股（55.40/56.41）同日买回 1,800 股（57.02~57.67 更高价）；9/22 再卖 5,400。兑现 +73% 大方向对，段内高买低卖损耗大，本周 −28,497。</li>
+<li><strong>下跌日接飞刀</strong>：9/24 全场 −3% 仍净买入半导体（安集/正帆/和林/臻宝/KC），持仓 1~2 天全部浮亏。</li>
+<li><strong>做T频繁</strong>：臻宝 9/24 卖 280.51→买 278.03；<span class="stk" data-code="300806">斯迪克</span> 9/18 卖 58.52→买 58.23；博杰 9/22~24 往返 15 笔。</li>
+<li><strong>止损缺失实锤</strong>：思源 −17.95%（6天）、联得 −8.76%（10天）远超 −8% 线；同期大盘 +2.5%，属个股纪律问题。</li>
+<li>频次与摩擦：9/22 单日 16 笔、9/23 11 笔、9/24 11 笔；9/22~24 三天费用约 939。</li>
+</ol>
+<h3>回填与校准</h3>
+<ul>
+<li><span class="stk-h" data-code="600105">永鼎股份</span>（案例库✅买）：8/24→9/2 清仓 +0.75%，跑输大盘 0.18pct → 信号弱兑现，快出保本金</li>
+<li>博杰 9/24"不碰"判定：待 9/28 验证；用户自身 9/24 清仓博杰 +1.28%，行为与判定一致</li>
+<li>校准点 #6（-8%硬止损）：思源案例提供支持证据；新增观察项：换手率与摩擦成本</li>
+</ul>
+<h3>修正（2026-09-27 用户反馈）</h3>
+<ul>
+<li><strong>单股仓位上限修正为 35%</strong>（30~35% 可接受，原版≤3成）：<span class="stk" data-code="688627">精智达</span> 37.6% 由"严重违规"改判"轻微超限 2.6pct"，处理建议降级为可选</li>
+<li><strong><span class="stk" data-code="589020">KC半导体</span> 9/23-24 买入改判</strong>：ETF 换仓回补（此前换入个股时卖出过 ETF 份额），撤销"亏损仓加码"定性</li>
+<li>已同步：规律手册 v0.4、panzhong-panduan / panhou-fupan / wubu-fupan 三个 skill 的仓位数字</li>
+</ul>
+<hr />
+<hr />
+<h2>全历史统计（2020-01 ~ 2026-09 · 来源：股票账户.xlsx 全量导入 2026-09-27）</h2>
+<blockquote>
+<p>已清仓 <strong>481 笔</strong>、交易流水 <strong>3,533 条</strong>全量入档（已清仓全历史.csv / 成交流水全历史.csv）。9月已清仓按 Excel 口径为 28 笔 +12,295（含 9/1-9/4 四笔此前未收录），替代此前手工统计的 24 笔口径。</p>
+</blockquote>
+<h3>总量</h3>
+<ul>
+<li>胜率 <strong>63.4%</strong>（305胜/176负）· 净盈亏 <strong>-92,162</strong> · 累计费用 19,810 · 平均持仓 9.5 天</li>
+<li><strong>均盈 +602 vs 均亏 -1,566 → 盈亏比 0.38</strong>（9月为 2.04——方向完全相反）</li>
+</ul>
+<h3>★ 持仓天数分桶（全档案最重要的发现）</h3>
+<table>
+<thead>
+<tr>
+<th>持仓天数</th>
+<th>笔数</th>
+<th>胜率</th>
+<th>净盈亏</th>
+<th>盈亏比</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>≤3天</td>
+<td>264</td>
+<td><strong>78%</strong></td>
+<td><strong>+46,543</strong></td>
+<td>0.63</td>
+</tr>
+<tr>
+<td>4-7天</td>
+<td>119</td>
+<td>52%</td>
+<td>-26,216</td>
+<td>0.56</td>
+</tr>
+<tr>
+<td>8-15天</td>
+<td>65</td>
+<td>40%</td>
+<td>-26,924</td>
+<td>0.87</td>
+</tr>
+<tr>
+<td>16-30天</td>
+<td>20</td>
+<td>50%</td>
+<td>-23,936</td>
+<td>0.50</td>
+</tr>
+<tr>
+<td>&gt;30天</td>
+<td>13</td>
+<td><strong>0%</strong></td>
+<td><strong>-61,629</strong></td>
+<td>0.00</td>
+</tr>
+</tbody>
+</table>
+<p><strong>结论：六年净亏 -9.2 万几乎全部由"拿太久"贡献。≤3 天的短线直觉是净赚 +4.65 万的；持仓超过 7 天后亏损单调放大；超过 30 天的 13 笔全军覆没。</strong></p>
+<h3>按年</h3>
+<table>
+<thead>
+<tr>
+<th>年份</th>
+<th>笔数</th>
+<th>胜率</th>
+<th>净盈亏</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>2020</td>
+<td>5</td>
+<td>40%</td>
+<td>-2,286</td>
+</tr>
+<tr>
+<td>2021</td>
+<td>6</td>
+<td>50%</td>
+<td>+268</td>
+</tr>
+<tr>
+<td>2024</td>
+<td>26</td>
+<td>92%</td>
+<td>+14,108</td>
+</tr>
+<tr>
+<td>2025</td>
+<td>150</td>
+<td>66%</td>
+<td>-47,728</td>
+</tr>
+<tr>
+<td>2026（至9/27）</td>
+<td>294</td>
+<td>60%</td>
+<td>-56,523</td>
+</tr>
+</tbody>
+</table>
+<h3>2026 逐月已实现</h3>
+<p>01 +284 / 02 +9,892 / <strong>03 -43,997（最惨）</strong> / 04 +7,100 / 05 +15,420 / 06 -19,132 / 07 -27,507 / 08 -10,878 / <strong>09 +12,295（转正）</strong></p>
+<h3>全历史 TOP 盈亏</h3>
+<ul>
+<li>盈利TOP：<span class="stk-h" data-code="002897">意华股份</span> +9,205（21天）· <span class="stk" data-code="688627">精智达</span> +6,935（3天）· <span class="stk-h" data-code="300139">晓程科技</span> +6,731 · <span class="stk-h" data-code="300285">国瓷材料</span> +5,760（16天）· <span class="stk" data-code="300806">斯迪克</span> +4,987</li>
+<li>亏损TOP：<strong><span class="stk" data-code="588080">科创板50</span> -18,530（21天）</strong> · <span class="stk-h" data-code="600215">派斯林</span> -17,657（<strong>71天</strong>）· <span class="stk-h" data-code="600707">彩虹股份</span> -13,177（<strong>84天</strong>）· <strong><span class="stk-h" data-code="513120">HK创新药</span> -13,090（140天）</strong> · <span class="stk-h" data-code="000960">锡业股份</span> -11,248（6天）</li>
+<li>亏损榜的共同点：全是"拿太久"的票</li>
+</ul>
+<h3>资金进出（2020-2026 全部转账）</h3>
+<ul>
+<li>银行→证券 +1,385,345（194笔）；证券→银行 -731,123（292笔）；<strong>净投入 +654,222</strong> → 这就是收益金额与收益率背离的来源（详见 收益追踪.md）</li>
+</ul>
+<hr />
+<h2>全历史个股TOP（229 只完整排序见 股票汇总.csv）</h2>
+<ul>
+<li>交易最频繁：<span class="stk-h" data-code="002225">濮耐股份</span> 10次(+5,760) · <span class="stk-h" data-code="002897">意华股份</span> 9次(+17,082) · <span class="stk-h" data-code="600887">伊利股份</span>/<span class="stk-h" data-code="603063">禾望电气</span>/<span class="stk-h" data-code="600489">中金黄金</span>/<span class="stk-h" data-code="300395">菲利华</span> 各7次</li>
+<li>持仓中全历史转正的仅 4/10：<span class="stk" data-code="300806">斯迪克</span> +140,730 · <span class="stk" data-code="688661">和林微纳</span> +706 · 其余 8 只全历史为负</li>
+</ul></article></main></div><footer>BUILT 2026-09-29 · 数据以私有仓库为准 · 决策辅助非投资建议</footer><button id="toTop" title="回到顶部">↑</button>
 <script>
 document.querySelectorAll('table.data').forEach(function(tb){
   var head = tb.querySelector('thead');
