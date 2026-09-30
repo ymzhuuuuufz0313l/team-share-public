@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>十五、记忆唤醒 · G13 修复与探针全档 · HK1V11 综合/签核流程实践</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./css/style.css">
+  <script src="./js/marked.min.js"></script>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a class="navbar-brand" href="./">HK1V11_FLOW_PRACTICE</a>
+      <div class="navbar-links" id="navbar-links"></div>
+    </div>
+  </nav>
+  <div class="container with-toc">
+    <aside class="toc-wrapper"><div class="toc" id="toc"></div></aside>
+    <div class="content">
+      <article class="article" id="article"></article>
+      <div class="page-nav" id="page-nav"></div>
+      <div class="footer">HK1V11 SYNTHESIS / SIGNOFF PRACTICE · AUTHOR ymzhuuuu · UPDATED 2026-09-30</div>
+    </div>
+  </div>
+  <script type="text/template" id="md">
+# 十五、记忆唤醒 · G13 修复与探针全档（指引）
+
+> **用途**：ch11 / ch14 / 首页时间线只留一句话结论——密集细节、证据链、commit 号、判据全部收拢在本章。隔段时间回来看，读这一章就能接上全部上下文。
+
+---
+
+## 1. G13 打一拍修复全档（SHORT + LONG 两分支终态）
+
+### 1.1 SHORT（SHORT_ENCODING_ALIGN.v + SHORT_ENCODING_DECODE.v）
+
+- **主体（df3e7d32）**：三件套打一拍——新增 `DATA_ALIGN_PRE_D / DATA_POINT_D / I_INDATA_D3` 三个 20bit FF（异步复位 0）；桶形 case 19 支路+default 数据参考 D1/D2→D2/D3；16 个 K 码比较器改吃 `DATA_ALIGN_PRE_D`；KCODE_REG 与装载值切 `DATA_POINT_D`（F-1）；`DATA_ALIGN` RHS 切 `DATA_ALIGN_PRE_D`（F-2）。
+- **v2 修正（4a4cd776）**：DECODE `KEY_SHIFT_JUDGE` 同拍交叉比较（LAT+1 vs FIND+2 相对相位变 1 拍）→ 新增 `DATA_POINT_LAT_D` 复原判决相位。
+- **v3 修正（16e653e3）**：S-2b 曾把掩蔽比较器整体挪到 PRE_D → 反重触发掩蔽接受集改变，K 码锁失败 → 比较器组拆分：掩蔽吃组合 PRE（lag-1）、K*_FIND 吃 PRE_D（+2 域）。
+- **效果**：ICG 使能环（worst −1.31）在 PRE_D 处切断两段各 ≤13 级；服务器批量 60 连跑 **59/60**（基线 t_H3840 转绿）。
+
+### 1.2 LONG（LONG_ENCODING_ALIGN.v，v4.1）
+
+- uniform+1 终版：+80bit FF、两级桶形数据参考重排、掩码-窗口互锁恢复、回波守卫 L-11；420b 基线 **52/52** + 放量 382 case **369/382（96.6%）**；FAIL 聚类（H3456×CH_SEL4×420b 10 条）定责中。
+
+### 1.3 验证链
+
+Qwen×6 + GLM×3 九路独立实施收敛（差异纯表面）+ 6 路对抗评审 + K3 六维终审 + iverilog 受控 + 服务器批量回归。commit 链：`df3e7d32` → `4a4cd776`（v2）→ `16e653e3`（v3）→ LONG `92fc5793`/v4.1 `451211a0`。
+
+---
+
+## 2. 组 4 深锥探针实验全档（0930，旧网表增量精修）
+
+### 2.1 目的与方法
+
+- **目的**：验证组 4 深锥（o_keep→BIT_COUNT −0.60，19 级 X1）能否靠增量综合 upsize 收敛——决定 Tier-2 提权 / RTL 流水的取舍。
+- **方法**：bsub -Ip csh → source /eda/env/syn1709.cshrc → dc_shell-t 交互（node043）→ `read_ddc` 0922 旧网表（**纯基线，不改任何约束**）→ 定点 before 报告 → `compile_ultra -incremental -scan` → after 定点报告。
+
+### 2.2 逐路径 before → after（每族 10 条）
+
+| 家族 | before | after | 收敛 |
+|---|---|---|---|
+| G13 组3 D1 | −1.19 ~ −1.31 | −0.20 ~ −0.22 | 83% |
+| G13 组2 LAT | −1.27 ~ −1.31 | −0.22 ×10 | 83% |
+| 组4 o_keep | −0.57 ~ −0.60 | −0.18 ~ −0.19 | 65~70% |
+
+### 2.3 判读与残余归属
+
+- **upsize 药效实锤**（65~83% 收敛，30 条路径分布整齐无离群），但**均未转绿**——残余 −0.18 / −0.22 需 X4 级处理。
+- **残余归属**：G13 组2/3 残余 → 新网表打一拍结构性切锥后预期直接消失；组 4 残余 −0.18 → 已定案 X4 兜底。
+- **诚实修正**："深锥 upsize 治不了"原判偏保守——upsize 实际买回 83%；但 OCV/多角/真实寄生会侵蚀理想线负载下的收敛，X4 兜底仍必要。
+- 证据：`script/site_audit_0930/probe_rpts/`（before/after 六份 + command.log，commit 737afb52）。
+
+---
+
+## 3. 两层回归根因档案（SHORT 打一拍引入、已修复）
+
+### 3.1 层 1（v2 修复）：DECODE 钥判决同拍交叉比较
+
+`KEY_SHIFT_JUDGE` 把 f(DATA_POINT_LAT) 与 K*_FIND 放同一表达式同拍比较——打一拍后 LAT +1 / FIND +2，相对相位变 1 拍 → 钥旋转判决翻转 → 配置包解扰错钥 → R_REG30_F 被写错。修复：DECODE 内 `DATA_POINT_LAT_D` 复原判决相位（4a4cd776）。
+
+### 3.2 层 2（v3 修复）：反重触发掩蔽 lag 几何
+
+S-2b 把 16 个比较器全挪到 PRE_D——K*_FIND 寄存器需要 +2 域没错，但 **KCODE_REG 的反重触发掩蔽项必须保持原 lag-1 几何**。掩蔽接受集改变 → 一次性训练流（K4→CTRL_F→IDLE→K1→CTRL_L→K3）首个装载落错 junction → K 码永不检出 → DCLK_CONFIG 不开全链死。修复：比较器组拆分——掩蔽吃组合 PRE（lag-1）、K*_FIND 吃 PRE_D（16e653e3）。
+
+### 3.3 方法论（重定时三查 + 对拍第四关）
+
+① 同拍交叉比较类消费者（判决器/掩蔽把两个延迟域信号放同一表达式）；② 反重触发掩蔽类（窗口 lag 是校准行为参数，不得随实现移动）；③ 装载值窗==首作用窗级联配平；④ **新旧 RTL 同激励对拍仿真**——静态"相对几何保持"推演不可信，必须对拍背书。
+
+---
+
+## 4. 输出域口径 + 验收检查点
+
+**口径**：find 域（K*_FIND/BK_ST/KCODE_TOG/K1_FIND_LATCH）**+2 拍**、DATA_ALIGN **+2 拍**（同拍配对）、DATA_POINT_LAT **+1 拍**；BK_ST/KCODE_TOG/K1_FIND_LATCH 随 find 域 +2。
+
+**下次 DC run 验收**：
+1. G13 组2/组3 56 条：**转绿**（打一拍切锥 + upsize）
+2. 组 4 o_keep 残余：**X4 upsize 后转绿**
+3. BKDU 24 条：**单拍可见**（修复=RTL 两级同步器，尚未实施）
+4. SEL-004：无新增；其余 80 条全消
+5. 通过后：G13 TEMPORARY mc 标记正式退役
+
+**证据归档**：`script/site_audit_0930/probe_rpts/`（before/after 六份 + command.log）、`script/_syn_0930v0/`（服务器包解压，gitignored）。
+
+---
+
+*本章为记忆唤醒指引——一句话结论在各章，完整判据在这里。*
+  </script>
+  <script src="./js/site.js"></script>
+</body>
+</html>

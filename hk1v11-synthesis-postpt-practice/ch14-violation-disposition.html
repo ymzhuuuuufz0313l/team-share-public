@@ -127,7 +127,7 @@
 
 **建议处置**：~~与组 3 一起把 G13 重写覆盖本尊+`_D1`~~（0928 否决）→ **交综合（retime/upsizing 桶形+20bit 比较锥）或 RTL 预相移重构（mux 移到 1bit 结果侧）**，与组 3 及 139 条 CONFIG_DATA 同桶。
 
-**0930 进展：SHORT 侧 RTL 打一拍已落地并服务器实锤**（df3e7d32 三件套+装载值域+DATA_ALIGN 切流水；回归两层修复：DECODE 钥判决相位 v2 `4a4cd776`、反重触发掩蔽比较器拆分 v3 `16e653e3`）——批量回归 **59/60**（基线 t_H3840_V16_FPS120 转绿 = K 码锁修复生效）；ICG 使能环在 `DATA_ALIGN_PRE_D` 处切断为两段各 ≤13 级。LONG 侧 **v4.1（uniform+1 + 回波守卫 L-11，451211a0）已落地并服务器实锤：420b 基线批 52/52 + 放量 382 case 369/382（96.6%，FAIL 聚类 H3456×CH_SEL4 10 条定责中）**；upsize X4 兜底与 56 条清零验收归下次 DC run。
+**0930 进展（一句话）**：SHORT 侧打一拍已落地并批量 59/60 基线转绿、LONG v4.1 已实锤（420b 52/52 + 放量 369/382）——**两层根因档案与探针全档见 ch15《记忆唤醒》**。
 
 **你应该看的 file:line**：
 - G13 注释本体：`ip_cons` **L329-330**
@@ -148,7 +148,7 @@
 
 **建议处置**：~~把 G13 重写覆盖本尊+`_D1`~~（0928 审查否决——D1 与本尊同为位对齐桶形移位选择寄存器，非准静态，❌ 不可恢复 mc）→ **交综合（retime/upsizing）或 RTL 预相移重构**，与组 2 及 139 条 CONFIG_DATA 同桶。
 
-**0930 进展**：同组 2——SHORT 侧打一拍落地（v2/v3 两层回归修复后批量 59/60，基线转绿）；本组 41 条中 SHORT 实例侧 ICG 使能环已切断，`_D1` 起点侧随同收敛；LONG 侧 **v4.1 已落地并服务器实锤（420b 基线 52/52 + 放量 369/382），`_D1` 与本尊同随 uniform+1 平移（20 条 LONG 实例路径同步收敛）**，DC run 终验收。
+**0930 进展（一句话）**：同组 2——SHORT 侧打一拍落地批量 59/60、LONG v4.1 实锤，本组随同收敛；**细节见 ch15**。
 
 **你应该看的 file:line**：
 - G13 pattern（看它为什么匹配不到 D1）：`ip_cons` **L329**（`DATA_POINT_LAT_reg*`——注意 `_reg` 前没有 `*`，中间插不进 `_D1`）
@@ -180,7 +180,7 @@
 **建议处置**：交综合（ungroup / retime / 大小 cell 重映射）或 RTL 流水。
 
 <div style="border:1px solid #e3e6ea;border-radius:8px;padding:12px 16px;margin:10px 0;background:#f5f7fa;font-size:13px;line-height:1.75;">
-<b>0930 探针实验：upsize 药效验证（旧网表增量精修，进行中）</b><br>
+<b>0930 探针实验：upsize 药效验证（已完成——全档见 ch15《记忆唤醒》）</b><br>
 <b>⚠ 口径声明：本探针全部数据基于打一拍前的旧网表（0922 ddc）——新 RTL（打一拍）效果不包含在本探针任何数字内。after 的 −0.18/−0.22 均为旧网表+增量 upsize 的结果。</b><br>
 目的：验证组 4 深锥（o_keep→BIT_COUNT −0.60 家族，19 级 X1）能否靠 upsize 收敛——决定 Tier-2 提权/RTL 流水的取舍。<br>
 方法：bsub -Ip csh → source /eda/env/syn1709.cshrc → dc_shell-t 交互（node043）→ read_ddc 0922 旧网表（纯基线，不改任何约束）→ 定点 before 报告 → compile_ultra -incremental -scan（补设 target/link_library 交互缺失项）→ after 定点报告。<br>
