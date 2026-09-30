@@ -127,6 +127,8 @@
 
 **建议处置**：~~与组 3 一起把 G13 重写覆盖本尊+`_D1`~~（0928 否决）→ **交综合（retime/upsizing 桶形+20bit 比较锥）或 RTL 预相移重构（mux 移到 1bit 结果侧）**，与组 3 及 139 条 CONFIG_DATA 同桶。
 
+**0930 进展：SHORT 侧 RTL 打一拍已落地并服务器实锤**（df3e7d32 三件套+装载值域+DATA_ALIGN 切流水；回归两层修复：DECODE 钥判决相位 v2 `4a4cd776`、反重触发掩蔽比较器拆分 v3 `16e653e3`）——批量回归 **59/60**（基线 t_H3840_V16_FPS120 转绿 = K 码锁修复生效）；ICG 使能环在 `DATA_ALIGN_PRE_D` 处切断为两段各 ≤13 级。LONG 侧 **v4.1（uniform+1 + 回波守卫 L-11，451211a0）已落地并服务器实锤：420b 基线批 52/52 + 放量 382 case 369/382（96.6%，FAIL 聚类 H3456×CH_SEL4 10 条定责中）**；upsize X4 兜底与 56 条清零验收归下次 DC run。
+
 **你应该看的 file:line**：
 - G13 注释本体：`ip_cons` **L329-330**
 - G13 审计注释（为什么留 OFF）：`ip_cons` **L321-328**
@@ -145,6 +147,8 @@
 **结论**：C 类。0922 审计已写明：0921V3 那 20 条近限路径里 **19 条 startpoint = `DATA_POINT_LAT_D1_reg_3_`**，`NOT matched by this waiver's pattern`。旧版"看起来对"其实是 waiver 没打中目标。
 
 **建议处置**：~~把 G13 重写覆盖本尊+`_D1`~~（0928 审查否决——D1 与本尊同为位对齐桶形移位选择寄存器，非准静态，❌ 不可恢复 mc）→ **交综合（retime/upsizing）或 RTL 预相移重构**，与组 2 及 139 条 CONFIG_DATA 同桶。
+
+**0930 进展**：同组 2——SHORT 侧打一拍落地（v2/v3 两层回归修复后批量 59/60，基线转绿）；本组 41 条中 SHORT 实例侧 ICG 使能环已切断，`_D1` 起点侧随同收敛；LONG 侧 **v4.1 已落地并服务器实锤（420b 基线 52/52 + 放量 369/382），`_D1` 与本尊同随 uniform+1 平移（20 条 LONG 实例路径同步收敛）**，DC run 终验收。
 
 **你应该看的 file:line**：
 - G13 pattern（看它为什么匹配不到 D1）：`ip_cons` **L329**（`DATA_POINT_LAT_reg*`——注意 `_reg` 前没有 `*`，中间插不进 `_D1`）
@@ -395,7 +399,7 @@
 | 优先级 | 动作 | 消多少 | 风险 |
 |---|---|---|---|
 | **P0** | 组 1：**0928 终局——9 分区逐 bit 翻案审查后整组回归组宽 mc，78 条闭环 + G14 两条 DPLC_CLK 窄 mc 闭环**（含 R_REG00_L 回组、休眠 B 类锚点含 HIZ_MIN_VAL[6:2] 全翻案，remove 10→1）；BKDU 保留单周期 + RTL 加同步（**BKDU/G1G2 0924 ymzhu 确认不能恢复**，修复=RTL 两级同步器） | 89（剩 BKDU 24 待 RTL） | 高 |
-| **P1** | 组 2+3：~~G13 重写扩 pattern~~ 0928 审查否决（位对齐桶形移位选择寄存器，非准静态，❌ 不可 mc）→ **重分类真实数据通路：交综合 retime/upsizing 或 RTL 预相移重构**（与 139 CONFIG_DATA 同桶） | 56 | 高 |
+| **P1** | 组 2+3：~~G13 重写扩 pattern~~ 0928 审查否决（位对齐桶形移位选择寄存器，非准静态，❌ 不可 mc）→ **重分类真实数据通路：交综合 retime/upsizing 或 RTL 预相移重构**（与 139 CONFIG_DATA 同桶）；**0929-30 实施**：SHORT 打一拍落地+两层回归修复（v2 `4a4cd776`/v3 `16e653e3`），服务器批量 59/60（基线转绿）；LONG v4 落地待首验；剩 CTRL_L_LINE_OVERRIDE 定责 + upsize X4 + DC run 验收 | 56 | 高 |
 | **P1** | 组 8：恢复 G14 `R_REG06_F_reg_2_` 对（DC 用 `reg_2_`） | 2 | 低 |
 | **P1** | 组 9：DTCTL 门控换 ICG / 使能同步；复核 INDATA_SYNC `set_input_delay -min` | 30 | 中（结构） |
 | **P2** | 组 4/5/6/7：交综合（retime/流水）或 RTL 优化；WCLK1(-0.11) 大概率 DC 收敛 | 305 | 低 |
@@ -411,4 +415,4 @@
   <script src="./js/site.js"></script>
 </body>
 </html>
-<!-- ymzhu 2026-09-28 14:58 -->
+<!-- ymzhu 2026-09-30 10:05 -->

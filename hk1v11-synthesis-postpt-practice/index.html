@@ -455,6 +455,7 @@
       <div class="body">
         <div class="t">0928 · 0922 收窄 vs DC 482 违例归因定案（五模型交叉）+ 三个学习页上线（ch11/ch12/ch13）+ R_REG47_F mc 闭环</div>
         <ul>
+          <li><b>0929-0930 G13 打一拍两分支终版落地 + 放量回归（commit 451211a0 / 16e653e3 / 4a4cd776）</b>：SHORT = 三件套 + 比较器组拆分（掩蔽吃组合 PRE 保 lag-1 几何）+ DECODE 钥判决相位复原，60 连跑 59/60 基线转绿；LONG = uniform+1 终版 v4.1（+80bit FF、桶形 {D1,D2}/{D2,D3}、掩码-窗口互锁恢复 + 回波守卫 L-11），420b 基线 52/52 + 放量 382 case **369/382（96.6%）**。<b>回归教育点</b>：增量静态审两轮全过仍漏装载拍瞬态（掩码 select 在 LAT 装载后一拍 stale）——全量审 2/3 判 critical 后 L-11 请回；放量暴露 FAIL 聚类 H3456×CH_SEL4×420b 10 条（50 错 quit 形态，与 v3 病征同款）定责中。<b>方法论沉淀</b>：打一拍必验"掩码×窗口同拍互锁 + 同拍交叉比较消费者"，静态相对几何推演（正反两向）均不可信，对拍 TB/服务器实跑为终审</li>
           <li><b>482 条违例归因定案</b>（5 模型 × 2 批独立全量分析，106 条被全部锁定且路径集合相同）：<b>106 收窄暴露</b>（10 分区 89 + G13 DATA_POINT_LAT 15 + G14 DPLC_MODE 2，worst RX_CLK <b>−1.45</b> = R_REG47_F HIZ_MIN→TP 计数器）+ <b>335 真实</b>（WCLK1 配置写 139 + RX 数据通路 139 + PIX_DATA 23 + DTCTL 门控 hold 30）+ <b>41 从未约束</b>（G13 pattern 从未命中 DATA_POINT_LAT_D1）。结论：收窄是有意收紧而非约束 bug，逐 bit 处置——准静态位恢复窄豁免，per-beat 消费者（BKDU/UTC 比较）改 RTL 同步。<b>0928 复审修订</b>：G13 56 条（15+41）经实读重分类为<b>真实数据通路</b>（DATA_POINT_LAT/_D1=位对齐桶形移位选择寄存器，非准静态，❌ 不可 mc → 交综合/RTL 预相移重构）；89 条中 65 mc 闭环 + 24 BKDU 真；G14 2 条窄 mc 闭环</li>
           <li><b>代际验证纪律定案</b>：PT（09-21 15:24）早于新 DC（09-22 14:22，svn.info 锚点）→ 现 PT 数字是<b>旧代基线</b>，新约束真实 STA 图景待下一轮 PT；robocopy 重置时间戳，代际判定用报告头 Date / write_sdc 时间戳 / dc.log 标记串三方对齐</li>
           <li><b>三个学习页上线</b>（非正式章节，首页网格"学"徽章）：ch11 违例归因实战（逐路径精读）、ch12 时序约束入门教学（为什么这么设/不能那样设）、ch13 目录结构与工具链（每个工具吃什么/吐什么/脚本包括什么）；K3-256K 严格 review 修订 26 处 + 补证 5 处</li>
@@ -463,6 +464,7 @@
           <li><b>0928 UTC 29 条 mc 闭环（commit 1c447cd1）——收窄暴露 89 条仅剩 BKDU 24 条待 RTL</b>：R_REG57_F[1] 6 条（−0.88，9 级锥）+ R_REG33_F[4] 4 条（−0.34）+ R_REG33_F[6] 8 条（−0.09）+ R_REG56_F[3] 5 条（−0.36）+ R_REG56_F[1] 6 条（−0.17），同一对 mc2/1（`-to RX_CLK`），bit-exact 5 bit 不加宽（R_MON_DC_VOL 未验不罩）。判据（每拍活消费分区靠判据而非 RTL 改动闭环）：① ymzhu 时序版——寄存器帧 3 地址/拍写入，0x21/0x38/0x39=行 33/56/57、FBANK 收尾 0x44=行 68，均非最后一拍；② "钳死"结构——UTC 计数器使能关时恒清零（`SHORT_ENCODING_ERROR_CTRL.v:33/76-79`、`LONG_ENCODING_ERROR_CTRL.v:193-218`），CNT=0 &lt; 最小 THD(2) → mc 垃圾窗内比较输出恒 0，不可能假脉冲。与 REG47 13 条（ea32da01）合计 0928 共 42 条 mc 闭环；剩 BKDU（R_REG03_L[2]）24 条定案不加 mc、走 RTL 两级同步器待实施</li>
           <li><b>0928 终局（commit 6b5a2394 + 769b213f + 664acef2）</b>：9 分区（R_REG00_L + R_REG33/34/40/41/46/47/56/57_F）经逐 bit 翻案审查（双判据：配置中段写 + 消费者配置期门控/钳制）后<b>整组回归 cpuwr_reg_grp 宽 mc</b>——remove 列表 10→<b>1</b>（只剩 R_REG03_L-BKDU），AABB/UTC/R_REG47_F/FSYNC 四组窄 mc 块全删；G14 退役、DPLC_MODE 2 条 DPLC_CLK 门控违例改由新纪律窄 mc（-to DPLC_CLK_*）闭环；休眠 B 类锚点（DBC_VBK_ON 经端口换名进 HSR_ACTIVE、HIZ_SEL、DBC、TP_F_AHEAD、HIZ_MIN_VAL[6:2]）全部翻案为 AABB 同构门控结构。全量复审 320 bit 全绿（❌=0）。回归检查点：下次 run BKDU 24 条仍单拍违例可见 + 其余 80 条全消 + SEL-004 无新增</li>
           <li><b>0929 窄约束四方全量审查（3×GLM-5.3 + Qwen 各自独立 408 bit 逐 bit + 共识裁决，commit 672c3f11）</b>：四方一致率 <b>94.1%</b>（384/408），24 bit 分歧全部 RTL 实证裁决；最终统计<b>需加 94 / 不需 170 / 不能 1（仅 BKDU）/ N-A 143</b>。实锤真漏：<b>08_F[7:6]</b>→ANCTL SCHOP（与已罩 04_F[7:5] 同 FF 同 STB_PE 门控）、<b>06_F[1]/[5]</b>→DTCTL DB0-5_pre（PIX_CLK 锥，DPOLINV/SHL）、<b>46_F[3]</b> 四方全票漏、<b>40_F[2] DPLT40 端点失配</b>（列 TMP 而 live 消费者已是 D1，PT 将 no-match=签核阻塞级）；30_F 共识误报经父级波形/文件核对纠正（两分支均在）。15 条修改建议 + 7 项拍板项待 ymzhu（_narrow_full_consensus.md）</li>
+          <li><b>0929-30 G13 打一拍修复全链路 + 服务器回归闭环（SHORT `df3e7d32` → v2 `4a4cd776` → v3 `16e653e3`）</b>：SHORT_ENCODING_ALIGN 三件套打一拍（新增 PRE_D/POINT_D/D3 三 FF、桶形/16 比较器/KCODE_REG/装载值切延时域、DATA_ALIGN 切 PRE_D），ICG 使能环（worst −1.31）在 PRE_D 处切断两段各 ≤13 级；验证链 = Qwen×6+GLM×3 九路独立实施收敛 + 6 路对抗评审 + K3 六维终审。服务器 t_H3840 回归 A/B 实锤后两层根因修复：<b>层1</b> DECODE 钥判决同拍交叉比较（新增 DATA_POINT_LAT_D 复原相位）、<b>层2</b> 反重触发掩蔽比较器 lag-1 几何（比较器组拆分：掩蔽吃组合 PRE、K*_FIND 吃 PRE_D）——方法论沉淀"重定时三查 + 新旧 RTL 同激励对拍第四关"（rtl-code-review skill 已增维度）。批量回归 <b>59/60</b>：基线转绿、SD_CHOP/FPS 全家族 PASS；LONG 侧 v4（uniform+1）落地待首验；剩 CTRL_L_LINE_OVERRIDE 定责、upsize X4、下次 DC run 验收 56 条清零</li>
         </ul>
       </div>
       <a class="more" href="./ch11-violation-atlas.html">违例归因实战 →</a>
@@ -623,4 +625,4 @@
   </script>
 </body>
 </html>
-<!-- ymzhu 2026-09-29 19:30 -->
+<!-- ymzhu 2026-09-30 10:05 -->
