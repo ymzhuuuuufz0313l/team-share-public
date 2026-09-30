@@ -219,6 +219,13 @@ before 基线：组 4 o_keep 家族 −0.57~−0.60 ×10 条；G13 组3 D1 −1.
 
 **建议处置**：交 DC 优化；若仍超，考虑对该写通路加窄 mc（确认是低频配置写）。
 
+<div style="border:1px solid #e3e6ea;border-radius:8px;padding:12px 16px;margin:10px 0;background:#f5f7fa;font-size:13px;line-height:1.75;">
+<b>0930 增补：组 5 处置确认（修复链全自动，无需动作）</b><br>
+① 澄清：DC 增量精修（INCR_OPT=1）对<b>全部</b>违例路径自动生效——本组跨域路径（RX_CLK→WCLK1_A）不在 weight-3 提权组内，以默认优先级参与，"不插队但有人管"；提权只留给深锥争抢场景，−0.11 轻伤无需插队。<br>
+② 修复链：<b>DC 增量（自动）→ 残余交 APR place_opt/route_opt（自动，真实寄生更准）→ 仍超才人工</b>（窄 mc 备选需先确认低频配置写语义）。−0.11（3.6% over）两道自动防线大概率消化。<br>
+③ upsize 不改约束不改 RTL——DC 综合时自动换大单元，属工具实现细节。
+</div>
+
 **你应该看的 file:line**：
 - 死约束删除注明：`ip_cons` **L332-337**（看它为什么"删了但无影响"）
 - DC 报告：worst 路径 startpoint `max.rpt` **L154274**（`CONFIG_DATA_reg_2_`，"clocked by RX_CLK"），slack `max.rpt` **L154346**（-0.11）；endpoint 为 `R_REG30_F_reg_2_`（"clocked by WCLK1_A_DCLK_SHORT"）；QoR 汇总 `.rpt` **L20418**
@@ -236,6 +243,14 @@ before 基线：组 4 o_keep 家族 −0.57~−0.60 ×10 条；G13 组3 D1 −1.
 **结论**：像素同域数据通路（`PIX_DATA_reg_*` → `CENTER1/DTCTL/PIX_DATA_D_reg_*`，DCLK_DATA_MUX 同域），真实数据延迟超标。23 条 startpoint 全部是 `PIX_DATA_reg_*`。
 
 **建议处置**：K1 式流水或让 DC retime。
+
+<div style="border:1px solid #e3e6ea;border-radius:8px;padding:12px 16px;margin:10px 0;background:#f5f7fa;font-size:13px;line-height:1.75;">
+<b>0930 增补：组 6 路径功能定性与决策树</b><br>
+① <b>真实路径确认</b>：代表路径 <code>PIX_DATA_reg[9]</code>（LONG 解码像素输出，RX_CLK 域）→ CHPI_DECODE 的 PIX_DATA_LONG 选择 mux → <b>SMT_CS 模块逐拍监测</b>（锥含 BK_CNT_NEXT[4] 消隐计数 next-state）→ <code>FLAG_1H_H2L_reg</code>（高→低边沿检测标志，DCLK_DATA_MUX_SHORT 域）。逐拍像素流，每拍都活。<br>
+② 跨域但<b>同源派生钟</b>（launch RX_CLK@3.05 / capture DCLK_DATA_MUX@4.57，窗口 1.52ns）——STA 单拍检查正确，非异步。<br>
+③ <b>mc 不可加</b>（逐拍流不满足准静态前提）；RTL 流水（数据晚 2 拍）<b>可能功能可接受</b>——有利证据：FLAG_1H 下游已有一对 mc2（ip_cons G9：FLAG_1H_*→CS_SYNC），但需走打一拍三查 + 对拍 TB 确认。<br>
+④ 决策树：下次 DC run 自动 upsize（默认优先级，未提权）→ 残余 &lt;0.2 交 APR 物理优化 → 残余大才 RTL 流水（先审 SMT_CS 全部消费者）。upsize 阶段零约束/RTL 改动。
+</div>
 
 **你应该看的 file:line**：
 - G1/G2 注释（看它的 -to 范围为什么罩不到本组）：基线 diff 里被删的 `-from R_REG03_L_reg* -to {PIX_CLK_EN_reg* PIX_DATA_reg*}` 一对 + `-to BK_ST_reg*` 一对（共 2 对/4 行）
@@ -437,4 +452,4 @@ before 基线：组 4 o_keep 家族 −0.57~−0.60 ×10 条；G13 组3 D1 −1.
   <script src="./js/site.js"></script>
 </body>
 </html>
-<!-- ymzhu 2026-09-30 16:37 -->
+<!-- ymzhu 2026-09-30 16:53 -->
