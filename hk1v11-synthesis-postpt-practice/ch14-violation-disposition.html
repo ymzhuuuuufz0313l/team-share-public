@@ -399,7 +399,7 @@
 | 优先级 | 动作 | 消多少 | 风险 |
 |---|---|---|---|
 | **P0** | 组 1：**0928 终局——9 分区逐 bit 翻案审查后整组回归组宽 mc，78 条闭环 + G14 两条 DPLC_CLK 窄 mc 闭环**（含 R_REG00_L 回组、休眠 B 类锚点含 HIZ_MIN_VAL[6:2] 全翻案，remove 10→1）；BKDU 保留单周期 + RTL 加同步（**BKDU/G1G2 0924 ymzhu 确认不能恢复**，修复=RTL 两级同步器） | 89（剩 BKDU 24 待 RTL） | 高 |
-| **P1** | 组 2+3：~~G13 重写扩 pattern~~ 0928 审查否决（位对齐桶形移位选择寄存器，非准静态，❌ 不可 mc）→ **重分类真实数据通路：交综合 retime/upsizing 或 RTL 预相移重构**（与 139 CONFIG_DATA 同桶）；**0929-30 实施**：SHORT 打一拍落地+两层回归修复（v2 `4a4cd776`/v3 `16e653e3`），服务器批量 59/60（基线转绿）；LONG v4 落地待首验；剩 CTRL_L_LINE_OVERRIDE 定责 + upsize X4 + DC run 验收 | 56 | 高 |
+| **P1** | 组 2+3：~~G13 重写扩 pattern~~ 0928 审查否决（位对齐桶形移位选择寄存器，非准静态，❌ 不可 mc）→ **重分类真实数据通路：交综合 retime/upsizing 或 RTL 预相移重构**（与 139 CONFIG_DATA 同桶）；**0929-30 实施**：SHORT 打一拍落地+两层回归修复（v2 `4a4cd776`/v3 `16e653e3`），服务器批量 59/60（基线转绿）；LONG v4.1 已实锤（420b 52/52 + 放量 369/382，FAIL 聚类定责中）；剩 CTRL_L_LINE_OVERRIDE 定责 + upsize X4 + DC run 验收 | 56 | 高 |
 | **P1** | 组 8：恢复 G14 `R_REG06_F_reg_2_` 对（DC 用 `reg_2_`） | 2 | 低 |
 | **P1** | 组 9：DTCTL 门控换 ICG / 使能同步；复核 INDATA_SYNC `set_input_delay -min` | 30 | 中（结构） |
 | **P2** | 组 4/5/6/7：交综合（retime/流水）或 RTL 优化；WCLK1(-0.11) 大概率 DC 收敛 | 305 | 低 |
@@ -415,4 +415,4 @@
   <script src="./js/site.js"></script>
 </body>
 </html>
-<!-- ymzhu 2026-09-30 11:20 -->
+<!-- ymzhu 2026-09-30 11:35 -->

@@ -57,7 +57,7 @@ run_dc
 - G1~G8 系列多周期（配置位 → 各时钟域，mc 2/1）+ round5 / G9 / G11
 - G10：DPLC 静态配置位 `set_max_delay [expr $DPLC_CLKP*2]`（例外优先级陷阱的解法，见 <a href="./ch10-warstories.html">十、排障实录</a> 案例 8）
 - SD 输出接口 14 行（`set_max_delay 14` ×4 口 + MPW 2/0.73 分时钟族 14 行）
-- G13：DATA_POINT_LAT 扇出的 mc 2/1（**TEMPORARY**，RTL 打拍后删除）
+- G13：DATA_POINT_LAT 扇出的 mc 2/1（**TEMPORARY**，RTL 打拍后删除；0929-30 两分支打一拍已落地并服务器实证，删除条件 = 下次 DC run 验 56 条清零）
 - `set_dont_touch [get_cells -hier *u_gate*]`：保护手搭时钟单元
 
 KEY: 下约束前必须非常了解 clock gen 的设计意图——1V11 的时钟树（RX_CLK → DCLK_DATA → NORMAL_CLK ÷2 → SD_CLK → INV → CLKA/CLKB）全部由 CLKGEN 的 u_gate_* 单元手搭，约束只有下对地方路径才能被全部 consume。
@@ -104,4 +104,4 @@ margin 口径：1V11 沿用 `MARGIN 0.80`（DC）/ `1.00`（PT），"对自己�
   <script src="./js/site.js"></script>
 </body>
 </html>
-<!-- ymzhu 2026-09-20 10:30 -->
+<!-- ymzhu 2026-09-30 11:35 -->

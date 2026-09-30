@@ -427,11 +427,11 @@
     <div class="hero-inner">
       <div class="kicker">HK1V11 · SYNTHESIS / SIGNOFF · PRACTICE</div>
       <h1>综合 / 签核流程<br>实践<span class="thin">记录</span></h1>
-      <p class="lead">一到九章搭 1V11 自己的流程骨架：位置、检查点、交付物；第十章是全站唯一有肉的地方——二十一段真实排障实录。</p>
+      <p class="lead">一到九章搭 1V11 自己的流程骨架：位置、检查点、交付物；第十~十四章是实录与判读核心——排障实录、违例图谱、约束教学与逐组处置。</p>
       <div class="meta">
         <span>AUTHOR <b>ymzhuuuu</b></span>
         <span>PROJECT <b>HK1V11</b></span>
-        <span>SPAN <b>0916~0922</b></span>
+        <span>SPAN <b>0916~0930</b></span>
       </div>
       <div class="hero-hint">
         <span>⭐</span>
@@ -439,8 +439,8 @@
       </div>
       <div class="reg">
         CURRENT
-        <span class="ver">0922</span>
-        REV 2026-09-22
+        <span class="ver">0930</span>
+        REV 2026-09-30
       </div>
     </div>
   </header>
@@ -473,7 +473,7 @@
       <div class="stat"><div class="v">10</div><div class="k">章节（一~九骨架 + 十实录）</div></div>
       <div class="stat"><div class="v">21</div><div class="k">排障案例</div></div>
       <div class="stat"><div class="v">6</div><div class="k">轮 mc 收敛</div></div>
-      <div class="stat"><div class="v">09<em>-28</em></div><div class="k">最近入库</div></div>
+      <div class="stat"><div class="v">09<em>-30</em></div><div class="k">最近入库</div></div>
     </div>
 
     <div class="section-title">章节索引 · 按流程顺序</div>
@@ -606,7 +606,7 @@
     <div class="st-details">
     <details open>
       <summary>🔄 <span class="st-date">0929-30</span> — G13 打一拍（SHORT+LONG）终版落地 + 放量回归</summary>
-      <div class="st-body"><b>0929-0930 G13 打一拍两分支终版落地 + 放量回归（commit 451211a0 / 16e653e3 / 4a4cd776）</b>：SHORT = 三件套 + 比较器组拆分（掩蔽吃组合 PRE 保 lag-1 几何）+ DECODE 钥判决相位复原，60 连跑 59/60 基线转绿；LONG = uniform+1 终版 v4.1（+80bit FF、桶形 {D1,D2}/{D2,D3}、掩码-窗口互锁恢复 + 回波守卫 L-11），420b 基线 52/52 + 放量 382 case **369/382（96.6%）**。<b>回归教育点</b>：增量静态审两轮全过仍漏装载拍瞬态（掩码 select 在 LAT 装载后一拍 stale）——全量审 2/3 判 critical 后 L-11 请回；放量暴露 FAIL 聚类 H3456×CH_SEL4×420b 10 条（50 错 quit 形态，与 v3 病征同款）定责中。<b>方法论沉淀</b>：打一拍必验"掩码×窗口同拍互锁 + 同拍交叉比较消费者"，静态相对几何推演（正反两向）均不可信，对拍 TB/服务器实跑为终审<br><br><b>0929-30 G13 打一拍修复全链路 + 服务器回归闭环（SHORT `df3e7d32` → v2 `4a4cd776` → v3 `16e653e3`）</b>：SHORT_ENCODING_ALIGN 三件套打一拍（新增 PRE_D/POINT_D/D3 三 FF、桶形/16 比较器/KCODE_REG/装载值切延时域、DATA_ALIGN 切 PRE_D），ICG 使能环（worst −1.31）在 PRE_D 处切断两段各 ≤13 级；验证链 = Qwen×6+GLM×3 九路独立实施收敛 + 6 路对抗评审 + K3 六维终审。服务器 t_H3840 回归 A/B 实锤后两层根因修复：<b>层1</b> DECODE 钥判决同拍交叉比较（新增 DATA_POINT_LAT_D 复原相位）、<b>层2</b> 反重触发掩蔽比较器 lag-1 几何（比较器组拆分：掩蔽吃组合 PRE、K*_FIND 吃 PRE_D）——方法论沉淀"重定时三查 + 新旧 RTL 同激励对拍第四关"（rtl-code-review skill 已增维度）。批量回归 <b>59/60</b>：基线转绿、SD_CHOP/FPS 全家族 PASS；LONG 侧 v4（uniform+1）落地待首验；剩 CTRL_L_LINE_OVERRIDE 定责、upsize X4、下次 DC run 验收 56 条清零</div>
+      <div class="st-body"><b>0929-0930 G13 打一拍两分支终版落地 + 放量回归（commit 451211a0 / 16e653e3 / 4a4cd776）</b>：SHORT = 三件套 + 比较器组拆分（掩蔽吃组合 PRE 保 lag-1 几何）+ DECODE 钥判决相位复原，60 连跑 59/60 基线转绿；LONG = uniform+1 终版 v4.1（+80bit FF、桶形 {D1,D2}/{D2,D3}、掩码-窗口互锁恢复 + 回波守卫 L-11），420b 基线 52/52 + 放量 382 case **369/382（96.6%）**。<b>回归教育点</b>：增量静态审两轮全过仍漏装载拍瞬态（掩码 select 在 LAT 装载后一拍 stale）——全量审 2/3 判 critical 后 L-11 请回；放量暴露 FAIL 聚类 H3456×CH_SEL4×420b 10 条（50 错 quit 形态，与 v3 病征同款）定责中。<b>方法论沉淀</b>：打一拍必验"掩码×窗口同拍互锁 + 同拍交叉比较消费者"，静态相对几何推演（正反两向）均不可信，对拍 TB/服务器实跑为终审<br><br><b>0929-30 G13 打一拍修复全链路 + 服务器回归闭环（SHORT `df3e7d32` → v2 `4a4cd776` → v3 `16e653e3`）</b>：SHORT_ENCODING_ALIGN 三件套打一拍（新增 PRE_D/POINT_D/D3 三 FF、桶形/16 比较器/KCODE_REG/装载值切延时域、DATA_ALIGN 切 PRE_D），ICG 使能环（worst −1.31）在 PRE_D 处切断两段各 ≤13 级；验证链 = Qwen×6+GLM×3 九路独立实施收敛 + 6 路对抗评审 + K3 六维终审。服务器 t_H3840 回归 A/B 实锤后两层根因修复：<b>层1</b> DECODE 钥判决同拍交叉比较（新增 DATA_POINT_LAT_D 复原相位）、<b>层2</b> 反重触发掩蔽比较器 lag-1 几何（比较器组拆分：掩蔽吃组合 PRE、K*_FIND 吃 PRE_D）——方法论沉淀"重定时三查 + 新旧 RTL 同激励对拍第四关"（rtl-code-review skill 已增维度）。批量回归 <b>59/60</b>：基线转绿、SD_CHOP/FPS 全家族 PASS；LONG 侧 v4.1 已实锤（420b 52/52 + 放量 369/382，FAIL 聚类定责中）；剩 CTRL_L_LINE_OVERRIDE 定责、upsize X4、下次 DC run 验收 56 条清零</div>
     </details>
     <details>
       <summary>🟡 <span class="st-date">0929</span> — 窄约束四方全量审查（15 建议 + 7 拍板待 ymzhu）</summary>
@@ -675,4 +675,4 @@
   </script>
 </body>
 </html>
-<!-- ymzhu 2026-09-30 10:55 -->
+<!-- ymzhu 2026-09-30 11:35 -->
