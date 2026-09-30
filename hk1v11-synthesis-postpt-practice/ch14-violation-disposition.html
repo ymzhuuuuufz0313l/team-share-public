@@ -181,12 +181,14 @@
 
 <div style="border:1px solid #e3e6ea;border-radius:8px;padding:12px 16px;margin:10px 0;background:#f5f7fa;font-size:13px;line-height:1.75;">
 <b>0930 探针实验：upsize 药效验证（旧网表增量精修，进行中）</b><br>
+<b>⚠ 口径声明：本探针全部数据基于打一拍前的旧网表（0922 ddc）——新 RTL（打一拍）效果不包含在本探针任何数字内。after 的 −0.18/−0.22 均为旧网表+增量 upsize 的结果。</b><br>
 目的：验证组 4 深锥（o_keep→BIT_COUNT −0.60 家族，19 级 X1）能否靠 upsize 收敛——决定 Tier-2 提权/RTL 流水的取舍。<br>
 方法：bsub -Ip csh → source /eda/env/syn1709.cshrc → dc_shell-t 交互（node043）→ read_ddc 0922 旧网表（纯基线，不改任何约束）→ 定点 before 报告 → compile_ultra -incremental -scan（补设 target/link_library 交互缺失项）→ after 定点报告。<br>
 before 基线：组 4 o_keep 家族 −0.57~−0.60 ×10 条；G13 组3 D1 −1.31、组2 LAT −1.31（对照组）。<br>
 判读标准：组 4 改善/转绿 = upsize 药效实锤（Tier-2 解注释即可，下次 DC 顺带闭环）；组 4 不动 = 需 RTL 流水；G13 −1.31 = 对照组，不动为预期（打一拍必要性实证）。<br>
 <b>0930 探针结果（已完成）</b>：增量 upsize 后三族路径全部大幅收敛——组 4 o_keep 家族 −0.57~−0.60 → <b>−0.18~−0.19（70%）</b>；G13 组3 D1 −1.31 → <b>−0.20~−0.22（83%）</b>；组2 LAT −1.31 → −0.22。均未转绿（残余 −0.18/−0.22）。<br>
-<b>结论</b>：① upsize 药效实锤（从全 X1 极端起点买回 70-83%）——组 4 残余 −0.18 由已定案的 upsize X4 兜底（LONG v4.1 未重构该锥）；G13 残余 −0.22 在新网表被打一拍结构性切短，预期直接转绿。② 对照组 G13 也被 upsize 治掉 83%——"深锥 upsize 治不了"的原判偏保守，但 OCV/余量下 X4 兜底仍必要，打一拍+upsize 组合终态不变。③ 探针方法论（旧网表+定点 before/after 对拍）验证有效，已沉淀。
+<b>结论</b>：① upsize 药效实锤（从全 X1 极端起点买回 70-83%）——组 4 残余 −0.18 由已定案的 upsize X4 兜底（LONG v4.1 未重构该锥）；G13 残余 −0.22 在新网表被打一拍结构性切短，预期直接转绿。② 对照组 G13 也被 upsize 治掉 83%——"深锥 upsize 治不了"的原判偏保守，但 OCV/余量下 X4 兜底仍必要，打一拍+upsize 组合终态不变。③ 探针方法论（旧网表+定点 before/after 对拍）验证有效，已沉淀。<br>
+<b>口径重申</b>：G13 残余 −0.22（旧网表）不等价于新网表现状——新网表同族路径已被打一拍结构性切短（锥分两段），预期优于 −0.22；组 4 残余 −0.18 归 X4 兜底不变。
 </div>
 
 **你应该看的 file:line**：
@@ -434,4 +436,4 @@ before 基线：组 4 o_keep 家族 −0.57~−0.60 ×10 条；G13 组3 D1 −1.
   <script src="./js/site.js"></script>
 </body>
 </html>
-<!-- ymzhu 2026-09-30 15:24 -->
+<!-- ymzhu 2026-09-30 15:46 -->
