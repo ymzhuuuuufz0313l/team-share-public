@@ -25,7 +25,7 @@
     <div class="content">
       <article class="article" id="article"></article>
       <div class="page-nav" id="page-nav"></div>
-      <div class="footer">HK1V11 SYNTHESIS / SIGNOFF PRACTICE · AUTHOR ymzhuuuu · UPDATED 2026-09-24</div>
+      <div class="footer">HK1V11 SYNTHESIS / SIGNOFF PRACTICE · AUTHOR ymzhuuuu · UPDATED 2026-09-30</div>
     </div>
   </div>
   <script type="text/template" id="md">
@@ -59,14 +59,14 @@
 
 | # | 组 | 条数 | worst | 旧约束干了什么 | 现在是什么 | Δ | 结论 | 优先级 |
 |---|---|---|---|---|---|---|---|---|
-| 1 | RX_CLK setup | 89 | **-1.45** | 宽 `R_REG*` 组 mc2 -to RX_CLK 全覆盖 | 组剔除 10 分区（24 B 类 bit） | **约束→删除** | B 类裸消费，有意收紧；逐 bit 二选一；**R_REG47_F 13 条 0928 mc 闭环（全局 WNS −1.45 消失）** | P0 |
+| 1 | RX_CLK setup | 89 | **-1.45** | 宽 `R_REG*` 组 mc2 -to RX_CLK 全覆盖 | 组剔除 10 分区（24 B 类 bit） | **约束→删除** | B 类裸消费，有意收紧；逐 bit 二选一；**R_REG47_F 13 条 0928 mc 闭环（全局 WNS −1.45 消失）；0928 终局：9 分区整组回归组宽 mc，remove 10→1** | P0 |
 | 2 | RX_CLK setup | 15 | -1.31 | G13 mc2 from-only 覆盖 | G13 注释 | **约束→删除** | ~~准静态，恢复 G13 即消~~ 0928 重分类：真实数据通路，交综合/RTL 重构 | P1 |
 | 3 | RX_CLK setup | 41 | -1.31 | G13 pattern 从未匹配 `_D1` | G13 注释（pattern 仍窄） | **从未约束** | ~~扩 pattern 消 56~~ 0928 重分类：真实，同上 | P1 |
-| 4 | RX_CLK setup | 139 | **-1.14** | 未覆盖（不在 cpuwr/G13/G14） | 未覆盖 | **从未约束** | RX 域真实关键路径 | P2 |
+| 4 | RX_CLK setup | 139 | **-1.14** | 未覆盖（不在 cpuwr/G13/G14） | 未覆盖 | **从未约束** | RX 域真实关键路径；0930 RX_CLK_DATA 提权落地 | P2 |
 | 5 | WCLK1_A_DCLK_SHORT | 139 | -0.11 | 唯一沾边的 `-through R_` 是死约束(0匹配) | 未覆盖 | **从未约束** | CHPI 配置写通路，真实(轻微) | P2 |
-| 6 | DCLK_DATA_MUX_SHORT | 23 | -0.43 | G1/G2 只对 R_REG03_L 起点生效 | 未覆盖 | **从未约束** | 像素同域数据通路，真实 | P2 |
-| 7 | SD_CLK_INV_DPLC_LONG | 4 | -0.36 | 未覆盖（G14 只管 config bit） | 未覆盖 | **从未约束** | 活计数器→生成时钟门控 | P2 |
-| 8 | DPLC_CLK_LONG | 2 | -0.38 | G14 mc2 from-only 覆盖 | G14 注释+移入 pt_shell guard | **约束→删除** | DPLC_MODE 一次性配置，可恢复 | P1 |
+| 6 | DCLK_DATA_MUX_SHORT | 23 | -0.43 | G1/G2 只对 R_REG03_L 起点生效 | 未覆盖 | **从未约束** | 像素同域数据通路，真实；0930 RX2DCLK_PIX 提权落地 | P2 |
+| 7 | SD_CLK_INV_DPLC_LONG | 4 | -0.36 | 未覆盖（G14 只管 config bit） | 未覆盖 | **从未约束** | 活计数器→生成时钟门控；0930 PIX2SD_GATE 提权落地 | P2 |
+| 8 | DPLC_CLK_LONG | 2 | -0.38 | G14 mc2 from-only 覆盖 | G14 注释+移入 pt_shell guard | **约束→删除** | DPLC_MODE 一次性配置，可恢复；**0930 已实施宽约束对（-to DPLC_CLK_*）** | P1 |
 | 9 | hold（4 组） | 30 | **-4.19** | 未覆盖 | 未覆盖 | **从未约束** | 生成时钟结构 hold + IO 输入 hold | P1 |
 
 > 合计 482 条 = setup 452（89+15+41+139+139+23+4+2）+ hold 30。**"收窄报出来的"只有 106 条（组1 89 + 组2 15 + 组8 2，均 Δ=约束→删除）；其余 376 条（78%）从未被任何约束覆盖，与收窄无关。**
@@ -103,8 +103,9 @@
 - **每拍活消费**（UTC 比较 `R_REG33/56/57`、BKDU `R_REG03_L[2]`）：恢复豁免 = 放走真违例 → **只能 RTL 加同步/门控**（**0928 修订：UTC 三分区 29 条已定案 mc 闭环、无需 RTL 改动**，见下）。
   - **UTC 三分区 29 条：0928 ymzhu 定案 mc 闭环（commit 1c447cd1）**——同一对 mc2/1（`-to RX_CLK`），bit-exact `-from` 5 bit（R_REG57_F[1] 6 条 −0.88 + R_REG33_F[4] 4 条 −0.34 + R_REG33_F[6] 8 条 −0.09 + R_REG56_F[3] 5 条 −0.36 + R_REG56_F[1] 6 条 −0.17），bit 精确不加宽（R_MON_DC_VOL 未验不罩）。判据：① ymzhu 时序版——寄存器帧 3 地址/拍写入，0x21/0x38/0x39 = 行 33/56/57、FBANK 收尾 0x44 = 行 68，均非最后一拍；② "钳死"结构——UTC 计数器使能关时恒清零（`SHORT_ENCODING_ERROR_CTRL.v:33/76-79`、`LONG_ENCODING_ERROR_CTRL.v:193-218`），CNT=0 < 最小 THD(2) → mc 垃圾窗内比较输出恒 0，不可能假脉冲。分析报告：`_reg33/56/57_mc_analysis.md`、`_hiz_min_sel_mc_phase_analysis.md`。
   - **BKDU `R_REG03_L[2]`（G1/G2）：0924 ymzhu 确认不能恢复（不能加 waiver）**——0922 run 中 24 条 BKDU→PIX_DATA 路径是活的（0921V3 曾被综合剪掉标 `p` 空转，现已复活），worst −0.16；R_BKDU 裸跨域进 DCLK 域像素逻辑无同步器 = 真实 CDC 亚稳态风险，waiver 只放宽 STA、治不了跨域。修复 = 把 `LC_REG_MAPPING` `BKDU_SYNC` 由单级扩两级并接像素路径（`LONG_ENCODING_OUTPUT.v:333/397`）。
+- **0928 全量 320bit 复审全绿**（9 分区翻案回归组宽 mc 的最终确认，逐 bit 复审无一遗留）。
 
-**建议处置**：不要一刀切恢复 blanket。逐 bit：准静态的恢复窄 mc（**AABB `R_REG40_F[0:1]` 0924 + VPS_EN_0 `[6]` 0928 均已确认、mc2/1 已加，23 条全闭环；R_REG47_F 0928 mc 已加，13 条闭环**）；UTC 比较类 **0928 已定案 mc 闭环（commit 1c447cd1，29 条全闭环，判据 = 非最后一拍写入 + 计数器钳死结构）**；**BKDU 0924 已确认走 RTL 两级同步器**。至此收窄暴露 89 条仅剩 BKDU 24 条待 RTL 实施。**0928 终局结构简化（commit 6b5a2394 + 769b213f + 664acef2）：9 分区（R_REG00_L + R_REG33/34/40/41/46/47/56/57_F）经逐 bit 翻案审查（`_group_rejoin_audit.md` + `_reg47_rejoin_audit.md` + `_reg_audit_C.md`）后整组回归 `cpuwr_reg_grp` 宽 mc——remove 列表 10→1（**只剩 R_REG03_L-BKDU**），AABB/UTC/R_REG47_F/FSYNC 四组窄 mc 块全删；G14 退役，其 bit2 DPLC_MODE 的 2 条 DPLC_CLK 门控违例改由新纪律 mc 对——-from bit 精确、-to 时钟对象宽终点（`-from R_REG06_F_reg_2_ -to DPLC_CLK_*`，dc/pt 双分支命名）闭环；休眠 B 类锚点（DBC_VBK_ON 经端口换名进 HSR_ACTIVE、HIZ_SEL、DBC、TP_F_AHEAD、HIZ_MIN_VAL[6:2]——SET 锥不含 HIZ、>= 自愈、锥活防 PVT 复发）全部翻案为 AABB 同构门控结构。回归检查点：下次 run BKDU 24 条必须仍单拍违例可见 + 其余 80 条全消（78 组覆盖 + 2 DPLC mc 对） + SEL-004 无新增。**
+**建议处置**：不要一刀切恢复 blanket。逐 bit：准静态的恢复窄 mc（**AABB `R_REG40_F[0:1]` 0924 + VPS_EN_0 `[6]` 0928 均已确认、mc2/1 已加，23 条全闭环；R_REG47_F 0928 mc 已加，13 条闭环**）；UTC 比较类 **0928 已定案 mc 闭环（commit 1c447cd1，29 条全闭环，判据 = 非最后一拍写入 + 计数器钳死结构）**；**BKDU 0924 已确认走 RTL 两级同步器**。至此收窄暴露 89 条仅剩 BKDU 24 条待 RTL 实施。**0928 终局结构简化（commit 6b5a2394 + 769b213f + 664acef2）：9 分区（R_REG00_L + R_REG33/34/40/41/46/47/56/57_F）经逐 bit 翻案审查（`_group_rejoin_audit.md` + `_reg47_rejoin_audit.md` + `_reg_audit_C.md`）后整组回归 `cpuwr_reg_grp` 宽 mc——remove 列表 10→1（**只剩 R_REG03_L-BKDU**），AABB/UTC/R_REG47_F/FSYNC 四组窄 mc 块全删；G14 退役，其 bit2 DPLC_MODE 的 2 条 DPLC_CLK 门控违例改由新纪律 mc 对——-from bit 精确、-to 时钟对象宽终点（`-from R_REG06_F_reg_2_ -to DPLC_CLK_*`，dc/pt 双分支命名）闭环；休眠 B 类锚点（DBC_VBK_ON 经端口换名进 HSR_ACTIVE、HIZ_SEL、DBC、TP_F_AHEAD、HIZ_MIN_VAL[6:2]——SET 锥不含 HIZ、>= 自愈、锥活防 PVT 复发）全部翻案为 AABB 同构门控结构。回归检查点：下次 run BKDU 24 条必须仍单拍违例可见 + 其余 67 条全消（89−24 BKDU = 65 组覆盖 + 组8 DPLC 2 条；原"78/80"系 R_REG47_F 13 条重复计——0928 已回归组，不得再单列） + SEL-004 无新增。**
 
 **你应该看的 file:line**：
 - 约束剔除本体：`ip_cons` **L413-424**（`get_cells R_REG*` + `remove_from_collection` 10 分区）
@@ -199,7 +200,7 @@ before 基线：组 4 o_keep 家族 −0.57~−0.60 ×10 条；G13 组3 D1 −1.
 <div style="border:1px solid #e3e6ea;border-radius:8px;padding:12px 16px;margin:10px 0;background:#f5f7fa;font-size:13px;line-height:1.75;">
 <b>0930 增补：组 4 提权方案（RX_CLK_DATA 路径组）与触发方式</b><br>
 ① 机制：建独立路径组 <code>group_path -name RX_CLK_DATA -weight 3 -from [get_clocks RX_CLK] -to [get_clocks RX_CLK]</code>——圈定 RX_CLK 域全部路径（含本组 139 条），weight 3 = 组内违例路径分到 3 倍优化精力；已收敛的正 slack 路径不消耗精力，多圈无害。<br>
-② 生效条件：group_path 必须写在 <code>compile_ultra</code> 之前；第二遍增量（<code>compile_ultra -incremental</code>）在其约束下做门级 upsize/重映射——对 −0.60 量级收敛率高，对 worst −1.14 深锥可能不足。决策树：upsize 精修 → APR（正常流程物理优化）→ <b>正式 run 后残余 &gt;0.10 转 RTL 流水</b>（阈值防过早 RTL 化）。<br>
+② 生效条件：group_path 必须写在 <code>compile_ultra</code> 之前；第二遍增量（<code>compile_ultra -incremental</code>）在其约束下做门级 upsize/重映射——对 −0.60 量级收敛率高，对 worst −1.14 深锥可能不足。决策树（<b>本组逻辑延迟主导</b>——深锥，探针 65~70% 方向性上界——<b>upsize 先于 APR</b>）：upsize 精修 → APR（正常流程物理优化）→ <b>正式 run 后残余 &gt;0.10 转 RTL 流水</b>（阈值防过早 RTL 化）。<br>
 ③ 验证：综合后 <code>report_path_group</code> 核对 RX_CLK_DATA 组内条数；<code>report_timing -group RX_CLK_DATA</code> 看 slack 收敛。<br>
 ④ 副作用：邻组路径可能被轻微带紧（全量 report_timing 复查兜住）；面积/功耗微增；无寄存器漂移、约束 pattern 零影响。<br>
 <b>⑤ 状态更新（0930）：RX_CLK_DATA 提权组已正式写入 ip_cons dc 分支（生效态，HK1V11 `a6230772`），随下次服务器回传上节点——dc run 残余确认后即实际生效，无需再改。</b>
@@ -249,7 +250,8 @@ before 基线：组 4 o_keep 家族 −0.57~−0.60 ×10 条；G13 组3 D1 −1.
 ① <b>真实路径确认</b>：代表路径 <code>PIX_DATA_reg[9]</code>（LONG 解码像素输出，RX_CLK 域）→ CHPI_DECODE 的 PIX_DATA_LONG 选择 mux → <b>SMT_CS 模块逐拍监测</b>（锥含 BK_CNT_NEXT[4] 消隐计数 next-state）→ <code>FLAG_1H_H2L_reg</code>（高→低边沿检测标志，DCLK_DATA_MUX_SHORT 域）。逐拍像素流，每拍都活。<br>
 ② 跨域但<b>同源派生钟</b>（launch RX_CLK@3.05 / capture DCLK_DATA_MUX@4.57，窗口 1.52ns）——STA 单拍检查正确，非异步。<br>
 ③ <b>mc 不可加</b>（逐拍流不满足准静态前提）；RTL 流水（数据晚 2 拍）<b>可能功能可接受</b>——有利证据：FLAG_1H 下游已有一对 mc2（ip_cons G9：FLAG_1H_*→CS_SYNC），但需走打一拍三查 + 对拍 TB 确认。<br>
-④ <b>决策树（0930 审查裁决翻转：本组路径 dump 显示 net 增量 0.00~0.04ns、逻辑延迟绝对主导——按判定框架应 upsize 先行，与组7 对齐）</b>：<b>先专门设置 upsize（提权组已落地）→ 残余交 APR → 仍不行才 RTL 流水</b>（先审 SMT_CS 全部消费者；FLAG_1H 下游已 mc2 是 RTL 流水的有利证据）。<b>（已落地：ip_cons dc 分支 RX2DCLK_PIX 提权组 weight 3，RX_CLK→DCLK_DATA_MUX_* 域，HK1V11 6da12b71，三提权组并列）</b>
+④ <b>决策树（0930 审查裁决翻转：本组路径 dump 显示 net 增量 0.00~0.04ns、逻辑延迟绝对主导——按判定框架应 upsize 先行，与组7 对齐）</b>：<b>先专门设置 upsize（提权组已落地）→ 残余交 APR → 仍不行才 RTL 流水</b>（先审 SMT_CS 全部消费者；FLAG_1H 下游已 mc2 是 RTL 流水的有利证据）。<b>（已落地：ip_cons dc 分支 RX2DCLK_PIX 提权组 weight 3，RX_CLK→DCLK_DATA_MUX_* 域，HK1V11 6da12b71，三提权组并列）</b><br>
+<b>验证点</b>：综合后 <code>report_path_group</code> 核对 RX2DCLK_PIX 组内条数 + <code>report_timing -group RX2DCLK_PIX</code> 看 slack 收敛。
 </div>
 
 **你应该看的 file:line**：
@@ -277,7 +279,8 @@ before 基线：组 4 o_keep 家族 −0.57~−0.60 ×10 条；G13 组3 D1 −1.
 ② <b>功能</b>：一行内开出前/后半窗，交替选通左右 source 组的输出时钟（source 型面板驱动选通结构）。<br>
 ③ <b>mc 不可加</b>：活计数器逐拍 + mc2 = 窗口边界门控时钟漏/多一个脉冲，FYS* 是面板接口时钟，错位面板可见。<br>
 ④ <b>结构发现</b>：流程 <code>-gate_clock</code> 无法把手搭 AND 换 ICG——ICG 前提是使能来自寄存器，本处 en_* 是计数器组合函数 → 工具侧无解，属 RTL 写法决定的结构问题。<br>
-⑤ <b>处置决策树（逐组判定，非统一模板）</b>：本组属<b>逻辑延迟主导</b>（单模块内比较器深锥 ~12 级、扇出 1-4、走线短）→ <b>先专门设置 upsize（提权组/增量精修），再交 APR</b>——逻辑深度问题 APR 修不了，且综合修复自动向 APR 传播，避免白跑物理迭代；仍不行才 <b>RTL 改造</b>（en_* 寄存器化 + ICG；L725"+1/+1 tolerance"注释暗示窗口有调节余量，但输出时钟窗口边界须先确认面板容忍度，1 拍窗口后移对前/后半窗边界对齐的影响须量化评估（边界处左右 source 钟错选风险），走打一拍三查+对拍）。<b>（已落地：ip_cons dc 分支 PIX2SD_GATE 提权组 weight 3，HK1V11 85d6de46，与组 4 RX_CLK_DATA 并排，下次 run 同时生效）</b>
+⑤ <b>处置决策树（逐组判定，非统一模板）</b>：本组属<b>逻辑延迟主导</b>（单模块内比较器深锥 ~12 级、扇出 1-4、走线短）→ <b>先专门设置 upsize（提权组/增量精修），再交 APR</b>——逻辑深度问题 APR 修不了，且综合修复自动向 APR 传播，避免白跑物理迭代；仍不行才 <b>RTL 改造</b>（en_* 寄存器化 + ICG；L725"+1/+1 tolerance"注释暗示窗口有调节余量，但输出时钟窗口边界须先确认面板容忍度，1 拍窗口后移对前/后半窗边界对齐的影响须量化评估（边界处左右 source 钟错选风险），走打一拍三查+对拍）。<b>（已落地：ip_cons dc 分支 PIX2SD_GATE 提权组 weight 3，HK1V11 85d6de46，与组 4 RX_CLK_DATA 并排，下次 run 同时生效）</b><br>
+<b>验证点</b>：综合后 <code>report_path_group</code> 核对 PIX2SD_GATE 组内条数 + <code>report_timing -group PIX2SD_GATE</code> 看 slack 收敛。
 </div>
 
 **你应该看的 file:line**：
@@ -302,7 +305,7 @@ before 基线：组 4 o_keep 家族 −0.57~−0.60 ×10 条；G13 组3 D1 −1.
 <div style="border:1px solid #e3e6ea;border-radius:8px;padding:12px 16px;margin:10px 0;background:#f5f7fa;font-size:13px;line-height:1.75;">
 <b>0930 状态确认：已实施（0928 宽约束对，-to 时钟对象）</b><br>
 ① 本节建议已被更优形态取代：mc 2/1-start <code>-from R_REG06_F_reg[2]/reg_2_ -to DPLC_CLK_*</code>——<b>-from bit 精确、-to 时钟对象宽终点</b>（罩住全部 DPLC 派生钟，与组宽 mc 同一纪律，非逐端点窄 mc；dc 方括号/pt 下划线双分支），ip_cons L347-353（行号以当前版 85d6de46 为准），安全依据已审计注明（0x06 中段 F 块写 + 配置期 DPLC 流水空闲）。<br>
-② 机制层：mc2 后 capture 推 2 拍（6.1ns vs 路径 ~3.4ns），−0.37/−0.38 必然转正。<br>
+② 机制层：mc2 后 setup 预算 +1 个 launch 周期（<code>-start 2</code>，周期来源 = WCLK1_A 域 3.05ns），−0.37/−0.38 必然转正。<br>
 ③ 生效层（下次 run 验证）：report_exceptions applied 标志 + capture 边沿=2 拍 + read_cons.log 无 SEL-004——三证据齐 = 组 8 闭环。
 </div>
 
@@ -335,6 +338,14 @@ before 基线：组 4 o_keep 家族 −0.57~−0.60 ×10 条；G13 组3 D1 −1.
 
 **建议处置**：DTCTL 门控换 ICG 或对 n751/n759 加同步，APR 后用真实时钟树复核；INDATA_SYNC 复核 `set_input_delay -min` 与板上 RX_CLK skew 预算。
 
+<div style="border:1px solid #e3e6ea;border-radius:8px;padding:12px 16px;margin:10px 0;background:#f5f7fa;font-size:13px;line-height:1.75;">
+<b>0930 状态：处置与验证点</b><br>
+① <b>定性</b>：worst −4.19 为<b>结构性 hold</b>（INDATA_SYNC IO 相关，30 条 = 4+4+2+20），非收窄责任。<br>
+② <b>处置</b>：APR hold 修复（缓冲链插入）。<br>
+③ <b>验证点</b>：APR 后 <code>report_timing -hold</code> 复扫该组清零。<br>
+④ <b>联动注</b>：本组与组7 共享门控单元 <b>C2272/C2277/C2278/C2283</b>——若组7 走 en 寄存器化+ICG 改造，须同时复扫组9 路径（一修两得 / 一处改动两处复验）。<br>
+</div>
+
 **你应该看的 file:line**：
 - 输入延迟约束：`ip_cons` **L311-312**（`set_input_delay -clock RX_CLK 0.3` / `-min -0.3` `[get_ports dout_lane*]`，核对 INDATA_SYNC 对应端口 -min 值）
 - DC 报告：4 个 hold 组头 `.rpt` **L7435 / L7446 / L7493 / L7508**，worst endpoint 行见上表；QoR 汇总 `.rpt` **L20262 / L20314 / L20353 / L20366**
@@ -351,7 +362,7 @@ before 基线：组 4 o_keep 家族 −0.57~−0.60 ×10 条；G13 组3 D1 −1.
 | **L329-330** | `#set_multicycle_path ... DATA_POINT_LAT_reg*` | G13（注释）→ 组2/3 |
 | **L332-337** | `-through R_` REMOVED 注释 | 死约束删除（组5 相关） |
 | **L339-347** | G14 审计注释 | G14 为什么注释 + 回归口 |
-| **L349-354** | G14 三对（注释，pt_shell guard 内） | 组8（85d6de46 起 DPLC_MODE 2 条改由下方 L347-353 mc 对闭环，注释对保留作 guard） |
+| **L349-354** | G14 三对（注释，pt_shell guard 内） | **G14 已退役——仅留审计注释 + guard，活跃约束 = 下方 L347-353 组8 mc 对**（85d6de46 起 DPLC_MODE 2 条改由该对闭环） |
 | **L347-353** | 组8 mc 对 `-from R_REG06_F_reg[2]/reg_2_ -to DPLC_CLK_*`（dc/pt 双分支，0928 终局实施） | 组8 闭环（**-from bit 精确、-to 时钟对象宽终点**） |
 | **—（dc 分支 0930 新增，行号见 85d6de46）** | `group_path -name RX_CLK_DATA -weight 3 -from [get_clocks RX_CLK] -to [get_clocks RX_CLK]` | 组4 提权（生效态 a6230772，随下次回传上节点） |
 | **—（dc 分支 0930 新增，行号见 85d6de46）** | `group_path -name PIX2SD_GATE -weight 3`（SD_CLK_INV/DPLC 门控 upsize 提权） | 组7 提权（生效态 85d6de46） |
@@ -365,7 +376,7 @@ before 基线：组 4 o_keep 家族 −0.57~−0.60 ×10 条；G13 组3 D1 −1.
 | **L413-424** | `set cpuwr_reg_grp [get_cells R_REG*]` + `remove_from_collection` 10 分区 | 组1 收窄本体 |
 | **L425-432** | 组 mc 三对（-to RX_CLK / DCLK_DATA_* / SD_CLK_INV_*） | 组 mc（对剩余对象生效） |
 | **L427-428** | `-to OSC_CLK` 对删除注明 | 空对删除（无影响） |
-| **L447-452** | R_REG00_L（FSYNC）mc：-to ANCTL/*L_CNT*、*F_CNT*、RX_CLK | 新增（RX_CLK 用时钟对象） |
+| **L447-452** | R_REG00_L（FSYNC）mc：-to ANCTL/*L_CNT*、*F_CNT*、RX_CLK | **已退役——0928 组宽 mc 覆盖**（R_REG00_L 整分区回归 cpuwr_reg_grp，窄 mc 块删除） |
 | **L609-612** | G10 max_delay 4 对（R_REG06_F_reg_7* / R_REG00_F_reg_6*，pt_shell guard，bit-exact） | G10（DC 下匹配不到，无变化） |
 
 ### 3.2 RTL 消费点（组 1 逐分区，**实读核实**）
@@ -456,9 +467,9 @@ before 基线：组 4 o_keep 家族 −0.57~−0.60 ×10 条；G13 组3 D1 −1.
 
 | 优先级 | 动作 | 消多少 | 风险 |
 |---|---|---|---|
-| **P0** | 组 1：**0928 终局——9 分区逐 bit 翻案审查后整组回归组宽 mc，78 条闭环 + G14 两条 DPLC_CLK 窄 mc 闭环**（含 R_REG00_L 回组、休眠 B 类锚点含 HIZ_MIN_VAL[6:2] 全翻案，remove 10→1）；BKDU 保留单周期 + RTL 加同步（**BKDU/G1G2 0924 ymzhu 确认不能恢复**，修复=RTL 两级同步器） | 89（剩 BKDU 24 待 RTL） | 高 |
+| **P0** | 组 1：**0928 终局——9 分区逐 bit 翻案审查后整组回归组宽 mc，67 条全消（89−24 BKDU = 65 组覆盖 + 组8 DPLC 2 条；原"78 条"系 R_REG47_F 13 条重复计，已回归组不得再单列）**（含 R_REG00_L 回组、休眠 B 类锚点含 HIZ_MIN_VAL[6:2] 全翻案，remove 10→1）；BKDU 保留单周期 + RTL 加同步（**BKDU/G1G2 0924 ymzhu 确认不能恢复**，修复=RTL 两级同步器） | 89（剩 BKDU 24 待 RTL） | 高 |
 | **P1** | 组 2+3：~~G13 重写扩 pattern~~ 0928 审查否决（位对齐桶形移位选择寄存器，非准静态，❌ 不可 mc）→ **重分类真实数据通路：交综合 retime/upsizing 或 RTL 预相移重构**（与 139 CONFIG_DATA 同桶）；**0929-30 实施**：SHORT 打一拍落地+两层回归修复（v2 `4a4cd776`/v3 `16e653e3`），服务器批量 59/60（基线转绿）；LONG v4.1 已实锤（420b 52/52 + 放量 369/382，FAIL 聚类定责中）；剩 CTRL_L_LINE_OVERRIDE 定责 + upsize X4 + DC run 验收 | 56 | 高 |
-| **P1** | 组 8：恢复 G14 `R_REG06_F_reg_2_` 对（DC 用 `reg_2_`） | 2 | 低 |
+| **P1** | 组 8：**已实施宽约束对（`-from R_REG06_F_reg_2_ -to DPLC_CLK_*`，dc/pt 双分支），待 run 三证据**（report_exceptions applied + capture 边沿=2 拍 + SEL-004 无新增） | 2 | 低 |
 | **P1** | 组 9：DTCTL 门控换 ICG / 使能同步；复核 INDATA_SYNC `set_input_delay -min` | 30 | 中（结构） |
 | **P2** | 组 4/5/6/7：交综合（retime/流水）或 RTL 优化；WCLK1(-0.11) 大概率 DC 收敛 | 305 | 低 |
 
@@ -473,4 +484,4 @@ before 基线：组 4 o_keep 家族 −0.57~−0.60 ×10 条；G13 组3 D1 −1.
   <script src="./js/site.js"></script>
 </body>
 </html>
-<!-- ymzhu 2026-09-30 17:23 -->
+<!-- ymzhu 2026-09-30 17:50 -->
