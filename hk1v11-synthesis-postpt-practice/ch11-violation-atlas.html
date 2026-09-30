@@ -513,7 +513,7 @@ DATA_POINT_LAT_reg_13_/Q
 **回归口**：0922 注释中写明：
 > `if a next run shows violating paths whose startpoint matches LONG_ENCODING_ALIGN/DATA_POINT_LAT_reg*, reconsider`
 
-> **0928 恢复前审查裁决（`_g13_datapoint_audit.md`）：❌ 不可恢复 mc，15+41 条重分类为真实数据通路。** 实读推翻"准静态"假设：DATA_POINT_LAT/_D1 不是配置寄存器——是**解串器位对齐桶形移位选择寄存器**（RX_CLK 域，K 码事件锁存对齐相位 → 20:1 桶形 mux → K1-K4 等值比较 → 每拍捕获；_D1 为 RTL 显式二级）。双判据全不过：更新恰在 idle→data 转换沿（`KCODE_REG_PE` 触发=非零字出现，流上正有真数据，无无人消费窗）；消费者无 load-enable；漏 K1/K4=丢行/帧边界不自愈。**处置：交综合（retime/upsizing 桶形+比较锥）或 RTL 预相移重构（mux 移到 1bit 结果侧）**，与 139 条 CONFIG_DATA 同桶。0918 waiver"临时豁免"定性正确。**0930 进展：两分支 RTL 打一拍已落地（SHORT df3e7d32→v2 4a4cd776→v3 16e653e3；LONG v4.1 451211a0）并服务器实证（59/60 + 420b 52/52 + 放量 369/382），56 条清零待下次 DC run 验收（详见 ch15《记忆唤醒》）。**
+> **0928 恢复前审查裁决（`_g13_datapoint_audit.md`）：❌ 不可恢复 mc，15+41 条重分类为真实数据通路。** 实读推翻"准静态"假设：DATA_POINT_LAT/_D1 不是配置寄存器——是**解串器位对齐桶形移位选择寄存器**（RX_CLK 域，K 码事件锁存对齐相位 → 20:1 桶形 mux → K1-K4 等值比较 → 每拍捕获；_D1 为 RTL 显式二级）。双判据全不过：更新恰在 idle→data 转换沿（`KCODE_REG_PE` 触发=非零字出现，流上正有真数据，无无人消费窗）；消费者无 load-enable；漏 K1/K4=丢行/帧边界不自愈。**处置：交综合（retime/upsizing 桶形+比较锥）或 RTL 预相移重构（mux 移到 1bit 结果侧）**，与 139 条 CONFIG_DATA 同桶。0918 waiver"临时豁免"定性正确。**0930 进展：两分支 RTL 打一拍已落地（SHORT df3e7d32→v2 4a4cd776→v3 16e653e3；LONG v4.1 451211a0 → v4.2 3d51348b 终态）并服务器实证（59/60 + 420b 52/52 + 放量 369/382）——420b 波形深藏装载拍回归已由 v4.2 LAT_EFF 装载拍旁路修复（差分 TB 与 live 严格 +1 全 0 差异、评审 PASS，遗留后端 STA 覆盖新锥），56 条清零待下次 DC run 验收（按 v4.2 重签，详见 ch15《记忆唤醒》）。**
 
 #### 5.1.3 41 条 DATA_POINT_LAT_D1（从未约束，C 类）
 
