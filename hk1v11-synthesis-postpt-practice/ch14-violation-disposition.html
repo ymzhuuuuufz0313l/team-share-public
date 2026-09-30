@@ -183,6 +183,15 @@
 - 这类 startpoint **没有任何 waiver**——在 `ip_cons` 里 grep 不到对应 `-from`（这正是"从未约束"的证据）
 - DC 报告：worst 整组 startpoint `max.rpt` **L39120** 起（RX_CLK 块），上表逐模块 startpoint 行已列
 
+<div style="border:1px solid #e3e6ea;border-radius:8px;padding:12px 16px;margin:10px 0;background:#f5f7fa;font-size:13px;line-height:1.75;">
+<b>0930 增补：组 4 提权方案（RX_CLK_DATA 路径组）与触发方式</b><br>
+① 机制：建独立路径组 <code>group_path -name RX_CLK_DATA -weight 3 -from [get_clocks RX_CLK] -to [get_clocks RX_CLK]</code>——圈定 RX_CLK 域全部路径（含本组 139 条），weight 3 = 组内违例路径分到 3 倍优化精力；已收敛的正 slack 路径不消耗精力，多圈无害。<br>
+② 生效条件：group_path 必须写在 <code>compile_ultra</code> 之前；第二遍增量（<code>compile_ultra -incremental</code>）在其约束下做门级 upsize/重映射——对 −0.60 量级收敛率高，对 worst −1.14 深锥可能不足（残余再议 RTL 流水）。<br>
+③ 验证：综合后 <code>report_path_group</code> 核对 RX_CLK_DATA 组内条数；<code>report_timing -group RX_CLK_DATA</code> 看 slack 收敛。<br>
+④ 副作用：邻组路径可能被轻微带紧（全量 report_timing 复查兜住）；面积/功耗微增；无寄存器漂移、约束 pattern 零影响。<br>
+⑤ 已写入本地 ip_cons（dc 分支）约束注释态/生效态待服务器回传；当前状态：<b>方案就绪，待组 4 服务器/DC run 残余确认后启用</b>。
+</div>
+
 ---
 
 ### 2.5 组 5 · WCLK1_A_DCLK_SHORT · 139 条（CONFIG_DATA）· worst -0.11
@@ -415,4 +424,4 @@
   <script src="./js/site.js"></script>
 </body>
 </html>
-<!-- ymzhu 2026-09-30 11:35 -->
+<!-- ymzhu 2026-09-30 13:55 -->
