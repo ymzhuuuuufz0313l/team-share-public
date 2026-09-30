@@ -201,7 +201,7 @@ before 基线：组 4 o_keep 家族 −0.57~−0.60 ×10 条；G13 组3 D1 −1.
 ② 生效条件：group_path 必须写在 <code>compile_ultra</code> 之前；第二遍增量（<code>compile_ultra -incremental</code>）在其约束下做门级 upsize/重映射——对 −0.60 量级收敛率高，对 worst −1.14 深锥可能不足（残余再议 RTL 流水）。<br>
 ③ 验证：综合后 <code>report_path_group</code> 核对 RX_CLK_DATA 组内条数；<code>report_timing -group RX_CLK_DATA</code> 看 slack 收敛。<br>
 ④ 副作用：邻组路径可能被轻微带紧（全量 report_timing 复查兜住）；面积/功耗微增；无寄存器漂移、约束 pattern 零影响。<br>
-⑤ 已写入本地 ip_cons（dc 分支）约束注释态/生效态待服务器回传；当前状态：<b>方案就绪，待组 4 服务器/DC run 残余确认后启用</b>。
+<b>⑤ 状态更新（0930）：RX_CLK_DATA 提权组已正式写入 ip_cons dc 分支（生效态，HK1V11 `a6230772`），随下次服务器回传上节点——dc run 残余确认后即实际生效，无需再改。</b>
 </div>
 
 ---
@@ -436,4 +436,4 @@ before 基线：组 4 o_keep 家族 −0.57~−0.60 ×10 条；G13 组3 D1 −1.
   <script src="./js/site.js"></script>
 </body>
 </html>
-<!-- ymzhu 2026-09-30 15:46 -->
+<!-- ymzhu 2026-09-30 16:09 -->
