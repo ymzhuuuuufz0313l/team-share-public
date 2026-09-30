@@ -87,14 +87,14 @@
 
 **逐分区拆解**（条数 / worst / 消费点 RTL file:line，**行号已实读核实**）：
 
-| 分区 | bit | 条数 | worst | 下游消费者（无同步器） | RTL file:line |
-|---|---|---|---|---|---|
-| R_REG03_L | [2] BKDU | 24 | -0.16 | 像素数据通路/对齐使能 | `DATA16TO24.v:198`、`CHPI_KCODE_ALIGN_L0.v:265`、`ANCTL.v:162,168,336-342` |
-| R_REG40_F | [0:1] AABB（+[6] VPS_EN_0） | 23 | -1.00 | HSR_W_cnt/HSR 装载使能（`STB_B & HSR_ACTIVE`）+ STB_DLY/SCHOP-CG；**✅ 0924/0928 窄 mc 落地后，0928 终局整分区翻案回归 cpuwr_reg_grp 组宽 mc、窄块删除（664acef2，"组覆盖防复发"取代"零违例不罩"）** | `CHPI_SD_CTRL.v:567`、`ANCTL.v:171/189/205` |
-| R_REG47_F | [1:6] HIZ_MIN（+reg_7_ LD_D_OPT） | 13 | **-1.45** | TP 计数器直喂；**0928 ymzhu 确认 mc2/1（-to RX_CLK）已加，13 条全闭环** | `CHPI_SD_CTRL.v:180-201` |
-| R_REG33_F | [4:6] UTC/FRM_CHK | 12 | -0.34 | 比较活 UTC 计数器；**✅ 0928 mc 闭环（1c447cd1）：[4] 4 条（−0.34）+ [6] 8 条（−0.09）** | `CHPI_UTC_CHK.v:27-31`、`SHORT_ENCODING_ERROR_CTRL.v:27` |
-| R_REG56_F | [0:3] UTC 阈值 | 11 | -0.36 | 活计数器比较；**✅ 0928 mc 闭环（1c447cd1）：[3] 5 条（−0.36）+ [1] 6 条（−0.17）** | `LONG_ENCODING_ERROR_CTRL.v:227-260` |
-| R_REG57_F | [0:2] UTC 阈值 | 6 | -0.88 | 同 R_REG56_F 链；**✅ 0928 mc 闭环（1c447cd1）：[1] 6 条（−0.88，9 级锥）** | `LONG_ENCODING_ERROR_CTRL.v:227-260` |
+| 分区 | bit | 条数 | worst | 下游消费者（无同步器） | RTL file:line | 已做判断 |
+|---|---|---|---|---|---|---|
+| R_REG03_L | [2] BKDU | 24 | -0.16 | 像素数据通路/对齐使能 | `DATA16TO24.v:198`、`CHPI_KCODE_ALIGN_L0.v:265`、`ANCTL.v:162,168,336-342` | 🔴 唯一排除，待 RTL 两级同步器 |
+| R_REG40_F | [0:1] AABB（+[6] VPS_EN_0） | 23 | -1.00 | HSR_W_cnt/HSR 装载使能（`STB_B & HSR_ACTIVE`）+ STB_DLY/SCHOP-CG；**✅ 0924/0928 窄 mc 落地后，0928 终局整分区翻案回归 cpuwr_reg_grp 组宽 mc、窄块删除（664acef2，"组覆盖防复发"取代"零违例不罩"）** | `CHPI_SD_CTRL.v:567`、`ANCTL.v:171/189/205` | ✅ 已回归组宽 mc，23 条闭环 |
+| R_REG47_F | [1:6] HIZ_MIN（+reg_7_ LD_D_OPT） | 13 | **-1.45** | TP 计数器直喂；**0928 ymzhu 确认 mc2/1（-to RX_CLK）已加，13 条全闭环** | `CHPI_SD_CTRL.v:180-201` | ✅ 已回归组宽 mc，13 条闭环（WNS 消失） |
+| R_REG33_F | [4:6] UTC/FRM_CHK | 12 | -0.34 | 比较活 UTC 计数器；**✅ 0928 mc 闭环（1c447cd1）：[4] 4 条（−0.34）+ [6] 8 条（−0.09）** | `CHPI_UTC_CHK.v:27-31`、`SHORT_ENCODING_ERROR_CTRL.v:27` | ✅ 已回归组宽 mc，12 条闭环 |
+| R_REG56_F | [0:3] UTC 阈值 | 11 | -0.36 | 活计数器比较；**✅ 0928 mc 闭环（1c447cd1）：[3] 5 条（−0.36）+ [1] 6 条（−0.17）** | `LONG_ENCODING_ERROR_CTRL.v:227-260` | ✅ 已回归组宽 mc，11 条闭环 |
+| R_REG57_F | [0:2] UTC 阈值 | 6 | -0.88 | 同 R_REG56_F 链；**✅ 0928 mc 闭环（1c447cd1）：[1] 6 条（−0.88，9 级锥）** | `LONG_ENCODING_ERROR_CTRL.v:227-260` | ✅ 已回归组宽 mc，6 条闭环 |
 
 > 注：`ANCTL.v` BKDU 消费点为 L162（`DRA_CS`）、L168（`CS_VCOM`）、L336-342（`POFF_CH*` 族）；`LC_REG_MAPPING.v:331` = `assign HSR_ACTIVE = (R_HSR_BLANK_ON | ~BKDU_SYNC) & R_HSR_EN`。原 `ip_cons` L385-412 审计注释里的 `ANCTL.v:147,153`/`LC_REG_MAPPING.v:322` 为漂移行号（见 §3.4）。另：`R_REG40_F[7]` DBC_VBK_ON 是本分区审计 B 类锚点（`HSR_ACTIVE` 裸项，per-beat），但本 run 它 **0 条违例**——23 条全来自 `[0:1]` AABB（21）+ `[6]` VPS_EN_0（2），且两组均已确认加 mc（0924/0928，见下）。
 
@@ -415,4 +415,4 @@
   <script src="./js/site.js"></script>
 </body>
 </html>
-<!-- ymzhu 2026-09-30 11:15 -->
+<!-- ymzhu 2026-09-30 11:20 -->
