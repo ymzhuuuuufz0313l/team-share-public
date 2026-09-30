@@ -249,7 +249,7 @@ before 基线：组 4 o_keep 家族 −0.57~−0.60 ×10 条；G13 组3 D1 −1.
 ① <b>真实路径确认</b>：代表路径 <code>PIX_DATA_reg[9]</code>（LONG 解码像素输出，RX_CLK 域）→ CHPI_DECODE 的 PIX_DATA_LONG 选择 mux → <b>SMT_CS 模块逐拍监测</b>（锥含 BK_CNT_NEXT[4] 消隐计数 next-state）→ <code>FLAG_1H_H2L_reg</code>（高→低边沿检测标志，DCLK_DATA_MUX_SHORT 域）。逐拍像素流，每拍都活。<br>
 ② 跨域但<b>同源派生钟</b>（launch RX_CLK@3.05 / capture DCLK_DATA_MUX@4.57，窗口 1.52ns）——STA 单拍检查正确，非异步。<br>
 ③ <b>mc 不可加</b>（逐拍流不满足准静态前提）；RTL 流水（数据晚 2 拍）<b>可能功能可接受</b>——有利证据：FLAG_1H 下游已有一对 mc2（ip_cons G9：FLAG_1H_*→CS_SYNC），但需走打一拍三查 + 对拍 TB 确认。<br>
-④ 决策树：<b>先让 APR 物理优化试（常规流程）→ 不行再专门设置 upsize（提权组/增量精修）→ 仍不行才 RTL 流水</b>（先审 SMT_CS 全部消费者）。
+④ <b>决策树（0930 审查裁决翻转：本组路径 dump 显示 net 增量 0.00~0.04ns、逻辑延迟绝对主导——按判定框架应 upsize 先行，与组7 对齐）</b>：<b>先专门设置 upsize（提权组已落地）→ 残余交 APR → 仍不行才 RTL 流水</b>（先审 SMT_CS 全部消费者；FLAG_1H 下游已 mc2 是 RTL 流水的有利证据）。<b>（已落地：ip_cons dc 分支 RX2DCLK_PIX 提权组 weight 3，RX_CLK→DCLK_DATA_MUX_* 域，HK1V11 6da12b71，三提权组并列）</b>
 </div>
 
 **你应该看的 file:line**：
@@ -355,6 +355,7 @@ before 基线：组 4 o_keep 家族 −0.57~−0.60 ×10 条；G13 组3 D1 −1.
 | **L347-353** | 组8 mc 对 `-from R_REG06_F_reg[2]/reg_2_ -to DPLC_CLK_*`（dc/pt 双分支，0928 终局实施） | 组8 闭环（**-from bit 精确、-to 时钟对象宽终点**） |
 | **—（dc 分支 0930 新增，行号见 85d6de46）** | `group_path -name RX_CLK_DATA -weight 3 -from [get_clocks RX_CLK] -to [get_clocks RX_CLK]` | 组4 提权（生效态 a6230772，随下次回传上节点） |
 | **—（dc 分支 0930 新增，行号见 85d6de46）** | `group_path -name PIX2SD_GATE -weight 3`（SD_CLK_INV/DPLC 门控 upsize 提权） | 组7 提权（生效态 85d6de46） |
+| **—（dc 分支 0930 新增，行号见 6da12b71）** | `group_path -name RX2DCLK_PIX -weight 3`（RX_CLK→DCLK_DATA_MUX_* 域像素路径 upsize 提权） | 组6 提权（生效态 6da12b71，三提权组并列） |
 | **L358-359** | `set_max_delay $DPLC_CLKP -to U_DPLC_DATA_GEN/*`（DC 分支，无 -from，`*`） | DPLC max_delay（DC 侧用 `*`，罩内部节点） |
 | **L362** | `set_max_delay [expr $DPLC_CLKP*2] -from R_REG48_F_reg* -to ...`（DC） | DPLC mc2（DC 侧） |
 | **L365-373** | AUDIT NOTE：两条 no-from set_max_delay 覆盖 per-beat 像素管线 | **重点思考**：GEN=PIX_CLK=DCLK_DATA（`CENTER1.v:239/241`），6.35 放宽 LONG 腿 2.54ns，意图未文档化，pending jjlu |
@@ -472,4 +473,4 @@ before 基线：组 4 o_keep 家族 −0.57~−0.60 ×10 条；G13 组3 D1 −1.
   <script src="./js/site.js"></script>
 </body>
 </html>
-<!-- ymzhu 2026-09-30 17:20 -->
+<!-- ymzhu 2026-09-30 17:23 -->
