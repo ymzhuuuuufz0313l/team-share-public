@@ -289,6 +289,13 @@ before 基线：组 4 o_keep 家族 −0.57~−0.60 ×10 条；G13 组3 D1 −1.
 
 **建议处置**：恢复 G14 的 `R_REG06_F_reg_2_` 对（DC 下用 `reg_2_` 形式避免 reg[2] 报错），或并入 G10 类 `set_max_delay`。低风险。
 
+<div style="border:1px solid #e3e6ea;border-radius:8px;padding:12px 16px;margin:10px 0;background:#f5f7fa;font-size:13px;line-height:1.75;">
+<b>0930 状态确认：已实施（0928 终局窄 mc，形态优于本节建议）</b><br>
+① 本节建议的"恢复 G14 对"已被更安全形态取代：窄 mc 2/1-start <code>-from R_REG06_F_reg[2]/reg_2_ -to DPLC_CLK_*</code>（<b>-to 时钟对象</b>，非 from-only 全端点放宽；dc 方括号/pt 下划线双分支=全文件唯一 bit 精确对），ip_cons L347-353，安全依据已审计注明（0x06 中段 F 块写 + 配置期 DPLC 流水空闲）。<br>
+② 机制层：mc2 后 capture 推 2 拍（6.1ns vs 路径 ~3.4ns），−0.37/−0.38 必然转正。<br>
+③ 生效层（下次 run 验证）：report_exceptions applied 标志 + capture 边沿=2 拍 + read_cons.log 无 SEL-004——三证据齐 = 组 8 闭环。
+</div>
+
 **你应该看的 file:line**：
 - G14 DPLC_MODE 注释对：`ip_cons` **L351-352**
 - G14 审计注释（为什么注释 + 回归口）：`ip_cons` **L339-347**
@@ -452,4 +459,4 @@ before 基线：组 4 o_keep 家族 −0.57~−0.60 ×10 条；G13 组3 D1 −1.
   <script src="./js/site.js"></script>
 </body>
 </html>
-<!-- ymzhu 2026-09-30 16:53 -->
+<!-- ymzhu 2026-09-30 16:55 -->
