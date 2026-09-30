@@ -25,7 +25,7 @@
     <div class="content">
       <article class="article" id="article"></article>
       <div class="page-nav" id="page-nav"></div>
-      <div class="footer">HK1V11 SYNTHESIS / SIGNOFF PRACTICE · AUTHOR ymzhuuuu · UPDATED 2026-09-24</div>
+      <div class="footer">HK1V11 SYNTHESIS / SIGNOFF PRACTICE · AUTHOR ymzhuuuu · UPDATED 2026-09-30</div>
     </div>
   </div>
   <script type="text/template" id="md">
@@ -425,6 +425,8 @@ set_multicycle_path 1 -start -hold  -from [get_cells -hier -filter {name =~ *LON
 
 RX_CLK 组是本次收窄影响最大的组，284 条中：89 条收窄暴露 + 15 条 G13 + 41 条从未约束 + 139 条真实数据通路。
 
+> **0930 状态总览**：89 条已终局闭环（67 条全消 = 65 条组宽 mc 覆盖 + 2 条 DPLC 窄 mc，BKDU 24 条待 RTL 两级同步器）；G13 56 条（15+41）RTL 打一拍已落地、服务器实证（59/60 + 420b 52/52 + 放量 369/382），待下次 DC run 验收；RX 数据通路 139 条 upsize 先行（RX_CLK_DATA 提权组 weight3 a6230772，X4 兜底）。逐组处置详见 ch15《记忆唤醒》。
+
 #### 5.1.1 89 条 = 收窄剔除的 R_REG* 分区（全部 narrowing_exposed）
 
 **startpoint 模式均在 `LC_CPUWR` 下**：
@@ -440,7 +442,7 @@ RX_CLK 组是本次收窄影响最大的组，284 条中：89 条收窄暴露 + 
 
 > **UTC 29 条 0928 mc 闭环判据（commit 1c447cd1）**：同一对 mc2/1（`-to RX_CLK`），bit-exact `-from` 共 5 bit（R_REG57_F[1]、R_REG33_F[4]/[6]、R_REG56_F[3]/[1]，bit 精确不加宽——R_MON_DC_VOL 未验不罩）。双重判据：① ymzhu 时序版——寄存器帧以 3 地址/拍写入，0x21/0x38/0x39 = 行 33/56/57、FBANK 收尾 0x44 = 行 68，均非最后一拍（对比 BKDU 反例的"配置末尾写"）；② "钳死"结构——UTC 计数器使能关时恒清零（`SHORT_ENCODING_ERROR_CTRL.v:33/76-79`、`LONG_ENCODING_ERROR_CTRL.v:193-218`），CNT=0 < 最小 THD(2) → mc 垃圾窗内比较输出恒 0，不可能假脉冲。至此 89 条收窄暴露仅剩 BKDU 24 条（定案不加 mc、走 RTL 两级同步器，待实施）。分析报告：`_reg33/56/57_mc_analysis.md`、`_hiz_min_sel_mc_phase_analysis.md`。
 
-> **0928 终局（commit 6b5a2394 + 769b213f + 664acef2）**：9 分区（R_REG00_L + R_REG33/34/40/41/46/47/56/57_F）经逐 bit 翻案审查（`_group_rejoin_audit.md` + `_reg47_rejoin_audit.md` + `_reg_audit_C.md`）后**整组回归 `cpuwr_reg_grp` 宽 mc**——remove 列表 10→**1**（**只剩 R_REG03_L-BKDU 一个**），AABB/UTC/R_REG47_F/FSYNC 四组窄 mc 块全删；G14 退役、其 bit2 DPLC_MODE 的 2 条 DPLC_CLK 门控违例改由**新纪律窄 mc**（`-from R_REG06_F_reg_2_ -to DPLC_CLK_*`，双分支命名）闭环。休眠 B 类锚点（DBC_VBK_ON/HIZ_SEL/DBC/TP_F_AHEAD/HIZ_MIN_VAL）全部翻案：实为端口换名/门控装载/配置期钳制的 AABB 同构结构。回归检查点：下次 run **BKDU 24 条必须仍单拍违例可见 + 其余 80 条全消（78 组覆盖 + 2 DPLC 窄 mc）** + SEL-004 无新增。
+> **0928 终局（commit 6b5a2394 + 769b213f + 664acef2）**：9 分区（R_REG00_L + R_REG33/34/40/41/46/47/56/57_F）经逐 bit 翻案审查（`_group_rejoin_audit.md` + `_reg47_rejoin_audit.md` + `_reg_audit_C.md`）后**整组回归 `cpuwr_reg_grp` 宽 mc**——remove 列表 10→**1**（**只剩 R_REG03_L-BKDU 一个**），AABB/UTC/R_REG47_F/FSYNC 四组窄 mc 块全删；G14 退役、其 bit2 DPLC_MODE 的 2 条 DPLC_CLK 门控违例改由**新纪律窄 mc**（`-from R_REG06_F_reg_2_ -to DPLC_CLK_*`，双分支命名）闭环。休眠 B 类锚点（DBC_VBK_ON/HIZ_SEL/DBC/TP_F_AHEAD/HIZ_MIN_VAL）全部翻案：实为端口换名/门控装载/配置期钳制的 AABB 同构结构。回归检查点：下次 run **BKDU 24 条必须仍单拍违例可见 + 其余 67 条全消（65 组覆盖 + 2 DPLC 窄 mc）** + SEL-004 无新增。**0930 状态：检查点达成——0928 全量 320bit 复审全绿，组宽 mc 终局闭环（cpuwr_reg_grp 仅排除 R_REG03_L/BKDU，mc2/1 × RX_CLK/DCLK_DATA_\*/SD_CLK_INV_\* 在役，四组窄 mc 全删）；闭环口径 = 67 条全消（89−24=65 组覆盖 + 组8 DPLC 2 条），BKDU 24 条 RTL 两级同步器仍待实施**（详见 ch15《记忆唤醒》）。
 | **小计** | **89** | — | — | — |
 
 **报告定位（89 条逐条行号）**：全部 89 条都在同一个文件——
@@ -511,7 +513,7 @@ DATA_POINT_LAT_reg_13_/Q
 **回归口**：0922 注释中写明：
 > `if a next run shows violating paths whose startpoint matches LONG_ENCODING_ALIGN/DATA_POINT_LAT_reg*, reconsider`
 
-> **0928 恢复前审查裁决（`_g13_datapoint_audit.md`）：❌ 不可恢复 mc，15+41 条重分类为真实数据通路。** 实读推翻"准静态"假设：DATA_POINT_LAT/_D1 不是配置寄存器——是**解串器位对齐桶形移位选择寄存器**（RX_CLK 域，K 码事件锁存对齐相位 → 20:1 桶形 mux → K1-K4 等值比较 → 每拍捕获；_D1 为 RTL 显式二级）。双判据全不过：更新恰在 idle→data 转换沿（`KCODE_REG_PE` 触发=非零字出现，流上正有真数据，无无人消费窗）；消费者无 load-enable；漏 K1/K4=丢行/帧边界不自愈。**处置：交综合（retime/upsizing 桶形+比较锥）或 RTL 预相移重构（mux 移到 1bit 结果侧）**，与 139 条 CONFIG_DATA 同桶。0918 waiver"临时豁免"定性正确。**0930 进展：两分支 RTL 打一拍已落地并服务器实证（SHORT 59/60 / LONG 369/382），56 条清零待下次 DC run 验收。**
+> **0928 恢复前审查裁决（`_g13_datapoint_audit.md`）：❌ 不可恢复 mc，15+41 条重分类为真实数据通路。** 实读推翻"准静态"假设：DATA_POINT_LAT/_D1 不是配置寄存器——是**解串器位对齐桶形移位选择寄存器**（RX_CLK 域，K 码事件锁存对齐相位 → 20:1 桶形 mux → K1-K4 等值比较 → 每拍捕获；_D1 为 RTL 显式二级）。双判据全不过：更新恰在 idle→data 转换沿（`KCODE_REG_PE` 触发=非零字出现，流上正有真数据，无无人消费窗）；消费者无 load-enable；漏 K1/K4=丢行/帧边界不自愈。**处置：交综合（retime/upsizing 桶形+比较锥）或 RTL 预相移重构（mux 移到 1bit 结果侧）**，与 139 条 CONFIG_DATA 同桶。0918 waiver"临时豁免"定性正确。**0930 进展：两分支 RTL 打一拍已落地（SHORT df3e7d32→v2 4a4cd776→v3 16e653e3；LONG v4.1 451211a0）并服务器实证（59/60 + 420b 52/52 + 放量 369/382），56 条清零待下次 DC run 验收（详见 ch15《记忆唤醒》）。**
 
 #### 5.1.3 41 条 DATA_POINT_LAT_D1（从未约束，C 类）
 
@@ -542,6 +544,8 @@ DATA_POINT_LAT_reg_13_/Q
 | `boe_bcc_prescale(_cnt)_reg_*` | BOE_AUTO_EQ_BCC_CTRL 的 `u_boe_rx_bcc_decoder` | 26 | -1.14 | L39458: `boe_bcc_prescale_reg_2_` → … → `sample_mask_cnt_reg_5_(RX_CLK)` |
 | `bcc_rx_reply_time_cnt` / `CS_SIG_ORG` / `bcc_receive_state` / `cnt_7b` / `o_raw_idx` | 各 | 1~3（合计 6） | -0.51 | 数据通路/状态机 |
 | **小计** | — | **139** | — | RX 域内部真实关键路径（理想时钟即违例），与收窄无关，需综合策略/RTL 优化 |
+
+> **0930 状态（组4）**：RX_CLK_DATA 提权组 weight3 已落地（commit a6230772），逻辑主导 → upsize 先行，X4 兜底（详见 ch15《记忆唤醒》）。
 
 ### 5.2 WCLK1_A_DCLK_SHORT 139 条（真实违例）
 
@@ -853,4 +857,4 @@ rep_dir_0922_1456/  新 DC 跑输出目录
   <script src="./js/site.js"></script>
 </body>
 </html>
-<!-- ymzhu 2026-09-30 11:35 -->
+<!-- ymzhu 2026-09-30 18:06 -->
