@@ -427,6 +427,15 @@ RX_CLK 组是本次收窄影响最大的组，284 条中：89 条收窄暴露 + 
 
 > **0930 状态总览**：89 条已终局闭环（67 条全消 = 65 条组宽 mc 覆盖 + 2 条 DPLC 窄 mc，BKDU 24 条待 RTL 两级同步器）；G13 56 条（15+41）RTL 打一拍已落地、服务器实证（59/60 + 420b 52/52 + 放量 369/382），待下次 DC run 验收；RX 数据通路 139 条 upsize 先行（RX_CLK_DATA 提权组 weight3 a6230772，X4 兜底）。逐组处置详见 ch15《记忆唤醒》。
 
+<p><span class="badge badge-ok">✅ 1004V0 DC 复核（rep_dir_1003）· 452 → 11 条 · 已清零组逐项见下方绿色标记</span></p>
+
+<details style="border:1px solid var(--ok,#047857);border-radius:8px;margin:8px 0 14px;background:var(--ok-bg,rgba(4,120,87,0.06));">
+<summary style="cursor:pointer;padding:8px 14px;font-weight:600;font-size:13.5px;color:var(--ok,#047857);list-style:none;">1004V0 DC 复核结果总览（点击展开）</summary>
+<div style="padding:6px 14px 10px;font-size:13px;line-height:1.75;">
+1003 复跑（2026-10-02，vs 本页基线 rep_dir_0922_1456）：<b>setup 违例 452 → 11 条（−97.6%），worst −1.45 → −0.01</b>，负 slack 组 5→1。本页各已清零组的独立"已闭环"标记：§5.1.1 cpuwr 65 条全消（40_F 23 / 47_F 13 / 33_F 12 / 56_F 11 / 57_F 6，含 UTC 29 与 AABB/VPS 23）✅、§5.5 DPLC_MODE 2 条（−0.38→+4.12）✅、§5.1.2/5.1.3 G13 56 条（worst −1.31→族内 +1.11）✅。BKDU 24 条 1003 复核为单拍 MET（worst +0.02 贴线、mc 排除未松），但 RTL 两级同步器仍未实施、真 CDC 待办保留。残留 11 条定性 + 全量扫描新发现（BOE 域迁移 / jjlu 编译树 / 本地仓库代际缺口）见 <a href="./ch16-dc1004-review.html">ch16 · 1004 DC 复核（四模型交叉）</a>。
+</div>
+</details>
+
 #### 5.1.1 89 条 = 收窄剔除的 R_REG* 分区（全部 narrowing_exposed）
 
 **startpoint 模式均在 `LC_CPUWR` 下**：
@@ -514,6 +523,15 @@ DATA_POINT_LAT_reg_13_/Q
 > `if a next run shows violating paths whose startpoint matches LONG_ENCODING_ALIGN/DATA_POINT_LAT_reg*, reconsider`
 
 > **0928 恢复前审查裁决（`_g13_datapoint_audit.md`）：❌ 不可恢复 mc，15+41 条重分类为真实数据通路。** 实读推翻"准静态"假设：DATA_POINT_LAT/_D1 不是配置寄存器——是**解串器位对齐桶形移位选择寄存器**（RX_CLK 域，K 码事件锁存对齐相位 → 20:1 桶形 mux → K1-K4 等值比较 → 每拍捕获；_D1 为 RTL 显式二级）。双判据全不过：更新恰在 idle→data 转换沿（`KCODE_REG_PE` 触发=非零字出现，流上正有真数据，无无人消费窗）；消费者无 load-enable；漏 K1/K4=丢行/帧边界不自愈。**处置：交综合（retime/upsizing 桶形+比较锥）或 RTL 预相移重构（mux 移到 1bit 结果侧）**，与 139 条 CONFIG_DATA 同桶。0918 waiver"临时豁免"定性正确。**0930 进展：两分支 RTL 打一拍已落地（SHORT df3e7d32→v2 4a4cd776→v3 16e653e3；LONG v4.1 451211a0 → v4.2 3d51348b 终态）并服务器实证（59/60 + 420b 52/52 + 放量 369/382）——420b 波形深藏装载拍回归已由 v4.2 LAT_EFF 装载拍旁路修复（差分 TB 与 live 严格 +1 全 0 差异、评审 PASS，遗留后端 STA 覆盖新锥），56 条清零待下次 DC run 验收（按 v4.2 重签，详见 ch15《记忆唤醒》）。**
+
+<p><span class="badge badge-ok">✅ 已闭环 · G13 56 条（15 LAT + 41 LAT_D1）· 1004V0 DC 复核（rep_dir_1003）</span></p>
+
+<details style="border:1px solid var(--ok,#047857);border-radius:8px;margin:8px 0 14px;background:var(--ok-bg,rgba(4,120,87,0.06));">
+<summary style="cursor:pointer;padding:8px 14px;font-weight:600;font-size:13.5px;color:var(--ok,#047857);list-style:none;">1004V0 DC 复核证据（点击展开，覆盖本节 15 条 + §5.1.3 41 条）</summary>
+<div style="padding:6px 14px 10px;font-size:13px;line-height:1.75;">
+1003 复跑验收达成（v4.2 重签口径）：G13 族 56 条 = 15 条 DATA_POINT_LAT + 41 条 DATA_POINT_LAT_D1 <b>全部归零</b>，worst −1.31 → 族内 worst <b>+1.11</b>；G13 waiver 两 run 均保持 OFF，单拍口径真实（清零来自 v4.2 打一拍结构性切短，非豁免）。残留 1 条 −0.01（SHORT <code>DATA_POINT_LAT_D1_reg_13_ → DATA_POINT_LAT_TMP CG latch</code>，v4.2 新锥）非原 56 条家族、另列追踪。详见 <a href="./ch16-dc1004-review.html">ch16 · 1004 DC 复核</a>。
+</div>
+</details>
 
 #### 5.1.3 41 条 DATA_POINT_LAT_D1（从未约束，C 类）
 
@@ -606,6 +624,15 @@ R_REG06_F_reg_2_/Q
 旧版: G14 from-only mc2 → 覆盖一切 endpoint
 新版: 注释 → 单周期
 ```
+
+<p><span class="badge badge-ok">✅ 已闭环 · DPLC_MODE 2 条 · 1004V0 DC 复核（rep_dir_1003）</span></p>
+
+<details style="border:1px solid var(--ok,#047857);border-radius:8px;margin:8px 0 14px;background:var(--ok-bg,rgba(4,120,87,0.06));">
+<summary style="cursor:pointer;padding:8px 14px;font-weight:600;font-size:13.5px;color:var(--ok,#047857);list-style:none;">1004V0 DC 复核证据（点击展开）</summary>
+<div style="padding:6px 14px 10px;font-size:13px;line-height:1.75;">
+1003 复跑（vs 基线 rep_dir_0922_1456）：R_REG06_F[2]（R_DPLC_MODE）2 条违例 <b>−0.38 → 全消</b>（该寄存器族 worst <b>+4.12</b>）；窄 mc 实测在位——<code>-from R_REG06_F_reg_2_ -to [DPLC_CLK_* 5 时钟对象]</code>（+hold 对），0928 纪律落地。0928 闭环记录 + 1003 复核 0 告警双证。详见 <a href="./ch16-dc1004-review.html">ch16 · 1004 DC 复核</a>。
+</div>
+</details>
 
 ### 5.6 hold 违例 30 条（结构性/IO 约束问题，与收窄无关）
 
@@ -857,4 +884,4 @@ rep_dir_0922_1456/  新 DC 跑输出目录
   <script src="./js/site.js"></script>
 </body>
 </html>
-<!-- ymzhu 2026-09-30 18:06 -->
+<!-- ymzhu 2026-10-04 11:00 -->

@@ -105,6 +105,42 @@
   - **BKDU `R_REG03_L[2]`（G1/G2）：0924 ymzhu 确认不能恢复（不能加 waiver）**——0922 run 中 24 条 BKDU→PIX_DATA 路径是活的（0921V3 曾被综合剪掉标 `p` 空转，现已复活），worst −0.16；R_BKDU 裸跨域进 DCLK 域像素逻辑无同步器 = 真实 CDC 亚稳态风险，waiver 只放宽 STA、治不了跨域。修复 = 把 `LC_REG_MAPPING` `BKDU_SYNC` 由单级扩两级并接像素路径（`LONG_ENCODING_OUTPUT.v:333/397`）。
 - **0928 全量 320bit 复审全绿**（9 分区翻案回归组宽 mc 的最终确认，逐 bit 复审无一遗留）。
 
+<p><span class="badge badge-ok">✅ 已闭环 · cpuwr 组覆盖 65 条全消 · 1004V0 DC 复核（rep_dir_1003）</span></p>
+
+<details style="border:1px solid var(--ok,#047857);border-radius:8px;margin:8px 0 14px;background:var(--ok-bg,rgba(4,120,87,0.06));">
+<summary style="cursor:pointer;padding:8px 14px;font-weight:600;font-size:13.5px;color:var(--ok,#047857);list-style:none;">1004V0 DC 复核证据（点击展开）</summary>
+<div style="padding:6px 14px 10px;font-size:13px;line-height:1.75;">
+1003 复跑（2026-10-02 服务器 run，vs 基线 rep_dir_0922_1456 452 条 setup 全量比对）：组覆盖 65 条 = <b>0 违例</b>——R_REG40_F 23（基线 worst −1.00）、R_REG33_F 12（−0.34）、R_REG56_F 11（−0.36）、R_REG57_F 6（−0.88）、R_REG47_F 13（−1.45）全部清零。约束侧实证：1003 SDC 中 cpuwr 组宽 mc <code>-from</code> 311→<b>383 cells</b>（39→48 regs，R_REG47_F / R_REG00_L / 01_L / 02_L 回组落地），<code>-to</code> RX_CLK / DCLK_DATA_* / SD_CLK_INV_* 三对齐备，R_REG03_L(BKDU) 仅 3 对同步器窄 mc、无像素通路 mc（排除未松动）。全档见 <a href="./ch16-dc1004-review.html">ch16 · 1004 DC 复核</a>。
+</div>
+</details>
+
+<p><span class="badge badge-ok">✅ 已闭环 · R_REG47_F 13 条 · 1004V0 DC 复核（rep_dir_1003）</span></p>
+
+<details style="border:1px solid var(--ok,#047857);border-radius:8px;margin:8px 0 14px;background:var(--ok-bg,rgba(4,120,87,0.06));">
+<summary style="cursor:pointer;padding:8px 14px;font-weight:600;font-size:13.5px;color:var(--ok,#047857);list-style:none;">1004V0 DC 复核证据（点击展开）</summary>
+<div style="padding:6px 14px 10px;font-size:13px;line-height:1.75;">
+既有闭环记录：0928 mc2/1（<code>-to RX_CLK</code>，<code>-from {R_REG47_F_reg_1_ R_REG47_F_reg_7_}</code>）13 条闭环、原全局 WNS −1.45 消失；0928 终局整分区回归组宽 mc（commit 769b213f）。1004V0 DC 复核（rep_dir_1003）：R_REG47_F 起点 17 路径块 <b>0 违例</b>、基线 worst −1.45 不再出现，0928 闭环记录 + 1003 复核 0 告警双证。详见 <a href="./ch16-dc1004-review.html">ch16 · 1004 DC 复核</a>。
+</div>
+</details>
+
+<p><span class="badge badge-ok">✅ 已闭环 · UTC 29 条 · 1004V0 DC 复核（rep_dir_1003）</span></p>
+
+<details style="border:1px solid var(--ok,#047857);border-radius:8px;margin:8px 0 14px;background:var(--ok-bg,rgba(4,120,87,0.06));">
+<summary style="cursor:pointer;padding:8px 14px;font-weight:600;font-size:13.5px;color:var(--ok,#047857);list-style:none;">1004V0 DC 复核证据（点击展开）</summary>
+<div style="padding:6px 14px 10px;font-size:13px;line-height:1.75;">
+既有闭环记录：0928 ymzhu 定案 mc 闭环（commit 1c447cd1）——R_REG57_F[1] 6（−0.88）+ R_REG33_F[4] 4（−0.34）+ R_REG33_F[6] 8（−0.09）+ R_REG56_F[3] 5（−0.36）+ R_REG56_F[1] 6（−0.17），bit-exact 5 bit + <code>-to RX_CLK</code>。1004V0 DC 复核（rep_dir_1003）：R_REG33_F / R_REG56_F / R_REG57_F 起点违例 = <b>0 / 0 / 0</b>，0928 闭环记录 + 1003 复核 0 告警双证。详见 <a href="./ch16-dc1004-review.html">ch16 · 1004 DC 复核</a>。
+</div>
+</details>
+
+<p><span class="badge badge-ok">✅ 已闭环 · AABB/VPS_EN_0 23 条 · 1004V0 DC 复核（rep_dir_1003）</span></p>
+
+<details style="border:1px solid var(--ok,#047857);border-radius:8px;margin:8px 0 14px;background:var(--ok-bg,rgba(4,120,87,0.06));">
+<summary style="cursor:pointer;padding:8px 14px;font-weight:600;font-size:13.5px;color:var(--ok,#047857);list-style:none;">1004V0 DC 复核证据（点击展开）</summary>
+<div style="padding:6px 14px 10px;font-size:13px;line-height:1.75;">
+既有闭环记录：AABB <code>R_REG40_F[0:1]</code> 0924 ymzhu 确认一次性 I2C 初始化配置加 mc（21 条）、<code>[6]</code> VPS_EN_0 0928 追加（2 条，STB_PE_DLY 拍装载）；0928 终局窄块删除、整分区回归组宽 mc（664acef2）。1004V0 DC 复核（rep_dir_1003）：R_REG40_F 起点 27 路径块 <b>0 违例</b>（基线 worst −1.00），23 条闭环 + 1003 复核 0 告警双证。详见 <a href="./ch16-dc1004-review.html">ch16 · 1004 DC 复核</a>。
+</div>
+</details>
+
 **建议处置**：不要一刀切恢复 blanket。逐 bit：准静态的恢复窄 mc（**AABB `R_REG40_F[0:1]` 0924 + VPS_EN_0 `[6]` 0928 均已确认、mc2/1 已加，23 条全闭环；R_REG47_F 0928 mc 已加，13 条闭环**）；UTC 比较类 **0928 已定案 mc 闭环（commit 1c447cd1，29 条全闭环，判据 = 非最后一拍写入 + 计数器钳死结构）**；**BKDU 0924 已确认走 RTL 两级同步器**。至此收窄暴露 89 条仅剩 BKDU 24 条待 RTL 实施。**0928 终局结构简化（commit 6b5a2394 + 769b213f + 664acef2）：9 分区（R_REG00_L + R_REG33/34/40/41/46/47/56/57_F）经逐 bit 翻案审查（`_group_rejoin_audit.md` + `_reg47_rejoin_audit.md` + `_reg_audit_C.md`）后整组回归 `cpuwr_reg_grp` 宽 mc——remove 列表 10→1（**只剩 R_REG03_L-BKDU**），AABB/UTC/R_REG47_F/FSYNC 四组窄 mc 块全删；G14 退役，其 bit2 DPLC_MODE 的 2 条 DPLC_CLK 门控违例改由新纪律 mc 对——-from bit 精确、-to 时钟对象宽终点（`-from R_REG06_F_reg_2_ -to DPLC_CLK_*`，dc/pt 双分支命名）闭环；休眠 B 类锚点（DBC_VBK_ON 经端口换名进 HSR_ACTIVE、HIZ_SEL、DBC、TP_F_AHEAD、HIZ_MIN_VAL[6:2]——SET 锥不含 HIZ、>= 自愈、锥活防 PVT 复发）全部翻案为 AABB 同构门控结构。回归检查点：下次 run BKDU 24 条必须仍单拍违例可见 + 其余 67 条全消（89−24 BKDU = 65 组覆盖 + 组8 DPLC 2 条；原"78/80"系 R_REG47_F 13 条重复计——0928 已回归组，不得再单列） + SEL-004 无新增。**
 
 **你应该看的 file:line**：
@@ -166,6 +202,15 @@
 - G13 pattern（看它为什么匹配不到 D1）：`ip_cons` **L329**（`DATA_POINT_LAT_reg*`——注意 `_reg` 前没有 `*`，中间插不进 `_D1`）
 - 审计更正注释：`ip_cons` **L322-327**
 - DC 报告：代表路径 startpoint `max.rpt` **L39374**（DATA_POINT_LAT_D1_reg_10_）
+
+<p><span class="badge badge-ok">✅ 已闭环 · G13 56 条（15 LAT + 41 LAT_D1）· 1004V0 DC 复核（rep_dir_1003）</span></p>
+
+<details style="border:1px solid var(--ok,#047857);border-radius:8px;margin:8px 0 14px;background:var(--ok-bg,rgba(4,120,87,0.06));">
+<summary style="cursor:pointer;padding:8px 14px;font-weight:600;font-size:13.5px;color:var(--ok,#047857);list-style:none;">1004V0 DC 复核证据（点击展开）</summary>
+<div style="padding:6px 14px 10px;font-size:13px;line-height:1.75;">
+1003 复跑（vs 基线 rep_dir_0922_1456）：G13 族 56 条 = 15 条 DATA_POINT_LAT（组2）+ 41 条 DATA_POINT_LAT_D1（组3）<b>全部归零</b>，worst −1.31 → 族内 worst <b>+1.11</b>（v4.2 两分支打一拍结构性切短锥体）；G13 waiver 两 run 均保持 OFF（约束注释实证），单拍口径真实。残留 1 条 −0.01（SHORT <code>DATA_POINT_LAT_D1_reg_13_ → DATA_POINT_LAT_TMP CG latch</code>，v4.2 新锥）<b>非原 56 条家族</b>，另列追踪。详见 <a href="./ch16-dc1004-review.html">ch16 · 1004 DC 复核</a>。
+</div>
+</details>
 
 ---
 
@@ -324,6 +369,15 @@ before 基线：组 4 o_keep 家族 −0.57~−0.60 ×10 条；G13 组3 D1 −1.
 - G14 DPLC_MODE 注释对：`ip_cons` **L351-352**
 - G14 审计注释（为什么注释 + 回归口）：`ip_cons` **L339-347**
 - DC 报告：worst 路径 startpoint `max.rpt` **L31466**（R_REG06_F_reg_2_），slack `max.rpt` **L31538**（-0.38）；QoR 汇总 `.rpt` **L20249**
+
+<p><span class="badge badge-ok">✅ 已闭环 · DPLC_MODE 2 条 · 1004V0 DC 复核（rep_dir_1003）</span></p>
+
+<details style="border:1px solid var(--ok,#047857);border-radius:8px;margin:8px 0 14px;background:var(--ok-bg,rgba(4,120,87,0.06));">
+<summary style="cursor:pointer;padding:8px 14px;font-weight:600;font-size:13.5px;color:var(--ok,#047857);list-style:none;">1004V0 DC 复核证据（点击展开）</summary>
+<div style="padding:6px 14px 10px;font-size:13px;line-height:1.75;">
+1003 复跑（vs 基线 rep_dir_0922_1456）：R_REG06_F[2]（R_DPLC_MODE）2 条违例 <b>−0.38 → 全消</b>（该寄存器族 worst <b>+4.12</b>）；窄 mc 实测在位——<code>set_multicycle_path 2 -setup -start -from R_REG06_F_reg_2_ -to [DPLC_CLK_* 5 时钟对象]</code>（+hold 对），即 0928 定案的 bit 精确 <code>-from</code> + 时钟对象 <code>-to</code> 纪律。上节"③ 生效层三证据"中的前两项（applied/违例消失）已由 1003 复核达成。详见 <a href="./ch16-dc1004-review.html">ch16 · 1004 DC 复核</a>。
+</div>
+</details>
 
 ---
 
@@ -495,4 +549,4 @@ before 基线：组 4 o_keep 家族 −0.57~−0.60 ×10 条；G13 组3 D1 −1.
   <script src="./js/site.js"></script>
 </body>
 </html>
-<!-- ymzhu 2026-09-30 19:11 -->
+<!-- ymzhu 2026-10-04 11:00 -->

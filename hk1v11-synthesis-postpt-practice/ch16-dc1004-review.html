@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>十六、1004 DC 复核 · HK1V11 综合/签核流程实践</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./css/style.css">
+  <script src="./js/marked.min.js"></script>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a class="navbar-brand" href="./">HK1V11_FLOW_PRACTICE</a>
+      <div class="navbar-links" id="navbar-links"></div>
+    </div>
+  </nav>
+  <div class="container with-toc">
+    <aside class="toc-wrapper"><div class="toc" id="toc"></div></aside>
+    <div class="content">
+      <article class="article" id="article"></article>
+      <div class="page-nav" id="page-nav"></div>
+      <div class="footer">HK1V11 SYNTHESIS / SIGNOFF PRACTICE · AUTHOR ymzhuuuu · UPDATED 2026-10-04</div>
+    </div>
+  </div>
+  <script type="text/template" id="md">
+# 十六、1004 DC 复核 · 四模型交叉全量分析（rep_dir_1003）
+
+> **实战复盘 · 按时间线 · 2026-10-04 · 对象 `PACK_TAR_1004V0.tar.gz` → `SYNTHESIS/ip/syn_HK1V11_digital_top/dc/rep_dir_1003/`（10-03 服务器 DC run），基线对照 [ch11/ch14](./ch11-violation-atlas.html) 的 `rep_dir_0922_1456`**
+>
+> **方法**：agent-teams `g13-dc1004-review` 四模型交叉——3×GLM（5.3 / 5.3-flash / 5.3-flashx）独立全量分析 + 队长逐判据交叉验证；其中 glm53flashx 做到两 run max.rpt 全量 4338/4899 路径块逐块解析 + SDC unwrap diff。**Qwen 路因线路中断 4 连超时缺席**（digest 已备，可补跑）；分歧（判据1 口径、残留 10 vs 11、SDC 16→13）以 t2+t3 双路一致 + t3 cell 级 diff 仲裁收敛。
+> 素材：`CONSENSUS_1004_DC_REVIEW.md`（共识）+ glm53flashx 全量报告 `script/_dc1004_rep1003_analysis_glm53flashx.md`。
+
+---
+
+## 1. 总 headline
+
+**setup 违例 452 → 11 条（−97.6%），worst −1.45 → −0.01**；负 slack 组 5→1（仅 RX_CLK_DATA）；G13 原 56 条确认根修消失；面积 294907→314707（**+6.7%**）、时序单元 +333（v4.2 打拍 + 工艺/约束变化的合并代价，待拆分）。
+
+| 维度 | 基线 0922（rep_dir_0922_1456） | 1004V0（rep_dir_1003） |
+|---|---|---|
+| setup 违例路径（max.rpt） | **452** | **11** |
+| worst slack / 最差组 | **−1.45**（RX_CLK 组，R_REG47_F HIZ） | **−0.01**（RX_CLK_DATA 组） |
+| 负 slack 路径组 | 5 组 | 1 组 |
+| all_violators：setup 端点 / hold / DRC | 410 / 30 / 655 | 25（含 15 条 0.00-rounding）/ 21 / 644 |
+| 面积 / 顺序单元 | 294,907 / 2668 | 314,707（+6.7%）/ 3001（+333，dc.log 口径；网表 FF 口径 2526→2839 +313） |
+| run 代际 | 2026-09-22，ymzhu HDL 树（80 文件） | 2026-10-02 23:17，jjlu HDL 树（81 文件），约束=0930 终版（`ymzhu 2026-09-30 17:25` 签名） |
+
+## 2. 六判据表（三路共识）
+
+| # | 判据 | 共论 | 证据要点 |
+|---|---|---|---|
+| 1 | G13 56 清零 | ✅ 达成（56 = 15 DATA_POINT_LAT + 41 DATA_POINT_LAT_D1 全部归零；两 run waiver 均 OFF、单拍口径真实）；**遗留 11 条 −0.01 微违例**（非 G13 原家族）：9× DATA_ALIGN_PRE_D 自环（v4.2 新锥，DC 实测仅差 0.01）+ SHORT DATA_POINT_LAT_D1_reg_13_→_TMP CG latch + STB_DLY_reg_15_→HSR_W_cnt CG latch（40_F 修复后打地鼠） | t1❌/t2✅/t3✅ → 口径统一：原 G13 家族=0，残留另列 |
+| 2 | BKDU 24 单拍可见 | ⚠️ 口径失效（非回归）：24 条物理 MET（组内 worst 仅 **+0.02 贴线**；另有路径 +1.18），时钟域重构后字面检查点失效；**RTL 两级 BKDU_SYNC 仍未实施**（网表 R_BKDU fanout14 直通 PIX_DATA mux，LC_REG_MAPPING.v 仍单级版）——真 CDC open，保留待办 | 三路一致；SDC 核实 R_REG03_L 仅 G3/LD_F/POLn 3 对同步器窄 mc、无像素通路 mc |
+| 3 | cpuwr 67 全消 + DPLC 2 | ✅ 组覆盖 65 全 0（40_F 23 / 47_F 13 / 33_F 12 / 56_F 11 / 57_F 6）；DPLC_MODE 2 条 −0.38→**+4.12**，bit 精确窄 mc（`-from R_REG06_F_reg_2_` / `-to DPLC_CLK_*`）在位 | 三路一致 |
+| 4 | SEL-004 无新增 | ✅ DC 侧 0 条实际告警（1003 仅注释文本 1 次；基线亦 0；历史 23 条属 PT read_cons.log 口径）；**终判需 PT read_cons.log，本包未含** | 三路一致 |
+| 5 | 总量 / worst / v4.2 新锥 | ✅ 452→11；新 group_path **RX2DCLK_PIX(+0.01) / PIX2SD_GATE(+1.01)** 生效（QoR 出现新组实证）；v4.2 新锥（DATA_ALIGN_PRE_D 352 处 / I_INDATA_D3 120 处）进报告且扛住 | 三路一致 |
+| 6 | 全量扫描 | ⚠️ 有发现（见 §5） | t3（glm53flashx）贡献最大 |
+
+## 3. 残留 11 条定性（全部 −0.01 量级）
+
+| # | 路径 | 起点 → 终点 | 条数 | 判读 |
+|---|---|---|---|---|
+| N1 | LONG_ENCODING_ALIGN **DATA_ALIGN_PRE_D 自环族** | `DATA_ALIGN_PRE_D_reg_3_` → `DATA_ALIGN_PRE_D_reg_{2,3,5,6,10,12,13,14,16}` | 9 | v4.2 打拍新锥（评审 H1 预言的同周期锥），DC 实测仅差 0.01——下轮 upsize 顺手清/复核 |
+| N2 | SHORT_ENCODING_ALIGN | `DATA_POINT_LAT_D1_reg_13_` → `SNPS_CG_CELL_DCLK_DATA_POINT_LAT_TMP_reg_0/latch(E)` | 1 | G13 家族新锥残留（v4.2 新寄存器 → 门控单元），**非原 56 条家族** |
+| N3 | CHPI_SD_CTRL | `STB_DLY_reg_15_` → `SNPS_CG_CELL_DCLK_HSR_W_cnt_reg_0/latch(E)` | 1 | R_REG40_F→HSR_W_cnt（基线 −0.94/−0.98）修复后浮出的打地鼠条目 |
+
+另：all_violators 中 **15 条端点真值 slack ∈ (−0.005, 0)** 被 2 位小数舍入为 `0.00 (VIOLATED: increase significant digits)`——"绝对零 margin"端点，与贴线组合并为下轮收敛目标。
+
+## 4. BKDU 口径（判据 2 需 ymzhu 裁决的实质）
+
+1. **排除侧完好（回归检查点通过）**：1003 SDC 中 `R_REG03_L` 仅 3 对同步器窄 mc（G3→BKDU_SYNC/CSYNC/R_PWR*_COP、LD_F_SYNC、POL1-4_SYNC），**无任何 `-to RX_CLK/PIX_DATA/DCLK_DATA` 的 BKDU mc**；抽样路径块 launch 0.00→capture 3.05 单周期、`slack (MET) +1.18`，确证单拍受检。
+2. **字面检查点失效（非回归）**：24 条全部物理 MET，组内 worst 仅 **+0.02**——时钟域重构（RX_CLK→DCLK_DATA_MUX_LONG 等）+ v4.2 综合结果使路径自然收敛，"仍违例可见"不再成立。
+3. **真 CDC 未修**：RTL 两级 BKDU_SYNC **仍未实施**（网表 `R_BKDU` fanout14 直通 SHORT/LONG_ENCODING_OUTPUT 的 PIX_DATA mux；`LC_REG_MAPPING.v` 仍单级版）；STA 转绿 ≠ 跨域安全，0924 定案（RTL 两级同步器，非 waiver）继续保留待办，+0.02 贴线在 PT/APR 多角下极易翻回。
+
+**建议口径**：判据 2 改记为"排除侧 PASS + 24 条单拍受检 + RTL 两级同步器保留待办（贴线 +0.02）"。
+
+## 5. 全量扫描新发现
+
+1. **BOE_AUTO_EQ_BCC_CTRL 整模块时钟域迁移 RX_CLK→OSC_CLK**（OSC_CLK 域 FF 68→323；boe_bcc 26 条违例 → **+9.93 / +12.37** 大裕量）——非本会话 RTL 变更，**待 designer 确认意图**。
+2. **1003 编译树 = jjlu HDL 树**（81 文件 vs 基线 ymzhu 树 80），约束读取走 jjlu ip_cons 路径，但内容带 **`ymzhu 2026-09-30 17:25` 0930 终版签名**（G6 group_path RX2DCLK_PIX 在 QoR 生效实证）——结果无代际错误，权威源流程需明确。
+3. **🔴 本地 1V11 仓库代际缺口**：服务器编译清单 81 文件 vs 本地 80——本地 HDL **缺 `LENB_CTRL.v`**，`DTCTL.v` / `LC_REG_MAPPING.v` 为旧版（而 LONG/SHORT_ENCODING_ALIGN、BUFFER_I 已是 v4.2 代）——**部分同步状态**，回传合并需按服务器清单对齐。
+4. **SDC mc_setup 16→13 对已定案非丢失**：cpuwr 组 mc `-from` 311→**383 cells**（39→48 regs，R_REG47_F / R_REG00_L / 01_L / 02_L 回组落地），行数减 = 3 对冗余窄对有意删除（0928 纪律）；SMT_CS FLAG 对保留；G13 waiver 两 run 均 OFF；false_path 5 / max_delay 120 / clock_groups 44 / create_clock 3 / input_delay 40 全等。
+5. **贴线组（下轮收敛目标）**：RX_CLK +0.02 / RX2DCLK_PIX +0.01 / WCLK1_A_DCLK_SHORT +0.01 / DCLK_DATA_MUX_LONG 0.00 / default 0.00；另 15 条 0.00-rounding 端点。
+6. v4.2 新增 FF 区域：BUFFER_I **INDATA_SYNC_D3**（新三级同步器组）、ANCTL 新计数器 IDLE_CNT / PWRC_TIME_CNT / TRIGGER_CNT（+71）、DTCTL en_1st/2nd_even/odd、LONG/SHORT_ENCODING 大规模时钟域重排。
+7. 规模：FF 2526→2839（+313，网表口径）、端口 6105→6772（+667，意图待确认）。
+
+## 6. 待 ymzhu 裁决
+
+1. BOE 时钟域迁移（RX_CLK→OSC_CLK）意图确认。
+2. BKDU 判据口径改为"排除侧 PASS + RTL 两级同步器保留待办"（§4）。
+3. 仓库策略：本轮只提交分析产物（0922 存档一份、1004 一份，互不覆盖）；服务器新 RTL（LENB_CTRL.v / DTCTL.v / LC_REG_MAPPING.v）**不同步**，缺口登记遗留待决策。
+
+## 7. 方法论沉淀
+
+- **四模型交叉分工**：3×GLM 独立全量分析（同一任务书：6 判据 + 全量扫描）→ 队长逐判据比对 → 分歧仲裁（t2+t3 双路一致 + t3 cell 级 diff 终裁）→ 共识呈 ymzhu 确认后收尾分发。判据 1 的"残留另列"口径、残留 10 vs 11 条、SDC 16→13 对定案均由此收敛。
+- **Qwen 路由缺席说明**：Qwen 路因线路中断 4 连超时缺席本轮回合（digest_1004.md 已备，可补跑）；本轮共识为 3×GLM 三路一致，Qwen 补跑后如与共识冲突需回滚重议。
+- **可复用的分析套路**（承接 [ch11](./ch11-violation-atlas.html) 心法）：① 两 run max.rpt 全量路径块逐块解析（Startpoint/Endpoint/Path Group/slack 四元组 + 起点族分类），不抽样；② SDC unwrap 续行后逐条 setdiff，mc 对数变化必须落到"哪 3 对、为什么"；③ dc.log 嵌入的 ip_cons tcl 全文 echo 是**约束代际签名的最可靠证据**（路径会骗人、签名不会）；④ DFF 域计数 diff（per-clock）是发现"整模块时钟域迁移"这类结构性变化的最快手段。
+- **验证链**：分析基目录 `script/pack_1004v0_extract/`（源包 387MB/9285 项）；成员报告 glm53 / glm53flash 任务 output，glm53flashx 全文 `script/_dc1004_rep1003_analysis_glm53flashx.md`。
+
+---
+
+*本文档由 agent-teams 团队 g13-dc1004-review 四模型交叉分析共识整理而成（2026-10-04），全部数字为两 run 报告全量解析实测值；上承 [ch11 违例归因实战](./ch11-violation-atlas.html) 与 [ch14 违例分组处置](./ch14-violation-disposition.html)，G13 全档见 ch15《记忆唤醒》。*
+  </script>
+  <script src="./js/site.js"></script>
+</body>
+</html>
+<!-- ymzhu 2026-10-04 10:55 -->
