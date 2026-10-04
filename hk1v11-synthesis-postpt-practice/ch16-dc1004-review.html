@@ -33,7 +33,7 @@
 
 > **实战复盘 · 按时间线 · 2026-10-04 · 对象 `PACK_TAR_1004V0.tar.gz` → `SYNTHESIS/ip/syn_HK1V11_digital_top/dc/rep_dir_1003/`（2026-10-02 23:17 服务器 DC 跑批；目录名 1003），基线对照 [ch11/ch14](./ch11-violation-atlas.html) 的 `rep_dir_0922_1456`**
 >
-> **方法**：agent-teams `g13-dc1004-review` 四模型交叉——3×GLM（5.3 / 5.3-flash / 5.3-flashx）独立全量分析 + 队长逐判据交叉验证；其中 glm53flashx 做到两 run max.rpt 全量 4338/4899 路径块逐块解析 + SDC unwrap diff。**Qwen 路因线路中断 4 连超时缺席**（digest 已备，可补跑）；分歧（判据1 口径、残留 10 vs 11、SDC 16→13）以 t2+t3 双路一致 + t3 cell 级 diff 仲裁收敛。
+> **方法**：agent-teams `g13-dc1004-review` 四模型交叉——3×GLM（5.3 / 5.3-flash / 5.3-flashx）独立全量分析 + 队长逐判据交叉验证；其中 glm53flashx 做到两 run max.rpt 全量 4338/4899 路径块逐块解析 + SDC unwrap diff。分歧（判据1 口径、残留 10 vs 11、SDC 16→13）以 t2+t3 双路一致 + t3 cell 级 diff 仲裁收敛。
 > 素材：`CONSENSUS_1004_DC_REVIEW.md`（共识）+ glm53flashx 全量报告 `script/_dc1004_rep1003_analysis_glm53flashx.md`。
 
 ---
@@ -101,7 +101,6 @@
 ## 7. 方法论沉淀
 
 - **四模型交叉分工**：3×GLM 独立全量分析（同一任务书：6 判据 + 全量扫描）→ 队长逐判据比对 → 分歧仲裁（t2+t3 双路一致 + t3 cell 级 diff 终裁）→ 共识呈 ymzhu 确认后收尾分发。判据 1 的"残留另列"口径、残留 10 vs 11 条、SDC 16→13 对定案均由此收敛。
-- **Qwen 路由缺席说明**：Qwen 路因线路中断 4 连超时缺席本轮回合（digest_1004.md 已备，可补跑）；本轮共识为 3×GLM 三路一致，Qwen 补跑后如与共识冲突需回滚重议。
 - **可复用的分析套路**（承接 [ch11](./ch11-violation-atlas.html) 心法）：① 两 run max.rpt 全量路径块逐块解析（Startpoint/Endpoint/Path Group/slack 四元组 + 起点族分类），不抽样；② SDC unwrap 续行后逐条 setdiff，mc 对数变化必须落到"哪 3 对、为什么"；③ dc.log 嵌入的 ip_cons tcl 全文 echo 是**约束代际签名的最可靠证据**（路径会骗人、签名不会）；④ DFF 域计数 diff（per-clock）是发现"整模块时钟域迁移"这类结构性变化的最快手段。
 - **验证链**：分析基目录 `script/pack_1004v0_extract/`（源包 387MB/9285 项）；成员报告 glm53 / glm53flash 任务 output，glm53flashx 全文 `script/_dc1004_rep1003_analysis_glm53flashx.md`。
 
