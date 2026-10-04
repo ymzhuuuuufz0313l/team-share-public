@@ -349,7 +349,7 @@
       margin-left: 6px;
       vertical-align: 2px;
     }
-    /* 个人学习资料卡：非正式章节，无编号，虚线边框区分 */
+    /* 非正式章节卡（实战复盘 / 个人学习资料两类）：无编号，虚线边框区分 */
     .grid-sep {
       grid-column: 1 / -1;
       font-size: 12px;
@@ -371,6 +371,19 @@
       border-radius: 20px;
       padding: 1px 8px;
       margin-bottom: 10px;
+    }
+    /* 实战复盘卡：日期徽标，按时间线组织，新报告按日期往后追加 */
+    .chapter-card .date-pill {
+      display: inline-block;
+      font-family: "IBM Plex Mono", Consolas, monospace;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--accent);
+      border: 1px solid var(--accent);
+      border-radius: 20px;
+      padding: 1px 8px;
+      margin-left: 6px;
+      vertical-align: 2px;
     }
 
     /* flow overview (copied from synthesis-integration-flow-guide design system) */
@@ -529,12 +542,19 @@
         <div class="desc">二十一段真实排障：约束链认知坑、-0.588 跨域 mc 缺口、skew -900、DC 双分支陷阱、网表 A/B 审判、max_delay 优先级、-900 定案、MPW 规格、DPLC_CASE 速率开关、跨网表 SEL-004 三真凶、毯子收窄、525M what-if</div>
       </a>
 
-      <div class="grid-sep">个人学习资料 · 非正式章节</div>
+      <div class="grid-sep">实战复盘 · 按时间线（带日期的版本实操，新报告按日期往后追加）</div>
       <a class="chapter-card study" href="./ch11-violation-atlas.html">
-        <div class="tag-study">学</div>
-        <div class="title">违例归因实战</div>
+        <div class="tag-study">实</div>
+        <div class="title">违例归因实战<span class="date-pill">0922</span></div>
         <div class="desc">0922 约束收窄 vs DC 违例逐路径精读：五模型交叉核对、逐跳归因、三分类、12 条心法</div>
       </a>
+      <a class="chapter-card study" href="./ch14-violation-disposition.html">
+        <div class="tag-study">实</div>
+        <div class="title">违例分组处置<span class="date-pill">0922→0928</span></div>
+        <div class="desc">新旧约束逐组对照 + 精确 file:line 索引（约束 / RTL / DC 报告行号），0922 收窄 482 条逐组归因，K3 审查修订</div>
+      </a>
+
+      <div class="grid-sep">个人学习资料 · 非正式章节（无时效）</div>
       <a class="chapter-card study" href="./ch12-constraint-tutorial.html">
         <div class="tag-study">学</div>
         <div class="title">时序约束入门教学</div>
@@ -544,11 +564,6 @@
         <div class="tag-study">学</div>
         <div class="title">目录结构与工具链</div>
         <div class="desc">lint / DC / LEC / PowerPro / PT 每个工具吃什么、吐什么、脚本包括什么、怎么连</div>
-      </a>
-      <a class="chapter-card study" href="./ch14-violation-disposition.html">
-        <div class="tag-study">学</div>
-        <div class="title">违例分组处置</div>
-        <div class="desc">新旧约束逐组对照 + 精确 file:line 索引（约束 / RTL / DC 报告行号），0922 收窄 482 条逐组归因，K3 审查修订</div>
       </a>
     </div>
 
