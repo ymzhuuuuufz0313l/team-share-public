@@ -92,11 +92,11 @@
 
 | 措施 | 归属违例族 | 条数 | 1003 实测归宿 |
 |------|-----------|-----:|---------------|
-| RTL 打拍 LONG v4.2 / SHORT v3 | DATA_POINT_LAT 15 + _D1 41（RX_CLK） | **56** | 全 MET：LAT worst **−1.31 → +2.10**、D1 **−1.31 → +0.01** |
+| RTL 打拍 LONG v4.2 / SHORT v3 | DATA_POINT_LAT 15 + _D1 41（RX_CLK） | **56** | 全 MET：LAT worst **−1.31 → +2.10**、D1 **−1.31 → 0.00**（42 条 MET 全部贴 0 显示） |
 | cpuwr_reg_grp 宽 mc（寄存器族） | R_REG40_F 23 + 47_F 13 + 33_F 12 + 56_F 11 + 57_F 6（RX_CLK） | **65** | 违例 0；起点被 mc 挤出报告集；SDC mc 命令 32→26 合并扩容（R_REGxx_F 全入统一名单） |
 | cpuwr_reg_grp 宽 mc（WCLK1 配置写） | CONFIG_DATA_*（WCLK1_A_DCLK_SHORT） | **139** | 违例 0；1003 上报 774 条全 MET，worst **−0.11 → +0.97** |
 | 窄 mc：AABB·VPS | PIX_DATA_reg_*（DCLK_DATA_MUX_SHORT） | **23** | 违例 0；96 条全 MET，组 worst **−0.43 → +1.53** |
-| DPLC_MODE bit 精确 mc | R_REG06_F_reg_2_ → C2276/C2282（DPLC_CLK_LONG） | **2** | 违例 0；worst **−0.38 → +4.12**（1003 SDC 新增 `-from R_REG06_F*` 实证） |
+| DPLC_MODE bit 精确 mc | R_REG06_F_reg_2_ → C2276/C2282（DPLC_CLK_LONG） | **2** | 违例 0（原 2 条已消失）；后继组 worst **−0.38 → +1.01**；"+4.12" 系 default 组另一条（基线 +4.40）——非同路径映射；1003 SDC 新增 `-from R_REG06_F*` 实证 |
 | BOE 域迁移 RX_CLK→OSC_CLK | boe_bcc_prescale 20 + _cnt 6（RX_CLK） | **26** | 违例 0；全部落 OSC_CLK 组，worst **−1.14 → +9.93 / −0.53 → +12.37**，与预期逐位吻合 |
 | R_REG03_L（BKDU，无 mc 物理收敛） | R_REG03_L 24（RX_CLK，终点 LONG_ENCODING_OUTPUT/PIX_DATA） | **24** | 违例 0；77 条全 MET，worst **−0.16 → +0.02** |
 | （清单未覆盖）LONG_ENCODING 数据通路 | rx_bit_cnt 46 + o_keep 60 + misc 11（DECODE/DESCRAMBLE 等） | **117** | 违例 0，全部物理 MET（worst +0.00~+0.02）；系打拍 uniform+1 + group_path 加权的综合作用，非清单单项独立闭环 |
