@@ -64,11 +64,13 @@
 
 ## 3. 残留 11 条定性（全部 −0.01 量级）
 
-| # | 路径 | 起点 → 终点 | 条数 | 判读 |
-|---|---|---|---|---|
-| N1 | LONG_ENCODING_ALIGN **DATA_ALIGN_PRE_D 自环族** | `DATA_ALIGN_PRE_D_reg_3_` → `DATA_ALIGN_PRE_D_reg_{2,3,5,6,10,12,13,14,16}` | 9 | v4.2 打拍新锥（评审 H1 预言的同周期锥），DC 实测仅差 0.01——下轮 upsize 顺手清/复核 |
-| N2 | SHORT_ENCODING_ALIGN | `DATA_POINT_LAT_D1_reg_13_` → `SNPS_CG_CELL_DCLK_DATA_POINT_LAT_TMP_reg_0/latch(E)` | 1 | G13 家族新锥残留（v4.2 新寄存器 → 门控单元），**非原 56 条家族** |
-| N3 | CHPI_SD_CTRL | `STB_DLY_reg_15_` → `SNPS_CG_CELL_DCLK_HSR_W_cnt_reg_0/latch(E)` | 1 | R_REG40_F→HSR_W_cnt（基线 −0.94/−0.98）修复后浮出的打地鼠条目 |
+| # | 路径 | 起点 → 终点 | 条数 | Worst Slack | 判读 |
+|---|---|---|---|---|---|
+| N1 | LONG_ENCODING_ALIGN **DATA_ALIGN_PRE_D 自环族** | `DATA_ALIGN_PRE_D_reg_3_` → `DATA_ALIGN_PRE_D_reg_{2,3,5,6,10,12,13,14,16}` | 9 | **−0.01**（9 条逐条一致，无离散） | v4.2 打拍新锥（评审 H1 预言的同周期锥），DC 实测仅差 0.01——下轮 upsize 顺手清/复核 |
+| N2 | SHORT_ENCODING_ALIGN | `DATA_POINT_LAT_D1_reg_13_` → `SNPS_CG_CELL_DCLK_DATA_POINT_LAT_TMP_reg_0/latch(E)` | 1 | **−0.01**（同端点族 3 条：−0.01 / +2.18 / +3.49） | G13 家族新锥残留（v4.2 新寄存器 → 门控单元），**非原 56 条家族** |
+| N3 | CHPI_SD_CTRL | `STB_DLY_reg_15_` → `SNPS_CG_CELL_DCLK_HSR_W_cnt_reg_0/latch(E)` | 1 | **−0.01**（同端点族 4 条：−0.01 / 0.00 / +2.35 / +2.40，其中 0.00 即舍入端点之一） | R_REG40_F→HSR_W_cnt（基线 −0.94/−0.98）修复后浮出的打地鼠条目 |
+
+> Slack 明细来源：`rep_dir_1003/HK1V11_digital_top_max.rpt` 逐 Endpoint→slack 配对抽取（1004 复核追加）；11 条 violation 全部精确 = −0.01，无更差值。
 
 另：all_violators 中 **15 条端点真值 slack ∈ (−0.005, 0)** 被 2 位小数舍入为 `0.00 (VIOLATED: increase significant digits)`——"绝对零 margin"端点，与贴线组合并为下轮收敛目标。
 
