@@ -631,7 +631,7 @@
     <div class="st-details">
     <details open>
       <summary>🟢 <span class="st-date">1004</span> — 1004V0 DC 复核（rep_dir_1003）：违例 452→11，六判据 4✅ 2⚠️</summary>
-      <div class="st-body"><b>1004V0 DC 复核（四模型交叉：3×GLM 独立全量 + 队长交叉验证）</b>：1003 服务器 run vs 基线 rep_dir_0922_1456 全量比对——<b>setup 违例 452→11（−97.6%）、worst −1.45→−0.01</b>，负 slack 组 5→1，面积 +6.7%/时序单元 +333。六判据：G13 56 清零✅（原 56 条路径本体归零，族内 MET worst 0.00 贴线，族内另余 1 条 −0.01 CG latch）、cpuwr 65 全消✅、DPLC 2 条✅（原 2 条已消失；后继组 +1.01；+4.12 为 default 组另一条）、SEL-004✅（PT 终判关闭：10 份 read_cons.log，9 corner 各 23 条=历史口径无新增；wc_cbest_125=55 多出 32 条全为 UTC_FRM_CNT/D1/D2 已知遗留）、总量✅；BKDU ⚠️ 口径改"排除侧 PASS（仅 3 对同步器窄 mc、单拍受检）+ 原 24 条 +1.18 全 MET（DCLK_DATA_MUX_LONG 组）+ RX_CLK 组新生 +0.02×11 贴线（PIX_DATA_ASYNC 端点）+ RTL 两级同步器保留待办（真 CDC open）"。残留 11 条全为 −0.01 量级（9× DATA_ALIGN_PRE_D v4.2 新锥自环 + SHORT _D1→TMP CG latch + STB_DLY→HSR_W_cnt CG latch）。全量扫描：BOE_AUTO_EQ_BCC_CTRL 整模块 RX_CLK→OSC_CLK 域迁移待确认、1003 编译树=jjlu（约束 0930 终版签名 `ymzhu 2026-09-30 17:25` 生效实证）、🔴 本地 1V11 仓库缺 LENB_CTRL.v 代际缺口、SDC mc 16→13 对定案非丢失（组 311→383 cells 扩容）、贴线组 RX_CLK +0.02 等列下轮收敛。<b>待 ymzhu 裁决 3 项</b>：BOE 域迁移意图 / BKDU 口径 / 仓库策略。详情页：<a href="./ch16-dc1004-review.html">ch16 · 1004 DC 复核（四模型交叉）</a></div>
+      <div class="st-body"><b>1004V0 DC 复核（四模型交叉：3×GLM 独立全量 + 队长交叉验证）</b>：1003 服务器 run vs 基线 rep_dir_0922_1456 全量比对——<b>setup 违例 452→11（−97.6%）、worst −1.45→−0.01</b>，负 slack 组 5→1，面积 +6.7%/时序单元 +333。六判据：G13 56 清零✅（原 56 条路径本体归零，族内 MET worst 0.00 贴线，族内另余 1 条 −0.01 CG latch）、cpuwr 65 全消✅、DPLC 2 条✅（原 2 条已消失；后继组 +1.01；+4.12 为 default 组另一条）、SEL-004✅（PT 终判关闭：10 份 read_cons.log，9 corner 各 23 条=历史口径无新增；wc_cbest_125=55 多出 32 条全为 UTC_FRM_CNT/D1/D2 已知遗留）、总量✅；BKDU ⚠️ 口径改"排除侧 PASS（仅 3 对同步器窄 mc、单拍受检）+ 原 24 条 +1.18 全 MET（DCLK_DATA_MUX_LONG 组）+ RX_CLK 组新生 +0.02×11 贴线（PIX_DATA_ASYNC 端点）+ RTL 两级同步器保留待办（真 CDC open）"。残留 11 条全为 −0.01 量级（9× DATA_ALIGN_PRE_D v4.2 新锥自环 + SHORT _D1→TMP CG latch + STB_DLY→HSR_W_cnt CG latch）。全量扫描：BOE_AUTO_EQ_BCC_CTRL 整模块 RX_CLK→OSC_CLK 域迁移待确认、1003 编译树=jjlu（约束 0930 终版签名 `ymzhu 2026-09-30 17:25` 生效实证）、🔴 本地 1V11 仓库缺 LENB_CTRL.v 代际缺口、SDC mc 16→13 对定案非丢失（组 311→383 cells 扩容）、贴线组 RX_CLK +0.02 等列下轮收敛。<b>待 ymzhu 裁决 3 项</b>：BOE 域迁移意图 / BKDU 口径 / 仓库策略。详情页：<a href="./ch16-dc1004-review.html">ch16 · 1004 DC 复核（四模型交叉）</a>。三代演进图表已收录（面积/总览）。</div>
     </details>
     <details open>
       <summary>🔄 <span class="st-date">0929-30</span> — G13 打一拍（SHORT+LONG）终版落地 + 放量回归</summary>
@@ -704,4 +704,4 @@
   </script>
 </body>
 </html>
-<!-- ymzhu 2026-10-04 11:45 -->
+<!-- ymzhu 2026-10-04 12:31 -->
