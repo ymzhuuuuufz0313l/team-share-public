@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>实战与复盘 · 快速跳转 · HK1V11 综合/签核流程实践</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./css/style.css">
+  <style>
+    /* —— 本页局部样式：沿用 index 卡片视觉语言（chapter-grid / chapter-card / date-pill / grid-sep / tag-study）—— */
+    .hub-head { text-align: center; padding: 26px 0 8px; }
+    .hub-head h1 {
+      font-family: "Noto Serif SC", serif;
+      font-weight: 900;
+      font-size: 30px;
+      margin: 0 0 8px;
+      color: var(--text);
+    }
+    .hub-head .lead { font-size: 14px; color: var(--muted); margin: 0; }
+    .back-home {
+      display: inline-block;
+      font-size: 13px;
+      color: var(--accent);
+      text-decoration: none;
+      border: 1px solid var(--accent);
+      border-radius: 20px;
+      padding: 3px 14px;
+      margin-bottom: 14px;
+      transition: background 0.15s, color 0.15s;
+    }
+    .back-home:hover { background: var(--accent); color: #fff; }
+    .section-title { display: flex; align-items: center; gap: 12px; margin: 30px 0 14px; }
+    .chapter-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 14px;
+    }
+    .chapter-card {
+      position: relative;
+      display: block;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 20px 20px 18px;
+      color: var(--text);
+      text-decoration: none;
+      transition: transform 0.16s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+      overflow: hidden;
+    }
+    .chapter-card::before {
+      content: "";
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 3px;
+      background: var(--accent);
+      opacity: 0;
+      transition: opacity 0.2s;
+    }
+    .chapter-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow);
+      border-color: var(--accent);
+    }
+    .chapter-card:hover::before { opacity: 1; }
+    .chapter-card .title { font-weight: 700; font-size: 15.5px; margin-bottom: 6px; }
+    .chapter-card .desc { font-size: 13px; color: var(--muted); line-height: 1.55; }
+    .chapter-card .kicker {
+      font-family: "IBM Plex Mono", Consolas, monospace;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+    .grid-sep {
+      grid-column: 1 / -1;
+      font-size: 12px;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      margin-top: 8px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .grid-sep::before { content: ""; width: 24px; height: 1px; background: var(--line); }
+    .chapter-card.study { border-style: dashed; background: transparent; }
+    .chapter-card.study .tag-study {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--muted);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 1px 8px;
+      margin-bottom: 10px;
+    }
+    .chapter-card .date-pill {
+      display: inline-block;
+      font-family: "IBM Plex Mono", Consolas, monospace;
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--accent);
+      border: 1px solid var(--accent);
+      border-radius: 20px;
+      padding: 1px 8px;
+      margin-left: 6px;
+      vertical-align: 2px;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a class="navbar-brand" href="./">HK1V11_FLOW_PRACTICE</a>
+      <div class="navbar-links" id="navbar-links"></div>
+    </div>
+  </nav>
+  <div class="container">
+    <div class="hub-head">
+      <a class="back-home" href="./">&larr; 返回首页</a>
+      <h1>实战与复盘 · 快速跳转</h1>
+      <p class="lead">排障实录以后的全部实战内容中枢：按时间线的复盘报告、专题全档与个人学习资料，一页直达。</p>
+    </div>
+
+    <div class="section-title">实战复盘 · 按时间线</div>
+    <div class="chapter-grid">
+      <a class="chapter-card study" href="./ch11-violation-atlas.html">
+        <div class="tag-study">实</div>
+        <div class="title">违例归因实战<span class="date-pill">0922</span></div>
+        <div class="desc">0922 约束收窄 vs DC 违例逐路径精读：五模型交叉核对、逐跳归因、三分类、12 条心法</div>
+      </a>
+      <a class="chapter-card study" href="./ch14-violation-disposition.html">
+        <div class="tag-study">实</div>
+        <div class="title">违例分组处置<span class="date-pill">0922→0928</span></div>
+        <div class="desc">新旧约束逐组对照 + 精确 file:line 索引，0922 收窄 482 条逐组归因，0928 终局与闭环标记</div>
+      </a>
+      <a class="chapter-card study" href="./ch16-dc1004-review.html">
+        <div class="tag-study">实</div>
+        <div class="title">1004 DC 复核·四模型交叉<span class="date-pill">1004</span></div>
+        <div class="desc">1004V0 复核 rep_dir_1003 vs 基线：setup 违例 452→11（−97.6%）、worst −1.45→−0.01，六判据共识 + 全量扫描新发现</div>
+      </a>
+    </div>
+
+    <div class="section-title">专题全档</div>
+    <div class="chapter-grid">
+      <a class="chapter-card" href="./ch10-warstories.html">
+        <div class="kicker">档</div>
+        <div class="title">排障实录<span class="date-pill">二十一则</span></div>
+        <div class="desc">二十一段真实排障：约束链认知坑、-0.588 跨域 mc 缺口、skew -900、DC 双分支陷阱、网表 A/B 审判、跨网表 SEL-004 三真凶、毯子收窄、525M what-if</div>
+      </a>
+      <a class="chapter-card" href="./ch15-memory-jogger.html">
+        <div class="kicker">档</div>
+        <div class="title">记忆唤醒 · G13 全档</div>
+        <div class="desc">G13 打一拍两分支全档：SHORT 三件套 / LONG v4.1→v4.2 演进、探针实验、差分 TB 与回归教育点</div>
+      </a>
+    </div>
+
+    <div class="section-title">个人学习资料</div>
+    <div class="chapter-grid">
+      <a class="chapter-card study" href="./ch12-constraint-tutorial.html">
+        <div class="tag-study">学</div>
+        <div class="title">时序约束入门教学</div>
+        <div class="desc">从真实 ip_cons 讲"为什么这么设 / 为什么不能那样设"：multicycle、CDC、skew、生效链，小白版</div>
+      </a>
+      <a class="chapter-card study" href="./ch13-toolchain-map.html">
+        <div class="tag-study">学</div>
+        <div class="title">目录结构与工具链</div>
+        <div class="desc">lint / DC / LEC / PowerPro / PT 每个工具吃什么、吐什么、脚本包括什么、怎么连</div>
+      </a>
+    </div>
+
+    <div class="footer">HK1V11 SYNTHESIS / SIGNOFF PRACTICE · AUTHOR ymzhuuuu · UPDATED 2026-10-04</div>
+  </div>
+  <script src="./js/site.js"></script>
+</body>
+</html>
+<!-- ymzhu 2026-10-04 11:10 -->

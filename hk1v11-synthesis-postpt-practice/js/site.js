@@ -14,8 +14,7 @@
     ['ch07-memory-power.html','Memory 与功耗'],
     ['ch08-powerpro.html',    'PowerPro'],
     ['ch09-to-signoff.html',  'TO SIGNOFF'],
-    ['ch10-warstories.html',  '排障实录'],
-    ['ch15-memory-jogger.html','记忆唤醒（G13 全档）']
+    ['cases.html',            '实战与复盘']
   ];
 
   function currentPage() {
@@ -151,4 +150,4 @@
   }
 })();
 
-// ymzhu 2026-09-24 16:45
+// ymzhu 2026-10-04 11:10
