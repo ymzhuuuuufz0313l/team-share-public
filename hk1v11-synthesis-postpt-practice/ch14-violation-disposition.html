@@ -110,7 +110,7 @@
 <details style="border:1px solid var(--ok,#047857);border-radius:8px;margin:8px 0 14px;background:var(--ok-bg,rgba(4,120,87,0.06));">
 <summary style="cursor:pointer;padding:8px 14px;font-weight:600;font-size:13.5px;color:var(--ok,#047857);list-style:none;">1004V0 DC 复核证据（点击展开）</summary>
 <div style="padding:6px 14px 10px;font-size:13px;line-height:1.75;">
-1003 复跑（2026-10-02 服务器 run，vs 基线 rep_dir_0922_1456 452 条 setup 全量比对）：组覆盖 65 条 = <b>0 违例</b>——R_REG40_F 23（基线 worst −1.00）、R_REG33_F 12（−0.34）、R_REG56_F 11（−0.36）、R_REG57_F 6（−0.88）、R_REG47_F 13（−1.45）全部清零。约束侧实证：1003 SDC 中 cpuwr 组宽 mc <code>-from</code> 311→<b>383 cells</b>（39→48 regs，R_REG47_F / R_REG00_L / 01_L / 02_L 回组落地），<code>-to</code> RX_CLK / DCLK_DATA_* / SD_CLK_INV_* 三对齐备，R_REG03_L(BKDU) 仅 3 对同步器窄 mc、无像素通路 mc（排除未松动）。全档见 <a href="./ch16-dc1004-review.html">ch16 · 1004 DC 复核</a>。
+1003 复跑（2026-10-02 服务器 run，vs 基线 rep_dir_0922_1456 452 条 setup 全量比对）：组覆盖 65 条 = <b>0 违例</b>——R_REG40_F 23（基线 worst −1.00）、R_REG33_F 12（−0.34）、R_REG56_F 11（−0.36）、R_REG57_F 6（−0.88）、R_REG47_F 13（−1.45）全部清零。约束侧实证：1003 SDC 中 cpuwr 组宽 mc <code>-from</code> 311→<b>383 cells</b>（唯一寄存器基名 44→53，扣 5 个 *_WR 伪 bank 后 39→48；新增 bank = 00_L + 33/34/40/41/46/47/56/57_F 共 9 个——01_L/02_L 0922 已在宽组，其窄对属收编删除），<code>-to</code> RX_CLK / DCLK_DATA_* / SD_CLK_INV_* 三对齐备，R_REG03_L(BKDU) 仅 3 对同步器窄 mc、无像素通路 mc（排除未松动）。全档见 <a href="./ch16-dc1004-review.html">ch16 · 1004 DC 复核</a>。
 </div>
 </details>
 
@@ -208,7 +208,7 @@
 <details style="border:1px solid var(--ok,#047857);border-radius:8px;margin:8px 0 14px;background:var(--ok-bg,rgba(4,120,87,0.06));">
 <summary style="cursor:pointer;padding:8px 14px;font-weight:600;font-size:13.5px;color:var(--ok,#047857);list-style:none;">1004V0 DC 复核证据（点击展开）</summary>
 <div style="padding:6px 14px 10px;font-size:13px;line-height:1.75;">
-1003 复跑（vs 基线 rep_dir_0922_1456）：G13 族 56 条 = 15 条 DATA_POINT_LAT（组2）+ 41 条 DATA_POINT_LAT_D1（组3）<b>全部归零</b>，worst −1.31 → 族内 worst <b>+1.11</b>（v4.2 两分支打一拍结构性切短锥体）；G13 waiver 两 run 均保持 OFF（约束注释实证），单拍口径真实。残留 1 条 −0.01（SHORT <code>DATA_POINT_LAT_D1_reg_13_ → DATA_POINT_LAT_TMP CG latch</code>，v4.2 新锥）<b>非原 56 条家族</b>，另列追踪。详见 <a href="./ch16-dc1004-review.html">ch16 · 1004 DC 复核</a>。
+1003 复跑（vs 基线 rep_dir_0922_1456）：G13 族 56 条 = 15 条 DATA_POINT_LAT（组2）+ 41 条 DATA_POINT_LAT_D1（组3）<b>全部归零</b>，worst −1.31 → 族内 MET worst <b>0.00</b>（贴线；此前 "+1.11" 系单条路径值，非族内 worst；族内另余 1 条 −0.01 CG latch 残留）（v4.2 两分支打一拍结构性切短锥体）；G13 waiver 两 run 均保持 OFF（约束注释实证），单拍口径真实。残留 1 条 −0.01（SHORT <code>DATA_POINT_LAT_D1_reg_13_ → DATA_POINT_LAT_TMP CG latch</code>，v4.2 新锥）<b>非原 56 条家族</b>，另列追踪。详见 <a href="./ch16-dc1004-review.html">ch16 · 1004 DC 复核</a>。
 </div>
 </details>
 
@@ -375,7 +375,7 @@ before 基线：组 4 o_keep 家族 −0.57~−0.60 ×10 条；G13 组3 D1 −1.
 <details style="border:1px solid var(--ok,#047857);border-radius:8px;margin:8px 0 14px;background:var(--ok-bg,rgba(4,120,87,0.06));">
 <summary style="cursor:pointer;padding:8px 14px;font-weight:600;font-size:13.5px;color:var(--ok,#047857);list-style:none;">1004V0 DC 复核证据（点击展开）</summary>
 <div style="padding:6px 14px 10px;font-size:13px;line-height:1.75;">
-1003 复跑（vs 基线 rep_dir_0922_1456）：R_REG06_F[2]（R_DPLC_MODE）2 条违例 <b>−0.38 → 全消</b>（该寄存器族 worst <b>+4.12</b>）；窄 mc 实测在位——<code>set_multicycle_path 2 -setup -start -from R_REG06_F_reg_2_ -to [DPLC_CLK_* 5 时钟对象]</code>（+hold 对），即 0928 定案的 bit 精确 <code>-from</code> + 时钟对象 <code>-to</code> 纪律。上节"③ 生效层三证据"中的前两项（applied/违例消失）已由 1003 复核达成。详见 <a href="./ch16-dc1004-review.html">ch16 · 1004 DC 复核</a>。
+1003 复跑（vs 基线 rep_dir_0922_1456）：R_REG06_F[2]（R_DPLC_MODE）2 条违例 <b>−0.38 → 原 2 条（−0.38/−0.37→C2282/C2276）已消失</b>；后继组 DPLC_CLK_LONG 现 worst <b>+1.01</b>（en_1st/2nd→ICG）；"+4.12" 为 default 组另一条（R_REG06_F_reg_7_→DPLC_Group，基线 +4.40）——非同路径映射；窄 mc 实测在位——<code>set_multicycle_path 2 -setup -start -from R_REG06_F_reg_2_ -to [DPLC_CLK_* 5 时钟对象]</code>（+hold 对），即 0928 定案的 bit 精确 <code>-from</code> + 时钟对象 <code>-to</code> 纪律。上节"③ 生效层三证据"中的前两项（applied/违例消失）已由 1003 复核达成。详见 <a href="./ch16-dc1004-review.html">ch16 · 1004 DC 复核</a>。
 </div>
 </details>
 
@@ -549,4 +549,4 @@ before 基线：组 4 o_keep 家族 −0.57~−0.60 ×10 条；G13 组3 D1 −1.
   <script src="./js/site.js"></script>
 </body>
 </html>
-<!-- ymzhu 2026-10-04 11:00 -->
+<!-- ymzhu 2026-10-04 11:45 -->
