@@ -84,6 +84,42 @@
 
 另：all_violators 中 **14 条端点真值 slack ∈ (−0.005, 0)** 被 2 位小数舍入为 `0.00 (VIOLATED: increase significant digits)`——"绝对零 margin"端点，与贴线组合并为下轮收敛目标。
 
+## 3b. 优化措施效果对照（452 条逐家族归因，实测闭合）
+
+> 对账基线：0922 `_max.rpt` VIOLATED 全量 **452** 条 → 1003 同报告 **11** 条（§3 残留）。逐起点族 × Path Group 归类后逐项对账，**452 = 56 + 204 + 23 + 2 + 26 + 24 + 117，闭合无缺口**（Python 单遍流式全量解析，非抽样）。
+
+### 3b.1 总加法表（452 条的归宿）
+
+| 措施 | 归属违例族 | 条数 | 1003 实测归宿 |
+|------|-----------|-----:|---------------|
+| RTL 打拍 LONG v4.2 / SHORT v3 | DATA_POINT_LAT 15 + _D1 41（RX_CLK） | **56** | 全 MET：LAT worst **−1.31 → +2.10**、D1 **−1.31 → +0.01** |
+| cpuwr_reg_grp 宽 mc（寄存器族） | R_REG40_F 23 + 47_F 13 + 33_F 12 + 56_F 11 + 57_F 6（RX_CLK） | **65** | 违例 0；起点被 mc 挤出报告集；SDC mc 命令 32→26 合并扩容（R_REGxx_F 全入统一名单） |
+| cpuwr_reg_grp 宽 mc（WCLK1 配置写） | CONFIG_DATA_*（WCLK1_A_DCLK_SHORT） | **139** | 违例 0；1003 上报 774 条全 MET，worst **−0.11 → +0.97** |
+| 窄 mc：AABB·VPS | PIX_DATA_reg_*（DCLK_DATA_MUX_SHORT） | **23** | 违例 0；96 条全 MET，组 worst **−0.43 → +1.53** |
+| DPLC_MODE bit 精确 mc | R_REG06_F_reg_2_ → C2276/C2282（DPLC_CLK_LONG） | **2** | 违例 0；worst **−0.38 → +4.12**（1003 SDC 新增 `-from R_REG06_F*` 实证） |
+| BOE 域迁移 RX_CLK→OSC_CLK | boe_bcc_prescale 20 + _cnt 6（RX_CLK） | **26** | 违例 0；全部落 OSC_CLK 组，worst **−1.14 → +9.93 / −0.53 → +12.37**，与预期逐位吻合 |
+| R_REG03_L（BKDU，无 mc 物理收敛） | R_REG03_L 24（RX_CLK，终点 LONG_ENCODING_OUTPUT/PIX_DATA） | **24** | 违例 0；77 条全 MET，worst **−0.16 → +0.02** |
+| （清单未覆盖）LONG_ENCODING 数据通路 | rx_bit_cnt 46 + o_keep 60 + misc 11（DECODE/DESCRAMBLE 等） | **117** | 违例 0，全部物理 MET（worst +0.00~+0.02）；系打拍 uniform+1 + group_path 加权的综合作用，非清单单项独立闭环 |
+| **合计** | | **452** | **闭合无缺口** ✅ |
+
+> 注：优化清单曾把 R_REG47_F 13 同时计入"宽 mc"与"窄 mc"两项（Σ=465 ≠ 452，多出的 13 即重复项）；UTC 29 经定位为 33/56/57_F 子集视图，本表按 65 一次计。
+
+### 3b.2 group_path 三组实测（-weight 3）
+
+| 组 | 0922 等价集合 worst | 1003 worst | n | 判读 |
+|---|---|---|---:|---|
+| RX_CLK_DATA（RX→RX） | −1.14（n=1343 子集） | **−0.01**（残留 ICG，§3） | 1512 | 承载全部残留 |
+| RX2DCLK_PIX | −0.43 | **+0.01** | 62 | 转正 |
+| PIX2SD_GATE | −0.36 | **+1.01** | 30 | 转正 |
+
+三组全部转正；但 group_path 贡献与打拍（v4.2 改变 DECODE/DESCRAMBLE 锥）**不可剥离**，无法从 rpt 单独归因。另：false_path 第 5 条 MONBLOCK pin 引用 **35 → 116**（体长 2594→8951 字符），其余 4 条逐字节相同。
+
+### 3b.3 hold 侧记（30 → 21，队长仲裁口径）
+
+直接 grep 两 run QoR `No. of Hold Violations` 全部行：0922 = 2+20+4+4 = **30**，1003 = 20+1 = **21**。消除明细：RX_CLK 20 条**随 group_path 改名迁移至 RX_CLK_DATA 组（未消失，仍 20）**；真消除 10 条 = DPLC_CLK 2 + SD_CLK_INV 系 4+4（受益于打拍锥变短 + BOE 迁移余量）；新增 I2C hold 1 → 净 21。（口径经队长 2026-10-04 直接 grep QoR 行仲裁确认；曾一度报告"hold 26"系 0922 漏数一条 4.00 行，已驳回。）
+
+> 完整对账报告与可复现脚本（parse_max.py / analyze1~5.py / mc_sig2.py 等）见 `script/dc_1004_review/OPT_EFFECTIVENESS_1004.md`。
+
 ## 4. BKDU 口径（判据 2 需 ymzhu 裁决的实质）
 
 1. **排除侧完好（回归检查点通过）**：1003 SDC 中 `R_REG03_L` 仅 3 对同步器窄 mc（G3→BKDU_SYNC/CSYNC/R_PWR*_COP、LD_F_SYNC、POL1-4_SYNC），**无任何 `-to RX_CLK/PIX_DATA/DCLK_DATA` 的 BKDU mc**；抽样路径块 launch 0.00→capture 3.05 单周期、`slack (MET) +1.18`，确证单拍受检。
@@ -127,5 +163,5 @@
   <script src="./js/site.js"></script>
 </body>
 </html>
-<!-- ymzhu 2026-10-04 12:56 -->
+<!-- ymzhu 2026-10-04 13:06 -->
 

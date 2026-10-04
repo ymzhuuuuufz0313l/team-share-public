@@ -635,7 +635,7 @@
     </details>
     <details open>
       <summary>🔄 <span class="st-date">0929-30</span> — G13 打一拍（SHORT+LONG）终版落地 + 放量回归</summary>
-      <div class="st-body"><b>G13 打一拍两分支终版落地 + 服务器回归闭环（SHORT `df3e7d32` → v2 `4a4cd776` → v3 `16e653e3`；LONG v4.1 `451211a0` → **v4.2 `3d51348b` 终态**）</b>：SHORT = 三件套打一拍（新增 PRE_D/POINT_D/D3 三 FF、桶形/16 比较器/KCODE_REG/装载值切延时域、DATA_ALIGN 切 PRE_D），ICG 使能环（worst −1.31）在 PRE_D 处切断两段各 ≤13 级；LONG = uniform+1 v4.1（+80bit FF、桶形 {D1,D2}/{D2,D3}、掩码-窗口互锁恢复 + 回波守卫 L-11）。<b>验证链</b>：Qwen×6+GLM×3 九路独立实施收敛 + 6 路对抗评审 + K3 六维终审；服务器回归 A/B 实锤后两层根因修复：<b>层1</b> DECODE 钥判决同拍交叉比较（新增 DATA_POINT_LAT_D 复原相位）、<b>层2</b> 反重触发掩蔽比较器 lag-1 几何（比较器组拆分：掩蔽吃组合 PRE、K*_FIND 吃 PRE_D）。<b>结果</b>：批量回归 SHORT <b>59/60</b>（基线转绿、SD_CHOP/FPS 全家族 PASS）；LONG v4.1 420b <b>52/52</b> + 放量 <b>369/382（96.6%）</b>后服务器波形暴露深藏装载拍回归 → <b>v4.2 终态收口</b>：LAT_EFF 装载拍旁路修复该回归（撤 live 没有的 L-11 守卫、0 新 FF），三实例差分 TB 与 live 严格 +1 全 0 差异、对抗评审 PASS（遗留后端 STA 覆盖新锥）。<b>回归教育点</b>：增量静态审两轮全过仍漏装载拍瞬态（掩码 select 在 LAT 装载后一拍 stale）——全量审 2/3 判 critical 后 L-11 请回；放量暴露 FAIL 聚类 H3456×CH_SEL4×420b 10 条（50 错 quit 形态，与 v3 病征同款）定责中；CTRL_L_LINE_OVERRIDE 1 例同责。<b>方法论沉淀</b>：打一拍必验"掩码×窗口同拍互锁 + 同拍交叉比较消费者"，静态相对几何推演（正反两向）均不可信，对拍 TB/服务器实跑为终审——已沉淀"重定时三查 + 新旧 RTL 同激励对拍第四关"（rtl-code-review skill 已增维度）。<b>剩余</b>：upsize X4、下次 DC run 验 56 条清零。<b>全档详见 ch15《记忆唤醒》</b></div>
+      <div class="st-body"><b>G13 打一拍两分支终版落地 + 服务器回归闭环（SHORT `df3e7d32` → v2 `4a4cd776` → v3 `16e653e3`；LONG v4.1 `451211a0` → **v4.2 `3d51348b` 终态**）</b>：SHORT = 三件套打一拍（新增 PRE_D/POINT_D/D3 三 FF、桶形/16 比较器/KCODE_REG/装载值切延时域、DATA_ALIGN 切 PRE_D），ICG 使能环（worst −1.31）在 PRE_D 处切断两段各 ≤13 级；LONG = uniform+1 v4.1（+80bit FF、桶形 {D1,D2}/{D2,D3}、掩码-窗口互锁恢复 + 回波守卫 L-11）。<b>验证链</b>：Qwen×6+GLM×3 九路独立实施收敛 + 6 路对抗评审 + K3 六维终审；服务器回归 A/B 实锤后两层根因修复：<b>层1</b> DECODE 钥判决同拍交叉比较（新增 DATA_POINT_LAT_D 复原相位）、<b>层2</b> 反重触发掩蔽比较器 lag-1 几何（比较器组拆分：掩蔽吃组合 PRE、K*_FIND 吃 PRE_D）。<b>结果</b>：批量回归 SHORT <b>59/60</b>（基线转绿、SD_CHOP/FPS 全家族 PASS）；LONG v4.1 420b <b>52/52</b> + 放量 <b>369/382（96.6%）</b>后服务器波形暴露深藏装载拍回归 → <b>v4.2 终态收口</b>：LAT_EFF 装载拍旁路修复该回归（撤 live 没有的 L-11 守卫、0 新 FF），三实例差分 TB 与 live 严格 +1 全 0 差异、对抗评审 PASS（遗留后端 STA 覆盖新锥）。<b>回归教育点</b>：增量静态审两轮全过仍漏装载拍瞬态（掩码 select 在 LAT 装载后一拍 stale）——全量审 2/3 判 critical 后 L-11 请回；放量暴露 FAIL 聚类 H3456×CH_SEL4×420b 10 条（50 错 quit 形态，与 v3 病征同款）定责中；CTRL_L_LINE_OVERRIDE 1 例同责。<b>方法论沉淀</b>：打一拍必验"掩码×窗口同拍互锁 + 同拍交叉比较消费者"，静态相对几何推演（正反两向）均不可信，对拍 TB/服务器实跑为终审——已沉淀"重定时三查 + 新旧 RTL 同激励对拍第四关"（rtl-code-review skill 已增维度）。<b>剩余</b>：upsize X4、下次 DC run 验 56 条清零。<b>全档详见 <a href="./ch15-memory-jogger.html">ch15《记忆唤醒》</a></b></div>
     </details>
     <details>
       <summary>🟡 <span class="st-date">0929</span> — 窄约束四方全量审查（15 建议 + 7 拍板待 ymzhu）</summary>
@@ -704,4 +704,4 @@
   </script>
 </body>
 </html>
-<!-- ymzhu 2026-10-04 12:31 -->
+<!-- ymzhu 2026-10-04 13:06 -->
