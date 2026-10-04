@@ -33,8 +33,8 @@
 
 > **实战复盘 · 按时间线 · 2026-10-04 · 对象 `PACK_TAR_1004V0.tar.gz` → `SYNTHESIS/ip/syn_HK1V11_digital_top/dc/rep_dir_1003/`（2026-10-02 23:17 服务器 DC 跑批；目录名 1003），基线对照 [ch11/ch14](./ch11-violation-atlas.html) 的 `rep_dir_0922_1456`**
 >
-> **方法**：agent-teams `g13-dc1004-review` 四模型交叉——3×GLM（5.3 / 5.3-flash / 5.3-flashx）独立全量分析 + 队长逐判据交叉验证；其中 glm53flashx 做到两 run max.rpt 全量 4338/4899 路径块逐块解析 + SDC unwrap diff。分歧（判据1 口径、残留 10 vs 11、SDC 16→13）以 t2+t3 双路一致 + t3 cell 级 diff 仲裁收敛。
-> 素材：`CONSENSUS_1004_DC_REVIEW.md`（共识）+ glm53flashx 全量报告 `script/_dc1004_rep1003_analysis_glm53flashx.md`。
+> **方法**：agent-teams `g13-dc1004-review` 四模型交叉——3×GLM（5.3 / 5.3-flash / 5.3-flashx）独立全量分析 + 队长逐判据交叉验证（含两 run max.rpt 全量路径块逐块解析 + SDC unwrap diff）。
+> 素材：`CONSENSUS_1004_DC_REVIEW.md`（共识）+ 全量分析报告 `script/_dc1004_rep1003_analysis_glm53flashx.md`。
 
 ---
 
@@ -65,12 +65,12 @@
 
 | # | 判据 | 共论 | 证据要点 |
 |---|---|---|---|
-| 1 | G13 56 清零 | ✅ 达成（56 = 15 DATA_POINT_LAT + 41 DATA_POINT_LAT_D1 全部归零；两 run waiver 均 OFF、单拍口径真实）；**遗留 11 条 −0.01 微违例**（非 G13 原家族）：9× DATA_ALIGN_PRE_D 自环（v4.2 新锥，DC 实测仅差 0.01）+ SHORT DATA_POINT_LAT_D1_reg_13_→_TMP CG latch + STB_DLY_reg_15_→HSR_W_cnt CG latch（40_F 修复后打地鼠） | t1❌/t2✅/t3✅ → 口径统一：原 G13 家族=0，残留另列 |
+| 1 | G13 56 清零 | ✅ 达成（56 = 15 DATA_POINT_LAT + 41 DATA_POINT_LAT_D1 全部归零；两 run waiver 均 OFF、单拍口径真实）；**遗留 11 条 −0.01 微违例**（非 G13 原家族）：9× DATA_ALIGN_PRE_D 自环（v4.2 新锥，DC 实测仅差 0.01）+ SHORT DATA_POINT_LAT_D1_reg_13_→_TMP CG latch + STB_DLY_reg_15_→HSR_W_cnt CG latch（40_F 修复后打地鼠） | 口径统一：原 G13 家族=0，残留另列 |
 | 2 | BKDU 24 单拍可见 | ⚠️ 口径失效（非回归）：原 24 条（R_REG03_L_reg_2_→LONG_ENCODING_OUTPUT/PIX_DATA_reg_0..23）现 **+1.18 全 MET**（DCLK_DATA_MUX_LONG 组）；RX_CLK 组的 **+0.02**×11 系时钟域重构后**新生**贴线路径（R_REG03_L_reg_2_→PIX_DATA_ASYNC_reg_*，扩展集 worst）——此前"组内 worst +0.02、另有 +1.18"的归属写反；**RTL 两级 BKDU_SYNC 仍未实施**（网表 R_BKDU fanout14 直通 PIX_DATA mux，LC_REG_MAPPING.v 仍单级版）——真 CDC open，保留待办 | 三路一致；SDC 核实 R_REG03_L 仅 G3/LD_F/POLn 3 对同步器窄 mc、无像素通路 mc |
 | 3 | cpuwr 67 全消 + DPLC 2 | ✅ 组覆盖 65 全 0（40_F 23 / 47_F 13 / 33_F 12 / 56_F 11 / 57_F 6）；DPLC_MODE 原 2 条（−0.38/−0.37→C2282/C2276）在 1003 **已消失**；后继组 DPLC_CLK_LONG 现 worst **+1.01**（en_1st/2nd→ICG）；"+4.12" 系 default 组另一条（R_REG06_F_reg_7_→DPLC_Group，基线 +4.40）——非同路径映射；bit 精确窄 mc（`-from R_REG06_F_reg_2_` / `-to DPLC_CLK_*`）在位 | 三路一致 |
 | 4 | SEL-004 无新增 | ✅ DC 侧 0 条实际告警（1003 仅注释文本 1 次；基线亦 0；历史 23 条属 PT read_cons.log 口径）；**PT 终判已关闭**——包内实有 10 份 read_cons.log：9 corner 各 23 条 SEL-004 = 历史口径无新增家族；wc_cbest_125 = 55（多出 32 条全部为 UTC_FRM_CNT /D1/D2 已知遗留） | 三路一致 |
 | 5 | 总量 / worst / v4.2 新锥 | ✅ 452→11；新 group_path 共 3 条 -weight 3（**RX2DCLK_PIX(+0.01) / PIX2SD_GATE(+1.01) / RX_CLK_DATA**）生效（QoR 出现新组实证）；v4.2 新锥（DATA_ALIGN_PRE_D 352 处 / I_INDATA_D3 120 处）进报告且扛住 | 三路一致 |
-| 6 | 全量扫描 | ⚠️ 有发现（见 §5） | t3（glm53flashx）贡献最大 |
+| 6 | 全量扫描 | ⚠️ 有发现（见 §5） | — |
 
 ## 3. 残留 11 条定性（全部 −0.01 量级）
 
@@ -114,9 +114,9 @@
 
 三组全部转正；但 group_path 贡献与打拍（v4.2 改变 DECODE/DESCRAMBLE 锥）**不可剥离**，无法从 rpt 单独归因。另：false_path 第 5 条 MONBLOCK pin 引用 **35 → 116**（体长 2594→8951 字符），其余 4 条逐字节相同。
 
-### 3b.3 hold 侧记（30 → 21，队长仲裁口径）
+### 3b.3 hold 侧记（30 → 21）
 
-直接 grep 两 run QoR `No. of Hold Violations` 全部行：0922 = 2+20+4+4 = **30**，1003 = 20+1 = **21**。消除明细：RX_CLK 20 条**随 group_path 改名迁移至 RX_CLK_DATA 组（未消失，仍 20）**；真消除 10 条 = DPLC_CLK 2 + SD_CLK_INV 系 4+4（受益于打拍锥变短 + BOE 迁移余量）；新增 I2C hold 1 → 净 21。（口径经队长 2026-10-04 直接 grep QoR 行仲裁确认；曾一度报告"hold 26"系 0922 漏数一条 4.00 行，已驳回。）
+直接 grep 两 run QoR `No. of Hold Violations` 全部行：0922 = 2+20+4+4 = **30**，1003 = 20+1 = **21**。消除明细：RX_CLK 20 条**随 group_path 改名迁移至 RX_CLK_DATA 组（未消失，仍 20）**；真消除 10 条 = DPLC_CLK 2 + SD_CLK_INV 系 4+4（受益于打拍锥变短 + BOE 迁移余量）；新增 I2C hold 1 → 净 21。（口径以直接 grep 两 run QoR 行为准。）
 
 > 完整对账报告与可复现脚本（parse_max.py / analyze1~5.py / mc_sig2.py 等）见 `script/dc_1004_review/OPT_EFFECTIVENESS_1004.md`。
 
@@ -146,7 +146,7 @@
 
 ## 7. 方法论沉淀
 
-- **四模型交叉分工**：3×GLM 独立全量分析（同一任务书：6 判据 + 全量扫描）→ 队长逐判据比对 → 分歧仲裁（t2+t3 双路一致 + t3 cell 级 diff 终裁）→ 共识呈 ymzhu 确认后收尾分发。判据 1 的"残留另列"口径、残留 10 vs 11 条、SDC 16→13 对定案均由此收敛。
+- **四模型交叉分工**：3×GLM 独立全量分析（同一任务书：6 判据 + 全量扫描）→ 队长逐判据比对 → 分歧仲裁 → 共识呈 ymzhu 确认后收尾分发。
 - **可复用的分析套路**（承接 [ch11](./ch11-violation-atlas.html) 心法）：① 两 run max.rpt 全量路径块逐块解析（Startpoint/Endpoint/Path Group/slack 四元组 + 起点族分类），不抽样；② SDC unwrap 续行后逐条 setdiff，mc 对数变化必须落到"哪 3 对、为什么"；③ dc.log 嵌入的 ip_cons tcl 全文 echo 是**约束代际签名的最可靠证据**（路径会骗人、签名不会）；④ DFF 域计数 diff（per-clock）是发现"整模块时钟域迁移"这类结构性变化的最快手段。
 - **验证链**：分析基目录 `script/pack_1004v0_extract/`（源包 387MB/9285 项）；成员报告 glm53 / glm53flash 任务 output，glm53flashx 全文 `script/_dc1004_rep1003_analysis_glm53flashx.md`。
 
@@ -163,5 +163,5 @@
   <script src="./js/site.js"></script>
 </body>
 </html>
-<!-- ymzhu 2026-10-04 13:06 -->
+<!-- ymzhu 2026-10-04 13:15 -->
 
