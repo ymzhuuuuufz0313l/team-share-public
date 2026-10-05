@@ -193,6 +193,127 @@ main,.stats{animation:fadeup .4s ease both}
   table.data td{padding:8px 10px}
   article{padding:var(--s4)}
 }
+/* ============ 9. 投资账本图表组件（纯内联 SVG · 雪球级交互 · 深浅主题自适应） ============ */
+:root{--c1:#b45309;--c2:#15803d;--c3:#0e7490;--c4:#7c3aed;--c5:#be185d;--c6:#a16207;--c7:#4d7c0f;--c8:#9333ea}
+@media(prefers-color-scheme:dark){:root{--c1:#eba03a;--c2:#4ade80;--c3:#22d3ee;--c4:#a78bfa;--c5:#f472b6;--c6:#facc15;--c7:#a3e635;--c8:#c084fc}}
+html[data-theme=light]{--c1:#b45309;--c2:#15803d;--c3:#0e7490;--c4:#7c3aed;--c5:#be185d;--c6:#a16207;--c7:#4d7c0f;--c8:#9333ea}
+html[data-theme=dark]{--c1:#eba03a;--c2:#4ade80;--c3:#22d3ee;--c4:#a78bfa;--c5:#f472b6;--c6:#facc15;--c7:#a3e635;--c8:#c084fc}
+/* 面板容器：编辑风白卡（18px 圆角 + 双层柔影） */
+.ov-panel{background:var(--surface);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow),inset 0 1px 0 var(--hl);padding:18px 20px;min-width:0}
+.ov-grid{display:grid;grid-template-columns:repeat(12,1fr);gap:var(--s4)}
+.ov-grid .sp12{grid-column:span 12}.ov-grid .sp7{grid-column:span 7}.ov-grid .sp5{grid-column:span 5}
+@media(max-width:1100px){.ov-grid .sp7,.ov-grid .sp5{grid-column:span 12}}
+/* 面板标题：中文圆点标签（沿用 .sec 圆点 token） */
+.pttl{display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:600;letter-spacing:.12em;color:var(--muted);margin:0 0 var(--s4)}
+.pttl::before{content:"";display:inline-block;width:var(--dot);height:var(--dot);border-radius:50%;background:var(--accent);flex:none}
+.pttl .ptsub{margin-left:auto;font-family:"IBM Plex Mono",monospace;font-size:10.5px;font-weight:400;letter-spacing:.06em;color:var(--muted);opacity:.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* 图例（名称列可被弹窗包裹点击） */
+.chart-legend{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+.lg-item{display:flex;align-items:center;gap:8px;font-size:12.5px;line-height:1.5;border-radius:8px;padding:3px 8px;transition:background .12s ease;cursor:default;min-width:0}
+.lg-item.on,.lg-item:hover{background:var(--rowh)}
+.sw{width:8px;height:8px;border-radius:2px;flex:none}
+.sw.s0{background:var(--c1)}.sw.s1{background:var(--c2)}.sw.s2{background:var(--c3)}.sw.s3{background:var(--c4)}.sw.s4{background:var(--c5)}.sw.s5{background:var(--c6)}.sw.s6{background:var(--c7)}.sw.s7{background:var(--c8)}
+.lg-nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lg-v{font-variant-numeric:tabular-nums;color:var(--text);white-space:nowrap}
+.lg-p{font-variant-numeric:tabular-nums;color:var(--muted);min-width:52px;text-align:right;white-space:nowrap}
+/* SVG 通用 token：网格/轴/柱/标签 */
+.axl{fill:var(--muted);font-family:"IBM Plex Mono",monospace;font-size:10px}
+.gl2{stroke:var(--muted);stroke-opacity:.25;stroke-width:1}
+.zeroln{stroke:var(--muted);stroke-opacity:.5;stroke-width:1}
+.bxl{fill:var(--muted);font-family:"IBM Plex Mono",monospace;font-size:10px}
+.bval{font-family:"IBM Plex Mono",monospace;font-size:11px;font-weight:600;fill:var(--text);font-variant-numeric:tabular-nums}
+.bval.pos{fill:var(--pos)}.bval.neg{fill:var(--neg)}
+.barchart{width:100%;height:auto;display:block}
+.bar{transition:opacity .12s ease}
+.bar.pos{fill:var(--pos)}.bar.neg{fill:var(--neg)}
+.bar-g:hover .bar{opacity:.8}
+.ytdt{fill:var(--muted);font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.06em}
+.ytdt.v{font-size:12.5px;font-weight:600;fill:var(--text)}
+.ytdt.v.pos{fill:var(--pos)}.ytdt.v.neg{fill:var(--neg)}
+/* 环形图：扇区 hover 放大 3%、其余降透明，图例反查联动 */
+.donut-wrap{display:grid;grid-template-columns:minmax(150px,215px) 1fr;gap:var(--s4);align-items:center}
+svg.donut{width:100%;height:auto;display:block}
+.dseg{cursor:pointer;transition:transform .12s ease,opacity .12s ease;transform-box:fill-box;transform-origin:center;stroke:var(--surface);stroke-width:1.5}
+.dseg:hover,.dseg.hl{transform:scale(1.035)}
+.dseg.dim{opacity:.55}
+.dseg.s0{fill:var(--c1)}.dseg.s1{fill:var(--c2)}.dseg.s2{fill:var(--c3)}.dseg.s3{fill:var(--c4)}.dseg.s4{fill:var(--c5)}.dseg.s5{fill:var(--c6)}.dseg.s6{fill:var(--c7)}.dseg.s7{fill:var(--c8)}
+.dc-top{fill:var(--text);font-family:"Noto Serif SC",serif;font-weight:900;font-size:23px;font-variant-numeric:tabular-nums}
+.dc-sub{fill:var(--muted);font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.04em}
+/* 累计收益曲线（hero） */
+.cumchart{width:100%;height:auto;display:block}
+.cumline{fill:none;stroke:var(--amber);stroke-width:2.5;stroke-linejoin:round;stroke-linecap:round}
+.area{transition:opacity .12s ease}
+.area.apos{fill:url(#gpos)}.area.aneg{fill:url(#gneg)}
+.area:hover{opacity:1}
+.gp0{stop-color:var(--pos);stop-opacity:.28}.gp1{stop-color:var(--pos);stop-opacity:.03}
+.gn0{stop-color:var(--neg);stop-opacity:.28}.gn1{stop-color:var(--neg);stop-opacity:.03}
+.endpoint{fill:var(--amber);stroke:var(--surface);stroke-width:2}
+.endlbl{font-family:"IBM Plex Mono",monospace;font-size:12.5px;font-weight:600;fill:var(--text);font-variant-numeric:tabular-nums}
+.hot{fill:none;stroke:none;pointer-events:all;cursor:crosshair}
+/* 横条行（HTML 名称列 + SVG 条，名称可点击弹窗） */
+.hbar{display:flex;flex-direction:column;gap:2px}
+.hbrow{display:grid;grid-template-columns:minmax(76px,116px) 1fr minmax(66px,86px);align-items:center;gap:10px;padding:2px 8px;border-radius:8px;transition:background .12s ease}
+.hbrow:hover{background:var(--rowh)}
+.hb-nm{font-size:12.5px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hb-bar{height:22px;min-width:0}
+.hbsvg{display:block;width:100%;height:22px}
+.hbsvg.bi{background:linear-gradient(90deg,transparent calc(50% - .5px),var(--line) 0,var(--line) calc(50% + .5px),transparent 0)}
+.hb{transition:opacity .12s ease}
+.hb.pos{fill:var(--pos)}.hb.neg{fill:var(--neg)}
+.hbrow:hover .hb{opacity:.8}
+.hb-v{text-align:right;font-size:12px;font-variant-numeric:tabular-nums}
+.hb-v.pos{color:var(--pos);font-weight:600}.hb-v.neg{color:var(--neg);font-weight:600}
+.tb2{display:grid;grid-template-columns:1fr 1fr;gap:var(--s4)}
+@media(max-width:900px){.tb2{grid-column:span 12;grid-template-columns:1fr}}
+/* 表内仓位迷你条 */
+.poscell{display:inline-flex;align-items:center;gap:8px;justify-content:flex-end}
+.pbar{width:64px;height:6px;border-radius:3px;background:var(--chip);overflow:hidden;flex:none}
+.pbar b{display:block;height:100%;border-radius:3px;background:var(--amber)}
+/* 小统计胶囊（月度交易活跃） */
+.act-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:var(--s3)}
+.act{background:var(--chip);border-radius:99px;padding:4px 12px;font-size:12px;color:var(--muted);white-space:nowrap}
+.act b{color:var(--text);font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;font-weight:600}
+/* 体系健康度：期望值 gauge + 小卡 */
+.gauge-wrap{display:grid;grid-template-columns:minmax(230px,310px) 1fr;gap:var(--s5);align-items:center}
+@media(max-width:900px){.gauge-wrap{grid-template-columns:1fr}}
+.gseg{fill:none;stroke:var(--chip);stroke-width:14}
+.garc{fill:none;stroke-width:7}
+.garc.cur{stroke:var(--pos)}
+.garc.base{stroke:var(--neg);stroke-opacity:.8;stroke-width:5;stroke-dasharray:1 6;stroke-linecap:round}
+.gneedle{stroke-width:2.5;stroke-linecap:round}
+.gneedle.cur{stroke:var(--pos)}.gneedle.base{stroke:var(--neg)}
+.ghub{fill:var(--surface);stroke:var(--muted);stroke-width:1.5}
+.glbl{font-family:"IBM Plex Mono",monospace;font-size:11px;font-weight:600;font-variant-numeric:tabular-nums}
+.glbl.cur{fill:var(--pos)}.glbl.base{fill:var(--neg)}
+.gzero{stroke:var(--muted);stroke-width:1;stroke-dasharray:2 3}
+svg.gauge{width:100%;height:auto;display:block}
+.hgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--s3)}
+.hcard{background:var(--chip);border-radius:14px;padding:12px 16px;min-width:0}
+.hcard .v{font-family:"Noto Serif SC",serif;font-weight:900;font-size:21px;line-height:1.3;font-variant-numeric:tabular-nums}
+.hcard .v.pos{color:var(--pos)}.hcard .v.neg{color:var(--neg)}
+.hcard .k{color:var(--muted);font-size:11.5px;margin-top:1px}
+.hcard .n{color:var(--muted);font-size:10.5px;font-family:"IBM Plex Mono",monospace;opacity:.8;margin-top:3px}
+/* 全局 tooltip（跟随鼠标，深浅主题适配） */
+#ctip{position:fixed;z-index:400;pointer-events:none;background:var(--surface);color:var(--text);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:10px;box-shadow:var(--shadow);padding:8px 12px;font-size:12px;line-height:1.65;opacity:0;transform:translateY(4px);transition:opacity .12s ease,transform .12s ease;max-width:280px}
+#ctip.on{opacity:1;transform:none}
+#ctip b{display:block;font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--accent-strong);letter-spacing:.04em}
+#ctip span{display:block;font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;font-size:11.5px}
+/* 快照日盈亏合计 + 口径注 */
+.daysum{display:flex;align-items:baseline;gap:10px;margin-top:var(--s3);font-size:12.5px;color:var(--muted)}
+.daysum b{font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;font-size:15px}
+.ocal{margin-top:var(--s3);font-size:11px;color:var(--muted);line-height:1.8;font-family:"IBM Plex Mono",monospace}
+/* 导航组图标（最小集 4 个） */
+.glicon{width:14px;height:14px;flex:none;stroke:var(--amber);fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;opacity:.9}
+.sgroup .gl.gli::before{display:none}
+/* 英雄/教训子标题 + 月度胜率副点 + 板块/行业 tab */
+.tbh{font-family:"IBM Plex Mono",monospace;font-size:11px;font-weight:600;letter-spacing:.14em;margin-bottom:8px}
+.tbh.pos{color:var(--pos)}.tbh.neg{color:var(--neg)}
+.wr-dot{fill:var(--amber);stroke:var(--surface);stroke-width:1;transition:opacity .12s ease}
+.wr-dot:hover{opacity:.8}
+.ov-tabs{display:flex;gap:6px;margin-bottom:12px}
+.ov-tab{border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:4px 14px;font-size:12px;color:var(--muted);cursor:pointer;font-family:inherit;transition:all .12s ease}
+.ov-tab:hover{border-color:var(--accent);color:var(--accent)}
+.ov-tab.on{background:var(--accent-soft);color:var(--accent-strong);border-color:var(--accent)}
 </style><style>
 /* 股票弹窗 */
 .stk{cursor:pointer;border-bottom:1px solid var(--accent)}
@@ -224,7 +345,7 @@ table.data tbody tr:has(.stk){cursor:pointer}
 .sfoot{margin-top:16px;color:var(--muted);font-size:11px;font-family:"IBM Plex Mono",monospace;border-top:1px dashed var(--line);padding-top:8px}
 /* 手机端弹窗：限高滚动 + 收窄留白（后注入，天然压过基础 .spanel 规则） */
 @media(max-width:700px){.spanel{max-height:92vh;overflow-y:auto;padding:18px}.sname{font-size:21px}}
-</style></head><body><aside class="sidenav"><div class="side-brand"><div class="b1">TRADING·JOURNAL</div><div class="b2">五步法 × 资金流 × 纪律</div></div><div class="sgroup"><div class="gl">导航</div><a href="index.html">⌂ 总览</a><a href="gegu.html">★ 全部个股</a></div><div class="sgroup"><div class="gl">台账·规则</div><a href="luojiku.html">股票逻辑库</a><a href="规律手册.html">规律手册 v0.4</a><a href="工作流程.html">工作流程</a><a href="持仓逻辑档案.html">持仓逻辑档案</a><a href="主力资金CT-函数解读.html">主力资金CT解读</a><a href="冰封黄白线-函数解读.html">冰封黄白线解读</a></div><div class="sgroup collapsible"><div class="gl">台账·数据</div><button class="sg-toggle" type="button" aria-expanded="false"><span>数据总览</span><span class="caret" aria-hidden="true">▾</span></button><div class="sg-sub"><a href="持仓快照.html">⚡ 持仓快照</a><a href="成交流水.html">成交流水</a><a href="股票汇总.html">股票汇总</a><a href="已清仓全历史.html">已清仓 481 笔</a><a href="成交流水全历史.html">流水 3533 条</a><a href="账户总览.html">账户全史</a><a href="收益追踪.html">收益追踪</a><a href="研报候选池.html">研报候选池</a></div></div><div class="sgroup"><div class="gl">归档</div><a href="panzhong.html" class="active">盘中判定</a><a href="panhou.html">盘后复盘</a><a href="yanbao.html">研报审稿</a><a href="taizhang.html">交易台账</a></div><button id="themeToggle" class="theme-toggle" title="切换深浅色主题">◐ 主题</button><div class="side-foot">DECISION SUPPORT<br>NOT INVESTMENT ADVICE<br>SINCE 2020-01</div></aside>
+</style></head><body><aside class="sidenav"><svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><symbol id="ic-nav" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5 13 13l-4.5 2.5L11 11z"/></symbol><symbol id="ic-book" viewBox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 18.5A2.5 2.5 0 0 1 6.5 16H20"/><path d="M8.5 7.5h8M8.5 10.5h5"/></symbol><symbol id="ic-db" viewBox="0 0 24 24"><ellipse cx="12" cy="5.5" rx="8" ry="2.8"/><path d="M4 5.5v13c0 1.55 3.58 2.8 8 2.8s8-1.25 8-2.8v-13"/><path d="M4 12c0 1.55 3.58 2.8 8 2.8s8-1.25 8-2.8"/></symbol><symbol id="ic-box" viewBox="0 0 24 24"><path d="M3.5 8 12 4l8.5 4v8L12 20l-8.5-4z"/><path d="M3.5 8 12 12l8.5-4M12 12v8"/></symbol></defs></svg><div class="side-brand"><div class="b1">TRADING·JOURNAL</div><div class="b2">五步法 × 资金流 × 纪律</div></div><div class="sgroup"><div class="gl gli"><svg class="glicon" aria-hidden="true"><use href="#ic-nav"/></svg>导航</div><a href="index.html">⌂ 总览</a><a href="gegu.html">★ 全部个股</a></div><div class="sgroup"><div class="gl gli"><svg class="glicon" aria-hidden="true"><use href="#ic-book"/></svg>台账·规则</div><a href="luojiku.html">股票逻辑库</a><a href="规律手册.html">规律手册 v0.4</a><a href="工作流程.html">工作流程</a><a href="持仓逻辑档案.html">持仓逻辑档案</a><a href="主力资金CT-函数解读.html">主力资金CT解读</a><a href="冰封黄白线-函数解读.html">冰封黄白线解读</a></div><div class="sgroup collapsible"><div class="gl gli"><svg class="glicon" aria-hidden="true"><use href="#ic-db"/></svg>台账·数据</div><button class="sg-toggle" type="button" aria-expanded="false"><span>数据总览</span><span class="caret" aria-hidden="true">▾</span></button><div class="sg-sub"><a href="持仓快照.html">⚡ 持仓快照</a><a href="成交流水.html">成交流水</a><a href="股票汇总.html">股票汇总</a><a href="已清仓全历史.html">已清仓 481 笔</a><a href="成交流水全历史.html">流水 3533 条</a><a href="账户总览.html">账户全史</a><a href="收益追踪.html">收益追踪</a><a href="研报候选池.html">研报候选池</a></div></div><div class="sgroup"><div class="gl gli"><svg class="glicon" aria-hidden="true"><use href="#ic-box"/></svg>归档</div><a href="panzhong.html" class="active">盘中判定</a><a href="panhou.html">盘后复盘</a><a href="yanbao.html">研报审稿</a><a href="taizhang.html">交易台账</a></div><button id="themeToggle" class="theme-toggle" title="切换深浅色主题">◐ 主题</button><div class="side-foot">DECISION SUPPORT<br>NOT INVESTMENT ADVICE<br>SINCE 2020-01</div></aside>
 <script>
 (function(){
   var KEY='tj-datagroup-open';
@@ -325,6 +446,43 @@ document.querySelectorAll('.search').forEach(function(inp){
       requestAnimationFrame(step);
     });
   }
+})();
+</script>
+
+<script>
+(function(){
+  if(!document.querySelector('[data-tip-title]'))return;
+  var tip=document.createElement('div');tip.id='ctip';document.body.appendChild(tip);
+  function fill(el){var h='';
+    var t=el.getAttribute('data-tip-title');if(t)h+='<b>'+t+'</b>';
+    var l1=el.getAttribute('data-tip-l1');if(l1)h+='<span>'+l1+'</span>';
+    var l2=el.getAttribute('data-tip-l2');if(l2)h+='<span>'+l2+'</span>';
+    tip.innerHTML=h}
+  function mv(e){var x=e.clientX+14,y=e.clientY+16;
+    if(x+tip.offsetWidth>innerWidth-8)x=Math.max(8,e.clientX-tip.offsetWidth-12);
+    if(y+tip.offsetHeight>innerHeight-8)y=Math.max(8,e.clientY-tip.offsetHeight-12);
+    tip.style.left=x+'px';tip.style.top=y+'px'}
+  document.addEventListener('mouseover',function(e){var el=e.target.closest?e.target.closest('[data-tip-title]'):null;if(!el)return;fill(el);mv(e);tip.classList.add('on')});
+  document.addEventListener('mousemove',function(e){if(tip.classList.contains('on'))mv(e)});
+  document.addEventListener('mouseout',function(e){var el=e.target.closest?e.target.closest('[data-tip-title]'):null;if(el)tip.classList.remove('on')});
+  /* 板块/行业 tab 切换（数据双渲染，纯显隐切换） */
+  [].forEach.call(document.querySelectorAll('.ov-tabs'),function(t){
+    t.addEventListener('click',function(e){
+      var b=e.target.closest?e.target.closest('.ov-tab'):null;if(!b)return;
+      [].forEach.call(t.querySelectorAll('.ov-tab'),function(x){x.classList.toggle('on',x===b)});
+      var host=t.parentNode;
+      [].forEach.call(host.querySelectorAll('[data-pane]'),function(p){p.style.display=(p.getAttribute('data-pane')===b.getAttribute('data-show'))?'':'none'});
+    });
+  });
+  /* donut：扇区/图例双向联动（hover 放大 3%+高亮，其余扇区降透明 45%） */
+  [].forEach.call(document.querySelectorAll('.donut-wrap'),function(w){
+    var segs=[].slice.call(w.querySelectorAll('.dseg')),lgs=[].slice.call(w.querySelectorAll('.lg-item'));
+    function idx(el){return el.getAttribute('data-idx')}
+    function hi(i){segs.forEach(function(s){s.classList.toggle('dim',idx(s)!==i);s.classList.toggle('hl',idx(s)===i)});lgs.forEach(function(l){l.classList.toggle('on',idx(l)===i)})}
+    function clear(){segs.forEach(function(s){s.classList.remove('dim','hl')});lgs.forEach(function(l){l.classList.remove('on')})}
+    segs.forEach(function(s){s.addEventListener('mouseenter',function(){hi(idx(s))});s.addEventListener('mouseleave',clear)});
+    lgs.forEach(function(l){l.addEventListener('mouseenter',function(){hi(idx(l))});l.addEventListener('mouseleave',clear)});
+  });
 })();
 </script>
 <script>if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(function(e){})</script><script src="assets/stocks.js"></script>
