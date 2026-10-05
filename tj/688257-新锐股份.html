@@ -472,8 +472,9 @@ svg.gauge{width:100%;height:auto;display:block}
   .hometop{padding:26px 16px 56px}
   h1.display{font-size:30px;margin-bottom:8px}
   .hometop .lead,.hometop .meta,.hometop .chips{display:none}
-  /* 首页核心数字已由 #mobile-dash 承载 → 统计条让位（仅影响 mobile-dash 紧邻的 .stats，其他页不动） */
-  .stats:has(+ #mobile-dash){display:none}
+  /* 首页核心数字已由 #mobile-dash 承载 → 统计卡让位（index 的 4 张 .stat 卡是 .layout 直接
+     子级、无 .stats 包裹——按「后面跟着 #mobile-dash」识别；其他页面无 #mobile-dash 不受影响） */
+  .layout>.stat:has(~ #mobile-dash){display:none}
   #mobile-dash{display:grid;gap:2px;max-width:min(96vw,1840px);width:calc(100% - var(--s4)*2);margin:-38px auto 0;padding:14px 18px 16px;position:relative;z-index:2;background:var(--surface);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow),inset 0 1px 0 var(--hl)}
   #mobile-dash .md-total{font-family:"Noto Serif SC",serif;font-weight:900;font-size:36px;line-height:1.2;font-variant-numeric:tabular-nums}
   #mobile-dash .md-total.pos{color:var(--pos)}#mobile-dash .md-total.neg{color:var(--neg)}
