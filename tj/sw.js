@@ -1,5 +1,5 @@
-/* trading-journal Service Worker —— PWA 离线壳缓存（改 VER 使旧缓存失效） */
-const VER = 'tj-pwa-v1';
+/* trading-journal Service Worker —— PWA 离线壳缓存（改 VER 使旧缓存失效；v2: assets 改 stale-while-revalidate） */
+const VER = 'tj-pwa-v2';
 const CORE = ['./', './index.html', './assets/stocks.js'];
 
 self.addEventListener('install', (e) => {
@@ -30,7 +30,7 @@ self.addEventListener('fetch', (e) => {
       }).catch(() => caches.match(req).then((r) => r || caches.match('./index.html')))
     );
   } else {
-    // 静态资源：cache-first + 后台更新
+    // 静态资源：stale-while-revalidate —— 立即回缓存（秒开），后台静默更新（下次刷新即最新）
     e.respondWith(
       caches.match(req).then((hit) => {
         const net = fetch(req).then((res) => {
@@ -39,7 +39,7 @@ self.addEventListener('fetch', (e) => {
             caches.open(VER).then((c) => c.put(req, copy));
           }
           return res;
-        });
+        }).catch(() => hit);
         return hit || net;
       })
     );
