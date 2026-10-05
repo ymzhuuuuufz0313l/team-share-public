@@ -568,6 +568,26 @@ table.data tbody tr:has(.stk){cursor:pointer}
 .tmini td{border-bottom:1px solid var(--line);padding:4px 8px}
 .pos{color:var(--pos);font-weight:600}.neg{color:var(--neg);font-weight:600}
 .starget{background:linear-gradient(90deg,rgba(235,160,58,.16),var(--accent-soft) 62%);border:1px dashed var(--accent);border-left:3px solid var(--accent);border-radius:12px;padding:9px 14px;margin:10px 0 4px;font-size:13px;line-height:1.7;color:var(--accent-strong)}
+/* v3：时效警示条（档案含旧材料时置顶） */
+.sstale{background:linear-gradient(90deg,rgba(235,160,58,.22),rgba(235,160,58,.08));border:1px solid rgba(235,160,58,.55);border-radius:10px;padding:6px 12px;font-size:12px;line-height:1.6;color:#7a5200;margin:0 0 12px;cursor:help}
+/* v3：目标/预期来源时效小标（⏳ 推演口径 / ✅ 公告核验） */
+.tok,.twait{display:inline-block;font-size:10.5px;border-radius:99px;padding:0 8px;margin-left:6px;font-weight:600;white-space:nowrap;vertical-align:1px}
+.tok{background:rgba(48,164,108,.14);color:var(--pos);border:1px solid rgba(48,164,108,.4)}
+.twait{background:rgba(235,160,58,.16);color:#8a5f0a;border:1px solid rgba(235,160,58,.5)}
+/* v3：验证清单区（醒目） */
+.clist{border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:12px;background:var(--accent-soft);padding:2px 12px;margin:4px 0 8px}
+.citem{display:flex;align-items:baseline;gap:8px;padding:6px 0;font-size:13px;line-height:1.55;border-bottom:1px dashed var(--line)}
+.citem:last-child{border-bottom:none}
+.c-ic{flex:none;font-weight:700;width:16px;text-align:center}
+.c-done .c-ic{color:var(--pos)}
+.c-fail .c-ic{color:var(--neg)}
+.c-wait .c-ic{color:var(--muted)}
+.c-wait .c-txt{color:var(--muted)}
+.c-lab{flex:none;font-size:10.5px;border-radius:99px;padding:1px 8px;margin-left:auto;font-family:"IBM Plex Mono",monospace;white-space:nowrap}
+.c-done .c-lab{background:rgba(48,164,108,.14);color:var(--pos)}
+.c-fail .c-lab{background:rgba(211,68,68,.13);color:var(--neg)}
+.c-wait .c-lab{background:rgba(120,130,150,.14);color:var(--muted)}
+.ck-sum{font-size:11px;color:var(--muted);font-weight:400;letter-spacing:0;margin-left:8px;font-family:"IBM Plex Mono",monospace}
 .sfoot{margin-top:16px;color:var(--muted);font-size:11px;font-family:"IBM Plex Mono",monospace;border-top:1px dashed var(--line);padding-top:8px}
 /* 手机端弹窗（P4）：不超屏 —— 宽 ≤100vw-24px、高 ≤100dvh-120px（100vh 兜底旧浏览器）、
    内部滚动、60px 顶部留白；关闭按钮加大到 40px 触摸目标 */
@@ -576,6 +596,9 @@ table.data tbody tr:has(.stk){cursor:pointer}
   .spanel{max-width:calc(100vw - 24px);max-height:calc(100vh - 120px);max-height:calc(100dvh - 120px);overflow-y:auto;margin:60px auto;padding:18px}
   .sname{font-size:21px}
   .smodal-x{width:40px;height:40px}
+  .citem{font-size:12px;gap:6px}
+  .c-lab{padding:1px 6px;margin-left:6px}
+  .tok,.twait{margin-left:4px}
 }
 </style></head><body><aside class="sidenav"><svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><symbol id="ic-nav" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5 13 13l-4.5 2.5L11 11z"/></symbol><symbol id="ic-book" viewBox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 18.5A2.5 2.5 0 0 1 6.5 16H20"/><path d="M8.5 7.5h8M8.5 10.5h5"/></symbol><symbol id="ic-db" viewBox="0 0 24 24"><ellipse cx="12" cy="5.5" rx="8" ry="2.8"/><path d="M4 5.5v13c0 1.55 3.58 2.8 8 2.8s8-1.25 8-2.8v-13"/><path d="M4 12c0 1.55 3.58 2.8 8 2.8s8-1.25 8-2.8"/></symbol><symbol id="ic-box" viewBox="0 0 24 24"><path d="M3.5 8 12 4l8.5 4v8L12 20l-8.5-4z"/><path d="M3.5 8 12 12l8.5-4M12 12v8"/></symbol></defs></svg><div class="side-brand"><div class="b1">TRADING·JOURNAL</div><div class="b2">五步法 × 资金流 × 纪律</div></div><div class="sgroup"><div class="gl gli"><svg class="glicon" aria-hidden="true"><use href="#ic-nav"/></svg>导航</div><a href="index.html">⌂ 总览</a><a href="gegu.html">★ 全部个股</a></div><div class="sgroup"><div class="gl gli"><svg class="glicon" aria-hidden="true"><use href="#ic-book"/></svg>台账·规则</div><a href="luojiku.html">股票逻辑库</a><a href="规律手册.html">规律手册 v0.4</a><a href="工作流程.html">工作流程</a><a href="持仓逻辑档案.html">持仓逻辑档案</a><a href="主力资金CT-函数解读.html">主力资金CT解读</a><a href="冰封黄白线-函数解读.html">冰封黄白线解读</a></div><div class="sgroup collapsible"><div class="gl gli"><svg class="glicon" aria-hidden="true"><use href="#ic-db"/></svg>台账·数据</div><button class="sg-toggle" type="button" aria-expanded="false"><span>数据总览</span><span class="caret" aria-hidden="true">▾</span></button><div class="sg-sub"><a href="持仓快照.html">⚡ 持仓快照</a><a href="成交流水.html">成交流水</a><a href="股票汇总.html">股票汇总</a><a href="已清仓全历史.html">已清仓 492 笔</a><a href="成交流水全历史.html">流水 3,608 条</a><a href="账户总览.html">账户全史</a><a href="收益追踪.html">收益追踪</a><a href="研报候选池.html">研报候选池</a></div></div><div class="sgroup"><div class="gl gli"><svg class="glicon" aria-hidden="true"><use href="#ic-box"/></svg>归档</div><a href="panzhong.html">盘中判定</a><a href="panhou.html">盘后复盘</a><a href="yanbao.html">研报审稿</a><a href="taizhang.html">交易台账</a></div><button id="themeToggle" class="theme-toggle" title="切换深浅色主题">◐ 主题</button><div class="side-foot">DECISION SUPPORT<br>NOT INVESTMENT ADVICE<br>SINCE 2020-01</div></aside>
 <script>
@@ -1072,11 +1095,13 @@ document.querySelectorAll('.search').forEach(function(inp){
 </script>
 <script>if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(function(e){})</script><script src="assets/stocks.js"></script>
 <div id="smodal" class="smodal"><div class="spanel">
+<div class="sstale" id="sm-stale" style="display:none"></div>
 <button class="smodal-x" title="关闭">×</button>
 <div class="scode" id="sm-code"></div>
 <div class="sname" id="sm-name"></div>
 <div class="schips"><span class="chip" id="sm-status"></span></div>
 <div class="schips" id="sm-chips"></div><div id="sm-target" style="display:none"></div>
+<div id="sm-checks" style="display:none"></div>
 <div id="sm-body"></div>
 <div class="sfoot">按 Esc 或点击空白处关闭 · 决策辅助非投资建议</div>
 </div></div>
@@ -1087,9 +1112,12 @@ document.addEventListener('click',function(e){
   /* .stk/.stk-h = 文本股票名；[data-code].pt = 曲线数据点/事件旗标（曲线交互v2，SVG closest 可用） */
   var el=e.target.closest?e.target.closest('.stk,.stk-h,[data-code].pt'):null;
   if(!el){var tr=e.target.closest?e.target.closest('tr'):null;if(tr&&tr.querySelector)el=tr.querySelector('.stk,.stk-h')}
-  if(el){var code=el.getAttribute('data-code');
+    if(el){var code=el.getAttribute('data-code');
     var d=(window.STOCK_DB||{})[code];if(!d)return;
     var T=(window.STOCK_TRADES||{})[code]||null;
+    /* v3：时效警示条——档案头部"⏳ 时效标注"行，置顶提示旧材料仅作概念参考 */
+    var stl=document.getElementById('sm-stale');
+    if(stl){if(d.stale){stl.innerHTML='⏳ 含旧材料（'+d.stale[0]+' 补）——概念参考，非当下依据';stl.title=d.stale[1];stl.style.display='block'}else{stl.style.display='none'}}
     document.getElementById('sm-code').textContent=d.code;
     document.getElementById('sm-name').textContent=d.name;
     var st=document.getElementById('sm-status');st.textContent=d.status||'';
@@ -1097,10 +1125,24 @@ document.addEventListener('click',function(e){
     var chips=[d.board,d.ind].filter(Boolean).map(function(x){return '<span class="chip">'+x+'</span>'}).join('');
     if(T&&T.n>0){chips+='<span class="chip">成交'+T.n+'笔</span><span class="chip">首次 '+(T.first||'?')+'</span><span class="chip">最近 '+(T.last||'?')+'</span>';}
     document.getElementById('sm-chips').innerHTML=chips;
+    /* v3：目标市值区——每条带来源时效标记（⏳ 推演·未核验 / ✅ 公告核验） */
     var tg=document.getElementById('sm-target');
-    if(tg){tg.innerHTML=(d.target||[]).map(function(x){return '🎯 '+x}).join('<br>');tg.style.display=(d.target&&d.target.length)?'block':'none';}
+    if(tg){var tf=d.tfl||[];tg.innerHTML=(d.target||[]).map(function(x,i){var f=tf[i]||'',b='';
+      if(f.indexOf('wait')>-1)b+=' <span class="twait">⏳ 推演·未核验</span>';
+      if(f.indexOf('ok')>-1)b+=' <span class="tok">✅ 公告核验</span>';
+      return '🎯 '+x+b}).join('<br>');tg.style.display=(d.target&&d.target.length)?'block':'none';}
+    /* v3：验证清单区——☐待验证(灰)/✓已兑现(绿)/✗已证伪(红) */
+    var ck=document.getElementById('sm-checks');
+    if(ck){var cs=d.checks||[];
+      if(cs.length){var nd=0;cs.forEach(function(c){if(c.s==='done')nd++});
+        var h='<div class="ssec">✅ 验证清单<span class="ck-sum">'+nd+'/'+cs.length+' 已兑现</span></div><div class="clist">';
+        cs.forEach(function(c){var ic=c.s==='done'?'✓':(c.s==='fail'?'✗':'☐'),lb=c.s==='done'?'已兑现':(c.s==='fail'?'已证伪':'待验证');
+          h+='<div class="citem c-'+c.s+'"><span class="c-ic">'+ic+'</span><span class="c-txt">'+c.t+'</span><span class="c-lab">'+lb+'</span></div>';});
+        ck.innerHTML=h+'</div>';ck.style.display='block';
+      }else{ck.innerHTML='';ck.style.display='none';}}
     var b=document.getElementById('sm-body');b.innerHTML='';
-    (d.sections||[]).forEach(function(s){var h=document.createElement('div');h.innerHTML='<div class="ssec">'+s[0]+'</div><div class="sbody">'+s[1]+'</div>';b.appendChild(h);});
+    /* v3：预测类章节（标题含预测/预期/测算/推演/展望）加"⏳ 推演"小标，区分事实与预测 */
+    (d.sections||[]).forEach(function(s){var h=document.createElement('div');h.innerHTML='<div class="ssec">'+s[0]+(/(预测|预期|测算|推演|展望)/.test(s[0])?' <span class="twait">⏳ 推演</span>':'')+'</div><div class="sbody">'+s[1]+'</div>';b.appendChild(h);});
     if(T&&T.n>0){
       var th='<div class="ssec">我与它的交易足迹</div><div class="sbody"><table class="tmini"><tr><th>日期</th><th>方向</th><th>价格</th><th>数量</th><th>金额</th></tr>';
       (T.rows||[]).forEach(function(r){var cls=r[1]==='买入'?' class="pos"':' class="neg"';
