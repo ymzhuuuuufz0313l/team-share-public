@@ -92,7 +92,7 @@
 
 | 措施 | 归属违例族 | 条数 | 1003 实测归宿 |
 |------|-----------|-----:|---------------|
-| RTL 打拍 LONG v4.2 / SHORT v3 | DATA_POINT_LAT 15 + _D1 41（RX_CLK） | **56** | 全 MET：LAT worst **−1.31 → +2.10**、D1 **−1.31 → 0.00**（42 条 MET 全部贴 0 显示） |
+| RTL 打拍 LONG v4.2 / SHORT v3 | DATA_POINT_LAT 15 + _D1 41（RX_CLK） | **56** | 全 MET：LAT worst **−1.31 → +2.10**、D1 **−1.31 → 0.00**（42 条 MET 全部贴 0 显示，含 41 条 D1 + 1 条 LAT 新 ICG 检查） |
 | cpuwr_reg_grp 宽 mc（寄存器族） | R_REG40_F 23 + 47_F 13 + 33_F 12 + 56_F 11 + 57_F 6（RX_CLK） | **65** | 违例 0；起点被 mc 挤出报告集；SDC mc 命令 32→26 合并扩容（R_REGxx_F 全入统一名单） |
 | cpuwr_reg_grp 宽 mc（WCLK1 配置写） | CONFIG_DATA_*（WCLK1_A_DCLK_SHORT） | **139** | 违例 0；1003 上报 774 条全 MET，worst **−0.11 → +0.97** |
 | 窄 mc：AABB·VPS | PIX_DATA_reg_*（DCLK_DATA_MUX_SHORT） | **23** | 违例 0；96 条全 MET，组 worst **−0.43 → +1.53** |
@@ -132,10 +132,10 @@
 
 ## 5. 全量扫描新发现
 
-1. **BOE_AUTO_EQ_BCC_CTRL 整模块时钟域迁移 RX_CLK→OSC_CLK**（OSC_CLK 域 FF 68→323，dc.log 口径——**本包无网表、未独立验证**；boe_bcc 26 条违例 → **+9.93 / +12.37** 大裕量）——非本会话 RTL 变更，**待 designer 确认意图**。
+1. **BOE_AUTO_EQ_BCC_CTRL 整模块时钟域迁移 RX_CLK→OSC_CLK**（OSC_CLK 域 FF 68→323，dc.log 口径；boe_bcc 26 条违例 → **+9.93 / +12.37** 大裕量，已验证）——非本会话 RTL 变更，**待 designer 确认意图**。
 2. **1003 编译树 = jjlu HDL 树**（81 文件 vs 基线 ymzhu 树 80），约束读取走 jjlu ip_cons 路径，但内容带 **`ymzhu 2026-09-30 17:25` 0930 终版签名**（G6 group_path RX2DCLK_PIX 在 QoR 生效实证）——结果无代际错误，权威源流程需明确。
 3. **🔴 本地 1V11 仓库代际缺口**：服务器编译清单 81 文件 vs 本地 80——本地 HDL **缺 `LENB_CTRL.v`**，`DTCTL.v` / `LC_REG_MAPPING.v` 为旧版（而 LONG/SHORT_ENCODING_ALIGN、BUFFER_I 已是 v4.2 代）——**部分同步状态**，回传合并需按服务器清单对齐。
-4. **SDC mc_setup 16→13 对已定案非丢失**：cpuwr 组 mc `-from` 311→**383 cells**（唯一寄存器基名 44→53，扣 5 个 *_WR 伪 bank 后 39→48；新增 bank = 00_L + 33/34/40/41/46/47/56/57_F 共 9 个——01_L/02_L 0922 已在宽组，其窄对属收编删除），行数减 = 3 对冗余窄对有意删除（0928 纪律）；SMT_CS FLAG 对保留；G13 waiver 两 run 均 OFF；false_path 计数 5=5 但**非全等**（第 5 条 MONBLOCK -through 清单扩充约 100 pin：DATA_POINT_LAT[19:0]/UTC_FRM_CNT 等）/ max_delay 120 / clock_groups 44 / create_clock 3 / input_delay 40 全等。
+4. **SDC mc_setup 16→13 对已定案非丢失**：删 4 对窄 mc + 增 1 对 DPLC = 净 −3（16→13）；cpuwr 组 mc `-from` 311→**383 cells**（唯一寄存器基名 44→53，扣 5 个 *_WR 伪 bank 后 39→48；新增 bank = 00_L + 33/34/40/41/46/47/56/57_F 共 9 个——01_L/02_L 0922 已在宽组，其窄对属收编删除）；SMT_CS FLAG 对保留；G13 waiver 两 run 均 OFF；false_path 计数 5=5 但**非全等**（第 5 条 MONBLOCK -through 清单扩充约 100 pin：DATA_POINT_LAT[19:0]/UTC_FRM_CNT 等）/ max_delay 120 / clock_groups 44 / create_clock 3 / input_delay 40 全等。
 5. **贴线组（下轮收敛目标）**：RX_CLK +0.02 / RX2DCLK_PIX +0.01 / WCLK1_A_DCLK_SHORT +0.01 / DCLK_DATA_MUX_LONG 0.00 / default 0.00；另 14 条 0.00-rounding 端点。
 6. v4.2 新增 FF 区域：BUFFER_I **INDATA_SYNC_D3**（新三级同步器组）、ANCTL 新计数器 IDLE_CNT / PWRC_TIME_CNT / TRIGGER_CNT（+71）、DTCTL en_1st/2nd_even/odd、LONG/SHORT_ENCODING 大规模时钟域重排。
 7. 规模：FF 2526→2839（+313，网表口径）、端口 6105→6772（+667，意图待确认）。

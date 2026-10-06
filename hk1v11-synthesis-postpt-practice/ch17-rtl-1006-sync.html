@@ -43,7 +43,7 @@
 >
 > **方法**：四路版本对比（t12-t15）→ 合并仲裁 → K3 终审（R1-R5）→ 四路符合性速核（t18-t21）→ 队长三项仲裁。数字全部来自 rpt/dc.log/SDC 实测。
 
-<div class="anchor-nav"><a href="#ARL">§A 模块表</a><a href="#B约束">§B 约束表</a><a href="#C总结论">§C 总结论</a><a href="#U1U14">U 清单</a></div>
+<div class="anchor-nav"><a href="#A-RTL-36-34-2">§A 模块表</a><a href="#B-0922-1003">§B 约束表</a><a href="#C">§C 总结论</a><a href="#U1-U14">U 清单</a></div>
 
 ---
 
@@ -54,7 +54,7 @@
 | 1 | **LONG_ENCODING_ALIGN.v** | v4.2 打拍：+80bit FF（L-1/L-2/L-3 D3 only）、LAT_EFF 装载拍旁路（撤 v4.1 L-11 守卫）、BK_ST 端口化 | 我方 G13（服务器在 v4.2 基础上追加 BK_ST 端口化） | 消除 G13 56 条（DATA_POINT_LAT 15 + D1 41） | **56→0**；LAT 族 worst −1.31→+2.10；D1 族→0.00（42 条 MET 全贴 0）；残留 9 条 −0.01 自环（DATA_ALIGN_PRE_D 新锥，max.rpt L3187-3971） |
 | 2 | **SHORT_ENCODING_ALIGN.v** | v3：比较器组拆分（掩蔽吃 PRE、K*_FIND 吃 PRE_D）+ BK_ST wire→output | 我方 G13（服务器在 v3 基础上追加 BK_ST 端口化） | SHORT 分支 15 条清零 | 族内清零（D1_reg_13_→TMP CG latch −0.01 残留 1 条，max.rpt L3889） |
 | 3 | **SHORT_ENCODING_DECODE.v** | DECODE 钥判决同拍交叉比较（新增 DATA_POINT_LAT_D 复原相位） | 我方 G13 | 反重触发掩蔽比较器 lag-1 几何 | 59/60 回归 PASS（基线转绿）；网表 DATA_POINT_LAT_D 实存（rpt 全树检索实证） |
-| 4 | **LONG_ENCODING_OUTPUT.v** | 像素输出异步重构：DCLK 域内先打 *_ASYNC（PIX_DATA_ASYNC/START_ASYNC）+ CONFIG_* 组端口化 + VBK_EN 双源 + 🔴 L47/L50 双声明 | 服务器演进 | BKDU 原 24 条终点消失（PIX_DATA_reg_* 改异步域） | R_REG03_L 原 24 条（终点 PIX_DATA_reg_*）**全 MET +0.02**；新 PIX_DATA_ASYNC 族 455 条（LONG 250/SHORT 205）（max.rpt L1474 等） |
+| 4 | **LONG_ENCODING_OUTPUT.v** | 像素输出异步重构：DCLK 域内先打 *_ASYNC（PIX_DATA_ASYNC/START_ASYNC）+ CONFIG_* 组端口化 + VBK_EN 双源 + 🔴 L47/L50 双声明 | 服务器演进 | BKDU 原 24 条终点消失（PIX_DATA_reg_* 改异步域）+ PIX_DATA_ASYNC 新域建立 | 原 24 条（R_REG03_L→LONG_ENCODING_OUTPUT/PIX_DATA）现 **+1.18 全 MET（DCLK_DATA_MUX_LONG 组）**；+0.02×11 为域重构新生（PIX_DATA_ASYNC 端点）——双集合勿混；PIX_DATA_ASYNC 字符串命中 455（rpt+max 合计），路径块实测 131 属 RX_CLK/RX2DCLK_PIX 组（max.rpt L1474 等） |
 | 5 | **BOE_AUTO_EQ_BCC_CTRL.v** | BOE 域迁移：`.clk(OSC_CLK_AEQ)`（本地为 `OSC_CLK & AUTO_EQ_EN` AND 门控）+ BCC_FF 输出端口化 | 服务器演进 | 26 条 RX_CLK 组大裕量收敛至 OSC 组 | **26 条全消除**；prescale −1.14→**+9.93**；prescale_cnt −0.53→**+12.37**（OSC_CLK 组，max.rpt L107630） |
 | 6 | **boe_rx_bcc_decoder.v** | prescale 复位 0xff→0x1b（600MHz luoyang 值）+ 训练判据 10bit 全 1→低 5bit 掩码式（放宽） | 服务器（BCC 参数修订） | 波形行为变化 | BCC prescale/state 寄存器网表留痕（rpt 全树检索实证）；STA 无法直接验证→U3 |
 | 7 | **boe_rx_switch_to_bus8.v** | PULLBCC_LOW_TIME 提为常量 12'd2000（值同） | 服务器 | 无行为变化 | ⚠️ 无独立 rpt 端点（功能已编译验证） |
@@ -135,7 +135,7 @@ commit `7dad5525`（38 文件），本地≡1003 编译版，452→11 时序结�
 
 | # | 严重度 | 发现 | 状态 |
 |---|---|---|---|
-| U1 | 🔴 | LONG_ENCODING_OUTPUT 双声明 PIX_DATA_ASYNC（L47/L50） | 删 L50 修（DC 容忍但规范不合规） |
+| U1 | 🔴 | LONG_ENCODING_OUTPUT 双声明 PIX_DATA_ASYNC（L47/L50） | 删 L50 修（DC 容忍但规范不合规；工具实证：dc.log 1003 编译零诊断） |
 | U2 | 🔴 | BKDU 两级同步器双侧未实施 | 同步时叠加（走三关） |
 | U3 | 🟡 | BCC prescale 0x1b/5bit 判码 | 需 BOE DV 回归 |
 | U4 | 🟡 | SMT_CS R_CH_SEL 编码移位 | 需寄存器文档+DV |
