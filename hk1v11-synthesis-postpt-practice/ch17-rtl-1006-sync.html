@@ -33,85 +33,103 @@
 
 > **实战复盘 · 按时间线 · 2026-10-06 · 对象 `pack_1006v0_rtl_extract`（服务器 10-06 ymzhu 树）vs 本地 `HDL/`（1004 交付态）+ `rep_dir_1003`（10-02 DC 编译版）**
 >
-> **方法**：agent-teams 四路版本对比（t12-t15）→ 合并仲裁 → K3 终审（R1-R5 修正）→ 四路符合性速核（t18-t21）→ 队长三项仲裁。全程只读 + 指纹交叉。
-> 素材：`CONFORM_1006V0_VERDICT.md`（终判）+ `REPORT_1006V0_MERGED.md`（合并仲裁版）。
+> **方法**：四路版本对比（t12-t15）→ 合并仲裁 → K3 终审（R1-R5）→ 四路符合性速核（t18-t21）→ 队长三项仲裁。数字全部来自 rpt/dc.log/SDC 实测。
 
 ---
 
-## 1. 终判 headline
+## A. RTL 逐模块修改表（34 真 diff 文件）
 
-**✅ 四路一致：1006V0 包 RTL 就是 1003 DC run（2026-10-02 23:17 编译）实际使用的版本。未发现任何行为级分歧。**
+| # | 模块（文件） | 修改内容 | 修改方 | 预期行为 | 实际结果（1003 rpt 实测） |
+|---|---|---|---|---|---|
+| 1 | **LONG_ENCODING_ALIGN.v** | v4.2 打拍：+80bit FF（L-1/L-2/L-3 D3 only）、LAT_EFF 装载拍旁路（撤 v4.1 L-11 守卫）、BK_ST 端口化 | 我方 G13 | 消除 G13 56 条（DATA_POINT_LAT 15 + D1 41） | **56→0**；LAT 族 worst −1.31→+2.10；D1 族→0.00（42 条 MET 全贴 0）；残留 9 条 −0.01 自环（DATA_ALIGN_PRE_D 新锥，max.rpt L3187-3971） |
+| 2 | **SHORT_ENCODING_ALIGN.v** | v3：比较器组拆分（掩蔽吃 PRE、K*_FIND 吃 PRE_D）+ BK_ST wire→output | 我方 G13 | SHORT 分支 15 条清零 | 族内清零（D1_reg_13_→TMP CG latch −0.01 残留 1 条，max.rpt L3889） |
+| 3 | **SHORT_ENCODING_DECODE.v** | DECODE 钥判决同拍交叉比较（新增 DATA_POINT_LAT_D 复原相位） | 我方 G13 | 反重触发掩蔽比较器 lag-1 几何 | 59/60 回归 PASS（基线转绿）；网表 DATA_POINT_LAT_D 实存 |
+| 4 | **LONG_ENCODING_OUTPUT.v** | 像素输出异步重构：DCLK 域内先打 *_ASYNC（PIX_DATA_ASYNC/START_ASYNC）+ CONFIG_* 组端口化 + VBK_EN 双源 + 🔴 L47/L50 双声明 | 服务器演进 | BKDU 原 24 条终点消失（PIX_DATA_reg_* 改异步域） | R_REG03_L 原 24 条（终点 PIX_DATA_reg_*）**全 MET +0.02**；新 PIX_DATA_ASYNC 族 455 条（LONG 250/SHORT 205） |
+| 5 | **BOE_AUTO_EQ_BCC_CTRL.v** | BOE 域迁移：`.clk(OSC_CLK_AEQ)`（本地为 `OSC_CLK & AUTO_EQ_EN` AND 门控）+ BCC_FF 输出端口化 | 服务器演进 | 26 条 RX_CLK 组大裕量收敛至 OSC 组 | **26 条全消除**；prescale −1.14→**+9.93**；prescale_cnt −0.53→**+12.37**（OSC_CLK 组，max.rpt L107630） |
+| 6 | **boe_rx_bcc_decoder.v** | prescale 复位 0xff→0x1b（600MHz luoyang 值）+ 训练判据 10bit 全 1→低 5bit 掩码式（放宽） | 服务器（BCC 参数修订） | 波形行为变化 | BCC prescale/state 寄存器网表留痕（t19 找到）；STA 无法直接验证→U3 |
+| 7 | **boe_rx_switch_to_bus8.v** | PULLBCC_LOW_TIME 提为常量 12'd2000（值同） | 服务器 | 无行为变化 | — |
+| 8 | **LENB_CTRL.v**（新模块 98 行） | TBK 假训练码（DATA_ALIGN 特征 0000011111/1111100000）/ EOL（BIT_ALIGN_PT_DLY）/ UTC 错误锁存 三重 LENB_ENABLE 保护 | 服务器（新模块） | LENB 门控进 DTCTL；EOL 支路保护 | **1003 已编译**（dc.log L1966 编译实录 + L4687 HDL-193）；LENB_ENABLE_0/2_reg 网表实存（DFFSBQX1AL9，L19465）；ENABLE_1 恒 1 被 **OPT-1206 常量消除**（L12834） |
+| 9 | **CHPI_SD_CTRL.v** | EOL 检测链：LONG_END_EVENT 增 `(SP & reg_eol & K4_FIND)` 项 + DATA_END_TIM 增 reg_eol 分支 + 修复 A（CS_NE_SMT_CS 2X 死 mux）+ 修复 B（CS_SIG_SMT_CS_DLY 移位源自纠） | 服务器（EOL/长包尾修正） | SP 模式可用 EOL 事件截段 | **reg_eol 网表 234 处实存**（max.rpt）；LONG_END_EVENT 3 处（max.rpt）；DV 回归前不确认→U5 |
+| 10 | **ANCTL.v** | 新计数器：IDLE/TRIGGER/PWRC_TIME_CNT +71 FF；PWRC_TA/TB/TSEL→COP 相位装载；HSR 穿层 | 服务器（电源/时序） | 分阶段上电时序 | 1004 网表 OSC/RX 域 ANCTL +71 FF（t3 FF 域漂移归因）；对应域 MET |
+| 11 | **DTCTL.v** | en_1st/2nd_odd/even 由组合比较改 **PIX_CLK 打一拍 reg** + ICG 化 + PIX_CLK_DPLC/LENB_ENABLE/DRA_CS 输入 + DBR0-5/DBL0-5 输出 | 服务器（LENB 集成） | DPLC 域打拍消除 hold | **DPLC_CLK_SHORT hold 2 条消除**（0922 hold 26→1003 21，真消除 10 条含 DPLC 2）；PIX_DATA_START_DLY 78 处（max.rpt） |
+| 12 | **SMT_CS.v** | R_CH_SEL 目标表整体移位：3'b000→960 项删除，改 001/010/011=960/726/720，000 落 default | 服务器（寄存器编码变更） | 旧配置 000 行为改变 | **行为变更需 DV 回归**→U4；SMART_CS ≥4bit 字段解析一致性规约相关 |
+| 13 | **CLKGEN.v** | 六新 ICG 时钟：DCLK_SE/DCLK_LE/DCLK_AEQ/DCLK_DATA_AEQ/OSC_CLK_AEQ/DCLK_DATA_DPLC | 服务器（AEQ/EOL 时钟树） | 新派生时钟供 AEQ/EOL 域 | u_gate_ICG_OSC_CLK_AEQ 网表实存（dc.log L6307）；1003 SDC 含对应 generated clock |
+| 14 | **LC_CLK_RST_GEN.v** | AUTO_EQ_PERIOD/EN + DCLK_SE/LE/AEQ 穿层 | 服务器 | 同上 | 与 CLKGEN 配套 |
+| 15 | **RSTNGEN.v** | AUTO_EQ_PERIOD/EN 输入 + AUTO_EQ_PHY_RSTN 复位输出 | 服务器 | AEQ 复位域 | 网表实存 |
+| 16 | **LINK_LOGIC.v** | 新信号穿层枢纽：DCLK_SE/LE/AEQ/DATA_AEQ/OSC_AEQ、EOL_DET、PWRC 族、SMT_CS、K4_FIND、LENB_ENABLE | 服务器 | 全部新信号在本层收发 | 8 处 AEQ 时钟 grep 确认（包内）；1003 编译路径确认 |
+| 17 | **LINK_PANEL_CTRL.v** | BOE 实例 `.clk(OSC_CLK_AEQ)` + **LENB_CTRL 实例化（L247）** + AUTO_EQ_TRAINIG_JUDGE 时钟改 DCLK | 服务器（BOE 收尾+LENB 集成） | BOE 域迁移正式化 + LENB 门控 | BOE 26 条消除（见 #5）；LENB_CTRL 编译确认（dc.log L1966） |
+| 18 | **LC_REG_MAPPING.v** | PWRC 链重构（R_PWRCP/N_COP_reg casex→if-else）+ R_REG10_F_WR/PWRC_TIME/R_REG31_F_WR/SRER/SREF×4 穿层 + **BKDU_SYNC 仍单级**（L417 单 FF） | 混合（服务器穿层+我方 0924 未实施） | BKDU 真 CDC 修复 | **BKDU 两级同步器未实施**（包/本地一致单级）→U2；STA 转绿 ≠ 跨域安全 |
+| 19 | **LC_CHPI_DECODE.v** | DCLK→DCLK_SE/DCLK_LE（SHORT/LONG 分支各自门控时钟）+ VBK_EN/BK_ST 输出 + DATA_ALIGN 上移（供 LENB_CTRL） | 服务器 | 分支时钟独立 + LENB 数据源 | 1003 编译确认 |
+| 20 | **LC_MONBLOCK.v** | 计数器输入进 MONI_OUT 多路选择（DATA_POINT_LAT/ERROR_FRAME_CNT 等）+ 6'h02 监测项 {K4,0,0,K1}→{K4,K3,K2,…} | 服务器（观测链前移） | 监测寄存器内容变化 | MONBLOCK FF 8→24（网表 +16）；6'h02 语义变化→U14；false_path pin 35→116 |
+| 21 | **CENTER1.v** | DCLK_DATA_DPLC/PWRC_TA/TB/TIME/SMT_CS_H2L/L2H 穿层 | 服务器 | 贯通层 | 1003 编译确认 |
+| 22 | **BUFFER_I.v** | EOL_DET_buf 输出 + EOL_DET_I 输入门控 buffer（APR_CDM u_gate_APR_CDM_EOL_DET） | 服务器（EOL 链起始） | EOL 检测链入口 | EOL 链网表 234 处实存（见 #9） |
+| 23 | **LINK_IO_CTRL.v** | DATA_POINT_LAT[19:0]/LONG01_ERROR_FRAME_CNT/HEADER_ERROR_* 计数器输入（监测口前移） | 服务器 | 监测寄存器内容变化 | 与 LC_MONBLOCK 配套 |
+| 24 | **LINK_CONFIG_CTRL.v** | TRAINING_RESULT/SDID/AUTO_EQ_EN 穿层 + PWRC_TSEL/ACS_EN 等死寄存器激活 | 服务器（死位激活） | 死位批量激活 | 下轮 DC 新增 cfg→消费锥违例候选→U7 |
+| 25 | **LINK_FAULT_CTRL.v** | 接口贯通 | 服务器 | — | — |
+| 26 | **LONG_ENCODING.v / ERROR_CTRL / SHORT_ENCODING 族** | 端口化：DCLK_DATA/DCLK_CONFIG/RSTN/VBK_EN/BK_ST/DATA_ALIGN/UTC 计数器上移 | 服务器 | 端口对齐 | 1003 编译确认（81/81 basename 全中） |
+| 27 | **SHORT_ENCODING_OUTPUT.v** | VBK_EN 双源（与 LONG_OUTPUT 同构）：VBK_stream reg + DCLK_CONFIG/VBK_EN 上移 | 服务器 | blank 行像素值可切换来源 | 1003 树无 VBK_stream 逻辑（1006 增量）→下轮新锥 |
+| 28 | **TOP\HK1V11.v / HK1V11_digital_top.v** | VU440_FPGA ifdef 重组 + ACS_O/DRA_CS_L0/L127 由绑 0 真实化 + EOL_DET_I 连通 | 服务器（顶层端口重构） | 顶层端口 +667（6105→6772） | 可解释（AEQ/DPLC/观测新端口规模吻合）→U11；建议 LEC 对拍 |
+| 29 | **I2C_CLK_GEN.v** | 本地 CG_CELLX4（ICG）vs 包 AND2X2 | 分叉（本地 0920 ICG 优化未上抛） | 功耗优化 vs 服务器一贯 AND | 1003 网表 L510/L512 = `u_gate_AND_REG_LD(_TE)`（AND 版）→**服务器一贯 AND、本地 CG 0920 后未上抛**→U8 待 ymzhu 拍板 |
+| 30 | **LOGIC_CENTER.f** | +1 行 LENB_CTRL.v | 服务器 | 编译清单对齐 | 1003 dc.log L1966 已编译 LENB_CTRL.v |
 
-| 关键数字 | 值 | 来源 |
-|---|---|---|
-| 正向指纹匹配 | 81/81 basename 全中 | t18 编译清单 |
-| 反向回溯 | **541 个报告寄存器基名全部命中、零孤儿族** | t19 |
-| 全量覆盖率 | 34 diff 文件新增 reg 53 个 → **33/34 = 97.1%** 可验证 | t20 |
-| 0922 负对照 | LENB_ENABLE/VBK_stream/ACS_CNT/ICG_DPLC 在 0922 全 ×0（区分度成立） | t20 |
-| 双声明容忍 | dc.log ^Error=0、redeclaration=0（DC N-2017.09 实测完全容忍） | 队长实证+t20 |
+## B. 约束逐项修改表（0922 → 1003）
 
-## 2. 验证链
-
-四路版本对比（t12 GLM-5.3 / t13 flash / t14 flashx / t15 Qwen）→ 合并仲裁（GLM-5.3 亲测 5 项证据）→ K3 终审（R1-R5 修正：SHORT_ALIGN 功能端口/BUFFER_I EOL/LENB 行号/MONBLOCK 0x02/I2C 网表反证）→ 四路符合性速核（t18-t21 各自独立 8-22 指纹）→ 队长三项仲裁（双声明降级/LENB 1003 已含/U6=OPT-1206）。
-
-**三项关键推翻**：
-1. LENB_CTRL / EOL / VBK_EN / ACS = **1003 编译树已含**（推翻 t14/t16/t17 "1006 增量"定性）
-2. U6 LENB_ENABLE_1 恒 1 = **DC OPT-1206 常量消除**（非隐患）
-3. 双声明 U1 = **DC 容忍、不阻塞编译**（降级为 LRM/可移植性规范问题）
-
-## 3. 证据矩阵
-
-| 维度 | 结果 | 来源 |
-|---|---|---|
-| 正向指纹 | t18: 17✅+1⚠️；t19: 17✅+1 弱；t20: 22✅+4⚠️+0❌；t21: 8/10 强匹配 | 四路 |
-| 反向回溯 | **541 基名零孤儿**；12 族零分歧；11 项零分歧 | t18/t19/t20 |
-| 编译清单 | **81/81 basename 全中**；LENB_CTRL.v L1966 编译实录 | t18/t19 |
-| 全量覆盖率 | **97.1%**（33/34）；19 组合+1 误报+1 静默 FF | t20 |
-| 0922 负对照 | 4 项全 ×0（区分度成立） | t20 |
-| 双声明容忍 | Error=0, redeclaration=0 | 队长+t20 |
-
-## 4. 关键仲裁记录
-
-| # | 仲裁项 | 先前定性 | 终判 | 证据 |
+| # | 约束改动 | 0922 状态 | 1003 状态 | 结果 |
 |---|---|---|---|---|
-| 1 | LENB/EOL/VBK/ACS 归属 | "1006 增量"（t14/t16/t17） | **1003 已含** | dc.log L1966/L4687/L6131 + 网表 234 处 |
-| 2 | U6 LENB_ENABLE_1 | "EOL 保护不生效" | **OPT-1206 常量消除**（构造性不生效，已知状态） | dc.log L12834 |
-| 3 | U1 双声明 | "编译阻塞" | **DC 容忍**（LRM 规范/可移植性问题） | dc.log ^Error=0 |
-| 4 | I2C CG vs AND | "本地领先"（t12）/ "1003 用 CG"（t14） | **服务器一贯 AND、本地 CG 0920 后未上抛** | 网表 L510/L512 + git log 6a1da1d1 |
-| 5 | TOP/LOGIC_CENTER.v | "新 wrapper"（t12） | **逐字节重复副本**（不入编译） | MD5 哈希一致 |
+| 1 | **cpuwr_reg_grp 宽 mc 扩容**（mc 命令 32→26 合并，cells 311→383） | RX 域寄存器族 65 条 + WCLK1 配置 139 条违例 | R_REGxx_F 全入统一宽 mc 名单 | **204 条全消**；CONFIG_DATA 774 条全 MET worst **+0.97**；R_REG40/47/33/56/57_F 起点不再上报 |
+| 2 | **DPLC_MODE bit 精确 mc 新增**（`-from R_REG06_F*` setup 2/hold 1，→ 7 cell） | R_REG06_F_reg_2_→C2276/C2282 2 条 −0.38 | 新增 bit 级窄 mc | **2 条消失**；后继组 DPLC_CLK_LONG worst **+1.01**（en_1st/2nd→ICG） |
+| 3 | **group_path -weight 3 ×3**（RX_CLK_DATA / RX2DCLK_PIX / PIX2SD_GATE） | 0922 SDC group_path 数 = 0 | 三组 weight 3 生效 | RX_CLK_DATA −1.14→**−0.01**（残留 ICG）；RX2DCLK_PIX −0.43→**+0.01**；PIX2SD_GATE −0.36→**+1.01** |
+| 4 | **MONBLOCK false_path pin 35→116**（体长 2594→8951 字符，+81 pin） | 35 pin | 116 pin | 预防性（监测位语义变化 U14）；前 4 条 false_path 逐字节相同 |
+| 5 | **BKDU 不加 mc**（RTL 同步器路线，R_REG03_L 从宽 mc 名单排除） | 24 条 −0.16 违例 | R_REG03_L 不在 mc 名单（SDC 实证） | 物理 MET **+0.02**（77 条全 MET）；但 RTL 两级同步器**未实施**→U2 CDC open |
+| 6 | **AABB·VPS 窄 mc→组宽收窄** | PIX_DATA_reg_* 23 条 −0.43 | 组宽收窄（mc 2-setup） | **23 条全消**；96 条全 MET 组 worst **+1.53** |
+| 7 | **WCLK1 配置域 mc** | 139 条 −1.45 | 宽 mc 覆盖 | **139 条全消**；774 条全 MET worst **+0.97** |
+| 8 | **五项计数全等**（cpuwr 383/DPLC 5 时钟/weight3×3/MONBLOCK 116/其余） | 与 1003 一致 | 与 0922 一致 | 约束代际无漂移（L518 标签差异外全同） |
 
-## 5. U1-U14 遗留清单（精简）
+## C. 总结论
+
+### 452→11 八项加法闭合
+
+| 措施 | 0922 条数 | 1003 归宿 | 证据 |
+|---|---:|---|---|
+| RTL 打拍 v4.2/v3 | 56 | 全 MET（−1.31→+2.10/0.00） | max.rpt DATA_ALIGN_PRE_D 族 |
+| cpuwr 宽 mc（RX 域） | 65 | 起点不再上报 | SDC mc 32→26 |
+| cpuwr 宽 mc（WCLK1） | 139 | 774 条全 MET +0.97 | max.rpt CONFIG_DATA |
+| AABB·VPS 窄 mc | 23 | 96 条全 MET +1.53 | max.rpt PIX_DATA |
+| DPLC bit mc | 2 | 消失，后继 +1.01 | SDC -from R_REG06_F |
+| BOE 域迁移 | 26 | OSC 组 +9.93/+12.37 | max.rpt L107630 |
+| BKDU（=R_REG03_L） | 24 | 77 条全 MET +0.02 | max.rpt R_REG03_L 族 |
+| LONG 数据通路收敛 | 117 | 全物理 MET +0.00~+0.02 | 打拍+weight3 综合 |
+| **合计** | **452** | **11 条新 −0.01 ICG（非旧残留）** | max.rpt L3187-3971 |
+
+### 符合性终判
+
+**✅ 四路一致：1006V0 包 RTL 就是 1003 DC run 实际使用的版本。** 81/81 编译清单 + 541 基名零孤儿 + 97.1% 覆盖率 + 0922 负对照 4 项 ×0。
+
+### 整树替换
+
+commit `7dad5525`（38 文件），本地≡1003 编译版，452→11 时序结论直接继承。
+
+---
+
+## U1-U14 遗留清单
 
 | # | 严重度 | 发现 | 状态 |
 |---|---|---|---|
-| U1 | 🔴 | LONG_ENCODING_OUTPUT 双声明 PIX_DATA_ASYNC | 删 L50 修（DC 容忍但规范不合规） |
+| U1 | 🔴 | LONG_ENCODING_OUTPUT 双声明 PIX_DATA_ASYNC（L47/L50） | 删 L50 修（DC 容忍但规范不合规） |
 | U2 | 🔴 | BKDU 两级同步器双侧未实施 | 同步时叠加（走三关） |
 | U3 | 🟡 | BCC prescale 0x1b/5bit 判码 | 需 BOE DV 回归 |
-| U4 | 🟡 | SMT_CS R_CH_SEL 编码移位 | 需寄存器文档+DV 同步 |
+| U4 | 🟡 | SMT_CS R_CH_SEL 编码移位 | 需寄存器文档+DV |
 | U5 | 🟡 | CHPI_SD_CTRL LONG_END_EVENT 修订 | 需 DV 回归 |
-| U6 | 🟡 | LENB_ENABLE_1 恒 1 占位 | 服务器待完成（OPT-1206 已消化） |
+| U6 | 🟡 | LENB_ENABLE_1 恒 1（OPT-1206 已消化） | 服务器待完成 |
 | U7 | 🟡 | 死位批量激活→下轮 DC 新违例候选 | 下轮约束评审挂账 |
 | U8 | 🟡 | I2C CG vs AND 分叉 | 待 ymzhu 拍板 |
 | U9-U14 | 🟢 | 重复副本/em-dash/端口+667/I2C hold/swp/MONBLOCK 0x02 | 低优先 |
 
-## 6. 整树替换执行与含义
-
-- **commit**：`7dad5525`（38 文件整树替换）
-- **含义**：本地 HDL ≡ 1003 编译版 → 452→11 的时序结论直接继承，无"未经验证新改动"风险
-- **放行 6 条件**：U1 修+语法关 / BKDU 两级同步器三关 / U3-U5 DV 确认 / U8 ymzhu 拍板 / U7+六时钟约束挂账 / 三关验收+CHANGES 双轨
-- **遗留 5 项**：BCC 参数/SMT_CS 编码/CHPI_SD_CTRL/I2C 方向/死位补评
-
-## 7. 方法论沉淀
-
-**rpt 端点查不到 ≠ 没编译**：正确证据源是 dc.log 编译清单（`Compiling source file`）+ HDL-193 模块构建 + DFT 寄存器表 + 网表 cell 实体。max.rpt 仅含时序约束覆盖的路径端点，控制信号/常量消除 FF/组合逻辑构造不出现在 timing path 中。
-
-**多层交叉审查教训**：本次四路版本对比中，t12/t14/t15 三处定性误判（LENB 归属/I2C 方向/TOP wrapper）均被后续符合性审查+队长实证推翻——**单一模型的"推断"不可作为终判，必须经编译日志/网表/哈希等物理证据交叉**。
-
 ---
 
-*素材路径：`script/pack_1006v0_rtl_extract/`（CONFORM_1006V0_VERDICT.md + REPORT_1006V0_MERGED.md + CONFORM_*.md ×4）*
+*素材：`script/pack_1006v0_rtl_extract/`（MERGED/VERDICT/CONFORM×4）+ `script/dc_1004_review/OPT_EFFECTIVENESS_1004.md`*
 
-<!-- ymzhu 2026-10-06 13:35 -->
+<!-- ymzhu 2026-10-06 13:45 -->
   </script>
   <script>
     (function(){
