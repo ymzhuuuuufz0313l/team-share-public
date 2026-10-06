@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>十七、RTL 1006 整树同步 · 版本对比与符合性终判</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./css/style.css">
+  <script src="./js/marked.min.js"></script>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a class="navbar-brand" href="./">HK1V11_FLOW_PRACTICE</a>
+      <div class="navbar-links" id="navbar-links"></div>
+    </div>
+  </nav>
+  <div class="container with-toc">
+    <aside class="toc-wrapper"><div class="toc" id="toc"></div></aside>
+    <div class="content">
+      <article class="article" id="article"></article>
+      <div class="page-nav" id="page-nav"></div>
+      <div class="footer">HK1V11 SYNTHESIS / SIGNOFF PRACTICE · AUTHOR ymzhuuuu · UPDATED 2026-10-06</div>
+    </div>
+  </div>
+  <script type="text/template" id="md">
+# 十七、RTL 1006 整树同步 · 版本对比与符合性终判
+
+> **实战复盘 · 按时间线 · 2026-10-06 · 对象 `pack_1006v0_rtl_extract`（服务器 10-06 ymzhu 树）vs 本地 `HDL/`（1004 交付态）+ `rep_dir_1003`（10-02 DC 编译版）**
+>
+> **方法**：agent-teams 四路版本对比（t12-t15）→ 合并仲裁 → K3 终审（R1-R5 修正）→ 四路符合性速核（t18-t21）→ 队长三项仲裁。全程只读 + 指纹交叉。
+> 素材：`CONFORM_1006V0_VERDICT.md`（终判）+ `REPORT_1006V0_MERGED.md`（合并仲裁版）。
+
+---
+
+## 1. 终判 headline
+
+**✅ 四路一致：1006V0 包 RTL 就是 1003 DC run（2026-10-02 23:17 编译）实际使用的版本。未发现任何行为级分歧。**
+
+| 关键数字 | 值 | 来源 |
+|---|---|---|
+| 正向指纹匹配 | 81/81 basename 全中 | t18 编译清单 |
+| 反向回溯 | **541 个报告寄存器基名全部命中、零孤儿族** | t19 |
+| 全量覆盖率 | 34 diff 文件新增 reg 53 个 → **33/34 = 97.1%** 可验证 | t20 |
+| 0922 负对照 | LENB_ENABLE/VBK_stream/ACS_CNT/ICG_DPLC 在 0922 全 ×0（区分度成立） | t20 |
+| 双声明容忍 | dc.log ^Error=0、redeclaration=0（DC N-2017.09 实测完全容忍） | 队长实证+t20 |
+
+## 2. 验证链
+
+四路版本对比（t12 GLM-5.3 / t13 flash / t14 flashx / t15 Qwen）→ 合并仲裁（GLM-5.3 亲测 5 项证据）→ K3 终审（R1-R5 修正：SHORT_ALIGN 功能端口/BUFFER_I EOL/LENB 行号/MONBLOCK 0x02/I2C 网表反证）→ 四路符合性速核（t18-t21 各自独立 8-22 指纹）→ 队长三项仲裁（双声明降级/LENB 1003 已含/U6=OPT-1206）。
+
+**三项关键推翻**：
+1. LENB_CTRL / EOL / VBK_EN / ACS = **1003 编译树已含**（推翻 t14/t16/t17 "1006 增量"定性）
+2. U6 LENB_ENABLE_1 恒 1 = **DC OPT-1206 常量消除**（非隐患）
+3. 双声明 U1 = **DC 容忍、不阻塞编译**（降级为 LRM/可移植性规范问题）
+
+## 3. 证据矩阵
+
+| 维度 | 结果 | 来源 |
+|---|---|---|
+| 正向指纹 | t18: 17✅+1⚠️；t19: 17✅+1 弱；t20: 22✅+4⚠️+0❌；t21: 8/10 强匹配 | 四路 |
+| 反向回溯 | **541 基名零孤儿**；12 族零分歧；11 项零分歧 | t18/t19/t20 |
+| 编译清单 | **81/81 basename 全中**；LENB_CTRL.v L1966 编译实录 | t18/t19 |
+| 全量覆盖率 | **97.1%**（33/34）；19 组合+1 误报+1 静默 FF | t20 |
+| 0922 负对照 | 4 项全 ×0（区分度成立） | t20 |
+| 双声明容忍 | Error=0, redeclaration=0 | 队长+t20 |
+
+## 4. 关键仲裁记录
+
+| # | 仲裁项 | 先前定性 | 终判 | 证据 |
+|---|---|---|---|---|
+| 1 | LENB/EOL/VBK/ACS 归属 | "1006 增量"（t14/t16/t17） | **1003 已含** | dc.log L1966/L4687/L6131 + 网表 234 处 |
+| 2 | U6 LENB_ENABLE_1 | "EOL 保护不生效" | **OPT-1206 常量消除**（构造性不生效，已知状态） | dc.log L12834 |
+| 3 | U1 双声明 | "编译阻塞" | **DC 容忍**（LRM 规范/可移植性问题） | dc.log ^Error=0 |
+| 4 | I2C CG vs AND | "本地领先"（t12）/ "1003 用 CG"（t14） | **服务器一贯 AND、本地 CG 0920 后未上抛** | 网表 L510/L512 + git log 6a1da1d1 |
+| 5 | TOP/LOGIC_CENTER.v | "新 wrapper"（t12） | **逐字节重复副本**（不入编译） | MD5 哈希一致 |
+
+## 5. U1-U14 遗留清单（精简）
+
+| # | 严重度 | 发现 | 状态 |
+|---|---|---|---|
+| U1 | 🔴 | LONG_ENCODING_OUTPUT 双声明 PIX_DATA_ASYNC | 删 L50 修（DC 容忍但规范不合规） |
+| U2 | 🔴 | BKDU 两级同步器双侧未实施 | 同步时叠加（走三关） |
+| U3 | 🟡 | BCC prescale 0x1b/5bit 判码 | 需 BOE DV 回归 |
+| U4 | 🟡 | SMT_CS R_CH_SEL 编码移位 | 需寄存器文档+DV 同步 |
+| U5 | 🟡 | CHPI_SD_CTRL LONG_END_EVENT 修订 | 需 DV 回归 |
+| U6 | 🟡 | LENB_ENABLE_1 恒 1 占位 | 服务器待完成（OPT-1206 已消化） |
+| U7 | 🟡 | 死位批量激活→下轮 DC 新违例候选 | 下轮约束评审挂账 |
+| U8 | 🟡 | I2C CG vs AND 分叉 | 待 ymzhu 拍板 |
+| U9-U14 | 🟢 | 重复副本/em-dash/端口+667/I2C hold/swp/MONBLOCK 0x02 | 低优先 |
+
+## 6. 整树替换执行与含义
+
+- **commit**：`7dad5525`（38 文件整树替换）
+- **含义**：本地 HDL ≡ 1003 编译版 → 452→11 的时序结论直接继承，无"未经验证新改动"风险
+- **放行 6 条件**：U1 修+语法关 / BKDU 两级同步器三关 / U3-U5 DV 确认 / U8 ymzhu 拍板 / U7+六时钟约束挂账 / 三关验收+CHANGES 双轨
+- **遗留 5 项**：BCC 参数/SMT_CS 编码/CHPI_SD_CTRL/I2C 方向/死位补评
+
+## 7. 方法论沉淀
+
+**rpt 端点查不到 ≠ 没编译**：正确证据源是 dc.log 编译清单（`Compiling source file`）+ HDL-193 模块构建 + DFT 寄存器表 + 网表 cell 实体。max.rpt 仅含时序约束覆盖的路径端点，控制信号/常量消除 FF/组合逻辑构造不出现在 timing path 中。
+
+**多层交叉审查教训**：本次四路版本对比中，t12/t14/t15 三处定性误判（LENB 归属/I2C 方向/TOP wrapper）均被后续符合性审查+队长实证推翻——**单一模型的"推断"不可作为终判，必须经编译日志/网表/哈希等物理证据交叉**。
+
+---
+
+*素材路径：`script/pack_1006v0_rtl_extract/`（CONFORM_1006V0_VERDICT.md + REPORT_1006V0_MERGED.md + CONFORM_*.md ×4）*
+
+<!-- ymzhu 2026-10-06 13:35 -->
+  </script>
+  <script>
+    (function(){
+      var tpl = document.getElementById('md');
+      var art = document.getElementById('article');
+      art.innerHTML = marked.parse(tpl.textContent);
+      // TOC
+      var toc = document.getElementById('toc');
+      var heads = art.querySelectorAll('h2, h3');
+      var tocHtml = '';
+      heads.forEach(function(h){
+        var id = h.textContent.replace(/[^a-zA-Z0-9\u4e00-\u9fff]/g,'').substring(0,20);
+        h.id = id;
+        var cls = h.tagName === 'H2' ? 'toc-h2' : 'toc-h3';
+        tocHtml += '<a class="' + cls + '" href="#' + id + '">' + h.textContent + '</a>';
+      });
+      toc.innerHTML = tocHtml;
+      // Page nav
+      var pn = document.getElementById('page-nav');
+      pn.innerHTML = '<div class="page-nav-inner"><a href="./ch16-dc1004-review.html" class="prev">← 十六、1004 DC 复核</a><a href="./" class="next">返回首页 →</a></div>';
+    })();
+  </script>
+</body>
+</html>
