@@ -581,6 +581,24 @@ main .dsw-pill.on{background:var(--amber);border-color:var(--amber);color:#0d152
 @media(max-width:700px){.actgrid{grid-template-columns:repeat(2,1fr)}}
 /* 环形中心大数字加大档（冲击力改造12：状态环形中心 28px 衬线） */
 .dc-top.xl{font-size:28px}
+/* ============ 16. 任意日拖动条（date_slider 通用组件 · 琥珀 44px 触摸目标） ============ */
+.dslider{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 var(--s3)}
+.ds-cap{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--muted);letter-spacing:.12em;white-space:nowrap}
+.ds-btn{width:36px;height:36px;border-radius:50%;border:1px solid var(--line);background:var(--surface);color:var(--accent-strong);font-size:18px;line-height:1;cursor:pointer;flex:none;transition:border-color .15s,background .15s;-webkit-tap-highlight-color:transparent}
+.ds-btn:hover{border-color:var(--accent);background:var(--accent-soft)}
+.ds-range{flex:1 1 220px;min-width:150px;-webkit-appearance:none;appearance:none;height:6px;border-radius:3px;background:linear-gradient(90deg,var(--accent-soft),var(--amber));outline:none;cursor:pointer}
+.ds-range::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:22px;height:22px;border-radius:50%;background:var(--amber);border:3px solid var(--surface);box-shadow:0 1px 6px rgba(180,83,9,.45);cursor:pointer;transition:transform .12s}
+.ds-range::-webkit-slider-thumb:hover{transform:scale(1.12)}
+.ds-range::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:var(--amber);border:3px solid var(--surface);box-shadow:0 1px 6px rgba(180,83,9,.45);cursor:pointer}
+.ds-date{font-family:"IBM Plex Mono",monospace;font-size:15px;font-weight:600;color:var(--accent-strong);font-variant-numeric:tabular-nums;min-width:106px;text-align:center;flex:none}
+.ds-sel{padding:8px 12px;border:1px solid var(--line);border-radius:99px;background:var(--surface);color:var(--text);font-size:13px;cursor:pointer;max-width:190px}
+.ds-sel:focus,.ds-range:focus-visible{outline:none;box-shadow:0 0 0 3px var(--accent-soft)}
+@media(max-width:700px){
+  .ds-btn{width:44px;height:44px;font-size:20px}
+  .ds-sel{min-height:44px;font-size:16px;flex:1 1 140px;max-width:none}
+  .ds-range{flex:1 1 100%;order:5}   /* 滑块独占一行：拖动不误触其他控件 */
+  .ds-date{flex:1;text-align:right}
+}
 </style><style>
 /* 股票弹窗 */
 .stk{cursor:pointer;border-bottom:1px solid var(--accent)}
@@ -1013,6 +1031,22 @@ document.querySelectorAll('.search').forEach(function(inp){
     segs.forEach(function(s){s.addEventListener('mouseenter',function(){hi(idx(s))});s.addEventListener('mouseleave',clear)});
     lgs.forEach(function(l){l.addEventListener('mouseenter',function(){hi(idx(l))});l.addEventListener('mouseleave',clear)});
   });
+  /* 任意日拖动条（date_slider 通用组件）：TJDS.bind(id, dates, cb) ——
+     滑块 input / ‹› 按钮 / 下拉 change 三路输入统一归一到 cb(dateStr, idx)；
+     dates 由消费方传入（通常 window.TJ_DAILY.dates），组件自身不持有数据。 */
+  window.TJDS={bind:function(id,dates,cb){
+    var box=document.getElementById(id);if(!box||!dates||!dates.length||typeof cb!=='function')return;
+    var rng=box.querySelector('.ds-range'),sel=box.querySelector('.ds-sel'),lbl=box.querySelector('.ds-date');
+    if(!rng||!sel||!lbl)return;
+    function set(i,fire){i=Math.max(0,Math.min(dates.length-1,Math.round(i)));
+      rng.value=i;sel.selectedIndex=i;lbl.textContent=dates[i];
+      if(fire){try{cb(dates[i],i)}catch(e){}}}
+    rng.addEventListener('input',function(){set(+rng.value,true)});
+    sel.addEventListener('change',function(){set(sel.selectedIndex,true)});
+    [].forEach.call(box.querySelectorAll('.ds-btn'),function(b){
+      b.addEventListener('click',function(){set(+rng.value+(+b.getAttribute('data-ds')||0),true)});
+    });
+  }};
 })();
 </script>
 <script>if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(function(e){})</script><script src="assets/stocks.js"></script>
