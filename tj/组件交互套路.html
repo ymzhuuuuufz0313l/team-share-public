@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"><title>交易台账 · 交易复盘系统</title><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23b45309'/%3E%3Ctext x='32' y='43' font-family='Menlo,Consolas,monospace' font-size='27' font-weight='700' fill='%23fff' text-anchor='middle'%3ETJ%3C/text%3E%3C/svg%3E"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0"><script>try{var _tj=localStorage.getItem('tj-theme');if(_tj==='dark'||_tj==='light')document.documentElement.setAttribute('data-theme',_tj)}catch(e){}</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0d1526"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><link rel="apple-touch-icon" href="assets/icon-192.png"><style>
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"><title>组件交互套路 · 交易复盘系统</title><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23b45309'/%3E%3Ctext x='32' y='43' font-family='Menlo,Consolas,monospace' font-size='27' font-weight='700' fill='%23fff' text-anchor='middle'%3ETJ%3C/text%3E%3C/svg%3E"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0"><script>try{var _tj=localStorage.getItem('tj-theme');if(_tj==='dark'||_tj==='light')document.documentElement.setAttribute('data-theme',_tj)}catch(e){}</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0d1526"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><link rel="apple-touch-icon" href="assets/icon-192.png"><style>
 /* ============ 0. 间距标尺 / 主题变量 ============ */
 :root{--s1:4px;--s2:8px;--s3:12px;--s4:16px;--s5:24px;--s6:32px;--s8:48px;
 --bg:#f4f1ea;--surface:#fffdf7;--text:#1c2534;--muted:#667180;--accent:#b45309;--accent-strong:#92400e;--accent-soft:#f7e8d4;--ink:#0d1526;--ink2:#131f38;--line:#ddd6c8;--chip:#efe9db;--shadow:0 1px 2px rgba(28,37,52,.04),0 16px 40px rgba(28,37,52,.08);--pos:#15803d;--neg:#dc2626;--side-w:236px;
@@ -659,7 +659,7 @@ table.data tbody tr:has(.stk){cursor:pointer}
   .c-lab{padding:1px 6px;margin-left:6px}
   .tok,.twait{margin-left:4px}
 }
-</style></head><body class="wide"><aside class="sidenav"><svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><symbol id="ic-nav" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5 13 13l-4.5 2.5L11 11z"/></symbol><symbol id="ic-book" viewBox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 18.5A2.5 2.5 0 0 1 6.5 16H20"/><path d="M8.5 7.5h8M8.5 10.5h5"/></symbol><symbol id="ic-db" viewBox="0 0 24 24"><ellipse cx="12" cy="5.5" rx="8" ry="2.8"/><path d="M4 5.5v13c0 1.55 3.58 2.8 8 2.8s8-1.25 8-2.8v-13"/><path d="M4 12c0 1.55 3.58 2.8 8 2.8s8-1.25 8-2.8"/></symbol><symbol id="ic-box" viewBox="0 0 24 24"><path d="M3.5 8 12 4l8.5 4v8L12 20l-8.5-4z"/><path d="M3.5 8 12 12l8.5-4M12 12v8"/></symbol></defs></svg><div class="side-brand"><div class="b1">TRADING·JOURNAL</div><div class="b2">五步法 × 资金流 × 纪律</div></div><div class="sgroup"><div class="gl gli"><svg class="glicon" aria-hidden="true"><use href="#ic-nav"/></svg>导航</div><a href="index.html">⌂ 总览</a><a href="gegu.html">★ 全部个股</a></div><div class="sgroup"><div class="gl gli"><svg class="glicon" aria-hidden="true"><use href="#ic-book"/></svg>台账·规则</div><a href="luojiku.html">股票逻辑库</a><a href="规律手册.html">规律手册 v0.7</a><a href="工作流程.html">工作流程</a><a href="持仓逻辑档案.html">持仓逻辑档案</a><a href="主力资金CT-函数解读.html">主力资金CT解读</a><a href="冰封黄白线-函数解读.html">冰封黄白线解读</a></div><div class="sgroup collapsible"><div class="gl gli"><svg class="glicon" aria-hidden="true"><use href="#ic-db"/></svg>台账·数据</div><button class="sg-toggle" type="button" aria-expanded="false"><span>数据总览</span><span class="caret" aria-hidden="true">▾</span></button><div class="sg-sub"><a href="持仓快照.html">⚡ 持仓快照</a><a href="成交流水.html">成交流水</a><a href="股票汇总.html">股票汇总</a><a href="已清仓全历史.html">已清仓 492 笔</a><a href="成交流水全历史.html">流水 3,608 条</a><a href="账户总览.html">账户全史</a><a href="收益追踪.html">收益追踪</a><a href="研报候选池.html">研报候选池</a></div></div><div class="sgroup"><div class="gl gli"><svg class="glicon" aria-hidden="true"><use href="#ic-box"/></svg>归档</div><a href="panzhong.html">盘中判定</a><a href="panhou.html">盘后复盘</a><a href="yanbao.html">研报审稿</a><a href="taizhang.html" class="active">交易台账</a></div><button id="themeToggle" class="theme-toggle" title="切换深浅色主题">◐ 主题</button><div class="side-foot">DECISION SUPPORT<br>NOT INVESTMENT ADVICE<br>SINCE 2020-01</div></aside>
+</style></head><body><aside class="sidenav"><svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><symbol id="ic-nav" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5 13 13l-4.5 2.5L11 11z"/></symbol><symbol id="ic-book" viewBox="0 0 24 24"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 18.5A2.5 2.5 0 0 1 6.5 16H20"/><path d="M8.5 7.5h8M8.5 10.5h5"/></symbol><symbol id="ic-db" viewBox="0 0 24 24"><ellipse cx="12" cy="5.5" rx="8" ry="2.8"/><path d="M4 5.5v13c0 1.55 3.58 2.8 8 2.8s8-1.25 8-2.8v-13"/><path d="M4 12c0 1.55 3.58 2.8 8 2.8s8-1.25 8-2.8"/></symbol><symbol id="ic-box" viewBox="0 0 24 24"><path d="M3.5 8 12 4l8.5 4v8L12 20l-8.5-4z"/><path d="M3.5 8 12 12l8.5-4M12 12v8"/></symbol></defs></svg><div class="side-brand"><div class="b1">TRADING·JOURNAL</div><div class="b2">五步法 × 资金流 × 纪律</div></div><div class="sgroup"><div class="gl gli"><svg class="glicon" aria-hidden="true"><use href="#ic-nav"/></svg>导航</div><a href="index.html">⌂ 总览</a><a href="gegu.html">★ 全部个股</a></div><div class="sgroup"><div class="gl gli"><svg class="glicon" aria-hidden="true"><use href="#ic-book"/></svg>台账·规则</div><a href="luojiku.html">股票逻辑库</a><a href="规律手册.html">规律手册 v0.7</a><a href="工作流程.html">工作流程</a><a href="持仓逻辑档案.html">持仓逻辑档案</a><a href="主力资金CT-函数解读.html">主力资金CT解读</a><a href="冰封黄白线-函数解读.html">冰封黄白线解读</a></div><div class="sgroup collapsible"><div class="gl gli"><svg class="glicon" aria-hidden="true"><use href="#ic-db"/></svg>台账·数据</div><button class="sg-toggle" type="button" aria-expanded="false"><span>数据总览</span><span class="caret" aria-hidden="true">▾</span></button><div class="sg-sub"><a href="持仓快照.html">⚡ 持仓快照</a><a href="成交流水.html">成交流水</a><a href="股票汇总.html">股票汇总</a><a href="已清仓全历史.html">已清仓 492 笔</a><a href="成交流水全历史.html">流水 3,608 条</a><a href="账户总览.html">账户全史</a><a href="收益追踪.html">收益追踪</a><a href="研报候选池.html">研报候选池</a></div></div><div class="sgroup"><div class="gl gli"><svg class="glicon" aria-hidden="true"><use href="#ic-box"/></svg>归档</div><a href="panzhong.html">盘中判定</a><a href="panhou.html">盘后复盘</a><a href="yanbao.html">研报审稿</a><a href="taizhang.html">交易台账</a></div><button id="themeToggle" class="theme-toggle" title="切换深浅色主题">◐ 主题</button><div class="side-foot">DECISION SUPPORT<br>NOT INVESTMENT ADVICE<br>SINCE 2020-01</div></aside>
 <script>
 (function(){
   var KEY='tj-datagroup-open';
@@ -679,7 +679,325 @@ table.data tbody tr:has(.stk){cursor:pointer}
   });
 })();
 </script>
-<div class="layout"><main><p class="crumb"><a href="index.html">总览</a> / <b>交易台账</b></p><h1 class="page">交易台账</h1><p class="sub">规则 · 底账 · 逻辑 · 追踪</p><nav class="datesw" aria-label="全站数据日期切换"><span class="dsw-cap">⏱ 数据日期</span><a class="dsw-pill on" href="index.html" title="最新快照日 2026-09-30 · 前往总览">最新</a><a class="dsw-pill" href="index-2026-09-24.html" title="2026-09-24 总览回溯页（本页内容不随日期变）">09/24</a><a class="dsw-pill" href="index-2026-09-28.html" title="2026-09-28 总览回溯页（本页内容不随日期变）">09/28</a><a class="dsw-pill" href="index-2026-09-29.html" title="2026-09-29 总览回溯页（本页内容不随日期变）">09/29</a></nav><div class="chips metachips"><span class="chip">19 个条目</span><span class="chip">3 组分类</span></div><h2 class="sec">当前持仓</h2><div class='tblwrap'><table class='data t-hold'><thead><tr><th>代码</th><th>名称</th><th>持有金额</th><th>持有盈亏</th><th>累计盈亏</th><th>仓位占比</th></tr></thead><tbody><tr><td data-label='代码'><span class="stk" data-code="688627">688627</span></td><td data-label='名称'><span class="stk" data-code="688627">精智达</span></td><td class='num' data-label='持有金额'>181,381.20</td><td class='num' data-label='持有盈亏'>-42,590.99</td><td class='num' data-label='累计盈亏'>-35,655.71</td><td class='num' data-label='仓位占比'><span class='poscell'><span class='mono'>+28.14%</span><span class='pbar'><b style='width:28.14%'></b></span></span></td></tr><tr><td data-label='代码'><span class="stk" data-code="300806">300806</span></td><td data-label='名称'><span class="stk" data-code="300806">斯迪克</span></td><td class='num' data-label='持有金额'>143,670.00</td><td class='num' data-label='持有盈亏'>+132,836.41</td><td class='num' data-label='累计盈亏'>+140,464.60</td><td class='num' data-label='仓位占比'><span class='poscell'><span class='mono'>+22.29%</span><span class='pbar'><b style='width:22.29%'></b></span></span></td></tr><tr><td data-label='代码'><span class="stk" data-code="688008">688008</span></td><td data-label='名称'><span class="stk" data-code="688008">澜起科技</span></td><td class='num' data-label='持有金额'>128,466.85</td><td class='num' data-label='持有盈亏'>-3,626.12</td><td class='num' data-label='累计盈亏'>-3,626.12</td><td class='num' data-label='仓位占比'><span class='poscell'><span class='mono'>+19.93%</span><span class='pbar'><b style='width:19.93%'></b></span></span></td></tr><tr><td data-label='代码'><span class="stk" data-code="688797">688797</span></td><td data-label='名称'><span class="stk" data-code="688797">臻宝科技</span></td><td class='num' data-label='持有金额'>110,652.80</td><td class='num' data-label='持有盈亏'>-9,931.15</td><td class='num' data-label='累计盈亏'>-9,931.15</td><td class='num' data-label='仓位占比'><span class='poscell'><span class='mono'>+17.17%</span><span class='pbar'><b style='width:17.17%'></b></span></span></td></tr><tr><td data-label='代码'><span class="stk" data-code="688037">688037</span></td><td data-label='名称'><span class="stk" data-code="688037">芯源微</span></td><td class='num' data-label='持有金额'>69,053.97</td><td class='num' data-label='持有盈亏'>-6,403.56</td><td class='num' data-label='累计盈亏'>-6,403.56</td><td class='num' data-label='仓位占比'><span class='poscell'><span class='mono'>+10.71%</span><span class='pbar'><b style='width:10.71%'></b></span></span></td></tr><tr><td data-label='代码'><span class="stk" data-code="588780">588780</span></td><td data-label='名称'><span class="stk" data-code="588780">芯片设计</span></td><td class='num' data-label='持有金额'>1,104.00</td><td class='num' data-label='持有盈亏'>-4,253.18</td><td class='num' data-label='累计盈亏'>-8,836.74</td><td class='num' data-label='仓位占比'><span class='poscell'><span class='mono'>+0.17%</span><span class='pbar'><b style='width:0.17%'></b></span></span></td></tr><tr><td data-label='代码'><span class="stk" data-code="588080">588080</span></td><td data-label='名称'><span class="stk" data-code="588080">科创板50</span></td><td class='num' data-label='持有金额'>313.80</td><td class='num' data-label='持有盈亏'>-5,078.63</td><td class='num' data-label='累计盈亏'>-29,517.65</td><td class='num' data-label='仓位占比'><span class='poscell'><span class='mono'>+0.05%</span><span class='pbar'><b style='width:0.05%'></b></span></span></td></tr><tr><td data-label='代码'><span class="stk" data-code="589020">589020</span></td><td data-label='名称'><span class="stk" data-code="589020">KC半导体</span></td><td class='num' data-label='持有金额'>221.20</td><td class='num' data-label='持有盈亏'>-7,957.51</td><td class='num' data-label='累计盈亏'>-6,297.18</td><td class='num' data-label='仓位占比'><span class='poscell'><span class='mono'>+0.03%</span><span class='pbar'><b style='width:0.03%'></b></span></span></td></tr><tr class='sumrow'><td colspan='2' data-label='代码'><b>合计（8 只）</b></td><td class='num' data-label='持有金额'><b>634,863.82</b></td><td class='num'></td><td class='num'></td><td class='num'></td></tr></tbody></table></div><h2 class="sec">规则与流程<span class="secno">01</span></h2><div class="chapter-grid"><a class="chapter-card" href="主力资金CT-函数解读.html"><span class="ccbadge">4 篇</span><div class="chead"><span class="title">主力资金CT-函数解读</span><span class="num">LEDGER-101</span></div><div class="desc">交易台账</div><span class="go" aria-hidden="true">→</span></a><a class="chapter-card" href="冰封黄白线-函数解读.html"><span class="ccbadge">4 篇</span><div class="chead"><span class="title">冰封黄白线-函数解读</span><span class="num">LEDGER-102</span></div><div class="desc">交易台账</div><span class="go" aria-hidden="true">→</span></a><a class="chapter-card" href="工作流程.html"><span class="ccbadge">4 篇</span><div class="chead"><span class="title">工作流程</span><span class="num">LEDGER-103</span></div><div class="desc">交易台账</div><span class="go" aria-hidden="true">→</span></a><a class="chapter-card" href="规律手册.html"><span class="ccbadge">4 篇</span><div class="chead"><span class="title">规律手册</span><span class="num">LEDGER-118</span></div><div class="desc">交易台账</div><span class="go" aria-hidden="true">→</span></a></div><h2 class="sec">持仓与研究池<span class="secno">02</span></h2><div class="chapter-grid"><a class="chapter-card" href="持仓逻辑档案.html"><span class="ccbadge">2 篇</span><div class="chead"><span class="title">持仓逻辑档案</span><span class="num">LEDGER-208</span></div><div class="desc">交易台账</div><span class="go" aria-hidden="true">→</span></a><a class="chapter-card" href="研报候选池.html"><span class="ccbadge">2 篇</span><div class="chead"><span class="title">研报候选池</span><span class="num">LEDGER-214</span></div><div class="desc">交易台账</div><span class="go" aria-hidden="true">→</span></a></div><h2 class="sec">数据底账<span class="secno">03</span></h2><div class="chapter-grid"><a class="chapter-card" href="已清仓全历史.html"><span class="ccbadge">7 个文件 · 持仓 8 只</span><div class="chead"><span class="title">已清仓全历史</span><span class="num">LEDGER-304</span></div><div class="desc">交易台账</div><span class="go" aria-hidden="true">→</span></a><a class="chapter-card" href="成交流水.html"><span class="ccbadge">7 个文件 · 持仓 8 只</span><div class="chead"><span class="title">成交流水</span><span class="num">LEDGER-305</span></div><div class="desc">交易台账</div><span class="go" aria-hidden="true">→</span></a><a class="chapter-card" href="成交流水全历史.html"><span class="ccbadge">7 个文件 · 持仓 8 只</span><div class="chead"><span class="title">成交流水全历史</span><span class="num">LEDGER-306</span></div><div class="desc">交易台账</div><span class="go" aria-hidden="true">→</span></a><a class="chapter-card" href="持仓快照.html"><span class="ccbadge">7 个文件 · 持仓 8 只</span><div class="chead"><span class="title">持仓快照</span><span class="num">LEDGER-307</span></div><div class="desc">交易台账</div><span class="go" aria-hidden="true">→</span></a><a class="chapter-card" href="收益追踪.html"><span class="ccbadge">7 个文件 · 持仓 8 只</span><div class="chead"><span class="title">收益追踪</span><span class="num">LEDGER-309</span></div><div class="desc">交易台账</div><span class="go" aria-hidden="true">→</span></a><a class="chapter-card" href="股票汇总.html"><span class="ccbadge">7 个文件 · 持仓 8 只</span><div class="chead"><span class="title">股票汇总</span><span class="num">LEDGER-317</span></div><div class="desc">交易台账</div><span class="go" aria-hidden="true">→</span></a><a class="chapter-card" href="账户总览.html"><span class="ccbadge">7 个文件 · 持仓 8 只</span><div class="chead"><span class="title">账户总览</span><span class="num">LEDGER-319</span></div><div class="desc">交易台账</div><span class="go" aria-hidden="true">→</span></a></div><h2 class="sec">其他</h2><div class="chapter-grid"><a class="chapter-card" href="日收盘价缓存.html"><div class="chead"><span class="title">日收盘价缓存</span><span class="num">LEDGER-X01</span></div><div class="desc">交易台账</div><span class="go" aria-hidden="true">→</span></a><a class="chapter-card" href="日频权益.html"><div class="chead"><span class="title">日频权益</span><span class="num">LEDGER-X02</span></div><div class="desc">交易台账</div><span class="go" aria-hidden="true">→</span></a><a class="chapter-card" href="月度全口径盈亏.html"><div class="chead"><span class="title">月度全口径盈亏</span><span class="num">LEDGER-X03</span></div><div class="desc">交易台账</div><span class="go" aria-hidden="true">→</span></a><a class="chapter-card" href="月收盘价缓存.html"><div class="chead"><span class="title">月收盘价缓存</span><span class="num">LEDGER-X04</span></div><div class="desc">交易台账</div><span class="go" aria-hidden="true">→</span></a><a class="chapter-card" href="组件交互套路.html"><div class="chead"><span class="title">组件交互套路</span><span class="num">LEDGER-X05</span></div><div class="desc">交易台账</div><span class="go" aria-hidden="true">→</span></a><a class="chapter-card" href="组件目录.html"><div class="chead"><span class="title">组件目录</span><span class="num">LEDGER-X06</span></div><div class="desc">交易台账</div><span class="go" aria-hidden="true">→</span></a></div></main></div><footer>BUILT 2026-10-07 · 数据以私有仓库为准 · 决策辅助非投资建议</footer><button id="toTop" title="回到顶部">↑</button><nav class="tabbar" aria-label="主导航"><svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><symbol id="ic-home" viewBox="0 0 24 24"><path d="M4 11.2 12 4.5l8 6.7V19a1.6 1.6 0 0 1-1.6 1.6h-3.9v-5.3h-5v5.3H5.6A1.6 1.6 0 0 1 4 19z"/></symbol><symbol id="ic-chart" viewBox="0 0 24 24"><path d="M4.5 20v-6.5M10.5 20V6.5M16.5 20v-9.5"/><path d="M3 20h18"/></symbol><symbol id="ic-folder" viewBox="0 0 24 24"><path d="M3.5 7A2 2 0 0 1 5.5 5h4.2l2 2.4h6.8a2 2 0 0 1 2 2v7.6a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z"/></symbol><symbol id="ic-arch" viewBox="0 0 24 24"><rect x="4" y="3.8" width="16" height="3.9" rx="1.1"/><path d="M5.2 7.7v10.6a2.5 2.5 0 0 0 2.5 2.5h8.6a2.5 2.5 0 0 0 2.5-2.5V7.7"/><path d="M9.8 12h4.4"/></symbol></defs></svg><a href="index.html"><svg aria-hidden="true"><use href="#ic-home"/></svg><span>总览</span></a><a href="持仓快照.html"><svg aria-hidden="true"><use href="#ic-chart"/></svg><span>持仓</span></a><a href="taizhang.html" class="active"><svg aria-hidden="true"><use href="#ic-folder"/></svg><span>数据</span></a><a href="panhou.html"><svg aria-hidden="true"><use href="#ic-arch"/></svg><span>归档</span></a></nav>
+<div class="layout"><main><p class="crumb"><a href="index.html">总览</a> / 交易台账 / <b>组件交互套路</b></p><article><h1>组件交互套路登记册（给未来的更新用 · 2026-10-07 建）</h1>
+<blockquote>
+<p>目的：每张图的交互模式在此登记。<strong>日常数据更新只需重建，不碰代码</strong>；只有新增图/改交互才需要按本册套路写。目标是不随时间推移退回"全部重来"。
+维护规则：每新增/修改一个图的交互，就在 §3 登记表加/改一行，并在 §5 断言红线核对一遍。</p>
+</blockquote>
+<h2>1. 五大交互套路（house style）</h2>
+<h3>套路A · 时间窗口（从/到 + 快捷胶囊 + localStorage）</h3>
+<ul>
+<li><strong>适用</strong>：按清仓日/月份聚合的分布图、榜单、节奏图（"换个时间段看画像"）。</li>
+<li><strong>五件套</strong>：①预设胶囊（复用 <code>.ov-tab</code>，含"(默认)"字样的那枚=静态口径）②从/到日期下拉（<code>select</code>，移动端 <code>min-height:44px;font-size:16px</code>）③localStorage 键 <code>tj-&lt;页&gt;-range</code> ④构建期 payload（<code>window.TJ_*</code>，<strong>as-of 截断</strong>——变体页只发 ≤ 快照日的数据，绝不发全量靠 JS 截）⑤JS 同构重画（与 Python 静态渲染逐字节一致，数字格式化对齐 <code>_money</code> 银行家舍入）。</li>
+<li><strong>红线</strong>：静态默认渲染 = 该图历史口径<strong>逐字节不变</strong>（40+ 处数值断言的前提）；窗口化只发生在交互后。</li>
+<li><strong>已落地</strong>：复购散点 <code>tj-sct-range</code>（默认924至今）、gegu 三图 <code>tj-gw-range</code>（默认全历史）、已清仓页 <code>tj-clr-range</code>（默认近14月）、首页月度柱 <code>tj-mbm-win</code>（默认近12月）、成交流水强度条 <code>tj-rfi-pane</code>（三 pane 预渲染变体，默认 pane 必须 DOM 首位）。</li>
+</ul>
+<h3>套路B · 单日拖动（date_slider + TJDS.bind）</h3>
+<ul>
+<li><strong>适用</strong>：单日构成（当日盈亏构成）。数据 <code>assets/daily-engine.js</code>。</li>
+<li><strong>要点</strong>：cap 必须注明「仅本组件」——与页面级日期控件（快照日跳页、两日对比）<strong>分权</strong>，互不影响。</li>
+<li><strong>已落地</strong>：持仓快照页「今天赚的亏的都在谁身上」。</li>
+</ul>
+<h3>套路C · 两日对比（从/到区间，独立记忆）</h3>
+<ul>
+<li><strong>适用</strong>：持仓结构对比。键 <code>tj-dcmp</code>，翻回溯页不丢。已落地：持仓快照页。</li>
+</ul>
+<h3>套路D · 点击下钻（点击聚合元素 → 共享明细面板）</h3>
+<ul>
+<li><strong>适用</strong>："图给结论、点击看构成"（月柱→该月清仓单；亏损桶→该桶的票；时长桶→该桶交易）。</li>
+<li><strong>六件套</strong>：①聚合元素加 <code>data-*</code> 属性（<code>data-month</code>/<code>data-bucket</code>/<code>data-bk</code>/<code>data-bin</code>/<code>data-yr</code>/<code>data-ym</code>/<code>data-code</code>）+ 透明命中区 <code>rect.hitcol</code>（触屏可用）+ <code>cursor:pointer</code> ②事件<strong>委托</strong>在面板外层（JS 重画 innerHTML 后监听不失效）③选中态 <code>.sel</code> 类（描边高亮；再点同元素取消。<strong>例外</strong>：details 展开型/提示态面板自带反馈可省）④共享明细面板 <code>#xxx-drill</code>：<strong>必须放在会被 JS innerHTML 整体替换的容器之外</strong>；静态默认态=窗口内最近月/默认桶（构建期现算、无 JS 可读），行=<code>|盈亏|</code> 降序+合计行 ⑤窗口切换后面板<strong>复位</strong>到新窗口默认——复位逻辑挂进 <code>render()</code> 本体（localStorage 记忆恢复路径也会走 render）⑥明细行类全新命名（<code>clr-dtl-*</code>/<code>gw-dr-*</code>/<code>mbm-dr-*</code>/<code>yr-dr-*</code>），名称 <code>_esc</code> 原文（inject_modal 自动包弹窗 span），<strong>禁 <code>_zw</code></strong>（零宽字符触发 audit 1）。</li>
+<li><strong>键名注</strong>：窗口记忆键惯例 <code>tj-&lt;族&gt;-range</code>（历史原因首页月度柱为 <code>tj-mbm-win</code>，新图一律用 <code>-range</code> 后缀）。</li>
+<li><strong>已落地</strong>：已清仓页两图（<code>#clr-dtl</code>，默认=窗口内最近月）、gegu 三图（<code>#gw-drill</code>，默认=&gt;30天桶）、首页月度柱（<code>#mbm-drill</code>，默认=提示态）、账户总览年度柱（<code>details.yr-drill</code> 静态收起，无 JS 可用）。</li>
+</ul>
+<h3>套路E · tab/pane 显隐（data-show / data-pane）</h3>
+<ul>
+<li><strong>适用</strong>：同数据多口径/多窗口预设（月度柱全口径vs仅已实现、强度条30/90/180日）。</li>
+<li><strong>要点</strong>：默认 pane 必须 DOM 首位且内容=历史口径；显隐走全站 <code>data-show</code> 机制。</li>
+</ul>
+<h2>2. 数据 payload 清单（下钻/重画的数据从哪来）</h2>
+<table>
+<thead>
+<tr>
+<th>payload</th>
+<th>内容</th>
+<th>挂载页</th>
+<th>生成</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>assets/closed-engine{,-日}.js</code></td>
+<td><code>TJ_CLOSED={asof,rows:[日,码,名,pnl×100,率×10000,天数]}</code>，代码/名称 \uXXXX 转义</td>
+<td>gegu、已清仓全历史、index（P1-B 起）</td>
+<td><code>write_closed_payload()</code> 幂等；变体页各自文件、as-of 截断</td>
+</tr>
+<tr>
+<td>index 内联 <code>TJ_MTM</code></td>
+<td>月频 81 月 <code>[ym,总,已实现,浮动,费用,笔,胜,负]</code> ×100 分</td>
+<td>index 族</td>
+<td>build 内联；变体 ≤ 所选月</td>
+</tr>
+<tr>
+<td>股票汇总 内联 <code>TJ_CLOSED=[{d,c,n,p}]</code></td>
+<td>散点专用（check_p2 依赖此形态）</td>
+<td>股票汇总族</td>
+<td>build 内联</td>
+</tr>
+<tr>
+<td><code>assets/daily-engine{,-日}.js</code></td>
+<td><code>TJ_DAILY</code> 任意日引擎</td>
+<td>持仓快照族</td>
+<td><code>write_daily_payload()</code> 幂等</td>
+</tr>
+</tbody>
+</table>
+<p><strong>转义铁律</strong>：payload 内代码/名称一律 \uXXXX 转义（<code>inject_modal.wrap_names</code> 会扫 <code>&lt;script&gt;</code> 文本，不转义会被包 span 破坏 JS）。外链 script 文件不受影响。</p>
+<h2>3. 每图登记表（改交互前先查这行）</h2>
+<table>
+<thead>
+<tr>
+<th>图</th>
+<th>页</th>
+<th>函数</th>
+<th>交互</th>
+<th>默认口径</th>
+<th>守护断言</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>复购散点（越做越赚/亏）</td>
+<td>股票汇总</td>
+<td>gegu.chart_repurchase_scatter</td>
+<td>A+D</td>
+<td>924至今（223只/481笔）</td>
+<td>check_p2 49项</td>
+</tr>
+<tr>
+<td>英雄与教训 TOP5</td>
+<td>gegu</td>
+<td>gegu.chart_topbottom</td>
+<td>A+D</td>
+<td>全历史</td>
+<td>check_p2+check_drill</td>
+</tr>
+<tr>
+<td>持仓时长分桶</td>
+<td>gegu</td>
+<td>gegu.chart_duration_bars</td>
+<td>A+D</td>
+<td>全历史（5桶 273/121/65/20/13）</td>
+<td>check_p2+check_drill</td>
+</tr>
+<tr>
+<td>盈亏率分布</td>
+<td>gegu</td>
+<td>gegu.chart_rate_hist</td>
+<td>A+D</td>
+<td>全历史（10桶，越-8%线36）</td>
+<td>check_p2+check_drill+audit(rhbar==10)</td>
+</tr>
+<tr>
+<td>累计已实现曲线</td>
+<td>gegu 尾</td>
+<td>gegu.chart_cum_curve</td>
+<td>变体asof（P2候选窗口化）</td>
+<td>全历史</td>
+<td>audit(evflag==3)+autoupdate(热区&gt;200)</td>
+</tr>
+<tr>
+<td>月度双tab柱</td>
+<td>index</td>
+<td>home.chart_monthly_bars</td>
+<td>A+E+D</td>
+<td>近12月</td>
+<td>check_p1(cur==2等)+check_drill</td>
+</tr>
+<tr>
+<td>hero 日频曲线×2</td>
+<td>index</td>
+<td>home.chart_hero_equity</td>
+<td>已具备（十字准线+点击清仓日弹窗+←/→）</td>
+<td>ytd/924</td>
+<td>check_p1+autoupdate(热区≥660)</td>
+</tr>
+<tr>
+<td>清仓节奏</td>
+<td>已清仓</td>
+<td>pages.chart_close_rhythm</td>
+<td>A+D</td>
+<td>近14月</td>
+<td>check_drill</td>
+</tr>
+<tr>
+<td>亏损解剖</td>
+<td>已清仓</td>
+<td>pages.chart_loss_anatomy</td>
+<td>A+D</td>
+<td>4桶</td>
+<td>check_drill</td>
+</tr>
+<tr>
+<td>年度柱</td>
+<td>账户总览</td>
+<td>pages.chart_yearly_realized</td>
+<td>D（details 静态）</td>
+<td>全年分组</td>
+<td>check_drill</td>
+</tr>
+<tr>
+<td>强度条</td>
+<td>成交流水(全历史)</td>
+<td>flows.chart_recent_intensity</td>
+<td>E</td>
+<td>近30日（pane 首位）</td>
+<td>check_p4（pane 结构）</td>
+</tr>
+<tr>
+<td>时段分布三层</td>
+<td>成交流水(全历史)</td>
+<td>flows.chart_hour_distribution</td>
+<td>无（P2 候选下钻）</td>
+<td>全历史</td>
+<td>check_p4（hbrow==4/chip==3）</td>
+</tr>
+<tr>
+<td>力量对比卡</td>
+<td>成交流水(全历史)</td>
+<td>flows.chart_force_compare</td>
+<td>无（固定30日，副题注明）</td>
+<td>近30日</td>
+<td>check_p4</td>
+</tr>
+<tr>
+<td>年度成交额趋势</td>
+<td>成交流水(全历史)</td>
+<td>flows.chart_yearly_amount_trend</td>
+<td>无（P3 不做）</td>
+<td>全年</td>
+<td>—</td>
+</tr>
+<tr>
+<td>当日盈亏构成</td>
+<td>持仓快照</td>
+<td>snapshot.chart_daypnl</td>
+<td>B</td>
+<td>本页快照日</td>
+<td>check_snap2+daily_engine</td>
+</tr>
+<tr>
+<td>两日对比</td>
+<td>持仓快照</td>
+<td>snapshot.chart_day_compare</td>
+<td>C</td>
+<td>最新两交易日</td>
+<td>check_snap2</td>
+</tr>
+<tr>
+<td>哑铃图/摊薄/天数纪律</td>
+<td>持仓快照</td>
+<td>snapshot.chart_*</td>
+<td>hover联动/无</td>
+<td>本页快照日</td>
+<td>audit(dbrow-h==快照数)+snap2</td>
+</tr>
+<tr>
+<td>集中度趋势</td>
+<td>持仓快照</td>
+<td>snapshot.chart_concentration</td>
+<td>已具备（悬停Top5富卡）</td>
+<td>全快照日</td>
+<td>snap2</td>
+</tr>
+<tr>
+<td>持仓地图/浮动构成/板块环形/环形分布</td>
+<td>index/股票汇总</td>
+<td>home.chart_holdings_map / chart_floating_comp / chart_board_donut / pages.chart_status_donut</td>
+<td>已具备（hover 信息+名称开档案弹窗）</td>
+<td>当期截面</td>
+<td>audit 8c</td>
+</tr>
+<tr>
+<td>体检卡/交易活跃卡</td>
+<td>index</td>
+<td>home.panel_health / panel_activity</td>
+<td>无（当期口径，P3 不做）</td>
+<td>当期</td>
+<td>autoupdate</td>
+</tr>
+<tr>
+<td>里程碑/年度/日历/超额</td>
+<td>账户总览/收益追踪</td>
+<td>pages.*</td>
+<td>P3 不做（本身就是明细/无时间维度）</td>
+<td>—</td>
+<td>check_p5</td>
+</tr>
+<tr>
+<td>判定战绩/漏斗/纪律趋势</td>
+<td>归档页</td>
+<td>pages.*</td>
+<td>P3（正文即清单）</td>
+<td>—</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h2>4. 固定更新流程</h2>
+<p><strong>日常（只发数据，不动代码）</strong>：改 交易台账/*.csv（或发我截图/Excel）→ <code>python scripts/build_site.py</code> → <code>python scripts/inject_modal.py</code> → <code>python scripts/audit_site.py</code>（须 0 问题）→ <code>python scripts/checks/check_p1..p6 + check_drill + check_snap2 + check_daily_engine</code> → <code>python scripts/test_autoupdate.py</code> → 推送（443 阻断走 <code>scripts/push_via_api.py</code> API 兜底）。全部图表自动跟随。</p>
+<p><strong>加交互/改图（按本册套路写代码）</strong>：先查 §3 该图登记行与守护断言 → 按套路 A-E 的"件套"清单实现 → §5 红线核对 → node --check 全部内联 JS → 全部门禁 → <strong>新增断言</strong>（check_drill 或对应 check）锁住新交互 → 更新本册 §3 登记行。</p>
+<h2>5. 断言红线（新增 DOM 时逐条核对）</h2>
+<table>
+<thead>
+<tr>
+<th>红线</th>
+<th>出处</th>
+<th>规避法</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>gegu <code>class="rhbar"</code>==10、bval 数字和==清仓笔数、<code>evflag</code>==3</td>
+<td>audit_site 8c</td>
+<td>新面板/明细禁用这些类</td>
+</tr>
+<tr>
+<td>gegu 每个 <code>&lt;table&gt;</code> 必须 tblwrap 包裹</td>
+<td>audit_site 8</td>
+<td>明细用 table 就包 tblwrap，或 div 行</td>
+</tr>
+<tr>
+<td>HTML 名称必须可被 inject_modal 完整包裹（禁 <code>_zw</code>、禁半截 span）</td>
+<td>audit_site 1</td>
+<td><code>_esc</code> 原文</td>
+</tr>
+<tr>
+<td>index 月度柱 <code>bar neg cur</code>==2、<code>bxl cur</code>==2、<code>&gt;25.12&lt;</code>==2、tooltip 四值</td>
+<td>check_p1</td>
+<td>月柱面板默认=提示态，行类全新</td>
+</tr>
+<tr>
+<td>快照页 <code>hbrow</code>==当日行数、<code>dbrow-h</code>-1==快照数、<code>fc-bd</code>==持仓数</td>
+<td>test_autoupdate</td>
+<td>不在快照页新增同名类静态行</td>
+</tr>
+<tr>
+<td>散点 223 点/指纹、closed-engine rows==清仓笔数、TJ_MTM ≥80 月</td>
+<td>check_p2</td>
+<td>payload 格式不改</td>
+</tr>
+<tr>
+<td>静态默认渲染逐字节不变</td>
+<td>test_autoupdate（恢复后逐字节一致）</td>
+<td>新交互只走"交互后重画"</td>
+</tr>
+</tbody>
+</table>
+<h2>6. 修订记录</h2>
+<ul>
+<li>2026-10-07 建册：套路A-E 固化；登记 27 图（含已具备等价交互的）；下钻已落地 4 页（已清仓/gegu/index/账户总览）；P2 候选=时段分布下钻、强度条日柱下钻、日历 tooltip 富化、快照页整行可点；断言补强待办=CLR/GW 图表重画字节等价、银行家舍入合成值单测（审查 agent 突变测试发现的两处覆盖缺口）。</li>
+<li>2026-10-07 补：data-month 值设防断言（防柱值错位）+ docs 内嵌 JS 与源码一致性断言入 check_drill（73 项）；gegu TOP5 行移动端 44px。</li>
+</ul></article></main></div><footer>BUILT 2026-10-07 · 数据以私有仓库为准 · 决策辅助非投资建议</footer><button id="toTop" title="回到顶部">↑</button><nav class="tabbar" aria-label="主导航"><svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><symbol id="ic-home" viewBox="0 0 24 24"><path d="M4 11.2 12 4.5l8 6.7V19a1.6 1.6 0 0 1-1.6 1.6h-3.9v-5.3h-5v5.3H5.6A1.6 1.6 0 0 1 4 19z"/></symbol><symbol id="ic-chart" viewBox="0 0 24 24"><path d="M4.5 20v-6.5M10.5 20V6.5M16.5 20v-9.5"/><path d="M3 20h18"/></symbol><symbol id="ic-folder" viewBox="0 0 24 24"><path d="M3.5 7A2 2 0 0 1 5.5 5h4.2l2 2.4h6.8a2 2 0 0 1 2 2v7.6a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z"/></symbol><symbol id="ic-arch" viewBox="0 0 24 24"><rect x="4" y="3.8" width="16" height="3.9" rx="1.1"/><path d="M5.2 7.7v10.6a2.5 2.5 0 0 0 2.5 2.5h8.6a2.5 2.5 0 0 0 2.5-2.5V7.7"/><path d="M9.8 12h4.4"/></symbol></defs></svg><a href="index.html"><svg aria-hidden="true"><use href="#ic-home"/></svg><span>总览</span></a><a href="持仓快照.html"><svg aria-hidden="true"><use href="#ic-chart"/></svg><span>持仓</span></a><a href="taizhang.html"><svg aria-hidden="true"><use href="#ic-folder"/></svg><span>数据</span></a><a href="panhou.html"><svg aria-hidden="true"><use href="#ic-arch"/></svg><span>归档</span></a></nav>
 <script>
 document.querySelectorAll('table.data').forEach(function(tb){
   var head = tb.querySelector('thead');
