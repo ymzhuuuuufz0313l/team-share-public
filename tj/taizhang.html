@@ -540,6 +540,47 @@ svg.gauge{width:100%;height:auto;display:block}
 @keyframes pfspin{to{transform:rotate(360deg)}}
 /* P5 全局减弱动态：用户系统偏好 reduce 时关闭一切动画/过渡 */
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+/* ============ 14. 全局日期切换器（日期变体页 · hero 下统计卡上） ============ */
+/* 琥珀底胶囊 + mono 字体 + 当前日期高亮（.on 实心琥珀）；构建期渲染为纯 <a> 链接，零 JS */
+.datesw{max-width:min(96vw,1840px);margin:-64px auto 56px;padding:0 28px;display:flex;align-items:center;flex-wrap:wrap;gap:8px;position:relative;z-index:3}
+.wide .datesw{max-width:min(98.5vw,2400px)}
+.dsw-cap{font-family:"IBM Plex Mono",monospace;font-size:11px;color:#9aa4b5;letter-spacing:.12em;margin-right:6px;opacity:.95;white-space:nowrap}
+.dsw-pill{display:inline-block;font-family:"IBM Plex Mono",monospace;font-variant-numeric:tabular-nums;font-size:12px;letter-spacing:.05em;color:var(--amber);background:rgba(235,160,58,.13);border:1px solid rgba(235,160,58,.45);border-radius:99px;padding:6px 15px;text-decoration:none;white-space:nowrap;transition:transform .15s,background .15s,box-shadow .15s}
+.dsw-pill:hover{background:rgba(235,160,58,.32);color:#f0b45f;transform:translateY(-1px)}
+.dsw-pill.on{background:var(--amber);border-color:var(--amber);color:#0d1526;font-weight:600;box-shadow:0 2px 12px rgba(235,160,58,.4);cursor:default}
+.dsw-pill.on:hover{transform:none;color:#0d1526}
+/* 内页（gegu 变体，浅色 main 内）：胶囊落在 surface 上，配合同一套琥珀 token */
+main .datesw{margin:0 0 var(--s5);padding:0}
+main .dsw-cap{color:var(--muted)}
+main .dsw-pill{color:var(--accent-strong);background:var(--accent-soft);border-color:var(--line)}
+main .dsw-pill:hover{color:var(--accent-strong);background:var(--rowh-solid)}
+main .dsw-pill.on{background:var(--amber);border-color:var(--amber);color:#0d1526}
+@media(max-width:700px){
+  .datesw{margin:-10px auto 14px;padding:0 var(--s4)}
+  main .datesw{margin:0 0 var(--s4);padding:0}
+  .dsw-pill{padding:7px 14px;font-size:13px;min-height:44px;box-sizing:border-box;display:inline-flex;align-items:center}
+}
+/* ============ 15. 冲击力改造：关键数字衬线大字 + 结论卡化（通用规则） ============ */
+/* 关键数字类：衬线 900 · tabular-nums · ≥20px（各组件大数字统一节奏） */
+.knum{font-family:"Noto Serif SC",serif;font-weight:900;font-variant-numeric:tabular-nums;font-size:21px;line-height:1.3}
+.knum.lg{font-size:27px}.knum.xl{font-size:34px}
+.knum.pos{color:var(--pos)}.knum.neg{color:var(--neg)}
+/* 次要标签：mono 10px 灰（详情收 tooltip） */
+.klbl{font-family:"IBM Plex Mono",monospace;font-size:10px;color:var(--muted);letter-spacing:.05em;margin-top:2px}
+/* 「一句话结论」：italic 灰字 → 💡 + accent-soft 底色卡片（全站 .insight 统一升级） */
+.insight{margin:var(--s3) 0 0;font-size:13px;font-style:normal;color:var(--text);line-height:1.7;
+  background:var(--accent-soft);border:1px solid color-mix(in srgb,var(--accent) 32%,transparent);
+  border-left:3px solid var(--accent);border-radius:12px;padding:10px 16px 10px 14px;
+  display:flex;gap:9px;align-items:baseline}
+.insight::before{content:"💡";flex:none;font-size:15px;line-height:1}
+/* 趋势箭头（活跃卡/大数字卡通用） */
+.trend{font-family:"IBM Plex Mono",monospace;font-size:10.5px;font-weight:600;white-space:nowrap}
+.trend.pos{color:var(--pos)}.trend.neg{color:var(--neg)}.trend.neu{color:var(--muted)}
+/* 活跃 2×3 大数字卡网格（桌面 3 列 × 2 行，窄屏 2 列） */
+.actgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s3);margin-top:0}
+@media(max-width:700px){.actgrid{grid-template-columns:repeat(2,1fr)}}
+/* 环形中心大数字加大档（冲击力改造12：状态环形中心 28px 衬线） */
+.dc-top.xl{font-size:28px}
 </style><style>
 /* 股票弹窗 */
 .stk{cursor:pointer;border-bottom:1px solid var(--accent)}
