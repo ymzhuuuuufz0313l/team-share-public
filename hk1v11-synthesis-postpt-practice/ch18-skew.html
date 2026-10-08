@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>十八、Clock Skew 从原理到实战 · HK1V11 综合/签核流程实践</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./css/style.css">
+  <script src="./js/marked.min.js"></script>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a class="navbar-brand" href="./">HK1V11_FLOW_PRACTICE</a>
+      <div class="navbar-links" id="navbar-links"></div>
+    </div>
+  </nav>
+  <div class="container with-toc">
+    <aside class="toc-wrapper"><div class="toc" id="toc"></div></aside>
+    <div class="content">
+      <article class="article" id="article"></article>
+      <div class="page-nav" id="page-nav"></div>
+      <div class="footer">HK1V11 SYNTHESIS / SIGNOFF PRACTICE · AUTHOR ymzhuuuu · UPDATED 2026-10-08</div>
+    </div>
+  </div>
+  <script type="text/template" id="md">
+# 十八、Clock Skew 从原理到实战 · 小白自学教程
+
+> 个人学习资料 · 面向自述"skew 小白"的读者。本章从零基础比喻讲到本项目三层代码（约束/采集/解析），再到"拿到一份 run 按图索骥找 skew 数据"和五个真实案例，最后留自测题。
+> 全部例子来自 HK1V11 1008 包（post-PT run 2026-10-08）真实文件，行号可回查。豁免/配对方法论见 <a href="./ch11-violation-atlas.html">ch11 §11</a>，本章不重复、只互链。
+
+---
+
+## 1. 原理 · 零基础
+
+### 1.1 发令枪比喻：为什么"钟"到每个人耳朵的时间不一样
+
+想象田径场发令枪：**枪响只有一个，但每个运动员听到枪声的时刻不同**——离发令员近的先听到，远的晚听到（距离 = 延迟）。
+
+数字芯片里：
+
+- **发令枪** = 时钟源（晶振进来的 `SCL_I`、`RX_CLK`，或它们的分频/门控分支）；
+- **运动员** = 几千个寄存器（DFF）的 CK 引脚；
+- **枪声传播** = 时钟树（CTS 综合的一堆 buffer/inverter 链）；
+- **每人听到枪声的时刻差** = **clock skew**。
+
+寄存器靠 CK 边沿"起跑"（把 D 打进 Q）。两个寄存器 A→B 传数据时，A 的起跑时刻和 B 的起跑时刻如果不一致，数据传输的比赛就变了味——这就是 skew 影响时序的全部来源。
+
+### 1.2 三个基础词：launch / capture / insertion delay
+
+一条最简单的时序路径（寄存器到寄存器）：
+
+```
+CLK ──树──> [FF_A 的 CK]   FF_A.Q ──组合逻辑──> FF_B.D   [FF_B 的 CK] <──树── CLK
+            ↑launch clock                          ↑capture clock
+```
+
+- **launch 寄存器（FF_A）**：数据出发的一端，CK 边沿把 D 打进 Q；
+- **capture 寄存器（FF_B）**：数据到达的一端，下一个 CK 边沿把 D 接住；
+- **insertion delay（插入延迟/时钟延迟）**：时钟从源点走到某个寄存器 CK 脚的总延迟，记 `t_CK(FF)`。树上每条分支的 insertion delay 都不一样。
+
+### 1.3 skew 的定义式
+
+$$skew = t_{capture\_CK} - t_{launch\_CK}$$
+
+即 capture 端 insertion delay 减 launch 端 insertion delay。注意方向约定：**capture 比 launch 晚到（skew > 0）记正**。
+
+- `skew > 0`（capture 晚起跑）：数据"多跑了一会儿才被接"——**对 setup 友好，对 hold 危险**；
+- `skew < 0`（capture 早起跑）：数据"少跑一会儿就被接"——**对 setup 危险，对 hold 友好**。
+
+### 1.4 skew 怎么进 setup/hold 账（数字例子）
+
+两个记账公式（uncertainty 暂记 0）：
+
+```
+setup slack = T_period + t_capture_CK − t_launch_CK − t_data_delay
+            = T_period − t_data_delay + skew
+hold  slack = t_launch_CK + t_data_delay − t_capture_CK
+            = t_data_delay − skew
+```
+
+**数字例子（本项目真实周期 T = 1.905ns，DCLK_DATA 族脉冲周期）**：
+
+设数据路径延迟 `t_data_delay = 1.6ns`：
+
+| 场景 | skew | setup 账 | hold 账 |
+|---|---|---|---|
+| 理想树 | 0 | 1.905 − 1.6 = **+0.305** ✓ | 1.6 − 0 = **+1.6** ✓ |
+| capture 晚 0.5ns | +0.5 | 1.905 − 1.6 + 0.5 = **+0.805**（setup 更宽松） | 1.6 − 0.5 = **+1.1**（hold 仍过，但被吃掉 0.5） |
+| capture 早 0.5ns | −0.5 | 1.905 − 1.6 − 0.5 = **−0.195** ✗ setup 违例 | 1.6 + 0.5 = **+2.1**（hold 更宽松） |
+
+规律一句话：**skew 正负一个方向挪，setup 和 hold 一松一紧，永远反向**。所以"故意加正 skew 救 setup"是在预支 hold 的余量——本项目 K1_FIND 路径 hold 被 −1.16ns 分支 skew 推穿就是这个机制的实战版（见 §4.3）。
+
+### 1.5 intra-clock vs inter-clock
+
+| 口径 | 定义 | 谁负责 |
+|---|---|---|
+| **intra-clock（local）skew** | 同一时钟域内，最晚 CK 与最早 CK 之差 | CTS 的本职，目标是压小 |
+| **inter-clock skew** | 两条相关时钟（源钟 ↔ generated clock 分支，或两分支之间）的 insertion 差 | **不是 CTS 能救的**——分支发散点物理位置决定，要用约束（mc/false_path/set_max_delay）消化 |
+
+HK1V11 的特点是 inter-clock 多：`CLKGEN` 里一堆 `u_gate_MUX_*` 输出点上定义的 generated clock（`SD_CLK_INV` / `WCLK1_A_*` / `DCLK_CONFIG_MUX_*`），分支间 4ns 级插入差不叫"CTS 没做好"，是设计结构使然。
+
+再叠一层**global/local/inter-clock 三口径**：global（源到各叶的全局插入差，决定 IO 接口相位）、local（域内，CTS 验收指标）、inter-clock（分支间，约束工程视角）。看报表时先问自己"这份文件是哪个口径"（§3 清单表每行都标了）。
+
+### 1.6 ICG 门控钟：树上多了一截"私人通道"
+
+ICG（integrated clock gating）单元插在时钟树分支上：CK 进、门控后的 gck 出，下游寄存器整块跑在 gck 后面。后果：
+
+- ICG 自身的延迟直接加进该分支的 insertion delay，**拉开与其他分支的 skew**；
+- 本项目 `SHORT_ENCODING` 整块逻辑就跑在 ICG 后的时钟上——它的 launch/capture 都在同一 gck 域内时问题不大，一旦跨"ICG 域 ↔ 非 ICG 域"传数据，skew 账里就多了一段别人没有的插入；
+- 审计要点：skew 报表里 **ICG 前后分叉的域**要单独看（clk.sum.rpt 的 per-clock latency 天然按 gck 分了组）。
+
+---
+
+## 2. 代码 · 本项目实战（三层）
+
+skew 从"物理现象"变成"报表上的数字"，在本项目要过三层代码。**每层的坑层不一样**：约束层错=钟定义错；采集层错=报告空；解析层错=数字假。
+
+### 2.1 约束层：钟从哪来（ip_cons）
+
+文件：`SYNTHESIS/common/ip_cons/HK1V11_digital_top.tcl`。
+
+两个基本包装 + 一个户口本机制：
+
+```tcl
+# L98-99：根钟（create_clock 的包装）
+kv_clock  OSC_CLK   $OSC_CLKP   $OSC_CLK_PIN
+kv_clock  I2C_CLK   $I2C_CLKP   $I2C_CLK_PIN
+
+# kv_genclock 模板 = create_generated_clock 的包装（L5 注释）
+# kv_genclock clk_name src_clk_period div_num src_clk_pin clk_pin
+```
+
+**户口本（重点）**：同一个 MUX 输出脚可以挂多个钟（`-add`），L116-118：
+
+```tcl
+create_generated_clock -name WCLK1_A_DCLK_SHORT -divide_by 1 -source $DCLK_CONFIG_MUX_PIN $WCLK1_A_CLK_PIN -master_clock DCLK_CONFIG_MUX_SHORT -add
+create_generated_clock -name WCLK1_A_DCLK_LONG  -divide_by 1 -source $DCLK_CONFIG_MUX_PIN $WCLK1_A_CLK_PIN -master_clock DCLK_CONFIG_MUX_LONG  -add
+create_generated_clock -name WCLK1_A_I2C        -divide_by 1 -source $I2C_CLK_PIN         $WCLK1_A_CLK_PIN -master_clock I2C_CLK -add
+```
+
+同一个 `u_gate_MUX_WCK1_ASEL` 输出脚，三个"户口"（不同 mode 下选不同的上游）。**这一层决定了 skew 报表里"有哪些钟可测"**——STA 只对定义了的钟做分析。另外 `-edges {1 3 4}` 的写法（DCLK_CONFIG_SHORT，L110）= 三沿取非等间隔，本质 **÷1.5 分频**——钟定义里的数学，直接决定 inter-clock 配对关系。
+
+### 2.2 采集层：skew 探针（report_timing_skew_sd.tcl）
+
+文件：`SYNTHESIS/top/sta/post/common/report_timing_skew_sd.tcl`（206 行，头部 L13-57 有 2026-09-16/17/18 三轮修复史注释）。
+
+**探针思想**：skew 没法"直接报"，就用 `report_timing -from <发散点> -to <终点>` 逐对打。时钟树报告（`-from` 时钟发散点引脚、`-to` 端口/寄存器）拿到的是**该分支 insertion delay 的包络（max/min）**；数据报告（`-from` 数据寄存器、`-to` 端口）拿到**数据到达包络**。两者相减就是接口 margin（§2.3）。
+
+L157-158（本次修复点，DPLC 模式 CLKB 时钟树探针）：
+
+```tcl
+# 修复前（commit 6a5e7ec8 之前）：
+report_timing -from [get_pins .../u_gate_MUX_DPLC_CLK/MUX2X2/O] -to [get_ports CLKB_L] ... > .../report_timing_sd_l_dplc_clk_b.rpt
+# 修复后（现值）：MUX2X2/ 段去掉，挂在被改名 cell 的上一层实例引脚
+report_timing -from [get_pins .../u_gate_MUX_DPLC_CLK/O] -to [get_ports CLKB_L] ... > .../report_timing_sd_l_dplc_clk_b.rpt
+```
+
+为什么改：post-route 网表里 PR 把 cell 改名了（§4.1 详述），老探针 `get_pins` 匹配不到 → SEL-005 空报告。**探针是"点名"，网表换名就哑**——这是采集层最典型的失效模式。
+
+### 2.3 解析层：哨兵与公式（get_sd_busskew.pl + merge）
+
+文件：`SYNTHESIS/top/sta/post/common/get_sd_busskew.pl`（169 行）、`merge_sd_busskew.pl`。
+
+**哨兵（L33-34）**：
+
+```perl
+$max = 0;
+$min = 1000;     # 哨兵初值：只在 rpt 里解析到 "data arrival time" 行才被真值覆盖
+```
+
+rpt 空 → 哨兵原样进 txt（`0,1000`）→ 下游 margin 公式算出 **−99x** 的响亮报警（用户决定保留，历史上正是靠它发现探针失效）。**看到 −99x 先查"报告是不是空的"，不要当时序数**。
+
+**margin 公式（L117-133）**：
+
+```perl
+margin_max = data_max − clk_min    # 最快数据 vs 最慢钟，setup 侧包络
+margin_min = data_min − clk_max    # 最慢数据 vs 最快钟，hold 侧包络
+```
+
+即 **margin = 数据到达 − 钟到达**，八个方向（l/r × 1p/dplc × a/b）× max/min 一并算。`merge_sd_busskew.pl` 把每角一行 txt 合并成 `summary/latest/report_sd_busskew.csv`（10 角一张表）。
+
+---
+
+## 3. 找数据点 · 按图索骥
+
+### 3.1 生成链图（run_summary L54-66 串起来）
+
+```
+PT run（每 corner latest/）
+  ├─ rpt/skew/report_timing_sd_*.rpt      ← report_timing_skew_sd.tcl 生成
+  ├─ rpt/skew/report_timing_rx0_00_*.rpt  ← rx0 skew 对（源同步 intra-pair）
+  ├─ rpt/skew/report_timing_io_max/min.rpt
+  ├─ rpt/clock_path.rpt                   ← report_clock_path.tcl（钟树单路径展开）
+  └─ rpt/HK1V11_digital_top.clk.sum.rpt   ← report_clock -skew 汇总（pt_report.tcl:3）
+        ↓ perl get_sd_busskew.pl <corner>/latest/rpt/skew/
+  ← <corner>_sd_busskew.txt（每角一行）
+        ↓ perl merge_sd_busskew.pl
+  ← summary/latest/report_sd_busskew.csv（10 角合并）
+```
+
+### 3.2 文件清单（拿到一份 run 先看这张表）
+
+以 wc_cworst_125 为例（`SYNTHESIS/top/sta/post/pt/<corner>/latest/` 下，其余 9 角同构）：
+
+| 文件 | 大小 | 口径 | 打开看什么 |
+|---|---|---|---|
+| `rpt/HK1V11_digital_top.clk.sum.rpt` | ~30 KB | **intra-clock 汇总** | 每个钟的 max/min launch/capture latency、local skew 有无 → **第一个打开的文件** |
+| `rpt/clock_path.rpt` | 3.6 KB | full_clock_expanded | 钟树单路径逐级展开；本代 "No Paths."×3 + SEL-005（探针失效直接可见） |
+| `rpt/skew/report_timing_sd_l_1p_clk_a.rpt` | 53.5 KB | SD 输出 CLKA_L 时钟树（global/inter 口径） | `data arrival time` 行的 max/min = insertion 包络 |
+| `rpt/skew/report_timing_sd_l_1p_clk_b.rpt` | 60.8 KB | CLKB_L 时钟树（1p 模式） | 同上 |
+| `rpt/skew/report_timing_sd_{l,r}_1p_{a,b}.rpt` | 133–318 KB | SD 数据总线（DB0–DB5/start → DBL*/DBR*/SLIN/SRIN） | bus-skew 的 data 侧 |
+| `rpt/skew/report_timing_sd_*_dplc_*.rpt` | clk_b 两份曾仅 **0.05 KB（空）** | DPLC 模式同口径 | **0.05 KB = 空壳 = 探针失效**，别当 0 skew |
+| `rpt/skew/report_timing_rx0_00_max/min.rpt` | 各 1.25 MB | RX0 通道 00 位 max/min 到达对 | 源同步接口 intra-pair skew |
+| `summary/latest/report_sd_busskew.csv` | 5 KB | **10 角合并** | margin_a/b max/min 全景，判读窗见 §4.4 |
+
+**三步上手**：① 先开 clk.sum.rpt 看 per-clock 包络（哪个钟 spread 大一目了然）；② 有接口问题开 csv 看 margin 行；③ 数字可疑（−99x / 0 / 1000）回追对应 rpt 是否空壳，再回追探针 tcl。
+
+---
+
+## 4. 真实案例 · 本项目
+
+### 4.1 999/−99x 哨兵事件全复盘（1008 包）
+
+**现象**：`report_sd_busskew.csv` 里 4 行醒目的 −992~−997（`sd_{l,r}_dplc_margin_b_max`），txt 里对应 `0,1000`。
+
+**证据链（四步）**：
+1. **报表**：`report_timing_sd_{l,r}_dplc_clk_b.rpt` 仅 0.05 KB，内容一行 `Error: Nothing matched for from_list (SEL-005)`；
+2. **脚本**：`report_timing_skew_sd.tcl` L157-158 的 `-from [get_pins ...u_gate_MUX_DPLC_CLK/MUX2X2/O]` 在 post-route 网表匹配不到；
+3. **网表实锤**：V1 APR 网表（`script/_syn_1008v1/.../HK1V11_digital_top.v`）**L1323-1326**，PR 把该 mux 下 cell 改名 `CLKMUX2X2 → HK1V11_digital_top_CLKMUX2X2_2`，引脚层变裸 `O`（原 `MUX2X2/O` 层级消失）→ get_pins 落空；
+4. **解析**：空 rpt → 哨兵残留（L33-34）→ margin = 6.03 − 1000 = **−993.97**。
+
+**修复（commit `6a5e7ec8`，2026-10-08）**：两处 `-from` 去掉 `MUX2X2/` 段，挂上一层实例引脚，天然免疫 PR 内部换名。验收：下个 run dplc_clk_b rpt 恢复 50-60KB 量级、csv 4 行落窗（−0.9~+4.1）。
+
+**教训**：skew 探针 = "点名"，PR 换名就哑；哨兵（999/−99x）是**报警不是数据**。更稳的方案是 `-from [get_clocks DPLC_CLK*]` 由钟定义反查发散点。
+
+### 4.2 WCLK1_A_I2C 包络 6.40ns：全项目最大
+
+clk.sum.rpt：`WCLK1_A_I2C` latency 0.037~6.439ns，**spread 6.40ns 全项目最大**。这是 780 条（每 corner ~489 hold + gating）假违例的物理背景：I2C 慢域派生钟（MUX S 腿 + AND 门控 + DEL 延时链 ~4.6ns skew）被默认按同步对检查。约束侧解法（父子对配 async）见 ch11 §11，本页只强调：**先看钟树包络，再定约束口径**——6.40 的 spread 直接告诉你"这族不可能按同步过"。
+
+### 4.3 G15 与 K1_FIND：skew 是违例根因也是杠杆
+
+- **G15 路径**（DCLK_CONFIG 族）：launch insertion 3.697 vs capture 3.180，**+0.5ns 正 skew** 是 setup 违例的主要构成（§1.4 表第三行的实况版：正 skew 在帮 setup 的反面场景里，本例 capture 反而早，即负向贡献 −0.517 挪给了数据要求）——修法用 mc 侧（commit `2d0cc6f9`）；
+- **K1_FIND 路径**：CTS 分支 skew **−1.16ns**（capture 比 launch 晚 1.16ns 的反向记法），hold 侧直接被推穿——§1.4 "skew 吃 hold" 的实战版。
+
+两条路径同一族根源：`DCLK_CONFIG_MUX_LONG`（spread 3.36ns）分支间插入差。
+
+### 4.4 SD 接口 margin 判读窗
+
+`report_sd_busskew.csv` 的 margin 行按 **spec 窗**判读（ymzhu 2026-10-08 确认）：
+
+| 模式 | 判读窗 | 本 run 实况 |
+|---|---|---|
+| normal (1p) | **±3.5** | 全部 10 角落窗，最差 `sd_l_1p_margin_b_min = −2.02`（wc_cworst）→ **SD 源同步接口签核过** |
+| dplc | **−0.9 ~ +4.1** | margin_b 4 行被哨兵污染（§4.1），修复后复测 |
+
+注意 csv 行头旧印 `[−2.5:+2.5]/[−1:4]` 是脚本内旧值，以 spec 为准（`get_sd_busskew.pl` 里窗值待同步）。
+
+### 4.5 签核阈值建议
+
+- **intra-clock spread**：立门限 **min(0.15 × T, 300ps)** 类经验值。例：RX_CLK T=3.81ns → 上限 ~500ps；当前 clk.sum 里 3.94 的"spread"含 inter 分支成分，建议改 `report_clock_timing -skew` 按 clock group 分开统计再签；
+- **接口 margin**：沿用 spec 窗逐 corner 全过即 PASS；
+- **哨兵纪律**：−99x / 0 / 1000 任何一个出现 = 报表链有断点，先修报表再谈签核。
+
+---
+
+## 5. 小白自测
+
+**Q1：hold 违例 4.6ns，一定是数据跑太快吗？**
+不一定。hold slack = t_data − skew，4.6ns 的违例更可能是 **capture 钟比 launch 钟晚 4.6ns**（skew +4.6）——本项目 WCLK1_A_I2C 族 780 条假 hold 全是这个机制：先查两域 insertion 包络差，再谈数据路径。
+
+**Q2：grep `set_clock_groups` 一条都搜不到，是不是没配豁免？**
+不对。约束可能藏在"列表 + kv 过程"两层后面（ip_cons 的 clklist → `kv_2clklist_group_path` → 落盘才变 `set_clock_groups`）。要按落盘 SDC 或 kv 调用行去数（详见 ch11 §11）。
+
+**Q3：csv 里 margin = −993.97，时序真的崩了吗？**
+没有。−99x 是解析器哨兵（$min=1000 未被覆盖）报警：上游 rpt 空了（探针 get_pins 在 post-route 网表失配）。先追 rpt 大小和 SEL-005。
+
+**Q4：正 skew 救 setup，能不能故意把 capture 分支做慢？**
+能，但每一皮秒正 skew 同时从 hold 账里扣（§1.4 表）。K1_FIND 就是分支 skew 把 hold 推穿的例子；故意 skew 要跟 hold 余量一起做预算。
+
+**Q5：DPLC 模式的 clk_a 报告和 1p 模式数字完全一样，是抄错了吗？**
+不是。CLKA 两种模式下物理上是同一棵树（`SD_CLK_INV`），dplc 文件名只是为了让 perl 解析器按文件名规约填 csv 的 dplc 行（脚本 L160-169 注释写明"NOT fabricated data"）。**看懂数字先看懂口径**。
+
+---
+
+## 交叉引用
+
+- 豁免列表配对方法论（为什么 6.40ns 包络要配 async 对）：<a href="./ch11-violation-atlas.html">ch11 §11 时钟豁免体系的列表配对方法论</a>
+- 约束入门（kv_clock/kv_genclock 与 multicycle 语义）：<a href="./ch12-constraint-tutorial.html">ch12 时序约束入门教学</a>
+- 999 事件原始分析档：`script/_syn_1008_skew_说明.md`（HK1V11 仓库，commit 6a5e7ec8 附带）
+  </script>
+  <script src="./js/site.js"></script>
+</body>
+</html>
+<!-- ymzhu 2026-10-08 16:08 -->
