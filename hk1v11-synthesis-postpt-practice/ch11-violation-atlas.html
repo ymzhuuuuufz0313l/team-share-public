@@ -912,7 +912,7 @@ HK1V11 的时钟豁免不是一条条 `set_clock_groups` 裸写的，而是三�
 2. **主-派生钟默认同步的惯例盲区**：直觉上"派生钟跟 master 同步，不用配组"——但这里物理派生路径是 **MUX S 腿 + AND 门控 + DEL 延时链（~4.6ns insertion skew）**，不是干净分频，STA 按同步对做 hold 检查必然爆；
 3. **hold 侧长期无人审计**：setup 侧组关系不全时被 max_delay/mc 遮掉，hold 报告从未逐家族对账。
 
-**铁证**：OSC 域配了"三连对"（`osc↔rx`、`osc↔iic_root`、`osc↔iic_wclk`，ip_cons L294-296），而 I2C 根域只配了 `iic_root↔rx` 一对（L292）——同样的"根域 vs 派生域"关系，一个配齐一个漏，说明不是设计决策而是**配对清单本身没有系统性生成**。L301 补上 `kv_2clklist_group_path $iic_root_clklist $iic_wclk_clklist`（commit `629ec58a`）。
+**铁证**：OSC 域配了"三连对"（`osc↔rx`、`osc↔iic_root`、`osc↔iic_wclk`，ip_cons L294-296），而 I2C 根域只配了 `iic_root↔rx` 一对（L292）——同样的"根域 vs 派生域"关系，一个配齐一个漏，说明不是设计决策而是**配对清单本身没有系统性生成**。L301 补上 `kv_2clklist_group_path $iic_root_clklist $iic_wclk_clklist`（commit `629ec58a`）。该 S 腿钟传播的物理分析层修法（`set_sense -stop_propagation -type clock`，与约束层 async 组互补）详见 <a href="./ch18-skew.html">ch18 skew 教程 §4.2</a>。
 
 ### 11.4 可复用审计清单
 
@@ -939,4 +939,4 @@ HK1V11 的时钟豁免不是一条条 `set_clock_groups` 裸写的，而是三�
   <script src="./js/site.js"></script>
 </body>
 </html>
-<!-- ymzhu 2026-10-08 15:38 -->
+<!-- ymzhu 2026-10-08 18:33 -->

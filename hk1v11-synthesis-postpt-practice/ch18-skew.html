@@ -239,9 +239,48 @@ PT run（每 corner latest/）
 
 **教训**：skew 探针 = "点名"，PR 换名就哑；哨兵（999/−99x）是**报警不是数据**。更稳的方案是 `-from [get_clocks DPLC_CLK*]` 由钟定义反查发散点。
 
-### 4.2 WCLK1_A_I2C 包络 6.40ns：全项目最大
+### 4.2 WCLK1_A_I2C 包络 6.40ns：全项目最大 + set_sense 完整闭环
 
 clk.sum.rpt：`WCLK1_A_I2C` latency 0.037~6.439ns，**spread 6.40ns 全项目最大**。这是全族 **832 条假违例（hold 489 + removal 282 + gating 61，实测口径）**的物理背景：I2C 慢域派生钟（MUX S 腿 + AND 门控 + DEL 延时链 ~4.6ns skew）被默认按同步对检查。约束侧解法（父子对配 async）见 ch11 §11，本页只强调：**先看钟树包络，再定约束口径**——6.40 的 spread 直接告诉你"这族不可能按同步过"。
+
+#### 4.2.1 关键命令：`set_sense -stop_propagation -type clock`（ymzhu 指示重点学习）
+
+**命令解析**（PT `man set_sense`：`[-clocks clock_list] pin_object_list [-type signal|clock]`）：
+
+```tcl
+set_sense u_LOGIC_CENTER/LC_CLK_RST_GEN/CLKGEN/u_gate_MUX_WCK1_ASEL/CLKMUX2X2/S \
+          -stop_propagation -type clock
+```
+
+- `-stop_propagation`：在该引脚上**打断传播**（sense 传播不再穿过此点）；
+- `-type clock`：**只切钟感（clock sense）传播，signal sense 不动**——即只影响时钟传播分析，不动数据路径例外；
+- 语法注意：`set_sense` 是**一个词**（不是 set_sense 命令族分开写）；pin 可用 `get_pins` 集合或直接路径字符串；
+- 执行反馈：返回命中数（`1` = 命中一个引脚）+ **PTE-139 "Invalidating logical update"**——提示当前 timing 已失效，**必须 `update_timing` 重算才生效**（漏掉这步是最常见"为什么没效果"）。
+
+**本项目案例（1008 实测闭环）**：
+
+- 目标 = `WCLK1_A_I2C` 经 TEST_EN 选择腿（`MUX_WCK1_ASEL` 的 **S 脚方向**）的钟传播，插入差 4.75~6.9ns（**PR hold-fix DEL 链疤痕**——布局布线工具为修 hold 加的延时链，把 S 腿时钟拖长）；
+- **设计师原意考古**：`SYNTHESIS/common/top_cons/add_on.tcl` **L8-9 原本就有** `##set_sense .../u_gate_MUX_WCK1_ASEL/MUX2X2/S -stop_propagation`——但被 `##` 注释且是老路径（层级 `LINK_LOGIC/CLKGEN` 已变 `LC_CLK_RST_GEN/CLKGEN`、引脚 `MUX2X2/S` 形态也已变），**从未生效**：一行被注释的关键命令，沉默了大半年；
+- **1008 修正实测**（ymzhu pt_shell）：按当前网表实核路径 `u_LOGIC_CENTER/LC_CLK_RST_GEN/CLKGEN/u_gate_MUX_WCK1_ASEL/CLKMUX2X2/S` 执行，返回 **1**（命中）+ PTE-139，`update_timing` 后 skew 报告中该分支传播被正确切断；
+- ⚠️ **网代形态差异**：不同实例/不同网代层级形态不同——同款 DPLC mux cell 在 post-route 已被拍平改名（§4.1 的 999 事件），WCK1_A 这只保留 `CLKMUX2X2` 层。**路径必须按各自网表实核**，跨网代复用命令字符串必失败。
+
+#### 4.2.2 三层解法谱系（方法论沉淀）
+
+同一个"WCLK1_A_I2C 假违例"问题，三层修法各解决一个面，**组合使用**：
+
+| 层 | 修法 | 状态 | 解决什么 |
+|---|---|---|---|
+| a) 约束层 | async clock_groups（父子对） | `629ec58a` 已落地，V3 run 实证 832 条清零 | **检查**：hold/removal/gating 不再按同步对查 |
+| b) 报表层 | pt_report.tcl skew 汇总剔除 | `73b37b6f` 做过，但 `-clock` collection 传法在真实 run 失败，**已回滚 `a9036c2c`**（根因 K3 t32 审查中） | **报表**：skew 汇总不再被疤痕分支污染 |
+| c) 物理分析层 | `set_sense -stop_propagation -type clock` | 本条，pt_shell 实测有效 | **传播**：分析层面直接切断 S 腿钟传播，skew 包络还原真实 |
+
+**教训（b 层事故实证）**：报表脚本改动必须**真实 run 验证**，纸面语法推演不可上服务器——`pt_report.tcl` 的 collection 传法本地看着对、真实 run 即崩，回滚本身也是一次代价。
+
+#### 4.2.3 使用注意
+
+- **会话级命令**：pt_shell 里敲只在当前会话生效；固化需进约束文件（位置待定：ip_cons 末尾 / add_on.tcl L9 解注释+改新路径，二选一待评审）；
+- 执行后**必须 `update_timing`**（PTE-139 的含义）；
+- **验证两步**：① `report_clock_timing -type skew -clock WCLK1_A_I2C` 看插入差变化（6.40 应显著回落）；② 全量 setup/hold 检查确认**无误伤真路径**（S 腿若被真路径用作数据选通，切钟感不影响数据，但需实证）。
 
 ### 4.3 G15 与 K1_FIND：skew 是违例根因也是杠杆
 
@@ -297,4 +336,4 @@ clk.sum.rpt：`WCLK1_A_I2C` latency 0.037~6.439ns，**spread 6.40ns 全项目最
   <script src="./js/site.js"></script>
 </body>
 </html>
-<!-- ymzhu 2026-10-08 16:09 -->
+<!-- ymzhu 2026-10-08 18:35 -->
