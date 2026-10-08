@@ -148,6 +148,10 @@
       pageNav.innerHTML = html;
     }
   }
+  /* ---------- image lightbox（全站图片点击放大，js/lightbox.js） ---------- */
+  var lb = document.createElement('script');
+  lb.src = './js/lightbox.js';
+  document.head.appendChild(lb);
 })();
 
-// ymzhu 2026-10-04 11:10
+// ymzhu 2026-10-08 12:55
