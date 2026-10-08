@@ -563,8 +563,37 @@ before 基线：组 4 o_keep 家族 −0.57~−0.60 ×10 条；G13 组3 D1 −1.
 ### 5.2 G15 新增约束记录：SMT_CS FLAG_1H→ANCTL ACS 计数器 ICG 使能 mc2/1
 
 1008 代 A 簇最差 2 条（`SMT_CS/FLAG_1H_H2L_reg` → `ANCTL/SNPS_CG_CELL_CLK_IDLE_CNT/CLK_TRIGGER_CNT latch/E`，worst **−1.10/−1.07**，wc_cbest 全局最差）已按"仿照 ip_cons L38 FLAG_1H→CS_SYNC 先例"处置：**G15 新增 mc2/1**（`-from SMT_CS/FLAG_1H_* -to ANCTL ACS 计数器 ICG 使能 latch/E`，dc/pt 双分支，commit **2d0cc6f9**）；预期下次 run **wc_cbest worst −1.10 清除**。
+
+### 5.3 V3 run 验证：今日三笔约束全部生效（run 10-08 15:19，`PACK_TAR_1008V3` 16:11 回传）
+
+**S1 生效实证（read_cons.log / exceptions rpt applied，wc_cworst_125 核验、10 角同）**：
+
+| 约束笔 | commit | applied 证据 | 分组效果 |
+|---|---|---|---|
+| G15 FLAG_1H mc2/1 | `2d0cc6f9` | `SMT_CS/FLAG_1H_{L2H,H2L}` mc 组 8 处在列 | wc_cbest setup.rpt **FLAG_1H 族 20 路全 MET**（A 簇 2 条清零） |
+| K1 latch/E mc（pt_shell 拆分） | `a33c68d8`+`af45ba94` | `SNPS_CG_CELL_WCK1_A_* latch/E` mc **136 处匹配** | **K1_FIND_LATCH 族 15 路全 MET**（K1 worst +0.141，D 簇 18 条清零） |
+| hold fix B：I2C_CLK↔WCLK1_A_I2C async 对 | `629ec58a` | `set_clock_groups -asynchronous -name WCLK1_A_I2C_1 -group [WCLK1_A_I2C] -group [RX_CLK DCLK_*…]` applied | **WCLK1_A_I2C 族 hold 489/角 → 0**（全 10 角）；async 178-306/角 → 0-4 |
+
+SEL-004=0、/D1/D2=0（10 角核验）；run 时间 15:19:10 晚于三笔约束 push；ip_cons 服务器版与本地同代（仅签名时间戳差）。
+
+**S2 数字盘点（全实测 csv）**：
+
+![V3 setup 演进](./sta1008v3_setup_evolution.png)
+
+- setup：**119 → 87**（wc_cworst 7→5、worst −0.144→**−0.0909**；wc_cbest 67→49、−1.10→−0.692；wc_typical 41→33；ml/tt 6 角全 0）；
+- hold（9 可比角）：**7563 → 242**（−7321），全角 worst −2.32 → **−0.2667**：
+
+![V3 hold 对比](./sta1008v3_hold_compare.png)
+
+**剩余真违例**（`sta1008v3_corner_matrix.png` 全 corner 总览，setup Σ87 / hold Σ244）：
+- setup 87 全在 RX_CLK + gating：wc_cbest startpoint 构成与旧 run 完全一致（LC_CPUWR R_REG03_L 28 = C 簇待 BKDU_SYNC 扩展、SCREN_SYNC_K3 23、K2_FIND 16、o_raw_data 11、K1_FIND 7）+ gating 1/9/1（B/E 族）；
+- hold 244：RX_CLK 12-37/角 + WCLK1_A_DCLK 5-12 + async/gating 零星（PIX_DATA_START_DLY 29、FCONFIG_ADD 24+22、CONFIG_DATA 14 = hold ECO 35 条范畴）。
+
+**gating hold 待办**：B/E gating 族 61/角已随 async 组收敛到 0-3/角（wc_cworst 1 条 −0.014 / wc_cbest 9 条 −0.455 / 其余 0-1）；**是否走方案 A（结构改 ICG）留待 ECO 评审**——若评审选 A，记入下轮 RTL 待办。
+
+**skew 内部核验（不入汇报）**：V3 服务器 run 的 skew_sd.tcl 仍是旧探针（MUX2X2/O）→ dplc_clk_b 仍空、csv 999/−993 哨兵保留——探针修复（`6a5e7ec8`）未回传服务器，与 `merge_sd_busskew.pl` 判读窗修正同在**待回传清单**，下次 run 验收 dplc_clk_b 真数据（详见 <a href="./ch18-skew.html">ch18 skew 教程 §4.1/§4.4</a>）。
   </script>
   <script src="./js/site.js"></script>
 </body>
 </html>
-<!-- ymzhu 2026-10-08 14:07 -->
+<!-- ymzhu 2026-10-08 16:45 -->
