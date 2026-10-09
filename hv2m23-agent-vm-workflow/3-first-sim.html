@@ -90,20 +90,6 @@ t_8b1lane 的仿真时间与服务器首跑**逐位一致**——环境迁移没
 ![Verdi 波形与仿真日志实拍](img/verdi_wave.png)
 
 
-## 5. 每 case 波形会话一键恢复（.rc）
-
-作者在每个 case 目录都留了 **nWave 波形恢复文件**（`tests/t_8b1lane_CS.rc` 等），内含精选信号分组（G1 IO / G6 phy / G3 LINK / G7）与视图状态。仿真产物的 `.vf` 虚拟波形文件生成后，只需修正 .rc 内的绝对路径即可一键还原整套波形视图：
-
-```bash
-sed "s|/sim_dd/pfsi/HV2M23/TOP_TCON_C/t_8b1lane_CS/|/sim_dd/ICer/HV2M23/TOP_TCON_C/t_8b1lane/|g" \
-    tests/t_8b1lane_CS.rc > /sim_dd/.../t_8b1lane_waves.rc
-verdi -dbdir simv.daidir -sswr t_8b1lane_waves.rc
-```
-
-恢复后的 nWave（信号分组与 marker 位置按作者原会话还原）：
-
-![nWave 波形会话恢复](img/verdi_nwave_restore.png)
-
 ## 4. 产物目录结构与 UVM 结果
 
 ![UVM 总结与 /sim_dd 产物目录](img/uvm_summary.png)
@@ -125,6 +111,22 @@ source ~/eda_env.sh
 cd /sim_dd/ICer/HV2M23/TOP_TCON_C/t_8b1lane
 verdi -dbdir simv.daidir -ssf chip_tb_top_000.fsdb &
 ```
+
+
+## 5. 每 case 波形会话一键恢复（.rc）
+
+作者在每个 case 目录都留了 **nWave 波形恢复文件**（`tests/t_8b1lane_CS.rc` 等），内含精选信号分组（G1 IO / G6 phy / G3 LINK / G7）与视图状态。仿真产物的 `.vf` 虚拟波形文件生成后，只需修正 .rc 内的绝对路径即可一键还原整套波形视图：
+
+```bash
+sed "s|/sim_dd/pfsi/HV2M23/TOP_TCON_C/t_8b1lane_CS/|/sim_dd/ICer/HV2M23/TOP_TCON_C/t_8b1lane/|g" \
+    tests/t_8b1lane_CS.rc > /sim_dd/.../t_8b1lane_waves.rc
+verdi -dbdir simv.daidir -sswr t_8b1lane_waves.rc
+```
+
+恢复后的 nWave（信号分组与 marker 位置按作者原会话还原）：
+
+![nWave 波形会话恢复](img/verdi_nwave_restore.png)
+
 </script>
 
 <script>
