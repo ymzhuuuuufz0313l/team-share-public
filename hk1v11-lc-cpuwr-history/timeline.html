@@ -628,6 +628,17 @@
 - 同表第 1 项（0x36 默认 `0x55→0x17`）已由 0918v1 完成；`rx_phy_eq_ctrl.v` 同名分支为选择器（选寄存器值），不涉及
 - 验收：iverilog 默认分支 EXIT 0 / FPGA 分支仅预期缺 ILA；评审 pass；信号连接零变化（报告 `markdownfile/0920v1/`）
 
+### 5.26 20260929 表审查：12 条全描述类变更，RTL 零修改
+
+`HK1V11_Register_20260929.xlsm`（2026-09-29 到货）全量审查——glm-5.3 团队成员 + captain 独立双 dump 逐 sheet diff 交叉验证：
+
+- **12 条变更全部为描述/文档类**（cs=0/1 两 sheet 对称）：`SP_S[2:0]` @0x1D 描述改 **dummy register**（原 Output Delay 20~90ns 表，字段/默认/访问保留）；`VKB[7:0]` @0x1E 补 VBK_EN=L keep last line / H follow 行为；`TP_F_AHEAD` @0x2E[3]、`HIZ_MIN_SEL` @0x2F[1]、`HIZ_MIN_VAL` @0x2F[6:2] 描述重写——Hi-Z 公式：默认最小 42PKT+100ns，HIZ_MIN_SEL=1 时 `HIZ_MIN_VAL×4PKT+4PKT`，门控 `TP_F_AHEAD==1 & LD_F==1`
+- **Reg_1V11 sheet 零变化**（无默认值/位段/Access/新增删除字段）；其余 8 个 sheet 零变化
+- **判定：三件套（0918v1/0920v1）无需任何修改**；TP_F_AHEAD 数字行为 CHPI_SD_CTRL 已有、HIZ/SP_S/VBK 均为透传
+- 2 项待设计确认：① SP_S 已标 dummy 但 RTL 输出链（LC_REG_MAPPING.v:196→LOGIC_CENTER）未断（保留透传合规，断链为可选清理）；② HIZ_MIN_VAL 新公式量纲 vs CHPI_SD_CTRL.v:187 原值直用且无新门控
+- 0919 裁决的规格回填 5 项（0x08=0X02、0x33=0X00、0x04 行 9dB 残留、0x34 Access、0x43[7]）0929 表仍未执行，继续挂规格 owner
+- 报告：`script/reg20260929_audit_glm53flash.md` + 独立 diff `reg20260929_vs_0919_diff_captain.txt`（HK1V11 commit 8d1808c1）
+
   </script>
   <script>
     document.getElementById('article').innerHTML = marked.parse(document.getElementById('md').textContent.trim());

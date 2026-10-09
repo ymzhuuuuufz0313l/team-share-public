@@ -711,7 +711,21 @@ assign 未解锁分支与复位块（RSTN_NLOCK_NORMAL）两处 default 均按 L
 - 优先级：`AUTO_EQ_EN`（AEQ 写回）> `reg_pin_eq|EQ_MODE`（sw 单 bit 拼位）> EQ 引脚查表
 - `rx_phy_eq_ctrl.v` 内同名 `3'b100,3'b101` 分支为选择器（选寄存器值 `reg_lane_ctrl_10`），不涉及本次编码修正
 
-## 28. 寄存器可视化大图
+## 28. 20260929 表描述变更：SP_S 转 dummy、Hi-Z 公式明确（RTL 零修改）
+
+`HK1V11_Register_20260929.xlsm` 全量审查（glm-5.3 团队 + captain 双 dump diff 交叉）：12 条变更全部为描述类，cs=0/1 两 sheet 对称；**Reg_1V11 零变化**，三件套无需任何修改。
+
+| 寄存器 | 地址 | 0929 变更 | RTL 影响 |
+|--------|------|----------|----------|
+| `SP_S[2:0]` | 0x1D | Output Delay 20~90ns 描述 → **dummy register**（字段/默认/访问保留） | 无必改：LC_REG_MAPPING.v:196 透传保留合规；输出链断开为可选清理（待设计确认） |
+| `VKB[7:0]` | 0x1E | 补 VBK_EN=L keep last line / H follow setting 行为描述 | 无 |
+| `TP_F_AHEAD` | 0x2E[3] | 描述重写（TP early falling + Hi-Z interval 公式） | 无：数字行为 CHPI_SD_CTRL 已有（TPW_AHEAD 比较） |
+| `HIZ_MIN_SEL/VAL` | 0x2F[1]/[6:2] | 门控 `TP_F_AHEAD==1 & LD_F==1`；公式 `HIZ_MIN_VAL×4PKT+4PKT`、默认 42PKT+100ns | 透传不变；CHPI_SD_CTRL.v:187 原值直用的量纲对应**待设计确认** |
+
+- 0919 裁决的规格回填 5 项（0x08=0X02、0x33=0X00、0x04 行 9dB 残留、0x34 Access、0x43[7]）在 0929 表仍未执行
+- 审查报告：`script/reg20260929_audit_glm53flash.md`（HK1V11 commit 8d1808c1）
+
+## 29. 寄存器可视化大图
 
 chip_sel=0/1 默认字节映射、checksum 地址覆盖、LSI 保护范围、复位域分类、0721v1 拍重组对照等 SVG 大图已集中到独立的 **寄存器图解 Sheet**：
 

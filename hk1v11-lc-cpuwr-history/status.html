@@ -252,6 +252,7 @@
 
 | 版本 | 主要状态 |
 |------|----------|
+| **20260929 表审查** | **非 RTL 版本（审查记录，09-29）：HK1V11_Register_20260929 全量审查通过——12 条变更全为描述类（SP_S→dummy、VKB/TP_F_AHEAD/HIZ_MIN_* 描述），Reg_1V11 零变化，三件套保持 0918v1/0920v1 不动；SP_S 链路与 HIZ_MIN_VAL 量纲 2 项待设计确认（见 §3）** ✅ |
 | **0920v1** | **EQ 引脚查表 12dB 编码修正（仅 LC_REG_MAPPING）：`EQ[0:2]=100/101` → `reg_lane_ctrl=5'b10100`（原 `5'b10000`）；其余表项（3dB/6dB/19dB）与 mux 优先级不变；验收三关通过** ✅ |
 | **0918v1** | **EQ 默认值调整 + 服务器 0917 基线重建：`reg_eq_bias_tune[7:0]`（0x36）默认 `8'h55→8'h17`（0x36 字节 `0x55→0x17`）；`reg_eq_rbc1`（0x08[1]）默认 `1'b0→1'b1`（0x08 字节 `0x00→0x02`）；`reg_eq_rbc0` 保持 `1'b0`；chip_sel=0/1 共用；env 默认值未同步（用户决策，挂账）** ✅ |
 | **0909v1** | **SCREN 口径对齐服务器：`` `ifdef VU440_FPGA `` 强制分支注释停用，所有平台（含 FPGA）scramble 由软件经 `R_REG00_F[4]`（0x00[4]）控制（默认关）；0907v1 CHIP_SEL 门控确认服务器已按同款写法合入；寄存器定义不变，`LC_CPUWR` 保持 0903v1** ✅ |
@@ -348,6 +349,9 @@
 | Loop_sel PIN 引入 | **待 projectleader 定** | `Loop_sel[2:0]` 实际 3 个 PIN 引入与命名待定（当前 LINK_CONFIG_CTRL 空接）；引测点（TESTO）不归 LC_CPUWR |
 | DV env 同步 | **用户暂缓** | env_cfg reg51 位偏移、reg56 EOL 打包、CDR/BCC 打包、reg_model 旧模板，待确认后同步；0918v1 新增缺口：0x08/0x36 env 默认值（rbc1=0、bias_tune=0x55）仍为旧值，依赖上电默认值检查的 case 会不一致 |
 | 上游 `CHPI_CONFIG_L0` 升 24bit | **外部依赖** | 每拍 3 字节采样；全芯片 FCONFIG 流仿真联调前提 |
+| SP_S 输出链清理 | **待设计确认（20260929）** | 规格已将 `SP_S[2:0]` @0x1D 标为 dummy register；RTL 仍驱动 LC_REG_MAPPING.v:196→LOGIC_CENTER 顶层输出。保留透传合规，断链为可选清理项 |
+| HIZ_MIN_VAL 量纲对齐 | **待设计确认（20260929）** | 规格新公式 `HIZ_MIN_VAL×4PKT+4PKT`、门控 `TP_F_AHEAD==1 & LD_F==1`；RTL CHPI_SD_CTRL.v:187 原值直用且无新门控——LD_W 计数单位是否隐含 ×4 需与规格/模拟侧对齐 |
+| 规格表回填 5 项 | **⚠️ 挂规格 owner** | 0919 裁决的回填清单（0x08=0X02、0x33=0X00、0x04 行 EQ 9dB 残留、0x34 Access=R、0x43[7] VPS_BK 删行）在 0929 版仍未执行，规格表已滞后 RTL 两版 |
 | `LINK_LOGIC` `[23:16]` tie-off 删除 | 待上游升版 | 过渡期防 X 传播，上游 24bit 输出到位后删除
 
 ## 4. 后续建议
