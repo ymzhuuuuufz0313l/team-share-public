@@ -252,7 +252,7 @@
 
 | 版本 | 主要状态 |
 |------|----------|
-| **20260929 表审查** | **非 RTL 版本（审查记录，09-29）：HK1V11_Register_20260929 全量审查通过——12 条变更全为描述类（SP_S→dummy、VKB/TP_F_AHEAD/HIZ_MIN_* 描述），Reg_1V11 零变化，三件套保持 0918v1/0920v1 不动；SP_S 链路与 HIZ_MIN_VAL 量纲 2 项待设计确认（见 §3）** ✅ |
+| **20260929 表审查** | **非 RTL 版本（审查记录，09-29）：HK1V11_Register_20260929 全量审查通过——12 条变更全为描述类（SP_S→dummy、VBK/TP_F_AHEAD/HIZ_MIN_* 描述），Reg_1V11 零变化，三件套保持 0918v1/0920v1 不动；SP_S 链路与 HIZ_MIN_VAL 量纲 2 项待设计确认（见 §3）** ✅ |
 | **0920v1** | **EQ 引脚查表 12dB 编码修正（仅 LC_REG_MAPPING）：`EQ[0:2]=100/101` → `reg_lane_ctrl=5'b10100`（原 `5'b10000`）；其余表项（3dB/6dB/19dB）与 mux 优先级不变；验收三关通过** ✅ |
 | **0918v1** | **EQ 默认值调整 + 服务器 0917 基线重建：`reg_eq_bias_tune[7:0]`（0x36）默认 `8'h55→8'h17`（0x36 字节 `0x55→0x17`）；`reg_eq_rbc1`（0x08[1]）默认 `1'b0→1'b1`（0x08 字节 `0x00→0x02`）；`reg_eq_rbc0` 保持 `1'b0`；chip_sel=0/1 共用；env 默认值未同步（用户决策，挂账）** ✅ |
 | **0909v1** | **SCREN 口径对齐服务器：`` `ifdef VU440_FPGA `` 强制分支注释停用，所有平台（含 FPGA）scramble 由软件经 `R_REG00_F[4]`（0x00[4]）控制（默认关）；0907v1 CHIP_SEL 门控确认服务器已按同款写法合入；寄存器定义不变，`LC_CPUWR` 保持 0903v1** ✅ |
@@ -331,10 +331,12 @@
 - **0827v1 表同步**：依据 HK1V11_Register_20260827.xlsm——LC_CPUWR 删 `output [4:0] sw_reg_lane_ctrl`（0x33[6:2] 复位默认 5'b00000 → Reserved）、新增 `output reg_eol` @ 0x38[6]（`LSI_PRTECT ? R_REG56_F[6] : 1'b0`，Short-encoding：0=DE by counter 默认 / 1=DE by EOL）；LC_REG_MAPPING 换服务器 0825 基线（含 AUTO_EQ mux）、新增 `sw_reg_lane_ctrl0~4` 五个单 bit output（←R_REG04_F[0]/R_REG03_F[1:0]/R_REG02_F[1:0]，chip_sel 无关）、mux `(reg_pin_eq|EQ_MODE)` 分支改内部拼位 `{c4,c3,c2,c1,c0}`；LINK_CONFIG_CTRL 本版不改（服务器侧配套挂账：旧 `.sw_reg_lane_ctrl` 连接 ×2 待删 + 实例补 5 个新 output 连接）
 - **0821v1/0821v2 BCC 方向定论**：0821v1 依 spec 理解将 BCC_M/SDID/AEQ_reg_lane_ctrl 改 regr_* 只读并删 I2C 写通路；0821v2 集成服务器 0825 后定论——CPUWR 无 BCC 总线访问权限，BCC_M 回退 I2C R/W output（下发 bcc_ctrl），SDID/AEQ_reg_lane_ctrl 保持只读 input 并去 regr_ 前缀对齐服务器命名；服务器验证通过（commit `602cea9`）
 - **0825/0828 服务器包集成**：0825 包整体替换 HDL/（`f54f8d6`）；0828 包（PACK_TAR_0828V0）覆盖 HDL/——修改 16/新增 2/删除 0，MD5 310/310 零差异（`d00e2a0`）；覆盖后 LC_CPUWR=0821v2、LINK_CONFIG_CTRL=服务器 0825 版（SDID 只读接通、BCC_M 上抛；⚠️ cr_done_filter 透传端口被服务器移除）；0827v1 评估=纯增量零冲突（LC_CPUWR/LC_REG_MAPPING 0827v1 为严格超集，拷回+集成补丁即重放）
-- **history 副本同步**：`LC_CPUWR_history/LINK_CONFIG_CTRL.v` 用户确认替换为服务器 0825 版（`b9e85a0`）；接口增量见 timeline 4.17
+- **history 副本同步**：`LC_CPUWR_history/LINK_CONFIG_CTRL.v` 用户确认替换为服务器 0825 版（`b9e85a0`）；接口增量见 timeline §5.20
 - **0903v1 表同步**：依据 HK1V11_Register_20260903.xlsm——LC_CPUWR 0x29（十进制 41，`R_REG41_F`）字节默认 `0x00→0x02`（`R_DBC_WIDTH_OPT[1:0]` @ 0x29[2:1] 复位默认 `2'b00→2'b01`，复位值与 LSI_PRTECT 读回兜底同步修改）；LC_REG_MAPPING `` `ifdef VU440_FPGA `` 下 `R_SCREN` 强制 `1'b1`（FPGA 平台 scramble 常开，`` `else `` 分支保持 `R_SCREN = R_REG00_F[4]`，ASIC/仿真流程行为不变）；寄存器 map 无变化，env/reg_model 无功能变化
 - **0907v1 CHIP_SEL 门控修复**：用户评审发现 cs=1 专有输出（`SR_PR/PF/NR/NF` @0x09、`PWRC_TA/TB/P/N` @0x0A、`PWRC_PA/PB/NA/NB` @0x1F，共 12 个）无 CHIP_SEL 门控——cs=0 下误写 Reserved 地址会把随机值漏到输出；修复为 cs=0 输出字段默认值常量、cs=1 行为不变（仅 LC_REG_MAPPING 0903v1→0907v1，map/RECON/LC_CPUWR 无变化）
 - **0918v1 EQ 默认值 + 服务器基线重建**：`reg_eq_bias_tune` 默认 `8'h55→8'h17`、`reg_eq_rbc1` 默认 `0→1`、`reg_eq_rbc0` 保持 0（0x08/0x36 字节默认 `0x00→0x02`/`0x55→0x17`）；根级三件套基线重建为服务器 0917 版，0827v1 集成挂账清零（cr_done_filter 接通、sw_reg_lane_ctrl 旧连接清除）；验收三关全过
+- **0920v1 EQ 查表编码修正**：仅 LC_REG_MAPPING——`EQ[0:2]=100/101` → `reg_lane_ctrl=5'b10100`（原 `5'b10000`），其余表项不变；验收三关全过
+- **20260929 表审查**：12 条变更全为描述类（SP_S→dummy、VBK/TP_F_AHEAD/HIZ_MIN_* 描述），Reg_1V11 零变化，三件套保持不动；SP_S 链清理与 HIZ_MIN_VAL 量纲 2 项待设计确认（glm-5.3 团队 + captain 独立 diff 交叉）
 
 ## 3. 待确认项
 
@@ -450,3 +452,5 @@ const article = document.getElementById('article');
   </script>
 </body>
 </html>
+
+<!-- ymzhu 2026-10-09 14:50 -->

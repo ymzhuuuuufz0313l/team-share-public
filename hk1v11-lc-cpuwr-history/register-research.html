@@ -246,7 +246,7 @@
   <script type="text/template" id="md">
 # 六、寄存器规格交叉验证
 
-> **⏳ 时间锚点**：本章节为 **0716 时点**的交叉验证记录（基线 0707 RTL + 0708/0716 Excel），保留作历史依据。文中 `0x32 sw_reg_lane_ctrl` 等字段的位置/命名与当前（0903v1；lane_ctrl 单 bit 迁移 0x02/0x03/0x04、0x33[6:2] Reserved 为 0827v1 变更）已不同——最新状态见[寄存器](./regmap.html)与[当前状态](./status.html)页。
+> **⏳ 时间锚点**：本章节为 **0716 时点**的交叉验证记录（基线 0707 RTL + 0708/0716 Excel），保留作历史依据。文中 `0x32 sw_reg_lane_ctrl` 等字段的位置/命名与当前（0920v1；lane_ctrl 单 bit 迁移 0x02/0x03/0x04、0x33[6:2] Reserved 为 0827v1 变更）已不同——最新状态见[寄存器](./regmap.html)与[当前状态](./status.html)页。
 
 ## 1. 验证目的与基线
 
@@ -321,6 +321,8 @@
 | `0x00-0x3F` | `00_CTRL_F.md` |
 | `0x40-0x44` | `40_CTRL_L.md` |
 | `0x90-0x92` | `90_CDR.md` |
+| `0xF0-0xF1` | `F0_I2C_PASSWORD.md` |
+| 保留地址 | `reserved_addresses.md` |
 
 ## 5. 0810 核对更新（HK1V11_Register_20260807.xlsm）
 
@@ -340,9 +342,6 @@
 
 > 核对结论：0810v1 RTL 与 `HK1V11_Register_20260807.xlsm` 一致；`chip_sel0/1_register_address_map.md` 已同步。
 
-| `0xF0-0xF1` | `F0_I2C_PASSWORD.md` |
-| 保留地址 | `reserved_addresses.md` |
-
 ## 6. 待确认项
 
 来自 `delta_report.md` 的遗留问题：
@@ -353,7 +352,7 @@
 4. 部分 Reserved 位在 RTL 中仍有存储单元，是否区分 `Reserved (stored)` / `Reserved (unimplemented)`。
 5. `LC_REG_MAPPING` 下游信号映射需逐位核对。
 
-这些事项与 [七、当前状态与后续](./status.html) 中的待确认项相互引用。
+这些事项与 [八、当前状态与后续](./status.html) 中的待确认项相互引用。
 
     </script>
   <script>
@@ -443,3 +442,5 @@ const article = document.getElementById('article');
   </script>
 </body>
 </html>
+
+<!-- ymzhu 2026-10-09 14:50 -->

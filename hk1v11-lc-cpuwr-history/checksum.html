@@ -361,6 +361,8 @@ LC_CPUWR 的寄存器更新核心机制：**写入一个寄存器需要连续 3 
 
 ### 5.3 one-shot unlock 验证陷阱
 
+one-shot unlock 实现后 checker 曾出现解锁帧内期望值误判（checker 在 unlock 帧已把 `expected[]` 切到下一帧 cfg，而 RTL 解锁帧内 shadow 保持当前帧）——详见[验证同步](./verification.html) §2.1「0618 one-shot unlock 误判修复」。
+
 ## 6. SCR_EN 与 SSFC 门控
 
 ### 6.1 0512 SCR_EN 复位逻辑
@@ -412,7 +414,7 @@ frame_end = 0x27
 
 **0807v1 新架构**（`LINK_CONFIG_CTRL` 承载寄存器通路）与 **0810v1 寄存器表同步**均**不改变 checksum 机制**：
 
-- 参与 XOR 累加的地址仍是 `0x00~0x08 & 0x1F`（除 `0x07` 控制寄存器），frame_end 仍为 `0x27`
+- 参与 XOR 累加的地址为 `0x00~0x06、0x08、0x09、0x0A、0x1D、0x1E、0x1F`（除 `0x07` 控制寄存器；0616v2 起纳入 `0x09/0x0A/0x1D/0x1E`），frame_end 仍为 `0x27`
 - 0810v1 新增/变更的寄存器（FSEL@reg146、EOL@reg56、BCC@reg147/160/161、reg50/51/53 字段修正）都不在 checksum 参与范围（`0x00~0x1F` 之外）
 - Seg2（`0x20~0x38`）仍为直写、不做 checksum
 - checker 期望、DV 环境、回归行为不因此改变
@@ -505,3 +507,5 @@ const article = document.getElementById('article');
   </script>
 </body>
 </html>
+
+<!-- ymzhu 2026-10-09 14:50 -->

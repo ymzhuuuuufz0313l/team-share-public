@@ -513,7 +513,7 @@ assign R_REG31_F_RECON = {PWRC_NB, PWRC_NA, PWRC_PB, PWRC_PA};  // 8'hAA
 |------|--------|--------|------|
 | `FSEL[1:0]` | reg53[1:0] (`0x35`) | **reg146[4:3]** (`0x92`) | 频率改 `00:10M/01:12M/10:14M/11:16M` |
 | `reg_fbdiv_clk_sel[1:0]` | reg50[6:5]（错位） | **reg53[1:0]** (`0x35`) | 修正错位 |
-| `sw_reg_lane_ctrl[4:0]` | reg50[4:0]（错位） | **reg51[6:2]** (`0x33`) | 修正错位 |
+| `sw_reg_lane_ctrl[4:0]` | reg50[4:0]（错位） | **reg51[5:1]** (`0x33`，0810 时点；0817 复核修正为 reg51[6:2]) | 修正错位 |
 | `reg_pin_eq` | reg50[7]（错位） | **reg51[7]** (`0x33`) | 修正错位 |
 | `reg_pin_eol_det` | - | **reg56[4]** (`0x38`) | 新增，默认 1 |
 | `reg_eol_det` | - | **reg56[5]** (`0x38`) | 新增，默认 0 |
@@ -572,7 +572,7 @@ assign R_REG31_F_RECON = {PWRC_NB, PWRC_NA, PWRC_PB, PWRC_PA};  // 8'hAA
 ### 20.1 0819v1 复位信号改名（无寄存器映射变化）
 
 - 复位信号 `N_RST` → `RSTN`（LC_CPUWR / LC_REG_MAPPING / LINK_CONFIG_CTRL / LINK_LOGIC 实例化），止步于 `LINK_CONFIG_CTRL` 端口（避免与芯片复位 RSTN 撞名）
-- `R_LOAD[1:0]` 由内部 wire 提升为 `LC_REG_MAPPING` output，`LINK_CONFIG_CTRL` `.R_LOAD()` 空接
+- `R_LOAD[1:0]` 确认保持 `LC_REG_MAPPING` 内部 wire，不提升为 output（初稿曾提 output，同日 RTL 复核回退；与本站 timeline §5.13/status §1 口径一致）
 
 ### 20.2 0819v2 Loop_sel[2:0] 选择 CDR/KVCO 默认值
 
@@ -718,7 +718,7 @@ assign 未解锁分支与复位块（RSTN_NLOCK_NORMAL）两处 default 均按 L
 | 寄存器 | 地址 | 0929 变更 | RTL 影响 |
 |--------|------|----------|----------|
 | `SP_S[2:0]` | 0x1D | Output Delay 20~90ns 描述 → **dummy register**（字段/默认/访问保留） | 无必改：LC_REG_MAPPING.v:196 透传保留合规；输出链断开为可选清理（待设计确认） |
-| `VKB[7:0]` | 0x1E | 补 VBK_EN=L keep last line / H follow setting 行为描述 | 无 |
+| `VBK[7:0]` | 0x1E | cs=0 sheet 补 VBK_EN=L keep last line / H follow 行为描述，cs=1 sheet 仅默认描述更新（cs=1 无 VBK_EN 字段） | 无 |
 | `TP_F_AHEAD` | 0x2E[3] | 描述重写（TP early falling + Hi-Z interval 公式） | 无：数字行为 CHPI_SD_CTRL 已有（TPW_AHEAD 比较） |
 | `HIZ_MIN_SEL/VAL` | 0x2F[1]/[6:2] | 门控 `TP_F_AHEAD==1 & LD_F==1`；公式 `HIZ_MIN_VAL×4PKT+4PKT`、默认 42PKT+100ns | 透传不变；CHPI_SD_CTRL.v:187 原值直用的量纲对应**待设计确认** |
 
@@ -819,3 +819,5 @@ const article = document.getElementById('article');
   </script>
 </body>
 </html>
+
+<!-- ymzhu 2026-10-09 14:50 -->

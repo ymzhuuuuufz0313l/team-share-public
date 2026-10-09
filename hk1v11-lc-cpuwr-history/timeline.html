@@ -463,7 +463,7 @@
 - **reg53 字段变更**：`[1:0]` 由 FSEL 改为 **`reg_fbdiv_clk_sel`**（`00:ck<5> 01:ck<4> 10:ck<10> 11:ck<11>`）
 - **reg56 新增 EOL**：`[4]` `reg_pin_eol_det`（默认 1）、`[5]` `reg_eol_det`（默认 0）；默认值 `0x05 → 0x15`
 - **新增 BCC 寄存器**（I2C-only 占位，BCC 协议未接入）：`BCC_M[3:0]` @ reg147、`SDID[4:0]` @ reg160、`AEQ_reg_lane_ctrl[3:0]` + 只读 `regr_AEQ/BCC_FF/PASS` @ reg161
-- **修正 reg50/51/53 字段错位**：`sw_reg_lane_ctrl`→reg51[6:2]、`reg_pin_eq`→reg51[7]、`reg_fbdiv_clk_sel`→reg53[1:0]、reg50 恢复 Reserved
+- **修正 reg50/51/53 字段错位**：`sw_reg_lane_ctrl`→reg51[5:1]（0810 时点；0817 复核修正为 reg51[6:2]）、`reg_pin_eq`→reg51[7]、`reg_fbdiv_clk_sel`→reg53[1:0]、reg50 恢复 Reserved
 - **LSI 保护修正**：reg48（TEST_PRTCT）/ reg160 / reg161 读回去掩码（表保护列空白）；reg147 保留保护
 - **验收三关**：iverilog + rtl-code-review + rtl-signal-trace 全部通过
 - **接口归属**：0810v1 新增信号（EOL/BCC 等）在 `LINK_CONFIG_CTRL` 中 `.xx()` 空接，不定义端口（由 bcc_ctrl 等模块接入）
@@ -632,7 +632,7 @@
 
 `HK1V11_Register_20260929.xlsm`（2026-09-29 到货）全量审查——glm-5.3 团队成员 + captain 独立双 dump 逐 sheet diff 交叉验证：
 
-- **12 条变更全部为描述/文档类**（cs=0/1 两 sheet 对称）：`SP_S[2:0]` @0x1D 描述改 **dummy register**（原 Output Delay 20~90ns 表，字段/默认/访问保留）；`VKB[7:0]` @0x1E 补 VBK_EN=L keep last line / H follow 行为；`TP_F_AHEAD` @0x2E[3]、`HIZ_MIN_SEL` @0x2F[1]、`HIZ_MIN_VAL` @0x2F[6:2] 描述重写——Hi-Z 公式：默认最小 42PKT+100ns，HIZ_MIN_SEL=1 时 `HIZ_MIN_VAL×4PKT+4PKT`，门控 `TP_F_AHEAD==1 & LD_F==1`
+- **12 条变更全部为描述/文档类**（cs=0/1 两 sheet 对称）：`SP_S[2:0]` @0x1D 描述改 **dummy register**（原 Output Delay 20~90ns 表，字段/默认/访问保留）；`VBK[7:0]` @0x1E：cs=0 sheet 补 VBK_EN=L keep last line / H follow 两行行为说明，cs=1 sheet 仅默认描述更新（cs=1 无 VBK_EN 字段）；`TP_F_AHEAD` @0x2E[3]、`HIZ_MIN_SEL` @0x2F[1]、`HIZ_MIN_VAL` @0x2F[6:2] 描述重写——Hi-Z 公式：默认最小 42PKT+100ns，HIZ_MIN_SEL=1 时 `HIZ_MIN_VAL×4PKT+4PKT`，门控 `TP_F_AHEAD==1 & LD_F==1`
 - **Reg_1V11 sheet 零变化**（无默认值/位段/Access/新增删除字段）；其余 8 个 sheet 零变化
 - **判定：三件套（0918v1/0920v1）无需任何修改**；TP_F_AHEAD 数字行为 CHPI_SD_CTRL 已有、HIZ/SP_S/VBK 均为透传
 - 2 项待设计确认：① SP_S 已标 dummy 但 RTL 输出链（LC_REG_MAPPING.v:196→LOGIC_CENTER）未断（保留透传合规，断链为可选清理）；② HIZ_MIN_VAL 新公式量纲 vs CHPI_SD_CTRL.v:187 原值直用且无新门控
@@ -727,3 +727,5 @@ const article = document.getElementById('article');
   </script>
 </body>
 </html>
+
+<!-- ymzhu 2026-10-09 14:50 -->
