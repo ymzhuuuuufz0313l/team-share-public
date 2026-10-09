@@ -575,8 +575,74 @@ SEL-004=0、/D1/D2=0（10 角核验）；run 晚于三笔约束 push，ip_cons �
 **gating hold 待办**：B/E gating 族残余 0-9 条/角（wc_cbest 9 条 −0.455 最差），处置方案（是否结构改 ICG）待 ECO 评审定。
 
 **skew 探针现状**：V3 服务器 run 的 skew_sd.tcl 仍是旧探针（MUX2X2/O）→ dplc_clk_b 仍空、csv 999/−993 哨兵保留——探针修复（`6a5e7ec8`）与 `merge_sd_busskew.pl` 判读窗修正同在**待回传清单**，下次 run 验收 dplc_clk_b 真数据（详见 <a href="./ch18-skew.html">ch18 skew 教程 §4.1/§4.4</a>）。
+
+### 5.4 P1 实施计划：BKDU_SYNC 扩展【待 ymzhu 决策·未实施】
+
+> 本节为**实施方案发布页**：是否随下轮回传服务器由 ymzhu 拍板。全部内容基于 10-08/09 已确认事实（带出处），RTL 尚未改动。
+
+#### 5.4.1 背景与动机
+
+- C 簇 **27 条 setup 违例**（wc_cbest 为主，worst **−0.54**；路径 `R_REG03_L_reg_2_` → `LONG_ENCODING_OUTPUT/PIX_DATA_ASYNC` latch/E 等；rpt = `SYNTHESIS/top/sta/post/pt/wc_cbest_125/latest/rpt/setup/`）；
+- **真路径判定**：`LONG_ENCODING_OUTPUT.v` L345/L411 R_BKDU 在 DCLK 域逐拍直通消费，**不可 mc**（0928 终局裁决：`cpuwr_reg_grp` 唯一永久排除项）；
+- V3/V4 run 实测 **27 条恒在**（§5.3 剩余真违例大头 R_REG03_L 28 中的主体）。
+
+#### 5.4.2 BKDU 功能定论（spec 证据）
+
+**CHPI 带内 V-blanking 指示位**：T5 V-Blanking dummy 行的 CTRL_L 携带 `bkdu=1`（spec："only can be set to H after K4"）；T4 视频行 `bkdu=0`（line1 另带 `fsync=1`）。`R_REG03_L[2]` = RX 侧逐帧锁存的"当前处于 V-blanking"指示器，**逐帧翻转**（K4 置位 / 首视频行清除）。
+
+消费者全景（按域分组）：
+
+| 域 | 消费者 | 现状 |
+|---|---|---|
+| DCLK（逐拍直通） | 长编码消隐注入（L411 mux）、PIX_CLK_EN 使能锥（L345）、训练禁用、FLAG 冻结 | **C 簇违例所在** |
+| DCLK（已打拍） | LC_REG_MAPPING BIT_ALIGN_PT 门控采样版→HSR_ACTIVE、CHPI_SCR_DEC→DATA_16_ORG | 已有 BKDU_SYNC 先例 ✅ |
+| 慢域 | 功控（R_PWRCP/R_PWRCN）、调试读出 | 当前 MET，raw 消费无违例 |
+
+#### 5.4.3 修改方案
+
+**唯一修改文件** = `HDL/HK1V11_digital_top/long_encoding/LONG_ENCODING_OUTPUT.v`：
+
+1. 新增 **2FF 跟随式同步器**（DCLK 域，`N_RST_NLOCK` 复位 0）：
+
+```verilog
+// before（无，raw 直通）：
+//   L345: else if (R_BKDU || HBK_ACTIVE || !PIX_STREAM_ACTIVE)
+//   L411: if(R_BKDU)
+// after（新增同步器 + 两处换用）：
+reg R_BKDU_SYNC1, R_BKDU_SYNC2;
+always @(posedge DCLK or negedge N_RST_NLOCK) begin
+    if (!N_RST_NLOCK) begin R_BKDU_SYNC1 <= 1'b0; R_BKDU_SYNC2 <= 1'b0; end
+    else              begin R_BKDU_SYNC1 <= R_BKDU;  R_BKDU_SYNC2 <= R_BKDU_SYNC1; end
+end
+// L345: else if (R_BKDU_SYNC2 || HBK_ACTIVE || !PIX_STREAM_ACTIVE)   // PIX_CLK_EN 使能锥
+// L411: if(R_BKDU_SYNC2)                                             // 消隐注入 mux
+```
+
+2. **不动清单**：LC_REG_MAPPING 同域消费者、已有 BKDU_SYNC 的两处、其余域当前 MET 的 raw 消费者——只动违例起点到 LONG_ENCODING_OUTPUT 的两条消费链。
+
+#### 5.4.4 风险与必查项
+
+1. **清零沿竞速（对抗评审必查）**：BKDU=0（首视频行 CTRL_L）经寄存器写路径 vs 首行数据经解码管道（K1 对齐 + 桶形 + 解码）到 OUTPUT 的延迟对比——预期**数据管道远长**，2 拍同步后的清除仍早于首行数据到达，无伪影；**若不成立则首行头部 2 拍 VBK 伪影**，方案需回炉；
+2. PIX_CLK_EN 使能锥连带（L345 同步器进锥后时序重排）；
+3. BKDU 生效晚 2 个 DCLK 拍（~7.6ns）——V-blanking 整窗合法，功能无感；
+4. **对 designer 确认项**：消隐边界移 2 像素是否有面板 spec 要求。
+
+#### 5.4.5 验证流程
+
+iverilog（`HDL_define.v` 同编）→ `rtl-code-review` 对抗评审（门禁 critical==0 && high≤1，**必含重定时消费者审计 + 清零沿竞速专项**）→ `rtl-signal-trace` 信号链路 → 长编码变更记 `longcode_ver/CHANGELOG.md`（非 Register Change，寄存器映射无变）。
+
+#### 5.4.6 服务器决策点
+
+- 本改动 = **RTL 功能变更**，生效需服务器重跑 DC+PT（非约束回传可及）；
+- **传** = C 簇 27 条清零 + 首行 DV 波形核验（首行前 2 拍无 VBK 伪影）；
+- **不传** = 27 条保留在账（§5.3 剩余真违例构成不变）；
+- 回滚 = `git revert` 单文件，无约束/网表连带。
+
+#### 5.4.7 版本纪律
+
+固定文件名 + 版本头注释（`// LONG_ENCODING_OUTPUT v1010v1 bkdu_sync`）；`HDL/` 与长编码归档目录**双轨记录**（CHANGES.md 两线并行）。
   </script>
   <script src="./js/site.js"></script>
 </body>
 </html>
-<!-- ymzhu 2026-10-09 11:50 -->
+<!-- ymzhu 2026-10-09 14:12 -->
