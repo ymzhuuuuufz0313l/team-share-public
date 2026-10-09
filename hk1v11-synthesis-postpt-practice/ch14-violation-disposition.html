@@ -505,26 +505,9 @@ before 基线：组 4 o_keep 家族 −0.57~−0.60 ×10 条；G13 组3 D1 −1.
 
 > 行号以 `rep_dir_0922_1456` 本次报告为准；重跑后行号会漂移，但"QoR 块 / startpoint / endpoint"的相对结构不变，按组名搜即可定位。
 
-### 3.4 K3 审查修订清单（本版相对首版改了什么）
+### 3.4 行号口径
 
-| 项 | 首版 | 修订为 | 依据 |
-|---|---|---|---|
-| 组4 worst | -0.85 | **-1.14**（boe_bcc_prescale_reg_2_） | max.rpt 全扫，原值与自身子表矛盾 |
-| 组5 时钟域 | "DCLK_CONFIG 域 / DCLK_CONFIG→WCLK1_A" | **RX_CLK 域 / RX_CLK→WCLK1_A** | max.rpt L154275 startpoint "clocked by RX_CLK" |
-| 组7 endpoint | C2282/C2276 | **C2272/C2277/C2278/C2283** | C2282/C2276 实为组8 endpoint |
-| R_REG03_L BKDU | ANCTL.v:147,153 | **ANCTL.v:162,168,336-342** | 实读（147/153 无 BKDU） |
-| R_REG34_F HIZ_SEL | ANCTL.v:130 | **ANCTL.v:133** | 实读（L133 = LD_F_ECO） |
-| R_REG40_F DBC_VBK | LC_REG_MAPPING.v:322 | **LC_REG_MAPPING.v:331** | 实读（L331 = HSR_ACTIVE） |
-| R_REG41_F DBC | CHPI_SD_CTRL.v:514-522 | **CHPI_SD_CTRL.v:551-559** | 实读（case R_HSR_W_SEL） |
-| R_REG46_F TP_F_AHEAD | CHPI_SD_CTRL.v:196,443 | **CHPI_SD_CTRL.v:203,466** | 实读（R_TP_F_AHEAD 仅 L203/466） |
-| 组4 "其他" 条数 | 6 | **7**（补 bcc_rx_reply_time_cnt×3），合计 139 | max.rpt 全扫 |
-| max.rpt 行数 | 206423 | **228116** | 字节级统计（引用行号仍命中） |
-| .rpt 行数 | 20541 | **20540** | 字节级统计 |
-| G1/G2 对数 | "4 对" | **2 对/4 行** | git diff 实为 {PIX}+{BK_ST} 各 1 对 |
-| set_input_delay 行 | L318 一带 | **L311-312** | 实读（L318 是 G13 注释） |
-| CENTER1.v PIX_CLK | :235 | **:239/241** | 实读（L235 是 DTCTL 实例化起始） |
-
-> **根因**：§3.2 的 RTL 行号首版转录自 `ip_cons` L385-412 审计注释，而该注释的行号在 RTL 后续改动后已漂移。**`ip_cons` L385-412 注释本身也需同步修订**（属 HK1V11 约束文件改动，另行处理）。
+RTL 行号首版转录自 `ip_cons` L385-412 审计注释、后经 RTL 改动漂移，本版已全部实读核实（修订明细见 git 历史 `script/mc_audit_0921/` 归档）；`ip_cons` L385-412 注释本身待同步修订。
 
 ---
 
@@ -532,8 +515,8 @@ before 基线：组 4 o_keep 家族 −0.57~−0.60 ×10 条；G13 组3 D1 −1.
 
 | 优先级 | 动作 | 消多少 | 风险 |
 |---|---|---|---|
-| **P0** | 组 1：**0928 终局——9 分区逐 bit 翻案审查后整组回归组宽 mc，67 条全消（89−24 BKDU = 65 组覆盖 + 组8 DPLC 2 条；原"78 条"系 R_REG47_F 13 条重复计，已回归组不得再单列）**（含 R_REG00_L 回组、休眠 B 类锚点含 HIZ_MIN_VAL[6:2] 全翻案，remove 10→1）；BKDU 保留单周期 + RTL 加同步（**BKDU/G1G2 0924 ymzhu 确认不能恢复**，修复=RTL 两级同步器） | 89（剩 BKDU 24 待 RTL） | 高 |
-| **P1** | 组 2+3：~~G13 重写扩 pattern~~ 0928 审查否决（位对齐桶形移位选择寄存器，非准静态，❌ 不可 mc）→ **重分类真实数据通路：交综合 retime/upsizing 或 RTL 预相移重构**（与 139 CONFIG_DATA 同桶）；**0929-30 实施**：SHORT 打一拍落地+两层回归修复（v2 `4a4cd776`/v3 `16e653e3`），服务器批量 59/60（基线转绿）；LONG v4.1 `451211a0` 420b 52/52 后波形发现深藏装载拍回归（K1/K4_FIND 恒 0）→ **v4.2 `3d51348b` 修复收口**（LAT_EFF 装载拍组合旁路 + 撤 L-11 守卫、0 新 FF；三实例差分 TB 严格 +1 等价、对抗评审 PASS critical=0，遗留一条 HIGH 待后端 STA 覆盖新同周期锥）；放量 369/382 FAIL 聚类定责中；剩 CTRL_L_LINE_OVERRIDE 定责 + upsize X4 + 重跑基线 + 下次 DC run 的 G13 清零验收按 v4.2 重签 | 56 | 高 |
+| **P0** | 组 1：整组回归组宽 mc，**67 条全消**；BKDU 24 条保留单周期 + RTL 加两级同步器（0924 ymzhu 确认不可 mc） | 89（剩 BKDU 24 待 RTL） | 高 |
+| **P1** | 组 2+3：0928 审查否决扩 pattern（位对齐桶形移位寄存器非准静态不可 mc），改走 SHORT 打一拍重构（v4.2 `3d51348b` 收口，差分 TB +1 等价、对抗评审 PASS）；剩 G13 清零验收与放量定责待办 | 56 | 高 |
 | **P1** | 组 8：**已实施宽约束对（`-from R_REG06_F_reg_2_ -to DPLC_CLK_*`，dc/pt 双分支），待 run 三证据**（report_exceptions applied + capture 边沿=2 拍 + SEL-004 无新增） | 2 | 低 |
 | **P1** | 组 9：DTCTL 门控换 ICG / 使能同步；复核 INDATA_SYNC `set_input_delay -min` | 30 | 中（结构） |
 | **P2** | 组 4/5/6/7：交综合（retime/流水）或 RTL 优化；WCLK1(-0.11) 大概率 DC 收敛 | 305 | 低 |
@@ -564,7 +547,7 @@ before 基线：组 4 o_keep 家族 −0.57~−0.60 ×10 条；G13 组3 D1 −1.
 
 1008 代 A 簇最差 2 条（`SMT_CS/FLAG_1H_H2L_reg` → `ANCTL/SNPS_CG_CELL_CLK_IDLE_CNT/CLK_TRIGGER_CNT latch/E`，worst **−1.10/−1.07**，wc_cbest 全局最差）已按"仿照 ip_cons L38 FLAG_1H→CS_SYNC 先例"处置：**G15 新增 mc2/1**（`-from SMT_CS/FLAG_1H_* -to ANCTL ACS 计数器 ICG 使能 latch/E`，dc/pt 双分支，commit **2d0cc6f9**）；预期下次 run **wc_cbest worst −1.10 清除**。
 
-### 5.3 V3 run 验证：今日三笔约束全部生效（run 10-08 15:19，`PACK_TAR_1008V3` 16:11 回传）
+### 5.3 V3 run 验证：今日三笔约束全部生效（V3 run 10-08，`PACK_TAR_1008V3`）
 
 **S1 生效实证（read_cons.log / exceptions rpt applied，wc_cworst_125 核验、10 角同）**：
 
@@ -574,9 +557,9 @@ before 基线：组 4 o_keep 家族 −0.57~−0.60 ×10 条；G13 组3 D1 −1.
 | K1 latch/E mc（pt_shell 拆分） | `a33c68d8`+`af45ba94` | `SNPS_CG_CELL_WCK1_A_* latch/E` mc **136 处匹配** | **K1_FIND_LATCH 族 15 路全 MET**（K1 worst +0.141，D 簇 18 条清零） |
 | hold fix B：I2C_CLK↔WCLK1_A_I2C async 对 | `629ec58a` | `set_clock_groups -asynchronous -name WCLK1_A_I2C_1 -group [WCLK1_A_I2C] -group [RX_CLK DCLK_*…]` applied | **WCLK1_A_I2C 族 hold 489/角 → 0**（全 10 角）；async 178-306/角 → 0-4 |
 
-SEL-004=0、/D1/D2=0（10 角核验）；run 时间 15:19:10 晚于三笔约束 push；ip_cons 服务器版与本地同代（仅签名时间戳差）。
+SEL-004=0、/D1/D2=0（10 角核验）；run 晚于三笔约束 push，ip_cons 服务器/本地同代。
 
-**S2 数字盘点（全实测 csv，图 = V3 run `report_setup.csv` / `report_hold.csv` 快照表格，2M23 同款配色+5 位小数）**：
+**S2 数字盘点（全实测 csv，图 = V3 run `report_setup.csv` / `report_hold.csv` 快照表格）**：
 
 ![V3 setup 快照（10 corner csv）](./sta1008v3_report_setup_k3.png)
 
@@ -585,19 +568,19 @@ SEL-004=0、/D1/D2=0（10 角核验）；run 时间 15:19:10 晚于三笔约束 
 
 ![V3 hold 快照（10 corner csv）](./sta1008v3_report_hold_k3.png)
 
-**SD 总线 skew（1P+DPLC 合并表，判读窗 normal(1p) ±3.5 / dplc −0.9~+4.1，数据 = ymzhu 18:30 截图口径）**：
+**SD 总线 skew（1P+DPLC 合并表，判读窗 normal(1p) ±3.5 / dplc −0.9~+4.1）**：
 
 ![V3 SD bus-skew 合并表](./sta1008v3_report_sd_busskew_k3.png)
 
-**剩余真违例**（setup Σ87 / hold Σ244；原 corner 总览矩阵图已由上两张 10-corner csv 表格取代）：
+**剩余真违例**（setup Σ87 / hold Σ244）：
 - setup 87 全在 RX_CLK + gating：wc_cbest startpoint 构成与旧 run 完全一致（LC_CPUWR R_REG03_L 28 = C 簇待 BKDU_SYNC 扩展、SCREN_SYNC_K3 23、K2_FIND 16、o_raw_data 11、K1_FIND 7）+ gating 1/9/1（B/E 族）；
 - hold 244：RX_CLK 12-37/角 + WCLK1_A_DCLK 5-12 + async/gating 零星（PIX_DATA_START_DLY 29、FCONFIG_ADD 24+22、CONFIG_DATA 14 = hold ECO 35 条范畴）。
 
-**gating hold 待办**：B/E gating 族 61/角已随 async 组收敛到 0-3/角（wc_cworst 1 条 −0.014 / wc_cbest 9 条 −0.455 / 其余 0-1）；**是否走方案 A（结构改 ICG）留待 ECO 评审**——若评审选 A，记入下轮 RTL 待办。
+**gating hold 待办**：B/E gating 族残余 0-9 条/角（wc_cbest 9 条 −0.455 最差），处置方案（是否结构改 ICG）待 ECO 评审定。
 
-**skew 内部核验（不入汇报）**：V3 服务器 run 的 skew_sd.tcl 仍是旧探针（MUX2X2/O）→ dplc_clk_b 仍空、csv 999/−993 哨兵保留——探针修复（`6a5e7ec8`）未回传服务器，与 `merge_sd_busskew.pl` 判读窗修正同在**待回传清单**，下次 run 验收 dplc_clk_b 真数据（详见 <a href="./ch18-skew.html">ch18 skew 教程 §4.1/§4.4</a>）。
+**skew 探针现状**：V3 服务器 run 的 skew_sd.tcl 仍是旧探针（MUX2X2/O）→ dplc_clk_b 仍空、csv 999/−993 哨兵保留——探针修复（`6a5e7ec8`）与 `merge_sd_busskew.pl` 判读窗修正同在**待回传清单**，下次 run 验收 dplc_clk_b 真数据（详见 <a href="./ch18-skew.html">ch18 skew 教程 §4.1/§4.4</a>）。
   </script>
   <script src="./js/site.js"></script>
 </body>
 </html>
-<!-- ymzhu 2026-10-09 10:22 -->
+<!-- ymzhu 2026-10-09 10:45 -->
