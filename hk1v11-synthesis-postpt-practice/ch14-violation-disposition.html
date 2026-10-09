@@ -569,16 +569,18 @@ SEL-004=0、/D1/D2=0（10 角核验）；run 晚于三笔约束 push，ip_cons �
 ![V3 SD bus-skew 合并表](./sta1008v3_report_sd_busskew_k3.png)
 
 **剩余真违例**（setup Σ87 / hold Σ244）：
-- setup 87 全在 RX_CLK + gating：wc_cbest startpoint 构成与旧 run 完全一致（LC_CPUWR R_REG03_L 28 = C 簇待 BKDU_SYNC 扩展、SCREN_SYNC_K3 23、K2_FIND 16、o_raw_data 11、K1_FIND 7）+ gating 1/9/1（B/E 族）；
+- setup 87 全在 RX_CLK + gating：wc_cbest startpoint 构成与旧 run 完全一致（LC_CPUWR R_REG03_L 28 = C 簇、方案已决策不实施存档见 §5.4、SCREN_SYNC_K3 23、K2_FIND 16、o_raw_data 11、K1_FIND 7）+ gating 1/9/1（B/E 族）；
 - hold 244：RX_CLK 12-37/角 + WCLK1_A_DCLK 5-12 + async/gating 零星（PIX_DATA_START_DLY 29、FCONFIG_ADD 24+22、CONFIG_DATA 14 = hold ECO 35 条范畴）。
 
 **gating hold 待办**：B/E gating 族残余 0-9 条/角（wc_cbest 9 条 −0.455 最差），处置方案（是否结构改 ICG）待 ECO 评审定。
 
 **skew 探针现状**：V3 服务器 run 的 skew_sd.tcl 仍是旧探针（MUX2X2/O）→ dplc_clk_b 仍空、csv 999/−993 哨兵保留——探针修复（`6a5e7ec8`）与 `merge_sd_busskew.pl` 判读窗修正同在**待回传清单**，下次 run 验收 dplc_clk_b 真数据（详见 <a href="./ch18-skew.html">ch18 skew 教程 §4.1/§4.4</a>）。
 
-### 5.4 P1 实施计划：BKDU_SYNC 扩展【待 ymzhu 决策·未实施】
+### 5.4 P1 实施计划：BKDU_SYNC 扩展【已决策：不实施（模块 owner=他人），方案存档】
 
-> 本节为**实施方案发布页**：是否随下轮回传服务器由 ymzhu 拍板。全部内容基于 10-08/09 已确认事实（带出处），RTL 尚未改动。
+> **决策框（ymzhu 2026-10-09）**：① **不打拍、不实施**——LONG_ENCODING_OUTPUT 非本人模块，改动权在模块 owner；② RTL `v1009v1 bkdu_sync` 曾实施→**已回退**（HK1V11 commit `23ed4377` → 回退 `d16c3bc5`）；③ **C 簇 27 条 setup 保留在违例账**；方案与全部评估材料（t46/t47 报告 + 2FF 代码于 git 历史 `23ed4377`）**移交模块 owner**，owner 未来实施可直接复用；④ spec 证据（BKDU = CHPI 带内 V-blanking 指示位）**保留**，见 §5.4.2。
+
+> 以下为存档的实施方案原文（未实施，供 owner 复用）。
 
 #### 5.4.1 背景与动机
 
@@ -645,4 +647,4 @@ iverilog（`HDL_define.v` 同编）→ `rtl-code-review` 对抗评审（门禁 c
   <script src="./js/site.js"></script>
 </body>
 </html>
-<!-- ymzhu 2026-10-09 14:12 -->
+<!-- ymzhu 2026-10-09 14:25 -->
