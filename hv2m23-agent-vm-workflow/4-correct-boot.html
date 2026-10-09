@@ -106,19 +106,6 @@ CPU Time:    824.570 seconds
       ['4-correct-boot', '正确启动'],
       ['5-agent-manual', '遥控手册']
     ];
-    const currentPath = location.pathname.split('/').pop() || 'index.html';
-    const linksContainer = document.getElementById('navbar-links');
-    chapters.forEach(([slug, label]) => {
-      const href = slug === 'index' ? './' : `./${slug}.html`;
-      const filename = slug === 'index' ? 'index.html' : `${slug}.html`;
-      const a = document.createElement('a');
-      a.href = href;
-      a.textContent = label;
-      if (currentPath === filename || currentPath.endsWith('/' + filename) || (currentPath === '' && slug === 'index')) {
-        a.classList.add('active');
-      }
-      linksContainer.appendChild(a);
-    });
 const currentPath = location.pathname.split('/').pop() || 'index.html';
 const linksContainer = document.getElementById('navbar-links');
 chapters.forEach(([slug, label]) => {
