@@ -4,24 +4,40 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <title>一、环境部署 · Agent 遥控 EDA 虚拟机</title>
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>一、环境部署：973G"开箱机"的解锁 · Agent 遥控 EDA 虚拟机</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="./assets/style.css">
+  <script src="./js/marked.min.js"></script>
 </head>
 <body>
-  <nav class="navbar"><div class="nav-inner">
-    <a class="brand" href="index.html">HV2M23·AGENT-VM</a>
-    <a class="navlink active" href="1-deploy.html">一 环境部署</a>
-    <a class="navlink" href="2-data.html">二 数据回迁</a>
-    <a class="navlink" href="3-first-sim.html">三 UVM 首跑</a>
-    <a class="navlink" href="4-correct-boot.html">四 正确启动</a>
-    <a class="navlink" href="5-agent-manual.html">五 Agent 遥控手册</a>
-  </div></nav>
-  <div class="page">
-    <div class="toc"><div class="toc-title">CONTENTS</div><div id="toc"></div></div>
-    <div class="article" id="article">
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a class="navbar-brand" href="./">AGENT_VM</a>
+      <div class="navbar-links" id="navbar-links"></div>
+    </div>
+  </nav>
+
+  <div class="container with-toc">
+    <aside class="toc-wrapper">
+      <div class="toc" id="toc"></div>
+    </aside>
+
+    <div class="content">
+      <article class="article" id="article"></article>
+      <div class="page-nav">
+        <a class="prev" href="./index.html"><span class="label">← 上一章</span><span class="title">主题首页</span></a>
+        <a class="next" href="./2-data.html"><span class="label">下一篇 →</span><span class="title">二、数据回迁：PACK_TAR 五包归位</span></a>
+      </div>
+  <div class="lightbox" id="lightbox">
+    <span class="close" id="lightbox-close">&times;</span>
+    <img id="lightbox-img" src="" alt="">
+    <div class="hint">滚轮缩放 · 拖拽移动 · Esc 或点击空白处关闭</div>
+  </div>
+
 <script type="text/template" id="md">
 # 一、环境部署：973G"开箱机"的解锁
 
@@ -99,18 +115,110 @@ License 服务（`lmgrd + snpslmd`）随虚拟机开机自启，`lmstat -c 27000
 - 三条软链 + 一个 env 文件 = 服务器脚本零改动跑通
 - SSH 免密（公钥已装入 root/ICer）让 Agent 可以像操作本机一样操作虚拟机
 </script>
-    </div>
-  </div>
-  <div class="pagenav">
-    <a href="index.html"><div class="dir">←</div><div class="pt">首页</div></a>
-    <a href="2-data.html" style="text-align:right;"><div class="dir">下一章 →</div><div class="pt">二、数据回迁</div></a>
-  </div>
-  <div class="lightbox" id="lightbox">
-    <span class="close" id="lightbox-close">&times;</span>
-    <img id="lightbox-img" src="" alt="">
-    <div class="hint">滚轮缩放 · 拖拽移动 · Esc 或点击空白处关闭</div>
-  </div>
-  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-  <script src="render.js"></script>
+
+<script>
+    const chapters = [
+      ['index', '首页'],
+      ['1-deploy', '环境部署'],
+      ['2-data', '数据回迁'],
+      ['3-first-sim', 'UVM 首跑'],
+      ['4-correct-boot', '正确启动'],
+      ['5-agent-manual', '遥控手册']
+    ];
+    const currentPath = location.pathname.split('/').pop() || 'index.html';
+    const linksContainer = document.getElementById('navbar-links');
+    chapters.forEach(([slug, label]) => {
+      const href = slug === 'index' ? './' : `./${slug}.html`;
+      const filename = slug === 'index' ? 'index.html' : `${slug}.html`;
+      const a = document.createElement('a');
+      a.href = href;
+      a.textContent = label;
+      if (currentPath === filename || currentPath.endsWith('/' + filename) || (currentPath === '' && slug === 'index')) {
+        a.classList.add('active');
+      }
+      linksContainer.appendChild(a);
+    });
+const currentPath = location.pathname.split('/').pop() || 'index.html';
+const linksContainer = document.getElementById('navbar-links');
+chapters.forEach(([slug, label]) => {
+  const href = slug === 'index' ? './' : `./${slug}.html`;
+  const filename = slug === 'index' ? 'index.html' : `${slug}.html`;
+  const a = document.createElement('a');
+  a.href = href;
+  a.textContent = label;
+  if (currentPath === filename || currentPath.endsWith('/' + filename)) a.classList.add('active');
+  linksContainer.appendChild(a);
+});
+</script>
+<script>
+const md = document.getElementById('md').textContent;
+document.getElementById('article').innerHTML = marked.parse(md);
+
+const toc = document.getElementById('toc');
+const headings = document.querySelectorAll('.article h2, .article h3');
+const tocLinks = [];
+headings.forEach(h => {
+  const id = h.textContent.trim().replace(/\s+/g, '-').replace(/[^\w\u4e00-\u9fa5-]/g, '');
+  h.id = id;
+  const cls = h.tagName === 'H2' ? 'toc-h2' : 'toc-h3';
+  const a = document.createElement('a');
+  a.href = '#' + id;
+  a.textContent = h.textContent;
+  a.className = cls;
+  toc.appendChild(a);
+  tocLinks.push(a);
+});
+
+tocLinks.forEach((link, i) => {
+  if (!link.classList.contains('toc-h2')) return;
+  const children = [];
+  for (let j = i + 1; j < tocLinks.length && tocLinks[j].classList.contains('toc-h3'); j++) children.push(tocLinks[j]);
+  if (!children.length) return;
+  link.classList.add('toc-parent');
+  const arrow = document.createElement('span');
+  arrow.className = 'toc-arrow';
+  arrow.textContent = '▸';
+  link.prepend(arrow);
+  children.forEach(c => c.parentLink = link);
+  arrow.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const collapsed = link.classList.toggle('collapsed');
+    children.forEach(c => c.style.display = collapsed ? 'none' : '');
+  });
+});
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      tocLinks.forEach(l => l.classList.remove('active'));
+      let active = tocLinks.find(a => a.getAttribute('href') === '#' + entry.target.id);
+      if (active && active.style.display === 'none' && active.parentLink) active = active.parentLink;
+      if (active) active.classList.add('active');
+    }
+  });
+}, { rootMargin: '-10% 0px -75% 0px' });
+headings.forEach(h => observer.observe(h));
+</script>
+<script>
+const lightbox = document.getElementById('lightbox');
+const lbImg = document.getElementById('lightbox-img');
+const lbClose = document.getElementById('lightbox-close');
+let scale = 1;
+let isDragging = false;
+let startX = 0, startY = 0, translateX = 0, translateY = 0;
+function openLightbox(src) { lbImg.src = src; scale = 1; translateX = 0; translateY = 0; updateTransform(); lightbox.classList.add('active'); document.body.style.overflow = 'hidden'; }
+function closeLightbox() { lightbox.classList.remove('active'); document.body.style.overflow = ''; }
+function updateTransform() { lbImg.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`; }
+document.addEventListener('click', (e) => { const img = e.target.closest('img'); if (!img || img.id === 'lightbox-img' || !img.closest('.article')) return; openLightbox(img.src); });
+lbClose.addEventListener('click', closeLightbox);
+lightbox.addEventListener('click', (e) => { if (e.target === lightbox) closeLightbox(); });
+lightbox.addEventListener('wheel', (e) => { e.preventDefault(); const d = e.deltaY > 0 ? -0.12 : 0.12; scale = Math.min(Math.max(0.5, scale + d), 5); updateTransform(); });
+lbImg.addEventListener('mousedown', (e) => { isDragging = true; startX = e.clientX - translateX; startY = e.clientY - translateY; lbImg.classList.add('grabbing'); e.preventDefault(); });
+document.addEventListener('mousemove', (e) => { if (!isDragging) return; translateX = e.clientX - startX; translateY = e.clientY - translateY; updateTransform(); });
+document.addEventListener('mouseup', () => { isDragging = false; lbImg.classList.remove('grabbing'); });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && lightbox.classList.contains('active')) closeLightbox(); });
+</script>
+
 </body>
 </html>
