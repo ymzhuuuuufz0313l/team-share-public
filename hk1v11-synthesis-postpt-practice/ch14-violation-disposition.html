@@ -535,13 +535,9 @@ RTL 行号首版转录自 `ip_cons` L385-412 审计注释、后经 RTL 改动漂
 
 ### 5.1 C 簇 27 条 R_REG03_L→PIX_DATA_ASYNC：BKDU 未同步消费者（t9 P1）
 
-1008 代 wc_cbest_125 setup 67 条违例中的 **C 簇 27 条**（`R_REG03_L_reg_2_` → `PIX_DATA_ASYNC_reg_*` / `PIX_CLK_EN_reg` / `SNPS_CG_CELL_DCLK_PIX_DATA_ASYNC latch/E` / `BK_ST_T_reg`，worst −0.45，跨时钟 WCLK1_A_CHPI_DCLK_SHORT→RX_CLK）**判定修正**：非"准静态配置 mc -to 漏列、补 mc 可消"，而是 **BKDU 未同步消费者**：
+1008 代 wc_cbest_125 setup 67 条中的 **C 簇 27 条**（worst −0.45，跨时钟 WCLK1_A_CHPI_DCLK_SHORT→RX_CLK）判定为 **BKDU 未同步消费者**（不可 mc，BKDU 口径全站权威见 ch17 §B）。RTL 实读三条证据：① R_BKDU 在 DCLK 域逐拍直通消费（`LONG_ENCODING_OUTPUT.v:411-417`/L345，BKDU=1 时每拍强制 `PIX_DATA_ASYNC <= VBK` 且 PIX_CLK_EN 常开）；② 综合器将其实现为 PIX_DATA_ASYNC 的 ICG 使能（违例首条 endpoint 即该 CG latch/E）；③ 1008 网表 `BKDU_SYNC_reg` 只覆盖 LC_REG_MAPPING/HSR_ACTIVE 消费者，LONG_ENCODING_OUTPUT 族未同步。
 
-- **RTL 实读**（`LONG_ENCODING_OUTPUT.v:411-417` / `L345`）：R_BKDU 在 DCLK 域**逐拍直通消费**——BKDU=1 时每拍强制 `PIX_DATA_ASYNC <= VBK`（消隐值）且 PIX_CLK_EN 常开，综合器将其实现为 **PIX_DATA_ASYNC 的 ICG 使能**（违例首条 endpoint 即该 CG latch/E）。
-- **0928 终局裁决**：R_REG03_L(BKDU) 是 `cpuwr_reg_grp` **唯一永久排除项**——"配置末尾写 + 立马生效" = **mc 不可加类型**（canonical 反例，见 §2.1 方法论框）。
-- **1008 网表现状**：`BKDU_SYNC_reg` 已落地但**只覆盖 LC_REG_MAPPING/HSR_ACTIVE 消费者**；LONG_ENCODING_OUTPUT 族（PIX_DATA_ASYNC ICG enable + PIX_CLK_EN）**未同步**——即 t9 报告 **P1** 项。
-
-**修法 = BKDU_SYNC 两级同步器扩展到 LONG_ENCODING_OUTPUT 消费者（结构根治 27 条）**，不可 mc。
+**修法 = BKDU_SYNC 两级同步器扩展到 LONG_ENCODING_OUTPUT 消费者（结构根治 27 条）**。
 
 ### 5.2 G15 新增约束记录：SMT_CS FLAG_1H→ANCTL ACS 计数器 ICG 使能 mc2/1
 
@@ -583,4 +579,4 @@ SEL-004=0、/D1/D2=0（10 角核验）；run 晚于三笔约束 push，ip_cons �
   <script src="./js/site.js"></script>
 </body>
 </html>
-<!-- ymzhu 2026-10-09 10:45 -->
+<!-- ymzhu 2026-10-09 11:50 -->

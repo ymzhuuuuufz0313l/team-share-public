@@ -38,34 +38,7 @@
 
 ## 0. 这一章怎么用
 
-先说清楚三个"读者约定"，后面每一块都按这个套路走：
-
-- **结论先行**：每块开头一句话把"这条约束到底在干什么"讲完，再展开。
-- **真实锚点**：本项目 tcl 片段 + RTL 里真实存在的模块名 / 信号名（都来自实际读到的文件）。RTL 在 `HDL/HK1V11_digital_top/` 下（主体在 `seperated_code/`，LONG 编码相关在 `long_encoding/`）。
-- **两问**：每块必答"为什么这么设"和"为什么不能那样设"（后者是这个项目真实踩过的坑）。
-
-每块末尾给 **自检方法**（1~3 条可复制的命令 / 检查步骤），让你能确认约束"真的生效了"。
-
-本章共 15 个概念块 + 1 个"心法"收尾：
-
-| # | 概念块 | 一句话 |
-|---|--------|--------|
-| 1 | 地图 | HK1V11 到底在约束一个什么样的时钟世界 |
-| 2 | setup/hold | 物理直觉 + launch/capture 边沿 + slack + path group |
-| 3 | create_clock | 主时钟 + uncertainty + 数据率↔时钟换算 |
-| 4 | create_generated_clock | 分频 / 反相 / 非整数分频 / -add |
-| 5 | clock group | 同一物理时钟的"多副马甲" |
-| 6 | CDC / false_path | 为什么异步要豁免 + 2FF 同步器 |
-| 7 | 时钟成组 | 异步域成组 + 新时钟必须进豁免清单 |
-| 8 | inout delay | -max / -min 各管什么，-min 设错造 hold 假违例 |
-| 9 | multicycle | 准静态配置寄存器为什么 2 setup + 1 hold 成对 |
-| 10 | -from/-to/-through | 三种端点模式 + "-to 必须用时钟对象" |
-| 11 | from-only 陷阱 | B 类裸消费者 + 0922 收窄 |
-| 12 | max_delay | 和 multicycle 的区别 + 层级端点写法 |
-| 13 | 命名与匹配 | reg[n] vs _reg_n_，pattern 必须 get_cells 验证 |
-| 14 | 生效链 | ip_cons → write_sdc → postcts.sdc → POSTPT，"改了没生效"找断点 |
-| 15 | 其他命令 + CTS | dont_touch / max_transition / min_pulse_width + skew/balance |
-| 16 | 心法 | 10 条可操作清单 |
+每块按"**结论先行 → 真实锚点**（本项目 tcl/RTL 实读）→ **两问**（为什么这么设 / 为什么不能那样设）"展开，末尾附自检命令。全章 15 个概念块 + 心法收尾（见侧边 TOC）。
 
 ---
 
@@ -778,13 +751,13 @@ grep -n "\-to [a-zA-Z_u].*reg" SYNTHESIS/common/ip_cons/HK1V11_digital_top.tcl  
 | `R_REG56_F_reg*` | `LONG_ENCODING_ERROR_CTRL.v:227-260` | UTC 阈值 vs 活计数器 |
 | `R_REG57_F_reg*` | 同 R_REG56_F 链 | UTC 阈值 |
 
-（行号口径说明：表里 `CHPI_SD_CTRL.v:274`、`ANCTL.v:130/147,153` 等是 **tcl 内嵌审计注释里的原引用行号**（写注释时的 RTL 行号，随 RTL 演进会有漂移）；本次复核重新实测的**声明处**行号为：`PSR_LINE_CNT`（CHPI_SD_CTRL.v:73）、`TP_WIDTH_CNT0/1`（:65-66）、`LD_F_ECO`（ANCTL.v:133）、`HSR_ACTIVE`（LC_REG_MAPPING.v:331）、`UTC_FRM_CNT`（CHPI_UTC_CHK.v:19）——信号都真实存在，消费关系成立。）
+（行号口径说明：表内 RTL 行号为审计注释时点引用，随版本漂移，以信号名搜索为准。）
 
 **真实审计证据（`script/mc_audit_0921/`，三路独立审查，bit 级 A212 / B24 / C160 / ?12）**：
 
 - **G1/G2（`R_REG03_L[2]` → `PIX_CLK_EN` / `BK_ST`）是 B 类"地雷"**（`multicycle逐条审查.md` 判定）：mc2 放宽的是 `PIX_CLK_EN` 使能 / `BK_ST` 解码 FSM 的**真实单周期检查**；V3 里这两条是 `p`（pruned——综合把 `R_REG*_L`→G 终点的组合锥裁掉了），当前**空转**，但**路径一复活就被静默放 2 倍周期**。tcl 0922 已把它们注释，留待 jjlu 对 K2-vs-BKDU 时间窗表态。**0924 ymzhu 确认不能恢复**：0922 run 中 24 条 BKDU→PIX_DATA 路径是活的（worst −0.16），R_BKDU 裸跨域进 DCLK 域像素逻辑无同步器 = 真实 CDC 亚稳态风险，waiver 治不了跨域——修复走 RTL 两级同步器（`LC_REG_MAPPING` `BKDU_SYNC` 扩两级），非 STA waiver。
-- **AABB（`R_REG40_F[0:1]`）0924 已闭环 mc**（与 G1/G2 BKDU"不能恢复"是同一 run 逐 bit 处置的另一半）：`R_REG40_F[0:1]` 0924 ymzhu 确认为**一次性 I2C 初始化配置、显示期稳定**（非 per-beat 消费者）→ 已加窄 `mc2/1`（`-to RX_CLK`，bit 精确 `-from` 排除同分区 B 类锚点 `[7]` DBC_VBK_ON），**闭环 21 条 HSR/STB/SCHOP 端点**（worst −1.00，`CHPI_SD_CTRL.v:567` / `ANCTL.v:171,189,205`）；同分区 `[6]` VPS_EN_0 **0928 ymzhu 确认一次性初始化写、已追加进 mc `-from`**（消费者 R_PWRCP_COP/R_PWRCN_COP 仅 `STB_PE_DLY` 拍装载、`LC_REG_MAPPING.v:281`，与 AABB 同构；前提=写入时 R_BKDU=0），2 条闭环——**R_REG40_F 分区 23 条全闭环**。`[7]` DBC_VBK_ON 初判"B 类、保持单拍"，后经翻案审查实读**翻案**：它经 `LINK_CONFIG_CTRL.v:302` 端口换名成 `R_HSR_BLANK_ON` 进 `HSR_ACTIVE`（`LC_REG_MAPPING.v:331`），消费者是 `STB_B & HSR_ACTIVE` 门控装载（AABB 同构）→ **0928 终态：整个 R_REG40_F 分区随 9 分区回归组宽 mc**（remove 列表 10→1 终局仅剩 BKDU，本窄 mc 块已删，证据链 `_group_rejoin_audit.md`）。
-- **UTC 三分区（`R_REG33_F[4]/[6]` + `R_REG56_F[3]/[1]` + `R_REG57_F[1]`）0928 已闭环 mc**（commit 1c447cd1，共 29 条：worst −0.88 九级锥）：同一对 `mc2/1`（`-to RX_CLK`），bit-exact `-from` 共 5 bit，不加宽（R_MON_DC_VOL 未验不罩）。这是"每拍活消费"分区里靠**判据而非 RTL 改动**闭环的例子，双重判据：① **ymzhu 时序版**——寄存器帧以 3 地址/拍写入，0x21/0x38/0x39（行 33/56/57）均非最后一拍，FBANK 收尾 0x44 = 行 68 → 垃圾窗不落消费前沿；② **"钳死"结构**——UTC 计数器使能关时恒清零（`SHORT_ENCODING_ERROR_CTRL.v:33/76-79`、`LONG_ENCODING_ERROR_CTRL.v:193-218`），CNT=0 < 最小 THD(2) → mc 垃圾窗内比较输出恒 0，不可能假脉冲。对比 BKDU"配置末尾写+立马生效"不能 mc 的反例，UTC 恰好两个条件都满足——同一张表里正反两个案例都齐了。**0928 终局修订：UTC/R_REG47 等窄 mc 块全删、整分区回归 cpuwr_reg_grp 组宽 mc（664acef2，"组覆盖防复发"取代"零违例不罩"）。**
+- **AABB（`R_REG40_F[0:1]`）**：一次性 I2C 初始化配置、显示期稳定 → 0924 加窄 mc 闭环 21 条，分区 23 条随 0928 终局回归组宽 mc（原窄 mc 块已删，翻案过程见 ch15）。
+- **UTC 三分区（`R_REG33/56/57_F` 共 29 条）**：靠**判据**而非 RTL 改动闭环的双重例——① 时序版判据（3 地址/拍写入、垃圾窗不落消费前沿）② "钳死"结构（计数器使能关恒清零，mc 窗内比较输出恒 0）。与 BKDU"配置末尾写+立马生效"不能 mc 的反例同表对照，正反两案例齐；0928 终局整分区回归组宽 mc（地址级/行号级证据见 ch15）。
 - **G8 / G11 冻名损失**：`POL1_SYNC_reg_1_/D1,D2`、`FLAG_1H_L2H` 分支被 `write_sdc` 冻名丢掉（SEL-004），轻微但真实——豁免名单"少了一角"。
 - **K1 覆盖错位（最重要）**：`-from SHORT_ENCODING_ALIGN/K1_FIND_LATCH` 在 V3 是死实例（`po`）；**活路径 = `LONG_ENCODING_ALIGN/K1_FIND_LATCH → R_REG06_F_reg_6_`（WCLK1_A_DCLK_SHORT，+0.187 MET，余量仅 0.19ns）**，换 corner/ECO 极易翻负——这正是 tcl 0922 补上 LONG 实例那对 multicycle 的原因。
 - **独立违例**：`LD_F_SYNC` 门控检查 **−0.0126 VIOLATED**（`INDATA_SYNC_D2` 起点，mc 不覆盖），与 G 约束无关，需单独 waiver/修复。
@@ -983,25 +956,14 @@ POSTPT（PrimeTime signoff）
 
 ### 14.2 "改了没生效"怎么找断点
 
-真实场景：你改了 `ip_cons`（比如收窄了 `cpuwr_reg_grp`），重跑 POSTPT，数字一点没变。排查顺序：
+真实场景：你改了 `ip_cons`，重跑 POSTPT，数字一点没变。排查顺序：
 
-1. **POSTPT 吃的是哪代 SDC？** 看 `read_cons.log` 里的 `Created by PrimeTime write_sdc on <timestamp>`。
-   - 如果这个时间戳**早于**你改 ip_cons 的时间 → 你这轮 POSTPT 用的还是**旧代** `postcts.sdc`，你改的根本没进去。**这是最常见的"改了没生效"**（ch11 的"代际对齐"坑：PT 报告头 Date 比新 DC 早一天，说明是旧代基线）。
-2. **write_sdc 有没有把你的改动物化进去？** 对比 `sdc_pr/` 里的 SDC 和 ip_cons 的改动。`-to` 填了寄存器名的那条，可能在这里就被固化成 pin 名了（第 10 块）。
-3. **约束是不是被静默丢弃了？** 看 `read_cons.log` 的 `SEL-004`/`SEL-005` 计数——匹配不到的约束会被丢掉且**不中断流程**。
-4. **DC 吃到的是新版吗？** 看 `dc.log` 里的标记串（比如 `cpuwr_reg_grp` 出现次数、`COMMENTED OUT 2026-09-22` 签名、排除标记次数）。
+1. **POSTPT 吃的是哪代 SDC？** 看 `read_cons.log` 的 `Created by PrimeTime write_sdc on <timestamp>`——早于你的改动即旧代（最常见）。
+2. **write_sdc 有没有物化你的改动？** 对比 `sdc_pr/` SDC 与 ip_cons diff（`-to` 寄存器名可能已固化成 pin 名）。
+3. **约束是不是被静默丢弃？** 看 `SEL-004`/`SEL-005` 计数。
+4. **DC 吃到的是新版吗？** 看 `dc.log` 标记串。
 
-> ch11 的真实时间线（代际对齐的完整示范）：
->
-> | 事件 | 时间 |
-> |------|------|
-> | 本地 ip_cons 0922 终版 | 09-22 14:18（tcl 文件尾签名行） |
-> | 新 DC 跑 | 09-22 14:22 起跑（`rep_dir_0922_1456/svn.info`："Date is 20260922142250"） |
-> | 服务器 POSTPT 报告 | **09-21 15:24**（`read_cons.log` 里 write_sdc 时间戳 15:24:21，旧代！） |
->
-> 结论：PT 报告比新 DC 还早一天 → 这批 PT 数字是旧代基线，不能用来评估新约束。
-
-**可复现证据（最新 0924v0 run）**：`SYNTHESIS/top/sta/post/pt/wc_typical_125/latest/log/read_cons.log`（文件 mtime **09-24 10:38**，是工作区最新的一轮 POSTPT）头部写 `# Created by PrimeTime write_sdc on Mon Sep 21 15:24:21 2026` → 这轮 POSTPT 吃的 `postcts.sdc` 生成于 **09-21**，**早于 0922 收窄**。也就是说：即便目录名叫 `0924v0`，它用的约束仍是 0922 之前那代——"改了 ip_cons 但 POSTPT 没吃到"在这里是**可复现、可核对**的，不是推测。
+> 完整代际验证五方法与 ch11 时间线示范见 <a href="./ch13-toolchain-map.html">ch13 §10.2</a>（全站唯一出处）；ch11 §1.4 有可复制命令。
 
 ### 14.3 死约束：`-through .../R_` 字面名从 0 匹配，删了无影响
 
@@ -1162,4 +1124,4 @@ report_min_pulse_width [get_clocks DCLK_DATA_LONG]
   <script src="./js/site.js"></script>
 </body>
 </html>
-<!-- ymzhu 2026-09-30 11:35 -->
+<!-- ymzhu 2026-10-09 11:50 -->

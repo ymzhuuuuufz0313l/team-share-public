@@ -40,30 +40,7 @@
 
 ## 0. 这一章怎么用
 
-先说清楚三个"读者约定"：
-
-- **结论先行**：每块开头一句话把"这个阶段到底在干什么"讲完，再展开。
-- **真实锚点**：目录树 / 脚本清单 / 产物名全部来自实探 `E:\project\HK1V11\SYNTHESIS` 和 `HDL` 目录的结果，不存在的不编。
-- **小白自检 3 问**：每块末尾给 3 个可自测的问题，确认你"真的看懂了"。
-
-本章共 **14 个块**：
-
-| # | 块 | 一句话 |
-|---|------|--------|
-| 1 | 全景地图 | 目录树 + 流程顺序图，先画全局 |
-| 2 | 设计配置（design.set） | 所有工具阶段的"总开关" |
-| 3 | Lint（nLint + SpyGlass） | 综合前静态检查 RTL 编码规范/CDC |
-| 4 | DC 综合 | 把 RTL 翻译成门级网表 |
-| 5 | LEC（逻辑等价检查） | 综合前后对比，确认没跑偏 |
-| 6 | PowerPro（功耗分析） | 算功耗 + 找优化点 |
-| 7 | Pre-PT（综合后时序） | 综合网表 + 约束 → 时序报告 |
-| 8 | SDC 传递链（sdc_pr） | 约束怎么从综合流到 APR 再到 POSTPT |
-| 9 | POSTPT（布局布线后时序） | 有 SPEF 的真实时序验证，10 corner |
-| 10 | 跨阶段纪律 | 约束生效链 + 代际验证法 |
-| 11 | DV_TCON_C 验证简介 | 验证目录结构 + 和后端流程的关系 |
-| 12 | 公共脚本层 | common/ 里跨阶段复用的脚本 |
-| 13 | 其他 IP 综合（LINK_LOGIC / LOGIC_CENTER） | 多 IP 独立综合的模式 |
-| 14 | 心法 | 12 条可操作教训 |
+每块按"结论先行 → 真实锚点（SYNTHESIS/HDL 实探）→ 小白自检 3 问"展开。全章 14 个块（见侧边 TOC）。
 
 ---
 
@@ -1142,36 +1119,7 @@ A：开启信号完整性（SI）分析——考虑相邻线之间的耦合电�
 
 ### 10.1 约束生效链（任何阶段断代，后面的数字都不可信）
 
-```
-ip_cons/HK1V11_digital_top.tcl（源头）
-    │
-    │  DC source
-    ▼
-DC session ──→ write_sdc → dc/rep_dir/xxx.sdc
-    │
-    │  LEC 用 .gv_org（网表，不用 SDC）
-    ▼
-LEC（只验证逻辑等价，不验证约束）
-    │
-    │  Pre-PT source 同样的 ip_cons
-    ▼
-PT session ──→ write_sdc → sdc_pr/xxx.tcl
-    │
-    │  APR read_sdc
-    ▼
-APR ──→ postcts.sdc
-    │
-    │  POSTPT source postcts.sdc
-    ▼
-POSTPT（最终报告）
-```
-
-**纪律**：
-- 改了 `ip_cons` → 必须重跑 DC → LEC → Pre-PT → APR → POSTPT
-- 改了 `clk_period.tcl` → 同上
-- 改了 `common_cons.tcl` → 同上
-- 只改了 `design.set` 里的 `TAR_LIB` → 至少重跑 DC → LEC → Pre-PT
-- APR 重跑了但没改约束 → 只需重跑 POSTPT
+生效链 ASCII 图与重跑纪律的**全站唯一出处**见 <a href="./ch06-postpt.html">ch06 §2</a>；本页只保留口诀：**ip_cons → DC(write_sdc) → Pre-PT(sdc_pr) → APR(postcts.sdc) → POSTPT**，任何一环用旧文件则其后数字全部不可信；改 ip_cons/clk_period/common_cons 必须整链重跑，只改 design.set 至少 DC→LEC→Pre-PT。
 
 ### 10.2 代际验证法（怎么确认"我跑的是最新的"）
 
@@ -1454,4 +1402,4 @@ SYNTHESIS FLOW  ver.2.1
   <script src="./js/site.js"></script>
 </body>
 </html>
-<!-- ymzhu 2026-09-24 16:40 -->
+<!-- ymzhu 2026-10-09 11:50 -->

@@ -81,24 +81,12 @@
 ### 1.4 验证命令（可复制）
 
 ```csh
-# 看 DC 是否吃到新约束（标记串出现次数）
-grep -c "cpuwr_reg_grp" rep_dir_0922_1456/dc.log
-grep -c "COMMENTED OUT 2026-09-22" rep_dir_0922_1456/dc.log
-grep -c "R_REG" rep_dir_0922_1456/dc.log
-
-# 看 PT 吃到哪代 SDC
-grep "Created by PrimeTime write_sdc on" read_cons.log
-
-# 看报告头 Date
-head -20 HK1V11_digital_top.sum.rpt | grep "Date:"
+grep -c "cpuwr_reg_grp" rep_dir_0922_1456/dc.log      # DC 是否吃到新约束（标记串）
+grep "Created by PrimeTime write_sdc on" read_cons.log # PT 吃到哪代 SDC
+head -20 HK1V11_digital_top.sum.rpt | grep "Date:"     # 报告头 Date
 ```
 
-```powershell
-# PowerShell：列出同步包内文件时间戳（注意：这些是同步时间，不是生成时间！）
-Get-ChildItem -Recurse -Path .\server_sync\ | Select-Object Name, LastWriteTime | Sort-Object LastWriteTime -Descending | Select-Object -First 20
-```
-
-> **坑**：PowerShell `Get-ChildItem` 的 `LastWriteTime` 在 robocopy 同步后是同步时间，不是文件生成时间。必须用报告头 Date 或 log 中的时间戳。
+> **坑**：robocopy 同步后的 `LastWriteTime` 是同步时间不是生成时间，代际判定必须用报告头 Date / write_sdc 时间戳 / dc.log 标记串三方对齐——完整五方法见 <a href="./ch13-toolchain-map.html">ch13 §10.2 代际验证法</a>（全站唯一出处）。
 
 ---
 
@@ -939,4 +927,4 @@ HK1V11 的时钟豁免不是一条条 `set_clock_groups` 裸写的，而是三�
   <script src="./js/site.js"></script>
 </body>
 </html>
-<!-- ymzhu 2026-10-09 10:45 -->
+<!-- ymzhu 2026-10-09 11:50 -->

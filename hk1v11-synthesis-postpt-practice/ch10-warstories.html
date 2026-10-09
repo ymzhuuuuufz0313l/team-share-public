@@ -381,152 +381,32 @@ set_max_delay [expr $DPLC_CLKP*2] -from .../R_REG06_F_reg_7_/CK -thr .../U_DPLC_
 
 ## 案例 10：MPW 规格与"pulse 是不是时钟周期的一半"
 
-> ⚠️ **本案例"处理"段中 (A) case_analysis 和 (C3) SHORT 留模板的部分已被案例 12/终版补遗推翻。** 终版：无 case、SHORT 族同值 2/0.73、clk_period 零修改。"现象/三问/概念表/结论中 pulse 概念和余量定性"仍然有效。
+> ⚠️ **本案例"处理"段的 case_analysis 与 SHORT 留模板方案已被案例 12 推翻**（终版：无 case、SHORT 族同值 2/0.73、clk_period 零修改）；以下仅保留仍然有效的概念，处理细节见 git 历史（commit `c15fe91`）。
 
 ### 现象
 
-SD 输出口补上 `set_min_pulse_width` 检查（批次 1）后，wc_cbest 一次冒出 **8 条违例**（worst CLKA_L **-0.365**）。规格链：MPW SPEC = **2ns**；3G(DPLC) 时 6.37/2=3.175 → 余量 1.175；5G(不开 DPLC) 若按同样余量 1.175 反推检查值只剩 **0.73**——"DPLC 那一坨设 0.7 几、其他保持 2、不设 false_path"，听起来像个方案，但每一步都值得拆开验证。
+SD 输出口补上 `set_min_pulse_width` 检查（批次 1）后，wc_cbest 一次冒出 **8 条违例**（worst CLKA_L **-0.365**）。规格链：MPW SPEC = **2ns**；3G(DPLC) 时 6.37/2=3.175 → 余量 1.175；5G 若按同余量反推检查值只剩 **0.73**。
 
-### 第一问：pulse 是不是时钟周期的一半？
+### 有效概念（三问）
 
-**只对 50% 占空比的链成立：**
-
-| 链 | 周期 | 高相 | 低相 | 是一半吗 |
-|---|---|---|---|---|
-| LONG 链（50% 占空比） | 3.81 | 1.905 | 1.905 | ✅ |
-| LONG 链 @3G | 6.35 | 3.175 | 3.175 | ✅ |
-| SHORT 链（`edges {1 3 4}`，非对称） | 5.715 | 3.81 | **1.905 = T/3** | ❌ |
-| SHORT 链 @3G | 9.525 | 6.35 | **3.175 = T/3** | ❌ |
-
-MPW 检查的是**较短那一相**；两条链的低相恰好相同（5G 1.905 / 3G 3.175），所以"按一半算"的数字恰好没露馅——但概念本身是错的，遇到别的占空比就会翻车。
-
-### 第二问：5G 通道口上的活时钟，pulse 到底是多少？
-
-**不是 1.905，是 3.81 / 5.715：**
-
-| 证据 | 内容 |
-|---|---|
-| RTL `CLKGEN.v:179/185` | `SD_CLK = PANEL_DPLC_CLK_SEL ? DCLK_DATA : normal_clk`；normal_clk 是 DCLK_DATA **÷2** 翻转（L168-176） |
-| SDC `ip_cons L57-61` | `SD_CLK_SHORT/LONG` 的 master 是 `NORMAL_CLK_SHORT/LONG`（= DCLK_DATA_MUX **÷2**） |
-
-→ no-DPLC（5G）时口上周期 **7.62ns（LONG）/ 11.43ns（SHORT）**，pulse = **3.81 / 5.715**，MPW=2 的余量 **1.81 / 3.715**——比 3G 的 1.175 还宽。1.905 是 DCLK_DATA（lane 侧）和 DPLC mux-I1 腿的脉冲，那些时钟在 normal 模式下**在片上是死的**（`set_case_analysis 0` 会杀掉）。
-
-### 第三问：规格到底从哪来？
-
-- 俊杰答疑："**DPLC clk 就是 RX_CLK**" → SDC 链条结构本来就对（`DCLK_DATA_LONG = RX_CLK ÷1`），错的只是基础周期 `RX_CLKP` 的值（5G=3.81 / 3G=6.35）
-- 3G 的周期项目里**早有名字**：`DPLC_CLKP = 6.35`（`clk_period.tcl:19`，注释 "3G×1.05/20=157.5M"）
-- FIXME 块（`ip_cons L99-131`）的头注释原文是 "**DRD output clock for pulsewidth requirement FIXME!! add later**"——它就是为 MPW 需求预留的占位块，`set_min_pulse_width ... 2` 的 spec 值一直在文件里，只是从没被接上。早前判它为"幽灵代码"是误判，需要 1V11 化（L102 层级错误、时钟名是 2M23 的）
-
-### 处理（终版，HK1V11 commit `c15fe91`，全英文注释，多行分段结构）
-
-**(A) MODE SELECTION —— case analysis 必须启用**（初版"本轮未启用"作废，两行打在两个时钟 mux 上）：
-
-```tcl
-set_case_analysis 0 [get_pins u_LOGIC_CENTER/LC_CLK_RST_GEN/CLKGEN/u_gate_MUX_SD_CLK/CLKMUX2X2/S]
-set_case_analysis 0 [get_pins u_LOGIC_CENTER/LC_CLK_RST_GEN/CLKGEN/u_gate_MUX_DCLK_DATA/CLKMUX2X2/S]
-```
-
-- 第一条：`PANEL_DPLC_CLK_SEL=0` → 不开 DPLC（mux 选 normal_clk）
-- 第二条：`SP=0` → LONG 编码（`CLKGEN.v:130-135` 证实 SP 是长短编码选择脚：0=LONG/PIX_CLK_LONG、1=SHORT/DCLK_DIV1P5_SHORT）
-- ⚠️ **警告**：SP=0 会杀掉**整个 SHORT 编码时钟族** → 本轮 run 是**新基线**，签核前必须确认 LONG 是出货编码
-
-**(B) CLOCK-TO-OUTPUT BUDGET**：`set_max_delay 14 -to CLKA_L/CLKB_L/CLKA_R/CLKB_R`（= 2M23 原值 L657-660）
-
-**(C) MPW 分时钟族（0.73 只给 LONG 族，不是整个 1.905 族）**：
-
-| 段 | 对象 | 值 | 说明 |
-|---|---|---|---|
-| **(C1)** | `NORMAL_CLK_LONG` / `SD_CLK_LONG` / `SD_CLK_INV_LONG` | **2** | LONG 正常腿（÷2 链，pulse 3.81），一行一个 `get_clocks` |
-| **(C2)** | `DCLK_DATA_LONG` / `DCLK_DATA_MUX_LONG` / `SD_CLK_DPLC_LONG` / `SD_CLK_INV_DPLC_LONG` | **0.73** | 仅这 4 个时钟对象（0.73 = 1.905 − 1.175，与 3G 等余量；**不设 false_path**；检查仍开着，真实恶化会报） |
-| **(C3)** | SHORT 族 | 不设值 | SP=0 已把 SHORT 族杀掉；留注释模板，若 SHORT 成为出货编码再启用 |
-
-### 结论
-
-- **"余量"是结果，不是规格**：spec 是绝对值 2ns（面板采样需求）；余量随 pulse 自然变化——5G 时 1.81/3.715 比 3G 的 1.175 **更宽**，不存在"必须设 1.905−1.175 才能保住余量"的问题。
-- **分时钟族/分模式设检查阈值**：幻影时钟要么 case 杀掉，要么给等余量阈值（0.73 = 1.905 − 1.175），**不要统一给 spec 值**。
-- **pulse=半周期要先验证占空比**：非对称链（`edges {1 3 4}`）低相是 T/3，不是一半。
-- **case_analysis 是模式选择，不是 false_path**——但它杀的是整个时钟族（SP=0 灭掉全部 SHORT 编码时钟），落笔前必须确认出货模式（本轮：no DPLC + LONG）。
-
-### 证据文件
-
-| 文件 | 内容 |
-|---|---|
-| ip_cons commit `c15fe91`（HK1V11） | 终版入真实约束：(A) 双 mux `set_case_analysis 0` + (B) `set_max_delay 14` ×4 口 + (C1/C2/C3) 分段 MPW（2 只给 LONG 正常腿、0.73 只给 LONG 族 4 个时钟对象、SHORT 留模板），全英文注释 |
-| `修改记录/pending_constraints_SD_output_20260917.tcl` | 推演全记录：幻影速率定性、模式开关提案、FIXME 借鉴清单、0.73 论证与 pulse 概念澄清 |
-| `CLKGEN.v:130-135`、`CLKGEN.v:179/185`、`ip_cons L57-61`、`clk_period.tcl:19` | SP=长短编码选择脚；"5G 活时钟 = ÷2 链"的 RTL+SDC 双证；3G 周期变量出处 |
+- **pulse = 半周期只对 50% 占空比成立**：LONG 链（÷2，50%）低相 = T/2；SHORT 链（`edges {1 3 4}` 非对称）低相 = **T/3**——两条链低相恰好同值（1.905），数字没露馅但概念是错的。
+- **5G 通道口上的活时钟 pulse 是 3.81/5.715 不是 1.905**（RTL `CLKGEN.v:179/185` ÷2 链 + SDC master 链双证）；1.905 是 normal 模式下片上已死的 lane 侧时钟脉冲。
+- **规格是绝对值（2ns 面板采样需求），余量是结果**：5G 余量 1.81/3.715 比 3G 的 1.175 更宽，不存在"必须保住 1.175"的问题。
+- **MPW 分时钟族设阈值**：幻影时钟给等余量阈值（0.73 = 1.905−1.175），检查保持开启，真实恶化仍会报警。
 
 ## 案例 11：DPLC_CASE 与 3G/5G 速率开关——为什么 1V11 只有一套约束
 
-> ⚠️ **本案例中 DPLC_CASE 开关、SP_CASE 双开关变量、按编码分 case 的方案已被案例 12/终版补遗全部推翻。** 终版：无任何 case/开关/if-else，clk_period 原始双速率共存（RX_CLKP 3.81 大部分路径 + DPLC_CLKP 6.35 DPLC 路径），一个 run 覆盖全部。"三问"和"2M23 对照分析"中的结构性事实（SP_I 物理引脚、RX0/RX1 双 lane 结构差异）仍然有效。
+> ⚠️ **本案例的 DPLC_CASE/SP_CASE 双开关与按编码分 case 方案已被案例 12 全部推翻**（终版：无任何 case/开关/if-else）；以下仅保留结构性事实，方案细节见 git 历史（`5f78f6f`/`130f773`）。
 
-### 现象
+### 仍然有效的结构性事实
 
-案例 10 定下分时钟族 MPW 后，连出三个问题：
-
-1. MPW 约束要分几套？四 case（长/短编码 × DPLC 开/关）要不要四份约束文件？
-2. 2M23 当年分了两个网表，我们是不是也得跟着拆？
-3. 2M23 的 `clk_period.tcl` 里有 `RX0_CLKP`(10.08)/`RX1_CLKP`(17.1) 两套周期，1V11 的 `clk_period.tcl` 里只有一个 `RX_CLKP`(3.81)——3G 的周期去哪了？
-
-### 三问
-
-**① MPW 值跟哪个轴走？** —— 只跟**速率轴**（DPLC/noDPLC），与编码轴无关：
-
-| 轴 | 值 | 依据 |
-|---|---|---|
-| 编码轴（LONG vs SHORT） | **无差别** | 正常腿都设 2（LONG pulse 3.81 / SHORT pulse 5.715 都 >2）；数据腿都设 0.73（**LONG 低相 = T/2 = 1.905，SHORT 低相 = T/3 = 1.905，数字相同、来历不同**） |
-| 速率轴（DPLC vs noDPLC） | **0.73 vs 2** | 5G 计时下 DPLC 族是幻影（没这个通路没这个模式）→ 0.73 是"诚实最小阈值"（=1.905−1.175，与 3G 等余量）；3G 真模式下 pulse=3.175，规格 2 适用 |
-
-**② SP_CASE 是要按 run 翻的开关吗？** —— 不是。`SP_I` 是**物理输入引脚**（HK1V11_digital_top.v:253/408，BUFFER_I.v:120 `SP_buf = SP_I`），板上绑死的**静态声明**，是 2M23 `DPSEL_I` 的对应物。真正按 run 翻的开关只有 `DPLC_CASE`。
-
-**③ 3G/5G 为什么 1V11 的 clk_period 没有两套？** —— 两边的物理结构根本不同：
-
-- **2M23**：`RX0_CLKP=10.08` / `RX1_CLKP=17.1`（clk_period.tcl L20-21）是**两条并存的独立 lane**，两个时钟域同时存在，所以不需要开关；他们真正用 case 的地方只有数据通路模式选择（`clk_period.tcl:16 set_case_analysis 0 [get_ports DPSEL_I]`）。
-- **1V11**：只有**一根 RX_CLK 管脚**（clk_lane），同一物理时钟在 5G/3G 两种速率下跑——**一个 clock 同时只能有一个周期**，正确形式是**按 run 切换基础周期**。俊杰的答案 "DPLC clk = RX_CLK" 证明链条结构本来就对（`DCLK_DATA_LONG = RX_CLK ÷1`），错的只是 `RX_CLKP` 的值；而且 3G 的周期项目里早有名字：`DPLC_CLKP=6.35`（clk_period.tcl:19，注释 "3G×1.05/20=157.5M"）。
-
-### 处理
-
-**一个开关联动三件事，四种 case 一份文件：**
-
-```tcl
-set SP_CASE   0    ;# 出货 strap 的静态声明（物理引脚，板上绑死）：0=LONG, 1=SHORT
-set DPLC_CASE 0    ;# 按 run 翻的速率开关：0=noDPLC(5G, RX_CLKP 3.81), 1=DPLC(3G, RX_CLKP 6.35)
-set_case_analysis $SP_CASE   [get_ports SP_I]
-set_case_analysis $DPLC_CASE [get_pins u_LOGIC_CENTER/LC_CLK_RST_GEN/CLKGEN/u_gate_MUX_SD_CLK/CLKMUX2X2/S]
-```
-
-`clk_period.tcl` 同步加 `DPLC_CASE` 开关（1→`RX_CLKP=6.35=DPLC_CLKP`，0→3.81；info exists guard）。
-
-**MPW 值跟随 DPLC_CASE（用户的挑战被接受）**：
-
-```tcl
-if {$DPLC_CASE == 0} {
-  # 幻影情境：0.73 = 1.905 - 1.175（诚实最小阈值，保住检出能力）
-  set_min_pulse_width -low -high 0.73 [get_clocks {DCLK_DATA_SHORT DCLK_DATA_LONG DCLK_DATA_MUX_SHORT DCLK_DATA_MUX_LONG SD_CLK_DPLC_SHORT SD_CLK_DPLC_LONG SD_CLK_INV_DPLC_SHORT SD_CLK_INV_DPLC_LONG}]
-} else {
-  # 3G 真模式：规格 2（pulse 3.175，余量 1.175）
-  set_min_pulse_width -low -high 2 [get_clocks {…同上 8 个时钟对象…}]
-}
-```
-
-> 之前"无条件 0.73"被用户当场反驳：**DPLC 模式真时钟下 0.73 太松，会掩盖 pulse 劣化到 1.9 以下的真违例**——值必须跟随速率，这一点和 case_analysis 值跟随 case 是同一个道理。
-
-### 结论
-
-- **四种 case 的实现 = 两个开关变量**：`SP_CASE`（出货 strap 静态声明）+ `DPLC_CASE`（按 run 翻）。不需要四份约束、不需要 2M23 式双网表/双目录。
-- **"余量"是结果，不是规格**：spec 是绝对值（2ns）；MPW 检查值的语义是"该模式下诚实的最小阈值"，幻影档和真模式档分开给。
-- **3G 的周期在项目里早有名字**（`DPLC_CLKP=6.35`）：缺的从来不是周期定义，而是把它接到 `RX_CLKP` 上的那个开关。
-- **后续联动清单**：`set_max_delay 14`（绝对预算，四 case 通用，不动）；正常腿 MPW=2（两 case 都过，不动）；G10 的 `2×DPLC_CLKP=12.7`（表达式跟常量，速率切换时复核语义，列复核项）；G1~G8 mc（launch 相对，不动）。
-
-### 证据文件
-
-| 文件 | 内容 |
-|---|---|
-| ip_cons (A)/(C1)/(C2)（HK1V11 `5f78f6f` 起） | 双开关 case_analysis + MPW if/else（DPLC_CASE=0→0.73，=1→2），全英文注释 |
-| `clk_period.tcl`（HK1V11 `130f773`） | `DPLC_CASE` 开关联动 `RX_CLKP`（1→6.35=`DPLC_CLKP`，0→3.81；info exists guard） |
-| 2M23 对照 | `clk_period.tcl:16 set_case_analysis 0 [get_ports DPSEL_I]`；L20-21 `RX0/RX1` 双 lane 并存（证明"双网表"是双 lane 结构使然，非通用做法） |
-| `CLKGEN.v:130-135` / `179/185` | SP=编码选择、PANEL_DPLC_CLK_SEL=模式选择（两个独立 mux，系列串联） |
+- **MPW 值只跟速率轴、不跟编码轴**：正常腿 LONG/SHORT 都 >2、数据腿低相恰好同值 1.905（T/2 与 T/3 来历不同数字相同）。
+- **`SP_I` 是物理引脚静态声明**（板上绑死，2M23 `DPSEL_I` 对应物），不是按 run 翻的开关。
+- **2M23 双网表/RX0+RX1 双周期是双 lane 结构使然**（10.08/17.1 独立时钟域并存）；1V11 单 RX_CLK + 双速率共存（RX_CLKP 3.81 / DPLC_CLKP 6.35），结构不同，不能照抄双 case。
 
 ## 案例 12：最终定稿——不用 case，per-clock MPW 就够了
+
+> 演进链：v1 port 级统一 MPW=1.9（8 条幻影违例）→ v2 per-clock 2/0.73 + case_analysis 双开关/if-else（过度工程，案例 10/11，已删）→ **v3 终版：无 case，纯 per-clock MPW 2/0.73** ✅。原"终版补遗"节与本节合并（0917 深夜定稿）。
 
 ### 现象
 
@@ -582,38 +462,6 @@ set_min_pulse_width -low -high 0.73 [get_clocks DCLK_DATA_LONG]   # +DCLK_DATA_M
 | ip_cons（HK1V11 定稿 `a3049b7`，其后 `fbe6665`/`a18cd24` 仅注释与 STATUS 标注） | 18 行活动约束（4+14），全英文注释，无 case/false_path/if-else；0918 起块头标 **STATUS: added 2026-09-17 NOT YET CONFIRMED OK**（待 jjlu 确认 MPW 2/0.73 + 下次 run 验证） |
 | clk_period.tcl | 零修改（原始五行：MARGIN/OSC/I2C/RX_CLKP 3.81/DPLC_CLKP 6.35） |
 | HV2M23_digital_top.tcl:657-660 | `set_max_delay 14` 照抄样板 |
-
-## 终版补遗：set_case_analysis 全删——回归"分时钟族 MPW"就够了（0917 深夜定稿）
-
-> **本节推翻了案例 10/11 中描述的 case_analysis / DPLC_CASE 方案。** 演进过程中引入的 case 机制是过度工程：幻影违例已经被 per-clock 0.73 化解了，不需要再杀任何时钟。
-
-### 演进链
-
-| 版本 | 方案 | 结果 |
-|------|------|------|
-| v1 | port 级统一 MPW=1.9 | 8 条违例（幻影速率） |
-| v2 | per-clock MPW 2/0.73 + case_analysis → 双开关/四 case/if-else | 过度工程 |
-| **v3 终版** | **无 case，纯 per-clock MPW 2/0.73** | ✅ |
-
-### 最终活动约束（ip_cons HEAD：4 行 max_delay + 14 行 MPW = 18 行）
-
-```tcl
-set_max_delay 14 -to CLKA_L / CLKB_L / CLKA_R / CLKB_R
-set_min_pulse_width -low -high 2    [6 个正常腿时钟对象]
-set_min_pulse_width -low -high 0.73 [8 个数据/DPLC 腿时钟对象]
-```
-
-- clk_period.tcl 保持原始（RX_CLKP 3.81 + DPLC_CLKP 6.35 两档共存），零修改
-- set_case_analysis **全部删除**：不需要 case、不需要开关、不需要 if/else、不需要 false_path
-- 两族时钟共存传播、各查各的 MPW，一个 run 覆盖全部产品 case
-
-### 为什么 case 不需要了
-
-用户判断"以前的方式就是正确的"：大部分路径按 5G 来（RX_CLKP 3.81），DPLC 的按 3G 来（DPLC_CLKP 6.35），两档速率共存于同一次 run。分时钟族设 MPW 值（2/0.73）已经解决了幻影违例问题——0.73 不是"放水"，是**保住 1.175ns 余量的诚实最小阈值**，真实占空比恶化依然报警。引入 case_analysis 是在解决一个已经被解决的问题。
-
-### 心法追加
-
-- **case_analysis 不是万能解——先问 per-clock 值能不能解决。** 如果每个时钟对象可以带自己的阈值，多模式共存比分模式切换更简洁。
 
 ## 案例 13：俊杰口径全面 review——中间路径 setup/hold 卡、输出口 MPW 卡
 
@@ -979,4 +827,4 @@ CPUWR 毯子用的是 `-through u_.../LC_CPUWR/R_*`——但 clock-gating 检查
   <script src="./js/site.js"></script>
 </body>
 </html>
-<!-- ymzhu 2026-09-30 11:35 -->
+<!-- ymzhu 2026-10-09 11:50 -->

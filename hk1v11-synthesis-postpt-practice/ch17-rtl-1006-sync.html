@@ -101,21 +101,7 @@
 
 ### 452→11 八项加法闭合
 
-**面积**：Total cell area **294907→314707（+6.7%，+19800 um²）**（.rpt L203/L445）。
-
-> **口径注**：452 家族按起点划分（R_REG40_F 与 R_REG03_L 族互斥无重复计数）；15（LAT）+41（D1）+29（UTC 三分区）+367（其余）=452 直接枚举闭合。
-
-| 措施 | 0922 条数 | 1003 归宿 | 证据 |
-|---|---:|---|---|
-| RTL 打拍 v4.2/v3 | 56 | 全 MET（−1.31→+2.10/0.00） | max.rpt DATA_ALIGN_PRE_D 族 |
-| cpuwr 宽 mc（RX 域） | 65 | 起点不再上报 | SDC mc 32→26 |
-| cpuwr 宽 mc（WCLK1） | 139 | 774 条全 MET +0.97 | max.rpt CONFIG_DATA |
-| AABB·VPS 窄 mc | 23 | 96 条全 MET +1.53 | max.rpt PIX_DATA |
-| DPLC bit mc | 2 | 消失，后继 +1.01 | SDC -from R_REG06_F |
-| BOE 域迁移 | 26 | OSC 组 +9.93/+12.37 | max.rpt L107630 |
-| BKDU（=R_REG03_L） | 24 | 原 24 条 +1.18 全 MET（DCLK_DATA_MUX_LONG）；+0.02×11 属 RX_CLK 域重构新生（不同集合） | max.rpt R_REG03_L 族 |
-| LONG 数据通路收敛 | 117 | 全物理 MET +0.00~+0.02 | 打拍+weight3 综合 |
-| **合计** | **452** | **11 条新 −0.01 ICG（非旧残留）** | max.rpt L3187-3971 |
+**面积**：Total cell area 294907→314707（+6.7%，+19800 um²）（.rpt L203/L445）；452 = 15（LAT）+41（D1）+29（UTC）+367（其余）直接枚举闭合，1003 终态 **11 条新 −0.01 ICG（非旧残留）**。逐措施八项明细表见 <a href="./ch16-dc1004-review.html">ch16 §3b</a>（全站唯一出处；本页 §A/§B 保留 BKDU/LENB 两项专述）。
 
 ### 符合性终判
 
@@ -176,4 +162,4 @@ commit `7dad5525`（38 文件），本地≡1003 编译版，452→11 时序结�
   <script src="./js/lightbox.js"></script>
 </body>
 </html>
-<!-- ymzhu 2026-10-08 12:56 -->
+<!-- ymzhu 2026-10-09 11:50 -->
