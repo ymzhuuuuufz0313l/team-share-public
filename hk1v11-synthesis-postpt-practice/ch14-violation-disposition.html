@@ -576,16 +576,20 @@ before 基线：组 4 o_keep 家族 −0.57~−0.60 ×10 条；G13 组3 D1 −1.
 
 SEL-004=0、/D1/D2=0（10 角核验）；run 时间 15:19:10 晚于三笔约束 push；ip_cons 服务器版与本地同代（仅签名时间戳差）。
 
-**S2 数字盘点（全实测 csv）**：
+**S2 数字盘点（全实测 csv，图 = V3 run `report_setup.csv` / `report_hold.csv` 快照表格，2M23 同款配色+5 位小数）**：
 
-![V3 setup 演进](./sta1008v3_setup_evolution.png)
+![V3 setup 快照（10 corner csv）](./sta1008v3_report_setup_k3.png)
 
 - setup：**119 → 87**（wc_cworst 7→5、worst −0.144→**−0.0909**；wc_cbest 67→49、−1.10→−0.692；wc_typical 41→33；ml/tt 6 角全 0）；
 - hold（9 可比角）：**7563 → 242**（−7321），全角 worst −2.32 → **−0.2667**：
 
-![V3 hold 对比](./sta1008v3_hold_compare.png)
+![V3 hold 快照（10 corner csv）](./sta1008v3_report_hold_k3.png)
 
-**剩余真违例**（`sta1008v3_corner_matrix.png` 全 corner 总览，setup Σ87 / hold Σ244）：
+**SD 总线 skew（1P+DPLC 合并表，判读窗 normal(1p) ±3.5 / dplc −0.9~+4.1，数据 = ymzhu 18:30 截图口径）**：
+
+![V3 SD bus-skew 合并表](./sta1008v3_report_sd_busskew_k3.png)
+
+**剩余真违例**（setup Σ87 / hold Σ244；原 corner 总览矩阵图已由上两张 10-corner csv 表格取代）：
 - setup 87 全在 RX_CLK + gating：wc_cbest startpoint 构成与旧 run 完全一致（LC_CPUWR R_REG03_L 28 = C 簇待 BKDU_SYNC 扩展、SCREN_SYNC_K3 23、K2_FIND 16、o_raw_data 11、K1_FIND 7）+ gating 1/9/1（B/E 族）；
 - hold 244：RX_CLK 12-37/角 + WCLK1_A_DCLK 5-12 + async/gating 零星（PIX_DATA_START_DLY 29、FCONFIG_ADD 24+22、CONFIG_DATA 14 = hold ECO 35 条范畴）。
 
@@ -596,4 +600,4 @@ SEL-004=0、/D1/D2=0（10 角核验）；run 时间 15:19:10 晚于三笔约束 
   <script src="./js/site.js"></script>
 </body>
 </html>
-<!-- ymzhu 2026-10-08 16:45 -->
+<!-- ymzhu 2026-10-09 10:22 -->
