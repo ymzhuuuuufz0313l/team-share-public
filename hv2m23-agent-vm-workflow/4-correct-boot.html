@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <title>四、正确启动方法 · Agent 遥控 EDA 虚拟机</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav class="navbar"><div class="nav-inner">
+    <a class="brand" href="index.html">HV2M23·AGENT-VM</a>
+    <a class="navlink" href="1-deploy.html">一 环境部署</a>
+    <a class="navlink" href="2-data.html">二 数据回迁</a>
+    <a class="navlink" href="3-first-sim.html">三 UVM 首跑</a>
+    <a class="navlink active" href="4-correct-boot.html">四 正确启动</a>
+    <a class="navlink" href="5-agent-manual.html">五 Agent 遥控手册</a>
+  </div></nav>
+  <div class="page">
+    <div class="toc"><div class="toc-title">CONTENTS</div><div id="toc"></div></div>
+    <div class="article" id="article">
+<script type="text/template" id="md">
+# 四、正确启动方法：五步清单与血泪教训
+
+## 1. 因果链复盘：一次误杀如何变成"打不开"
+
+当天真实时间线，每一环都有日志证据：
+
+| 时刻 | 事件 | 性质 |
+|------|------|------|
+| 13:40 | 4G 配置开机（当时宿主内存已腾出） | 正常启动 |
+| 13:53 | **GNOME 桌面出现，虚拟机实际已经启动成功** | ✅ |
+| 14:08 | Agent 依据"Tools 心跳超时"误判冻死，执行 `stop hard` | ❌ 误杀 |
+| 14:08 起 | XFS 文件系统带脏日志，之后每次开机都要做日志恢复 | 后果 |
+| 14:15 ~ 15:10 | 多次观察只等 2~4 分钟就下"还是不行"结论，又多次硬复位 | ❌ 每次复位让恢复重新来过 |
+| 15:15 | 改为"静置 50 分钟只轮询不复位"，SSH 恢复 | ✅ |
+
+根因不是虚拟机坏了，而是两个误判叠加：**把"启动慢"当成"启动失败"，又用硬断电把自愈过程反复打断**。
+
+## 2. 正确启动五步清单（可复制）
+
+| 步骤 | 操作 | 要点 |
+|------|------|------|
+| ① 查宿主余量 | `可用内存 ≥ VM分配 + 1G`，不够先关应用 | 内存不足 = 启动中段必冻 |
+| ② 摘除引导歧义 | ISO 光驱 `startConnected=FALSE`，只留硬盘一条启动路径 | 排除"到底从哪启动"的变量 |
+| ③ `vmrun start` | 幂等；若上次未完全关机先 `vmrun stop hard` **一次** | 之后绝不再碰电源 |
+| ④ 静置轮询 | `ssh` 每 2 分钟探一次，上限 50 分钟；期间黑屏/点点动画都属正常 | **一次复位都不发** |
+| ⑤ SSH 通 = 成功 | `uptime`、`dmesg | grep -i xfs` 验证恢复记录 | 以 SSH 为准，不以屏幕为准 |
+
+## 3. 状态判读表：哪些"异常"其实正常
+
+| 屏幕表现 | 判读 |
+|------|------|
+| 内核文字后接一排点（plymouth） | 正常图形启动动画 |
+| 点点长时间不动 + CPU 低速运转 | **XFS 日志恢复进行中**，等待即可 |
+| 纯黑屏（800×600） | X/显示模式切换期，VNC 抓帧为黑属已知边界 |
+| Tools 心跳超时一次 | GNOME 启动期内存压力，一过性 |
+
+## 4. 修复验证：复跑逐位一致
+
+静置启动成功后，t_8b1lane 在同一虚拟机上复跑：
+
+```text
+TEST CASE PASSED
+UVM_ERROR :    0
+UVM_FATAL :    0
+Time: 1349709440 ps
+CPU Time:    824.570 seconds
+```
+
+仿真时间与 0915 首跑**逐位一致**——文件系统恢复完成后，环境确定性没有任何劣化。
+
+## 5. 一条纪律
+
+**运行中的虚拟机永远不 `stop hard`。** 关机走虚拟机内 `poweroff` 或 VMware 界面软关机；万不得已必须硬关时，接受下一次开机会有长恢复，并且**这一次不许再打断**。
+</script>
+    </div>
+  </div>
+  <div class="pagenav">
+    <a href="3-first-sim.html"><div class="dir">← 上一章</div><div class="pt">三、UVM 首跑</div></a>
+    <a href="5-agent-manual.html" style="text-align:right;"><div class="dir">下一章 →</div><div class="pt">五、Agent 遥控手册</div></a>
+  </div>
+  <div class="lightbox" id="lightbox">
+    <span class="close" id="lightbox-close">&times;</span>
+    <img id="lightbox-img" src="" alt="">
+    <div class="hint">滚轮缩放 · 拖拽移动 · Esc 或点击空白处关闭</div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="render.js"></script>
+</body>
+</html>

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <title>一、环境部署 · Agent 遥控 EDA 虚拟机</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav class="navbar"><div class="nav-inner">
+    <a class="brand" href="index.html">HV2M23·AGENT-VM</a>
+    <a class="navlink active" href="1-deploy.html">一 环境部署</a>
+    <a class="navlink" href="2-data.html">二 数据回迁</a>
+    <a class="navlink" href="3-first-sim.html">三 UVM 首跑</a>
+    <a class="navlink" href="4-correct-boot.html">四 正确启动</a>
+    <a class="navlink" href="5-agent-manual.html">五 Agent 遥控手册</a>
+  </div></nav>
+  <div class="page">
+    <div class="toc"><div class="toc-title">CONTENTS</div><div id="toc"></div></div>
+    <div class="article" id="article">
+<script type="text/template" id="md">
+# 一、环境部署：973G"开箱机"的解锁
+
+## 1. 硬件与软件底账
+
+先把全部家底列清楚，后文所有路径以此为准。
+
+| 项 | 值 |
+|------|------|
+| 宿主机 | ThinkBook 类笔记本 · Ultra 7 155H（16C22T）· 16G DDR5 · 单 NVMe 954G |
+| 宿主机系统 | Windows 10 专业版 22H2 |
+| 虚拟化 | VMware Workstation 17.6.3（`D:\VMware`，个人免费） |
+| 虚拟机 | IC_EDA_ALL 丰富版（芯王阁），磁盘 48 分片 vmdk 共 **973G**，放 `E:\IC_EDA` |
+| 客户机 | CentOS 7.9.2009 · 内核 3.10.0-1160 · 4G 内存 / 8 vCPU（稳定配置） |
+| 账号 | 桌面/root 密码均为 `2022`；日常操作用 ICer（桌面会话属主） |
+| EDA | VCS-MX O-2018.09-1 · Verdi O-2018.09-SP2 · DC O-2018.06-SP1 · PT · ICC2 · INCISIVE152 · IC617 · QuestaSim · Vivado 2019.1 |
+| License | `SNPSLMD_LICENSE_FILE=27000@IC_EDA`（虚拟机内自建 license 服务，开机自启） |
+
+## 2. 内存是第一道坎
+
+这台虚拟机标称 10G 起步，但在 16G 宿主机上**给多少都未必能启动**——决定因素是宿主机**当时可用**内存，不是总量。
+
+| 尝试 | VM 内存 | 宿主机可用 | 结果 |
+|------|--------|-----------|------|
+| 1 | 8G | 1.3G | 启动中段冻死（GNOME/服务阶段被饿死） |
+| 2 | 8G | 4.5G | 同样冻死 |
+| 3 | 4G | 4.5G | 能推进，但偏紧 |
+| **最终** | **4G** | **≥5G** | **稳定** |
+
+结论沉淀为一条规则：**开机前 `vmrun list` 之外先看宿主机可用内存，VM 分配 + 1G ≤ 宿主机可用**。日常 4G/8核 跑 RTL 仿真绰绰有余；真需要大内存时先腾宿主机再改 `memsize`（必须关机改）。
+
+## 3. 路径软链三板斧：让服务器脚本零改动
+
+服务器上所有脚本写死了 `/project/HV2M23/...` 与大小写敏感的目录名。虚拟机里这三个软链打完，脚本一行不用改：
+
+```bash
+# ① 大小写：仓库里是小写 hdl/，脚本引用大写 HDL/
+cd /home/ICer/work/HV2M23 && ln -s hdl HDL
+
+# ② 绝对路径：服务器根路径整体映射（所有 /project/HV2M23/... 原样生效）
+mkdir -p /project && ln -s /home/ICer/work/HV2M23 /project/HV2M23
+
+# ③ 同事路径：个别脚本引用别人家目录下的文件
+mkdir -p designer/DD/pengxia/HV2M23/DV_TCON_C/top/agents
+ln -sfn $DV_TCON_C/top/agents/isprx_env \
+        designer/DD/pengxia/HV2M23/DV_TCON_C/top/agents/isprx_env
+```
+
+同款软链思路还解决了两处：`register_names.txt`（REG_NAMES 报错消失，140 项寄存器名加载成功）、M31 标准单元 verilog（两个软链悬空，按 `readlink -f` 真实目标重打包替换）。
+
+## 4. eda_env.sh：SSH 非交互的环境方案
+
+工具路径都写在 ICer 的 `.bashrc`，但 SSH 非交互命令**不加载它**（`which vcs` 报 not found）。解法：把 `.bashrc` 整体复制为独立环境文件，所有远程执行前先 source：
+
+```bash
+cp /home/ICer/.bashrc /home/ICer/eda_env.sh
+# 之后所有远程执行统一走：
+ssh root@vm "su - ICer -c 'source ~/eda_env.sh && which vcs dc_shell verdi pt_shell'"
+```
+
+验证输出（四件套全可达）：
+
+```text
+vcs:       /home/synopsys/vcs-mx/O-2018.09-1/bin/vcs
+dc_shell:  /home/synopsys/syn/O-2018.06-SP1/bin/dc_shell
+verdi:     /home/synopsys/verdi/Verdi_O-2018.09-SP2/bin/verdi
+pt_shell:  /home/synopsys/pts/O-2018.06-SP1/bin/pt_shell
+```
+
+License 服务（`lmgrd + snpslmd`）随虚拟机开机自启，`lmstat -c 27000@IC_EDA` 确认在位。
+
+## 5. 本小结
+
+- 虚拟机本体没坏，坏的是"宿主内存 + 路径 + 环境"三件外层事
+- 三条软链 + 一个 env 文件 = 服务器脚本零改动跑通
+- SSH 免密（公钥已装入 root/ICer）让 Agent 可以像操作本机一样操作虚拟机
+</script>
+    </div>
+  </div>
+  <div class="pagenav">
+    <a href="index.html"><div class="dir">←</div><div class="pt">首页</div></a>
+    <a href="2-data.html" style="text-align:right;"><div class="dir">下一章 →</div><div class="pt">二、数据回迁</div></a>
+  </div>
+  <div class="lightbox" id="lightbox">
+    <span class="close" id="lightbox-close">&times;</span>
+    <img id="lightbox-img" src="" alt="">
+    <div class="hint">滚轮缩放 · 拖拽移动 · Esc 或点击空白处关闭</div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="render.js"></script>
+</body>
+</html>

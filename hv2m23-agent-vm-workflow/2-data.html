@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <title>二、数据回迁 · Agent 遥控 EDA 虚拟机</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav class="navbar"><div class="nav-inner">
+    <a class="brand" href="index.html">HV2M23·AGENT-VM</a>
+    <a class="navlink" href="1-deploy.html">一 环境部署</a>
+    <a class="navlink active" href="2-data.html">二 数据回迁</a>
+    <a class="navlink" href="3-first-sim.html">三 UVM 首跑</a>
+    <a class="navlink" href="4-correct-boot.html">四 正确启动</a>
+    <a class="navlink" href="5-agent-manual.html">五 Agent 遥控手册</a>
+  </div></nav>
+  <div class="page">
+    <div class="toc"><div class="toc-title">CONTENTS</div><div id="toc"></div></div>
+    <div class="article" id="article">
+<script type="text/template" id="md">
+# 二、数据回迁：PACK_TAR 五包归位
+
+## 1. 服务器目录 → 虚拟机映射总表
+
+服务器上脚本写死的绝对路径，在虚拟机里用"软链 + 同构目录"原样还原。对照表是回迁的唯一依据：
+
+| 服务器路径（脚本引用） | 虚拟机路径 | 内容 |
+|------|------|------|
+| `/project/HV2M23/HDL/file_list/HV2M23.f` 等 | `/home/ICer/work/HV2M23/HDL/...`（经 `/project` 软链） | RTL 全集 + filelist |
+| `/project/HV2M23/DataBase/Analog/VERILOG/updated/` | `DataBase/Analog/VERILOG/updated/`（`updated→20260725` 软链保留） | 22 个模拟宏行为模型 |
+| `/project/HV2M23/cad/STD/9t/verilog/M31*.v` | `cad/STD/9t/verilog/`（真文件替换悬空软链） | M31 标准单元门级模型 |
+| `/eda/process/015/ENEXCHIP/standcell/M31*/nldm_db/` | `cad/STD/9t/nldm_db/`（464M 全 PVT .db） | DC 综合库 |
+| `/project/HV2M23/designer/DD/ymzhu/HV2M23/DV_TCON_C` | `designer/DD/ymzhu/HV2M23/DV_TCON_C`（V4 包同构） | UVM 环境 + 回归脚本 |
+| `.ppm` 公共帧池 | `DV_TCON_C/top/tests/ppm_mix_*/` | case 目录内以软链引用 |
+
+原则只有一条：**脚本写什么路径，虚拟机里就存在什么路径**——软链补齐差异，脚本零改动。
+
+## 2. 五包清单（PACK_TAR_0915V0 ~ V5）
+
+| 包 | 内容 | 体积 | 状态 |
+|------|------|------|------|
+| V0 | 模拟宏行为模型（`DataBase/Analog/VERILOG` 全目录，含 `updated→20260725` 软链结构） | 2.7M | ✅ 0 悬空 |
+| V1 | M31 两个 .v 的软链本体 | <0.1M | ❌ 悬空（被 V3 取代） |
+| V2 | `designer/DD/ymzhu/HV2M23/DV` 全树 | 161M | ✅ |
+| V3 | M31 kit：`verilog + nldm_db(全PVT 464M) + lef + lef_techfiles`（SL_00.01.000 / SS_01.05.000 两版本） | 437M | ✅ |
+| V4 | `DV_TCON_C` 全树（`--exclude='*.ppm'`） | 137M | ✅ |
+| V5 | `tests/ppm_mix_*` 公共帧池真文件 | 91M | ✅ |
+
+V4 排除了 ppm 后，case 目录里缺失的 ppm 链接由脚本重建：从 V2 的完整 DV 树读取每个软链的真实目标，在 DV_TCON_C 树内逐个复原。**最终 59 个 ppm 全量实开验证，0 不可读。**
+
+## 3. 打包命令存档（服务器侧 csh 语法）
+
+```csh
+# V0 模拟行为模型
+tar -czf ~/Desktop/PACK_TAR_0915V0.tar.gz -C /project/HV2M23/DataBase/Analog VERILOG
+# V3 M31 标准单元 kit（含两版本，排除 gds/ccs 等大件）
+tar -czhf ~/Desktop/PACK_TAR_0915V3.tar.gz \
+  -C /eda/process/015/ENEXCHIP/standcell/M31HSSC900EL150SL_00.01.000 verilog nldm_db lef lef_techfiles \
+  -C /eda/process/015/ENEXCHIP/standcell/M31HSSC900EL150SS_01.05.000 verilog nldm_db lef lef_techfiles
+# V4 DV_TCON_C（排除全部 ppm）
+tar -czf ~/Desktop/PACK_TAR_0915V4.tar.gz --exclude='*.ppm' \
+  -C /project/HV2M23/designer/DD/ymzhu/HV2M23 DV_TCON_C
+# V5 公共帧池（自动枚举 ppm_mix_* 目录）
+cd /project/HV2M23/designer/DD/ymzhu/HV2M23/DV_TCON_C/top/tests
+tar -czf ~/Desktop/PACK_TAR_0915V5.tar.gz ppm_mix_*
+```
+
+注意两点：服务器登录 shell 是 csh，`$(...)` 命令替换不可用（报 Illegal variable name），用通配符展开替代；软链要用 `tar -czh`（跟随链接取真身）或单独重打包目标目录。
+
+## 4. 悬空软链的诊断与修复
+
+M31 两个 .v 在服务器上是指向工艺库目录的软链，直接打包只会带走链接本身。虚拟机里的症状与诊断：
+
+```bash
+# 悬空软链 = 链接在、目标不在
+find $PROJECT_PATH -name '*.v' -xtype l        # 列出所有悬空链接
+readlink -f /project/HV2M23/cad/STD/9t/verilog/M31HSSC900EL150SL.v
+# → /eda/process/015/ENEXCHIP/standcell/M31HSSC900EL150SL_00.01.000/verilog/...
+```
+
+修复 = 按 `readlink -f` 的真实目标重新打包（`tar -czhf`，`-h` 跟随链接），解压后链接位变成真文件。
+
+## 5. Cadence VIP：排除判定
+
+仿真脚本里出现过 `/eda/cadence/VIP/11.30.073-s/.../denali_64bit` 路径，曾疑似需要迁移 Cadence VIP。判定方法：对 UVM 源码全量 grep `denali|Denali|cadenceVIP`——**零实例化**。I2C 验证走的是自研 `i2c_env` + `i2c_model.sv`（已从 VIP 迁移完毕）。VIP 路径只是 PowerPro 运行时导出的环境快照化石，不是依赖，不迁移。
+</script>
+    </div>
+  </div>
+  <div class="pagenav">
+    <a href="1-deploy.html"><div class="dir">← 上一章</div><div class="pt">一、环境部署</div></a>
+    <a href="3-first-sim.html" style="text-align:right;"><div class="dir">下一章 →</div><div class="pt">三、UVM 首跑</div></a>
+  </div>
+  <div class="lightbox" id="lightbox">
+    <span class="close" id="lightbox-close">&times;</span>
+    <img id="lightbox-img" src="" alt="">
+    <div class="hint">滚轮缩放 · 拖拽移动 · Esc 或点击空白处关闭</div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="render.js"></script>
+</body>
+</html>

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>Agent 遥控 EDA 虚拟机工作模式 · HV2M23</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="hero">
+    <div class="inner">
+      <div class="version">0915</div>
+      <div class="kicker">HV2M23 · DIGITAL IC VERIFICATION WORKFLOW</div>
+      <h1>Agent 遥控 EDA 虚拟机<span class="thin">工作模式</span></h1>
+      <p class="lead">一台 973G 的"开箱即用"CentOS 虚拟机，一个跑在本机的大模型 Agent，五包服务器数据，两次 UVM PASSED——这套"本机大脑 + 虚拟机手脚"的工作模式，从零到跑通的全过程与全部坑。</p>
+      <div class="meta">AUTHOR: ymzhuuuu &nbsp;·&nbsp; SPAN: 2026-09-15 &nbsp;·&nbsp; ENV: VMware 17.6.3 + CentOS 7.9 + VCS/Verdi/DC &nbsp;·&nbsp; CASE: t_LITEST / t_8b1lane</div>
+    </div>
+  </div>
+  <div class="latest">
+    <div class="card">
+      <span class="badge">CURRENT 0915</span><span class="badge">2 CASES PASSED</span>
+      <ul>
+        <li><b>t_LITEST / t_8b1lane 双 PASSED</b>——UVM_ERROR 0，t_8b1lane 仿真时间与服务器首跑逐位一致（1.35ms）</li>
+        <li><b>正确启动五步法</b>——从"反复硬重启越搞越坏"到"一次安静启动"的完整复盘在第四章</li>
+        <li><b>本文全部截图</b>由 Agent 通过 <code>vmrun captureScreen</code> 实拍虚拟机屏幕所得，非摆拍</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="statbar-wrap" style="max-width:1288px;margin:34px auto 0;padding:0 24px;">
+    <div class="statbar">
+      <div class="stat"><div class="num ok">2</div><div class="lbl">UVM case PASSED</div></div>
+      <div class="stat"><div class="num">5</div><div class="lbl">服务器数据包回传</div></div>
+      <div class="stat"><div class="num">973G</div><div class="lbl">虚拟机磁盘（48 分片）</div></div>
+      <div class="stat"><div class="num">4G/8核</div><div class="lbl">稳定运行配置</div></div>
+      <div class="stat"><div class="num warn">0</div><div class="lbl">脚本改动（全部软链适配）</div></div>
+    </div>
+  </div>
+
+  <div style="max-width:1288px;margin:30px auto 0;padding:0 24px;">
+    <img src="workflow.svg" alt="Agent 遥控 EDA 虚拟机工作流" style="width:100%;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:18px;">
+    <p style="text-align:center;color:var(--muted);font-size:13px;margin-top:8px;">控制流（琥珀）与数据流：Agent 在宿主机，通过 SSH / vmrun / HGFS 三条通道驱动虚拟机内的 EDA 工具链</p>
+  </div>
+
+  <div class="cards">
+    <a class="card" href="1-deploy.html">
+      <div class="no">CHAPTER 01</div>
+      <div class="t">一、环境部署：973G 开箱机的解锁</div>
+      <div class="d">VMware 部署、内存分配教训（8G→4G 的往返）、大小写/同事路径三类软链、eda_env.sh、license 与工具验证</div>
+    </a>
+    <a class="card" href="2-data.html">
+      <div class="no">CHAPTER 02</div>
+      <div class="t">二、数据回迁：PACK_TAR 五包归位</div>
+      <div class="d">服务器目录到虚拟机的映射表、行为模型/M31 库/DV 树/ppm 池四类数据、软链悬空的诊断与重打包、VIP 排除判定</div>
+    </a>
+    <a class="card" href="3-first-sim.html">
+      <div class="no">CHAPTER 03</div>
+      <div class="t">三、UVM 首跑：冻结 18 分钟之后 PASSED</div>
+      <div class="d">makefile 运行机制、t_LITEST 在 1050.817μs 的零延迟死循环、RX_PHY_BEH 行为开关、t_8b1lane 复现、真实截图</div>
+    </a>
+    <a class="card" href="4-correct-boot.html">
+      <div class="no">CHAPTER 04</div>
+      <div class="t">四、正确启动方法：五步清单</div>
+      <div class="d">"中间打开过、后来打不开"的完整因果链：一次误杀硬关机如何弄脏 XFS、日志恢复为何看起来像死机、可复制的五步启动法</div>
+    </a>
+    <a class="card" href="5-agent-manual.html">
+      <div class="no">CHAPTER 05</div>
+      <div class="t">五、Agent 遥控手册：通道、命令与坑</div>
+      <div class="d">SSH/vmrun/HGFS/VNC 四通道能力对照、常用命令块原文、VNC 单请求怪癖、X 渲染不可见的边界——本文截图即 Agent 实拍</div>
+    </a>
+  </div>
+
+  <div style="text-align:center;color:var(--muted);font-size:13px;padding:20px 0 46px;">
+    仅供个人学习 · 商业 EDA 工具与工艺库严禁用于任何商业用途
+  </div>
+</body>
+</html>

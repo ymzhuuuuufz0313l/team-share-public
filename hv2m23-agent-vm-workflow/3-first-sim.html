@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <title>三、UVM 首跑 · Agent 遥控 EDA 虚拟机</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav class="navbar"><div class="nav-inner">
+    <a class="brand" href="index.html">HV2M23·AGENT-VM</a>
+    <a class="navlink" href="1-deploy.html">一 环境部署</a>
+    <a class="navlink" href="2-data.html">二 数据回迁</a>
+    <a class="navlink active" href="3-first-sim.html">三 UVM 首跑</a>
+    <a class="navlink" href="4-correct-boot.html">四 正确启动</a>
+    <a class="navlink" href="5-agent-manual.html">五 Agent 遥控手册</a>
+  </div></nav>
+  <div class="page">
+    <div class="toc"><div class="toc-title">CONTENTS</div><div id="toc"></div></div>
+    <div class="article" id="article">
+<script type="text/template" id="md">
+# 三、UVM 首跑：冻结 18 分钟之后 PASSED
+
+## 1. 运行入口：makefile 的正确打开方式
+
+仿真由 `DV_TCON_C/script/makefile` 驱动，关键参数与易错点：
+
+```bash
+source /home/ICer/eda_env.sh                      # EDA 环境（不 source 则 vcs 不存在）
+export PROJECT_PATH=/home/ICer/work/HV2M23
+export DV_TOP_PATH=$PROJECT_PATH/DV_TCON_C/top
+export DV_SCRIPT_PATH=$PROJECT_PATH/DV_TCON_C/script
+export SIM_PATH=/sim_dd/ICer/HV2M23               # 服务器惯例的产物根目录
+cd /sim_dd/ICer/HV2M23/TOP_TCON_C/t_8b1lane       # 在产物目录里跑，产物不散落
+
+make -f $DV_SCRIPT_PATH/makefile all \
+     TESTS_NAME=t_8b1lane CHIP_TOP_NAME=chip_tb_top \
+     SEED=1 DEFINE_TOP=TOP
+```
+
+三个易错点：**`DEFINE_TOP=TOP` 不传则 make 报"没有规则可制作目标 comp"**（comp/run 规则包在 ifdef 里）；`SIM_PATH` 决定产物落点（服务器惯例 `/sim_dd/<user>/<project>`）；compile 在当前目录进行，所以在产物目录里执行 make，`compile.log / simv / csrc / simv.daidir / fsdb` 全部集中在一处。
+
+编译前置自检：`filelist/tb.f` 共引用 56 个源文件，逐一存在性校验 56/56 通过后才开始编译（2~3 分钟，-j8）。
+
+## 2. t_LITEST：卡死 18 分钟的零延迟环
+
+<div class="pcard">
+<div class="prow"><span class="k">状态</span><span><span class="badge badge-fixed">🔵 已解决</span> <span class="badge">09/15</span></span></div>
+<div class="prow"><span class="k">现象</span><span>仿真时间停在 <b>1050.817μs</b>，CPU 100% 烧 18 分钟，fsdb 零增长，UVM 无响应</span></div>
+<div class="prow"><span class="k">定位</span><span>XPHY 的 CDR PLL 锁定计数器（M31 门级单元）报 <b>RB 与 SB 同时使能</b>，构成零延迟组合环——delta cycle 无限空转，仿真时间不推进</span></div>
+<div class="prow"><span class="k">解决</span><span>user_def.sv 打开 <code>`define RX_PHY_BEH</code>（RX PHY 行为模型开关），PHY 走行为级绕开门级 PLL，重跑即过</span></div>
+</div>
+
+判据实录：修复前 fsdb 采样 15 秒零字节增长、日志尾部时间戳冻结；修复后 7 分钟内仿真时间推进到 2545μs，日志从 501 行涨到 56063 行。
+
+## 3. 结果：t_LITEST / t_8b1lane 双 PASSED
+
+| Case | 结果 | UVM_ERROR | 仿真时长 | CPU |
+|------|------|-----------|---------|-----|
+| t_LITEST | **PASSED** | 0 | 2721.625μs（正常 $finish） | 952s |
+| t_8b1lane | **PASSED** | 0 | 1349709440 ps = 1.35ms | 824s |
+
+t_8b1lane 的仿真时间与服务器首跑**逐位一致**——环境迁移没有引入任何行为差异，这就是"服务器结构原样还原"策略的验证闭环。
+
+真实屏幕截图（Agent 用 `vmrun captureScreen` 实拍虚拟机屏幕）：Verdi 已加载 simv.daidir 层次 + chip_tb_top_000.fsdb 波形，右侧终端是 sim.log 尾部与 UVM 结果。
+
+![Verdi 波形与仿真日志实拍](img/verdi_wave.png)
+
+## 4. 产物结构：/sim_dd 服务器惯例
+
+```text
+/sim_dd/ICer/HV2M23/TOP_TCON_C/t_8b1lane/
+├── run.log            # make 总日志
+├── compile.log        # VCS 编译日志
+├── sim.log            # 仿真日志（UVM 报告在此）
+├── simv, simv.daidir  # 可执行 + Verdi 调试库
+├── csrc/ simv.vdb
+└── chip_tb_top_000.fsdb  # 4.3G 波形
+```
+
+结构来自 `run_parallel.py` 的服务器惯例 `SIM_PATH=/sim_dd/{user}/HV2M23/TOP_TCON_C`。Verdi 打开方式：
+
+```bash
+source ~/eda_env.sh
+cd /sim_dd/ICer/HV2M23/TOP_TCON_C/t_8b1lane
+verdi -dbdir simv.daidir -ssf chip_tb_top_000.fsdb &
+```
+</script>
+    </div>
+  </div>
+  <div class="pagenav">
+    <a href="2-data.html"><div class="dir">← 上一章</div><div class="pt">二、数据回迁</div></a>
+    <a href="4-correct-boot.html" style="text-align:right;"><div class="dir">下一章 →</div><div class="pt">四、正确启动方法</div></a>
+  </div>
+  <div class="lightbox" id="lightbox">
+    <span class="close" id="lightbox-close">&times;</span>
+    <img id="lightbox-img" src="" alt="">
+    <div class="hint">滚轮缩放 · 拖拽移动 · Esc 或点击空白处关闭</div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="render.js"></script>
+</body>
+</html>

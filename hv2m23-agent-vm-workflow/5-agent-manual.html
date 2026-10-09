@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <title>五、Agent 遥控手册 · Agent 遥控 EDA 虚拟机</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <nav class="navbar"><div class="nav-inner">
+    <a class="brand" href="index.html">HV2M23·AGENT-VM</a>
+    <a class="navlink" href="1-deploy.html">一 环境部署</a>
+    <a class="navlink" href="2-data.html">二 数据回迁</a>
+    <a class="navlink" href="3-first-sim.html">三 UVM 首跑</a>
+    <a class="navlink" href="4-correct-boot.html">四 正确启动</a>
+    <a class="navlink active" href="5-agent-manual.html">五 Agent 遥控手册</a>
+  </div></nav>
+  <div class="page">
+    <div class="toc"><div class="toc-title">CONTENTS</div><div id="toc"></div></div>
+    <div class="article" id="article">
+<script type="text/template" id="md">
+# 五、Agent 遥控手册：通道、命令与坑
+
+## 1. 四条通道能力对照
+
+Agent 在宿主机（Windows）上，虚拟机是它的"手"。四条通道各有分工，互为备份：
+
+| 通道 | 命令入口 | 能做什么 | 限制 |
+|------|---------|---------|------|
+| **SSH 免密** | `ssh root@192.168.206.128 "<cmd>"` | 任意命令、读日志、跑仿真、改配置 | 非交互不加载 .bashrc（需 source eda_env.sh） |
+| **vmrun** | `vmrun -T ws -gu root -gp 2022 ...` | 电源控制、**captureScreen 截屏**（需 Tools 运行） | Tools 未运行时全部客户机操作不可用 |
+| **HGFS 共享文件夹** | `D:\virtual_share` ↔ `/mnt/hgfs/virtual_share` | 宿主↔虚拟机双向传文件 | 大批量小文件先 tar 再传 |
+| **VNC 5901** | 自写 RFB 客户端 | 文字控制台可见可输入 | **X/GNOME 渲染不可见**；单会话限制 |
+
+关键结论：**X/GNOME 渲染对 VNC 不可见**（纯黑帧），文字控制台可见。所以"看桌面/看波形"用 `vmrun captureScreen`，"看启动文字日志"才用 VNC。
+
+## 2. 常用命令块（原文可直接复用）
+
+### 启动一次仿真
+
+```bash
+ssh root@192.168.206.128 "su - ICer -c '
+  source ~/eda_env.sh
+  export PROJECT_PATH=/home/ICer/work/HV2M23
+  export DV_TOP_PATH=$PROJECT_PATH/DV_TCON_C/top
+  export SIM_PATH=/sim_dd/ICer/HV2M23
+  cd /sim_dd/ICer/HV2M23/TOP_TCON_C/t_8b1lane
+  make -f $DV_SCRIPT_PATH/makefile all \
+       TESTS_NAME=t_8b1lane CHIP_TOP_NAME=chip_tb_top \
+       SEED=1 DEFINE_TOP=TOP >> run.log 2>&1'"
+```
+
+### 截取虚拟机屏幕（Tools 运行时）
+
+```bash
+vmrun -T ws -gu root -gp 2022 captureScreen IC_EDA.vmx screen.png
+```
+
+### 读状态（不进图形，判断启动/冻结）
+
+```bash
+vmrun -T ws list                                  # 电源状态
+ssh root@vm "uptime; free -m | head -2"           # 负载与内存
+vmrun -T ws checkToolsState IC_EDA.vmx            # Tools 状态
+```
+
+### 大文件传输（宿主 → 虚拟机）
+
+```bash
+# 11.7k 个小文件：先合成单流，走 HGFS 零网络栈
+tar -czf D:\virtual_share\pack.tar.gz -C E:\project HV2M23
+# 虚拟机内：tar -xzf /mnt/hgfs/virtual_share/pack.tar.gz -C /home/ICer/work
+```
+
+## 3. 启动波形查看（Verdi）
+
+```bash
+su - ICer -c '
+  export DISPLAY=:0 XAUTHORITY=/home/ICer/.Xauthority
+  export SNPSLMD_LICENSE_FILE=27000@IC_EDA
+  export VCS_HOME=/home/synopsys/vcs-mx/O-2018.09-1
+  export LD_LIBRARY_PATH=/home/synopsys/verdi/Verdi_O-2018.09-SP2/share/PLI/lib/LINUX64
+  nohup /home/synopsys/verdi/Verdi_O-2018.09-SP2/bin/verdi \
+        -dbdir /sim_dd/ICer/HV2M23/TOP_TCON_C/t_8b1lane/simv.daidir \
+        -ssf    /sim_dd/ICer/HV2M23/TOP_TCON_C/t_8b1lane/chip_tb_top_000.fsdb &'
+```
+
+Verdi 窗口出现在虚拟机桌面（GNOME 会话属 ICer）。三个必要条件缺一不可：`DISPLAY=:0`、`XAUTHORITY`（指向 `/home/ICer/.Xauthority`）、`SNPSLMD_LICENSE_FILE`。
+
+## 4. 坑清单（全部实测踩过）
+
+| 坑 | 症状 | 解法 |
+|------|------|------|
+| Tools 心跳超时一次 | 看似冻死 | GNOME 启动期内存压力，一过性——先静置再判断 |
+| `stop hard` 后开不动 | 开机长时间黑屏/点点 | XFS 日志恢复中，静置 50 分钟轮询，绝不再复位 |
+| VNC 抓不到桌面 | 帧缓冲纯黑 | X/GNOME 渲染对 VNC 不可见，改用 `vmrun captureScreen` |
+| VNC 单请求限制 | 同会话第二次请求无响应 | 每次动作开新 VNC 会话，动作间冷却约 1 分钟 |
+| yum 源 404 | CentOS 7 EOL | 重定向到 vault.centos.org；SCLo 用 bfsu/aliyun 镜像 |
+| csh 里 `$(...)` | Illegal variable name | 服务器登录 shell 是 csh，改用通配符/两步法 |
+| 根分区 LVM | `/dev/mapper/centos-home` | 救援时先 `lvm vgchange -ay` 再修 |
+| Chrome 吃 1.7G | 宿主机余量不足，VM 启动冻死 | 开 VM 前先关浏览器 |
+
+## 5. 这套模式的价值
+
+Agent 的大脑在宿主机（本机 DSH），虚拟机只是它的"工具机"：代码与数据经 HGFS/软链双向可达，命令经 SSH 直达，产物经 `/sim_dd` 结构化落盘，屏幕经 captureScreen 随时可查。**一次配置，之后所有 EDA 操作都变成普通的对话指令**——"跑一下 t_8b1lane"、"看仿真到哪了"、"把波形截给我"，Agent 自己选通道执行并回报结果。
+</script>
+    </div>
+  </div>
+  <div class="pagenav">
+    <a href="4-correct-boot.html"><div class="dir">← 上一章</div><div class="pt">四、正确启动方法</div></a>
+    <a href="index.html" style="text-align:right;"><div class="dir">回到</div><div class="pt">首页</div></a>
+  </div>
+  <div class="lightbox" id="lightbox">
+    <span class="close" id="lightbox-close">&times;</span>
+    <img id="lightbox-img" src="" alt="">
+    <div class="hint">滚轮缩放 · 拖拽移动 · Esc 或点击空白处关闭</div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="render.js"></script>
+</body>
+</html>

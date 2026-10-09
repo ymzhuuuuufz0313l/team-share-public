@@ -1,0 +1,45 @@
+﻿digraph agentvm {
+  rankdir=LR;
+  bgcolor="transparent";
+  compound=true;
+  fontname="Consolas";
+  node [fontname="Noto Sans SC", fontsize=12, shape=box, style="rounded,filled", color="#b45309", fillcolor="#f7e8d4", penwidth=1.6, margin="0.18,0.12"];
+  edge [color="#667180", fontname="Consolas", fontsize=10, fontcolor="#667180", arrowsize=0.8];
+
+  subgraph cluster_srv {
+    label=<<b>鍏徃鏈嶅姟鍣?/b>>; fontsize=11; fontcolor="#92400e";
+    style="rounded,dashed"; color="#ddd6c8";
+    src   [label="椤圭洰鏁版嵁\nHDL 路 UVM 路 SYNTHESIS", fillcolor="#fffdf7"];
+    pack  [label="PACK_TAR_0915\nV0 ~ V5 鍒嗗嵎鍖?, fillcolor="#fffdf7"];
+    src -> pack;
+  }
+
+  subgraph cluster_host {
+    label=<<b>瀹夸富鏈?Windows + DSH Agent</b>>; fontsize=11; fontcolor="#92400e";
+    style="rounded,dashed"; color="#ddd6c8";
+    agent [label="DSH Agent\n澶ц剳 路 璋冨害 路 鍒嗘瀽", fillcolor="#0d1526", fontcolor="#f0a137", color="#b45309"];
+    hgfs  [label="VMware HGFS\nD:\\virtual_share", fillcolor="#fffdf7"];
+    ssh   [label="SSH 鍏嶅瘑閫氶亾\nroot@192.168.206.128", fillcolor="#fffdf7"];
+    vmrun [label="vmrun\n鐢垫簮 路 captureScreen", fillcolor="#fffdf7"];
+  }
+
+  subgraph cluster_vm {
+    label=<<b>铏氭嫙鏈?CentOS 7 路 IC_EDA锛?G/8鏍革級</b>>; fontsize=11; fontcolor="#92400e";
+    style="rounded,dashed"; color="#ddd6c8";
+    proj   [label="/home/ICer/work/HV2M23\nRTL 路 UVM 路 SYNTHESIS", fillcolor="#fffdf7"];
+    simdd  [label="/sim_dd/ICer/HV2M23\nTOP_TCON_C/<case>/ 浠跨湡浜х墿", fillcolor="#fffdf7"];
+    tools  [label="VCS 路 Verdi 路 DC 路 PT\nlicense 27000@IC_EDA", fillcolor="#fffdf7"];
+    waved  [label="nWave 娉㈠舰\nchip_tb_top_000.fsdb", fillcolor="#fffdf7"];
+  }
+
+  pack  -> hgfs  [label="curl / 缃戠洏"];
+  hgfs  -> proj  [label="/mnt/hgfs 鎸傝浇"];
+  agent -> ssh   [label="鍛戒护 / 浼犳枃浠?, color="#b45309"];
+  ssh   -> proj  [color="#b45309"];
+  agent -> vmrun [color="#b45309"];
+  vmrun -> tools [label="start / reset\ncaptureScreen", color="#b45309"];
+  proj  -> tools [label="make DEFINE_TOP=TOP"];
+  tools -> simdd [label="run.log 路 sim.log\nfsdb"];
+  simdd -> waved [style=dashed];
+}
+
