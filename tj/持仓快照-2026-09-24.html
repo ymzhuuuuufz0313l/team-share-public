@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"><title>持仓快照 · 交易复盘系统</title><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23b45309'/%3E%3Ctext x='32' y='43' font-family='Menlo,Consolas,monospace' font-size='27' font-weight='700' fill='%23fff' text-anchor='middle'%3ETJ%3C/text%3E%3C/svg%3E"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0"><script>try{var _tj=localStorage.getItem('tj-theme');if(_tj==='dark'||_tj==='light')document.documentElement.setAttribute('data-theme',_tj)}catch(e){}</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0d1526"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><link rel="apple-touch-icon" href="assets/icon-192.png"><style>
+<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"><title>持仓快照 · 交易复盘系统</title><link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23b45309'/%3E%3Ctext x='32' y='43' font-family='Menlo,Consolas,monospace' font-size='27' font-weight='700' fill='%23fff' text-anchor='middle'%3ETJ%3C/text%3E%3C/svg%3E"><meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"><meta http-equiv="Pragma" content="no-cache"><meta http-equiv="Expires" content="0"><script>try{var _tj=localStorage.getItem('tj-theme');if(_tj==='dark'||_tj==='light')document.documentElement.setAttribute('data-theme',_tj)}catch(e){}</script><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0d1526"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><link rel="apple-touch-icon" href="assets/icon-192.png"><script src="assets/daily-engine.js"></script><style>
 /* ============ 0. 间距标尺 / 主题变量 ============ */
 :root{--s1:4px;--s2:8px;--s3:12px;--s4:16px;--s5:24px;--s6:32px;--s8:48px;
 --bg:#f4f1ea;--surface:#fffdf7;--text:#1c2534;--muted:#667180;--accent:#b45309;--accent-strong:#92400e;--accent-soft:#f7e8d4;--ink:#0d1526;--ink2:#131f38;--line:#ddd6c8;--chip:#efe9db;--shadow:0 1px 2px rgba(28,37,52,.04),0 16px 40px rgba(28,37,52,.08);--pos:#15803d;--neg:#dc2626;--side-w:236px;
@@ -878,148 +878,60 @@ table.data tbody tr.tr-hl td:first-child{background:var(--rowh-solid);box-shadow
 <p class="snapnote">共 65 行 · 6 个快照日 · 「查看全部历史快照」展开所有日期（含各日汇总行）</p>
 <p class="snapnote">⧗ 快照日已覆盖 2026-09-24 → 2026-10-09 区间内全部 6 个交易日（节假日休市不开快照（如国庆长假）；新交易日收盘后更新台账即自动追加回溯页）。</p>
 </main>
-<script src="assets/daily-engine.js"></script>
-<script>window.SNAP_PAGE={"day":"2026-09-24","latest":"2026-10-09"};</script>
+<script>window.SNAP_PAGE={"day":"2026-09-24","latest":"2026-10-09"};</script></div><footer>BUILT 2026-10-09 · 数据以私有仓库为准 · 决策辅助非投资建议</footer><button id="toTop" title="回到顶部">↑</button><nav class="tabbar" aria-label="主导航"><svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><symbol id="ic-home" viewBox="0 0 24 24"><path d="M4 11.2 12 4.5l8 6.7V19a1.6 1.6 0 0 1-1.6 1.6h-3.9v-5.3h-5v5.3H5.6A1.6 1.6 0 0 1 4 19z"/></symbol><symbol id="ic-chart" viewBox="0 0 24 24"><path d="M4.5 20v-6.5M10.5 20V6.5M16.5 20v-9.5"/><path d="M3 20h18"/></symbol><symbol id="ic-folder" viewBox="0 0 24 24"><path d="M3.5 7A2 2 0 0 1 5.5 5h4.2l2 2.4h6.8a2 2 0 0 1 2 2v7.6a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z"/></symbol><symbol id="ic-arch" viewBox="0 0 24 24"><rect x="4" y="3.8" width="16" height="3.9" rx="1.1"/><path d="M5.2 7.7v10.6a2.5 2.5 0 0 0 2.5 2.5h8.6a2.5 2.5 0 0 0 2.5-2.5V7.7"/><path d="M9.8 12h4.4"/></symbol></defs></svg><a href="index.html"><svg aria-hidden="true"><use href="#ic-home"/></svg><span>总览</span></a><a href="持仓快照.html" class="active"><svg aria-hidden="true"><use href="#ic-chart"/></svg><span>持仓</span></a><a href="taizhang.html"><svg aria-hidden="true"><use href="#ic-folder"/></svg><span>数据</span></a><a href="panhou.html"><svg aria-hidden="true"><use href="#ic-arch"/></svg><span>归档</span></a></nav>
 <script>
-/* 当日盈亏构成 v3：任意日拖动重渲染（数据 = assets/daily-engine.js 的 window.TJ_DAILY；
-   静态首屏由 Python 同构渲染，这里只负责拖动后的客户端重画， markup 与静态版一致） */
-(function(){
-  var D=window.TJ_DAILY;if(!D)return;
-  var body=document.getElementById('dpnl-body'),sums=document.getElementById('dpnl-sums');
-  var ttl=document.getElementById('dpnl-ttl'),sub=document.getElementById('dpnl-sub');
-  var host=body&&body.parentNode;if(!body||!sums||!ttl)return;
-  function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
-  function m2(v){var f=Math.abs(v).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});return (v<0?'-':'+')+f}
-  function m0(v){var f=Math.abs(v).toLocaleString('en-US',{maximumFractionDigits:0});return (v<0?'-':'+')+f}
-  function cl(v){return v>=0?'pos':'neg'}
-  function pcls(v){return v>0?'pos':(v<0?'neg':'')}
-  function pctf(p10){return p10==null?'—':((p10>0?'+':'')+(p10/10).toFixed(2)+'%')}
-  function row(x,nm,ci){
-    var v=x[1]/100,re=x[2]/100,p10=x[3],qt=x[4],whole=x[5],days=x[6];
-    var closed=days>0,pos=v>=0,c=cl(v);
-    var half=Math.min(50,Math.abs(v)/(maxw||1)*50);
-    var bar='<rect class="hb '+c+'" x="'+(50-half).toFixed(2)+'" y="3" width="'+half.toFixed(2)+'" height="16"'+(closed?' fill-opacity=".3"/>':'/>');
-    if(closed)bar+='<rect x="'+(50-half).toFixed(2)+'" y="3" width="'+half.toFixed(2)+'" height="16" fill="none" class="hx-edge '+c+'"/>';
-    var svg='<svg class="hbsvg bi" viewBox="0 0 100 22" preserveAspectRatio="none">'+bar+'</svg>';
-    var flag=closed?'<i class="cxflag">⚑已清仓</i>':'';
-    var unres=v-re;
-    var title,l1='',l2='',rc='';
-    if(closed){
-      title=D.codes[ci][0]+' '+nm+' ⚑已清仓（当日离场）';
-      l1='当日 '+m2(v)+' · 已实现 '+m2(re);
-      l2='全周期兑现 '+(whole?m2(whole/100):'—')+' · 持仓 '+(days>0?days+' 天':'—')+'（已清仓台账）';
-      rc='hbrow cx';
-    }else{
-      title=D.codes[ci][0]+' '+nm;
-      l1='当日 '+m2(v)+'（已实现 '+m2(re)+' · 浮盈变化 '+m2(unres)+'）';
-      l2='持仓 '+qt.toLocaleString('en-US')+' 股 · 当日盈亏率 '+pctf(p10);
-      rc='hbrow';
-    }
-    return '<div class="'+rc+'" data-tip-title="'+esc(title)+'" data-tip-l1="'+esc(l1)+'" data-tip-l2="'+esc(l2)+'">'
-      +'<span class="hb-nm">'+esc(nm)+flag+'</span><span class="hb-bar">'+svg+'</span>'
-      +'<span class="hb-v mono '+c+'">'+m2(v)+'</span></div>';
-  }
-  var maxw=1;
-  function render(i){
-    var day=D.dates[i],rows=D.rows[i]||[],s=D.sums[i]||[0,0,0];
-    maxw=1;rows.forEach(function(x){maxw=Math.max(maxw,Math.abs(x[1]/100))});
-    var held=0,nclosed=0;
-    var html=rows.map(function(x){var closed=x[6]>0;if(closed)nclosed++;else held++;return row(x,D.codes[x[0]][1],x[0])}).join('');
-    body.innerHTML=html||'<p class="snapnote">（该日无持仓、无交易）</p>';
-    host.setAttribute('data-nheld',held);host.setAttribute('data-nclosed',nclosed);
-    host.setAttribute('data-day',day);host.setAttribute('data-di',i);
-    var unres=s[0]/100,real=s[1]/100,tot=s[2]/100,eq=D.eqd[i];
-    var h='<div class="daysum">浮盈变化合计 <b class="'+pcls(unres)+'">'+m2(unres)+'</b>'
-      +'<span>（全部 '+(held+nclosed)+' 只 · 含 '+nclosed+' 笔清仓票昨浮盈收口 · 今收×今持 − 昨收×昨持 − 日内买卖）</span></div>'
-      +'<div class="daysum">当日已实现合计 <b class="'+pcls(real)+'">'+m2(real)+'</b>'
-      +'<span>（含部分减仓与 '+nclosed+' 笔清仓 · 移动平均成本口径）</span></div>'
-      +'<div class="daysum">当日总计 <b class="'+pcls(tot)+'">'+m2(tot)+'</b><span>（浮盈变化 + 当日已实现）</span></div>';
-    if(eq!=null){var d=tot-eq/100,ok=Math.abs(d)<=Math.max(Math.abs(eq/100)*0.005,1);
-      h+='<div class="daysum">权益法当日参考 <b class="'+pcls(eq/100)+'">'+m2(eq/100)+'</b><span>（日频权益 ΔE−Δ净转入 · 全口径）</span></div>'
-        +(ok?'<p class="ocal">✓ 口径差 '+(d>=0?'+':'')+d.toFixed(2)+'（≤0.5%）—— 构成与权益逐日对平。</p>'
-            :'<p class="ocal">口径差 '+(d>=0?'+':'')+d.toFixed(2)+'：当日含逆回购/台账间划转等非股票现金流，全口径以权益法为准。</p>');}
-    h+='<p class="ocal">⚙ 任意日构成 = 成交流水全历史重放 × 日收盘价缓存（引擎现算，不依赖快照「当日盈亏」录入）；拖动日期或用 ±/下拉切任意交易日。个别票与下方明细表的快照录入值或有 ≤0.5 元精度差（录入四舍五入；引擎与日频权益逐日对平 0.00），明细表保留录入原值。</p>';
-    sums.innerHTML=h;
-    ttl.firstChild.nodeValue=(i===D.dates.length-1)?'今天赚的亏的都在谁身上':'回溯 '+day.slice(5)+' · 那天赚的亏的都在谁身上';
-    sub.textContent=day+' · '+held+' 只在仓 · '+nclosed+' 笔当日清仓 · 按当日盈亏绝对值降序 · 虚线条=当日离场（含兑现）· 拖滑块回溯全部 '+D.dates.length+' 个交易日';
-  }
-  if(window.TJDS)TJDS.bind('dpnl-slider',D.dates,function(day,i){render(i)});
-})();
-</script>
-
-<script>
-(function(){
-  /* 回溯导航：SNAP_PAGE={day:本页快照日, latest:最新快照日}（build 时注入）。
-     #snapdate 变更 → 跳转对应回溯页（持仓快照.html=最新日 / 持仓快照-日期.html=历史日）；
-     「全部历史」按钮在 本日 ⇄ 全部日期 间切换明细表显隐（跳转页本身就是单日视图）。 */
-  var CFG=window.SNAP_PAGE||{day:null,latest:null};
-  var sel=document.getElementById('snapdate');
-  var box=document.getElementById('snapsearch');
-  var btn=document.getElementById('snapall');
-  var table=document.getElementById('snaptable');
-  var cnt=document.getElementById('snapcount');
-  var all=false;
-  function apply(){
-    var v=all?'all':(CFG.day||'all');
-    var q=(box&&box.value?box.value:'').trim().toUpperCase();
-    var n=0;
-    if(table){
-      [].forEach.call(table.querySelectorAll('tbody tr'),function(tr){
-        var okd=(v==='all')||(tr.getAttribute('data-date')===v);
-        var okq=!q||(tr.textContent.toUpperCase().indexOf(q)>-1);
-        var show=okd&&okq;
-        tr.style.display=show?'':'none';
-        if(show)n++;
-      });
-    }
-    if(cnt)cnt.textContent=n;
-  }
-  if(sel)sel.addEventListener('change',function(){
-    var v=sel.value;
-    if(!v||v===CFG.day)return;
-    location.href=(v===CFG.latest)?'持仓快照.html':'持仓快照-'+v+'.html';
-  });
-  if(box)box.addEventListener('input',apply);
-  if(btn)btn.addEventListener('click',function(){
-    all=!all;
-    btn.textContent=all?'只看本日快照':'查看全部历史快照';
-    apply();
-  });
-  /* 哑铃图 ↔ 明细表 hover 联动：图行 data-code → 表格同名行 .tr-hl 高亮（两处相同 data-code） */
-  if(table){
-    [].forEach.call(document.querySelectorAll('.dbrow-h[data-code]'),function(r){
-      function mark(on){
-        var c=r.getAttribute('data-code');
-        [].forEach.call(table.querySelectorAll('tbody tr[data-code]'),function(tr){
-          if(tr.getAttribute('data-code')===c)tr.classList.toggle('tr-hl',on);
-        });
-      }
-      r.addEventListener('mouseenter',function(){mark(true)});
-      r.addEventListener('mouseleave',function(){mark(false)});
-    });
-  }
-  apply();
-})();
-</script>
-</div><footer>BUILT 2026-10-09 · 数据以私有仓库为准 · 决策辅助非投资建议</footer><button id="toTop" title="回到顶部">↑</button><nav class="tabbar" aria-label="主导航"><svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><symbol id="ic-home" viewBox="0 0 24 24"><path d="M4 11.2 12 4.5l8 6.7V19a1.6 1.6 0 0 1-1.6 1.6h-3.9v-5.3h-5v5.3H5.6A1.6 1.6 0 0 1 4 19z"/></symbol><symbol id="ic-chart" viewBox="0 0 24 24"><path d="M4.5 20v-6.5M10.5 20V6.5M16.5 20v-9.5"/><path d="M3 20h18"/></symbol><symbol id="ic-folder" viewBox="0 0 24 24"><path d="M3.5 7A2 2 0 0 1 5.5 5h4.2l2 2.4h6.8a2 2 0 0 1 2 2v7.6a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z"/></symbol><symbol id="ic-arch" viewBox="0 0 24 24"><rect x="4" y="3.8" width="16" height="3.9" rx="1.1"/><path d="M5.2 7.7v10.6a2.5 2.5 0 0 0 2.5 2.5h8.6a2.5 2.5 0 0 0 2.5-2.5V7.7"/><path d="M9.8 12h4.4"/></symbol></defs></svg><a href="index.html"><svg aria-hidden="true"><use href="#ic-home"/></svg><span>总览</span></a><a href="持仓快照.html" class="active"><svg aria-hidden="true"><use href="#ic-chart"/></svg><span>持仓</span></a><a href="taizhang.html"><svg aria-hidden="true"><use href="#ic-folder"/></svg><span>数据</span></a><a href="panhou.html"><svg aria-hidden="true"><use href="#ic-arch"/></svg><span>归档</span></a></nav>
-<script>
+/* 表头排序 v2（2026-10-08 重写）。v1 缺陷（用户实测发现）：
+   ① parseFloat('2026-10-08')=2026 → 日期列全行"相等"→ 排序静默失效（点清仓日期列无反应）；
+   ② 千分位/-号/-5.6% 清洗不完整（'—'、'1,234' 混排）；
+   ③ 汇总行/分组行被一起排散；
+   ④ 无方向指示，二次点击语义不可见。
+   v2 规则：完整日期正则优先 → 否则纯数（含负号/千分位/百分号/单位'万'换算）→ 否则中文 locale；
+   首行若是合计/汇总行则钉底不参与；th.sa=升序 th.sd=降序 箭头指示。 */
 document.querySelectorAll('table.data').forEach(function(tb){
   var head = tb.querySelector('thead');
   if(!head) return;
   head.querySelectorAll('th').forEach(function(th,col){
+    if(th.dataset.sortReady) return;
+    th.dataset.sortReady='1';
     th.title='点击排序';
     th.addEventListener('click',function(){
-      head.querySelectorAll('th').forEach(function(o){o.classList.remove('sa','sd')});
       var tbody=tb.querySelector('tbody');
-      var rows=[].slice.call(tbody.rows), dir=th.dataset.dir=-(th.dataset.dir||-1);
+      if(!tbody) return;
+      var rows=[].slice.call(tbody.rows);
+      if(rows.length<2) return;
+      var dir = th.dataset.dir==='1' ? -1 : 1;   // 首次点击=升序，再点反转
+      th.dataset.dir=String(dir);
+      head.querySelectorAll('th').forEach(function(o){o.classList.remove('sa','sd')});
       th.classList.add(dir===1?'sa':'sd');
-      rows.sort(function(a,b){
-        var x=a.cells[col].textContent.trim().replace(/[+,%]/g,'').replace(/[,]/g,''), y=b.cells[col].textContent.trim().replace(/[+,%]/g,'').replace(/[,]/g,'');
-        var nx=parseFloat(x), ny=parseFloat(y);
-        if(!isNaN(nx)&&!isNaN(ny)) return (nx-ny)*dir;
-        return x.localeCompare(y,'zh')*dir;
+      var pin=[], body=[];
+      rows.forEach(function(r){
+        var c0=(r.cells[0]?r.cells[0].textContent:'').trim();
+        (r.classList.contains('sumrow')||/^(合计|汇总|小计)/.test(c0) ? pin : body).push(r);
       });
-      for(var i=0;i<rows.length;i++) tbody.appendChild(rows[i]);
+      var cache = body.map(function(r){
+        var tx=(r.cells[col]?r.cells[col].textContent:'').trim();
+        var m=tx.match(/^(\d{4})-(\d{2})-(\d{2})/);           // 完整日期优先（YYYY-MM-DD 前缀）
+        var key;
+        if(m) key=m[1]+m[2]+m[3];
+        else{
+          var tm=tx.match(/^(\d{1,2}):(\d{2})(?::(\d{2}))?$/);  /* v2.1: HH:MM 时间列 */
+          var isW=/万$/.test(tx);
+          var num=parseFloat(tx.replace(/[,+%\s]/g,''));
+          if(tm) key=+tm[1]*3600+(+tm[2])*60+(tm[3]?+tm[3]:0);
+          else if(!isNaN(num)){ if(isW)num*=10000; key=num; }
+          else key=null;                       /* 不可解析值归桶钉尾 */
+        }
+        return {r:r, k:key};
+      });
+      cache.sort(function(a,b){
+        var ka=a.k, kb=b.k;
+        if(typeof ka==='number'&&typeof kb==='number') return (ka-kb)*dir;
+        if(typeof ka==='number') return -dir;   /* v2.1: 一侧是数字 */
+        if(typeof kb==='number') return dir;
+        if(typeof kb==='number') return dir;
+      });
+      cache.forEach(function(x){tbody.appendChild(x.r)});   /* 先排数据行 */
+      pin.forEach(function(r){tbody.appendChild(r)});        /* 合计行最后钉底 */
     });
   });
 });
@@ -1152,12 +1064,15 @@ document.querySelectorAll('.search').forEach(function(inp){
       if(cur&&cur._dot)cur._dot.classList.remove('snap');
       cur=h;
       svg._ki=(h?hots.indexOf(h):-1);
-      if(h&&h._dot){
-        h._dot.classList.add('snap');
+      /* P1-2 修复：hot 点仅月末可见 dot——落点无 dot 时仍画准线（否则键盘逐日 ~95% 按键无反馈） */
+      if(h){
+        if(h._dot)h._dot.classList.add('snap');
         var x=h.getAttribute('data-xx');
-        line.setAttribute('x1',x);line.setAttribute('x2',x);
-        line.setAttribute('y1','0');line.setAttribute('y2',''+vb.height);
-        line.style.display='';
+        if(x!=null){
+          line.setAttribute('x1',x);line.setAttribute('x2',x);
+          line.setAttribute('y1','0');line.setAttribute('y2',''+vb.height);
+          line.style.display='';
+        }
       }else{line.style.display='none'}
     }
     svg.addEventListener('mousemove',function(e){

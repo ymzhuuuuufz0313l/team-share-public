@@ -713,23 +713,58 @@ table.data tbody tr:has(.stk){cursor:pointer}
 <p>归档说明：本篇为招商电新 20260830 研报要点存档，全部数字与表述均为卖方原口径，<strong>未经任何官方渠道核验</strong>；执行层一律以五步法判定为准，本档案不构成任何操作依据。与已在库的 <span class="stk" data-code="300936">300936</span> PTFE 逻辑（20260927-PTFE之争合集，图口径）为<strong>同一家公司的两条并行逻辑</strong>：①PTFE 高速覆铜板（27 年期权）②英中电气绝缘材料并购+LNG 层压木（本次新增）。</p>
 </blockquote></article></main></div><footer>BUILT 2026-10-09 · 数据以私有仓库为准 · 决策辅助非投资建议</footer><button id="toTop" title="回到顶部">↑</button><nav class="tabbar" aria-label="主导航"><svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs><symbol id="ic-home" viewBox="0 0 24 24"><path d="M4 11.2 12 4.5l8 6.7V19a1.6 1.6 0 0 1-1.6 1.6h-3.9v-5.3h-5v5.3H5.6A1.6 1.6 0 0 1 4 19z"/></symbol><symbol id="ic-chart" viewBox="0 0 24 24"><path d="M4.5 20v-6.5M10.5 20V6.5M16.5 20v-9.5"/><path d="M3 20h18"/></symbol><symbol id="ic-folder" viewBox="0 0 24 24"><path d="M3.5 7A2 2 0 0 1 5.5 5h4.2l2 2.4h6.8a2 2 0 0 1 2 2v7.6a2 2 0 0 1-2 2h-13a2 2 0 0 1-2-2z"/></symbol><symbol id="ic-arch" viewBox="0 0 24 24"><rect x="4" y="3.8" width="16" height="3.9" rx="1.1"/><path d="M5.2 7.7v10.6a2.5 2.5 0 0 0 2.5 2.5h8.6a2.5 2.5 0 0 0 2.5-2.5V7.7"/><path d="M9.8 12h4.4"/></symbol></defs></svg><a href="index.html"><svg aria-hidden="true"><use href="#ic-home"/></svg><span>总览</span></a><a href="持仓快照.html"><svg aria-hidden="true"><use href="#ic-chart"/></svg><span>持仓</span></a><a href="taizhang.html"><svg aria-hidden="true"><use href="#ic-folder"/></svg><span>数据</span></a><a href="panhou.html"><svg aria-hidden="true"><use href="#ic-arch"/></svg><span>归档</span></a></nav>
 <script>
+/* 表头排序 v2（2026-10-08 重写）。v1 缺陷（用户实测发现）：
+   ① parseFloat('2026-10-08')=2026 → 日期列全行"相等"→ 排序静默失效（点清仓日期列无反应）；
+   ② 千分位/-号/-5.6% 清洗不完整（'—'、'1,234' 混排）；
+   ③ 汇总行/分组行被一起排散；
+   ④ 无方向指示，二次点击语义不可见。
+   v2 规则：完整日期正则优先 → 否则纯数（含负号/千分位/百分号/单位'万'换算）→ 否则中文 locale；
+   首行若是合计/汇总行则钉底不参与；th.sa=升序 th.sd=降序 箭头指示。 */
 document.querySelectorAll('table.data').forEach(function(tb){
   var head = tb.querySelector('thead');
   if(!head) return;
   head.querySelectorAll('th').forEach(function(th,col){
+    if(th.dataset.sortReady) return;
+    th.dataset.sortReady='1';
     th.title='点击排序';
     th.addEventListener('click',function(){
-      head.querySelectorAll('th').forEach(function(o){o.classList.remove('sa','sd')});
       var tbody=tb.querySelector('tbody');
-      var rows=[].slice.call(tbody.rows), dir=th.dataset.dir=-(th.dataset.dir||-1);
+      if(!tbody) return;
+      var rows=[].slice.call(tbody.rows);
+      if(rows.length<2) return;
+      var dir = th.dataset.dir==='1' ? -1 : 1;   // 首次点击=升序，再点反转
+      th.dataset.dir=String(dir);
+      head.querySelectorAll('th').forEach(function(o){o.classList.remove('sa','sd')});
       th.classList.add(dir===1?'sa':'sd');
-      rows.sort(function(a,b){
-        var x=a.cells[col].textContent.trim().replace(/[+,%]/g,'').replace(/[,]/g,''), y=b.cells[col].textContent.trim().replace(/[+,%]/g,'').replace(/[,]/g,'');
-        var nx=parseFloat(x), ny=parseFloat(y);
-        if(!isNaN(nx)&&!isNaN(ny)) return (nx-ny)*dir;
-        return x.localeCompare(y,'zh')*dir;
+      var pin=[], body=[];
+      rows.forEach(function(r){
+        var c0=(r.cells[0]?r.cells[0].textContent:'').trim();
+        (r.classList.contains('sumrow')||/^(合计|汇总|小计)/.test(c0) ? pin : body).push(r);
       });
-      for(var i=0;i<rows.length;i++) tbody.appendChild(rows[i]);
+      var cache = body.map(function(r){
+        var tx=(r.cells[col]?r.cells[col].textContent:'').trim();
+        var m=tx.match(/^(\d{4})-(\d{2})-(\d{2})/);           // 完整日期优先（YYYY-MM-DD 前缀）
+        var key;
+        if(m) key=m[1]+m[2]+m[3];
+        else{
+          var tm=tx.match(/^(\d{1,2}):(\d{2})(?::(\d{2}))?$/);  /* v2.1: HH:MM 时间列 */
+          var isW=/万$/.test(tx);
+          var num=parseFloat(tx.replace(/[,+%\s]/g,''));
+          if(tm) key=+tm[1]*3600+(+tm[2])*60+(tm[3]?+tm[3]:0);
+          else if(!isNaN(num)){ if(isW)num*=10000; key=num; }
+          else key=null;                       /* 不可解析值归桶钉尾 */
+        }
+        return {r:r, k:key};
+      });
+      cache.sort(function(a,b){
+        var ka=a.k, kb=b.k;
+        if(typeof ka==='number'&&typeof kb==='number') return (ka-kb)*dir;
+        if(typeof ka==='number') return -dir;   /* v2.1: 一侧是数字 */
+        if(typeof kb==='number') return dir;
+        if(typeof kb==='number') return dir;
+      });
+      cache.forEach(function(x){tbody.appendChild(x.r)});   /* 先排数据行 */
+      pin.forEach(function(r){tbody.appendChild(r)});        /* 合计行最后钉底 */
     });
   });
 });
@@ -862,12 +897,15 @@ document.querySelectorAll('.search').forEach(function(inp){
       if(cur&&cur._dot)cur._dot.classList.remove('snap');
       cur=h;
       svg._ki=(h?hots.indexOf(h):-1);
-      if(h&&h._dot){
-        h._dot.classList.add('snap');
+      /* P1-2 修复：hot 点仅月末可见 dot——落点无 dot 时仍画准线（否则键盘逐日 ~95% 按键无反馈） */
+      if(h){
+        if(h._dot)h._dot.classList.add('snap');
         var x=h.getAttribute('data-xx');
-        line.setAttribute('x1',x);line.setAttribute('x2',x);
-        line.setAttribute('y1','0');line.setAttribute('y2',''+vb.height);
-        line.style.display='';
+        if(x!=null){
+          line.setAttribute('x1',x);line.setAttribute('x2',x);
+          line.setAttribute('y1','0');line.setAttribute('y2',''+vb.height);
+          line.style.display='';
+        }
       }else{line.style.display='none'}
     }
     svg.addEventListener('mousemove',function(e){
