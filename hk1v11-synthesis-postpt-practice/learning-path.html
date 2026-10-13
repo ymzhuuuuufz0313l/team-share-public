@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>学习路径 · HK1V11 综合/签核流程实践</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./css/style.css">
+  <script src="./js/marked.min.js"></script>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a class="navbar-brand" href="./">HK1V11_FLOW_PRACTICE</a>
+      <div class="navbar-links" id="navbar-links"></div>
+    </div>
+  </nav>
+  <div class="container with-toc">
+    <aside class="toc-wrapper"><div class="toc" id="toc"></div></aside>
+    <div class="content">
+      <article class="article" id="article"></article>
+      <div class="page-nav" id="page-nav"></div>
+      <div class="footer">HK1V11 SYNTHESIS / SIGNOFF PRACTICE · AUTHOR ymzhuuuu · UPDATED 2026-10-13</div>
+    </div>
+  </div>
+  <script type="text/template" id="md">
+# 学习路径 · 新读者按序上手
+
+> 本站 20 页分两层：**一~九章是流程骨架**（位置、检查点、交付物），**十~十八章是实录与教学**（排障、归因、约束、skew）。新读者不要从头硬啃——按本页顺序走，每一步都知道"读它解决什么问题"。
+
+建议节奏：第 1→7 步是主线，走完即掌握 1V11 签核交付全流程；第 8 步进阶三本按兴趣选读。遇到不懂的术语/脚本，用右上角 **搜索（Ctrl K）** 全站检索。
+
+---
+
+## 1. 环境与配置（读 [ch01](./ch01-env.html)）
+
+- **解决什么问题**：跑任何一步之前的地基——design.set 三处口径（综合 / prePT / postPT）在哪、`clk_period.tcl` 是 1V11 特有的时钟周期源头、filelist 怎么管。
+- **核对点**：能说出"换 corner / 换库要改哪几个文件"。
+
+## 2. RTL 检查（读 [ch02](./ch02-rtl-check.html)）
+
+- **解决什么问题**：CKF 连接性检查与 nLint 在 1V11 流程中的位置——哪些 error 必须修、哪些 warning 可以 waive。
+- **核对点**：知道"检查不过就不能进综合"的卡口在哪。
+
+## 3. 综合（读 [ch03](./ch03-synthesis.html)）
+
+- **解决什么问题**：DC 约束的 dc_shell / pt_shell 双分支写法（为什么同一条约束要写两种形态）、dont_use 纪律、compile 产物。
+- **核对点**：理解"约束改了没生效"的第一嫌疑是生效链，不是语法（ch10 案例 1 的伏笔）。
+
+## 4. LEC 验证（读 [ch04](./ch04-lec.html)）
+
+- **解决什么问题**：必须做 LEC 的三个节点；怎么区分"真 pass"和"根本没跑起来"。
+- **核对点**：拿到 LEC log 知道先看哪一行。
+
+## 5. POSTPT（读 [ch06](./ch06-postpt.html)，本站方法论总纲）
+
+- **解决什么问题**：约束链三文件（ip_cons → write_sdc → postcts.sdc）、10 corner 怎么跑、skew 报告链怎么读——全站引用最多的一章。
+- **核对点**：能默画约束生效链；知道 SEL-004/005 计数是回归自检的唯一可靠指标。
+
+## 6. TO SIGNOFF（读 [ch09](./ch09-to-signoff.html)）
+
+- **解决什么问题**：summary/latest 下五个 csv 各看什么、违例分组怎么读、交付前最后清单。
+- **核对点**：能独立判读 report_setup / report_hold / report_sd_busskew 三张表。
+
+## 7. 违例分组处置（读 [ch14](./ch14-violation-disposition.html)）
+
+- **解决什么问题**：拿到几百条违例清单后怎么办——逐组归因、新旧约束对照、精确 file:line 索引的工作法（0922 收窄 482 条全程实录 + 1008 三笔修复判定）。
+- **核对点**：会说清"收窄暴露 / 真实违例 / 从未约束"三分类。
+
+## 8. 进阶（按兴趣选读）
+
+- [ch11 违例归因实战](./ch11-violation-atlas.html)——逐路径精读的方法论（怎么从 max.rpt 抽数、五模型交叉核对怎么组织）；
+- [ch12 时序约束入门教学](./ch12-constraint-tutorial.html)——每条约束"为什么这么设 / 为什么不能那样设"，零基础友好；
+- [ch18 Clock Skew 从原理到实战](./ch18-skew.html)——skew 零基础教程，含 set_sense 关键命令闭环与自测五问；
+- 配套读物：[ch10 排障实录](./ch10-warstories.html)（21 段真实案例当故事书读）、[ch13 工具链地图](./ch13-toolchain-map.html)（查目录结构/脚本归属时用）。
+
+---
+
+**读完自检**：做一遍 [ch18 §5 的小白自测五问](./ch18-skew.html)——能答出 4 问以上，说明主线已通。
+
+## 交叉引用
+
+- 流程基线（HV2M23 模板站，含脚本字典/FAQ/检查清单）：<a href="../synthesis-integration-flow-guide/">Synthesis &amp; Integration Flow 指南</a>
+- 流程骨架细节：[ch01](./ch01-env.html) ~ [ch09](./ch09-to-signoff.html)
+- 排障实录案例库：[ch10](./ch10-warstories.html)
+  </script>
+  <script src="./js/site.js"></script>
+</body>
+</html>
+<!-- ymzhu 2026-10-13 17:15 -->

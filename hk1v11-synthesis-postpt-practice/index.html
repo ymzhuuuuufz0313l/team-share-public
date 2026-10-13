@@ -10,6 +10,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet">
+  <script src="./search.js" defer></script>
   <style>
     :root {
       --bg: #f4f1ea;
@@ -440,60 +441,61 @@
     <div class="hero-inner">
       <div class="kicker">HK1V11 · SYNTHESIS / SIGNOFF · PRACTICE</div>
       <h1>综合 / 签核流程<br>实践<span class="thin">记录</span></h1>
-      <p class="lead">一到九章搭 1V11 自己的流程骨架：位置、检查点、交付物；第十~十四章是实录与判读核心——排障实录、违例图谱、约束教学与逐组处置。</p>
+      <p class="lead">一到九章搭 1V11 自己的流程骨架：位置、检查点、交付物；十~十八章是实录与判读核心——排障实录、违例图谱、约束教学、skew 教程与逐组处置。</p>
       <div class="meta">
         <span>AUTHOR <b>ymzhuuuu</b></span>
         <span>PROJECT <b>HK1V11</b></span>
-        <span>SPAN <b>0916~0930</b></span>
+        <span>SPAN <b>0916~1013</b></span>
       </div>
       <div class="hero-hint">
         <span>⭐</span>
-        <span>推荐直奔 <a href="./ch10-warstories.html">第十章 排障实录</a> 看二十一段真实案例 <span class="arrow">→</span> 一~九章为流程骨架，数据逐步补录</span>
+        <span>新读者先走 <a href="./learning-path.html">学习路径</a> 按序上手 <span class="arrow">→</span> 再直奔 <a href="./ch10-warstories.html">第十章 排障实录</a> 看二十一段真实案例</span>
       </div>
       <div class="reg">
         CURRENT
-        <span class="ver">0930</span>
-        REV 2026-09-30
+        <span class="ver">1013</span>
+        REV 2026-10-13
       </div>
     </div>
   </header>
 
   <div class="container">
     <div class="latest">
-      <!-- LATEST 卡维护规则：时间线每条只写一句话（标题+一句话结论）；完整证据链/commit/判据写入页面底部「状态跟踪总账」对应 details 块（新增主题加块，勿回填时间线） -->
+      <!-- LATEST 卡维护规则：时间线每条只写一句话（标题+一句话结论+详情页链接）；完整证据链/commit/判据写入页面底部「状态跟踪总账」对应 details 块（新增主题加块，勿回填时间线） -->
       <div class="badge">
         <span class="tag">LATEST</span>
-        <span class="num">0930</span>
+        <span class="num">1013</span>
       </div>
       <div class="body">
-        <div class="t">0930 · G13 打一拍两分支放量回归（SHORT 59/60 / LONG 369/382）· 窄约束四方共识 · 482 归因定案</div>
+        <div class="t">1008~1013 · 约束三笔 V3 实证（hold 7563→242）· skew 新窗 ±3.5/−0.9~+4.1 · set_sense 闭环 · 全站收敛</div>
         <ul>
-          <li><b>0929-30 G13 打一拍两分支终版落地 + 放量回归</b>——SHORT 60 连跑 59/60 基线转绿、LONG 420b 52/52 + 放量 369/382（96.6%）；FAIL 聚类定责中（细节↓状态跟踪）</li>
-          <li><b>0929 窄约束四方全量审查</b>——一致率 94.1%，实锤真漏 4 项；15 条修改建议 + 7 项拍板待 ymzhu</li>
-          <li><b>0928 终局：9 分区整组回归宽 mc</b>——remove 10→1（仅 BKDU），320 bit 复审全绿</li>
-          <li><b>0928 UTC 29 条 mc 闭环</b>——收窄暴露 89 条仅剩 BKDU 24 条待 RTL 同步器</li>
-          <li><b>0928 R_REG47_F 13 条 mc 闭环</b>——全局 WNS −1.45 消失；mc 可加性判据成文</li>
-          <li><b>0924 逐 bit 处置定案</b>——BKDU 走 RTL 两级同步器；AABB+VPS_EN_0 mc 落地、23 条闭环</li>
-          <li><b>482 条违例归因定案（五模型交叉）</b>——106 收窄暴露 + 335 真实 + 41 从未约束；G13 56 条重分类真实数据通路</li>
-          <li><b>代际验证纪律定案</b>——当前 PT 数字为旧代基线，三方对齐判代际</li>
-          <li><b>三个学习页上线（ch11/ch12/ch13）</b>——K3-256K review 修订 26 处 + 补证 5 处</li>
+          <li><b>1008 约束三笔 V3 run 实证</b>——WCLK1_A_I2C async 489→0、setup 119→87、hold 7563→242（<a href="./ch14-violation-disposition.html">ch14 §5.3</a>）</li>
+          <li><b>skew 链路修复</b>——探针换名失配修复（−900 哨兵定案）+ 规格窗收紧 ±3.5 / −0.9~+4.1（<a href="./ch18-skew.html">ch18</a>）</li>
+          <li><b>set_sense 关键命令闭环</b>——S 腿钟传播物理层修法 pt_shell 实测生效（<a href="./ch18-skew.html">ch18 §4.2</a>）</li>
+          <li><b>BKDU bkdu_sync 决策</b>——不打拍不实施（非本人模块），方案移交 owner、27 条留账（<a href="./ch14-violation-disposition.html">ch14 §5.4</a>）</li>
+          <li><b>全站收敛 S1-S5</b>——单一出处化完成，452→11 总账唯一出处在 <a href="./ch16-dc1004-review.html">ch16</a></li>
         </ul>
       </div>
-      <a class="more" href="./ch11-violation-atlas.html">违例归因实战 →</a>
+      <a class="more" href="./ch14-violation-disposition.html">违例分组处置 →</a>
     </div>
 
     <div class="stats">
-      <div class="stat"><div class="v">10</div><div class="k">章节（一~九骨架 + 十实录）</div></div>
+      <div class="stat"><div class="v">20</div><div class="k">页面（九骨架 + 实录 + 复盘教学 + 速查）</div></div>
       <div class="stat"><div class="v">21</div><div class="k">排障案例</div></div>
       <div class="stat"><div class="v">6</div><div class="k">轮 mc 收敛</div></div>
-      <div class="stat"><div class="v">09<em>-30</em></div><div class="k">最近入库</div></div>
+      <div class="stat"><div class="v">10<em>-13</em></div><div class="k">最近入库</div></div>
     </div>
 
     <div class="section-title">章节索引 · 按流程顺序</div>
     <div class="chapter-grid">
+      <a class="chapter-card" href="./learning-path.html">
+        <div class="num">〇</div>
+        <div class="title">学习路径<span class="star">先读</span></div>
+        <div class="desc">新读者按序上手：环境 → 检查 → 综合 → LEC → PT → 签核 → 处置 → 进阶</div>
+      </a>
       <a class="chapter-card" href="./ch01-env.html">
         <div class="num">一</div>
-        <div class="title">环境与配置<span class="star">先读</span></div>
+        <div class="title">环境与配置</div>
         <div class="desc">design.set 三处口径、common_db 库配置、corner 开关</div>
       </a>
       <a class="chapter-card" href="./ch02-rtl-check.html">
@@ -640,6 +642,10 @@
     </style>
     <div class="st-details">
     <details open>
+      <summary>🟢 <span class="st-date">1008~1013</span> — 1008 签核收敛：约束三笔 V3 实证 + skew 链路修复 + set_sense 记录 + BKDU 决策</summary>
+      <div class="st-body"><b>1008 签核收敛</b>：约束三笔（FLAG_1H mc / K1 latch/E / WCLK1_A_I2C async）V3 run 实证 setup 119→87、hold 7563→242；skew 探针修复 + 新窗 ±3.5/−0.9~+4.1；<code>set_sense -stop_propagation -type clock</code> 实测闭环；BKDU bkdu_sync 拍板不实施、移交 owner。详见 <a href="./ch14-violation-disposition.html">ch14 §5.3/§5.4</a> / <a href="./ch18-skew.html">ch18</a>。</div>
+    </details>
+    <details open>
       <summary>🟢 <span class="st-date">1006</span> — 1006V0 RTL 整树同步：包≡1003 编译版（四路 97.1% 零孤儿），整树替换完成</summary>
       <div class="st-body"><b>1006V0 RTL 整树同步</b>：四路交叉 + K3 终审判定包≡1003 编译版（81/81 清单 + 541 基名零孤儿 + 97.1% 覆盖率），整树替换 commit `7dad5525`（38 文件），452→11 结论直接继承；遗留 5 项。详见 <a href="./ch17-rtl-1006-sync.html">ch17 · RTL 1006 整树同步</a>。</div>
     </details>
@@ -700,7 +706,17 @@
       ['ch07-memory-power', 'Memory 与功耗'],
       ['ch08-powerpro', 'PowerPro'],
       ['ch09-to-signoff', 'TO SIGNOFF'],
-      ['cases', '实战与复盘']
+      ['ch10-warstories', '排障实录'],
+      ['cases', '实战与复盘'],
+      ['ch11-violation-atlas', '违例归因'],
+      ['ch12-constraint-tutorial', '约束教学'],
+      ['ch13-toolchain-map', '工具链'],
+      ['ch14-violation-disposition', '违例处置'],
+      ['ch15-memory-jogger', '记忆唤醒'],
+      ['ch16-dc1004-review', '1004复核'],
+      ['ch17-rtl-1006-sync', '1006同步'],
+      ['ch18-skew', 'Skew'],
+      ['learning-path', '学习路径']
     ];
     const currentPath = location.pathname.split('/').pop() || 'index.html';
     const linksContainer = document.getElementById('navbar-links');
@@ -718,4 +734,4 @@
   </script>
 </body>
 </html>
-<!-- ymzhu 2026-10-09 17:30 -->
+<!-- ymzhu 2026-10-13 16:50 -->

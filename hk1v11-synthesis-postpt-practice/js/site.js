@@ -14,7 +14,17 @@
     ['ch07-memory-power.html','Memory 与功耗'],
     ['ch08-powerpro.html',    'PowerPro'],
     ['ch09-to-signoff.html',  'TO SIGNOFF'],
-    ['cases.html',            '实战与复盘']
+    ['ch10-warstories.html',  '排障实录'],
+    ['cases.html',            '实战与复盘'],
+    ['ch11-violation-atlas.html',      '违例归因'],
+    ['ch12-constraint-tutorial.html',  '约束教学'],
+    ['ch13-toolchain-map.html',        '工具链'],
+    ['ch14-violation-disposition.html','违例处置'],
+    ['ch15-memory-jogger.html',        '记忆唤醒'],
+    ['ch16-dc1004-review.html',        '1004复核'],
+    ['ch17-rtl-1006-sync.html',        '1006同步'],
+    ['ch18-skew.html',                 'Skew'],
+    ['learning-path.html',    '学习路径']
   ];
 
   function currentPage() {
@@ -152,6 +162,10 @@
   var lb = document.createElement('script');
   lb.src = './js/lightbox.js';
   document.head.appendChild(lb);
+  /* ---------- site search（全站搜索，根目录 search.js + search-index.js） ---------- */
+  var ss = document.createElement('script');
+  ss.src = './search.js';
+  document.head.appendChild(ss);
 })();
 
-// ymzhu 2026-10-08 12:55
+// ymzhu 2026-10-13 16:35
