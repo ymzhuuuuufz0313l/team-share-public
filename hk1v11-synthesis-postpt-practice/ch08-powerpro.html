@@ -305,13 +305,13 @@ WARNING: PowerPro 读取的 RTL 必须是可综合代码，无法综合会 inter
 
 | # | 根因 | 1V11 | 1V22 | 关键证据 |
 |---|---|---|---|---|
-| 1 | **【最大】解码通路：双协议双引擎并行 vs 单协议单引擎** | `LC_CHPI_DECODE` 同时实例化 SHORT+LONG 两套完整解码引擎（L106/L157）+ 24-bit 宽 SP mux 常开（L207-224）+ 20-bit 输入流水每拍翻转喂两套引擎；解码规模 ≈2× | 统一 CSPI 单引擎（`LC_CSPIF_L0` 1497 行 + `LC_CSPIF_L1` 466 行，L0→L1 流水） | 对应实测差距：解码组 +4976 µW（×1.58，高速档） |
+| 1 | **【最大】解码通路：双协议双引擎并行 vs 单协议 per-lane 实例** | `LC_CHPI_DECODE` 同时实例化 SHORT+LONG 两套完整解码引擎（L106/L157）+ 24-bit 宽 SP mux 常开（L207-224）+ 20-bit 输入流水每拍翻转喂两套引擎；解码规模 ≈2× | 统一 CSPI 单协议、按 lane 双实例（`LC_CSPIF_L0`=lane0 / `LC_CSPIF_L1`=lane1 用 DCLK1，1lane 场景仅 L0 工作；L0/L1 非流水——t6 精读修正） | 对应实测差距：解码组 +4976 µW（×1.58，高速档） |
 | 2 | **【关键】ICG 门控粒度：引擎级粗门控 vs 子域级细门控** | ICG 单元相同（GCKHBQX4AL9）、总量相近（19 vs 14 有效，t5 实测裁决），但 1V11 门控只在时钟端（`DCLK_SE/LE = DCLK & SP/~SP`），**解码引擎内 0 个 ICG**——非活动引擎组合前级仍随输入翻转 | 解码引擎内 **9 个有效 ICG**（LC_CSPIF_L0×8：L301/857/982/1024/1065/1193/1291/1505 + LC_CSPIF_L1×1 L472；另有 1 个被注释 L137）细门控各子域（DLY_CNT/WIDTH_CNT/UTC/HSR/VGMA/KEY_RST/SETTING） | 同样时钟，1V22 能停掉 1V11 停不掉的子逻辑；附带发现：1V11 CHPI_SD_CTRL L270/271 有 2 个**被注释**的子域 ICG |
 | 3 | **【显著】时钟架构：单模双/三协议 mux + 1.5× 相位 vs 按 lane 单协议** | `CLKGEN` 5 个 CLKMUX2X2 按 SP/测试 mux（L193/200/217/249/255，t5 实测裁决）+ 3 个 1.5× 相位寄存器常翻转（L118-160）+ 9 ICG | `CLKGEN_U0/U1` 按 lane 简化、无协议 mux、无相位翻转、0 ICG（门控移到数据通路） | 对应实测：时钟生成组 ×64-69（含门控归属口径差） |
-| 4 | **【反向】显示时序：1V22 更重** | 单级 `DTCTL`（904 行，seq=14） | 两级 `DTCTL_L0/L1`+`TOTAL_DTCTL`（seq≈65）——面向更高分辨率/双线面板 | 此项不是 1V11 功耗偏高原因；实测 DTCTL 组 1V11 仍大 ×1.64 系频率/活动率所致 |
+| 4 | **【反向】显示时序：1V22 结构更大但实测更省** | 单级 `DTCTL`（904 行，seq=14，426f 全速域翻转） | 按 lane 双实例 `DTCTL_L0/L1`+`TOTAL_DTCTL` 六件套（L0/L1 非两级流水——t6 精读修正）；半速率 1P 时钟域（DTCLK_1P）+ 1lane 下 L1 整体静默 | 1V22 双 lane 可扩展结构更大，但半速率域+L1 静默使实测 DTCTL 组 1V11 仍大 ×1.64 |
 | 5 | **【口径】集成范围** | 面板输出驱动不在数字顶层（`DMY` 已注释，LOGIC_CENTER L1548） | 数字顶层内集成 18 个面板 OBUF/INBUF 树；`LC_CPUWR` 更宽总线（142 vs 64 reg 声明） | 数字顶层 vs 全芯片口径须先对齐再归因 |
 
-**1V11 可落地优化（学 1V22，按收益/风险排序）**：① **解码引擎内加细粒度 ICG**（最高收益·低风险；对 CHPI_SCR_DEC_L0/CHPI_SD_CTRL 计数器子域插 CG_CELLX4，保留 R_CG_OFF 开关；须跑 rtl-signal-trace Workflow C 相对拍差审计）；② 协议固定时裁剪双引擎/24-bit 宽 SP mux（高收益·中风险）；③ 精简 CLKGEN 双协议 mux + 1.5× 相位时钟（中收益·中风险）；④ LC_CPUWR 寄存器文件批量化组织（低收益·低风险）；⑤ 先对齐数字顶层 vs 全芯片功耗口径（口径确认）。
+**1V11 可落地优化（学 1V22，按收益/风险排序）**：① **解码引擎内加细粒度 ICG**（最高收益·低风险；对 SHORT_ENCODING_ALIGN/OUTPUT、CHPI_SD_CTRL 计数器子域插 CG_CELLX4——CHPI_SD_CTRL L270/271 本就有 2 个被注释的 ICG 可直接启用；须跑 rtl-signal-trace Workflow C 相对拍差审计）；② 协议固定时裁剪双引擎/24-bit 宽 SP mux（高收益·中风险）；③ 精简 CLKGEN 双协议 mux + 1.5× 相位时钟（中收益·中风险）；④ LC_CPUWR 寄存器文件批量化组织（低收益·低风险）；⑤ 先对齐数字顶层 vs 全芯片功耗口径（口径确认）。
 
 旧占位说明（1V22 RTL 包 0 字节待下载）已闭环：1015 已拿到 `script/_syn_1015hdl` 完整 RTL 包并完成上述分析。
 
@@ -323,4 +323,4 @@ WARNING: PowerPro 读取的 RTL 必须是可综合代码，无法综合会 inter
   <script src="./js/site.js"></script>
 </body>
 </html>
-<!-- ymzhu 2026-10-15 17:58 -->
+<!-- ymzhu 2026-10-15 18:47 -->
