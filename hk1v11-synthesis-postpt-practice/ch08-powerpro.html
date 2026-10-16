@@ -94,20 +94,18 @@ WARNING: PowerPro 读取的 RTL 必须是可综合代码，无法综合会 inter
 
 > 口径：**Initial Design**（`hier_pwr_detail.csv` `__Top_Node__` total，优化前）；**Area = 同代 DC 报告 Total cell area**（1003 代 = `dc/rep_dir_1003/HK1V11_digital_top.rpt` 314706.88 µm²；0922 代 = `dc/rep_dir_0922_1456` 294906.50 µm²）；Clk Freq = `RX_CLK × 20 / 1000`（**20bit = HK1V11 RX 数据通路位宽**，`LINK_LOGIC.v` INDATA[19:0]，vs 2M23 `doutx[17:0]`=18bit）；**不乘 1.05**（那是 2M23 `clk_period.tcl` STA 时钟周期的 5% margin，非数据率↔时钟物理因子）。数据源为 **1008 服务器包**（`script/_syn_1008v2/.../powerpro/rep_dir_{1lane,4k180,dplc}_1003/hier_pwr_detail.csv`）。
 
-### 4.1 功耗表（两 case）
+### 4.1 功耗表
 
 ![HK1V11 PowerPro 功耗表](./powerpro_hk11.png)
 
-| Case | Clk Freq | Process | Area | Lane | Normal (mW) |
-|------|----------|---------|------|------|-------------|
-| t_8b1lane | 2.97G | 145 | 314707 | 1L | **16.30** |
-| 4K180 | 4.47G | 145 | 314707 | 1L | **29.47** |
+| Case | Clk Freq | Process | Area | Lane | Normal (mW) | Run 代 |
+|------|----------|---------|------|------|-------------|--------|
+| t_8b1lane | 2.97G | 145 | 314707 | 1L | **16.30** | 1003 |
+| t_8b1lane | **4.46G** | 145 | 314707 | 1L | **25.65** | **1015** |
+| 4K180 | 4.47G | 145 | 314707 | 1L | **29.47** | 1003 |
+| DPLC | 2.97G | 145 | 314707 | 1L | 16.30 | 1003 |
 
-> DPLC 开启实测 **≈16.30 mW**（1008 包 rep_dir_dplc_1003，16304.58 µW，与 Normal 16303.43 µW 基本持平——DPLC 本 case 活动占比极小）。
-
-> 功耗随速率：4K180 是 t_8b1lane 的 **1.81×** 而速率只 **1.50×**，超线性归因见 §4.4。
-
-> 📉 历史口径：旧值（21.08/37.9/21.36 mW）为 **0922 代**数据，已废弃；1008 包 1003 代同 netlist 重跑后整体下降 ≈22%，**以 1003 代为准**。
+> **1015 新增**：t_8b1lane@4.46G = **25.65 mW**（`PACK_TAR_1015V3` rep_dir，1015-10/15 服务器跑，与 §4.5 的 1V22@4.46G 同日同流程——用于跨项目同频对比）。旧 1003 代（1008 包）保持备查。
 
 ### 4.2 跨项目对比（HK1V11 vs HV2M23 / HV3310B1 / HV1V21 / HV1V22，双组带 run 代）
 
@@ -239,10 +237,8 @@ WARNING: PowerPro 读取的 RTL 必须是可综合代码，无法综合会 inter
 
 - 指南站同章：<a href="../synthesis-integration-flow-guide/powerpro.html" target="_blank">SYN_FLOW_GUIDE · PowerPro 功耗评估</a>（培训课件全记录 / HV2M23 六组实测 / 常见问题 9 条）
 - PTPX 侧：<a href="./ch07-memory-power.html">七、Memory 与功耗</a>
-|---|---|---|---|
-- PTPX 侧：<a href="./ch07-memory-power.html">七、Memory 与功耗</a>
 </script>
   <script src="./js/site.js"></script>
 </body>
 </html>
-<!-- ymzhu 2026-10-16 13:40 -->
+<!-- ymzhu 2026-10-16 13:55 -->
