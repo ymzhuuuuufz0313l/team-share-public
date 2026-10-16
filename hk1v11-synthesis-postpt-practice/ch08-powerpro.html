@@ -206,7 +206,7 @@ WARNING: PowerPro 读取的 RTL 必须是可综合代码，无法综合会 inter
 
 | 功能块 | 1V11 (µW) | 1V22 (µW) | 差 (µW) | 说明 |
 |---|---:|---:|---:|---|
-| **面板 SD 时序族** | LINK_PANEL_CTRL **3019**（SD_CTRL 2256 + SMT_CS 516 + 其他） | — | **+3019** | 1V11 独有（SD 协议 STB/LD/CS/HSR 时序） |
+| **面板 SD 时序族** | LINK_PANEL_CTRL **3019**（SD_CTRL 2256 + SMT_CS 516 + FREQ_JUDGE 88 + LENB 64 + 其他） | — | **+3019** | 独有形态·**部分等价**（t14 逐子功能精读裁决）：核心 STB/CS/HSR 时序 1V22 **有**（内嵌 LC_CSPIF_L0 L1013-1375，带专属 ICG）；SMT_CS 516 + FREQ_JUDGE 88 + LENB 动态检测 64 + BCC 1 + LD/FAKE 时序（不可拆）为 1V11 独有 |
 | **BUFFER_I**（输入同步）| **2511** | —（在 rx_phy 内） | **+2511** | 84f 三拍同步，0% 门控 |
 | **短编码解码** | SHORT_ENCODING 10294 | LC_CSPIF_L0 6389 + CMD_ALIGN 2201 = **8590** | **+1704** | 同功能：K 码 40b 滑窗 vs 9b 命令码 |
 | **显示时序 DTCTL** | **4717**（含 DPLC_GEN 1360） | TOTAL_DTCTL **3294**（含 u_DPLC 981） | **+1423** | 同功能，1V11 全速域 vs 1V22 半速率+L1 静默 |
@@ -226,12 +226,12 @@ WARNING: PowerPro 读取的 RTL 必须是可综合代码，无法综合会 inter
 
 **1V11 多出 10.5 mW，1V22 独有功能抵扣 4.8 mW，净差 6.7 mW（×1.35）。**
 
-差距 Top 3：面板 SD 时序（3.0）> BUFFER_I（2.5）> 短编码差（1.7）。其中：
-- **1V11 独有功能**（1V22 无对应物）：面板 SD + 长编码 + 故障域 = **4.1 mW** 纯新增
-- **共有功能实现差**：短编码 + DTCTL + 配置 + 时钟 + ANCTL = **6.1 mW**——同功能但 1V11 实现方式功耗更高（根因：双引擎并行 + 引擎内零细粒度 ICG + 集中时钟 mux + 全速域）
+差距 Top 3：面板 SD 时序（3.0）> BUFFER_I（2.5）> 短编码差（1.7）。其中（t14 逐子功能精读修正后口径，`script/_panel_ctrl_deep_k3.md`）：
+- **1V11 明确纯新增**（1V22 无对应功能）：长编码 853 + SMT_CS 内容自适应 CS 516 + FREQ_JUDGE 在线测频 88 + LENB 动态检测 64 + BCC 1 + 故障域 104 + CONFIG 通路 134 ≈ **1.76 mW**
+- **共有/等价功能实现差**：短编码 1704 + DTCTL 1423 + 配置 798 + 时钟 519 + ANCTL 564 + 面板 SD 核心时序（STB/CS/HSR，1V22 内嵌 LC_CSPIF_L0，1V11 侧 2256 不可拆）≈ **5.0 mW+**——同功能但 1V11 实现方式功耗更高（根因：双引擎并行 + 引擎内零细粒度 ICG + 集中时钟 mux + 全速域）
 - **位置迁移**（BUFFER_I/K 码对齐在 1V22 沉入 rx_phy）：双边同计净差 **+2.5 mW**
 
-> RTL 根因与优化建议详见 `script/_1v11_vs_1v22_hdl_crossvalidate.md`（三模型交叉验证权威版）。关键优化着手点：CHPI_SD_CTRL L270/271 有 2 个被注释的 ICG 可直接启用。
+> RTL 根因与优化建议详见 `script/_1v11_vs_1v22_hdl_crossvalidate.md`（三模型交叉验证权威版）；面板族逐子功能 1V22 对应物排查见 `script/_panel_ctrl_deep_k3.md`（t14）。关键优化着手点：CHPI_SD_CTRL L270/271 有 2 个被注释的 ICG 可直接启用。
 
 ## 交叉引用
 
@@ -241,4 +241,4 @@ WARNING: PowerPro 读取的 RTL 必须是可综合代码，无法综合会 inter
   <script src="./js/site.js"></script>
 </body>
 </html>
-<!-- ymzhu 2026-10-16 13:55 -->
+<!-- ymzhu 2026-10-16 14:28 -->
