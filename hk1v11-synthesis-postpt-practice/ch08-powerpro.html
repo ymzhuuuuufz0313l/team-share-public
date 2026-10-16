@@ -217,7 +217,7 @@ WARNING: PowerPro 读取的 RTL 必须是可综合代码，无法综合会 inter
 | **面板特有子功能**（SMT_CS+FREQ_JUDGE+LENB+AEQ+BCC） | **677**（+父级 86 ≈ 3019 ✓） | — | **+763** | SMT_CS/FREQ_JUDGE 主体 1V22 无活跃功能（同源 SMT_CS.v 未例化；测频改静态寄存器，lock 打拍共有 CLKGEN_U0）；LENB 部分等价（TBK→tbk_flag 保留，判决改 LENB_MASK_NUM 分档）；AEQ 判决功能等价（rx_phy blank 窗）；BCC 协议删除 |
 | **BUFFER_I**（输入同步）| **2511** | —（在 rx_phy 内） | **+2511** | 84f 三拍同步，0% 门控 |
 | **短编码解码**（SHORT_ENCODING ↔ CSPIF_L0+CMD_ALIGN） | 10294 | 8590 | **+1704** | 同功能：K 码 40b 滑窗 vs 9b 命令码 |
-| **显示时序 DTCTL**（含 DPLC） | **4717** | **3294** | **+1423** | 同功能，1V11 全速域 vs 1V22 半速率+L1 静默 |
+| **显示时序 DTCTL**（含 DPLC） | **4717**（含 DPLC_GEN 1360） | **3294**（含 u_DPLC 981） | **+1423** | 同功能，1V11 全速域 vs 1V22 半速率+L1 静默；DPLC 双向各有新增（t17：1V11 多 RGBW+Group 模式，1V22 多 GRAY 编码+域内时序） |
 | **长编码解码**（LONG_ENCODING） | **853** | — | **+853** | 1V11 独有（UHE 420b→413b + LFSR 解扰） |
 | **寄存器配置**（CONFIG_CTRL ↔ CPUWR） | **1525** | **727** | **+798** | 1V11 更宽（双 bank + 24 分区） |
 | **ANCTL** | **782** | **218** | **+564** | |
@@ -251,4 +251,4 @@ WARNING: PowerPro 读取的 RTL 必须是可综合代码，无法综合会 inter
   <script src="./js/site.js"></script>
 </body>
 </html>
-<!-- ymzhu 2026-10-16 14:48 -->
+<!-- ymzhu 2026-10-16 15:08 -->
