@@ -204,24 +204,33 @@ WARNING: PowerPro 读取的 RTL 必须是可综合代码，无法综合会 inter
 
 #### 模块级功耗对比（按功能块对齐，按差距降序）
 
-| 功能块 | 1V11 (µW) | 1V22 (µW) | 差 (µW) | 说明 |
+<style>
+.pwr45 th:nth-child(2), .pwr45 td:nth-child(2) { width: 10%; }
+.pwr45 th:nth-child(4), .pwr45 td:nth-child(4) { width: 11%; min-width: 80px; }
+</style>
+
+<div class="pwr45">
+
+| 功能块（模块名） | 1V11 (µW) | 1V22 (µW) | **差 (µW)** | 说明 |
 |---|---:|---:|---:|---|
-| **面板 SD 时序核**（STB/CS/HSR/TP） | CHPI_SD_CTRL **2256** | 内嵌 LC_CSPIF_L0（6389 内**不可拆**） | 配对差不可拆 | **功能等价·融合**（t16 裁决：TPD_CLIP/TPW_CLIP/TP_ACT_SET_OK 信号名逐字继承 + 半速率化 + 1V22 实装 ICG；1V11 特有 LD/FAKE/STB_IO 不可拆） |
-| **面板特有子功能** | SMT_CS **516** + FREQ_JUDGE **88** + LENB **64** + AEQ 判决 **8** + BCC **1** = **677**（+父级自开销 86 ≈ 合计 3019 ✓） | — | **+763** | SMT_CS/FREQ_JUDGE 主体 1V22 无活跃功能（同源 SMT_CS.v 未例化；测频改静态寄存器，lock 打拍共有 CLKGEN_U0）；LENB 部分等价（TBK→tbk_flag 保留，判决改 LENB_MASK_NUM 分档）；AEQ 判决功能等价（rx_phy blank 窗）；BCC 协议删除 |
+| **面板 SD 时序核**（CHPI_SD_CTRL） | **2256** | 内嵌 LC_CSPIF_L0（6389 内**不可拆**） | 配对差不可拆 | **功能等价·融合**（t16 裁决：TPD_CLIP/TPW_CLIP/TP_ACT_SET_OK 信号名逐字继承 + 半速率化 + 1V22 实装 ICG；1V11 特有 LD/FAKE/STB_IO 不可拆） |
+| **面板特有子功能**（SMT_CS+FREQ_JUDGE+LENB+AEQ+BCC） | **677**（+父级 86 ≈ 3019 ✓） | — | **+763** | SMT_CS/FREQ_JUDGE 主体 1V22 无活跃功能（同源 SMT_CS.v 未例化；测频改静态寄存器，lock 打拍共有 CLKGEN_U0）；LENB 部分等价（TBK→tbk_flag 保留，判决改 LENB_MASK_NUM 分档）；AEQ 判决功能等价（rx_phy blank 窗）；BCC 协议删除 |
 | **BUFFER_I**（输入同步）| **2511** | —（在 rx_phy 内） | **+2511** | 84f 三拍同步，0% 门控 |
-| **短编码解码** | SHORT_ENCODING 10294 | LC_CSPIF_L0 6389 + CMD_ALIGN 2201 = **8590** | **+1704** | 同功能：K 码 40b 滑窗 vs 9b 命令码 |
-| **显示时序 DTCTL** | **4717**（含 DPLC_GEN 1360） | TOTAL_DTCTL **3294**（含 u_DPLC 981） | **+1423** | 同功能，1V11 全速域 vs 1V22 半速率+L1 静默 |
-| **长编码解码** | LONG_ENCODING **853** | — | **+853** | 1V11 独有（UHE 420b→413b + LFSR 解扰） |
-| **寄存器配置** | LINK_CONFIG_CTRL **1525** | LC_CPUWR **727** | **+798** | 1V11 更宽（双 bank + 24 分区） |
+| **短编码解码**（SHORT_ENCODING ↔ CSPIF_L0+CMD_ALIGN） | 10294 | 8590 | **+1704** | 同功能：K 码 40b 滑窗 vs 9b 命令码 |
+| **显示时序 DTCTL**（含 DPLC） | **4717** | **3294** | **+1423** | 同功能，1V11 全速域 vs 1V22 半速率+L1 静默 |
+| **长编码解码**（LONG_ENCODING） | **853** | — | **+853** | 1V11 独有（UHE 420b→413b + LFSR 解扰） |
+| **寄存器配置**（CONFIG_CTRL ↔ CPUWR） | **1525** | **727** | **+798** | 1V11 更宽（双 bank + 24 分区） |
 | **ANCTL** | **782** | **218** | **+564** | |
-| **时钟生成 CLKGEN** | **527**（三协议 mux + 9 ICG） | CLKGEN_U0 **8**（单协议） | **+519** | |
-| **其他小模块** | MONBLOCK 264 + FAULT 104 + IO 等 | MONBLOCK 218 + WD 5 + RSTN 2 | **+143** | |
+| **时钟生成 CLKGEN** | **527** | **8** | **+519** | 三协议 mux + 9 ICG vs 单协议 |
+| **其他小模块** | ~368 | ~225 | **+143** | MONBLOCK/FAULT/IO/WD/RSTN |
 | **1V11 多出小计** | | | **+10534** | |
 | rx_phy（EQ/LEQ 硬件）| — | **4196** | **−4196** | 1V22 独有 |
 | MON_DISP（校准屏显）| — | **588** | **−588** | 1V22 独有 |
 | I2C | 16 | 4 | −12 | |
 | **1V22 多出小计** | | | **−4796** | |
 | **净差距** | 25645 | 18969 | **= 6676** ✓ | |
+
+</div>
 
 #### 结论
 
