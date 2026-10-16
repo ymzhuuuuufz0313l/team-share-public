@@ -229,8 +229,9 @@ WARNING: PowerPro 读取的 RTL 必须是可综合代码，无法综合会 inter
 |---|---:|---:|---:|---:|---:|
 | 低速档：1V11 2.97G（1lane WORK）vs 1V22 2.67G（rep_1lane_2p67g） | **16303** | **11324** | **×1.44** | 16303 vs 8563 | **×1.90** |
 | 高速档：1V11 4.47G（4K180 rep_dir_4k180_1003）vs 1V22 4.46G（rep_1lane_4p5g） | **29470** | **18969** | **×1.55** | 29470 vs 14447 | **×2.04** |
+| <span style="background-color:#fff3cd">同频档：1V11 4.46G（t_8b1lane rep_dir，1015V3 新）vs 1V22 4.46G</span> | <span style="background-color:#fff3cd">**25645**</span> | <span style="background-color:#fff3cd">**18969**</span> | <span style="background-color:#fff3cd">**×1.35**</span> | <span style="background-color:#fff3cd">25645 vs 14447</span> | <span style="background-color:#fff3cd">**×1.78**</span> |
 
-> 高速档 lane 频率比 ≈1.00（**近等频，最公平**）；低速档频率比 ≈1.11。1V22 digital_top 内含 `u_rx_phy_unit`（4.46G 档 4196 µW / 22.1%，2.67G 档 2565 µW）而 1V11 无此层级——整 chip 倍数（1.44×/1.55×）被它压低，同口径 LOGIC_CENTER 倍数（1.90×/2.04×）才是数字逻辑本体差距。模块级归因见 §4.5.3，RTL 根因见 §4.5.6。
+> 高速档 lane 频率比 ≈1.00（**近等频，最公平**）；低速档频率比 ≈1.11。**1015V3 新增同频档（10/16）**：1V11 t_8b1lane 提到 4.46G，与 1V22 完全同频同日同流程——×1.35（整 chip）/×1.78（LC），比 4K180 档（×1.55/×2.04）低，差为场景活动率（t_8b1lane 测试图样 vs 4K180 全真视频流）；功能级归因终版见 §4.5.3-1。1V22 digital_top 内含 `u_rx_phy_unit`（4.46G 档 4196 µW / 22.1%，2.67G 档 2565 µW）而 1V11 无此层级——整 chip 倍数（1.44×/1.55×）被它压低，同口径 LOGIC_CENTER 倍数（1.90×/2.04×）才是数字逻辑本体差距。模块级归因见 §4.5.3，RTL 根因见 §4.5.6。
 
 旧 1014 口径总账（低活动场景，保留备查；其 2.60×/3.95× 已被上方频率匹配口径取代）：
 
@@ -266,28 +267,28 @@ WARNING: PowerPro 读取的 RTL 必须是可综合代码，无法综合会 inter
 
 旧 1014 口径逐模块表（低活动场景，已废止：LC_CPUWR 86×/CLKGEN 67× 等极端倍数均为"1V22 数据不动"的活动率假象，频率匹配口径下分别为 ×2.6/×2.4（配置控制组）与 ×64-69（含门控归属口径差））；如需追溯见 git 历史（110d0e8 版）。
 
-#### 4.5.3-1 功能级功耗归因：1V11 独有功能清单（t9 三方裁决权威版）
+#### 4.5.3-1 功能级功耗归因：1V11 独有功能清单（t9 三方裁决权威版，t12 已换同频 4.46G 实测）
 
-> 来源：`script/_1v11_vs_1v22_hdl_crossvalidate.md`（K3/QWEN/GLM 三模型 HDL 精读交叉验证裁决）。功耗值 = 1V11@4.47G（4K180，rep_dir_4k180_1003 hier_pwr_detail），占比以 1V11 总功耗 29469.66 µW 为分母。"1V22 去向"列说明该功能在 1V22 中的归宿。
+> 来源：`script/_1v11_vs_1v22_hdl_crossvalidate.md`（K3/QWEN/GLM 三模型 HDL 精读交叉验证裁决）+ `script/_1v11_vs_1v22_final.md`（t12 终拼，含双侧逐功能对表）。功耗值 = **1V11@4.46G 同频实测**（PACK_TAR_1015V3，`_syn_1015v3/.../rep_dir`，t_8b1lane case，总功耗 25645.40 µW；此前为 4K180@4.47G 临时值，已替换）。"1V22 去向"列说明该功能在 1V22 中的归宿。
 
 | # | 独有功能 | 活跃模块（HDL 行号依据） | 功耗 (µW) | 占比 | 1V22 去向 |
 |---|---|---|---:|---:|---|
-| 1 | 数字域 K 码位对齐（CHPI 短协议） | `SHORT_ENCODING_ALIGN`（40b K1-K4 滑窗，SHORT_ENCODING_ALIGN.v L57-67） | **4273.92** | 14.5% | 下沉 rx_phy（`BIT_ALIGN_DONE` 握手，CSPI_CMD_ALIGN_L0.v L9-12）——位置迁移，双边同计 |
-| 2 | 数字输入同步级 | `BUFFER_I`（APR_CDM + 84f 三拍同步，BUFFER_I.v L1-60；0% 门控） | **3534.86** | 12.0% | rx_phy_misc 两拍同步 + INBUF pad 链——位置迁移，双边同计 |
-| 3 | 面板 SD 时序独立模块族 | `LINK_PANEL_CTRL`（CHPI_SD_CTRL 2179.17/SMT_CS/FREQ_JUDGE/LENB/AEQ 判决，LINK_PANEL_CTRL.v L117-280） | **2682.91** | 9.1% | 拆解并入 LC_CSPIF_L0（带专属 ICG）/rx_phy/CLKGEN_U0 |
-| 4 | CHPI 长协议引擎（UHE 420b→413b + 7b LFSR 解扰） | `LONG_ENCODING` 族 5 文件（LC_CHPI_DECODE.v L157；long_decoding_top.v L2） | **1166.87** | 4.0% | 无（CSPI 单协议）——纯新增 |
-| 5 | 独立故障管理域 | `LINK_FAULT_CTRL`（CDR_CRC_DET/WATCHDOG/FAULT_FLAG，LINK_FAULT_CTRL.v L29-54） | 134.85 | 0.46% | 分摊（WD→CSPI_WD_BWDBL、CRC→PHY） |
-| 6 | CONFIG 帧独立通路 + 双 bank 寄存器 | `CHPI_CONFIG_L0` + `LC_REG_MAPPING`（LINK_CONFIG_CTRL.v L196/L434） | 134.71 | 0.46% | 并入精简版 LC_CPUWR/REG_MAPPING |
+| 1 | 数字域 K 码位对齐（CHPI 短协议） | `SHORT_ENCODING_ALIGN`（40b K1-K4 滑窗，SHORT_ENCODING_ALIGN.v L57-67） | **3306.65** | 12.9% | 下沉 rx_phy（`BIT_ALIGN_DONE` 握手，CSPI_CMD_ALIGN_L0.v L9-12）——位置迁移，双边同计 |
+| 2 | 数字输入同步级 | `BUFFER_I`（APR_CDM + 84f 三拍同步，BUFFER_I.v L1-60；0% 门控） | **2511.00** | 9.8% | rx_phy_misc 两拍同步 + INBUF pad 链——位置迁移，双边同计 |
+| 3 | 面板 SD 时序独立模块族 | `LINK_PANEL_CTRL`（CHPI_SD_CTRL/SMT_CS/FREQ_JUDGE/LENB/AEQ 判决，LINK_PANEL_CTRL.v L117-280） | **3019.34** | 11.8% | 拆解并入 LC_CSPIF_L0（带专属 ICG）/rx_phy/CLKGEN_U0 |
+| 4 | CHPI 长协议引擎（UHE 420b→413b + 7b LFSR 解扰） | `LONG_ENCODING` 族 5 文件（LC_CHPI_DECODE.v L157；long_decoding_top.v L2） | **852.63** | 3.3% | 无（CSPI 单协议）——纯新增 |
+| 5 | 独立故障管理域 | `LINK_FAULT_CTRL`（CDR_CRC_DET/WATCHDOG/FAULT_FLAG，LINK_FAULT_CTRL.v L29-54） | 104.18 | 0.41% | 分摊（WD→CSPI_WD_BWDBL、CRC→PHY） |
+| 6 | CONFIG 帧独立通路 + 双 bank 寄存器 | `CHPI_CONFIG_L0` + `LC_REG_MAPPING`（LINK_CONFIG_CTRL.v L196/L434） | 134.49 | 0.52% | 并入精简版 LC_CPUWR/REG_MAPPING |
 | 7 | 双协议 SP 选择架构 | `LC_CHPI_DECODE` 24b 宽 mux（L207-224）+ CLKGEN DCLK_SE/LE | 含于解码组 | — | 无（单协议无 mux） |
-| 8 | 1.5× 相位时钟 | `CLKGEN` 相位寄存器（L118-160） | 含于 CLKGEN 527.40 | — | 无 |
-| 9 | BCC 自动均衡协议族 | `BOE_AUTO_EQ_BCC_CTRL`+bcc_ctrl（LINK_PANEL_CTRL.v L253） | ~1.1（动态近零） | ~0% | rx_phy_eq_ctrl 替代 |
+| 8 | 1.5× 相位时钟 | `CLKGEN` 相位寄存器（L118-160） | 含于 CLKGEN 528.27 | — | 无 |
+| 9 | BCC 自动均衡协议族 | `BOE_AUTO_EQ_BCC_CTRL`+bcc_ctrl（LINK_PANEL_CTRL.v L253） | 1.15（动态近零） | ~0% | rx_phy_eq_ctrl 替代 |
 | 10 | 死代码/历史备份（9+2 件） | 仅 bak_temp0702.v 等例化，不进综合 | 0 | 0% | — |
 
-**独有功能总开销**（口径：1V22 无任何形式承担的"纯新增"= #3+#4+#5+#6+#9）：**≈ 5.12 mW，占 1V11@4.47G 总功耗 17.4%**；位置迁移类（#1+#2 = 7.81 mW，26.5%）1V22 以 rx_phy（4196 µW）承担，双边同计后净差约 +3.6 mW。两者合计解释了 1V11 高速档近半功耗的归属。
+**独有功能总开销（同频 4.46G 终版）**：纯新增（1V22 无任何形式承担，#3-#6+#9）= **4.11 mW，占 16.0%**；位置迁移类（#1+#2）= 5.82 mW（22.7%，1V22 侧承担件 rx_phy 4196 µW，迁移净差 +1.62 mW）；合计特有功能开销 9.93 mW（38.7%）。双向对称列出：1V22 独有功能（rx_phy 完整 EQ/LEQ + OBUF 树 + MON_DISP）= 4.78 mW。
+
+**差距分解**（25.65 − 18.97 = 6.68 mW，互斥配对差口径）：共有功能效率差 **+6.14 mW（92.0%）** 为主体（同一功能不同实现效率——双引擎/集中时钟/引擎内零细门控）；1V11 独有模块 +3.12 mW、位置迁移 +2.51 mW，被 1V22 独有（rx_phy+MON_DISP）−4.78 mW 大部分互抵。完整双侧逐功能对表见 `script/_1v11_vs_1v22_final.md`。
 
 **三方交叉验证结论摘要**：功耗数字三方提取全一致；配对/功能判定分歧 6 处全部实读源码裁决（L0/L1 per-lane 非流水、MON_DISP=校准显示非面板控制、PAT_DET/CRC/SMT_CS 双边死代码、DFE tap 已注释纯 LEQ、ICG 19 vs 14 有效、CLKMUX=5）；独有清单核心 5 项三方一致。详见 `script/_1v11_vs_1v22_crossvalidate.md` 与 `_1v11_vs_1v22_hdl_crossvalidate.md`。
-
-**占位（待 PACK_TAR_1015V3）**：功耗包到位后在此补 1V11@4.46G vs 1V22@4.46G 逐功能对比表（上表逐行补 1V22 承担侧功耗列）。
 
 #### 4.5.4 分项结构对比（register / combinational / clock_network）
 
@@ -346,4 +347,4 @@ WARNING: PowerPro 读取的 RTL 必须是可综合代码，无法综合会 inter
   <script src="./js/site.js"></script>
 </body>
 </html>
-<!-- ymzhu 2026-10-15 18:58 -->
+<!-- ymzhu 2026-10-16 09:52 -->
