@@ -23,6 +23,35 @@
   <div class="container with-toc">
     <aside class="toc-wrapper"><div class="toc" id="toc"></div></aside>
     <div class="content">
+      <!-- LEC 实测总览（0908 跑 · 1015 代复核一致 · 三 IP 全 PASS） -->
+      <div class="section-title">聚合 · 1V11 三 IP LEC（综合后节点 RTL ↔ Gate 网表）</div>
+      <div class="chapter-grid" style="margin-bottom: 12px;">
+        <div class="chapter-card" style="grid-column: 1 / -1; text-align: center; padding: 24px 20px;">
+          <div class="num">三 IP Conformal LEC · 综合后节点（RTL golden ↔ Gate revised）· 0908 跑 · 1015 代复核一致</div>
+          <div class="title" style="font-size: 36px; font-family: var(--font-mono); font-weight: 600; color: var(--accent);">3 / 3 <span style="color: var(--muted); font-size: 22px;">IP PASS</span></div>
+          <div class="desc" style="margin-top: 10px; font-size: 14px;">合计 <b>4792 EQ</b> · <b>0 NON-EQ</b> · 0 Aborted · 0 Uncompared<span class="badge badge-ok" style="margin-left: 10px;">逻辑一致</span></div>
+        </div>
+        <div class="chapter-card" style="text-align: center; padding: 16px 12px;">
+          <div class="num">syn_HK1V11_digital_top</div>
+          <div class="title" style="font-size: 22px; font-family: var(--font-mono);">2738 EQ</div>
+          <div class="desc">54 PI + 287 PO + 2448 DFF + 3 DLAT = 2792 映射</div>
+        </div>
+        <div class="chapter-card" style="text-align: center; padding: 16px 12px;">
+          <div class="num">syn_LINK_LOGIC</div>
+          <div class="title" style="font-size: 22px; font-family: var(--font-mono);">735 EQ</div>
+          <div class="desc">0 NON-EQ · 0 Aborted · 0 Uncompared</div>
+        </div>
+        <div class="chapter-card" style="text-align: center; padding: 16px 12px;">
+          <div class="num">syn_LOGIC_CENTER</div>
+          <div class="title" style="font-size: 22px; font-family: var(--font-mono);">1319 EQ</div>
+          <div class="desc">0 NON-EQ · 0 Aborted · 0 Uncompared</div>
+        </div>
+      </div>
+      <div class="chapter-card" style="padding: 14px 18px; margin-bottom: 28px;">
+        <div style="font-family: var(--font-mono); font-size: 15px; text-align: center; margin-bottom: 10px;">digital_top 对账：2792 映射（54 PI + 287 PO + 2448 DFF + 3 DLAT）→ <b style="color: var(--accent);">2738</b> 比较点全 EQ</div>
+        <div style="font-size: 12px; color: var(--muted); text-align: center;">NON-EQ 0 · Aborted 0 · Uncompared 0 · 不可达率 golden 7% / revised 3% · 数据源 <span class="mono">rep_dir/lec.log</span>（0908 跑，1015 代复核一致）</div>
+      </div>
+
       <article class="article" id="article"></article>
       <div class="page-nav" id="page-nav"></div>
       <div class="footer">HK1V11 SYNTHESIS / SIGNOFF PRACTICE · AUTHOR ymzhuuuu · UPDATED 2026-09-16</div>
@@ -82,4 +111,4 @@ KEY: 网表换版（如 A→B）时 LEC 要重做，约束兼容性也要重查�
   <script src="./js/site.js"></script>
 </body>
 </html>
-<!-- ymzhu 2026-09-20 10:30 -->
+<!-- ymzhu 2026-10-19 18:33 -->
