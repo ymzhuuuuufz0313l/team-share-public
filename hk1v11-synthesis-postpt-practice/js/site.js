@@ -45,20 +45,36 @@
     return location.pathname.split('/').pop() || 'index.html';
   }
 
-  /* ---------- navbar（平铺项 + hover 下拉组） ---------- */
+  /* ---------- navbar（两行：一行=平铺章节+搜索，二行=下拉组+GitHub）
+     下拉交互：hover 展开（CSS）+ 点 ▾ 钉开/关（JS，触屏可用），点外部 / Esc 关闭 */
   var navBox = document.getElementById('navbar-links');
   if (navBox) {
     var cur = currentPage();
+    var rowMain = document.createElement('div');
+    rowMain.className = 'nav-row nav-row-main';
+    var rowSub = document.createElement('div');
+    rowSub.className = 'nav-row nav-row-sub';
+    navBox.appendChild(rowMain);
+    navBox.appendChild(rowSub);
+
+    function closeDrops(root) {
+      root.querySelectorAll('.nav-drop.open').forEach(function (w) {
+        w.classList.remove('open');
+        var b = w.querySelector('.nav-drop-btn');
+        if (b) b.setAttribute('aria-expanded', 'false');
+      });
+    }
+
     NAV.forEach(function (item) {
-      if (typeof item[0] === 'string') { /* 平铺链接 */
+      if (typeof item[0] === 'string') { /* 平铺链接 → 第一行 */
         var a = document.createElement('a');
         a.href = item[0] === 'index.html' ? './' : './' + item[0];
         a.textContent = item[1];
         if (cur === item[0]) a.classList.add('active');
-        navBox.appendChild(a);
+        rowMain.appendChild(a);
         return;
       }
-      /* 下拉组：父项可点（进 hub 页），hover/focus 展开子章 */
+      /* 下拉组 → 第二行：点父项标签进 hub 页；点 ▾ 钉开/关 */
       var wrap = document.createElement('div');
       wrap.className = 'nav-drop';
       var pa = document.createElement('a');
@@ -68,6 +84,7 @@
       var caret = document.createElement('span');
       caret.className = 'caret';
       caret.textContent = '▾';
+      caret.title = '展开 / 收起';
       pa.appendChild(caret);
       var childActive = cur === item.href;
       item.children.forEach(function (c) { if (cur === c[0]) childActive = true; });
@@ -83,8 +100,32 @@
       });
       wrap.appendChild(pa);
       wrap.appendChild(menu);
-      navBox.appendChild(wrap);
+      rowSub.appendChild(wrap);
+      pa.setAttribute('aria-expanded', 'false');
+      caret.addEventListener('click', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        var open = wrap.classList.toggle('open');
+        pa.setAttribute('aria-expanded', open ? 'true' : 'false');
+      });
+      menu.addEventListener('click', function () { closeDrops(navBox); }); /* 子项跳走后收起钉开的菜单 */
     });
+
+    document.addEventListener('click', function (e) {
+      if (!navBox.contains(e.target)) closeDrops(navBox);
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') closeDrops(navBox);
+    });
+
+    /* 第二行右侧：GitHub 仓库入口 */
+    var gh = document.createElement('a');
+    gh.className = 'nav-gh';
+    gh.href = 'https://github.com/ymzhuuuuufz0313l/team-share-public';
+    gh.target = '_blank';
+    gh.rel = 'noopener';
+    gh.innerHTML = 'GitHub';
+    rowSub.appendChild(gh);
   }
 
   /* ---------- markdown render + TOC ---------- */
@@ -211,4 +252,4 @@
   document.head.appendChild(ss);
 })();
 
-// ymzhu 2026-10-19 17:41
+// ymzhu 2026-10-19 17:52

@@ -109,15 +109,15 @@
     style.textContent = css;
     document.head.appendChild(style);
 
-    var navbar = document.querySelector('.navbar-inner');
-    if (!navbar) return;
+    var host = document.querySelector('.nav-row-main') || document.querySelector('.navbar-inner');
+    if (!host) return;
 
     var btn = document.createElement('button');
     btn.className = 'search-btn';
     btn.type = 'button';
     btn.innerHTML = '<span>搜索</span><kbd>Ctrl K</kbd>';
     btn.addEventListener('click', openSearch);
-    navbar.appendChild(btn);
+    host.appendChild(btn);
 
     var overlay = document.createElement('div');
     overlay.className = 'search-overlay';
@@ -455,3 +455,4 @@
     inject();
   }
 })();
+// ymzhu 2026-10-19 17:52
