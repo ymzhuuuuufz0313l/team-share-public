@@ -294,7 +294,7 @@ set_sense u_LOGIC_CENTER/LC_CLK_RST_GEN/CLKGEN/u_gate_MUX_WCK1_ASEL/CLKMUX2X2/S 
 | 模式 | 判读窗 | 本 run 实况 |
 |---|---|---|
 | normal (1p) | **±3.5** | 全部 10 角落窗，最差 `sd_l_1p_margin_b_min = −2.02`（wc_cworst）→ **SD 源同步接口签核过** |
-| dplc | **−0.9 ~ +4.1** | margin_b 4 行被哨兵污染（§4.1），修复后复测 |
+| dplc | **−0.9 ~ +4.1** | 哨兵修复后 10-15 代 live 复测：margin_b_min 全 10 角 −1.17~−3.74 出左界（真违例，签核待决，见 §4.6） |
 
 注意 csv 行头旧印 `[−2.5:+2.5]/[−1:4]` 是脚本内旧值，以 spec 为准（`get_sd_busskew.pl` 里窗值待同步）。
 
@@ -303,6 +303,24 @@ set_sense u_LOGIC_CENTER/LC_CLK_RST_GEN/CLKGEN/u_gate_MUX_WCK1_ASEL/CLKMUX2X2/S 
 - **intra-clock spread**：立门限 **min(0.15 × T, 300ps)** 类经验值。例：RX_CLK T=3.81ns → 上限 ~500ps；当前 clk.sum 里 3.94 的"spread"含 inter 分支成分，建议改 `report_clock_timing -skew` 按 clock group 分开统计再签；
 - **接口 margin**：沿用 spec 窗逐 corner 全过即 PASS；
 - **哨兵纪律**：−99x / 0 / 1000 任何一个出现 = 报表链有断点，先修报表再谈签核。
+
+---
+
+### 4.6 10-15 代 live 复测：set_max_delay 14 与 skew 数值的关系（10 角全量）
+
+10-15 代（SDC 10-10 write_sdc，10 corner 全量）把 ch18 的原理全部落成了可复算的数字，四条结论：
+
+**① 14 是延迟预算，闭环可复算**：约束源 `ip_cons L222-225`（`set_max_delay 14 -to CLKA_L/CLKB_L/CLKA_R/CLKB_R`，标注 STATUS: NOT YET CONFIRMED OK）。10 组 × 10 角 = 100 格 slack 矩阵（phy csv 纯数值，正=MET 负=VIOLATED）：**8/8 组在 wc_cworst_125 恰好闭环 14.000000**（如 sd_l_1p_clk_a：arrival 8.298851 + slack 5.701149）；全矩阵 99 正 + 1 负（−0.001051，rx0_00_min @ lt_typical_m40）。
+
+**② phy 的值是 slack，sd 的 margin 才是真相对 skew**：phy csv 的 "busskew" = check − 时钟 arrival（延迟预算余量）；sd csv 的 margin = 数据 arrival − 时钟 arrival（真相对 skew，判读窗见 §4.4）。两者共用同一棵时钟树（§1.5 inter-clock 的报表形态）。
+
+**③ DPLC CLKB 出窗 = 真违例（签核待决）**：10-15 live `sd_{l,r}_dplc_margin_b_min` 全 10 角 **−1.17~−3.74**，全部出左界 −0.9——非哨兵（rpt 非空、值真实），是数据/钟到达差的真实超窗。1p 各 margin 行仍全落窗（最差 −2.02）。
+
+**④ 14 vs 12：差的是触发点，不是对错**：当前实测 arrival 包络 2.0~8.2 ns（10 角 min..max），12 与 14 全 MET、每格数值差常数 2；差别 = 报警提前量——退化树（arrival 12~14 ns）12 提前 2 ns 抓住、14 会漏。check 必须夹在"正常包络"与"面板采样失效点"之间：设小误报、设远漏失。14 = 2M23 同族已验证值（HV2M23 ip_cons L657-660 同款 4 端口）+ pad 绝对预算（非周期数：5G≈3.67 周期 / 3G≈2.20 周期）。
+
+![DELAY vs SKEW — set_max_delay (14/12) 与 skew 数值的关系](./images/delay_skew_14vs12.png)
+
+四份完整报告（14 判读 / 5G3G 推演 / 2M23 残留审计 / 全量审计裁决）与图解生成脚本见 <a href="./ch19-skew-audit.html">ch19 10-15 代 skew 全量审计与 5G3G 推演</a>。
 
 ---
 
@@ -327,6 +345,7 @@ set_sense u_LOGIC_CENTER/LC_CLK_RST_GEN/CLKGEN/u_gate_MUX_WCK1_ASEL/CLKMUX2X2/S 
 
 ## 交叉引用
 
+- 10-15 代 live 数据与四份全量审计报告（14=slack 闭环 / DPLC 出窗 / 5G3G 推演 / 2M23 残留审计）：<a href="./ch19-skew-audit.html">ch19 10-15 代 skew 全量审计与 5G3G 推演</a>
 - 豁免列表配对方法论（为什么 6.40ns 包络要配 async 对）：<a href="./ch11-violation-atlas.html">ch11 §12 时钟豁免体系的列表配对方法论</a>
 - 约束入门（kv_clock/kv_genclock 与 multicycle 语义）：<a href="./ch12-constraint-tutorial.html">ch12 时序约束入门教学</a>
 - 999 事件原始分析档：`script/_syn_1008_skew_说明.md`（HK1V11 仓库，commit 6a5e7ec8 附带）
@@ -334,4 +353,4 @@ set_sense u_LOGIC_CENTER/LC_CLK_RST_GEN/CLKGEN/u_gate_MUX_WCK1_ASEL/CLKMUX2X2/S 
   <script src="./js/site.js"></script>
 </body>
 </html>
-<!-- ymzhu 2026-10-09 16:55（Pages 资产部署探针提交） -->
+<!-- ymzhu 2026-10-19 17:25 -->
