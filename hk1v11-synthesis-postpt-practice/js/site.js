@@ -3,7 +3,9 @@
 (function () {
   'use strict';
 
-  var CHAPTERS = [
+  /* 顶部导航：平铺项 + 两个 hover 下拉组（排障/复盘/学习子章收进下拉，不占顶部）
+     item 形态：['file.html', '标签'] 平铺；{ label, href, children: [[file, 标签], ...] } 下拉组 */
+  var NAV = [
     ['index.html',            '首页'],
     ['ch01-env.html',         '环境与配置'],
     ['ch02-rtl-check.html',   'RTL 检查'],
@@ -14,33 +16,74 @@
     ['ch07-memory-power.html','Memory 与功耗'],
     ['ch08-powerpro.html',    'PowerPro'],
     ['ch09-to-signoff.html',  'TO SIGNOFF'],
-    ['ch10-warstories.html',  '排障实录'],
-    ['cases.html',            '实战与复盘'],
-    ['ch11-violation-atlas.html',      '违例归因'],
-    ['ch12-constraint-tutorial.html',  '约束教学'],
-    ['ch13-toolchain-map.html',        '工具链'],
-    ['ch14-violation-disposition.html','违例处置'],
-    ['ch15-memory-jogger.html',        '记忆唤醒'],
-    ['ch16-dc1004-review.html',        '1004复核'],
-    ['ch17-rtl-1006-sync.html',        '1006同步'],
-    ['ch18-skew.html',                 'Skew'],
-    ['learning-path.html',    '学习路径']
+    { label: '实战与复盘', href: 'cases.html', children: [
+      ['ch10-warstories.html',          '排障实录'],
+      ['ch11-violation-atlas.html',     '违例归因'],
+      ['ch14-violation-disposition.html','违例处置'],
+      ['ch15-memory-jogger.html',       '记忆唤醒'],
+      ['ch16-dc1004-review.html',       '1004复核'],
+      ['ch17-rtl-1006-sync.html',       '1006同步'],
+      ['ch18-skew.html',                'Skew'],
+      ['ch19-skew-audit.html',          '10-15 审计']
+    ]},
+    { label: '学习路径', href: 'learning-path.html', children: [
+      ['ch12-constraint-tutorial.html', '约束教学'],
+      ['ch13-toolchain-map.html',       '工具链']
+    ]}
   ];
+  /* 平铺序列表（prev/next 导航用）：下拉组按 父项 → 子章 顺序展开 */
+  var FLAT_NAV = [];
+  NAV.forEach(function (item) {
+    if (typeof item[0] === 'string') { FLAT_NAV.push(item); }
+    else {
+      FLAT_NAV.push([item.href, item.label]);
+      item.children.forEach(function (c) { FLAT_NAV.push(c); });
+    }
+  });
 
   function currentPage() {
     return location.pathname.split('/').pop() || 'index.html';
   }
 
-  /* ---------- navbar ---------- */
+  /* ---------- navbar（平铺项 + hover 下拉组） ---------- */
   var navBox = document.getElementById('navbar-links');
   if (navBox) {
     var cur = currentPage();
-    CHAPTERS.forEach(function (pair) {
-      var a = document.createElement('a');
-      a.href = pair[0] === 'index.html' ? './' : './' + pair[0];
-      a.textContent = pair[1];
-      if (cur === pair[0]) a.classList.add('active');
-      navBox.appendChild(a);
+    NAV.forEach(function (item) {
+      if (typeof item[0] === 'string') { /* 平铺链接 */
+        var a = document.createElement('a');
+        a.href = item[0] === 'index.html' ? './' : './' + item[0];
+        a.textContent = item[1];
+        if (cur === item[0]) a.classList.add('active');
+        navBox.appendChild(a);
+        return;
+      }
+      /* 下拉组：父项可点（进 hub 页），hover/focus 展开子章 */
+      var wrap = document.createElement('div');
+      wrap.className = 'nav-drop';
+      var pa = document.createElement('a');
+      pa.className = 'nav-drop-btn';
+      pa.href = './' + item.href;
+      pa.textContent = item.label;
+      var caret = document.createElement('span');
+      caret.className = 'caret';
+      caret.textContent = '▾';
+      pa.appendChild(caret);
+      var childActive = cur === item.href;
+      item.children.forEach(function (c) { if (cur === c[0]) childActive = true; });
+      if (childActive) wrap.classList.add('active-parent');
+      var menu = document.createElement('div');
+      menu.className = 'nav-drop-menu';
+      item.children.forEach(function (c) {
+        var a2 = document.createElement('a');
+        a2.href = './' + c[0];
+        a2.textContent = c[1];
+        if (cur === c[0]) a2.classList.add('active');
+        menu.appendChild(a2);
+      });
+      wrap.appendChild(pa);
+      wrap.appendChild(menu);
+      navBox.appendChild(wrap);
     });
   }
 
@@ -146,14 +189,14 @@
   var pageNav = document.getElementById('page-nav');
   if (pageNav) {
     var cur = currentPage();
-    var i = CHAPTERS.findIndex(function (p) { return p[0] === cur; });
+    var i = FLAT_NAV.findIndex(function (p) { return p[0] === cur; });
     if (i >= 0) {
       var html = '';
       if (i > 0) {
-        html += '<a class="prev" href="./' + CHAPTERS[i - 1][0] + '"><span class="label">&larr; 上一篇</span><span class="title">' + CHAPTERS[i - 1][1] + '</span></a>';
+        html += '<a class="prev" href="./' + FLAT_NAV[i - 1][0] + '"><span class="label">&larr; 上一篇</span><span class="title">' + FLAT_NAV[i - 1][1] + '</span></a>';
       }
-      if (i < CHAPTERS.length - 1) {
-        html += '<a class="next" href="./' + CHAPTERS[i + 1][0] + '"><span class="label">下一篇 &rarr;</span><span class="title">' + CHAPTERS[i + 1][1] + '</span></a>';
+      if (i < FLAT_NAV.length - 1) {
+        html += '<a class="next" href="./' + FLAT_NAV[i + 1][0] + '"><span class="label">下一篇 &rarr;</span><span class="title">' + FLAT_NAV[i + 1][1] + '</span></a>';
       }
       pageNav.innerHTML = html;
     }
@@ -168,4 +211,4 @@
   document.head.appendChild(ss);
 })();
 
-// ymzhu 2026-10-13 16:35
+// ymzhu 2026-10-19 17:41

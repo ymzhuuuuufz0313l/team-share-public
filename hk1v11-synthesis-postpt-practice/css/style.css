@@ -96,11 +96,9 @@ body {
   display: flex;
   align-items: center;
   gap: 4px;
-  overflow-x: auto;
   flex: 1;
-  scrollbar-width: none;
+  flex-wrap: wrap;
 }
-.navbar-links::-webkit-scrollbar { display: none; }
 .navbar-links a {
   padding: 5px 10px;
   border-radius: 6px;
@@ -112,6 +110,49 @@ body {
 }
 .navbar-links a:hover { background: var(--chip); color: var(--text); text-decoration: none; }
 .navbar-links a.active { background: var(--accent); color: #fff; font-weight: 600; }
+
+/* ---------- 顶部导航 hover 下拉组 ---------- */
+.nav-drop { position: relative; display: flex; }
+.nav-drop-btn { display: flex; align-items: center; gap: 5px; }
+.nav-drop-btn .caret {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  opacity: 0.7;
+  transition: transform 0.15s;
+}
+.nav-drop:hover .caret, .nav-drop:focus-within .caret { transform: rotate(180deg); }
+.nav-drop.active-parent > .nav-drop-btn { background: var(--accent); color: #fff; font-weight: 600; }
+.nav-drop.active-parent > .nav-drop-btn .caret { opacity: 0.9; }
+.nav-drop-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  z-index: 1000;
+  min-width: 168px;
+  padding: 6px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-4px);
+  transition: opacity 0.15s, transform 0.15s, visibility 0.15s;
+}
+.nav-drop:hover .nav-drop-menu, .nav-drop:focus-within .nav-drop-menu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+.nav-drop-menu a {
+  display: block;
+  padding: 6px 10px;
+  border-radius: 5px;
+  font-size: 13px;
+  color: var(--text);
+}
+.nav-drop-menu a:hover { background: var(--chip); color: var(--text); }
+.nav-drop-menu a.active { background: var(--accent); color: #fff; font-weight: 600; }
 
 @media (max-width: 640px) {
   .navbar-inner { padding: 8px 14px; gap: 10px; }
@@ -669,4 +710,4 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
 .lb-overlay .lb-next { right: 20px; top: 50%; transform: translateY(-50%); }
 @media print { .lb-overlay { display: none !important; } }
 
-/* ymzhu 2026-10-08 12:55 */
+/* ymzhu 2026-10-19 17:41 */
