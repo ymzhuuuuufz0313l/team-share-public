@@ -23,6 +23,64 @@
   <div class="container with-toc">
     <aside class="toc-wrapper"><div class="toc" id="toc"></div></aside>
     <div class="content">
+      <!-- 速查卡：数据率↔时钟换算三因子 -->
+      <div class="section-title">速查 · 数据率↔时钟换算三因子（别混）</div>
+      <div class="chapter-grid" style="margin-bottom: 12px;">
+        <div class="chapter-card" style="grid-column: 1 / -1; text-align: center; padding: 24px 20px;">
+          <div class="num">5G 数据率 → RX_CLK 周期（HK1V11 · 20bit RX）</div>
+          <div class="title" style="font-size: 36px; font-family: var(--font-mono); font-weight: 600; color: var(--accent);">5G × 1.05 ÷ 20 = 262.5 MHz = <span style="color: var(--info);">3.81</span> ns</div>
+          <div class="desc" style="margin-top: 10px; font-size: 14px;">DC 降额 3.048 ns（×0.8）<span class="badge badge-warn" style="margin-left: 10px;">1.05 不是物理因子</span></div>
+        </div>
+        <div class="chapter-card" style="text-align: center; padding: 16px 12px;">
+          <div class="num">×20（RX 位宽）</div>
+          <div class="title" style="font-size: 22px; font-family: var(--font-mono);">INDATA[19:0]</div>
+          <div class="desc">20 bit RX 数据 · <b>不是</b>颜色深度 24</div>
+        </div>
+        <div class="chapter-card" style="text-align: center; padding: 16px 12px;">
+          <div class="num">1.05（5% STA 裕量）</div>
+          <div class="title" style="font-size: 22px; font-family: var(--font-mono);">工程约定</div>
+          <div class="desc">250→262.5 MHz 加裕量 · 非物理换算系数</div>
+        </div>
+        <div class="chapter-card" style="text-align: center; padding: 16px 12px;">
+          <div class="num">0.8 / 1.0（DC vs PT）</div>
+          <div class="title" style="font-size: 22px; font-family: var(--font-mono);">3.048 / 3.81</div>
+          <div class="desc">DC 综合更严（20% 裕量）· PT 用名义</div>
+        </div>
+      </div>
+      <div class="chapter-card" style="padding: 14px 18px; margin-bottom: 28px;">
+        <div style="font-family: var(--font-mono); font-size: 14px; text-align: center; color: var(--muted);">data_rate(G) = RX_CLK(MHz) × 20 ÷ 1000　|　clk_period.tcl：MARGIN=0.80(DC) / 1.00(PT)　|　⚠️ 别写 data_rate = RX_CLK × 1.05</div>
+      </div>
+
+      <!-- 速查卡：Multicycle 黄金配对 -->
+      <div class="section-title">速查 · Multicycle 黄金配对（setup/hold 错开 1）</div>
+      <div class="chapter-grid" style="margin-bottom: 12px;">
+        <div class="chapter-card" style="grid-column: 1 / -1; text-align: center; padding: 24px 20px;">
+          <div class="num">准静态配置寄存器（R_REG* · I2C 2MHz 慢写）</div>
+          <div class="title" style="font-size: 36px; font-family: var(--font-mono); font-weight: 600; color: var(--accent);">setup = 2 <span style="color: var(--muted); font-size: 22px;">+</span> hold = 1</div>
+          <div class="desc" style="margin-top: 10px; font-size: 14px;">cycle 数必须错开 1<span class="badge badge-warn" style="margin-left: 10px;">漏 hold = 留漏洞</span></div>
+        </div>
+        <div class="chapter-card" style="text-align: center; padding: 16px 12px;">
+          <div class="num">setup 窗口</div>
+          <div class="title" style="font-size: 22px; font-family: var(--font-mono);">7.62 ns</div>
+          <div class="desc">2 × 3.81ns · capture 延后到第 2 周期</div>
+        </div>
+        <div class="chapter-card" style="text-align: center; padding: 16px 12px;">
+          <div class="num">hold 窗口</div>
+          <div class="title" style="font-size: 22px; font-family: var(--font-mono);">3.81 ns</div>
+          <div class="desc">1 × 3.81ns · capture 不延后（第 1 周期）</div>
+        </div>
+        <div class="chapter-card" style="text-align: center; padding: 16px 12px;">
+          <div class="num">适用对象</div>
+          <div class="title" style="font-size: 22px; font-family: var(--font-mono);">408 bit</div>
+          <div class="desc">A212 准静态留 · B24 裸 per-beat 剔（0922）</div>
+        </div>
+        <div class="chapter-card" style="text-align: center; padding: 16px 12px;">
+          <div class="num">-to 必须</div>
+          <div class="title" style="font-size: 22px; font-family: var(--font-mono);">时钟对象</div>
+          <div class="desc">寄存器名被 write_sdc 冻成 pin 名 → SEL-004 丢弃</div>
+        </div>
+      </div>
+
       <article class="article" id="article"></article>
       <div class="page-nav" id="page-nav"></div>
       <div class="footer">HK1V11 SYNTHESIS / SIGNOFF PRACTICE · AUTHOR ymzhuuuu · UPDATED 2026-09-24</div>
@@ -1124,4 +1182,4 @@ report_min_pulse_width [get_clocks DCLK_DATA_LONG]
   <script src="./js/site.js"></script>
 </body>
 </html>
-<!-- ymzhu 2026-10-09 11:50 -->
+<!-- ymzhu 2026-10-19 18:12 -->
