@@ -202,6 +202,12 @@ WARNING: PowerPro 读取的 RTL 必须是可综合代码，无法综合会 inter
 
 > 数据源：1V11 = t_8b1lane@4.46G（1015V3 `rep_dir`，Initial 25645 µW）；1V22 = 1lane@4.46G（1015V1 `rep_1lane_4p5g_dir`，Initial 18969 µW）。双边同日（10/15）同工具（PowerPro 2024.2_1）同库（ENEXCHIP M31HSSC900EL150）同流程，频率完全一致——最公平口径。总差距 = **6676 µW**。
 
+#### 功耗组成可视化
+
+![1V11 vs 1V22 Module Power Comparison](./power_module_compare_1v11_1v22.png)
+
+![1V11 vs 1V22 Power Composition Donut](./power_composition_donut_1v11_1v22.png)
+
 #### 模块级功耗对比（按功能块对齐，按差距降序）
 
 <style>
@@ -252,4 +258,4 @@ WARNING: PowerPro 读取的 RTL 必须是可综合代码，无法综合会 inter
   <script src="./js/site.js"></script>
 </body>
 </html>
-<!-- ymzhu 2026-10-16 15:18 -->
+<!-- ymzhu 2026-10-19 16:25 -->
