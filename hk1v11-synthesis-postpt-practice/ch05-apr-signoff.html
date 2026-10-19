@@ -23,6 +23,59 @@
   <div class="container with-toc">
     <aside class="toc-wrapper"><div class="toc" id="toc"></div></aside>
     <div class="content">
+      <div class="section-title" style="margin-top: 0;">对比 · 1008 APR post-PT 首轮 signoff（10 corner 全跑）</div>
+      <div class="chapter-grid" style="margin-bottom: 28px;">
+        <div class="chapter-card" style="grid-column: 1 / -1; text-align: center; padding: 24px 20px;">
+          <div class="num">1008 代 APR 网表 post-PT · 2026-10-08 · 10 corner 全量</div>
+          <div class="title" style="font-size: 36px; font-family: var(--font-mono); font-weight: 600; color: var(--accent);">7 <span style="color: var(--muted); font-size: 20px;">条</span></div>
+          <div class="desc" style="margin-top: 10px; font-size: 14px;">wc_cworst_125 setup（worst −0.144）<span class="badge badge-ok" style="margin-left: 10px;">7/10 角 ≤2 条</span></div>
+        </div>
+        <div class="chapter-card" style="text-align: center; padding: 16px 12px;">
+          <div class="num">wc_cbest_125 setup</div>
+          <div class="title" style="font-size: 22px; font-family: var(--font-mono);">67 条</div>
+          <div class="desc">worst −1.104（gating 27 + RX_CLK 41）</div>
+        </div>
+        <div class="chapter-card" style="text-align: center; padding: 16px 12px;">
+          <div class="num">hold 全角（P0）</div>
+          <div class="title" style="font-size: 22px; font-family: var(--font-mono); color: var(--bad);">742–887</div>
+          <div class="desc">worst −2.32（WCLK1_A_I2C 489 恒定）</div>
+        </div>
+        <div class="chapter-card" style="text-align: center; padding: 16px 12px;">
+          <div class="num">G13 + 67 mc</div>
+          <div class="title" style="font-size: 22px; font-family: var(--font-mono); color: var(--ok);">0 违例</div>
+          <div class="desc">8F 分区 10 角全零 · 闭环保持</div>
+        </div>
+        <div class="chapter-card" style="text-align: center; padding: 16px 12px;">
+          <div class="num">BKDU 哨兵</div>
+          <div class="title" style="font-size: 22px; font-family: var(--font-mono);">达成</div>
+          <div class="desc">BKDU_SYNC_reg 网表在位 · cbest 26 可见</div>
+        </div>
+      </div>
+
+      <div class="section-title">聚合 · hold P0 构成（全角恒定对账）</div>
+      <div class="chapter-grid" style="margin-bottom: 28px;">
+        <div class="chapter-card" style="grid-column: 1 / -1; text-align: center; padding: 24px 20px;">
+          <div class="num">10 corner 全角 · hold 违例（1008 APR 网表实测）</div>
+          <div class="title" style="font-size: 36px; font-family: var(--font-mono); font-weight: 600; color: var(--bad);">~850 <span style="font-size: 20px;">条/corner</span></div>
+          <div class="desc" style="margin-top: 10px; font-size: 14px;">= 489（I2C）+ ~300（async）+ 61（gating）<span class="badge badge-bad" style="margin-left: 10px;">P0 未处理主存量</span></div>
+        </div>
+        <div class="chapter-card" style="text-align: center; padding: 16px 12px;">
+          <div class="num">WCLK1_A_I2C（恒定）</div>
+          <div class="title" style="font-size: 22px; font-family: var(--font-mono);">489 条</div>
+          <div class="desc">worst −2.32 · 起点 I2C_ST/MULTI_R_CNT</div>
+        </div>
+        <div class="chapter-card" style="text-align: center; padding: 16px 12px;">
+          <div class="num">async</div>
+          <div class="title" style="font-size: 22px; font-family: var(--font-mono);">~300 条</div>
+          <div class="desc">worst −1.56 · I2C_EN_CTL/R_REGF0→R_REG*</div>
+        </div>
+        <div class="chapter-card" style="text-align: center; padding: 16px 12px;">
+          <div class="num">gating</div>
+          <div class="title" style="font-size: 22px; font-family: var(--font-mono);">61 条</div>
+          <div class="desc">worst −1.82 · MULTI_R_CNT→shadow latch</div>
+        </div>
+      </div>
+
       <article class="article" id="article"></article>
       <div class="page-nav" id="page-nav"></div>
       <div class="footer">HK1V11 SYNTHESIS / SIGNOFF PRACTICE · AUTHOR ymzhuuuu · UPDATED 2026-09-20</div>
@@ -150,4 +203,4 @@ flowchart TD
   <script src="./js/site.js"></script>
 </body>
 </html>
-<!-- ymzhu 2026-09-20 10:09 -->
+<!-- ymzhu 2026-10-19 18:20 -->
