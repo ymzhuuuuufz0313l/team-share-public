@@ -32,7 +32,7 @@
 
 # 八、PowerPro 功耗评估
 
-&gt; 本章收录 PowerPro 低功耗评估的方法论框架（功耗构成、评估工具、环境搭建、report 检查），并记录 1V11 的**实测**：RTL level 前仿功耗已跑通（t_8b1lane + 4K180 两 case，功耗表 + 跨项目对比 2 图），数据率换算因子定为 **20bit**；1V11 vs 1V22（HV1V22）双边同流程数据侧归因见 **§4.5**（2026-10-15 新增）。
+&gt; 本章收录 PowerPro 低功耗评估的方法论框架（功耗构成、评估工具、环境搭建、report 检查），并记录 1V11 的**实测**：RTL level 前仿功耗已跑通（t_8b1lane + 4K180 两 case，§4.1 功耗表 + 跨芯片对比表图），数据率换算因子定为 **20bit**；4K180 1.81× 分解与 1V11 vs 1V22（HV1V22）同频归因见 **§4.4 / §4.5**（hero 卡 + 2 图）。
 
 ## 1. 功耗基础与评估工具
 
@@ -96,8 +96,6 @@ WARNING: PowerPro 读取的 RTL 必须是可综合代码，无法综合会 inter
 
 ### 4.1 功耗表
 
-![HK1V11 PowerPro 功耗表](./powerpro_hk11.png)
-
 | Case | Clk Freq | Process | Area | Lane | Normal (mW) | Run 代 |
 |------|----------|---------|------|------|-------------|--------|
 | t_8b1lane | 2.97G | 145 | 314707 | 1L | **16.30** | 1003 |
@@ -122,6 +120,47 @@ WARNING: PowerPro 读取的 RTL 必须是可综合代码，无法综合会 inter
 ### 4.4 功耗与场景的关系——为什么 4K180 是 1.81× 而不是 1.5×（完整版）
 
 > 归因源文档：`script/_syn_1008_powerpro_4k180_归因.md`（HK1V11 库）；复算脚本说明见 §4.4.3。
+
+<div class="section-title">对比 · 为什么 4K180 是 1.81× 而不是 1.5×</div>
+<div class="chapter-grid" style="margin-bottom: 12px;">
+  <div class="chapter-card" style="grid-column: 1 / -1; text-align: center; padding: 24px 20px;">
+    <div class="num">t_8b1lane @2.97G → 4K180 @4.47G（同 1L · 同 RTL 1006 · Initial Design）</div>
+    <div class="title" style="font-size: 36px; font-family: var(--font-mono); font-weight: 600; color: var(--accent);">16.30 <span style="color: var(--muted); font-size: 22px;">→</span> 29.47 <span style="font-size: 20px;">mW</span></div>
+    <div class="desc" style="margin-top: 10px; font-size: 14px;">实测总倍数 <b>1.807</b> = 1.5053 频率 × 1.2008 活动率<span class="badge badge-warn" style="margin-left: 10px;">非纯频率比</span></div>
+  </div>
+  <div class="chapter-card" style="text-align: center; padding: 16px 12px;">
+    <div class="num">频率因子</div>
+    <div class="title" style="font-size: 22px; font-family: var(--font-mono);">1.5053</div>
+    <div class="desc">RX_CLK 148.4→223.4 MHz（FPS 120→180）</div>
+  </div>
+  <div class="chapter-card" style="text-align: center; padding: 16px 12px;">
+    <div class="num">活动率因子</div>
+    <div class="title" style="font-size: 22px; font-family: var(--font-mono);">1.2008</div>
+    <div class="desc">每周期数据翻转率 ↑~20% · 本对激励实测</div>
+  </div>
+  <div class="chapter-card" style="text-align: center; padding: 16px 12px;">
+    <div class="num">锚点</div>
+    <div class="title" style="font-size: 22px; font-family: var(--font-mono);">×1.500</div>
+    <div class="desc">clock_network 恰 = 频率比 · 口径可信</div>
+  </div>
+  <div class="chapter-card" style="text-align: center; padding: 16px 12px;">
+    <div class="num">新激活硬件</div>
+    <div class="title" style="font-size: 22px; font-family: var(--font-mono);">0</div>
+    <div class="desc">同模块集合 · 无"睡→醒"硬件</div>
+  </div>
+</div>
+<div class="chapter-card" style="padding: 14px 18px; margin-bottom: 28px;">
+  <div style="font-family: var(--font-mono); font-size: 15px; text-align: center; margin-bottom: 10px;">29469.66 = 16303.43 × <b style="color: var(--accent);">1.5053</b>（频率） × <b style="color: var(--info);">1.2008</b>（活动率）</div>
+  <div style="font-size: 12px; color: var(--muted); margin-bottom: 6px;">增量 +13.17 mW 四桶构成：</div>
+  <div style="display: flex; height: 14px; border-radius: 4px; overflow: hidden;">
+    <div style="width: 60.9%; background: var(--accent);"></div>
+    <div style="width: 37.6%; background: var(--info);"></div>
+    <div style="width: 1.5%; background: var(--muted);"></div>
+  </div>
+  <div style="display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); margin-top: 6px;">
+    <span>频率 8.01 mW（60.9%）</span><span>活动率 4.94 mW（37.6%）</span><span>固定 0.21 mW（1.6%）</span>
+  </div>
+</div>
 
 #### 4.4.1 为什么：完整论证链
 
@@ -202,6 +241,35 @@ WARNING: PowerPro 读取的 RTL 必须是可综合代码，无法综合会 inter
 
 > 数据源：1V11 = t_8b1lane@4.46G（1015V3 `rep_dir`，Initial 25645 µW）；1V22 = 1lane@4.46G（1015V1 `rep_1lane_4p5g_dir`，Initial 18969 µW）。双边同日（10/15）同工具（PowerPro 2024.2_1）同库（ENEXCHIP M31HSSC900EL150）同流程，频率完全一致——最公平口径。总差距 = **6676 µW**。
 
+<div class="section-title">对比 · 1V11 vs 1V22 @4.46G 净差对账</div>
+<div class="chapter-grid" style="margin-bottom: 12px;">
+  <div class="chapter-card" style="grid-column: 1 / -1; text-align: center; padding: 24px 20px;">
+    <div class="num">1V11 vs 1V22（同日 · 同工具 · 同库 · 同流程 · 完全同频）</div>
+    <div class="title" style="font-size: 36px; font-family: var(--font-mono); font-weight: 600; color: var(--accent);">25.65 <span style="color: var(--muted); font-size: 22px;">vs</span> 18.97 <span style="font-size: 20px;">mW</span></div>
+    <div class="desc" style="margin-top: 10px; font-size: 14px;">净差 <b>6676 µW</b><span class="badge badge-warn" style="margin-left: 10px;">×1.35</span>　对账 = 1.70 纯新增 + 7.30 实现差 + 2.50 迁移 − 4.80 抵消 ≈ 6.7 ✓</div>
+  </div>
+  <div class="chapter-card" style="text-align: center; padding: 16px 12px;">
+    <div class="num">纯新增（1V22 无对应功能）</div>
+    <div class="title" style="font-size: 22px; font-family: var(--font-mono);">+1.70 mW</div>
+    <div class="desc">长编码 853 + SMT_CS 516 + 测频 88 + BCC 1 + 故障域 104 + CONFIG 134</div>
+  </div>
+  <div class="chapter-card" style="text-align: center; padding: 16px 12px;">
+    <div class="num">等价功能实现差</div>
+    <div class="title" style="font-size: 22px; font-family: var(--font-mono);">+7.30 mW</div>
+    <div class="desc">SD 核 2256 + 短编码 1704 + DTCTL 1423 + 配置 798 + 时钟 519 + ANCTL 564</div>
+  </div>
+  <div class="chapter-card" style="text-align: center; padding: 16px 12px;">
+    <div class="num">位置迁移</div>
+    <div class="title" style="font-size: 22px; font-family: var(--font-mono);">+2.50 mW</div>
+    <div class="desc">BUFFER_I / K 码对齐沉入 1V22 rx_phy · 双边同计</div>
+  </div>
+  <div class="chapter-card" style="text-align: center; padding: 16px 12px;">
+    <div class="num">1V22 独有抵消</div>
+    <div class="title" style="font-size: 22px; font-family: var(--font-mono); color: var(--ok);">−4.80 mW</div>
+    <div class="desc">rx_phy EQ/LEQ 4196 + MON_DISP 588</div>
+  </div>
+</div>
+
 #### 功耗组成可视化
 
 ![1V11 vs 1V22 Module Power Comparison](./power_module_compare_1v11_1v22.png)
@@ -258,4 +326,4 @@ WARNING: PowerPro 读取的 RTL 必须是可综合代码，无法综合会 inter
   <script src="./js/site.js"></script>
 </body>
 </html>
-<!-- ymzhu 2026-10-19 16:25 -->
+<!-- ymzhu 2026-10-19 18:06 -->
