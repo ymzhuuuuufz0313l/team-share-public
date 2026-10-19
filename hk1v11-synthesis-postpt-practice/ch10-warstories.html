@@ -23,6 +23,73 @@
   <div class="container with-toc">
     <aside class="toc-wrapper"><div class="toc" id="toc"></div></aside>
     <div class="content">
+      <div class="section-title" style="margin-top: 0;">速查 · G13 一周多轮收敛（round1→6）</div>
+      <div class="chapter-grid" style="margin-bottom: 12px;">
+        <a class="chapter-card" href="#收敛仪表盘" style="grid-column: 1 / -1; text-align: center; padding: 24px 20px;">
+          <div class="num">round1 → round6 · G13 一周约束收窄（打地鼠收敛）</div>
+          <div class="title" style="font-size: 36px; font-family: var(--font-mono); font-weight: 600; color: var(--accent);">6 <span style="font-size: 20px;">轮</span></div>
+          <div class="desc" style="margin-top: 10px; font-size: 14px;">round1 42 条违例<b>全消</b> → round5 K1 族 <b>96→3</b> · round6 待 POSTPT 验证</div>
+        </a>
+        <a class="chapter-card" href="#收敛仪表盘" style="text-align: center; padding: 16px 12px;">
+          <div class="num">round1</div>
+          <div class="title" style="font-size: 22px; font-family: var(--font-mono);">42 条全消</div>
+          <div class="desc">G1(25)+G3(17) 逐条 mc · ignored 为零</div>
+        </a>
+        <a class="chapter-card" href="#收敛仪表盘" style="text-align: center; padding: 16px 12px;">
+          <div class="num">round2</div>
+          <div class="title" style="font-size: 22px; font-family: var(--font-mono);">POL +3</div>
+          <div class="desc">G2~G8 共 30 对 · 浮出 3 条新起点（打地鼠）</div>
+        </a>
+        <a class="chapter-card" href="#收敛仪表盘" style="text-align: center; padding: 16px 12px;">
+          <div class="num">round3</div>
+          <div class="title" style="font-size: 22px; font-family: var(--font-mono);">矩阵闭环</div>
+          <div class="desc">POL 扇入矩阵补 3 对 · 无 round4 打地鼠</div>
+        </a>
+        <a class="chapter-card" href="#收敛仪表盘" style="text-align: center; padding: 16px 12px;">
+          <div class="num">round4</div>
+          <div class="title" style="font-size: 22px; font-family: var(--font-mono);">100+→30 行</div>
+          <div class="desc">族通配合并 + dc/pt 双分支 · DC 不再误读</div>
+        </a>
+        <a class="chapter-card" href="#收敛仪表盘" style="text-align: center; padding: 16px 12px;">
+          <div class="num">round5</div>
+          <div class="title" style="font-size: 22px; font-family: var(--font-mono);">96→3</div>
+          <div class="desc">K1_FIND→CPUWR 族 mc（同一约束下）</div>
+        </a>
+        <a class="chapter-card" href="#收敛仪表盘" style="text-align: center; padding: 16px 12px;">
+          <div class="num">round6</div>
+          <div class="title" style="font-size: 22px; font-family: var(--font-mono);">⏳ 待验证</div>
+          <div class="desc">G9/G11 mc + G10 max_delay 2× · 入 pending bundle</div>
+        </a>
+      </div>
+
+      <div class="section-title">对比 · 约束"写了"却不生效——三真凶都在落地环节（案例 21）</div>
+      <div class="chapter-grid" style="margin-bottom: 12px;">
+        <a class="chapter-card" href="#案例-21约束明明写了却不生效三个真凶都在落地环节不在语法0921-POSTPT" style="grid-column: 1 / -1; text-align: center; padding: 24px 20px;">
+          <div class="num">案例 21 · UTC_FRM_CNT 路径（WCLK1_A_CHPI_DCLK_SHORT → RX_CLK）</div>
+          <div class="title" style="font-size: 34px; font-family: var(--font-mono); font-weight: 600; color: var(--accent);">56 <span style="font-size: 20px;">条 SEL-004 静默丢弃</span></div>
+          <div class="desc" style="margin-top: 10px; font-size: 14px;">→ 违例 <b>−0.369</b> · 三真凶全在 <b>write_sdc 对象落地</b>环节、不在语法 · 修复：<b>-to 用时钟对象</b></div>
+        </a>
+        <a class="chapter-card" href="#案例-21约束明明写了却不生效三个真凶都在落地环节不在语法0921-POSTPT" style="text-align: center; padding: 16px 12px; border-left: 3px solid var(--bad);">
+          <div class="num"><span class="badge badge-bad">真凶一 · 主因</span></div>
+          <div class="title" style="font-size: 20px; font-family: var(--font-mono);">SEL-004 ×16</div>
+          <div class="desc">-to 写寄存器 → DC 数据脚 D1/D2 → APR 无此脚 → 匹配 0 对象被丢</div>
+        </a>
+        <a class="chapter-card" href="#案例-21约束明明写了却不生效三个真凶都在落地环节不在语法0921-POSTPT" style="text-align: center; padding: 16px 12px; border-left: 3px solid var(--ok);">
+          <div class="num"><span class="badge badge-ok">真凶二 · 证伪</span></div>
+          <div class="title" style="font-size: 20px; font-family: var(--font-mono);">346 vs 8 pin</div>
+          <div class="desc">全 _F_ 银行 vs 全 _L_（8 个 CK）→ 集合不相交 → 非冲突</div>
+        </a>
+        <a class="chapter-card" href="#案例-21约束明明写了却不生效三个真凶都在落地环节不在语法0921-POSTPT" style="text-align: center; padding: 16px 12px; border-left: 3px solid var(--warn);">
+          <div class="num"><span class="badge badge-warn">真凶三 · 次因</span></div>
+          <div class="title" style="font-size: 20px; font-family: var(--font-mono);">−3.815 伪违例</div>
+          <div class="desc">if/else 合并丢 /D* → max_delay 抓内部节点（结构性必爆）</div>
+        </a>
+      </div>
+      <div class="chapter-card" style="padding: 14px 18px; margin-bottom: 28px;">
+        <div style="font-family: var(--font-mono); font-size: 13px; text-align: center; margin-bottom: 8px;">心法 29 · 约束"不生效"先查三件套</div>
+        <div style="font-size: 12px; color: var(--muted); text-align: center;">① read_cons.log 的 SEL-004 警告 · ② report_exceptions.rpt 异常在不在 · ③ report_timing capture 边沿第几拍</div>
+        <div style="font-size: 11px; color: var(--muted); text-align: center; margin-top: 6px;">数据源：<code>ch10-warstories.html</code> 收敛仪表盘（round1→6）+ 案例 21（三真凶）</div>
+      </div>
       <article class="article" id="article"></article>
       <div class="page-nav" id="page-nav"></div>
       <div class="footer">HK1V11 SYNTHESIS / SIGNOFF PRACTICE · AUTHOR ymzhuuuu · UPDATED 2026-09-21</div>
@@ -827,4 +894,4 @@ CPUWR 毯子用的是 `-through u_.../LC_CPUWR/R_*`——但 clock-gating 检查
   <script src="./js/site.js"></script>
 </body>
 </html>
-<!-- ymzhu 2026-10-09 11:50 -->
+<!-- ymzhu 2026-10-19 18:31 -->
