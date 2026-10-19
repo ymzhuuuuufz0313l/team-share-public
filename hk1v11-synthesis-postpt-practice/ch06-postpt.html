@@ -23,6 +23,38 @@
   <div class="container with-toc">
     <aside class="toc-wrapper"><div class="toc" id="toc"></div></aside>
     <div class="content">
+      <div class="section-title">对比 · 1008 V1→V3 约束修复效果</div>
+      <div class="chapter-grid" style="margin-bottom: 12px;">
+        <div class="chapter-card" style="grid-column: 1 / -1; text-align: center; padding: 24px 20px;">
+          <div class="num">1008 post-PT · V1(10:51) → V3(15:19) · 同网表 · 9 角可比</div>
+          <div class="title" style="font-size: 36px; font-family: var(--font-mono); font-weight: 600; color: var(--accent);">7563 <span style="color: var(--muted); font-size: 22px;">→</span> 242 <span style="font-size: 20px;">条 hold</span></div>
+          <div class="desc" style="margin-top: 10px; font-size: 14px;">三笔约束修复（I2C async 组 + K1 latch/E mc + G15 FLAG mc）后 hold 大清洗 · setup 119→87<span class="badge badge-warn" style="margin-left: 10px;">−96.8%</span></div>
+        </div>
+        <div class="chapter-card" style="text-align: center; padding: 16px 12px;">
+          <div class="num">hold 总账（9 角）</div>
+          <div class="title" style="font-size: 22px; font-family: var(--font-mono);">7563 → 242</div>
+          <div class="desc">−7321 · 全角 worst −2.32→−0.2667</div>
+        </div>
+        <div class="chapter-card" style="text-align: center; padding: 16px 12px;">
+          <div class="num">WCLK1_A_I2C</div>
+          <div class="title" style="font-size: 22px; font-family: var(--font-mono);">489/角 → 0</div>
+          <div class="desc">全 10 角清零 · async 组约束生效</div>
+        </div>
+        <div class="chapter-card" style="text-align: center; padding: 16px 12px;">
+          <div class="num">setup（9 角）</div>
+          <div class="title" style="font-size: 22px; font-family: var(--font-mono);">119 → 87</div>
+          <div class="desc">A/D 簇 20 路 mc 清零 · 余 RX_CLK+gating</div>
+        </div>
+        <div class="chapter-card" style="text-align: center; padding: 16px 12px;">
+          <div class="num">hold worst</div>
+          <div class="title" style="font-size: 22px; font-family: var(--font-mono);">−2.32 → −0.2667</div>
+          <div class="desc">wc_cworst · RX_CLK hold</div>
+        </div>
+      </div>
+      <div class="chapter-card" style="padding: 14px 18px; margin-bottom: 28px;">
+        <div style="font-family: var(--font-mono); font-size: 13px; text-align: center; margin-bottom: 8px;">数据源：1008 代 post-PT · V1 rpt Oct 8 10:51 / V3 sum.rpt Oct 8 15:19 · <code>HK1V11_postpt_1008_对比评估.md</code> + <code>script/_syn_1008v3_评估报告.md</code></div>
+        <div style="font-size: 12px; color: var(--muted); text-align: center;">⚠️ 与 1004 DC run（rep_dir_1003，setup 452→11）是不同工具不同 run，不可混标</div>
+      </div>
       <article class="article" id="article"></article>
       <div class="page-nav" id="page-nav"></div>
       <div class="footer">HK1V11 SYNTHESIS / SIGNOFF PRACTICE · AUTHOR ymzhuuuu · UPDATED 2026-09-16</div>
@@ -143,6 +175,16 @@ dplc skew 行全空的根因：**SDC 引用了 0917V1 RTL 的 cell 名，但当�
 | hold | ~1742 / −5.078（全 corner 同量级） | 既有 P0，独立专项 |
 | skew clk 报表 | slack (MET) 8.729 = 14 − 5.271 | 全部受约束 |
 
+1V11 实测（1008 代 V3 run，Oct 8 15:19，三笔约束修复后）：
+
+| 指标 | V1（10:51） | V3（15:19） | 说明 |
+|---|---|---|---|
+| setup（9 角） | 119 | **87** | A/D 簇 20 路 mc 清零；余 RX_CLK+gating（wc_cbest 49 / wc_cworst 5） |
+| hold（9 角） | 7563 | **242** | WCLK1_A_I2C 489/角→0 + async 178–306→0–4 + gating 61→0–3 |
+| hold worst | −2.32 | **−0.2667** | wc_cworst · RX_CLK hold |
+
+*来源：`HK1V11_postpt_1008_对比评估.md`（V1）+ `script/_syn_1008v3_评估报告.md`（V3）*
+
 ## 7. 1V11 实测坑清单（write_sdc / 对象匹配三连）
 
 | 坑 | 症状 | 解法 |
@@ -213,4 +255,4 @@ Balance 的实质：**离源近的树枝多绕几级缓冲、离源远的少绕�
   <script src="./js/site.js"></script>
 </body>
 </html>
-<!-- ymzhu 2026-10-09 11:35 -->
+<!-- ymzhu 2026-10-19 18:18 -->
