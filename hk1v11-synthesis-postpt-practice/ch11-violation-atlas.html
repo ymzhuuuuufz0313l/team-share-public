@@ -23,6 +23,42 @@
   <div class="container with-toc">
     <aside class="toc-wrapper"><div class="toc" id="toc"></div></aside>
     <div class="content">
+      <!-- 速查 · 十二心法 -->
+      <div id="quickref-rules">
+        <div class="section-title">速查 · 十二心法</div>
+        <div class="chapter-grid" style="grid-template-columns: repeat(4, 1fr);">
+          <div class="chapter-card"><div class="num">心法 1</div><div class="title">约束生效只看落地证据链</div><div class="desc">dc.log 标记串 → write_sdc → SEL-004 计数 → applied 标志，逐环确认</div></div>
+          <div class="chapter-card"><div class="num">心法 2</div><div class="title">代际验证看报告头 Date</div><div class="desc">robocopy 重置 mtime；三方对齐 14:18 / 14:37 / 09-21 15:25</div></div>
+          <div class="chapter-card"><div class="num">心法 3</div><div class="title">收窄后逐 bit 分类，不一刀切</div><div class="desc">89 条中 UTC 真实（恢复=掩盖）vs HIZ 可恢复窄 mc</div></div>
+          <div class="chapter-card"><div class="num">心法 4</div><div class="title">区分死约束和活约束</div><div class="desc">`-through R_` 字面名 0 匹配（CMD-036），删了无影响</div></div>
+          <div class="chapter-card"><div class="num">心法 5</div><div class="title">from-only mc 是无边界放宽</div><div class="desc">无 -to = 覆盖一切 endpoint 含 gating check，B 类位禁用</div></div>
+          <div class="chapter-card"><div class="num">心法 6</div><div class="title">pattern 必须用 get_cells 验证</div><div class="desc">`DATA_POINT_LAT_reg_*` 漏 `_D1`（41 条 never_constrained）</div></div>
+          <div class="chapter-card"><div class="num">心法 7</div><div class="title">hold 归因必须反查 netlist</div><div class="desc">30 条：10 结构（DTCTL 门控）+ 20 IO（INDATA_SYNC）</div></div>
+          <div class="chapter-card"><div class="num">心法 8</div><div class="title">-to 用时钟对象，不用寄存器名</div><div class="desc">AND2DFFRBQX /D1+D2 → APR /D → SEL-004 静默丢弃</div></div>
+          <div class="chapter-card"><div class="num">心法 9</div><div class="title">多模型交叉锁定主线</div><div class="desc">5 模型 2 批全部锁定 (A)=106 条，路径集合相同</div></div>
+          <div class="chapter-card"><div class="num">心法 10</div><div class="title">注释预留回归口</div><div class="desc">G13："if a next run shows … reconsider"——下次归因证据</div></div>
+          <div class="chapter-card"><div class="num">心法 11</div><div class="title">QoR ±3 条差异属汇总口径</div><div class="desc">RX_CLK 逐路径 284 vs QoR 表 287，差 3 条不需追查</div></div>
+          <div class="chapter-card"><div class="num">心法 12</div><div class="title">处置看 worst slack 非条数</div><div class="desc">WCLK1 139 条 −0.11 vs CHPI_SD_CTRL 12 级链 −1.45（全局 WNS）</div></div>
+        </div>
+      </div>
+
+      <!-- 聚合 · 482 条三分类 -->
+      <div id="aggregate-3cat">
+        <div class="section-title">聚合 · 482 条三分类</div>
+        <div class="chapter-grid" style="grid-template-columns: repeat(3, 1fr);">
+          <a class="chapter-card" href="#7-三分类汇总482条"><div class="num">A</div><div class="title">narrowing_exposed 收窄暴露</div><div class="desc">106 条（22.0%）= 89 R_REG* + 15 G13 + 2 G14<br>旧版覆盖 → 新版剔除</div><div class="tag">约束→删除</div></a>
+          <a class="chapter-card" href="#7-三分类汇总482条"><div class="num">B</div><div class="title">genuine 真实违例</div><div class="desc">335 条（69.5%）= 139 RX + 139 WCLK1 + 23 PIX + 4 门控 + 30 hold<br>新旧均无豁免</div><div class="tag">从未约束</div></a>
+          <a class="chapter-card" href="#7-三分类汇总482条"><div class="num">C</div><div class="title">never_constrained 从未约束</div><div class="desc">41 条（8.5%）= DATA_POINT_LAT_D1（G13 pattern 从未匹配 _D1）</div><div class="tag">pattern 缺陷</div></a>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;margin-top:14px;flex-wrap:wrap;">
+          <div class="chapter-card" style="padding:10px 14px;min-width:140px;"><div class="desc" style="margin:0;font-size:12px;"><b>① 旧版覆盖？</b><br>该 startpoint 在旧 mc 匹配集内？</div></div>
+          <span style="font-size:18px;color:var(--muted);">→</span>
+          <div class="chapter-card" style="padding:10px 14px;min-width:140px;"><div class="desc" style="margin:0;font-size:12px;"><b>② 新版排除？</b><br>被 remove / 注释？</div></div>
+          <span style="font-size:18px;color:var(--muted);">→</span>
+          <div class="chapter-card" style="padding:10px 14px;min-width:140px;"><div class="desc" style="margin:0;font-size:12px;"><b>③ pattern 匹配？</b><br>get_cells 实际计数</div></div>
+        </div>
+      </div>
+
       <article class="article" id="article"></article>
       <div class="page-nav" id="page-nav"></div>
       <div class="footer">HK1V11 SYNTHESIS / SIGNOFF PRACTICE · AUTHOR ymzhuuuu · UPDATED 2026-09-30</div>
@@ -686,6 +722,8 @@ R_REG06_F_reg_2_/Q
 
 ## 7. 三分类汇总（482 条）
 
+<a href="#aggregate-3cat" style="font-size:12px;color:var(--accent);text-decoration:none;">← 返回总览</a>
+
 | 分类 | 数量 | 占比 | 构成 |
 |------|------|------|------|
 | **(A) narrowing_exposed** 收窄暴露 | **106** | **22.0%** | R_REG* 被剔 10 分区 89（RX_CLK）+ G13 DATA_POINT_LAT 15（RX_CLK）+ G14 R_REG06_F[2] 2（DPLC_CLK_LONG） |
@@ -927,4 +965,4 @@ HK1V11 的时钟豁免不是一条条 `set_clock_groups` 裸写的，而是三�
   <script src="./js/site.js"></script>
 </body>
 </html>
-<!-- ymzhu 2026-10-09 11:50 -->
+<!-- ymzhu 2026-10-19 17:16 -->
