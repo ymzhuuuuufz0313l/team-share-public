@@ -700,9 +700,15 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
   max-width: 94vw; max-height: 84vh;
   border-radius: 4px;
   box-shadow: 0 0 60px rgba(0, 0, 0, 0.7);
-  cursor: zoom-out;
+  cursor: grab;
   margin: 0;
+  transform-origin: 0 0;
+  will-change: transform;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-drag: none;
 }
+.lb-overlay .lb-img.grabbing { cursor: grabbing; }
 .lb-overlay .lb-cap {
   margin-top: 14px;
   color: rgba(233, 229, 217, 0.75);
@@ -732,4 +738,4 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
 .lb-overlay .lb-next { right: 20px; top: 50%; transform: translateY(-50%); }
 @media print { .lb-overlay { display: none !important; } }
 
-/* ymzhu 2026-10-19 18:33 */
+/* ymzhu 2026-10-20 10:14 */
