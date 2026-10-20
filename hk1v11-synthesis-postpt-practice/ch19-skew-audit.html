@@ -7,6 +7,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <title>十九、10-15 代 skew 全量审计与 5G3G 推演 · HK1V11 综合/签核流程实践</title>
+  <meta name="description" content="本章收录 10-15 live 代（10 corner，1V11 = 1p/dplc）skew 链路四份报告的全文 + 一张核心图解。工作副本在 HK1V11 仓库 docs/；原…">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet">
@@ -48,7 +49,7 @@
       </div>
       <article class="article" id="article"></article>
       <div class="page-nav" id="page-nav"></div>
-      <div class="footer">HK1V11 SYNTHESIS / SIGNOFF PRACTICE · AUTHOR ymzhuuuu · UPDATED 2026-10-08</div>
+      <div class="footer">HK1V11 SYNTHESIS / SIGNOFF PRACTICE · AUTHOR ymzhuuuu · UPDATED 2026-10-19</div>
     </div>
   </div>
   <script type="text/template" id="md">
@@ -319,7 +320,7 @@ margin 落在窗内 = 数据↔时钟相对到达满足面板采样要求；出�
 | RX 输入同步探针 | `SYNTHESIS/top/sta/post/common/report_timing_skew_isprx.tcl` L3-8 |
 | I2C IO 探针（当前空）| `SYNTHESIS/top/sta/post/common/report_timing_skew_io.tcl` L12-17 |
 
-<!-- ymzhu 2026-10-19 16:45 -->
+<!-- ymzhu 2026-10-20 13:43 -->
 
 
 ---

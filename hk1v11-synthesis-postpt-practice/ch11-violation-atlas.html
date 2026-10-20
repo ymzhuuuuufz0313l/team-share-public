@@ -7,6 +7,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <title>十一、违例归因实战 · HK1V11 综合/签核流程实践</title>
+  <meta name="description" content="实战复盘 · 按时间线 · 数字后端 / STA 约束工程 · HK1V11 项目 0922 约束收窄复盘">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet">
@@ -46,9 +47,9 @@
       <div id="aggregate-3cat">
         <div class="section-title">聚合 · 482 条三分类</div>
         <div class="chapter-grid" style="grid-template-columns: repeat(3, 1fr);">
-          <a class="chapter-card" href="#7-三分类汇总482条"><div class="num">A</div><div class="title">narrowing_exposed 收窄暴露</div><div class="desc">106 条（22.0%）= 89 R_REG* + 15 G13 + 2 G14<br>旧版覆盖 → 新版剔除</div><div class="tag">约束→删除</div></a>
-          <a class="chapter-card" href="#7-三分类汇总482条"><div class="num">B</div><div class="title">genuine 真实违例</div><div class="desc">335 条（69.5%）= 139 RX + 139 WCLK1 + 23 PIX + 4 门控 + 30 hold<br>新旧均无豁免</div><div class="tag">从未约束</div></a>
-          <a class="chapter-card" href="#7-三分类汇总482条"><div class="num">C</div><div class="title">never_constrained 从未约束</div><div class="desc">41 条（8.5%）= DATA_POINT_LAT_D1（G13 pattern 从未匹配 _D1）</div><div class="tag">pattern 缺陷</div></a>
+          <a class="chapter-card" href="#7-三分类汇总482-条"><div class="num">A</div><div class="title">narrowing_exposed 收窄暴露</div><div class="desc">106 条（22.0%）= 89 R_REG* + 15 G13 + 2 G14<br>旧版覆盖 → 新版剔除</div><div class="tag">约束→删除</div></a>
+          <a class="chapter-card" href="#7-三分类汇总482-条"><div class="num">B</div><div class="title">genuine 真实违例</div><div class="desc">335 条（69.5%）= 139 RX + 139 WCLK1 + 23 PIX + 4 门控 + 30 hold<br>新旧均无豁免</div><div class="tag">从未约束</div></a>
+          <a class="chapter-card" href="#7-三分类汇总482-条"><div class="num">C</div><div class="title">never_constrained 从未约束</div><div class="desc">41 条（8.5%）= DATA_POINT_LAT_D1（G13 pattern 从未匹配 _D1）</div><div class="tag">pattern 缺陷</div></a>
         </div>
         <div style="display:flex;align-items:center;gap:8px;margin-top:14px;flex-wrap:wrap;">
           <div class="chapter-card" style="padding:10px 14px;min-width:140px;"><div class="desc" style="margin:0;font-size:12px;"><b>① 旧版覆盖？</b><br>该 startpoint 在旧 mc 匹配集内？</div></div>
@@ -61,7 +62,7 @@
 
       <article class="article" id="article"></article>
       <div class="page-nav" id="page-nav"></div>
-      <div class="footer">HK1V11 SYNTHESIS / SIGNOFF PRACTICE · AUTHOR ymzhuuuu · UPDATED 2026-09-30</div>
+      <div class="footer">HK1V11 SYNTHESIS / SIGNOFF PRACTICE · AUTHOR ymzhuuuu · UPDATED 2026-10-20</div>
     </div>
   </div>
   <script type="text/template" id="md">
@@ -965,4 +966,4 @@ HK1V11 的时钟豁免不是一条条 `set_clock_groups` 裸写的，而是三�
   <script src="./js/site.js"></script>
 </body>
 </html>
-<!-- ymzhu 2026-10-19 17:16 -->
+<!-- ymzhu 2026-10-20 13:43 -->
