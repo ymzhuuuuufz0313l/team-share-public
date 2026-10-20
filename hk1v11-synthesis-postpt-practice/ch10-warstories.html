@@ -78,7 +78,7 @@
         <a class="chapter-card" href="#案例-21约束明明写了却不生效三个真凶都在落地环节不在语法0921-POSTPT" style="text-align: center; padding: 16px 12px; border-left: 3px solid var(--ok);">
           <div class="num"><span class="badge badge-ok">真凶二 · 证伪</span></div>
           <div class="title" style="font-size: 20px; font-family: var(--font-mono);">346 vs 8 pin</div>
-          <div class="desc">全 _F_ 银行 vs 全 _L_（8 个 CK）→ 集合不相交 → 非冲突</div>
+          <div class="desc">全 _F_ 区域 vs 全 _L_（8 个 CK）→ 集合不相交 → 非冲突</div>
         </a>
         <a class="chapter-card" href="#案例-21约束明明写了却不生效三个真凶都在落地环节不在语法0921-POSTPT" style="text-align: center; padding: 16px 12px; border-left: 3px solid var(--warn);">
           <div class="num"><span class="badge badge-warn">真凶三 · 次因</span></div>
@@ -812,7 +812,7 @@ UTC_FRM_CNT 计数器路径（发射寄存器 `LC_CPUWR/R_REG00_L_reg_0_`，时�
 
 ### 收尾状态
 
-约束文件收敛为：一个 `R_REG*` 组（F+L 银行）× 4 个 `-to`（RX_CLK / OSC_CLK / DCLK_DATA_* / SD_CLK_INV_*）共 8 行 mc，全文件所有 multicycle 统一 `2 -start -setup` + `1 -start -hold`，无数值冲突。旧的 "R_REG* 爆炸"（289~1000+ 条违例）是**无 `-to` 的裸 blanket** 所致，与带明确 `-to` 的组约束不是一回事。
+约束文件收敛为：一个 `R_REG*` 组（F+L 区域）× 4 个 `-to`（RX_CLK / OSC_CLK / DCLK_DATA_* / SD_CLK_INV_*）共 8 行 mc，全文件所有 multicycle 统一 `2 -start -setup` + `1 -start -hold`，无数值冲突。旧的 "R_REG* 爆炸"（289~1000+ 条违例）是**无 `-to` 的裸 blanket** 所致，与带明确 `-to` 的组约束不是一回事。
 
 ### 心法 29
 
