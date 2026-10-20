@@ -802,7 +802,7 @@ UTC_FRM_CNT 计数器路径（发射寄存器 `LC_CPUWR/R_REG00_L_reg_0_`，时�
 ### 真凶二：怀疑"两条 multicycle 一个 -start 一个 -end 冲突"——先用落地对象证伪
 
 - 用户怀疑 `-from R_REG*_F_reg* -to RX_CLK`（mc2 -start）与 UTC 专用 mc（-end）冲突。
-- 实测（read_cons.log 落地结果）：前者 -from 是 **346 个 pin 全部为 `_F_` 银行**，`R_REG00_L` 出现 **0 次**；后者 -from 恰是 **8 个 `R_REG00_L_reg_*/CK`**。两个集合完全不相交，不可能有路径同时匹配 → **不是冲突**。
+- 实测（read_cons.log 落地结果）：前者 -from 是 **346 个 pin 全部为 `_F_` 区域**，`R_REG00_L` 出现 **0 次**；后者 -from 恰是 **8 个 `R_REG00_L_reg_*/CK`**。两个集合完全不相交，不可能有路径同时匹配 → **不是冲突**。
 
 ### 真凶三：if/else 合并时丢了 `/D*` 端点限定，max_delay 抓进内部节点 → 伪违例 −3.8
 
