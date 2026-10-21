@@ -3,6 +3,12 @@
 (function () {
   'use strict';
 
+  /* 骨架屏兜底：marked CDN 失败时 4s 后强制摘除 .loading，不留永挂占位（复审 t73 #2） */
+  setTimeout(function () {
+    var a = document.getElementById('article');
+    if (a) a.classList.remove('loading');
+  }, 4000);
+
   /* 顶部导航：平铺项 + 两个 hover 下拉组（排障/复盘/学习子章收进下拉，不占顶部）
      item 形态：['file.html', '标签'] 平铺；{ label, href, children: [[file, 标签], ...] } 下拉组 */
   var NAV = [
@@ -270,13 +276,23 @@
           var active = tocLinks.find(function (x) { return x.getAttribute('href') === '#' + targetId; });
           if (active) {
             active.classList.add('active');
-            /* TOC 当前项自动滚入视野（UI 审 t65） */
+            /* TOC 当前项自动滚入视野；用户手动滚目录后 4s 内不打扰（复审 t73 #1） */
             var tocEl = document.getElementById('toc');
-            if (tocEl) tocEl.scrollTop = active.offsetTop - tocEl.clientHeight / 2;
+            if (tocEl && Date.now() > (tocEl.__userUntil || 0)) {
+              tocEl.__progMark = Date.now() + 80;   /* 标记接下来的滚动是程序设置 */
+              tocEl.scrollTop = active.offsetTop - tocEl.clientHeight / 2;
+            }
           }
         });
       }, { rootMargin: '-10% 0px -75% 0px' });
       headings.forEach(function (h) { observer.observe(h); });
+      /* TOC 用户手动滚动检测：程序设置的滚动带 __progMark 标记，其余视为用户操作，4s 内暂停自动滚入 */
+      var tocEl0 = document.getElementById('toc');
+      if (tocEl0) {
+        tocEl0.addEventListener('scroll', function () {
+          if (Date.now() > (this.__progMark || 0)) this.__userUntil = Date.now() + 4000;
+        }, { passive: true });
+      }
     }
   }
 
@@ -336,4 +352,4 @@
   document.head.appendChild(ss);
 })();
 
-// ymzhu 2026-10-19 17:52
+// ymzhu 2026-10-21 11:49
