@@ -54,6 +54,7 @@
     img.src = list[idx].src;
     overlay.classList.add('open');
     document.body.style.overflow = 'hidden';
+    resetPointerState();   /* 开图清指针状态，防上一会话残留（复审 t76） */
     reset();
   }
 
@@ -62,6 +63,7 @@
     img.src = '';
     img.style.transform = '';
     document.body.style.overflow = '';
+    resetPointerState();
   }
 
   /* ---------- 锚点缩放核心：光标/双指中点下的点缩放前后不动 ---------- */
@@ -88,6 +90,12 @@
   var drag = null;
   var pointers = new Map();   /* pointerId -> {x,y} */
   var pinchDist = 0;
+  function resetPointerState() {   /* show/hide 时清残留（复审 t76：ESC 后重开防幽灵捏合） */
+    pointers.clear();
+    drag = null;
+    pinchDist = 0;
+    img.classList.remove('grabbing');
+  }
   img.addEventListener('pointerdown', function (e) {
     if (e.button !== 0) return;
     pointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
@@ -159,4 +167,4 @@
 
   collect();
 })();
-// ymzhu 2026-10-21 12:08
+// ymzhu 2026-10-21 12:15
