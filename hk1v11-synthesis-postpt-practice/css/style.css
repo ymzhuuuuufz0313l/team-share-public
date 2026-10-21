@@ -324,7 +324,7 @@ h2, h3 { scroll-margin-top: 76px; }
   width: 38px; height: 34px;
   padding: 7px 9px;
   background: none;
-  border: 1px solid var(--line);
+  border: 1px solid var(--muted);
   border-radius: 6px;
   cursor: pointer;
   margin-left: auto;
@@ -932,4 +932,4 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
 .lb-overlay .lb-next { right: 20px; top: 50%; transform: translateY(-50%); }
 @media print { .lb-overlay { display: none !important; } }
 
-/* ymzhu 2026-10-21 12:08 */
+/* ymzhu 2026-10-21 12:24 */
