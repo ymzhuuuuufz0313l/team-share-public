@@ -142,11 +142,23 @@
     burger.innerHTML = '<span></span><span></span><span></span>';
     document.querySelector('.navbar-inner').appendChild(burger);
     burger.addEventListener('click', function () {
+      /* 与 TOC 抽屉互斥（复审 t75） */
+      var tocW = document.querySelector('.toc-wrapper');
+      if (tocW) tocW.classList.remove('open');
       var open = document.body.classList.toggle('nav-open');
       burger.setAttribute('aria-expanded', open ? 'true' : 'false');
     });
     navBox.querySelectorAll('a').forEach(function (a) {
       a.addEventListener('click', function () { document.body.classList.remove('nav-open'); });
+    });
+    /* 点导航区外任意处关闭抽屉（复审 t75） */
+    document.addEventListener('click', function (e) {
+      if (!document.body.classList.contains('nav-open')) return;
+      var nav = document.querySelector('.navbar');
+      if (!nav.contains(e.target)) {
+        document.body.classList.remove('nav-open');
+        burger.setAttribute('aria-expanded', 'false');
+      }
     });
   }
 
@@ -351,7 +363,10 @@
     tocBtn.type = 'button';
     tocBtn.innerHTML = '<span aria-hidden="true">☰</span> 本页目录';
     document.body.appendChild(tocBtn);
-    tocBtn.addEventListener('click', function () { tocWrap.classList.toggle('open'); });
+    tocBtn.addEventListener('click', function () {
+      document.body.classList.remove('nav-open');   /* 与导航抽屉互斥（复审 t75） */
+      tocWrap.classList.toggle('open');
+    });
     tocWrap.querySelectorAll('a').forEach(function (a) {
       a.addEventListener('click', function () { tocWrap.classList.remove('open'); });
     });
@@ -388,4 +403,4 @@
   document.head.appendChild(ss);
 })();
 
-// ymzhu 2026-10-21 12:08
+// ymzhu 2026-10-21 12:18
