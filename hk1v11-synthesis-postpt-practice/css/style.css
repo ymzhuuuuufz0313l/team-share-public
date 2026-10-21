@@ -21,8 +21,8 @@
   --ok-bg: rgba(4, 120, 87, 0.08);
   --bad: #b91c1c;
   --bad-bg: rgba(185, 28, 28, 0.08);
-  --warn: #a16207;
-  --warn-bg: rgba(161, 98, 7, 0.10);
+  --warn: #8a5305;
+  --warn-bg: rgba(138, 83, 5, 0.10);
   --info: #1d4ed8;
   --info-bg: rgba(29, 78, 216, 0.08);
   --font-mono: "IBM Plex Mono", "SFMono-Regular", Consolas, "JetBrains Mono", monospace;
@@ -297,6 +297,15 @@ h2, h3 { scroll-margin-top: 76px; }
   pointer-events: none;
 }
 .lb-thumb:hover::after { opacity: 1; }
+/* 暗色主题：纸底 PNG 嵌暗页的框线过渡（复审 t71 #3，覆盖 delay_skew/功耗图） */
+@media (prefers-color-scheme: dark) {
+  .lb-thumb {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 6px;
+  }
+}
 .toc-toggle { display: none; }
 @media (max-width: 768px) {
   .toc-wrapper { display: none; }
@@ -486,7 +495,8 @@ blockquote {
   border-radius: 0 10px 10px 0;
   font-size: 15px;
 }
-/* 章节导语：首个块引用加 mono kicker，与普通注记区分（排版体系审 #2） */
+/* 章节导语：首个块引用加 mono kicker，与普通注记区分（排版体系审 #2）
+   豁免页（首 bq 为口径/出处注记）由 site.js 加 .no-lead（复审 t67） */
 .article > blockquote:first-of-type::before {
   content: "导语 · OVERVIEW";
   display: block;
@@ -497,6 +507,7 @@ blockquote {
   color: var(--accent);
   margin-bottom: 6px;
 }
+.article.no-lead > blockquote:first-of-type::before { content: none; }
 
 /* ---------- 列表 ---------- */
 ul, ol { padding-left: 28px; }
@@ -661,6 +672,11 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
   color: var(--accent);
   background: var(--accent-soft);
 }
+/* 语义 tag 变体（复审 t71：三分类等中性标签不再一律琥珀） */
+.chapter-card .tag.tag-warn { border-color: var(--warn); color: var(--warn); background: var(--warn-bg); }
+.chapter-card .tag.tag-bad  { border-color: var(--bad);  color: var(--bad);  background: var(--bad-bg); }
+.chapter-card .tag.tag-info { border-color: var(--info); color: var(--info); background: var(--info-bg); }
+.chapter-card .tag.tag-muted { border-color: var(--line); color: var(--muted); background: var(--chip); }
 
 /* ---------- 问题卡 / 结论卡 ---------- */
 .pcard {
@@ -867,4 +883,4 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
 .lb-overlay .lb-next { right: 20px; top: 50%; transform: translateY(-50%); }
 @media print { .lb-overlay { display: none !important; } }
 
-/* ymzhu 2026-10-21 11:44 */
+/* ymzhu 2026-10-21 11:56 */

@@ -138,6 +138,9 @@
   var mdEl = document.getElementById('md');
   if (mdEl && document.getElementById('article')) {
     var art = document.getElementById('article');
+    /* 导语 kicker 豁免页：首个块引用是口径/出处注记而非章节导语（复审 t67） */
+    var NO_LEAD = { 'ch03-synthesis.html': 1, 'ch06-postpt.html': 1, 'ch08-powerpro.html': 1 };
+    if (NO_LEAD[currentPage()]) art.classList.add('no-lead');
     art.innerHTML = marked.parse(mdEl.textContent);
     art.classList.remove('loading');
 
@@ -176,14 +179,26 @@
       btn.type = 'button';
       btn.textContent = 'copy';
       btn.addEventListener('click', function () {
-        var done = function () {
-          btn.textContent = '已复制';
-          btn.classList.add('done');
+        var mark = function (txt, ok) {
+          btn.textContent = txt;
+          btn.classList.toggle('done', !!ok);
           setTimeout(function () { btn.textContent = 'copy'; btn.classList.remove('done'); }, 1600);
         };
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-          navigator.clipboard.writeText(c.textContent).then(done, done);
-        } else { done(); }
+        var fallback = function () {   /* 非安全上下文 / 权限拒：execCommand 降级（复审 t70） */
+          try {
+            var ta = document.createElement('textarea');
+            ta.value = c.textContent;
+            ta.style.cssText = 'position:fixed;opacity:0';
+            document.body.appendChild(ta);
+            ta.select();
+            var ok = document.execCommand('copy');
+            document.body.removeChild(ta);
+            mark(ok ? '已复制' : '复制失败', ok);
+          } catch (e) { mark('复制失败', false); }
+        };
+        if (navigator.clipboard && navigator.clipboard.writeText && window.isSecureContext) {
+          navigator.clipboard.writeText(c.textContent).then(function () { mark('已复制', true); }, fallback);
+        } else fallback();
       });
       pre.appendChild(btn);
     });
@@ -324,6 +339,11 @@
     tocWrap.querySelectorAll('a').forEach(function (a) {
       a.addEventListener('click', function () { tocWrap.classList.remove('open'); });
     });
+    /* 点抽屉外任意处关闭（复审 t72） */
+    document.addEventListener('click', function (e) {
+      if (!tocWrap.classList.contains('open')) return;
+      if (!tocWrap.contains(e.target) && !tocBtn.contains(e.target)) tocWrap.classList.remove('open');
+    });
   }
 
   /* ---------- prev / next page nav ---------- */
@@ -352,4 +372,4 @@
   document.head.appendChild(ss);
 })();
 
-// ymzhu 2026-10-21 11:49
+// ymzhu 2026-10-21 11:56
