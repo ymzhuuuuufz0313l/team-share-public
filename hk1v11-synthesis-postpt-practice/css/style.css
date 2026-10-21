@@ -307,6 +307,55 @@ h2, h3 { scroll-margin-top: 76px; }
   }
 }
 .toc-toggle { display: none; }
+
+/* ---------- 平板档 1024：TOC 收窄 + 正文留白收紧（缓办项实施） ---------- */
+@media (max-width: 1024px) and (min-width: 769px) {
+  .container { padding: 32px 20px 56px; }
+  .article { padding: 38px 34px; }
+  .toc-wrapper { width: 224px; }
+}
+
+/* ---------- 移动端导航抽屉：≤768px hamburger（缓办项实施） ---------- */
+.nav-burger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  width: 38px; height: 34px;
+  padding: 7px 9px;
+  background: none;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  cursor: pointer;
+  margin-left: auto;
+}
+.nav-burger span { display: block; height: 2px; background: var(--text); border-radius: 1px; }
+@media (max-width: 768px) {
+  .nav-burger { display: flex; }
+  .navbar-links {
+    display: none;
+    position: absolute;
+    top: 100%; left: 0; right: 0;
+    background: var(--surface);
+    border-bottom: 1px solid var(--line);
+    box-shadow: var(--shadow);
+    padding: 10px 16px 16px;
+    max-height: 72vh;
+    overflow-y: auto;
+  }
+  body.nav-open .navbar-links { display: flex; }
+  /* 抽屉内下拉组：静态展开，子项直接可见 */
+  .nav-drop-menu {
+    position: static;
+    opacity: 1; visibility: visible; transform: none;
+    box-shadow: none; border: none; background: transparent;
+    display: block;
+    margin: 2px 0 8px;
+    padding: 0 0 0 14px;
+    min-width: 0;
+  }
+  .nav-row-main .search-btn { margin-left: 0; }
+}
 @media (max-width: 768px) {
   .toc-wrapper { display: none; }
 
@@ -883,4 +932,4 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
 .lb-overlay .lb-next { right: 20px; top: 50%; transform: translateY(-50%); }
 @media print { .lb-overlay { display: none !important; } }
 
-/* ymzhu 2026-10-21 11:56 */
+/* ymzhu 2026-10-21 12:08 */

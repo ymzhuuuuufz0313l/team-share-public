@@ -132,6 +132,22 @@
     gh.rel = 'noopener';
     gh.innerHTML = 'GitHub';
     rowSub.appendChild(gh);
+
+    /* 移动端导航抽屉：≤768px hamburger（缓办项实施） */
+    var burger = document.createElement('button');
+    burger.className = 'nav-burger';
+    burger.type = 'button';
+    burger.setAttribute('aria-label', '菜单');
+    burger.setAttribute('aria-expanded', 'false');
+    burger.innerHTML = '<span></span><span></span><span></span>';
+    document.querySelector('.navbar-inner').appendChild(burger);
+    burger.addEventListener('click', function () {
+      var open = document.body.classList.toggle('nav-open');
+      burger.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+    navBox.querySelectorAll('a').forEach(function (a) {
+      a.addEventListener('click', function () { document.body.classList.remove('nav-open'); });
+    });
   }
 
   /* ---------- markdown render + TOC ---------- */
@@ -158,7 +174,7 @@
           if (ri === 0 || !r.children[ci]) return;
           total++;
           var txt = (r.children[ci].textContent || '').trim();
-          if (txt !== '' && /^[-−+]?[\d,.]+%?$/.test(txt)) numeric++;
+          if (txt !== '' && /^[-−+]?[\d,.]+\s*(?:%|MHz|GHz|ns|ps|ms|µs|µW|nW|mW|kW|W|µm²|µm|nm|KB|MB|GB|TB|G|M|k)?$/.test(txt)) numeric++;
         });
         if (total > 0 && numeric / total >= 0.8) {
           rows.forEach(function (r) { if (r.children[ci]) r.children[ci].classList.add('num'); });
@@ -372,4 +388,4 @@
   document.head.appendChild(ss);
 })();
 
-// ymzhu 2026-10-21 11:56
+// ymzhu 2026-10-21 12:08
