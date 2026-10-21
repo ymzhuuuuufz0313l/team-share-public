@@ -26,28 +26,28 @@
     <div class="content">
       <div class="section-title">聚合 · 10-15 代签核结论（100 格 slack 矩阵）</div>
       <div class="chapter-grid" style="margin-bottom: 12px;">
-        <div class="chapter-card" style="grid-column: 1 / -1; text-align: center; padding: 24px 20px;">
+        <div class="chapter-card card-span card-hero card-center">
           <div class="num">set_max_delay 14 · 10 组 × 10 corner = 100 格（其中 8 SD 组闭环 14.0 · live 10-15 09:29）</div>
-          <div class="title" style="font-size: 36px; font-family: var(--font-mono); font-weight: 600; color: var(--accent);">14.000000 <span style="font-size: 20px; color: var(--muted);">闭环</span></div>
+          <div class="title" style="font-family: var(--font-mono); font-weight: 600; color: var(--accent);">14.000000 <span style="font-size: 20px; color: var(--muted);">闭环</span></div>
           <div class="desc" style="margin-top: 10px; font-size: 14px;">8/8 组在 wc_cworst_125 恰好 slack + arrival = 14.000000<span class="badge badge-ok" style="margin-left: 10px;">可复算</span></div>
         </div>
-        <div class="chapter-card" style="text-align: center; padding: 16px 12px;">
+        <div class="chapter-card card-center card-mini">
           <div class="num">100 格 MET</div>
-          <div class="title" style="font-size: 22px; font-family: var(--font-mono);">99 + 1</div>
+          <div class="title" style="font-family: var(--font-mono);">99 + 1</div>
           <div class="desc">99 MET + 1 VIOLATED（−0.001051，rx0_00_min @ lt_typical_m40）</div>
         </div>
-        <div class="chapter-card" style="text-align: center; padding: 16px 12px;">
+        <div class="chapter-card card-center card-mini">
           <div class="num">1p 判读窗</div>
-          <div class="title" style="font-size: 22px; font-family: var(--font-mono); color: var(--ok);">±3.5 全过</div>
+          <div class="title" style="font-family: var(--font-mono); color: var(--ok);">±3.5 全过</div>
           <div class="desc">10 角全落窗，最差 sd_l_1p_margin_b_min = −2.02</div>
         </div>
-        <div class="chapter-card" style="text-align: center; padding: 16px 12px;">
+        <div class="chapter-card card-center card-mini">
           <div class="num">DPLC 判读窗</div>
-          <div class="title" style="font-size: 22px; font-family: var(--font-mono); color: var(--warn);">出窗 ❌</div>
+          <div class="title" style="font-family: var(--font-mono); color: var(--warn);">出窗 ❌</div>
           <div class="desc">margin_b_min 全 10 角 −1.17~−3.74，出左界 −0.9（真违例）</div>
         </div>
       </div>
-      <article class="article" id="article"></article>
+      <article class="article loading" id="article"></article>
       <div class="page-nav" id="page-nav"></div>
       <div class="footer">HK1V11 SYNTHESIS / SIGNOFF PRACTICE · AUTHOR ymzhuuuu · UPDATED 2026-10-20</div>
     </div>
@@ -377,4 +377,4 @@ set_sense u_LOGIC_CENTER/LC_CLK_RST_GEN/CLKGEN/u_gate_MUX_WCK1_ASEL/CLKMUX2X2/S 
   <script src="./js/site.js"></script>
 </body>
 </html>
-<!-- ymzhu 2026-10-20 13:43 -->
+<!-- ymzhu 2026-10-21 11:44 -->

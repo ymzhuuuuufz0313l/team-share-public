@@ -24,7 +24,7 @@
   <div class="container with-toc">
     <aside class="toc-wrapper"><div class="toc" id="toc"></div></aside>
     <div class="content">
-      <article class="article" id="article"></article>
+      <article class="article loading" id="article"></article>
       <div class="page-nav" id="page-nav"></div>
       <div class="footer">HK1V11 SYNTHESIS / SIGNOFF PRACTICE · AUTHOR ymzhuuuu · UPDATED 2026-10-19</div>
     </div>
@@ -41,29 +41,29 @@
 
 <div class="section-title">对比 · 1004 复核 headline</div>
 <div class="chapter-grid" style="margin-bottom: 28px;">
-  <div class="chapter-card" style="grid-column: 1 / -1; text-align: center; padding: 28px 20px;">
+  <div class="chapter-card card-span card-hero card-center">
     <div class="num">DC rep_dir_1003 vs 0922 基线</div>
-    <div class="title" style="font-size: 38px; font-family: var(--font-mono); font-weight: 600; color: var(--accent);">452 <span style="color: var(--muted); font-size: 24px;">→</span> <span style="color: var(--ok);">11</span></div>
-    <div class="desc" style="margin-top: 10px; font-size: 14px;">setup 违例路径（max.rpt）<span class="badge badge-ok" style="margin-left: 10px; font-size: 13px;">−97.6%</span></div>
+    <div class="title" style="font-family: var(--font-mono); font-weight: 600; color: var(--accent);">452 <span style="color: var(--muted); font-size: 24px;">→</span> <span style="color: var(--ok);">11</span></div>
+    <div class="desc" style="margin-top: 10px; font-size: 14px;">setup 违例路径（max.rpt）<span class="badge badge-ok" style="margin-left: 10px; font-size: 13px;">−▼ −▼ −97.6%</span></div>
   </div>
-  <div class="chapter-card" style="text-align: center; padding: 16px 12px;">
+  <div class="chapter-card card-center card-mini">
     <div class="num">worst slack</div>
-    <div class="title" style="font-size: 18px; font-family: var(--font-mono);">−1.45 <span style="color: var(--muted);">→</span> <span style="color: var(--ok);">−0.01</span></div>
+    <div class="title" style="font-family: var(--font-mono);">−1.45 <span style="color: var(--muted);">→</span> <span style="color: var(--ok);">−0.01</span></div>
     <div class="desc">RX_CLK → RX_CLK_DATA 组</div>
   </div>
-  <div class="chapter-card" style="text-align: center; padding: 16px 12px;">
+  <div class="chapter-card card-center card-mini">
     <div class="num">负 slack 路径组</div>
-    <div class="title" style="font-size: 18px; font-family: var(--font-mono);">5 <span style="color: var(--muted);">→</span> <span style="color: var(--ok);">1</span></div>
+    <div class="title" style="font-family: var(--font-mono);">5 <span style="color: var(--muted);">→</span> <span style="color: var(--ok);">1</span></div>
     <div class="desc">仅 RX_CLK_DATA</div>
   </div>
-  <div class="chapter-card" style="text-align: center; padding: 16px 12px;">
+  <div class="chapter-card card-center card-mini">
     <div class="num">面积</div>
-    <div class="title" style="font-size: 18px; font-family: var(--font-mono);">294 907 <span style="color: var(--muted);">→</span> 314 707</div>
+    <div class="title" style="font-family: var(--font-mono);">294 907 <span style="color: var(--muted);">→</span> 314 707</div>
     <div class="desc"><span class="badge badge-warn">+6.7%</span></div>
   </div>
-  <div class="chapter-card" style="text-align: center; padding: 16px 12px;">
+  <div class="chapter-card card-center card-mini">
     <div class="num">时序单元</div>
-    <div class="title" style="font-size: 18px; font-family: var(--font-mono);">2668 <span style="color: var(--muted);">→</span> 3001</div>
+    <div class="title" style="font-family: var(--font-mono);">2668 <span style="color: var(--muted);">→</span> 3001</div>
     <div class="desc"><span class="badge badge-reco">+333</span></div>
   </div>
 </div>
@@ -71,32 +71,32 @@
 <div class="section-title">聚合 · 六判据共识</div>
 <p style="font-family: var(--font-mono); font-size: 12px; color: var(--muted); letter-spacing: 0.08em; margin: -8px 0 14px;">四模型交叉 · 3×GLM + 队长仲裁</p>
 <div class="chapter-grid">
-  <div class="chapter-card" style="text-align: center; padding: 18px 14px;">
+  <div class="chapter-card card-center card-mini">
     <div style="font-size: 28px; line-height: 1; margin-bottom: 10px;">✅</div>
     <div class="title">G13 56 清零</div>
     <div class="desc">56 条全归零，残留 11 条非原家族</div>
   </div>
-  <div class="chapter-card" style="text-align: center; padding: 18px 14px;">
+  <div class="chapter-card card-center card-mini">
     <div style="font-size: 28px; line-height: 1; margin-bottom: 10px;">⚠️</div>
     <div class="title">BKDU 24 单拍可见</div>
     <div class="desc">口径失效（非回归），RTL 同步器未实施</div>
   </div>
-  <div class="chapter-card" style="text-align: center; padding: 18px 14px;">
+  <div class="chapter-card card-center card-mini">
     <div style="font-size: 28px; line-height: 1; margin-bottom: 10px;">✅</div>
     <div class="title">cpuwr 67 全消 + DPLC 2</div>
     <div class="desc">65 条全 0，DPLC 2 条已消失</div>
   </div>
-  <div class="chapter-card" style="text-align: center; padding: 18px 14px;">
+  <div class="chapter-card card-center card-mini">
     <div style="font-size: 28px; line-height: 1; margin-bottom: 10px;">✅</div>
     <div class="title">SEL-004 无新增</div>
     <div class="desc">DC 侧 0 条，PT 终判已关闭</div>
   </div>
-  <div class="chapter-card" style="text-align: center; padding: 18px 14px;">
+  <div class="chapter-card card-center card-mini">
     <div style="font-size: 28px; line-height: 1; margin-bottom: 10px;">✅</div>
     <div class="title">总量 / worst / v4.2 新锥</div>
     <div class="desc">452→11，三组 weight3 转正</div>
   </div>
-  <div class="chapter-card" style="text-align: center; padding: 18px 14px;">
+  <div class="chapter-card card-center card-mini">
     <div style="font-size: 28px; line-height: 1; margin-bottom: 10px;">⚠️</div>
     <div class="title">全量扫描</div>
     <div class="desc">有发现（BOE 域迁移 / 代际缺口）</div>
@@ -230,5 +230,5 @@
   <script src="./js/site.js"></script>
 </body>
 </html>
-<!-- ymzhu 2026-10-20 13:43 -->
+<!-- ymzhu 2026-10-21 11:44 -->
 

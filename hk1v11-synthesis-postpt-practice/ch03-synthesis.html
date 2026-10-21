@@ -24,7 +24,7 @@
   <div class="container with-toc">
     <aside class="toc-wrapper"><div class="toc" id="toc"></div></aside>
     <div class="content">
-      <article class="article" id="article"></article>
+      <article class="article loading" id="article"></article>
       <div class="page-nav" id="page-nav"></div>
       <div class="footer">HK1V11 SYNTHESIS / SIGNOFF PRACTICE · AUTHOR ymzhuuuu · UPDATED 2026-10-19</div>
     </div>
@@ -38,33 +38,33 @@
 <div id="ch03-qor-overview" style="scroll-margin-top:76px;"></div>
 <div class="section-title">对比 · 综合 QoR 跨代（0922 → 1003）</div>
 <div class="chapter-grid" style="margin-bottom: 12px;">
-  <a class="chapter-card" href="#5-综合-QoR-跨代对比0922--1003" style="grid-column: 1 / -1; text-align: center; padding: 24px 20px;">
+  <a class="chapter-card card-span card-hero card-center" href="#5-综合-QoR-跨代对比0922--1003" style="20px">
     <div class="num">DC 综合 QoR · 基线 rep_dir_0922_1456 → 10-03 DC run rep_dir_1003（约束 0930 终版）</div>
-    <div class="title" style="font-size: 36px; font-family: var(--font-mono); font-weight: 600; color: var(--accent);">452 <span style="color: var(--muted); font-size: 22px;">→</span> 11 <span style="font-size: 20px;">setup 违例</span></div>
-    <div class="desc" style="margin-top: 10px; font-size: 14px;">worst <b>−1.45 → −0.01</b> · 负 slack 组 <b>5 → 1</b>（仅 RX_CLK_DATA）<span class="badge badge-ok" style="margin-left: 10px;">−97.6%</span></div>
+    <div class="title" style="font-family: var(--font-mono); font-weight: 600; color: var(--accent);">452 <span style="color: var(--muted); font-size: 22px;">→</span> 11 <span style="font-size: 20px;">setup 违例</span></div>
+    <div class="desc" style="margin-top: 10px; font-size: 14px;">worst <b>−1.45 → −0.01</b> · 负 slack 组 <b>5 → 1</b>（仅 RX_CLK_DATA）<span class="badge badge-ok" style="margin-left: 10px;">−▼ −▼ −97.6%</span></div>
   </a>
-  <a class="chapter-card" href="#5-综合-QoR-跨代对比0922--1003" style="text-align: center; padding: 16px 12px;">
+  <a class="chapter-card card-center card-mini" href="#5-综合-QoR-跨代对比0922--1003" style="12px">
     <div class="num">cell 面积</div>
-    <div class="title" style="font-size: 22px; font-family: var(--font-mono);">294907 → 314707</div>
+    <div class="title" style="font-family: var(--font-mono);">294907 → 314707</div>
     <div class="desc">+6.7%（+19800 µm²）· 综合规模代价</div>
   </a>
-  <a class="chapter-card" href="#5-综合-QoR-跨代对比0922--1003" style="text-align: center; padding: 16px 12px;">
+  <a class="chapter-card card-center card-mini" href="#5-综合-QoR-跨代对比0922--1003" style="12px">
     <div class="num">时序单元</div>
-    <div class="title" style="font-size: 22px; font-family: var(--font-mono);">2668 → 3001</div>
+    <div class="title" style="font-family: var(--font-mono);">2668 → 3001</div>
     <div class="desc">+333 · v4.2 打拍 + 工艺/约束变化</div>
   </a>
-  <a class="chapter-card" href="#5-综合-QoR-跨代对比0922--1003" style="text-align: center; padding: 16px 12px;">
+  <a class="chapter-card card-center card-mini" href="#5-综合-QoR-跨代对比0922--1003" style="12px">
     <div class="num">FF 寄存器</div>
-    <div class="title" style="font-size: 22px; font-family: var(--font-mono);">2526 → 2839</div>
+    <div class="title" style="font-family: var(--font-mono);">2526 → 2839</div>
     <div class="desc">+313 · 打拍新增触发器</div>
   </a>
-  <a class="chapter-card" href="#5-综合-QoR-跨代对比0922--1003" style="text-align: center; padding: 16px 12px;">
+  <a class="chapter-card card-center card-mini" href="#5-综合-QoR-跨代对比0922--1003" style="12px">
     <div class="num">端口</div>
-    <div class="title" style="font-size: 22px; font-family: var(--font-mono);">6105 → 6772</div>
+    <div class="title" style="font-family: var(--font-mono);">6105 → 6772</div>
     <div class="desc">+667 · 意图待确认</div>
   </a>
 </div>
-<div class="chapter-card" style="padding: 14px 18px; margin-bottom: 28px;">
+<div class="chapter-card" style="padding: 14px 18px; margin-bottom: 28px">
   <div style="font-family: var(--font-mono); font-size: 15px; text-align: center; margin-bottom: 10px;">时序收敛 <b style="color: var(--ok);">452→11</b> · 面积代价 <b style="color: var(--accent);">+6.7%</b>（v4.2 打拍 + 工艺/约束变化的合并代价，待拆分）</div>
   <div style="font-size: 12px; color: var(--muted);">数据源：<span class="mono">SYNTHESIS/ip/syn_HK1V11_digital_top/dc/rep_dir_0922_1456 → rep_dir_1003</span>（Cell Area .rpt L20484/L20083；Sequential 2668/3001；FF 2526/2839；端口 6105/6772 均实读核实）· 四模型交叉共识 <span class="mono">script/dc_1004_review/CONSENSUS_1004_DC_REVIEW.md</span> · 详见 ch16 1004 DC 复核</div>
 </div>
@@ -157,4 +157,4 @@ margin 口径：1V11 沿用 `MARGIN 0.80`（DC）/ `1.00`（PT），"对自己�
   <script src="./js/site.js"></script>
 </body>
 </html>
-<!-- ymzhu 2026-10-20 13:43 -->
+<!-- ymzhu 2026-10-21 11:44 -->

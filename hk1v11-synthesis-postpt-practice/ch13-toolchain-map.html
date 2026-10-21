@@ -27,32 +27,32 @@
       <!-- 速查卡：约束传递链关键产物 -->
       <div class="section-title">速查 · 约束传递链（改任何一环，后面全不可信）</div>
       <div class="chapter-grid" style="margin-bottom: 12px;">
-        <div class="chapter-card" style="grid-column: 1 / -1; text-align: center; padding: 24px 20px;">
+        <div class="chapter-card card-span card-hero card-center">
           <div class="num">ip_cons → DC(write_sdc) → Pre-PT(sdc_pr) → APR(postcts.sdc) → POSTPT</div>
-          <div class="title" style="font-size: 32px; font-family: var(--font-mono); font-weight: 600; color: var(--accent);">6 工具（版本表）· 3 代 SDC · 1 条约束链</div>
+          <div class="title" style="font-family: var(--font-mono); font-weight: 600; color: var(--accent);">6 工具（版本表）· 3 代 SDC · 1 条约束链</div>
           <div class="desc" style="margin-top: 10px; font-size: 14px;">改 ip_cons / clk_period / common_cons → 全链重跑<span class="badge badge-warn" style="margin-left: 10px;">旧文件 = 数字全废</span></div>
         </div>
-        <div class="chapter-card" style="text-align: center; padding: 16px 12px;">
+        <div class="chapter-card card-center card-mini">
           <div class="num">DC → Pre-PT</div>
-          <div class="title" style="font-size: 22px; font-family: var(--font-mono);">.gv + .sdc</div>
+          <div class="title" style="font-family: var(--font-mono);">.gv + .sdc</div>
           <div class="desc">compile_dc.tcl 139 行 · 网表 1.6MB dc.log</div>
         </div>
-        <div class="chapter-card" style="text-align: center; padding: 16px 12px;">
+        <div class="chapter-card card-center card-mini">
           <div class="num">Pre-PT → APR</div>
-          <div class="title" style="font-size: 22px; font-family: var(--font-mono);">sdc_pr 290 行</div>
+          <div class="title" style="font-family: var(--font-mono);">sdc_pr 290 行</div>
           <div class="desc">write_sdc 物化 · pt_setup.tcl 121 行</div>
         </div>
-        <div class="chapter-card" style="text-align: center; padding: 16px 12px;">
+        <div class="chapter-card card-center card-mini">
           <div class="num">APR → POSTPT</div>
-          <div class="title" style="font-size: 22px; font-family: var(--font-mono);">postcts.sdc</div>
+          <div class="title" style="font-family: var(--font-mono);">postcts.sdc</div>
           <div class="desc">+ SPEF · pt_setup.tcl 352 行 · 10 corner</div>
         </div>
       </div>
-      <div class="chapter-card" style="padding: 14px 18px; margin-bottom: 28px;">
+      <div class="chapter-card" style="padding: 14px 18px; margin-bottom: 28px">
         <div style="font-family: var(--font-mono); font-size: 14px; text-align: center; color: var(--muted);">自检：grep "Created by PrimeTime write_sdc on" read_cons.log（时间戳早于你的改动 = 旧代）· SEL-004 计数（静默丢弃）· report_exceptions applied 标志</div>
       </div>
 
-      <article class="article" id="article"></article>
+      <article class="article loading" id="article"></article>
       <div class="page-nav" id="page-nav"></div>
       <div class="footer">HK1V11 SYNTHESIS / SIGNOFF PRACTICE · AUTHOR ymzhuuuu · UPDATED 2026-10-20</div>
     </div>
@@ -1426,7 +1426,7 @@ SYNTHESIS FLOW  ver.2.1
                                            If your rpt have error the signoff will not pass !!!
 ```
 
-<!-- ymzhu 2026-10-20 13:43 -->
+<!-- ymzhu 2026-10-21 11:44 -->
   </script>
   <script src="./js/site.js"></script>
 </body>

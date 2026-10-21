@@ -24,7 +24,7 @@
   <div class="container with-toc">
     <aside class="toc-wrapper"><div class="toc" id="toc"></div></aside>
     <div class="content">
-      <article class="article" id="article"></article>
+      <article class="article loading" id="article"></article>
       <div class="page-nav" id="page-nav"></div>
       <div class="footer">HK1V11 SYNTHESIS / SIGNOFF PRACTICE · AUTHOR ymzhuuuu · UPDATED 2026-10-20</div>
     </div>
@@ -124,33 +124,33 @@ WARNING: PowerPro 读取的 RTL 必须是可综合代码，无法综合会 inter
 
 <div class="section-title">对比 · 为什么 4K180 是 1.81× 而不是 1.5×</div>
 <div class="chapter-grid" style="margin-bottom: 12px;">
-  <div class="chapter-card" style="grid-column: 1 / -1; text-align: center; padding: 24px 20px;">
+  <div class="chapter-card card-span card-hero card-center">
     <div class="num">t_8b1lane @2.97G → 4K180 @4.47G（同 1L · 同 RTL 1006 · Initial Design）</div>
-    <div class="title" style="font-size: 36px; font-family: var(--font-mono); font-weight: 600; color: var(--accent);">16.30 <span style="color: var(--muted); font-size: 22px;">→</span> 29.47 <span style="font-size: 20px;">mW</span></div>
+    <div class="title" style="font-family: var(--font-mono); font-weight: 600; color: var(--accent);">16.30 <span style="color: var(--muted); font-size: 22px;">→</span> 29.47 <span style="font-size: 20px;">mW</span></div>
     <div class="desc" style="margin-top: 10px; font-size: 14px;">实测总倍数 <b>1.807</b> = 1.5053 频率 × 1.2008 活动率<span class="badge badge-warn" style="margin-left: 10px;">非纯频率比</span></div>
   </div>
-  <div class="chapter-card" style="text-align: center; padding: 16px 12px;">
+  <div class="chapter-card card-center card-mini">
     <div class="num">频率因子</div>
-    <div class="title" style="font-size: 22px; font-family: var(--font-mono);">1.5053</div>
+    <div class="title" style="font-family: var(--font-mono);">1.5053</div>
     <div class="desc">RX_CLK 148.4→223.4 MHz（FPS 120→180）</div>
   </div>
-  <div class="chapter-card" style="text-align: center; padding: 16px 12px;">
+  <div class="chapter-card card-center card-mini">
     <div class="num">活动率因子</div>
-    <div class="title" style="font-size: 22px; font-family: var(--font-mono);">1.2008</div>
+    <div class="title" style="font-family: var(--font-mono);">1.2008</div>
     <div class="desc">每周期数据翻转率 ↑~20% · 本对激励实测</div>
   </div>
-  <div class="chapter-card" style="text-align: center; padding: 16px 12px;">
+  <div class="chapter-card card-center card-mini">
     <div class="num">锚点</div>
-    <div class="title" style="font-size: 22px; font-family: var(--font-mono);">×1.500</div>
+    <div class="title" style="font-family: var(--font-mono);">×1.500</div>
     <div class="desc">clock_network 恰 = 频率比 · 口径可信</div>
   </div>
-  <div class="chapter-card" style="text-align: center; padding: 16px 12px;">
+  <div class="chapter-card card-center card-mini">
     <div class="num">新激活硬件</div>
-    <div class="title" style="font-size: 22px; font-family: var(--font-mono);">0</div>
+    <div class="title" style="font-family: var(--font-mono);">0</div>
     <div class="desc">同模块集合 · 无"睡→醒"硬件</div>
   </div>
 </div>
-<div class="chapter-card" style="padding: 14px 18px; margin-bottom: 28px;">
+<div class="chapter-card" style="padding: 14px 18px; margin-bottom: 28px">
   <div style="font-family: var(--font-mono); font-size: 15px; text-align: center; margin-bottom: 10px;">29469.66 = 16303.43 × <b style="color: var(--accent);">1.5053</b>（频率） × <b style="color: var(--info);">1.2008</b>（活动率）</div>
   <div style="font-size: 12px; color: var(--muted); margin-bottom: 6px;">增量 +13.17 mW 四桶构成（新激活桶 = 0，见上方 mini 卡）：</div>
   <div style="display: flex; height: 14px; border-radius: 4px; overflow: hidden;">
@@ -244,29 +244,29 @@ WARNING: PowerPro 读取的 RTL 必须是可综合代码，无法综合会 inter
 
 <div class="section-title">对比 · 1V11 vs 1V22 @4.46G 净差对账</div>
 <div class="chapter-grid" style="margin-bottom: 12px;">
-  <div class="chapter-card" style="grid-column: 1 / -1; text-align: center; padding: 24px 20px;">
+  <div class="chapter-card card-span card-hero card-center">
     <div class="num">1V11 vs 1V22（同日 · 同工具 · 同库 · 同流程 · 完全同频）</div>
-    <div class="title" style="font-size: 36px; font-family: var(--font-mono); font-weight: 600; color: var(--accent);">25.65 <span style="color: var(--muted); font-size: 22px;">vs</span> 18.97 <span style="font-size: 20px;">mW</span></div>
-    <div class="desc" style="margin-top: 10px; font-size: 14px;">净差 <b>6676 µW</b><span class="badge badge-warn" style="margin-left: 10px;">×1.35</span>　对账 = 1.70 纯新增 + 7.30 实现差 + 2.50 迁移 − 4.80 抵消 ≈ 6.7 ✓</div>
+    <div class="title" style="font-family: var(--font-mono); font-weight: 600; color: var(--accent);">25.65 <span style="color: var(--muted); font-size: 22px;">vs</span> 18.97 <span style="font-size: 20px;">mW</span></div>
+    <div class="desc" style="margin-top: 10px; font-size: 14px;">净差 <b>6676 µW</b><span class="badge badge-warn" style="margin-left: 10px;">×▲ ×▲ ×1.35</span>　对账 = 1.70 纯新增 + 7.30 实现差 + 2.50 迁移 − 4.80 抵消 ≈ 6.7 ✓</div>
   </div>
-  <div class="chapter-card" style="text-align: center; padding: 16px 12px;">
+  <div class="chapter-card card-center card-mini">
     <div class="num">纯新增（1V22 无对应功能）</div>
-    <div class="title" style="font-size: 22px; font-family: var(--font-mono);">+1.70 mW</div>
+    <div class="title" style="font-family: var(--font-mono);">+1.70 mW</div>
     <div class="desc">长编码 853 + SMT_CS 516 + 测频 88 + BCC 1 + 故障域 104 + CONFIG 134</div>
   </div>
-  <div class="chapter-card" style="text-align: center; padding: 16px 12px;">
+  <div class="chapter-card card-center card-mini">
     <div class="num">等价功能实现差</div>
-    <div class="title" style="font-size: 22px; font-family: var(--font-mono);">+7.30 mW</div>
+    <div class="title" style="font-family: var(--font-mono);">+7.30 mW</div>
     <div class="desc">SD 核 2256 + 短编码 1704 + DTCTL 1423 + 配置 798 + 时钟 519 + ANCTL 564</div>
   </div>
-  <div class="chapter-card" style="text-align: center; padding: 16px 12px;">
+  <div class="chapter-card card-center card-mini">
     <div class="num">位置迁移</div>
-    <div class="title" style="font-size: 22px; font-family: var(--font-mono);">+2.50 mW</div>
+    <div class="title" style="font-family: var(--font-mono);">+2.50 mW</div>
     <div class="desc">BUFFER_I / K 码对齐沉入 1V22 rx_phy · 双边同计</div>
   </div>
-  <div class="chapter-card" style="text-align: center; padding: 16px 12px;">
+  <div class="chapter-card card-center card-mini">
     <div class="num">1V22 独有抵消</div>
-    <div class="title" style="font-size: 22px; font-family: var(--font-mono); color: var(--ok);">−4.80 mW</div>
+    <div class="title" style="font-family: var(--font-mono); color: var(--ok);">−4.80 mW</div>
     <div class="desc">rx_phy EQ/LEQ 4196 + MON_DISP 588</div>
   </div>
 </div>
@@ -327,4 +327,4 @@ WARNING: PowerPro 读取的 RTL 必须是可综合代码，无法综合会 inter
   <script src="./js/site.js"></script>
 </body>
 </html>
-<!-- ymzhu 2026-10-20 13:43 -->
+<!-- ymzhu 2026-10-21 11:44 -->

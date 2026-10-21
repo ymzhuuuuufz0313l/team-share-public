@@ -26,28 +26,28 @@
     <div class="content">
       <div class="section-title">聚合 · 全量审计裁决（12 项 · 0 高危 · 通过）</div>
       <div class="chapter-grid" style="margin-bottom: 12px;">
-        <div class="chapter-card" style="grid-column: 1 / -1; text-align: center; padding: 24px 20px;">
+        <div class="chapter-card card-span card-hero card-center">
           <div class="num">四份交付物（t1 残留 / t2 清除 / t3 解释 / t4 推演）全量审计</div>
-          <div class="title" style="font-size: 36px; font-family: var(--font-mono); font-weight: 600; color: var(--ok);">通过 <span style="font-size: 20px; color: var(--muted);">12 项全低危</span></div>
+          <div class="title" style="font-family: var(--font-mono); font-weight: 600; color: var(--ok);">通过 <span style="font-size: 20px; color: var(--muted);">12 项全低危</span></div>
           <div class="desc" style="margin-top: 10px; font-size: 14px;">0 高危 + 12 低危（10 行号漂移 + 2 数值计算 F11/F12），全部当场修正<span class="badge badge-ok" style="margin-left: 10px;">PASS</span></div>
         </div>
-        <div class="chapter-card" style="text-align: center; padding: 16px 12px;">
+        <div class="chapter-card card-center card-mini">
           <div class="num">100 格口径</div>
-          <div class="title" style="font-size: 22px; font-family: var(--font-mono);">99 MET + 1</div>
+          <div class="title" style="font-family: var(--font-mono);">99 MET + 1</div>
           <div class="desc">rx0_00_min −0.001051 @ lt_typical_m40（唯一 VIOLATED）</div>
         </div>
-        <div class="chapter-card" style="text-align: center; padding: 16px 12px;">
+        <div class="chapter-card card-center card-mini">
           <div class="num">DPLC CLKB</div>
-          <div class="title" style="font-size: 22px; font-family: var(--font-mono); color: var(--warn);">10/10 出窗</div>
+          <div class="title" style="font-family: var(--font-mono); color: var(--warn);">10/10 出窗</div>
           <div class="desc">margin_b_min −1.17~−3.74，出左界 −0.9（真违例，待规格确认）</div>
         </div>
-        <div class="chapter-card" style="text-align: center; padding: 16px 12px;">
+        <div class="chapter-card card-center card-mini">
           <div class="num">遗留待办</div>
-          <div class="title" style="font-size: 22px; font-family: var(--font-mono);">3 项</div>
+          <div class="title" style="font-family: var(--font-mono);">3 项</div>
           <div class="desc">14 待确认 / DPLC ECO 或规格重定 / 5G3G 判读窗重定</div>
         </div>
       </div>
-      <article class="article" id="article"></article>
+      <article class="article loading" id="article"></article>
       <div class="page-nav" id="page-nav"></div>
       <div class="footer">HK1V11 SYNTHESIS / SIGNOFF PRACTICE · AUTHOR ymzhuuuu · UPDATED 2026-10-19</div>
     </div>
@@ -320,7 +320,7 @@ margin 落在窗内 = 数据↔时钟相对到达满足面板采样要求；出�
 | RX 输入同步探针 | `SYNTHESIS/top/sta/post/common/report_timing_skew_isprx.tcl` L3-8 |
 | I2C IO 探针（当前空）| `SYNTHESIS/top/sta/post/common/report_timing_skew_io.tcl` L12-17 |
 
-<!-- ymzhu 2026-10-20 13:43 -->
+<!-- ymzhu 2026-10-21 11:44 -->
 
 
 ---

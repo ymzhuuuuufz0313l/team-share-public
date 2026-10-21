@@ -38,6 +38,13 @@
     document.querySelectorAll('.article img, .content img').forEach(function (im) {
       list.push({ src: im.getAttribute('src'), alt: im.alt || '' });
       im.classList.add('lb-zoomable');
+      /* 包 .lb-thumb：hover 显示 🔍 角标（UI 审 t61 可发现性） */
+      if (im.parentNode && !im.parentNode.classList.contains('lb-thumb')) {
+        var w = document.createElement('span');
+        w.className = 'lb-thumb';
+        im.parentNode.insertBefore(w, im);
+        w.appendChild(im);
+      }
     });
   }
 

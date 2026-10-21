@@ -131,7 +131,56 @@
   /* ---------- markdown render + TOC ---------- */
   var mdEl = document.getElementById('md');
   if (mdEl && document.getElementById('article')) {
-    document.getElementById('article').innerHTML = marked.parse(mdEl.textContent);
+    var art = document.getElementById('article');
+    art.innerHTML = marked.parse(mdEl.textContent);
+    art.classList.remove('loading');
+
+    /* 表格增强：滚动容器 + 超长表(>40 行)内部滚动+sticky 表头 + 纯数字列右对齐（UI 审 t62） */
+    art.querySelectorAll('table').forEach(function (t) {
+      var rows = t.querySelectorAll('tr');
+      var wrap = document.createElement('div');
+      wrap.className = 'table-wrap' + (rows.length > 40 ? ' table-tall' : '');
+      t.parentNode.insertBefore(wrap, t);
+      wrap.appendChild(t);
+      var cols = rows.length ? rows[0].children.length : 0;
+      for (var ci = 0; ci < cols; ci++) {
+        var numeric = 0, total = 0;
+        rows.forEach(function (r, ri) {
+          if (ri === 0 || !r.children[ci]) return;
+          total++;
+          var txt = (r.children[ci].textContent || '').trim();
+          if (txt !== '' && /^[-−+]?[\d,.]+%?$/.test(txt)) numeric++;
+        });
+        if (total > 0 && numeric / total >= 0.8) {
+          rows.forEach(function (r) { if (r.children[ci]) r.children[ci].classList.add('num'); });
+        }
+      }
+    });
+
+    /* 代码块增强：语言标签 + log/text 浅底 + 复制按钮（UI 审 t62） */
+    art.querySelectorAll('pre > code').forEach(function (c) {
+      var lang = (c.className.match(/language-([\w-]+)/) || [])[1];
+      var pre = c.parentNode;
+      if (lang) {
+        pre.setAttribute('data-lang', (lang === 'text') ? 'log' : lang);
+        if (lang === 'text' || lang === 'log') pre.classList.add('log-view');
+      }
+      var btn = document.createElement('button');
+      btn.className = 'code-copy';
+      btn.type = 'button';
+      btn.textContent = 'copy';
+      btn.addEventListener('click', function () {
+        var done = function () {
+          btn.textContent = '已复制';
+          btn.classList.add('done');
+          setTimeout(function () { btn.textContent = 'copy'; btn.classList.remove('done'); }, 1600);
+        };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(c.textContent).then(done, done);
+        } else { done(); }
+      });
+      pre.appendChild(btn);
+    });
 
     var toc = document.getElementById('toc');
     var headings = document.querySelectorAll('.article h2, .article h3');
@@ -219,11 +268,46 @@
           }
           tocLinks.forEach(function (l) { l.classList.remove('active'); });
           var active = tocLinks.find(function (x) { return x.getAttribute('href') === '#' + targetId; });
-          if (active) active.classList.add('active');
+          if (active) {
+            active.classList.add('active');
+            /* TOC 当前项自动滚入视野（UI 审 t65） */
+            var tocEl = document.getElementById('toc');
+            if (tocEl) tocEl.scrollTop = active.offsetTop - tocEl.clientHeight / 2;
+          }
         });
       }, { rootMargin: '-10% 0px -75% 0px' });
       headings.forEach(function (h) { observer.observe(h); });
     }
+  }
+
+  /* ---------- 阅读进度条（UI 审 t58） ---------- */
+  var prog = document.createElement('div');
+  prog.className = 'read-progress';
+  document.body.appendChild(prog);
+  var progTick = false;
+  window.addEventListener('scroll', function () {
+    if (progTick) return;
+    progTick = true;
+    requestAnimationFrame(function () {
+      var de = document.documentElement;
+      var max = de.scrollHeight - de.clientHeight;
+      prog.style.width = (max > 0 ? (de.scrollTop / max) * 100 : 0) + '%';
+      progTick = false;
+    });
+  }, { passive: true });
+
+  /* ---------- 移动端 TOC 抽屉：≤768px 右下角按钮唤出（UI 审 t64） ---------- */
+  var tocWrap = document.querySelector('.toc-wrapper');
+  if (tocWrap) {
+    var tocBtn = document.createElement('button');
+    tocBtn.className = 'toc-toggle';
+    tocBtn.type = 'button';
+    tocBtn.innerHTML = '<span aria-hidden="true">☰</span> 本页目录';
+    document.body.appendChild(tocBtn);
+    tocBtn.addEventListener('click', function () { tocWrap.classList.toggle('open'); });
+    tocWrap.querySelectorAll('a').forEach(function (a) {
+      a.addEventListener('click', function () { tocWrap.classList.remove('open'); });
+    });
   }
 
   /* ---------- prev / next page nav ---------- */
