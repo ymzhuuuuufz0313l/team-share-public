@@ -582,14 +582,6 @@ always @(posedge DCLK_INV)
 | D | ECO | 缩短→hold | 低风险 | — | 距离大，安全 |
 | E | ECO | 加长→setup | 中风险 | — | 确认余量 |
 
-## 8. 小白自测
-
-1. 什么是半周期路径？为什么 setup 和 hold 都变紧？
-2. useful skew 帮入域 setup 时，出域 setup 会怎样？为什么？
-3. 如果入口 FF 和出口 FF 在不同时钟网，分别 skew 的额外风险是什么？
-4. RTL 加一级 posedge 打拍为什么能消除互卡？
-5. 域内（同钟同相）路径的 setup/hold 会互卡吗？为什么？
-
 ---
 
   </script>
