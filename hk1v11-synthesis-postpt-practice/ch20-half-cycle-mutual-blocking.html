@@ -200,7 +200,135 @@ hold 侧:   launch 晚 → 数据晚到 → 不太早 → 改善 ✓
 - setup 余量未知（域内全周期 3.81ns，应该有余量）
 - 加 0.16ns delay → setup 余量减 0.16ns → **大概率安全但需确认**
 
-## 4. 分析方法论：RTL → 网表 → PT
+## 4. PT 报告路径全集（完整层级，可直接交叉核对）
+
+### 4.1 入域 Setup 违例（8 条，wc_cbest_125）
+
+<div class="ascii-block">
+Startpoint: u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/PSR_LINE_CNT_reg
+             (rising edge-triggered flip-flop clocked by RX_CLK)
+Endpoint:    u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/STB_FAKE_DLY_reg_0_
+             (rising edge-triggered flip-flop clocked by RX_CLK')
+             launch: RX_CLK@0.000  capture: RX_CLK'@1.905  slack = -0.675 (VIOLATED)
+
+Startpoint: u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/PSR_LINE_CNT_reg
+             (rising edge-triggered flip-flop clocked by RX_CLK)
+Endpoint:    u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/STB_DLY_reg_0_
+             (rising edge-triggered flip-flop clocked by RX_CLK')
+             launch: RX_CLK@0.000  capture: RX_CLK'@1.905  slack = -0.675 (VIOLATED)
+
+Startpoint: u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/CS_SIG_ORG_SMT_CS_reg
+             (rising edge-triggered flip-flop clocked by RX_CLK)
+Endpoint:    u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/CS_SIG_ORG_SMT_CS_neg_reg
+             (rising edge-triggered flip-flop clocked by RX_CLK')
+             launch: RX_CLK@0.000  capture: RX_CLK'@1.905  slack = -0.588 (VIOLATED)
+
+Startpoint: u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/CS_SIG_ORG_reg
+             (rising edge-triggered flip-flop clocked by RX_CLK)
+Endpoint:    u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/CS_SIG_ORG_neg_reg
+             (rising edge-triggered flip-flop clocked by RX_CLK')
+             slack = -0.488 (VIOLATED)
+
+Startpoint: u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/STB_IO_pre_reg
+             (rising edge-triggered flip-flop clocked by RX_CLK)
+Endpoint:    u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/STB_IO_pre_neg_reg
+             (rising edge-triggered flip-flop clocked by RX_CLK')
+             slack = -0.388 (VIOLATED)
+
+Startpoint: u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/STB_FAKE_ORG_reg
+             (rising edge-triggered flip-flop clocked by RX_CLK)
+Endpoint:    u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/STB_FAKE_ORG_neg_reg
+             (rising edge-triggered flip-flop clocked by RX_CLK')
+             slack = -0.349 (VIOLATED)
+
+Startpoint: u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/STB_P_reg
+             (rising edge-triggered flip-flop clocked by RX_CLK)
+Endpoint:    u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/STB_P_neg_reg
+             (rising edge-triggered flip-flop clocked by RX_CLK')
+             slack = -0.340 (VIOLATED)
+
+Startpoint: u_LOGIC_CENTER/LINK_LOGIC/LC_CHPI_DECODE/SHORT_ENCODING/SHORT_ENCODING_OUTPUT/SHORT_ENCODING_PHASE_DATA_reg_0_
+             (rising edge-triggered flip-flop clocked by RX_CLK)
+Endpoint:    u_LOGIC_CENTER/LC_CLK_RST_GEN/CLKGEN/short_encoding_phase_data_0_half_dly_reg
+             (rising edge-triggered flip-flop clocked by RX_CLK')
+             slack = -0.045 (VIOLATED)
+</div>
+
+### 4.2 出域 Setup 极薄余量（10 条，锁死 skew 上限）
+
+<div class="ascii-block">
+Startpoint: u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/STB_DLY_reg_15_
+             (rising edge-triggered flip-flop clocked by RX_CLK')
+Endpoint:    u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/HSR_W_cnt_reg_5_
+             (rising edge-triggered flip-flop clocked by RX_CLK)
+             launch: RX_CLK'@1.905  capture: RX_CLK@3.810
+             slack = +0.259 (MET)  ← 最差余量，skew 上限锁死因素！
+
+Startpoint: u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/STB_DLY_reg_15_
+             (clocked by RX_CLK')
+Endpoint:    .../HSR_W_cnt_reg_6_                    slack = +0.272
+Endpoint:    .../HSR_W_cnt_reg_4_                    slack = +0.288
+Endpoint:    .../SNPS_CG_CELL_DCLK_HSR_W_cnt_reg_0/latch  slack = +0.335
+Endpoint:    .../SNPS_CG_CELL_CLK_SCHOP_reg_0/latch      slack = +0.345
+Endpoint:    .../SNPS_CG_CELL_CLK_PWRC_TIME_CNT_reg_0/latch  slack = +0.369
+Endpoint:    .../HSR_W_cnt_reg_1_                    slack = +0.451
+Endpoint:    .../HSR_W_cnt_reg_0_                    slack = +0.457
+Endpoint:    .../PWRC_TIME_CNT_reg_0_               slack = +0.457
+
+Startpoint: u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/STB_FAKE_DLY_reg_7_
+             (clocked by RX_CLK')
+Endpoint:    u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/HSR_FAKE_reg
+             (clocked by RX_CLK)
+             slack = +0.479 (MET)
+</div>
+
+### 4.3 Hold 违例（4 条，wc_cworst_125）
+
+<div class="ascii-block">
+Startpoint: u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/STB_DLY_reg_3_
+             (rising edge-triggered flip-flop clocked by RX_CLK')
+Endpoint:    u_LOGIC_CENTER/CENTER1/DTCTL/LENB1_DLY_reg_0_
+             (rising edge-triggered flip-flop clocked by DCLK_DATA_MUX_SHORT)
+             launch: RX_CLK'@5.715  capture: DCLK_DATA_MUX_SHORT@5.715
+             slack = -0.690 (VIOLATED)  ← 全设计最差 hold！
+
+Startpoint: u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/STB_DLY_reg_7_
+             (rising edge-triggered flip-flop clocked by RX_CLK')
+Endpoint:    u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/STB_DLY_reg_8_
+             (rising edge-triggered flip-flop clocked by RX_CLK')
+             slack = -0.182 (VIOLATED)
+
+Startpoint: u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/STB_DLY_reg_3_
+             (rising edge-triggered flip-flop clocked by RX_CLK')
+Endpoint:    u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/STB_DLY_reg_4_
+             (rising edge-triggered flip-flop clocked by RX_CLK')
+             slack = -0.160 (VIOLATED)
+
+Startpoint: u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/STB_FAKE_DLY_reg_3_
+             (rising edge-triggered flip-flop clocked by RX_CLK')
+Endpoint:    u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/STB_FAKE_DLY_reg_4_
+             (rising edge-triggered flip-flop clocked by RX_CLK')
+             slack = -0.159 (VIOLATED)
+</div>
+
+### 4.4 网表关键 FF 的时钟连接
+
+<div class="ascii-block">
+// 入口 FF（setup 违例的 capture 端）
+AND2DFFRBQX4AL9 STB_DLY_reg_0_ (
+    .CK(ccopt_net__2),     // DCLK_INV → 可多加 skew
+    .D1(STB_EN),
+    .D2(STB_P_neg) );
+
+// 出口 FF（setup 极薄的 launch 端）
+DFFRBQX1AL9 STB_DLY_reg_15_ (
+    .CK(ccopt_net__3),     // DCLK_INV → 只能少加 skew
+    .D(STB_DLY[14]) );
+
+// 不同时钟网！这是分别 skew 的物理基础
+</div>
+
+## 5. 分析方法论：RTL → 网表 → PT
 
 ### 4.1 三级追踪法
 
@@ -226,7 +354,7 @@ if base_l == base_c and lc != cc:  # 同名不同相
 - 路径 1 的 slack(D) 单调递增（D 帮它）
 - 路径 2 的 slack(D) 单调递减（D 伤它）
 
-## 5. 解决策略
+## 6. 解决策略
 
 ### 5.1 分别 skew（利用不同时钟网）
 
@@ -256,7 +384,7 @@ always @(posedge DCLK_INV)
 
 域内 hold 违例不涉及互卡（skew 不影响域内），用标准 hold-fix buffer 即可。
 
-## 6. 互卡矩阵速查
+## 7. 互卡矩阵速查
 
 | 互卡 | 方向 | 类型 | 当前状态 | skew 敏感 | 解决 |
 |------|------|------|----------|-----------|------|
@@ -266,7 +394,7 @@ always @(posedge DCLK_INV)
 | D | ECO | 缩短→hold | 低风险 | — | 距离大，安全 |
 | E | ECO | 加长→setup | 中风险 | — | 确认余量 |
 
-## 7. 小白自测
+## 8. 小白自测
 
 1. 什么是半周期路径？为什么 setup 和 hold 都变紧？
 2. useful skew 帮入域 setup 时，出域 setup 会怎样？为什么？
