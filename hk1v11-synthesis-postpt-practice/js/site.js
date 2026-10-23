@@ -30,7 +30,8 @@
       ['ch16-dc1004-review.html',       '1004复核'],
       ['ch17-rtl-1006-sync.html',       '1006同步'],
       ['ch18-skew.html',                'Skew'],
-      ['ch19-skew-audit.html',          '10-15 审计']
+      ['ch19-skew-audit.html',          '10-15 审计'],
+      ['ch20-half-cycle-mutual-blocking.html', 'Setup-Hold互卡']
     ]},
     { label: '学习路径', href: 'learning-path.html', children: [
       ['ch12-constraint-tutorial.html', '约束教学'],

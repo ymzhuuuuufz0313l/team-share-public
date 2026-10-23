@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>二十、Setup-Hold 互卡 · HK1V11 综合/签核流程实践</title>
+  <meta name="description" content="半周期路径中 setup 与 hold 的互卡关系分析——从 RTL 到网表到 PT 的三级追踪方法，五组互卡模式识别与解决策略">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./css/style.css">
+  <style>
+    .ascii-block { font-family: 'IBM Plex Mono', monospace; font-size: 12px; line-height: 1.5; background: #f8f7f2; border: 1px solid #e0dccf; border-radius: 6px; padding: 14px 18px; overflow-x: auto; white-space: pre; margin: 12px 0; }
+    .互卡-box { border-left: 4px solid #e74c3c; padding: 10px 16px; background: #fef9f7; border-radius: 0 6px 6px 0; margin: 10px 0; }
+    .互卡-good { border-left-color: #27ae60; background: #f7fcf9; }
+    .互卡-warn { border-left-color: #f39c12; background: #fefbf3; }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a class="navbar-brand" href="./">HK1V11_PRACTICE</a>
+      <div class="navbar-links" id="navbar-links"></div>
+    </div>
+  </nav>
+
+  <div class="hero">
+    <div class="hero-inner">
+      <div class="kicker">HK1V11 · CHAPTER 20 · ADVANCED</div>
+      <h1>Setup-Hold <span class="thin">互卡</span></h1>
+      <p class="lead">半周期路径中 setup 与 hold 如何互相锁死对方的修复空间——从 RTL 信号链、网表时钟分支到 PT 路径的三级追踪实录。</p>
+      <div class="author">ymzhu · 2026-10-23 · 基于 10-21 网表实测</div>
+    </div>
+  </div>
+
+  <div class="container with-toc">
+    <aside class="toc-wrapper"><nav class="toc" id="toc"></nav></aside>
+    <main class="article">
+
+# 二十、Setup-Hold 互卡
+
+## 1. 什么是互卡
+
+**互卡（mutual blocking）**：两条（或多条）时序路径对同一个调节手段的需求方向相反，导致修一条必然恶化另一条。
+
+在半周期路径中，互卡发生在三个层面：
+
+| 层面 | 描述 | 调节手段 |
+|------|------|----------|
+| **时钟层面** | skew 帮一个方向的 setup 就伤另一个方向的 hold | useful skew |
+| **路径层面** | 缩短路径修 setup 可能触发 hold，加长路径修 hold 可能触发 setup | ECO buffer |
+| **跨方向层面** | 同一个时钟域的入口和出口对 skew 需求相反 | CTS 分支控制 |
+
+## 2. 半周期基础
+
+### 2.1 正常路径 vs 半周期路径
+
+<div class="ascii-block">
+正常路径（全周期 T=3.81ns）：
+  DCLK:  _/‾‾\___/‾‾\___/‾‾\___
+          |         |
+          launch    capture
+          |←── T ──→|          ← 数据有 3.81ns
+
+半周期路径（T/2=1.905ns）：
+  DCLK:      _/‾‾\___/‾‾\___
+  DCLK_INV:  ___/‾‾\___/‾‾\_
+                  |    |
+                  launch capture
+                  |←T/2→|            ← 数据只有 1.905ns！
+</div>
+
+### 2.2 HK1V11 的 DCLK_INV 域
+
+RTL 设计（`CHPI_SD_CTRL.v` L530-580, `CLKGEN.v` L118-165）：
+
+```verilog
+// 正常相位源寄存器
+always @(posedge DCLK)
+    STB_P <= ...;
+
+// 反相影子寄存器（LD_R timing，20241225 添加）
+assign DCLK_INV = ~DCLK;  // CLKGEN.v L46
+
+always @(posedge DCLK_INV)
+    STB_P_neg <= STB_P;   // 半周期捕获！
+
+// 延时链（也在反相域）
+always @(posedge DCLK_INV)
+    STB_DLY <= {STB_DLY[14:0], STB_A_PRE};  // 16 级移位
+```
+
+**86 个 FF** 分布在 **5 条时钟网**：
+
+| 时钟网 | FF 数 | 内容 |
+|--------|-------|------|
+| ccopt_net__1 | 27 | CS_SIG_SMT_CS_DLY 全链 |
+| ccopt_net__2 | 30 | CS_SIG_DLY + STB_FAKE_DLY + 影子寄存器 |
+| ccopt_net__3 | 25 | STB_DLY + 部分混合 + 影子 |
+| ccopt_net__59 | 3 | short_encoding_phase half_dly |
+| CLK_clone3 | 1 | STB_DLY 个别级 |
+
+## 3. 五组互卡模式
+
+### 互卡 A：入域 setup ↔ 入域 hold
+
+> <div class="互卡-box">
+> <strong>机理</strong>：skew 使 capture 沿延迟 → setup 窗口变大（好）但 hold 阈值上移（坏）。<br>
+> 同一个 skew 动作，帮 setup 就伤 hold。
+> </div>
+
+**实际路径（setup 侧，8 条违例）**：
+
+| PT 路径 | Slack | 网表 |
+|---------|-------|------|
+| PSR_LINE_CNT → STB_DLY_reg_0 | **-0.675** | AND2DFFRBQX4 .CK=ccopt_2 |
+| PSR_LINE_CNT → STB_FAKE_DLY_reg_0 | **-0.675** | .CK=ccopt_2 |
+| CS_SIG_ORG_SMT_CS → _neg | -0.588 | .CK=ccopt_3 |
+| CS_SIG_ORG → _neg | -0.488 | .CK=ccopt_2 |
+| STB_IO_pre → _neg | -0.388 | .CK=ccopt_2 |
+| STB_FAKE_ORG → _neg | -0.349 | .CK=ccopt_2 |
+| STB_P → _neg | -0.340 | .CK=ccopt_2 |
+
+**hold 侧**：当前零违例（但 skew 恶化余量，余量未知）。
+
+<div class="ascii-block">
+skew 对入域的影响：
+
+setup:  |←hold───setup──→|     skew →
+                         右移（setup 更松 ✓）
+        |←hold───setup────────→|
+                右移（hold 更紧 ✗）
+
+修复 setup 的代价 = hold 余量的消耗
+</div>
+
+### 互卡 B：出域 setup ↔ 出域 hold
+
+> <div class="互卡-box">
+> <strong>机理</strong>：skew 使 launch 沿延迟 → 数据晚出发 → setup 恶化但 hold 改善。<br>
+> 全设计最差 hold（-0.690）与出域最薄 setup（+0.259）在同方向上互卡。
+> </div>
+
+**实际路径**：
+
+| PT 路径 | 类型 | Slack | 含义 |
+|---------|------|-------|------|
+| STB_DLY_15 → HSR_W_cnt_5 | setup | **+0.259** | 出口极薄，锁死 skew 上限 |
+| STB_DLY_3 → LENB1_DLY | hold | **-0.690** | 全设计最差 hold |
+
+<div class="ascii-block">
+同一个 skew 动作（launch 延迟）：
+
+setup 侧:  launch 晚 → 数据晚到 → 窗口小 → 恶化 ✗
+hold 侧:   launch 晚 → 数据晚到 → 不太早 → 改善 ✓
+
+帮了 hold 就伤了 setup（互卡！）
+</div>
+
+### 互卡 C：入域 setup ↔ 出域 setup（最强互卡）
+
+> <div class="互卡-box 互卡-warn">
+> <strong>这是最致命的互卡</strong>——两边都是 setup，且对 skew 需求完全相反。<br>
+> 但 HK1V11 有一个幸运发现：入口和出口在不同时钟网！
+> </div>
+
+**实际路径对**：
+
+```
+入口（需要 net__2 skew ↑）:          出口（需要 net__3 skew ↓）:
+  PSR_LINE_CNT                        STB_DLY_reg_15
+  [RX_CLK]                           [RX_CLK', ccopt_net__3]
+      |                                  |
+      | 数据 4.04ns（太慢）              | mux + 逻辑
+      v                                  v
+  STB_DLY_reg_0                       HSR_W_cnt_reg_5
+  [RX_CLK', ccopt_net__2]           [RX_CLK]
+      |                                  |
+  capture 要晚到                      launch 不能晚
+```
+
+<div class="互卡-box 互卡-good">
+<strong>关键发现</strong>：reg_0 在 ccopt_net__2，reg_15 在 ccopt_net__3——不同网！<br>
+可以分别控制 skew（net__2 多加 / net__3 少加），缓解但不消除互卡（链中间过渡仍有窗口损失）。
+</div>
+
+### 互卡 D：ECO 缩短 vs hold
+
+修 setup 需缩短路径 → 缩太多可能触发 hold。
+
+**量化**（PSR_LINE_CNT → STB_DLY_reg_0）：
+- 当前 data_delay = 4.04ns（setup 违例，太慢）
+- hold 阈值 ≈ 1.0ns（数据不能太早）
+- 需缩短 2.14ns（4.04 → 1.90）→ 修完后距 hold 阈值仍有 0.90ns → **安全**
+
+### 互卡 E：ECO 加长 vs setup
+
+修 hold 需加长路径 → 加太多可能触发 setup。
+
+**量化**（STB_DLY_3 → STB_DLY_4，域内）：
+- hold slack = -0.160ns（太快）
+- setup 余量未知（域内全周期 3.81ns，应该有余量）
+- 加 0.16ns delay → setup 余量减 0.16ns → **大概率安全但需确认**
+
+## 4. 分析方法论：RTL → 网表 → PT
+
+### 4.1 三级追踪法
+
+| 步骤 | 做什么 | 产出 |
+|------|--------|------|
+| ① RTL | 找 `posedge` 与 `posedge *_INV` 配对，确认信号链 | 源寄存器→影子→延时链→输出 |
+| ② 网表 | 找每个 FF 的 `.CK()` 连接，确认时钟网分布 | 时钟网→FF 映射表 |
+| ③ PT | 提取 setup + hold 违例的 startpoint→endpoint | 违例路径清单 |
+| ④ 交叉 | 匹配 RTL 信号名与 PT 路径名 | 完整因果链 |
+| ⑤ 推演 | 对每个 skew 值推演六个方向的变化 | 互卡矩阵 |
+
+### 4.2 从 PT 报告提取半周期路径
+
+```python
+# 关键：识别 launch 和 capture 钟名互补（RX_CLK vs RX_CLK'）
+if base_l == base_c and lc != cc:  # 同名不同相
+    category = 'half_cycle'         # 半周期路径
+```
+
+### 4.3 判定互卡的充要条件
+
+两条路径互卡 ⟺ 存在一个调节手段 D，使得：
+- 路径 1 的 slack(D) 单调递增（D 帮它）
+- 路径 2 的 slack(D) 单调递减（D 伤它）
+
+## 5. 解决策略
+
+### 5.1 分别 skew（利用不同时钟网）
+
+| 时钟网 | 建议 skew | 锁定因素 |
+|--------|----------|----------|
+| ccopt_net__2 | +0.48ns | STB_FAKE_DLY 出口余量 0.479 |
+| ccopt_net__3 | +0.25ns | STB_DLY_15 出口余量 0.259 |
+| ccopt_net__59 | +0.05ns | 仅需修 -0.045 |
+
+**效果**：4/10 条 setup 修复，但 3 条大违例仍在。
+
+### 5.2 RTL 打拍（治本）
+
+```verilog
+// 在正常钟域与影子寄存器之间插一级 posedge DCLK FF
+reg STB_P_pipe;
+always @(posedge DCLK)
+    STB_P_pipe <= STB_P;      // 全周期，无压力
+
+always @(posedge DCLK_INV)
+    STB_P_neg <= STB_P_pipe;  // 半周期，但 reg→reg 直连！
+```
+
+**原理**：半周期约束从"4ns 长路径"变为"0.1ns 直连"——互卡根源消除。
+
+### 5.3 hold-fix buffer（独立修复）
+
+域内 hold 违例不涉及互卡（skew 不影响域内），用标准 hold-fix buffer 即可。
+
+## 6. 互卡矩阵速查
+
+| 互卡 | 方向 | 类型 | 当前状态 | skew 敏感 | 解决 |
+|------|------|------|----------|-----------|------|
+| A | 入域 | setup↔hold | setup 违 + hold 未知 | 反向 | RTL 打拍 |
+| B | 出域 | setup↔hold | setup 薄 + hold 违 | 反向 | 分别 skew |
+| C | 入↔出 | setup↔setup | 入违 + 出薄 | 反向 | 不同网 skew |
+| D | ECO | 缩短→hold | 低风险 | — | 距离大，安全 |
+| E | ECO | 加长→setup | 中风险 | — | 确认余量 |
+
+## 7. 小白自测
+
+1. 什么是半周期路径？为什么 setup 和 hold 都变紧？
+2. useful skew 帮入域 setup 时，出域 setup 会怎样？为什么？
+3. 如果入口 FF 和出口 FF 在不同时钟网，分别 skew 的额外风险是什么？
+4. RTL 加一级 posedge 打拍为什么能消除互卡？
+5. 域内（同钟同相）路径的 setup/hold 会互卡吗？为什么？
+
+---
+
+    </main>
+  </div>
+
+  <footer class="footer">
+    <div class="footer-inner">
+      <span class="brand">HK1V11_PRACTICE</span>
+      <span class="updated">UPDATED 2026-10-23</span>
+      <a href="https://github.com/ymzhuuuuufz0313l" target="_blank">GITHUB</a>
+    </div>
+  </footer>
+
+  <script src="./js/site.js"></script>
+</body>
+</html>
+<!-- ymzhu 2026-10-23 16:15 -->
