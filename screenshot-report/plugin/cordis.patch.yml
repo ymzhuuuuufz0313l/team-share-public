@@ -1,0 +1,12 @@
+# 截图→报告 本地插件挂载片段（screenshot-report）—— T7 终审合稿正式版
+# 队长把本片段追加进 ~/.dsh/profiles/desktop/cordis.patch.yml（§3.3；同形 insert: 先例 mcp-github）。
+# 本目录 E:/screenshot-report-plugin/plugin/ 即最终合稿（基座 impl-d + impl-b self_check + P1/P3/M5 修正）。
+# id 用独立名 screenshot-report（勿与任何 bundle 内插件同名，跨 bundle 同名会静默丢弃其一）。
+# 追加后重启 DSH Desktop 生效（以重启为验收口径）；真机验收清单见 architecture.md §14.5。
+- insert:
+    - id: screenshot-report
+      name: 'file:///E:/screenshot-report-plugin/plugin/index.js'
+
+# 兜底（若 Loader 不认 file:// 绝对路径）：把插件目录加进
+# ~/.dsh/profiles/desktop/package.json 的 dependencies 后引用包名：
+#   "screenshot-report": "file:E:/screenshot-report-plugin/plugin"
