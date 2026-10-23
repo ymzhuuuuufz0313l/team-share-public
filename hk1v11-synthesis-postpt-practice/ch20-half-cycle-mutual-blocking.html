@@ -3,37 +3,34 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
   <title>二十、Setup-Hold 互卡 · HK1V11 综合/签核流程实践</title>
-  <meta name="description" content="半周期路径中 setup 与 hold 的互卡关系分析——从 RTL 到网表到 PT 的三级追踪方法，五组互卡模式识别与解决策略">
+  <meta name="description" content="半周期路径中 setup 与 hold 的互卡关系分析——从 RTL 到网表到 PT 的三级追踪，五组互卡模式识别与解决策略">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./css/style.css">
-  <style>
-    .ascii-block { font-family: 'IBM Plex Mono', monospace; font-size: 12px; line-height: 1.5; background: #f8f7f2; border: 1px solid #e0dccf; border-radius: 6px; padding: 14px 18px; overflow-x: auto; white-space: pre; margin: 12px 0; }
-    .互卡-box { border-left: 4px solid #e74c3c; padding: 10px 16px; background: #fef9f7; border-radius: 0 6px 6px 0; margin: 10px 0; }
-    .互卡-good { border-left-color: #27ae60; background: #f7fcf9; }
-    .互卡-warn { border-left-color: #f39c12; background: #fefbf3; }
-  </style>
+  <script src="./js/marked.min.js"></script>
 </head>
 <body>
   <nav class="navbar">
     <div class="navbar-inner">
-      <a class="navbar-brand" href="./">HK1V11_PRACTICE</a>
+      <a class="navbar-brand" href="./">HK1V11_FLOW_PRACTICE</a>
       <div class="navbar-links" id="navbar-links"></div>
     </div>
   </nav>
-
-  <div class="hero">
-    <div class="hero-inner">
-      <div class="kicker">HK1V11 · CHAPTER 20 · ADVANCED</div>
-      <h1>Setup-Hold <span class="thin">互卡</span></h1>
-      <p class="lead">半周期路径中 setup 与 hold 如何互相锁死对方的修复空间——从 RTL 信号链、网表时钟分支到 PT 路径的三级追踪实录。</p>
-      <div class="author">ymzhu · 2026-10-23 · 基于 10-21 网表实测</div>
+  <div class="container with-toc">
+    <aside class="toc-wrapper"><div class="toc" id="toc"></div></aside>
+    <div class="content">
+      <article class="article loading" id="article"></article>
+      <div class="page-nav" id="page-nav"></div>
+      <div class="footer">HK1V11 SYNTHESIS / SIGNOFF PRACTICE · AUTHOR ymzhuuuu · UPDATED 2026-10-23</div>
     </div>
   </div>
 
-  <div class="container with-toc">
-    <aside class="toc-wrapper"><nav class="toc" id="toc"></nav></aside>
-    <main class="article">
+  <script type="text/template" id="md">
 
 # 二十、Setup-Hold 互卡
 
@@ -53,7 +50,7 @@
 
 ### 2.1 正常路径 vs 半周期路径
 
-<div class="ascii-block">
+```
 正常路径（全周期 T=3.81ns）：
   DCLK:  _/‾‾\___/‾‾\___/‾‾\___
           |         |
@@ -66,7 +63,7 @@
                   |    |
                   launch capture
                   |←T/2→|            ← 数据只有 1.905ns！
-</div>
+```
 
 ### 2.2 HK1V11 的 DCLK_INV 域
 
@@ -102,10 +99,8 @@ always @(posedge DCLK_INV)
 
 ### 互卡 A：入域 setup ↔ 入域 hold
 
-> <div class="互卡-box">
-> <strong>机理</strong>：skew 使 capture 沿延迟 → setup 窗口变大（好）但 hold 阈值上移（坏）。<br>
+> **机理**：skew 使 capture 沿延迟 → setup 窗口变大（好）但 hold 阈值上移（坏）。
 > 同一个 skew 动作，帮 setup 就伤 hold。
-> </div>
 
 **实际路径（setup 侧，8 条违例）**：
 
@@ -121,7 +116,7 @@ always @(posedge DCLK_INV)
 
 **hold 侧**：当前零违例（但 skew 恶化余量，余量未知）。
 
-<div class="ascii-block">
+```
 skew 对入域的影响：
 
 setup:  |←hold───setup──→|     skew →
@@ -130,14 +125,12 @@ setup:  |←hold───setup──→|     skew →
                 右移（hold 更紧 ✗）
 
 修复 setup 的代价 = hold 余量的消耗
-</div>
+```
 
 ### 互卡 B：出域 setup ↔ 出域 hold
 
-> <div class="互卡-box">
-> <strong>机理</strong>：skew 使 launch 沿延迟 → 数据晚出发 → setup 恶化但 hold 改善。<br>
+> **机理**：skew 使 launch 沿延迟 → 数据晚出发 → setup 恶化但 hold 改善。
 > 全设计最差 hold（-0.690）与出域最薄 setup（+0.259）在同方向上互卡。
-> </div>
 
 **实际路径**：
 
@@ -146,21 +139,19 @@ setup:  |←hold───setup──→|     skew →
 | STB_DLY_15 → HSR_W_cnt_5 | setup | **+0.259** | 出口极薄，锁死 skew 上限 |
 | STB_DLY_3 → LENB1_DLY | hold | **-0.690** | 全设计最差 hold |
 
-<div class="ascii-block">
+```
 同一个 skew 动作（launch 延迟）：
 
 setup 侧:  launch 晚 → 数据晚到 → 窗口小 → 恶化 ✗
 hold 侧:   launch 晚 → 数据晚到 → 不太早 → 改善 ✓
 
 帮了 hold 就伤了 setup（互卡！）
-</div>
+```
 
 ### 互卡 C：入域 setup ↔ 出域 setup（最强互卡）
 
-> <div class="互卡-box 互卡-warn">
-> <strong>这是最致命的互卡</strong>——两边都是 setup，且对 skew 需求完全相反。<br>
+> **这是最致命的互卡**——两边都是 setup，且对 skew 需求完全相反。
 > 但 HK1V11 有一个幸运发现：入口和出口在不同时钟网！
-> </div>
 
 **实际路径对**：
 
@@ -177,10 +168,8 @@ hold 侧:   launch 晚 → 数据晚到 → 不太早 → 改善 ✓
   capture 要晚到                      launch 不能晚
 ```
 
-<div class="互卡-box 互卡-good">
-<strong>关键发现</strong>：reg_0 在 ccopt_net__2，reg_15 在 ccopt_net__3——不同网！<br>
-可以分别控制 skew（net__2 多加 / net__3 少加），缓解但不消除互卡（链中间过渡仍有窗口损失）。
-</div>
+> **关键发现**：reg_0 在 ccopt_net__2，reg_15 在 ccopt_net__3——不同网！
+> 可以分别控制 skew（net__2 多加 / net__3 少加），缓解但不消除互卡（链中间过渡仍有窗口损失）。
 
 ### 互卡 D：ECO 缩短 vs hold
 
@@ -200,11 +189,11 @@ hold 侧:   launch 晚 → 数据晚到 → 不太早 → 改善 ✓
 - setup 余量未知（域内全周期 3.81ns，应该有余量）
 - 加 0.16ns delay → setup 余量减 0.16ns → **大概率安全但需确认**
 
-## 4. PT 报告路径全集（完整层级，可直接交叉核对）
+## 4. PT 报告路径全集（完整层级）
 
 ### 4.1 入域 Setup 违例（8 条，wc_cbest_125）
 
-<div class="ascii-block">
+```
 Startpoint: u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/PSR_LINE_CNT_reg
              (rising edge-triggered flip-flop clocked by RX_CLK)
 Endpoint:    u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/STB_FAKE_DLY_reg_0_
@@ -221,7 +210,7 @@ Startpoint: u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/CS_SIG_ORG_SM
              (rising edge-triggered flip-flop clocked by RX_CLK)
 Endpoint:    u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/CS_SIG_ORG_SMT_CS_neg_reg
              (rising edge-triggered flip-flop clocked by RX_CLK')
-             launch: RX_CLK@0.000  capture: RX_CLK'@1.905  slack = -0.588 (VIOLATED)
+             slack = -0.588 (VIOLATED)
 
 Startpoint: u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/CS_SIG_ORG_reg
              (rising edge-triggered flip-flop clocked by RX_CLK)
@@ -252,11 +241,11 @@ Startpoint: u_LOGIC_CENTER/LINK_LOGIC/LC_CHPI_DECODE/SHORT_ENCODING/SHORT_ENCODI
 Endpoint:    u_LOGIC_CENTER/LC_CLK_RST_GEN/CLKGEN/short_encoding_phase_data_0_half_dly_reg
              (rising edge-triggered flip-flop clocked by RX_CLK')
              slack = -0.045 (VIOLATED)
-</div>
+```
 
 ### 4.2 出域 Setup 极薄余量（10 条，锁死 skew 上限）
 
-<div class="ascii-block">
+```
 Startpoint: u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/STB_DLY_reg_15_
              (rising edge-triggered flip-flop clocked by RX_CLK')
 Endpoint:    u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/HSR_W_cnt_reg_5_
@@ -264,27 +253,18 @@ Endpoint:    u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/HSR_W_cnt_re
              launch: RX_CLK'@1.905  capture: RX_CLK@3.810
              slack = +0.259 (MET)  ← 最差余量，skew 上限锁死因素！
 
-Startpoint: u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/STB_DLY_reg_15_
-             (clocked by RX_CLK')
-Endpoint:    .../HSR_W_cnt_reg_6_                    slack = +0.272
-Endpoint:    .../HSR_W_cnt_reg_4_                    slack = +0.288
-Endpoint:    .../SNPS_CG_CELL_DCLK_HSR_W_cnt_reg_0/latch  slack = +0.335
-Endpoint:    .../SNPS_CG_CELL_CLK_SCHOP_reg_0/latch      slack = +0.345
-Endpoint:    .../SNPS_CG_CELL_CLK_PWRC_TIME_CNT_reg_0/latch  slack = +0.369
-Endpoint:    .../HSR_W_cnt_reg_1_                    slack = +0.451
-Endpoint:    .../HSR_W_cnt_reg_0_                    slack = +0.457
-Endpoint:    .../PWRC_TIME_CNT_reg_0_               slack = +0.457
+（其余 9 条均从 STB_DLY_reg_15_ 出发，slack +0.272~+0.479，略）
 
 Startpoint: u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/STB_FAKE_DLY_reg_7_
-             (clocked by RX_CLK')
+             (rising edge-triggered flip-flop clocked by RX_CLK')
 Endpoint:    u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/HSR_FAKE_reg
-             (clocked by RX_CLK)
+             (rising edge-triggered flip-flop clocked by RX_CLK)
              slack = +0.479 (MET)
-</div>
+```
 
 ### 4.3 Hold 违例（4 条，wc_cworst_125）
 
-<div class="ascii-block">
+```
 Startpoint: u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/STB_DLY_reg_3_
              (rising edge-triggered flip-flop clocked by RX_CLK')
 Endpoint:    u_LOGIC_CENTER/CENTER1/DTCTL/LENB1_DLY_reg_0_
@@ -309,11 +289,11 @@ Startpoint: u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/STB_FAKE_DLY_
 Endpoint:    u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/STB_FAKE_DLY_reg_4_
              (rising edge-triggered flip-flop clocked by RX_CLK')
              slack = -0.159 (VIOLATED)
-</div>
+```
 
 ### 4.4 网表关键 FF 的时钟连接
 
-<div class="ascii-block">
+```
 // 入口 FF（setup 违例的 capture 端）
 AND2DFFRBQX4AL9 STB_DLY_reg_0_ (
     .CK(ccopt_net__2),     // DCLK_INV → 可多加 skew
@@ -326,11 +306,11 @@ DFFRBQX1AL9 STB_DLY_reg_15_ (
     .D(STB_DLY[14]) );
 
 // 不同时钟网！这是分别 skew 的物理基础
-</div>
+```
 
 ## 5. 分析方法论：RTL → 网表 → PT
 
-### 4.1 三级追踪法
+### 5.1 三级追踪法
 
 | 步骤 | 做什么 | 产出 |
 |------|--------|------|
@@ -340,15 +320,16 @@ DFFRBQX1AL9 STB_DLY_reg_15_ (
 | ④ 交叉 | 匹配 RTL 信号名与 PT 路径名 | 完整因果链 |
 | ⑤ 推演 | 对每个 skew 值推演六个方向的变化 | 互卡矩阵 |
 
-### 4.2 从 PT 报告提取半周期路径
+### 5.2 从 PT 报告提取半周期路径
+
+关键：识别 launch 和 capture 钟名互补（`RX_CLK` vs `RX_CLK'`）。
 
 ```python
-# 关键：识别 launch 和 capture 钟名互补（RX_CLK vs RX_CLK'）
 if base_l == base_c and lc != cc:  # 同名不同相
     category = 'half_cycle'         # 半周期路径
 ```
 
-### 4.3 判定互卡的充要条件
+### 5.3 判定互卡的充要条件
 
 两条路径互卡 ⟺ 存在一个调节手段 D，使得：
 - 路径 1 的 slack(D) 单调递增（D 帮它）
@@ -356,7 +337,7 @@ if base_l == base_c and lc != cc:  # 同名不同相
 
 ## 6. 解决策略
 
-### 5.1 分别 skew（利用不同时钟网）
+### 6.1 分别 skew（利用不同时钟网）
 
 | 时钟网 | 建议 skew | 锁定因素 |
 |--------|----------|----------|
@@ -366,7 +347,7 @@ if base_l == base_c and lc != cc:  # 同名不同相
 
 **效果**：4/10 条 setup 修复，但 3 条大违例仍在。
 
-### 5.2 RTL 打拍（治本）
+### 6.2 RTL 打拍（治本）
 
 ```verilog
 // 在正常钟域与影子寄存器之间插一级 posedge DCLK FF
@@ -380,7 +361,7 @@ always @(posedge DCLK_INV)
 
 **原理**：半周期约束从"4ns 长路径"变为"0.1ns 直连"——互卡根源消除。
 
-### 5.3 hold-fix buffer（独立修复）
+### 6.3 hold-fix buffer（独立修复）
 
 域内 hold 违例不涉及互卡（skew 不影响域内），用标准 hold-fix buffer 即可。
 
@@ -404,18 +385,8 @@ always @(posedge DCLK_INV)
 
 ---
 
-    </main>
-  </div>
-
-  <footer class="footer">
-    <div class="footer-inner">
-      <span class="brand">HK1V11_PRACTICE</span>
-      <span class="updated">UPDATED 2026-10-23</span>
-      <a href="https://github.com/ymzhuuuuufz0313l" target="_blank">GITHUB</a>
-    </div>
-  </footer>
-
+  </script>
   <script src="./js/site.js"></script>
 </body>
 </html>
-<!-- ymzhu 2026-10-23 16:15 -->
+<!-- ymzhu 2026-10-23 16:30 -->
