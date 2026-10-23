@@ -97,117 +97,108 @@ always @(posedge DCLK_INV)
 
 ## 3. 五组互卡模式
 
+> **一句话总结**：DCLK_INV 域同时被入口 setup 和出口 setup 挤压，任何 skew >0.25ns 都是拆东墙补西墙。治本方案是 RTL 加一级 posedge 打拍。
+
 ### 互卡 A：入域 setup ↔ 入域 hold
 
-> **机理**：skew 使 capture 沿延迟 → setup 窗口变大（好）但 hold 阈值上移（坏）。
-> 同一个 skew 动作，帮 setup 就伤 hold。
+> **一句话**：skew 帮 setup 修违例，但同时消耗 hold 余量——hold 余量是未知盲区。
 
-#### PT 报告显示的路径（setup 侧，wc_cbest_125）
+**Setup 侧**（8 条违例，worst -0.675ns）：
+
+| 路径 | Slack | 说明 |
+|------|-------|------|
+| PSR_LINE_CNT → STB_DLY_reg_0 | -0.675 | 行计数器→延时链入口 |
+| PSR_LINE_CNT → STB_FAKE_DLY_reg_0 | -0.675 | 伪选通链入口 |
+| CS_SIG_ORG_SMT_CS → _neg | -0.588 | SMART_CS 影子 |
+| CS_SIG_ORG → _neg | -0.488 | 片选影子 |
+| STB_IO_pre → _neg | -0.388 | IO 预选通影子 |
+| STB_FAKE_ORG → _neg | -0.349 | 伪选通影子 |
+| STB_P → _neg | -0.340 | 选通影子 |
+
+**Hold 侧**：零违例（余量未知——PT 报告只列 VIOLATED 不列 MET 余量）。
+
+<details>
+<summary>📋 展开 PT 完整路径（点击展开）</summary>
 
 ```
 Startpoint: u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/PSR_LINE_CNT_reg
              (rising edge-triggered flip-flop clocked by RX_CLK)
 Endpoint:    u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/STB_DLY_reg_0_
              (rising edge-triggered flip-flop clocked by RX_CLK')
-             launch: RX_CLK@0.000  capture: RX_CLK'@1.905
-             data arrival: 4.038  data required: 3.364
-             slack (VIOLATED) = -0.675
+             data arrival: 4.038  data required: 3.364  slack = -0.675
 
 Startpoint: u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/PSR_LINE_CNT_reg
-             (rising edge-triggered flip-flop clocked by RX_CLK)
+             (clocked by RX_CLK)
 Endpoint:    u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/STB_FAKE_DLY_reg_0_
-             (rising edge-triggered flip-flop clocked by RX_CLK')
-             slack (VIOLATED) = -0.675
+             (clocked by RX_CLK')  slack = -0.675
 
 Startpoint: u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/CS_SIG_ORG_SMT_CS_reg
-             (rising edge-triggered flip-flop clocked by RX_CLK)
+             (clocked by RX_CLK)
 Endpoint:    u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/CS_SIG_ORG_SMT_CS_neg_reg
-             (rising edge-triggered flip-flop clocked by RX_CLK')
-             slack (VIOLATED) = -0.588
+             (clocked by RX_CLK')  slack = -0.588
+
+Startpoint: u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/CS_SIG_ORG_reg
+             (clocked by RX_CLK)
+Endpoint:    u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/CS_SIG_ORG_neg_reg
+             (clocked by RX_CLK')  slack = -0.488
+
+Startpoint: u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/STB_IO_pre_reg
+             (clocked by RX_CLK)
+Endpoint:    u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/STB_IO_pre_neg_reg
+             (clocked by RX_CLK')  slack = -0.388
+
+Startpoint: u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/STB_FAKE_ORG_reg
+             (clocked by RX_CLK)
+Endpoint:    u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/STB_FAKE_ORG_neg_reg
+             (clocked by RX_CLK')  slack = -0.349
 
 Startpoint: u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/STB_P_reg
-             (rising edge-triggered flip-flop clocked by RX_CLK)
+             (clocked by RX_CLK)
 Endpoint:    u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/STB_P_neg_reg
-             (rising edge-triggered flip-flop clocked by RX_CLK')
-             slack (VIOLATED) = -0.340
+             (clocked by RX_CLK')  slack = -0.340
 ```
 
-#### PT 报告显示的路径（hold 侧）
+</details>
 
-当前 hold 报告中**没有**此方向违例——报告只列 VIOLATED，MET 路径余量未知。
-这是互卡 A 的盲区：**我们不知道 hold 余量有多少，但 skew 会消耗它**。
+**解决方案**：
 
-```
-hold 检查逻辑（同一条路径的 hold 侧）：
-  launch: RX_CLK@0.000 → 数据出发
-  capture: RX_CLK'@1.905 → 数据必须在此之前保持稳定
-
-  hold slack = min_data_delay - (capture_clk_delay + hold_time - launch_clk_delay)
-
-  skew 加入后：capture_clk_delay 增加 → hold slack 减少
-  当前 = 未知（正数，否则会出现在违例报告中）
-  skew +0.48 后 = 未知 - 0.48 → 可能变负！
-```
-
-#### 互卡可视化
-
-```
-skew 对入域的影响：
-
-setup:  |←hold───setup──→|     skew →
-                         右移（setup 更松 ✓）
-        |←hold───setup────────→|
-                右移（hold 更紧 ✗）
-
-修复 setup 的代价 = hold 余量的消耗
-```
-
-#### 解决方案
-
-| 方案 | 操作 | 效果 | 风险 |
-|------|------|------|------|
-| **RTL 打拍（推荐）** | 在 PSR_LINE_CNT 与延时链之间插 posedge DCLK FF | 半周期约束变为 reg→reg 直连，setup 轻松满足；hold 也不再受 skew 影响 | 信号多一拍延迟，需 designer 确认 |
-| **分别 skew** | ccopt_net__2 加 +0.48ns | 4 条 setup 修复（影子寄存器类）| hold 余量未知，skew 后可能出现新违例 |
-| **混合** | skew +0.25ns（保守）+ 对最差路径 ECO 优化 | 部分修复 | hold 风险较小但仍需复查 |
+| 方案 | 效果 | 风险 |
+|------|------|------|
+| **RTL 打拍（推荐）** | 彻底消除半周期约束 | 一拍延迟需 designer 确认 |
+| 分别 skew +0.48 | 修 4 条（影子类） | hold 余量未知 |
+| 保守 skew +0.25 | 修 1 条 | hold 风险较小 |
 
 ---
 
 ### 互卡 B：出域 setup ↔ 出域 hold
 
-> **机理**：skew 使 launch 沿延迟 → 数据晚出发 → setup 恶化但 hold 改善。
-> 全设计最差 hold（-0.690）与出域最薄 setup（+0.259）在同方向上互卡。
+> **一句话**：同一个 skew 帮 hold（-0.690 改善）就伤 setup（+0.259 恶化）。
 
-#### PT 报告显示的路径（setup 侧，极薄余量）
+| 路径 | 类型 | Slack | 含义 |
+|------|------|-------|------|
+| STB_DLY_15 → HSR_W_cnt_5 | setup | **+0.259** | 最薄！skew 上限锁死因素 |
+| STB_DLY_3 → LENB1_DLY | hold | **-0.690** | 全设计最差 hold |
+
+<details>
+<summary>📋 展开 PT 完整路径</summary>
 
 ```
+【setup 侧，10 条极薄】
 Startpoint: u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/STB_DLY_reg_15_
              (rising edge-triggered flip-flop clocked by RX_CLK')
 Endpoint:    u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/HSR_W_cnt_reg_5_
              (rising edge-triggered flip-flop clocked by RX_CLK)
              launch: RX_CLK'@1.905  capture: RX_CLK@3.810
-             data arrival: 6.123  data required: 6.382
-             slack (MET) = +0.259  ← 最差！skew 上限锁死因素
+             slack (MET) = +0.259  ← 最差余量
 
-（同类 9 条，均从 STB_DLY_reg_15_ 出发）
-Startpoint: .../STB_DLY_reg_15_ → Endpoint: .../HSR_W_cnt_reg_6_   slack = +0.272
-Startpoint: .../STB_DLY_reg_15_ → Endpoint: .../HSR_W_cnt_reg_4_   slack = +0.288
-Startpoint: .../STB_DLY_reg_15_ → Endpoint: .../latch(DCLK_HSR)    slack = +0.335
-Startpoint: .../STB_DLY_reg_15_ → Endpoint: .../latch(CLK_SCHOP)   slack = +0.345
-Startpoint: .../STB_DLY_reg_15_ → Endpoint: .../latch(PWRC_TIME)   slack = +0.369
-Startpoint: .../STB_DLY_reg_15_ → Endpoint: .../HSR_W_cnt_reg_1_   slack = +0.451
-Startpoint: .../STB_DLY_reg_15_ → Endpoint: .../HSR_W_cnt_reg_0_   slack = +0.457
-Startpoint: .../STB_DLY_reg_15_ → Endpoint: .../PWRC_TIME_CNT_reg  slack = +0.457
+（其余 9 条均从 STB_DLY_reg_15_ 出发，slack +0.272~+0.479）
 
 Startpoint: u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/STB_FAKE_DLY_reg_7_
-             (rising edge-triggered flip-flop clocked by RX_CLK')
+             (clocked by RX_CLK')
 Endpoint:    u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/HSR_FAKE_reg
-             (rising edge-triggered flip-flop clocked by RX_CLK)
-             slack (MET) = +0.479
-```
+             (clocked by RX_CLK)  slack = +0.479
 
-#### PT 报告显示的路径（hold 侧，全设计最差）
-
-```
+【hold 侧，全设计最差】
 Startpoint: u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/STB_DLY_reg_3_
              (rising edge-triggered flip-flop clocked by RX_CLK')
 Endpoint:    u_LOGIC_CENTER/CENTER1/DTCTL/LENB1_DLY_reg_0_
@@ -216,185 +207,95 @@ Endpoint:    u_LOGIC_CENTER/CENTER1/DTCTL/LENB1_DLY_reg_0_
              slack (VIOLATED) = -0.690
 ```
 
-#### 互卡推演
+</details>
 
-```
-同一个 skew 动作（launch 延迟）：
+**互卡推演**：
 
-对 setup 路径 STB_DLY_15 → HSR_W_cnt：
-  launch 晚 → 数据晚到 → 窗口小 → 恶化
-  +0.675 skew → +0.259 - 0.675 = -0.416 → 从 MET 变 VIOLATED！
+| skew 量 | setup 效果 | hold 效果 |
+|---------|-----------|-----------|
+| +0.675 | +0.259-0.675 = **-0.416 ❌** | -0.690+0.675 = **-0.015 ✅** |
+| +0.25 | +0.259-0.25 = **+0.009 ✅** | -0.690+0.25 = **-0.44 ⚠️** |
 
-对 hold 路径 STB_DLY_3 → LENB1_DLY：
-  launch 晚 → 数据晚到 → 不太早 → 改善
-  +0.675 skew → -0.690 + 0.675 = -0.015 → 几乎修复
-
-帮了 hold 就伤了 setup（互卡！）
-```
-
-#### 解决方案
-
-| 方案 | 操作 | 效果 | 风险 |
-|------|------|------|------|
-| **分别 skew（推荐）** | ccopt_net__3 只加 +0.25ns（不多加）| setup 保住（+0.009）；hold 改善至 -0.44 | -0.44 仍未修完 |
-| **hold 单独 delay** | 在 STB_DLY_3 → LENB1_DLY 数据路径插 delay buffer | hold 独立修复，不影响 setup | 需精确控制 delay 量 |
-| **两步走** | skew +0.25 → hold 改善到 -0.44 → 再插 0.44ns delay | setup 安全 + hold 修复 | 需验证 delay 不影响其他路径 |
+**解决方案**：net__3 只加 +0.25ns（保 setup），hold 残余 -0.44 用 delay buffer 单独修。
 
 ---
 
 ### 互卡 C：入域 setup ↔ 出域 setup（最强互卡）
 
-> **这是最致命的互卡**——两边都是 setup，且对 skew 需求完全相反。
-> 但 HK1V11 有一个幸运发现：入口和出口在不同时钟网！
+> **一句话**：两边都是 setup 且 skew 需求相反——但入口和出口在不同时钟网，可分别控制。
 
-#### PT 报告显示的路径对
+**网表证据**：
 
-**入口路径（需要 net__2 skew ↑）**：
 ```
+入口 FF:  STB_DLY_reg_0_  .CK = ccopt_net__2  ← 可多加 skew
+出口 FF:  STB_DLY_reg_15_ .CK = ccopt_net__3  ← 只能少加 skew
+                                        ↑ 不同网！
+```
+
+<details>
+<summary>📋 展开 PT 完整路径</summary>
+
+```
+【入口（需要 net__2 skew ↑）】
 Startpoint: u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/PSR_LINE_CNT_reg
              (rising edge-triggered flip-flop clocked by RX_CLK)
 Endpoint:    u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/STB_DLY_reg_0_
              (rising edge-triggered flip-flop clocked by RX_CLK')
-             slack (VIOLATED) = -0.675
              网表: AND2DFFRBQX4AL9 STB_DLY_reg_0_ (.CK(ccopt_net__2))
-```
+             slack (VIOLATED) = -0.675
 
-**出口路径（需要 net__3 skew ↓）**：
-```
+【出口（需要 net__3 skew ↓）】
 Startpoint: u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/STB_DLY_reg_15_
              (rising edge-triggered flip-flop clocked by RX_CLK')
 Endpoint:    u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/HSR_W_cnt_reg_5_
              (rising edge-triggered flip-flop clocked by RX_CLK)
-             slack (MET) = +0.259  ← 不能再少！
              网表: DFFRBQX1AL9 STB_DLY_reg_15_ (.CK(ccopt_net__3))
+             slack (MET) = +0.259  ← 不能再少
 ```
 
-#### 网表证据
+</details>
 
-```
-// 入口 FF —— 在 ccopt_net__2
-AND2DFFRBQX4AL9 STB_DLY_reg_0_ (
-    .CK(ccopt_net__2),     ← 可多加 skew
-    .D1(STB_EN),
-    .D2(STB_P_neg) );
+**解决方案推演**：
 
-// 出口 FF —— 在 ccopt_net__3（不同网！）
-DFFRBQX1AL9 STB_DLY_reg_15_ (
-    .CK(ccopt_net__3),     ← 只能少加 skew
-    .D(STB_DLY[14]) );
-```
+| 方案 | net__2 | net__3 | 入口 | 出口 |
+|------|--------|--------|------|------|
+| 统一 +0.675 | +0.675 | +0.675 | ✅ 全修 | ❌ 全毁 |
+| **分别 skew** | **+0.48** | **+0.25** | ⚠️ -0.195 | ✅ +0.009 |
+| 统一 +0.25 | +0.25 | +0.25 | ❌ -0.425 | ✅ +0.009 |
 
-#### 互卡可视化
-
-```
-入口（需要 net__2 skew ↑）:          出口（需要 net__3 skew ↓）:
-  PSR_LINE_CNT                        STB_DLY_reg_15
-  [RX_CLK]                           [RX_CLK', ccopt_net__3]
-      |                                  |
-      | 数据 4.04ns（太慢）              | mux + 逻辑
-      v                                  v
-  STB_DLY_reg_0                       HSR_W_cnt_reg_5
-  [RX_CLK', ccopt_net__2]           [RX_CLK]
-      |                                  |
-  capture 要晚到                      launch 不能晚
-```
-
-#### 解决方案
-
-| 方案 | net__2 skew | net__3 skew | 入口效果 | 出口效果 |
-|------|------------|------------|----------|----------|
-| 统一 +0.675 | +0.675 | +0.675 | -0.675+0.675=0 ✅ | +0.259-0.675=-0.416 ❌ |
-| **分别 skew** | **+0.48** | **+0.25** | -0.675+0.48=-0.195 ⚠️ | +0.259-0.25=+0.009 ✅ |
-| 统一 +0.25 | +0.25 | +0.25 | -0.675+0.25=-0.425 ❌ | +0.009 ✅ |
-
-**推荐**：分别 skew（net__2=+0.48 / net__3=+0.25），出口安全但入口仍有 -0.195ns 残留，需后续 RTL 打拍。
-
-**额外风险**：STB_DLY 链中间从 net__2 到 net__3 的过渡级，skew 差 = 0.48-0.25 = 0.23ns 窗口缩小，需确认域内 setup 余量 > 0.23ns。
+**推荐**：分别 skew。入口残留 -0.195ns 由 RTL 打拍解决。
+**风险**：链中间 net__2→net__3 过渡处窗口缩 0.23ns，需确认域内 setup 余量。
 
 ---
 
 ### 互卡 D：ECO 缩短 vs hold
 
-> 修 setup 需缩短路径 → 缩太多可能触发 hold。
+> **一句话**：修 setup 缩短路径→太短可能触发 hold。但此路径差距大（0.90ns），安全。
 
-#### PT 报告显示的路径
+| 项目 | 数值 |
+|------|------|
+| 当前 data_delay | 4.04ns |
+| 修 setup 需缩至 | 1.90ns |
+| hold 阈值 | ≈1.0ns |
+| 修完后距阈值 | 0.90ns → **安全** |
 
-```
-Startpoint: u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/PSR_LINE_CNT_reg
-             (rising edge-triggered flip-flop clocked by RX_CLK)
-Endpoint:    u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/STB_DLY_reg_0_
-             (rising edge-triggered flip-flop clocked by RX_CLK')
-             data arrival: 4.038  data required: 3.364
-             slack (VIOLATED) = -0.675
-```
-
-#### 量化分析
-
-```
-当前 data_delay = 4.04ns（太慢，setup 违例）
-hold 阈值 ≈ launch_clk_delay + hold_time ≈ 1.0ns（数据不能太早）
-
-修 setup：需缩短 4.04 → 1.90ns（缩短 2.14ns）
-修完后：data_delay = 1.90ns，hold 阈值 = 1.0ns
-余量 = 1.90 - 1.00 = 0.90ns → hold 仍然安全 ✓
-
-结论：此路径修 setup 不会触发 hold（差距大，安全）
-```
-
-#### 解决方案
-
-| 方案 | 操作 | 效果 |
-|------|------|------|
-| ECO upsize | 对 PSR_LINE_CNT → STB_EN → D1 路径上的 cell 换大驱动 | 缩短数据路径，但 2.14ns 幅度太大，ECO 难以达成 |
-| RTL 打拍 | 插一级 posedge DCLK FF | 根本消除（半周期窗口不再适用于长路径）|
-| 综合 | 下一轮 DC 综合时对此路径加权重 | 长期方案 |
+**解决方案**：ECO upsize（2.14ns 幅度太激进）或 RTL 打拍（推荐）。
 
 ---
 
 ### 互卡 E：ECO 加长 vs setup
 
-> 修 hold 需加长路径 → 加太多可能触发 setup。
+> **一句话**：修 hold 加长路径→太长可能触发 setup。但域内全周期余量大（3.6ns），安全。
 
-#### PT 报告显示的路径
+| 路径 | Slack | 处置 |
+|------|-------|------|
+| STB_DLY_3 → STB_DLY_4 | -0.160 | hold-fix buffer |
+| STB_DLY_7 → STB_DLY_8 | -0.182 | hold-fix buffer |
+| STB_FAKE_DLY_3 → _4 | -0.159 | hold-fix buffer |
 
-```
-Startpoint: u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/STB_DLY_reg_3_
-             (rising edge-triggered flip-flop clocked by RX_CLK')
-Endpoint:    u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/STB_DLY_reg_4_
-             (rising edge-triggered flip-flop clocked by RX_CLK')
-             slack (VIOLATED) = -0.160
-```
+**解决方案**：标准 hold-fix buffer（独立操作，与 skew 互不干扰）。
 
-同类型的域内 hold 违例还有 2 条：
-
-```
-Startpoint: .../STB_DLY_reg_7_  → Endpoint: .../STB_DLY_reg_8_   slack = -0.182
-Startpoint: .../STB_FAKE_DLY_reg_3_ → Endpoint: .../STB_FAKE_DLY_reg_4_  slack = -0.159
-```
-
-#### 量化分析
-
-```
-hold slack = -0.160ns（数据跑太快，需加 delay 0.16ns）
-setup 余量 = 未知（域内全周期 3.81ns，当前 MET）
-
-加 0.16ns delay 后：
-  hold: -0.160 + 0.16 = 0 → 修复 ✓
-  setup: 原余量 - 0.16ns → 需原余量 > 0.16ns
-
-域内全周期 = 3.81ns，数据路径（reg→reg 直连）≈ 0.1ns
-setup 余量 ≈ 3.81 - 0.1 - setup_time ≈ 3.6ns >> 0.16ns
-→ 非常安全 ✓
-```
-
-#### 解决方案
-
-| 方案 | 操作 | 效果 | 风险 |
-|------|------|------|------|
-| **hold-fix buffer（标准做法）** | 在 STB_DLY_3 → STB_DLY_4 数据路径插 delay buffer | hold 修复 | setup 余量 3.6ns，极安全 |
-| 同上 × 3 | 对 3 条域内 hold 各插 buffer | 全部修复 | 同上 |
-
-> **注意**：域内 hold 不受 skew 影响（两端同时偏移），所以 hold-fix buffer 与 skew 方案互不干扰，可以独立执行。
+---
 
 ## 4. PT 报告路径全集（完整层级）
 
