@@ -382,7 +382,7 @@
     <div class="hero-inner">
       <div class="kicker">HV2M23 · DV · LOCAL AGENT → REMOTE VM</div>
       <h1>Agent 遥控 EDA 虚拟机<br>工作<span class="thin">模式</span></h1>
-      <p class="lead">一台 973G"开箱即用"的 CentOS 虚拟机 + 一个跑在本机的大模型 Agent：五包数据回迁、两次 UVM PASSED、一次从误杀到自愈的启动修复全记录；10-22 起同一台 VM 再扛起 HK1V11 bring-up——50 错根因定案、0 错干净跑、Verdi 标准流程固化。</p>
+      <p class="lead">一台 973G"开箱即用"的 CentOS 虚拟机 + 一个跑在本机的大模型 Agent：五包数据回迁、两次 UVM PASSED、一次从误杀到自愈的启动修复全记录；10-22 起同一台 VM 再扛起 HK1V11 bring-up——50 错根因定案、0 错干净跑、Verdi 标准流程固化；随后一次 60 小时零介入自主循环，双芯片穷尽探索收官。</p>
       <div class="meta">
         <span>AUTHOR <b>ymzhuuuu</b></span>
         <span>PROJECT <b>HV2M23 / HK1V11</b></span>
@@ -404,22 +404,22 @@
     <div class="latest">
       <div class="badge">
         <span class="tag">LATEST</span>
-        <span class="num">1023</span>
+        <span class="num">1026</span>
       </div>
       <div class="body">
-        <div class="t">1023 · HK1V11 bring-up 收官：五连跑矩阵定根因，checker 关干净跑 0 错，Verdi 标准流程固化 skill</div>
+        <div class="t">1026 · 60h 零介入自主循环收官：双芯片穷尽探索，HK1V11 632-case 全量回归 0 个数字 DUT bug，环境零破坏验收</div>
         <ul>
-          <li>50×[analog pol error] 与 PPM/DPLC_MODE/PORT_NUM 均无关；信号级实锤 DUT H4INV 极性通路未生效（100 口 pol 位全 0）</li>
-          <li>真正的 checker 开关硬编码在 case test 文件（改类默认值无效）；r6 干净跑 <code>UVM_ERROR 0</code> 满 8 帧 961μs</li>
-          <li>裸 <code>verdi -ssf</code> 设计树空白的反复坑 → 标准式 <code>-dbdir simv.daidir -ssf chip_tb_top.vf -sswr &lt;rc&gt;</code></li>
+          <li>116 rounds / 73+ 里程碑无人参与；硬约束 = 隔离工作区 + 不阻塞等待，全程满足</li>
+          <li>632-case 回归 577/632 完成、五类 100% 定性：50err 根因 = DRA 晶体管级模拟模型不收敛（非数字 bug）；HV2M23 第二芯片 I2C 批量 98%</li>
+          <li>多厂商 EDA 全栈盘点 + Icarus/VCS/golden model 三层器件模拟体系；收官清理 79G 可再生产物</li>
         </ul>
       </div>
-      <a class="more" href="./6-hk1v11.html">HK1V11 实录 →</a>
+      <a class="more" href="./7-loop.html">60h 循环全记录 →</a>
     </div>
 
     <div class="stats">
-      <div class="stat"><div class="v">7</div><div class="k">Sheet 页面</div></div>
-      <div class="stat"><div class="v">3</div><div class="k">UVM case PASSED / 0 错</div></div>
+      <div class="stat"><div class="v">8</div><div class="k">Sheet 页面</div></div>
+      <div class="stat"><div class="v">60<em>h</em></div><div class="k">零介入自主循环</div></div>
       <div class="stat"><div class="v">5</div><div class="k">数据包回传归位</div></div>
       <div class="stat"><div class="v">973<em>G</em></div><div class="k">虚拟机磁盘（48 分片）</div></div>
     </div>
@@ -456,6 +456,11 @@
         <div class="title">HK1V11 bring-up 实录<span class="star">新增</span></div>
         <div class="desc">run_tc.sh 一行跑 case、PPM 双 symlink、五连跑矩阵定根因、checker 关 0 错干净跑、Verdi 标准流程与日常坑</div>
       </a>
+      <a class="chapter-card" href="./7-loop.html">
+        <div class="num">七</div>
+        <div class="title">60h 自主循环：双芯片穷尽探索<span class="star">新增</span></div>
+        <div class="desc">116 rounds 零介入、632-case 回归 0 数字 bug、多厂商 EDA 全栈盘点、三层器件模拟体系、环境零破坏验收</div>
+      </a>
     </div>
 
     <div class="section-title">一句话结论</div>
@@ -488,7 +493,8 @@
       ['3-first-sim', 'UVM 首跑'],
       ['4-correct-boot', '正确启动'],
       ['5-agent-manual', '遥控手册'],
-      ['6-hk1v11', 'HK1V11 实录']
+      ['6-hk1v11', 'HK1V11 实录'],
+      ['7-loop', '60h 循环']
     ];
     const currentPath = location.pathname.split('/').pop() || 'index.html';
     const linksContainer = document.getElementById('navbar-links');

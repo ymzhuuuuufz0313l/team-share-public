@@ -30,7 +30,7 @@
       <article class="article" id="article"></article>
       <div class="page-nav">
         <a class="prev" href="./5-agent-manual.html"><span class="label">← 上一章</span><span class="title">五、Agent 遥控手册</span></a>
-        <a class="next" href="./index.html"><span class="label">回到首页 →</span><span class="title">工作模式总览</span></a>
+        <a class="next" href="./7-loop.html"><span class="label">下一篇 →</span><span class="title">七、60h 自主循环：双芯片穷尽探索</span></a>
       </div>
     </div>
   </div>
@@ -84,6 +84,8 @@ PORT_NUM6 case 每次跑都报 50 条 `[analog pol error]`（奇数口期望 101
 
 - `ana_SIM_OUT[9660:0]` 整场仿真只被 TB 锁存 5 次；两次有效拍（323.59us / 326.78us）中 **100 个口的 pol 位（每口 10bit 的 MSB）全部为 0**——H4INV=1 时 DUT 输出数据路径**没有执行反相**
 - checker 采样时刻（339.49us）总线为 X，X 被强转 `bit` 类型后显示 0——错误信息里的 `00000000` 其实是 X
+
+> **10-26 补记**：60h 自主循环（[第七章](./7-loop.html)）把根因再挖深一层——`SIM_OUT=X` 来自 **DRA 晶体管级模拟模型不收敛**（非数字 bug，golden model 驱动模拟输出可证明数字核心正确）；随后 632-case 全量回归五类 100% 定性，**0 个数字 DUT bug**。
 
 ## 4. checker 关干净跑：0 错、满 8 帧
 
@@ -147,7 +149,8 @@ addSignal -h 15 -UNSIGNED -HEX /chip_tb_top/ana_data_output_if/ana_SIM_OUT[59:0]
 - **skill**：`hk1v11-vm-flow`（本机 DSH skill，含完整流程、坑清单、设计事实）
 - **run 目录备份**：见 §1；当前 = r6（checker 关、0 错）
 - **test 文件 checker 开关现为 0**（备份 `.bak_1023_ckoff`）——要跑全 check 先改回 1
-- **待跟进**：对照项目回归确认 1920 case 的 analog check 是否通过（怀疑 VM 的 RTL 版本旧于项目）；t_8b1lane 服务器 cfg 的 DPLC_MODE 残留（本地 git=1、服务器=0）待恢复
+- **对照回归**：已由第七章 60h 循环的 632-case 全量回归覆盖（577/632 完成、五类 100% 定性、0 数字 DUT bug）
+- **待跟进**：t_8b1lane 服务器 cfg 的 DPLC_MODE 残留（本地 git=1、服务器=0）待恢复
 </script>
 
 <script>
