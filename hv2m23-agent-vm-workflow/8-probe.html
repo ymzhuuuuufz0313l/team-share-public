@@ -64,14 +64,14 @@
 | F3 | CDR PLL 收敛条件（stuck 11 case） | 功能 | 🔄 计划 |
 | F4 | CS_SYNC 训练脉冲机制（CHPI 3 case） | 功能 | 🔄 计划 |
 | T1 | QuestaSim 功能冒烟（mentorall license） | 工具 | ✅ R2 通过 |
-| T2 | Calibre 2015 DRC/LVS 冒烟（TSMC PDK） | 工具 | 🔄 计划 |
+| T2 | Calibre 2015 DRC/LVS 冒烟（TSMC PDK） | 工具 | ✅ R4 判负（工具/license 版本错位） |
 | T3 | ICC2 冒烟 | 工具 | 🔄 计划 |
 | T4 | IC617 + Spectre（MMSIM151）冒烟 | 工具 | ✅ R2 判负（license 守护进程损坏） |
-| T5 | Vivado 2019.1 小设计全流程 | 工具 | 🔄 计划 |
+| T5 | Vivado 2019.1 小设计全流程 | 工具 | ✅ R4 定案（工具可用 / VU440 不可行） |
 | T6 | PT 已有网表时序分析 | 工具 | 🔄 计划 |
-| T7 | ARM FastModels 9.4 能力探测（新发现） | 工具 | 🔄 计划 |
+| T7 | ARM FastModels 9.4 能力探测（新发现） | 工具 | ✅ R3 判负（缺 LISA 编译器） |
 | T8 | KVM/libvirt 嵌套虚拟化探测（新发现） | 工具 | ✅ R2 判负（无 /dev/kvm / 无 vmx） |
-| P1 | VCS 编译 -j 调优基准 | 性能 | 🔄 计划 |
+| P1 | VCS 编译 -j 调优基准 | 性能 | ✅ R4 完成（~20s，无并行收益） |
 | P2 | FSDB 写入吞吐 | 性能 | 🔄 计划 |
 | P3 | fsdb2vcd 抽取吞吐 | 性能 | 🔄 计划 |
 | P4 | Icarus vs VCS 速度对比 | 性能 | 🔄 计划 |
@@ -87,13 +87,13 @@
 
 ### 3.1 三厂商 license 服务器（全部本地自建、全部在运行）
 
-| 厂商 | 守护进程 | 端口 | 容量 |
+| 厂商 | 守护进程 | 端口（10-26 实测修正） | 容量 |
 |------|---------|------|------|
-| Synopsys | lmgrd + snpslmd | 27000 | INCREMENT 格式，~99 许可/feature（VCS/Verdi/DC/PT/ICC2 全家），当前 0 在用 |
-| Mentor | lmgrd + mgcld | 5280 | **mentorall_s 全家桶**（QuestaSim/Falcon/ICLayout/Board/MixedSignal/Reliability/Cable...） |
-| Cadence | cdslmd | 5281 | 100 uncounted（IC617） |
+| Synopsys | lmgrd + snpslmd | 27000 ✅ | INCREMENT 格式，~99 许可/feature（VCS/Verdi/DC/PT/ICC2 全家） |
+| Mentor | lmgrd + mgcld | **27002** ✅（非 5280，端口在 dat 文件里） | **mentorall_s 全家桶**（数千 feature：QuestaSim/Calibre PV/XCalibre/ICLayout/Board...，999/feature） |
+| Cadence | lmgrd + cdslmd | 5280/5281 ❌ | 100 uncounted（IC617）——**cdslmd 段错误，实际不可用**（见 4.4） |
 
-结论：三厂商许可全部本地自建、零外部依赖；当前 0 在用 = 大规模并行实验无许可瓶颈。
+结论：三厂商许可全部本地自建、零外部依赖；Synopsys + Mentor 可用，Cadence 损坏。
 
 ### 3.2 工具全景（本轮新发现，补全第七章）
 
@@ -185,11 +185,30 @@ FastModels 9.4（524M）= 框架 + FVP_MPS2 构建源码（Cortex-M0/M0+/M3/M4/M
 
 > 轮间事故记录：T4 排查时误用 `killall lmgrd` 把 Synopsys + Mentor 两台健康 license 服务器一并杀掉，F2 编译随即卡 license 队列——已重启恢复（27000/27002 均在位）。教训：杀 lmgrd 必须按 PID 精确杀，`killall` 会跨厂商误伤。
 
-## 5. 后续轮次
+## 5. 第 4 轮：工具冒烟电池总判定（10-26）
 
-- **R4 工具冒烟续**：Calibre DRC/LVS（TSMC PDK）/ Vivado 小设计（VU440 流程可用性）
-- **R5 性能基准（P 组）**：VCS 编译 -j1/-j4/-j8 实测 / FSDB 写入吞吐 / fsdb2vcd 抽取吞吐——给这台 VM 建立量化基线
-- **R6 F2 补全**：cmodel 预期输出 → GM hex → v2 像素数据模式端到端（需 cmodel 二进制或服务器回传）
+七个工具实验全部收官，这台 VM 的"多厂商 EDA 平台"真实能力定案：
+
+| 编号 | 工具 | 判定 | 一句话原因 |
+|------|------|------|-----------|
+| T1 | QuestaSim 10.7c | ✅ **可用** | vlog/vsim 冒烟通过（license 27002） |
+| T2 | Calibre 2015.2 | ❌ 不可用 | 工具请求老 feature 名，license 只有 2020 新名（calibrepvs_s）——版本错位 5 代 |
+| T3 | ICC2 | ⏳ 未跑 | 下轮（Synopsys license 在位，理论可用） |
+| T4 | Cadence IC617/Spectre | ❌ 不可用 | cdslmd 32-bit 确定性段错误（60h 循环从未工作过） |
+| T5 | Vivado 2019.1 | ⚠️ **工具可用 / VU440 不可行** | Artix-7 全流程 3.8MB bitstream 生成；但 part 库裁剪（804 parts，无 UltraScale+/Versal） |
+| T7 | ARM FastModels 9.4 | ❌ 不可用 | 框架+FVP 源码在，LISA 编译器二进制缺失 |
+| T8 | KVM/libvirt | ❌ 不可用 | 无 /dev/kvm、无 vmx 位 |
+| P1 | VCS 编译 -j 基准 | ✅ 完成 | 116-module 设计 ~20s 单线程；-j4/-j8 无收益（20/22/21s） |
+
+**总判定**：本机真实功能平台 = **Synopsys 全家（VCS/Verdi/DC/PT/ICC2，待 T3 验证）+ QuestaSim 10.7c + Vivado 2019.1（7 系）+ RISC-V/qemu**。"完整多厂商平台"的说法至此完全勘误——Mentor 系除 QuestaSim 外、Cadence 系、ARM 系均不可用。
+
+**T5 技术细节**（Vivado 批处理流程坑）：写 XDC 的 Tcl 里 `puts $xdc "...[get_ports clk]"` 会被 Tcl 立即求值（此时设计未打开）→ 需花括号转义；CFGBVS 必须匹配 CONFIG_VOLTAGE（3.3→VCCO）；无 pin 定位时 UCIO-1 需降级为 Warning。
+
+## 6. 后续轮次
+
+- **R5 功能深潜（F 组续）**：T3 ICC2 冒烟（补齐 Synopsys 全家判定）/ F3 CDR PLL 收敛条件（stuck 11）/ F4 CS_SYNC 训练脉冲（CHPI 3）
+- **R6 性能基准（P 组续）**：FSDB 写入吞吐（P2）/ fsdb2vcd 全量抽取吞吐（P3，3GB FSDB 深度解析）/ Icarus vs VCS（P4）
+- **R7 F2 补全**：cmodel 预期输出 → GM hex → v2 像素数据模式端到端（需 cmodel 二进制或服务器回传）
 - 每轮结束更新本页 + PROGRESS.md，可再生产物随手清理
 </script>
 
