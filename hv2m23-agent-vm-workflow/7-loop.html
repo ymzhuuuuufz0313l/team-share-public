@@ -68,11 +68,11 @@
 | 板块 | 结果 |
 |------|------|
 | HK1V11 632-case 全量回归 | 577/632 完成，**五类 100% 定性**：PASS 46 / 50err 506 / COMPILE_FAIL 11 / stuck 11 / CHPI 3 → **0 个数字 DUT bug** |
-| 50err（506 case）根因 | DRA 晶体管级模拟模型不收敛（SIM_OUT=X，X 强转 0）——非数字 bug；golden model 驱动模拟输出可证明数字核心正确 |
+| 50err（506 case）根因 | DRA 晶体管级模拟模型不收敛（SIM_OUT=X，X 强转 0）——非数字 bug；golden model 驱动模拟输出可证明数字核心正确（10-26 [第八章 F1](./8-probe.html) 四实验把机制钉死：位级闪烁、永不收敛，流程固有伪影） |
 | stuck（11）/ CHPI（3）根因 | CDR PLL "Both RB and SB enabled" + link training 不收敛；CS_SYNC 仅训练脉冲时锁值，TP 未激活 → 保持 0 |
 | COMPILE_FAIL（11）根因 | test 侧问题：SFCOR 缺文件 + 跨模块引用（与 DUT 无关） |
 | HV2M23 第二芯片验证 | 纯数字 I2C 批量：383/391 = **98%** 寄存器读正确；串行数据路径全族 PPM 依赖（load ppm 后 early exit） |
-| 多厂商 EDA 盘点 | VCS/Verdi/DC/PT/ICC2 + QuestaSim 10.7c + Calibre 2015.2 + Cadence IC617/Spectre + RISC-V gcc 11 + qemu + TSMC PDK 65/90/130nm——完整多厂商平台 |
+| 多厂商 EDA 盘点 | VCS/Verdi/DC/PT/ICC2 + QuestaSim 10.7c + Calibre 2015.2 + Cadence IC617/Spectre + RISC-V gcc 11 + qemu + TSMC PDK 65/90/130nm——完整多厂商平台（10-26 [第八章 T4](./8-probe.html) 功能实测勘误：Cadence 工具实际不可用——license 守护进程确定性段错误，本节"Server started"日志为 1 秒假象） |
 | 器件模拟方案 | Icarus 全 top（59 RTL + 39 行为 stub）+ VCS UVM 芯片级 + golden model 三层体系；顺带抓出 1 处潜在 RTL 连接问题（端口连接缺逗号） |
 | DC 结构综合 | digital_top 29168 leaf（and_or.db 无 SDC，属结构综合非真实时序收敛） |
 | 无 GUI 波形探针 | fsdb2vcd 从 3GB FSDB 抽信号级数据：AVE 平均 / 420b 长码两条功能链的门控机制确认 |

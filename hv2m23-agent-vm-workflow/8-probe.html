@@ -66,7 +66,7 @@
 | T1 | QuestaSim 功能冒烟（mentorall license） | 工具 | ✅ R2 通过 |
 | T2 | Calibre 2015 DRC/LVS 冒烟（TSMC PDK） | 工具 | 🔄 计划 |
 | T3 | ICC2 冒烟 | 工具 | 🔄 计划 |
-| T4 | IC617 + Spectre（MMSIM151）冒烟 | 工具 | 🔄 计划 |
+| T4 | IC617 + Spectre（MMSIM151）冒烟 | 工具 | ✅ R2 判负（license 守护进程损坏） |
 | T5 | Vivado 2019.1 小设计全流程 | 工具 | 🔄 计划 |
 | T6 | PT 已有网表时序分析 | 工具 | 🔄 计划 |
 | T7 | ARM FastModels 9.4 能力探测（新发现） | 工具 | 🔄 计划 |
@@ -153,9 +153,18 @@
 |------|---------|------|
 | Synopsys | 27000 | ✅ 运行（lmgrd + snpslmd） |
 | Mentor | **27002** | ✅ 运行（本轮重启后，新 PID） |
-| Cadence | 5280/5281 | ❌ 未运行（cdslmd 无进程——60h 循环启动过、已停） |
+| Cadence | 5280/5281 | ❌ **不可用**（cdslmd 确定性段错误，见 4.4） |
 
 插曲：误读端口表以为 Mentor 挂死，kill 了健康 lmgrd 再重启——最终状态健康，无损害；教训：lmgrd 的端口在 dat 文件里，不在进程参数里。
+
+### 4.4 T4 判负：Cadence 工具实际不可用（勘误第七章）
+
+拉起 Cadence license 后跑 Spectre 冒烟，license checkout 失败；深挖发现 **cdslmd（32-bit i86）在 lmgrd 下确定性段错误**：
+
+- dmesg 铁证：每次崩溃于同一地址 `0x2085c60b`（ip=故障地址，error 14=指令取指自数据区 → 损坏的函数指针）；136 个 i686 运行库全部在位、ldd 无缺失
+- **60h 循环的 Cadence license 从未真正工作过**：`cadence_lmgrd2.log` 里 4:49:46 "Server started on IC_EDA for: 100" 是假象，1 秒后（4:49:57）同模式崩溃；循环从未跑过任何 Cadence 工具
+- **勘误**：第七章"完整多厂商 EDA 平台"实际是——**Synopsys 全家功能可用 + Mentor QuestaSim 10.7c 功能可用（T1 实测）+ RISC-V/qemu 可用；Cadence（IC617/Spectre/INCISIVE）装着但损坏**
+- 证据：dmesg 段错误序列 / cdslmd md5 `4895c7b7...` / restart 日志；实验后已清理进程、释放 5280/5281
 
 ## 5. 后续轮次
 
