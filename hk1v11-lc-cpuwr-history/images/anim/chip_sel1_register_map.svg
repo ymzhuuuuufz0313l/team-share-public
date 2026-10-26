@@ -6,6 +6,9 @@
 @keyframes rowIn { from { opacity:0; transform: translateY(6px); } to { opacity:1; transform: none; } }
 .chg { animation: chgPulse 2s ease-in-out 4s infinite; }
 @keyframes chgPulse { 0%,100% { opacity:1; } 50% { opacity:0.45; } }
+
+.chgrow { animation: chgRowPulse 2.4s ease-in-out 4s infinite; }
+@keyframes chgRowPulse { 0%,100% { opacity:1; } 50% { opacity:0.5; } }
 </style>
 <rect width="1100" height="2946" fill="#ffffff"/>
 <g class="head">
@@ -170,7 +173,8 @@
 <text x="661.5" y="509.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">CTRLF_CHECKSUM[3:0]</text>
 <text x="661.5" y="523.0" text-anchor="middle" font-size="9.0" fill="#64748b">4'b0000</text>
 </g>
-<g class="row" style="animation-delay: 0.24s">
+<g class="row" style="animation-delay: 0.24s"><g class="chgrow">
+
 <text x="158" y="568.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x08 (8)</text>
 <rect x="842" y="550.0" width="64" height="26" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" rx="13"/>
 <circle cx="854" cy="563.0" r="3.5" fill="#22c55e"/>
@@ -195,7 +199,8 @@
 <rect x="744" y="540" width="81" height="46" fill="#e0e7ff" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="784.5" y="561.0" text-anchor="middle" font-size="8.0" font-weight="500" fill="#1e293b">reg_eq_rbc0</text>
 <text x="784.5" y="575.0" text-anchor="middle" font-size="7.0" fill="#64748b">1'b0</text>
-</g>
+
+</g></g>
 <g class="row" style="animation-delay: 0.27s">
 <text x="158" y="620.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x09 (9)</text>
 <rect x="842" y="602.0" width="64" height="26" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" rx="13"/>
@@ -576,7 +581,8 @@
 <text x="784.5" y="1653.0" text-anchor="middle" font-size="8.0" font-weight="500" fill="#1e293b">R_PTAT_EN</text>
 <text x="784.5" y="1667.0" text-anchor="middle" font-size="7.0" fill="#64748b">1'b0</text>
 </g>
-<g class="row" style="animation-delay: 0.90s">
+<g class="row" style="animation-delay: 0.90s"><g class="chgrow">
+
 <text x="158" y="1712.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x2F (47)</text>
 <rect x="842" y="1694.0" width="64" height="26" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" rx="13"/>
 <circle cx="854" cy="1707.0" r="3.5" fill="#22c55e"/>
@@ -595,7 +601,8 @@
 <text x="784.5" y="1705.0" text-anchor="middle" font-size="7.5" font-weight="500" fill="#1e293b">SCS_PKT_HALF</text>
 <text x="784.5" y="1719.0" text-anchor="middle" font-size="7.0" fill="#64748b">1'b0</text>
 </g>
-</g>
+
+</g></g>
 <g class="row" style="animation-delay: 0.93s">
 <text x="158" y="1764.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x30 (48)</text>
 <rect x="842" y="1746.0" width="64" height="26" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" rx="13"/>

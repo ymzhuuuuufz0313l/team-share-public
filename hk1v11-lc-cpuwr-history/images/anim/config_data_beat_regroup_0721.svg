@@ -5,6 +5,9 @@
 .head { opacity:0; animation: rowIn 0.4s ease forwards; }
 .chg { animation: chgPulse 2s ease-in-out 4s infinite; }
 @keyframes chgPulse { 0%,100% { opacity:1; } 50% { opacity:0.45; } }
+
+.chgrow { animation: chgRowPulse 2.4s ease-in-out 4s infinite; }
+@keyframes chgRowPulse { 0%,100% { opacity:1; } 50% { opacity:0.5; } }
 </style>
 <rect width="1240" height="848" fill="#ffffff"/>
 <g class="head">
@@ -108,10 +111,12 @@
 <text x="64" y="826" font-size="12" fill="#166534">分组变化不改值 → checker / DV 期望与回归行为不变</text>
 </g>
 </g>
-<g class="row" style="animation-delay:0.81s">
+<g class="row" style="animation-delay:0.81s"><g class="chgrow">
+
 <rect x="640" y="768" width="560" height="66" rx="10" fill="#fff7ed" stroke="#fb923c" stroke-width="1.5"/>
 <text x="656" y="790" font-size="13" font-weight="700" fill="#c2410c">过渡依赖</text>
 <text x="656" y="808" font-size="12" fill="#c2410c">CHPI_CONFIG_L0 未升 24bit 前，LINK_LOGIC 将 [23:16] tie-off 防 X 传播</text>
 <text x="656" y="826" font-size="12" fill="#c2410c">全芯片 FCONFIG 流仿真待上游升版后联调（END：5'd20 / 3'd3）</text>
-</g>
+
+</g></g>
 </svg>

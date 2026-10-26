@@ -6,6 +6,9 @@
 .head { opacity:0; animation: rowIn 0.4s ease forwards; }
 .chg { animation: chgPulse 2s ease-in-out 4s infinite; }
 @keyframes chgPulse { 0%,100% { opacity:1; } 50% { opacity:0.45; } }
+
+.chgrow { animation: chgRowPulse 2.4s ease-in-out 4s infinite; }
+@keyframes chgRowPulse { 0%,100% { opacity:1; } 50% { opacity:0.5; } }
 </style>
 <rect width="940" height="1764" fill="#ffffff"/>
 <g class="head">
@@ -147,7 +150,8 @@
 <text x="739.5" y="841.0" text-anchor="middle" font-size="9.0" font-weight="500" fill="#1e293b">CTRLF_CHECKSUM[3:0]</text>
 <text x="739.5" y="855.0" text-anchor="middle" font-size="8.0" fill="#64748b">4'b0000</text>
 </g>
-<g class="row" style="animation-delay:0.24s">
+<g class="row" style="animation-delay:0.24s"><g class="chgrow">
+
 <text x="170" y="900" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x08 (8)</text>
 <rect x="260" y="910" width="159" height="40" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="339.5" y="927.0" text-anchor="middle" font-size="9.0" font-weight="500" fill="#1e293b">SD_CHOP_F[1:0]</text>
@@ -169,7 +173,8 @@
 <rect x="820" y="910" width="79" height="40" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="859.5" y="927.0" text-anchor="middle" font-size="8.0" font-weight="500" fill="#1e293b">reg_eq_rbc0</text>
 <text x="859.5" y="941.0" text-anchor="middle" font-size="7.0" fill="#64748b">1'b0</text>
-</g>
+
+</g></g>
 <g class="row" style="animation-delay:0.27s">
 <text x="170" y="986" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x09 (9)</text>
 <text x="172" y="1020.0" text-anchor="end" font-size="12" fill="#64748b">chip_sel=0</text>

@@ -6,6 +6,9 @@
 .head { opacity:0; animation: rowIn 0.4s ease forwards; }
 .chg { animation: chgPulse 2s ease-in-out 4s infinite; }
 @keyframes chgPulse { 0%,100% { opacity:1; } 50% { opacity:0.45; } }
+
+.chgrow { animation: chgRowPulse 2.4s ease-in-out 4s infinite; }
+@keyframes chgRowPulse { 0%,100% { opacity:1; } 50% { opacity:0.5; } }
 </style>
 <rect width="1198" height="2894" fill="#ffffff"/>
 <g class="head">
@@ -431,7 +434,8 @@
 <text x="1100.0" y="1549" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">R_PTAT_EN</text>
 <text x="1100.0" y="1564" text-anchor="middle" font-size="9" fill="#64748b">1'b0</text>
 </g>
-<g class="row" style="animation-delay: 0.84s">
+<g class="row" style="animation-delay: 0.84s"><g class="chgrow">
+
 <text x="158" y="1608" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x2F (47)</text>
 <rect x="170" y="1580" width="124" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="232.0" y="1601" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">LD_D_OPT</text>
@@ -447,7 +451,8 @@
 <text x="1100.0" y="1601" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">SCS_PKT_HALF</text>
 <text x="1100.0" y="1616" text-anchor="middle" font-size="9" fill="#64748b">1'b0</text>
 </g>
-</g>
+
+</g></g>
 <g class="row" style="animation-delay: 0.87s">
 <text x="158" y="1660" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x30 (48)</text>
 <rect x="170" y="1632" width="992" height="46" fill="#e9d5ff" stroke="#94a3b8" stroke-width="1" rx="4"/>
