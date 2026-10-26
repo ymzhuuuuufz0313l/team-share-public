@@ -8,7 +8,15 @@
 
 .chgrow { animation: chgRowPulse 2.4s ease-in-out 4s infinite; }
 @keyframes chgRowPulse { 0%,100% { opacity:1; } 50% { opacity:0.5; } }
-</style>
+.shine { animation: shineSweep 6s linear infinite; }
+@keyframes shineSweep {
+  0%   { transform: translateX(-152px); opacity: 0; }
+  5%   { opacity: 1; }
+  42%  { transform: translateX(1240px); opacity: 1; }
+  48%  { opacity: 0; }
+  100% { transform: translateX(1240px); opacity: 0; }
+}.brd { animation: brdPulse 2.4s ease-in-out 4s infinite; }
+@keyframes brdPulse { 0%,100% { stroke-opacity: 1; } 50% { stroke-opacity: 0.4; } }</style>
 <rect width="1240" height="848" fill="#ffffff"/>
 <g class="head">
 <text x="620" y="36" text-anchor="middle" font-size="22" font-weight="800" fill="#1e293b">LC_CPUWR 0721v1 配置拍重组对照（流内字节顺序不变，仅分组 2B/拍 → 3B/拍）</text>
@@ -105,7 +113,7 @@
 </g>
 <g class="row" style="animation-delay:0.78s">
 <g class="chg">
-<rect x="48" y="768" width="560" height="66" rx="10" fill="#ecfdf5" stroke="#16a34a" stroke-width="1.5"/>
+<rect x="48" y="768" width="560" height="66" rx="10" fill="#ecfdf5" stroke="#16a34a" stroke-width="1.5" class="brd"/>
 <text x="64" y="790" font-size="13" font-weight="700" fill="#166534">XOR 总量不变（结合律）</text>
 <text x="64" y="808" font-size="12" fill="#166534">0x00^01^02^03^04^05^06^08^09^0A^1D^1E^1F，frame_end=0x27</text>
 <text x="64" y="826" font-size="12" fill="#166534">分组变化不改值 → checker / DV 期望与回归行为不变</text>
@@ -113,10 +121,13 @@
 </g>
 <g class="row" style="animation-delay:0.81s"><g class="chgrow">
 
-<rect x="640" y="768" width="560" height="66" rx="10" fill="#fff7ed" stroke="#fb923c" stroke-width="1.5"/>
+<rect x="640" y="768" width="560" height="66" rx="10" fill="#fff7ed" stroke="#fb923c" stroke-width="1.5" class="brd"/>
 <text x="656" y="790" font-size="13" font-weight="700" fill="#c2410c">过渡依赖</text>
 <text x="656" y="808" font-size="12" fill="#c2410c">CHPI_CONFIG_L0 未升 24bit 前，LINK_LOGIC 将 [23:16] tie-off 防 X 传播</text>
 <text x="656" y="826" font-size="12" fill="#c2410c">全芯片 FCONFIG 流仿真待上游升版后联调（END：5'd20 / 3'd3）</text>
 
 </g></g>
+
+<defs><linearGradient id="shineGrad" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#f0a137" stop-opacity="0"/><stop offset="0.5" stop-color="#f0a137" stop-opacity="0.18"/><stop offset="1" stop-color="#f0a137" stop-opacity="0"/></linearGradient></defs>
+<rect class="shine" x="0" y="0" width="152" height="848" fill="url(#shineGrad)"/>
 </svg>

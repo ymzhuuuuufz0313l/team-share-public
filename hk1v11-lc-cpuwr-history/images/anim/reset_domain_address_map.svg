@@ -9,7 +9,14 @@
 
 .chgrow { animation: chgRowPulse 2.4s ease-in-out 4s infinite; }
 @keyframes chgRowPulse { 0%,100% { opacity:1; } 50% { opacity:0.5; } }
-</style>
+.shine { animation: shineSweep 6s linear infinite; }
+@keyframes shineSweep {
+  0%   { transform: translateY(-502px); opacity: 0; }
+  5%   { opacity: 1; }
+  42%  { transform: translateY(2956px); opacity: 1; }
+  48%  { opacity: 0; }
+  100% { transform: translateY(2956px); opacity: 0; }
+}</style>
 <rect width="866" height="2956" fill="#ffffff"/>
 <g class="head">
 <text x="433.0" y="40" text-anchor="middle" font-size="22" font-weight="bold" fill="#1e293b">LC_CPUWR 1023v1 复位域分类</text>
@@ -720,4 +727,7 @@
 <text x="370" y="2877" font-size="11" fill="#1e293b">RSTN_SCR_EN</text>
 <text x="433.0" y="2926" text-anchor="middle" font-size="11" fill="#64748b">大部分字段由 N_RST_NLOCK 复位；0x30 TEST_PRTCT 由 N_RST 复位；0827v1 新增 0x02/0x03/0x04 单 bit lane_ctrl 与 0x38[6] reg_eol 均为 N_RST_NLOCK</text>
 </g>
+
+<defs><linearGradient id="shineGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f0a137" stop-opacity="0"/><stop offset="0.5" stop-color="#f0a137" stop-opacity="0.18"/><stop offset="1" stop-color="#f0a137" stop-opacity="0"/></linearGradient></defs>
+<rect class="shine" x="0" y="0" width="866" height="502" fill="url(#shineGrad)"/>
 </svg>

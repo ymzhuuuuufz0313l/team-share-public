@@ -9,7 +9,14 @@
 
 .chgrow { animation: chgRowPulse 2.4s ease-in-out 4s infinite; }
 @keyframes chgRowPulse { 0%,100% { opacity:1; } 50% { opacity:0.5; } }
-</style>
+.shine { animation: shineSweep 6s linear infinite; }
+@keyframes shineSweep {
+  0%   { transform: translateY(-491px); opacity: 0; }
+  5%   { opacity: 1; }
+  42%  { transform: translateY(2894px); opacity: 1; }
+  48%  { opacity: 0; }
+  100% { transform: translateY(2894px); opacity: 0; }
+}</style>
 <rect width="1198" height="2894" fill="#ffffff"/>
 <g class="head">
 <text x="599.0" y="38" text-anchor="middle" font-size="22" font-weight="bold" fill="#1e293b">LC_CPUWR 1023v1 寄存器 LSI_PRTECT 保护状态（chip_sel = 0 视图）</text>
@@ -706,4 +713,7 @@
 <text x="599.0" y="2800" text-anchor="middle" font-size="11" fill="#64748b">不受保护：0x00~0x1F、0x27、0x40~0x44、0xA0/0xA1；受保护：0x20~0x26、0x28~0x2F、0x31~0x39、0x90~0x93；0x30 写入 8&apos;h72 后解锁</text>
 <text x="599.0" y="2820" text-anchor="middle" font-size="11" fill="#64748b">chip_sel=1 差异（0x02 SMART_CS、0x09/0x0A/0x1F 回拼默认值）见 chip_sel1 寄存器图；保护状态两种 chip_sel 一致</text>
 </g>
+
+<defs><linearGradient id="shineGrad" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f0a137" stop-opacity="0"/><stop offset="0.5" stop-color="#f0a137" stop-opacity="0.18"/><stop offset="1" stop-color="#f0a137" stop-opacity="0"/></linearGradient></defs>
+<rect class="shine" x="0" y="0" width="1198" height="491" fill="url(#shineGrad)"/>
 </svg>
