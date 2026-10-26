@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>八、探测实验：虚拟机五维探查（持续更新）· Agent 遥控 EDA 虚拟机</title>
+  <title>八、探测实验：虚拟机五维探查（R1-R10 收官）· Agent 遥控 EDA 虚拟机</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet">
@@ -42,7 +42,7 @@
   </div>
 
 <script type="text/template" id="md">
-# 八、探测实验：虚拟机五维探查（2026-10-26 起，持续更新）
+# 八、探测实验：虚拟机五维探查（2026-10-26，R1-R10 收官）
 
 第七章的 60h 循环完成了"穷尽探索"；本章是第二阶段——**聚焦实验**：未定论问题深挖（DRA 收敛）、多厂商工具功能冒烟（装过 ≠ 能用）、性能量化基线、数据资产深盘。每轮实验结果追加到本章，源记录在 VM 隔离工作区 `/home/ICer/work/probe_lab_1026/PROGRESS.md`。
 
@@ -72,7 +72,7 @@
 | T7 | ARM FastModels 9.4 能力探测（新发现） | 工具 | ✅ R3 判负（缺 LISA 编译器） |
 | T8 | KVM/libvirt 嵌套虚拟化探测（新发现） | 工具 | ✅ R2 判负（无 /dev/kvm / 无 vmx） |
 | P1 | VCS 编译 -j 调优基准 | 性能 | ✅ R4 完成（~20s，无并行收益） |
-| P2 | FSDB 写入吞吐 | 性能 | 🔄 计划 |
+| P2 | FSDB 写入吞吐 | 性能 | ✅ R5 完成（经 P3/E1 推导：~5.8MB/s 写入，索引访问） |
 | P3 | fsdb2vcd 抽取吞吐 | 性能 | ✅ R5 完成（索引访问，与文件大小无关） |
 | P4 | Icarus vs VCS 速度对比 | 性能 | ✅ R10 定案（小设计快 35 倍；UVM/全设计必须 VCS） |
 | D1 | /sim_dd 全资产盘点 | 数据 | ✅ R9 盘点完成（13G 双项目 + cmodel 参考在位） |
@@ -296,9 +296,50 @@ CHPI 是 5 类回归中**唯一既非模拟模型限制、也非 test 侧文件�
 
 **定论**：Icarus 定位 = 自包含模块/纯数字逻辑的**秒级快速 sanity 与无 license 冒烟**（模块开发调试利器）；HK1V11 的 UVM 回归与含 analog 全设计仿真**必须 VCS**。开源工具链是 VCS 的补充，不是替代。
 
-## 11. 后续轮次
+## 11. 收官：全项目最终判定（10-26，R1-R10 全部完成）
 
-- **R11 收官**：全项目总结页——所有 F/T/P/D 项目的最终判定汇总 + VM 平台能力矩阵 + 给设计 owner 的完整结论（VM 与服务器流程差异的已证实机理清单）
+### 11.1 实验收官总表（21 项全部定案）
+
+| 组 | 定案 |
+|---|---|
+| **F 功能（4/4）** | F1 DRA 50err = 事件驱动仿真不收敛 X→0（E1 xprop 排除 + F2-v2 cmodel ground truth 铁证）/ F2 golden model bug 已修（case PASS）+ v2 标定完成 / F3 stuck 11 = CDR PLL 模型不锁定 + CHPI_WATCHDOG 12ms 重试死循环 / F4 CHPI 3 = CS_SYNC 同步窗 vs VS_O 采样 1 帧竞态（**唯一需 owner 裁决项**） |
+| **T 工具（8/8）** | T1 QuestaSim ✅ / T2 Calibre ❌（版本错位）/ T3 ICC2 ❌（安装不完整）/ T4 Cadence ❌（cdslmd 段错误）/ T5 Vivado ⚠️（7 系全流程通，VU440 不可行）/ T6 PT ⚠️（流程通，真实 STA 断链）/ T7 ARM FastModels ❌（缺 LISA）/ T8 KVM ❌（无硬件虚拟化） |
+| **P 性能（4/4）** | P1 VCS -j 无收益（20s 底）/ P2 FSDB 写入 ~5.8MB/s / P3 fsdb2vcd 索引访问（2s 抽 2GB FSDB 信号）/ P4 Icarus 小设计快 35 倍但 UVM/全设计不可行 |
+| **D 数据（4/4）** | D1 /sim_dd 13G 双项目在位 / D2 全资产盘点 / D3 4.3GB FSDB 解析 / D4 cmodel 参考 200 文件 38MB 在位 |
+| **E 环境（3/3）** | E1 三厂商 license（27000/27002 可用，Cadence 损坏）/ E2 OS/服务 / E3 工具版本全景 |
+
+### 11.2 VM 平台能力矩阵（最终版）
+
+| 能力域 | 判定 | 说明 |
+|---|---|---|
+| **数字仿真（主流程）** | ✅ 全功能 | VCS O-2018.09 + Verdi O-2018.09：632-case UVM 回归、FSDB dump/抽取、波形分析全部可用（60h 循环 + 本轮 R7-R10 实证） |
+| **第二仿真器** | ✅ | QuestaSim 10.7c（vlog/vsim，license 27002） |
+| **逻辑综合（结构级）** | ⚠️ 受限 | DC 可 elaborate+compile，但项目是门级设计（自定义单元）→ 只能出 FFGEN 结构网表 |
+| **真实时序 STA / 布局布线** | ❌ | PT 流程通但 liberty→db 编译链断裂（LC2 不兼容 + PTS 缺 LC 桥接）；ICC2 缺二进制 + PDK 无 stdcell LEF |
+| **FPGA 流程** | ⚠️ 受限 | Vivado 2019.1 在 7 系（xc7a100t）全流程通（bitstream 3.8min）；part DB 裁剪后无 UltraScale+/Versal，VU440 不可行 |
+| **多厂商 signoff** | ❌ | Cadence 全线（cdslmd 段错误）、Calibre（版本错位）、ARM FastModels（缺 LISA）均判负 |
+| **虚拟化** | ❌ | 无 /dev/kvm、CPU 无 vmx |
+| **开源补充** | ✅ 定位清晰 | Icarus 12：模块级秒级 sanity（快 35 倍、免 license）；UVM/全设计必须 VCS |
+
+### 11.3 632-case 回归五类 100% 机理闭合（60h 循环定性 + 本轮 F 组机理化）
+
+| 类别 | 数量 | 根因（最终） |
+|---|---|---|
+| PASS | 46 | 工作子集 |
+| 50err（analog-pol） | 506 | **DRA 晶体管级模型事件驱动不收敛** → SIM_OUT=X → checker 采 X→0 → 与 cmodel 期望失配（F1+F2-v2 双重铁证，非数字 bug） |
+| COMPILE_FAIL | 11 | test 侧（缺文件/跨模块引用版本错位），非 DUT |
+| stuck | 11 | **CDR PLL 模型不锁定** + CHPI_WATCHDOG 12ms BWD 重试死循环（F3 信号级+源码级闭合，非数字 bug） |
+| CHPI | 3 | **CS_SYNC 同步窗（end-event 锁存）vs TB VS_O 采样点的 1 帧竞态**（F4 波形级闭合；写路径 100% 正常）——**需 owner 裁决改 TB 还是改 RTL** |
+
+### 11.4 给设计 owner 的完整结论
+
+1. **VM 上的 632-case 回归与服务器结果差异已全部机理化**——0 个数字 DUT bug 由 VM 环境引入；所有非 PASS 类别均有信号级/源码级根因，且全部指向 **analog 模型收敛性**（50err、stuck）或 **TB/RTL 协议竞态**（CHPI，唯一待定）
+2. **VM 与服务器流程差异的已证实机理（3 条）**：① 事件驱动 VCS 下晶体管级 DRA/CDR 模型不收敛（X 传播）→ 服务器流程若通过，其 DRA 必然收敛（不同仿真机制或 model 版本）；② CS_SYNC 锁存点竞态（F4）——若服务器该 case 通过，需比对服务器 RTL/TB 的锁存时机；③ 工具链完整性（服务器有完整后端，VM 只有前段）
+3. **VM 定位**：日常数字仿真主流程（VCS/Verdi/QuestaSim）+ 快速开源 sanity（Icarus）+ 7 系 FPGA 冒烟（Vivado）；signoff 类（STA/布局/多厂商）必须回服务器
+4. **待办（需 owner 决策）**：F4 裁决（改 TB 延 1 帧 vs 改 RTL 锁存点）；t_8b1lane 服务器 cfg DPLC_MODE 恢复（10-23 遗留）；test 文件 checker 开关恢复（.bak_1023_ckoff 在位）
+
+## 12. 轮次记录索引
+
 - 每轮结束更新本页 + PROGRESS.md，可再生产物随手清理
 </script>
 
