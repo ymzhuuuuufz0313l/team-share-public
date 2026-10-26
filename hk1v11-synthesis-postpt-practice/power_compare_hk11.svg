@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="605" height="457" viewBox="0 0 605 457">
+<svg xmlns="http://www.w3.org/2000/svg" width="605" height="400" viewBox="0 0 605 400">
 <style><![CDATA[
 text{font-family:ui-monospace,Consolas,monospace,"Microsoft YaHei",sans-serif;font-size:11px;}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
@@ -58,7 +58,7 @@ text{font-family:ui-monospace,Consolas,monospace,"Microsoft YaHei",sans-serif;fo
 <clipPath id="cCmp"><rect x="1" y="255" width="603" height="20"/><rect x="1" y="343" width="603" height="20"/></clipPath>
 <clipPath id="cBody"><rect x="0" y="56" width="605" height="330"/></clipPath>
 </defs>
-<rect x="0" y="0" width="605" height="457" fill="#f4f1ea"/>
+<rect x="0" y="0" width="605" height="400" fill="#f4f1ea"/>
 <g class="in">
 <rect x="0" y="0" width="605" height="30" fill="#1c2534"/>
 <text x="10" y="15.0" dominant-baseline="central" fill="#f4f1ea" font-weight="bold">PowerPro 功耗对比 — HK1V11（前仿）vs 其他芯片（后仿）</text>
@@ -272,10 +272,10 @@ text{font-family:ui-monospace,Consolas,monospace,"Microsoft YaHei",sans-serif;fo
 <text x="594" y="375.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
 </g>
 <g clip-path="url(#cBody)"><rect class="zeband" x="0" y="50" width="180" height="344" fill="url(#gZeb)"/></g>
-<text class="cap" x="8" y="392" dominant-baseline="hanging" fill="#5b6675">HK1V11=前仿（RTL，no corner）双组带 run 代：0922 代（旧值 21.08/21.36/37.9，Area=0922 DC 294907）与 </text>
-<text class="cap" x="8" y="405" dominant-baseline="hanging" fill="#5b6675">1003 代（1008 包 rep_dir_*_1003，16.30/16.30/29.47，Area=1003 DC 314707）；其余=后仿（gate level）</text>
-<text class="cap" x="8" y="418" dominant-baseline="hanging" fill="#5b6675">：HV2M23/3310B1/1V21=back_ppt LVT，HV1V22=Nexchip 145nm（Normal=4G 不开 DPLC，DPLC=3G 开）；Normal/</text>
-<text class="cap" x="8" y="431" dominant-baseline="hanging" fill="#5b6675">DPLC=Initial Design (mW)，Area=同代 DC 报告 Total cell area；HK1V11 无 DRDOD→'-'</text>
+
+
+
+
 <g stroke="#ddd6c8" stroke-width="1">
 <line x1="0" y1="30" x2="0" y2="457"/>
 <line x1="134" y1="30" x2="134" y2="457"/>
