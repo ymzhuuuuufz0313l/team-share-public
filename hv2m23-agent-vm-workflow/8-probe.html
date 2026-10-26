@@ -68,7 +68,7 @@
 | T3 | ICC2 冒烟 | 工具 | ✅ R5 判负（ict 二进制缺失 + 无 stdcell LEF） |
 | T4 | IC617 + Spectre（MMSIM151）冒烟 | 工具 | ✅ R2 判负（license 守护进程损坏） |
 | T5 | Vivado 2019.1 小设计全流程 | 工具 | ✅ R4 定案（工具可用 / VU440 不可行） |
-| T6 | PT 已有网表时序分析 | 工具 | 🔄 计划 |
+| T6 | PT 已有网表时序分析 | 工具 | ✅ R6 定案（工具可用 / 真实 STA 不可行） |
 | T7 | ARM FastModels 9.4 能力探测（新发现） | 工具 | ✅ R3 判负（缺 LISA 编译器） |
 | T8 | KVM/libvirt 嵌套虚拟化探测（新发现） | 工具 | ✅ R2 判负（无 /dev/kvm / 无 vmx） |
 | P1 | VCS 编译 -j 调优基准 | 性能 | ✅ R4 完成（~20s，无并行收益） |
@@ -194,13 +194,14 @@ FastModels 9.4（524M）= 框架 + FVP_MPS2 构建源码（Cortex-M0/M0+/M3/M4/M
 | T1 | QuestaSim 10.7c | ✅ **可用** | vlog/vsim 冒烟通过（license 27002） |
 | T2 | Calibre 2015.2 | ❌ 不可用 | 工具请求老 feature 名，license 只有 2020 新名（calibrepvs_s）——版本错位 5 代 |
 | T3 | ICC2 | ❌ 不可用 | 安装不完整（ict 二进制缺失）+ PDK 无 stdcell LEF（后端 P&R 工具+数据双缺） |
+| T6 | PrimeTime | ⚠️ **流程可用 / 真实 STA 不可行** | read/link/clock/report 全通；但 liberty→db 编译链断裂（LC2 命令集不兼容 + PTS 缺 LC 桥接），且设计是门级+自定义单元 |
 | T4 | Cadence IC617/Spectre | ❌ 不可用 | cdslmd 32-bit 确定性段错误（60h 循环从未工作过） |
 | T5 | Vivado 2019.1 | ⚠️ **工具可用 / VU440 不可行** | Artix-7 全流程 3.8MB bitstream 生成；但 part 库裁剪（804 parts，无 UltraScale+/Versal） |
 | T7 | ARM FastModels 9.4 | ❌ 不可用 | 框架+FVP 源码在，LISA 编译器二进制缺失 |
 | T8 | KVM/libvirt | ❌ 不可用 | 无 /dev/kvm、无 vmx 位 |
 | P1 | VCS 编译 -j 基准 | ✅ 完成 | 116-module 设计 ~20s 单线程；-j4/-j8 无收益（20/22/21s） |
 
-**总判定（R5 更新）**：本机真实功能平台 = **Synopsys 前段（VCS/Verdi/DC/PT 二进制齐全；ICC2 不可用）+ QuestaSim 10.7c + Vivado 2019.1（7 系）+ RISC-V/qemu**。"完整多厂商平台"的说法至此完全勘误——Mentor 系除 QuestaSim 外、Cadence 系、ARM 系均不可用；**后端 P&R 流程整体不可行**（ICC2 缺二进制，三个 TSMC PDK 均无 stdcell LEF）。
+**总判定（R6 更新，全工具收官）**：本机真实功能平台 = **VCS 仿真（日常主流程）+ Verdi 波形 + QuestaSim 10.7c + Vivado 2019.1（7 系）+ RISC-V/qemu**。Synopsys 后端全线不可行：DC 只能结构综合（FFGEN 估算）、PT 流程通但真实 STA 断链（liberty 编译链缺失）、ICC2 缺二进制+无 stdcell LEF。**"完整多厂商 EDA 平台"的说法至此完全勘误**——Mentor 系除 QuestaSim 外、Cadence 系、ARM 系均不可用；**任何需要真实工艺库时序/布局的 signoff 类流程都必须在服务器上跑**。
 
 **T5 技术细节**（Vivado 批处理流程坑）：写 XDC 的 Tcl 里 `puts $xdc "...[get_ports clk]"` 会被 Tcl 立即求值（此时设计未打开）→ 需花括号转义；CFGBVS 必须匹配 CONFIG_VOLTAGE（3.3→VCCO）；无 pin 定位时 UCIO-1 需降级为 Warning。
 
@@ -223,6 +224,15 @@ FastModels 9.4（524M）= 框架 + FVP_MPS2 构建源码（Cortex-M0/M0+/M3/M4/M
 | **全树 187k 信号 10us 窗口** | 6s | 34.9MB（~5.8MB/s） |
 
 结论：fsdb2vcd 按索引定位信号数据，**抽取耗时 ∝（信号数 × 窗口内跳变数），与 FSDB 总大小无关**——4.3GB 级别单信号全量抽取 <1s，无 GUI 信号级波形探针完全实用且远快于预期。附带观察：HV2M23 `pixel_out` 1.58ms 内仅 86 跳变——第二芯片的 DRA 输出同样稀疏/X 主导，与 HK1V11 F1 结论跨芯片一致。
+
+### 6.3 T6 定案：PT 流程通，真实 STA 断链（+ 门级设计真相）
+
+PT O-2018.06-SP1 全流程实测：29k 网表（DC 60s 导出，184 modules，2725 FF）read_verilog / read_lib / link_design / create_clock / report_timing 全部执行——**工具本身没问题**。但真实时序分析卡在两处：
+
+1. **设计真相**：HK1V11 digital core 是**门级设计**——RTL 自带 30+ 个自定义行为单元（`DFFRX4`/`DFFRSX4`/`BUFX1-6`/`CLKBUFX1-6`/`MUX2X2`/`CG_CELLX4`... 全在 `seperated_code/`）。DC 用 and_or.db（纯组合通用库）综合时 FF 全部落成 **FFGEN**（无时序模型）→ PT 报 "No constrained paths"。
+2. **liberty→db 编译链断裂**：真实 PDK 单元库在位（TSMC 90nm sc-x liberty：`DFFX1-4/HX`、`AND2X1-8`，319k 行），但编译需要 lc_shell——本机的 LC 安装是 **LC2 DesignWare**（经典 `attribute/library/compile_library` 命令集不识别，缺 Qt 库需借 PTS shlib 才能启动），且 PTS 安装**缺 LC 桥接脚本**（`auxx/syn/lc_commands.tbc` 不存在，`set lc_shell` 后 PT 仍报 PT-063）。
+
+**定论**（与 60h 循环 M66 互证）：DC 结构综合 ≠ 真实时序收敛；60h 报告的 "40.08ns critical path" 是 FFGEN + wire-load 估算，非 PDK 时序结果。真实 STA/布局需要项目自有单元库映射，**属于服务器流程**。
 
 ## 7. 后续轮次
 
