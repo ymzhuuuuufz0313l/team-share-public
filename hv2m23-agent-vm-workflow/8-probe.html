@@ -60,7 +60,7 @@
 | 编号 | 实验 | 维度 | 状态 |
 |------|------|------|------|
 | F1 | DRA 模拟模型收敛深潜（506 case 失败根因） | 功能 | ✅ R2 定案 |
-| F2 | golden model bug 修复验证（intf_connect.sv:130 非法 part select） | 功能 | 🔄 计划 |
+| F2 | golden model bug 修复验证（intf_connect.sv:130 非法 part select） | 功能 | ✅ R3 修复+验证（case PASS） |
 | F3 | CDR PLL 收敛条件（stuck 11 case） | 功能 | 🔄 计划 |
 | F4 | CS_SYNC 训练脉冲机制（CHPI 3 case） | 功能 | 🔄 计划 |
 | T1 | QuestaSim 功能冒烟（mentorall license） | 工具 | ✅ R2 通过 |
@@ -166,11 +166,30 @@
 - **勘误**：第七章"完整多厂商 EDA 平台"实际是——**Synopsys 全家功能可用 + Mentor QuestaSim 10.7c 功能可用（T1 实测）+ RISC-V/qemu 可用；Cadence（IC617/Spectre/INCISIVE）装着但损坏**
 - 证据：dmesg 段错误序列 / cdslmd md5 `4895c7b7...` / restart 日志；实验后已清理进程、释放 5280/5281
 
+### 4.5 T7 判负：ARM FastModels 缺 LISA 编译器
+
+FastModels 9.4（524M）= 框架 + FVP_MPS2 构建源码（Cortex-M0/M0+/M3/M4/M7）+ AMBA bus 协议 LISA 源码，但 **LISA 编译器二进制未安装**（portfolio 内无 lisa/lisa64）→ 无法构建/运行 Fast Model，与 Cadence 同判负级别。
+
+### 4.6 F2 ✅：golden model bug 修复并验证
+
+60h 循环 M75 发现的 golden model 编译 bug（`intf_connect.sv:130` 变量上界 part-select）本轮修复并端到端验证：
+
+| 步骤 | 结果 |
+|------|------|
+| 修复 | `[10*gi+7:0]` → `[10*gi +: 8]`（隔离副本，原项目文件未动；符合注释语义 bit[9]=0 / bit[8]=pol / bit[7:0]=像素） |
+| 编译 | **0 错**（60h 循环同构建在此行编译失败） |
+| 运行 | t_8b1lane_checksum_vbk_en → **TEST CASE PASSED**，UVM_ERROR 0 / FATAL 0，GMV2 激活（880us，CPU 298s） |
+| 限制 | v2 像素数据模式（`+GM_HEX_FILE`）需要 cmodel 预期输出 txt（`outResult/analog/frame_*_analog*.txt`），VM 上无现成文件、cmodel 二进制缺失 → 待补 |
+
+意义：golden model 路径（含此前从未编译通过的 v2 分支）首次可编译可用——数字核心 + checker 的 golden 验证通道重新打通。
+
+> 轮间事故记录：T4 排查时误用 `killall lmgrd` 把 Synopsys + Mentor 两台健康 license 服务器一并杀掉，F2 编译随即卡 license 队列——已重启恢复（27000/27002 均在位）。教训：杀 lmgrd 必须按 PID 精确杀，`killall` 会跨厂商误伤。
+
 ## 5. 后续轮次
 
-- **R3 工具冒烟续**：Calibre DRC/LVS（TSMC PDK）/ ICC2 / IC617+Spectre（先拉起 Cadence license）/ Vivado 小设计
-- **R4 F2**：golden model bug 修复验证（intf_connect.sv:130 非法 part select）——解锁全 case 数字核心验证
-- **R5 性能基准（P 组）**：VCS 编译 -j 调优 / FSDB 写入吞吐 / fsdb2vcd 抽取吞吐
+- **R4 工具冒烟续**：Calibre DRC/LVS（TSMC PDK）/ Vivado 小设计（VU440 流程可用性）
+- **R5 性能基准（P 组）**：VCS 编译 -j1/-j4/-j8 实测 / FSDB 写入吞吐 / fsdb2vcd 抽取吞吐——给这台 VM 建立量化基线
+- **R6 F2 补全**：cmodel 预期输出 → GM hex → v2 像素数据模式端到端（需 cmodel 二进制或服务器回传）
 - 每轮结束更新本页 + PROGRESS.md，可再生产物随手清理
 </script>
 
