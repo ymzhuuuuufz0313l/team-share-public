@@ -62,7 +62,7 @@
 | F1 | DRA 模拟模型收敛深潜（506 case 失败根因） | 功能 | ✅ R2 定案 |
 | F2 | golden model bug 修复验证（intf_connect.sv:130 非法 part select） | 功能 | ✅ R3 修复+验证（case PASS） |
 | F3 | CDR PLL 收敛条件（stuck 11 case） | 功能 | ✅ R7 定案（12ms 看门狗重试死循环，模型限制） |
-| F4 | CS_SYNC 训练脉冲机制（CHPI 3 case） | 功能 | 🔄 计划 |
+| F4 | CS_SYNC 训练脉冲机制（CHPI 3 case） | 功能 | ✅ R8 定案（同步窗 vs VS_O 采样竞态，需 owner 裁决） |
 | T1 | QuestaSim 功能冒烟（mentorall license） | 工具 | ✅ R2 通过 |
 | T2 | Calibre 2015 DRC/LVS 冒烟（TSMC PDK） | 工具 | ✅ R4 判负（工具/license 版本错位） |
 | T3 | ICC2 冒烟 | 工具 | ✅ R5 判负（ict 二进制缺失 + 无 stdcell LEF） |
@@ -247,9 +247,26 @@ PT O-2018.06-SP1 全流程实测：29k 网表（DC 60s 导出，184 modules，27
 
 **定论**：stuck 11 = **晶体管级 CDR PLL 门级模型在事件驱动 VCS 下不锁定**（模型限制，与 F1 DRA bitline 闪烁同类问题）+ 数字域 CHPI 看门狗按设计 12ms 重试。**非数字 DUT bug**——若服务器回归"通过"，说明服务器流程用的是收敛的 CDR 模型（或不同仿真机制）。
 
-## 8. 后续轮次
+## 8. 第 8 轮：F4 定案——CHPI 3 case 是 TB 采样点与 DUT 同步窗的 1 帧竞态（10-26）
 
-- **R8 功能深潜（F 组收尾）**：F4 CS_SYNC 训练脉冲机制（CHPI 3 case 根因，M59 已初定性，待机理化）/ D4 PPM 池与输入数据盘点
+CHPI 是 5 类回归中**唯一既非模拟模型限制、也非 test 侧文件问题**的类别，本轮重跑 case（补 LD_LIBRARY_PATH 修复 FSDB dumper）+ 2.05GB 波形取证，完整闭合：
+
+**证据链**：
+1. 测试读回映射：`CS1/CS0 = LINK_LOGIC.CS_SYNC[1:0]`；RTL 中 `R_CS_reg = R_REG03_L[1:0]`（寄存器 0x43 低 2 位），`CS_SYNC` 仅在 `TP_ACT0_SET_OK` 脉冲时锁存（该脉冲由 CHPI_SD_CTRL 的 end-event 计数器产生：`K2_FIND|K3_FIND|(SP&EOL&K4_FIND)`）
+2. **写路径 100% 正常**：ADDR03_L 断言 200 次，每次 DATA_A 都携带正确值（0x7F/0x7B 含 CS=11），同寄存器的 BKDU/LD_F 位均写成功
+3. **两条时间线**（us）：
+   - `R_CS_reg`（即时）：b11@**320.7** → b00@408.4 → b10@568.2 → b11@661.4 → b01@909.3
+   - `CS_SYNC`（同步窗锁存）：b11@**395.6** → b00@410.4 → b10@646.2 → b11@664.3 → b01@909.9 —— 比 R_CS_reg **晚 60-80us**
+   - `VS_O` 测试采样点：335.5 / 423.2 / 503.1 / 583.1 / 676.3 …
+4. 帧 0 检查 @335.5us：R_CS_reg 已是 b11，但 CS_SYNC 仍 b00（395.6 才锁存）→ 读回 0 → `WRITE FAIL CS1==0 (expected 1)`，与日志逐条吻合
+
+**定论**：**TB 采样协议（VS_O 沿检查）与 DUT 同步协议（end-event 窗锁存 CS_SYNC）之间的 1 帧竞态**——测试永远读到上一帧的 CS_SYNC。非数字写路径 bug、非模拟模型限制。chipsel1 的 32 errors 同机理（更多帧的 CS 期望）。
+
+**留给设计 owner 的裁决**：改 TB（延 1 帧检查）还是改 RTL（VS_O 时锁存）？若服务器版本该 case 通过，需比对服务器 RTL/TB 的 CS_SYNC 锁存时机——这是 VM 与服务器流程差异的又一候选证据点。
+
+## 9. 后续轮次
+
+- **R9 数据面**：D4 PPM 池与输入数据盘点（/sim_dd 与 test 目录的 pattern 数据规模、cmodel 输入）/ D1 剩余盘点项
 - **R7 性能基准收尾（P 组）**：P4 Icarus vs VCS 速度对比（60h 循环三层仿真体系的量化）
 - **R8 F2 补全**：cmodel 预期输出 → GM hex → v2 像素数据模式端到端（需 cmodel 二进制或服务器回传）
 - 每轮结束更新本页 + PROGRESS.md，可再生产物随手清理
