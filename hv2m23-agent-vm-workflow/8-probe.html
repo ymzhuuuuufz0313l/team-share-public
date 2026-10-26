@@ -60,7 +60,7 @@
 | 编号 | 实验 | 维度 | 状态 |
 |------|------|------|------|
 | F1 | DRA 模拟模型收敛深潜（506 case 失败根因） | 功能 | ✅ R2 定案 |
-| F2 | golden model bug 修复验证（intf_connect.sv:130 非法 part select） | 功能 | ✅ R3 修复+验证（case PASS） |
+| F2 | golden model bug 修复验证（intf_connect.sv:130 非法 part select） | 功能 | ✅ R3 修复+PASS / **R9 v2 完成**（50err 用 cmodel ground truth 最终标定） |
 | F3 | CDR PLL 收敛条件（stuck 11 case） | 功能 | ✅ R7 定案（12ms 看门狗重试死循环，模型限制） |
 | F4 | CS_SYNC 训练脉冲机制（CHPI 3 case） | 功能 | ✅ R8 定案（同步窗 vs VS_O 采样竞态，需 owner 裁决） |
 | T1 | QuestaSim 功能冒烟（mentorall license） | 工具 | ✅ R2 通过 |
@@ -78,7 +78,7 @@
 | D1 | /sim_dd 全资产盘点 | 数据 | 🔄 进行中 |
 | D2 | /home/ICer/work 全资产盘点 | 数据 | ✅ R1 |
 | D3 | 3GB FSDB 深度解析 | 数据 | ✅ R5 完成（与 P3 合并：4.3GB 实测） |
-| D4 | PPM 池与输入数据 | 数据 | 🔄 计划 |
+| D4 | PPM 池与输入数据 | 数据 | ✅ R9 盘点（/sim_dd 13G + cmodel 参考 200 文件 38MB 在位） |
 | E1 | 三厂商 license 容量盘点 | 环境 | ✅ R1 |
 | E2 | OS/服务/网络层 | 环境 | ✅ R1 |
 | E3 | 工具版本全景 | 环境 | ✅ R1 |
@@ -264,11 +264,25 @@ CHPI 是 5 类回归中**唯一既非模拟模型限制、也非 test 侧文件�
 
 **留给设计 owner 的裁决**：改 TB（延 1 帧检查）还是改 RTL（VS_O 时锁存）？若服务器版本该 case 通过，需比对服务器 RTL/TB 的 CS_SYNC 锁存时机——这是 VM 与服务器流程差异的又一候选证据点。
 
-## 9. 后续轮次
+## 9. 第 9 轮：D4 数据面盘点 + F2-v2 完成（50err 用 cmodel ground truth 最终标定）（10-26）
 
-- **R9 数据面**：D4 PPM 池与输入数据盘点（/sim_dd 与 test 目录的 pattern 数据规模、cmodel 输入）/ D1 剩余盘点项
+**D4 数据面盘点**：
+- `/sim_dd/ICer/` = **13G**：HK1V11（12G，60h 循环 run 目录 + outResult）+ HV2M23（1.4G，t_8b1lane FSDB + PPM）
+- test 目录 PPM 池：1864 个 .ppm 共 1.2G（`ppm_mix_1920x480` 等）
+- **cmodel 参考输出在位**：`/sim_dd/.../t_8b1lane/outResult/analog/` 200 个 `frame_*_analog*.txt` 共 38MB（10-bit 像素值三元组格式）——此前认为"缺 cmodel 输出"的 F2-v2 阻塞解除
+
+**F2-v2 完成（50err 最终标定）**：
+1. t_8b1lane 开 `analog_check_on=1` + 拷贝 200 个 cmodel 参考 → **复现 UVM_ERROR=50**，与 60h 循环签名逐条一致（全部 @347.855us / frame 0 / 单行奇数索引，expected 10101010）
+2. checker 逻辑（scoreboard:155）：每像素 10-bit 的 **MSB（bit 8）** 必须按 H4INV/POL/POL2/POLC 推导的 8-bit 极性图案交替
+3. **FSDB 铁证**：347.855382us 时刻 DUT `ana_SIM_OUT`（9661-bit）line 0 = **480 个 X / 3 个 0 / 0 个 1**（奇数像素 MSB）——checker 报的 "dut=0" 就是 **X→0 转换**
+4. **定论**：F1 最终确认——50err = 晶体管级 DRA 在事件驱动 VCS 下不收敛（输出 X）→ checker 采 X→0 → 与 cmodel 期望失配。**非真实 analog 差异、非数字 bug**。VM/服务器差异的已证实机理至此共三个：F1（xprop 排除 + X→0）、F4（CS_SYNC 锁存点竞态）、本条（DRA 收敛性）
+5. 项目状态已恢复（t_8b1lane.sv 回到 ck=0）
+
+## 10. 后续轮次
+
+
 - **R7 性能基准收尾（P 组）**：P4 Icarus vs VCS 速度对比（60h 循环三层仿真体系的量化）
-- **R8 F2 补全**：cmodel 预期输出 → GM hex → v2 像素数据模式端到端（需 cmodel 二进制或服务器回传）
+- **R10**：P4 Icarus vs VCS 速度对比（开源工具链定位）/ D1 剩余盘点项 / 全项目总结（所有 F/T/P/D 收官后的最终判定页）
 - 每轮结束更新本页 + PROGRESS.md，可再生产物随手清理
 </script>
 
