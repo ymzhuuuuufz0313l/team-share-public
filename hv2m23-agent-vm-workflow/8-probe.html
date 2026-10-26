@@ -61,7 +61,7 @@
 |------|------|------|------|
 | F1 | DRA 模拟模型收敛深潜（506 case 失败根因） | 功能 | ✅ R2 定案 |
 | F2 | golden model bug 修复验证（intf_connect.sv:130 非法 part select） | 功能 | ✅ R3 修复+验证（case PASS） |
-| F3 | CDR PLL 收敛条件（stuck 11 case） | 功能 | 🔄 计划 |
+| F3 | CDR PLL 收敛条件（stuck 11 case） | 功能 | ✅ R7 定案（12ms 看门狗重试死循环，模型限制） |
 | F4 | CS_SYNC 训练脉冲机制（CHPI 3 case） | 功能 | 🔄 计划 |
 | T1 | QuestaSim 功能冒烟（mentorall license） | 工具 | ✅ R2 通过 |
 | T2 | Calibre 2015 DRC/LVS 冒烟（TSMC PDK） | 工具 | ✅ R4 判负（工具/license 版本错位） |
@@ -234,9 +234,22 @@ PT O-2018.06-SP1 全流程实测：29k 网表（DC 60s 导出，184 modules，27
 
 **定论**（与 60h 循环 M66 互证）：DC 结构综合 ≠ 真实时序收敛；60h 报告的 "40.08ns critical path" 是 FFGEN + wire-load 估算，非 PDK 时序结果。真实 STA/布局需要项目自有单元库映射，**属于服务器流程**。
 
-## 7. 后续轮次
+## 7. 第 7 轮：F3 定案——stuck 11 的 12ms 看门狗重试死循环（10-26）
 
-- **R6 功能深潜（F 组续）**：F3 CDR PLL 收敛条件（stuck 11 case 根因）/ F4 CS_SYNC 训练脉冲机制（CHPI 3 case）/ T6 PT 时序冒烟（二进制在位，用已有网表）
+60h 循环已定性 "stuck = 模拟 CDR PLL 问题"，本轮把机理**信号级+源码级完整闭合**：
+
+**因果链**：
+1. **警告源**（M31 门级单元模型内部自检）：`M31HSSC900EL150SL.v:14218` — `or(RB_or_SB, RB, SB); @(negedge RB_or_SB) if (RB_or_SB===0) $display("Both RB and SB...")`。这是 FF 异步 set/reset 同时拉低的**复位瞬态自检**，不是功能 bug
+2. **位置**：`XPHY0_TOP.I_lane0.I_cdr_ana_loop.I_cdr_pll.I_lock_detector`（36 个 FF 实例）
+3. **时间分布**（t_reg_i2c_password_rw_match，360 条警告）：**精确 12ms 周期**——0 / 12.3 / 24.3 / … / 108.3ms × 10 次 × 36 条。对照组：PASS case（t_8b1lane）只有 t=0 一次 36 条（PLL 一次锁定，无重试）
+4. **12ms 源** = `CHPI_WATCHDOG.v:19`：`parameter WD_CNT_TAR_AL = 20'd120000; //change to 12ms`，`BWDL_TRIG = (WD_CNT>=120000) & ~BAC_RECEIVED & ~LOCK_FREQ_DLY0`——link 握手（BAC）收不到 → 12ms 后 band watchdog 触发 → 复位 CDR PLL（36 条警告 = 复位的表面现象）→ 重新训练 → 再失败 → **死循环**
+5. I2C 测试需要 link 建立 → 111ms VCS 超时 → "stuck"
+
+**定论**：stuck 11 = **晶体管级 CDR PLL 门级模型在事件驱动 VCS 下不锁定**（模型限制，与 F1 DRA bitline 闪烁同类问题）+ 数字域 CHPI 看门狗按设计 12ms 重试。**非数字 DUT bug**——若服务器回归"通过"，说明服务器流程用的是收敛的 CDR 模型（或不同仿真机制）。
+
+## 8. 后续轮次
+
+- **R8 功能深潜（F 组收尾）**：F4 CS_SYNC 训练脉冲机制（CHPI 3 case 根因，M59 已初定性，待机理化）/ D4 PPM 池与输入数据盘点
 - **R7 性能基准收尾（P 组）**：P4 Icarus vs VCS 速度对比（60h 循环三层仿真体系的量化）
 - **R8 F2 补全**：cmodel 预期输出 → GM hex → v2 像素数据模式端到端（需 cmodel 二进制或服务器回传）
 - 每轮结束更新本页 + PROGRESS.md，可再生产物随手清理
