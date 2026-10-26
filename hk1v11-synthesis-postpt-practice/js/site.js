@@ -232,6 +232,24 @@
       pre.appendChild(btn);
     });
 
+    /* 动画 SVG 滚动重播：长页面里 SVG 多为下方图，一次性入场动画在加载时就播完、用户滚到时看不到
+       → 首进视口前 240px 重播（src 加 query 强制 <img> 内 SVG 重新渲染，标准技巧）；
+       配合 lazy-load 延迟加载；加载时已在视口内的不重播（入场动画正在自然播放）（2026-10-26 ymzhu） */
+    art.querySelectorAll('img[src$=".svg"]').forEach(function (img) {
+      var r = img.getBoundingClientRect();
+      if (r.top < window.innerHeight && r.bottom > 0) return;
+      img.loading = 'lazy';
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (!e.isIntersecting) return;
+          io.unobserve(img);
+          var base = (img.getAttribute('src') || '').split('?')[0];
+          img.src = base + '?v=' + Date.now();
+        });
+      }, { rootMargin: '240px 0px' });
+      io.observe(img);
+    });
+
     var toc = document.getElementById('toc');
     var headings = document.querySelectorAll('.article h2, .article h3');
     var tocLinks = [];
@@ -404,4 +422,4 @@
   document.head.appendChild(ss);
 })();
 
-// ymzhu 2026-10-21 12:18
+// ymzhu 2026-10-26 16:50

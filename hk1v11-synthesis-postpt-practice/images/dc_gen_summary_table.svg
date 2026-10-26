@@ -1,0 +1,106 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="100%" viewBox="0 0 3928 489" role="img" aria-label="DC 三代总览（时间 / 面积 / 时序 / 主要变化）">
+  <style>
+    .mono{font-family:ui-monospace,Consolas,monospace;}
+    .cjk{font-family:'Microsoft YaHei',sans-serif;}
+    @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+    @keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes growW{from{width:0}}
+    @keyframes pop{from{transform:scale(.7)}to{transform:scale(1)}}
+    @keyframes breathe{0%,100%{opacity:.25}50%{opacity:.55}}
+    @keyframes sweep{0%{transform:translateX(-320px)}45%{transform:translateX(4250px)}100%{transform:translateX(4250px)}}
+    .hdr{animation:fadeIn .3s ease-out both}
+    .underline{animation:growW .4s ease-out .15s both}
+    .r1{animation:rise .3s ease-out .3s both}
+    .r2{animation:rise .3s ease-out .34s both}
+    .r3{animation:rise .3s ease-out .38s both}
+    .fill{animation:growW .5s ease-out .4s both}
+    .pop{transform-box:fill-box;transform-origin:center;animation:pop .3s ease-out both}
+    .p1{animation-delay:.3s}
+    .p2{animation-delay:.34s}
+    .p3{animation-delay:.38s}
+    .br{opacity:.25;animation:breathe 2.4s ease-in-out infinite}
+    .sweep{animation:sweep 4s ease-in-out infinite}
+    @keyframes tl{0%{width:0;opacity:0}4%{width:0;opacity:.4}14%{width:1309px;opacity:.4}28%{width:1309px;opacity:.4}38%{width:2718px;opacity:.4}52%{width:2718px;opacity:.4}62%{width:3926px;opacity:.4}90%{width:3926px;opacity:.4}97%{width:3926px;opacity:0}100%{width:0;opacity:0}}
+    .tl{animation:tl 6s linear infinite}
+    @keyframes rg1{0%{opacity:0}10%{opacity:.16}30%{opacity:.16}40%{opacity:0}100%{opacity:0}}
+    @keyframes rg2{0%{opacity:0}38%{opacity:0}48%{opacity:.16}66%{opacity:.16}76%{opacity:0}100%{opacity:0}}
+    @keyframes rg3{0%{opacity:0}76%{opacity:0}86%{opacity:.16}98%{opacity:.16}100%{opacity:0}}
+    .rg1{animation:rg1 5.6s linear infinite}
+    .rg2{animation:rg2 5.6s linear infinite}
+    .rg3{animation:rg3 5.6s linear infinite}
+    @keyframes pl{0%,100%{opacity:1}50%{opacity:.7}}
+    .pl1{animation:pl 3.2s ease-in-out infinite}
+    .pl2{animation:pl 3.2s ease-in-out 1.07s infinite}
+    .pl3{animation:pl 3.2s ease-in-out 2.13s infinite}
+    @keyframes wash{0%,100%{opacity:1}50%{opacity:.6}}
+    .wash{animation:wash 5.2s ease-in-out infinite}
+    @keyframes diag{to{transform:translate(19.8px,19.8px)}}
+    .diag{animation:diag 7s linear infinite}
+    @media (prefers-reduced-motion:reduce){*{animation:none!important}}
+  </style>
+  <defs>
+    <linearGradient id="shineS" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#fffdf7" stop-opacity="0"/>
+      <stop offset="0.5" stop-color="#fffdf7" stop-opacity="0.5"/>
+      <stop offset="1" stop-color="#fffdf7" stop-opacity="0"/>
+    </linearGradient>
+    <pattern id="diagF2" width="28" height="28" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <rect width="2" height="28" fill="#0e7490"/>
+    </pattern>
+    <clipPath id="clipD2"><rect x="0" y="396" width="3928" height="93"/></clipPath>
+  </defs>
+  <rect x="0" y="0" width="3928" height="489" fill="#fffdf7"/>
+  <g class="hdr">
+    <rect x="0" y="0" width="3928" height="110" fill="#0e7490"/>
+    <text x="40" y="55" dy="0.35em" font-size="52" font-weight="bold" fill="#fffdf7" class="mono">DC 三代总览（时间 / 面积 / 时序 / 主要变化）</text>
+    <line x1="0" y1="110" x2="3928" y2="110" stroke="#fffdf7" stroke-opacity="0.4" stroke-width="2"/>
+    <rect x="0" y="110" width="3928" height="100" fill="#0e7490"/>
+    <text x="24" y="160" dy="0.35em" font-size="40" fill="#fffdf7" class="cjk">时间</text>
+    <text x="454" y="160" dy="0.35em" font-size="40" fill="#fffdf7" class="mono">面积 (um2)</text>
+    <text x="854" y="160" dy="0.35em" font-size="40" fill="#fffdf7" class="mono">结构（FF / comb）</text>
+    <text x="1474" y="160" dy="0.35em" font-size="40" fill="#fffdf7" class="mono">时序（setup / WNS / hold）</text>
+    <text x="3904" y="160" dy="0.35em" font-size="40" fill="#fffdf7" text-anchor="end" class="cjk">主要变化</text>
+    <rect class="underline" x="0" y="210" width="3928" height="4" fill="#b45309"/>
+  </g>
+  <g class="r1">
+    <rect class="rg1" x="0" y="210" width="3928" height="93" fill="#0e7490" opacity="0"/>
+    <text x="24" y="256" dy="0.35em" font-size="38" font-weight="bold" fill="#1c2534" class="mono">2026-09-01</text>
+    <text x="454" y="256" dy="0.35em" font-size="38" font-weight="bold" fill="#0e7490" class="mono">283496</text>
+    <text x="854" y="256" dy="0.35em" font-size="38" fill="#1c2534" class="mono">FF 2434 / comb 11344</text>
+    <g class="pl1"><text x="1474" y="256" dy="0.35em" font-size="38" font-weight="bold" fill="#b91c1c" class="mono pop p1">434 条 / -0.33 ns / hold 87</text></g>
+    <text x="3904" y="256" dy="0.35em" font-size="38" fill="#1c2534" text-anchor="end" class="cjk">约束收窄前：部分路径未被真实检查，表面违例少并非真实收敛</text>
+  </g>
+  <g class="r2">
+    <rect x="0" y="303" width="3928" height="93" fill="#f4f1ea"/>
+    <rect class="rg2" x="0" y="303" width="3928" height="93" fill="#0e7490" opacity="0"/>
+    <text x="24" y="350" dy="0.35em" font-size="38" font-weight="bold" fill="#1c2534" class="mono">2026-09-22</text>
+    <text x="454" y="350" dy="0.35em" font-size="38" font-weight="bold" fill="#0e7490" class="mono">294907</text>
+    <text x="854" y="350" dy="0.35em" font-size="38" fill="#1c2534" class="mono">FF 2526 / comb 12096</text>
+    <g class="pl2"><text x="1474" y="350" dy="0.35em" font-size="38" font-weight="bold" fill="#b91c1c" class="mono pop p2">452 条 / -1.45 ns / hold 30</text></g>
+    <text x="3904" y="350" dy="0.35em" font-size="38" fill="#1c2534" text-anchor="end" class="cjk">完成约束收窄：暴露真实信息 + 真实待优化路径：setup 452 条、最差 −1.45ns</text>
+  </g>
+  <g class="r3">
+    <g class="wash"><rect class="fill" x="0" y="396" width="3928" height="93" fill="#0e7490" fill-opacity="0.1"/></g>
+    <rect class="rg3" x="0" y="396" width="3928" height="93" fill="#0e7490" opacity="0"/>
+    <g clip-path="url(#clipD2)"><g class="diag"><rect x="-40" y="360" width="4010" height="160" fill="url(#diagF2)" opacity="0.05"/></g></g>
+    <rect class="sweep" x="0" y="396" width="300" height="93" fill="url(#shineS)" opacity="0.6"/>
+    <rect class="br" x="0" y="396" width="6" height="93" fill="#0e7490"/>
+    <text x="24" y="442" dy="0.35em" font-size="38" font-weight="bold" fill="#1c2534" class="mono">2026-10-02</text>
+    <text x="454" y="442" dy="0.35em" font-size="38" font-weight="bold" fill="#0e7490" class="mono">314707</text>
+    <text x="854" y="442" dy="0.35em" font-size="38" fill="#1c2534" class="mono">FF 2839 / comb 11773</text>
+    <g class="pl3"><text x="1474" y="442" dy="0.35em" font-size="38" font-weight="bold" fill="#047857" class="mono pop p3">11 条 / -0.01 ns / hold 21</text></g>
+    <text x="3904" y="442" dy="0.35em" font-size="38" fill="#1c2534" text-anchor="end" class="cjk">关键路径优化 + 约束审核后重新添加：setup 452→11（−97.6%），最差 −0.01ns，面积 +6.7%</text>
+  </g>
+  <g stroke="#ddd6c8" stroke-width="2">
+    <line x1="430" y1="110" x2="430" y2="489"/>
+    <line x1="830" y1="110" x2="830" y2="489"/>
+    <line x1="1450" y1="110" x2="1450" y2="489"/>
+    <line x1="2100" y1="110" x2="2100" y2="489"/>
+    <line x1="0" y1="210" x2="3928" y2="210"/>
+    <line x1="0" y1="303" x2="3928" y2="303"/>
+    <line x1="0" y1="396" x2="3928" y2="396"/>
+  </g>
+  <rect class="tl" x="0" y="216" width="3926" height="6" fill="#0e7490" opacity="0"/>
+  <rect x="1.5" y="1.5" width="3925" height="486" fill="none" stroke="#ddd6c8" stroke-width="3"/>
+</svg>
+<!-- ymzhu 2026-10-26 17:08 -->
