@@ -59,18 +59,18 @@
 
 | 编号 | 实验 | 维度 | 状态 |
 |------|------|------|------|
-| F1 | DRA 模拟模型收敛深潜（506 case 失败根因） | 功能 | 🔄 计划 |
+| F1 | DRA 模拟模型收敛深潜（506 case 失败根因） | 功能 | ✅ R2 定案 |
 | F2 | golden model bug 修复验证（intf_connect.sv:130 非法 part select） | 功能 | 🔄 计划 |
 | F3 | CDR PLL 收敛条件（stuck 11 case） | 功能 | 🔄 计划 |
 | F4 | CS_SYNC 训练脉冲机制（CHPI 3 case） | 功能 | 🔄 计划 |
-| T1 | QuestaSim 功能冒烟（mentorall license） | 工具 | 🔄 计划 |
+| T1 | QuestaSim 功能冒烟（mentorall license） | 工具 | ✅ R2 通过 |
 | T2 | Calibre 2015 DRC/LVS 冒烟（TSMC PDK） | 工具 | 🔄 计划 |
 | T3 | ICC2 冒烟 | 工具 | 🔄 计划 |
 | T4 | IC617 + Spectre（MMSIM151）冒烟 | 工具 | 🔄 计划 |
 | T5 | Vivado 2019.1 小设计全流程 | 工具 | 🔄 计划 |
 | T6 | PT 已有网表时序分析 | 工具 | 🔄 计划 |
 | T7 | ARM FastModels 9.4 能力探测（新发现） | 工具 | 🔄 计划 |
-| T8 | KVM/libvirt 嵌套虚拟化探测（新发现） | 工具 | 🔄 计划 |
+| T8 | KVM/libvirt 嵌套虚拟化探测（新发现） | 工具 | ✅ R2 判负（无 /dev/kvm / 无 vmx） |
 | P1 | VCS 编译 -j 调优基准 | 性能 | 🔄 计划 |
 | P2 | FSDB 写入吞吐 | 性能 | 🔄 计划 |
 | P3 | fsdb2vcd 抽取吞吐 | 性能 | 🔄 计划 |
@@ -100,7 +100,7 @@
 | 位置 | 内容 | 备注 |
 |------|------|------|
 | `/home/mentor/ARM` | **ARM FastModels 9.4**（Portfolio + Tools） | 新发现：CPU/SoC 快速模型平台，60h 循环未触碰 |
-| KVM/libvirtd | active，无客户机、无镜像 | 嵌套虚拟化条件具备（T8 探测） |
+| KVM/libvirtd | active，无客户机、无镜像 | T8 判负：无 `/dev/kvm`、CPU 无 vmx 位 |
 | `/home/synopsys/fpga` | N-2018.03-SP1 / O-2018.06-SP1 | Synopsys FPGA 版工具 |
 | `/home/synopsys` | SpyGlass-L2016.06 / icc2 / pts / syn / vcs-mx / verdi / identify / lc | 全家 |
 | `/home/mentor` | Calibre2015 / quasim / ARM | 全家 |
@@ -124,11 +124,44 @@
 - 资源：内存 3.7G（本轮 1.8G 可用）/ `/home` 309G（63% 用，117G 空）
 - 3 个旧 Verdi GUI 常驻（10-22 / 10-23 启动），合计 ~1.4G 内存——实验高峰期可作释放对象
 
-## 4. 后续轮次
+## 4. 第 2 轮结果（10-26）
 
-- **R2 工具冒烟电池**：QuestaSim / Calibre / ICC2 / IC617 / Vivado——证明多厂商平台"能用"而不只是"装着"
-- **R3 DRA 收敛深潜（F1）**：506 case 失败的最后大未定论——模拟模型为什么不收敛，能否修复
-- **R4 性能基准（P 组）**：给这台 VM 建立量化基线（编译/波形/抽取三组数字）
+### 4.1 F1 定案：DRA "不收敛"的完整机制（四实验闭环）
+
+10-23 遗留的 50×[analog pol error] 之谜，本轮用四个实验把机制钉死：
+
+| 实验 | 方法 | 结果 |
+|------|------|------|
+| E1 | 复用 r6 已编译 simv，同 case 同 seed 重跑，仅加 `-xprop=none`，fsdb 逐位对比 | SIM_OUT 完全一致（61 有效位 + 9600 X）→ **排除 X-prop 传播模式假设** |
+| E2 | 顶层 netlist 静态检查 | `DRA_BITLINE_R`[4809:10] + `DRA_BITLINE_L`[9669:4810] = 9660bit 全覆盖 → **排除缺块** |
+| E3 | 时变快照对比 | 323us 仅 **1** bit 有效 / 330us **61** bit 有效（961-966 通道=带专用 POFF/VNPOFF 处理的路尾特殊组）/ 339.49us checker 采样时 = X → **位级闪烁、永不收敛** |
+| E4 | 16 个 DRA 版本（20260114→20260910+updated）扫描 | 全部晶体管级（M31 90nm 单元库 69k 行），**无行为级变体** |
+
+**定论**：晶体管级 DRA 网表在事件驱动 VCS 中，内部模拟节点 X↔值随机闪烁、永不稳定；`SIM_OUT` 位级闪烁，checker 采样必然落到 X（强转 0）→ 50 错。**这是流程固有伪影：非数字 DUT bug**（60h 循环 golden model 已证数字核心正确），**也非 VM 特有问题**（16 个版本全部同构）。推论：若服务器回归"通过"，必用不同机制（co-sim / 初值 / 容差检查）——这是 10-23 遗留问题的答案。
+
+### 4.2 T1 通过：QuestaSim 10.7c 功能可用
+
+`vlog` 编译 0 错 + `vsim -c` 仿真 PASS + license checkout 正常。三个坑：
+
+- **`vcom` 是 VHDL 编译器、`vlog` 才是 Verilog**（老 ModelSim 命名；10.7c 的 vcom 无 `-sv`/`-v2001` 选项）
+- **Mentor license 真实端口是 27002**，不是 5280——dat 文件 `SERVER` 行决定，`ps` 上看不到端口
+- `LM_LICENSE_FILE=27002@IC_EDA`
+
+### 4.3 license 端口实测修正（R1 勘误）
+
+| 厂商 | 真实端口 | 状态 |
+|------|---------|------|
+| Synopsys | 27000 | ✅ 运行（lmgrd + snpslmd） |
+| Mentor | **27002** | ✅ 运行（本轮重启后，新 PID） |
+| Cadence | 5280/5281 | ❌ 未运行（cdslmd 无进程——60h 循环启动过、已停） |
+
+插曲：误读端口表以为 Mentor 挂死，kill 了健康 lmgrd 再重启——最终状态健康，无损害；教训：lmgrd 的端口在 dat 文件里，不在进程参数里。
+
+## 5. 后续轮次
+
+- **R3 工具冒烟续**：Calibre DRC/LVS（TSMC PDK）/ ICC2 / IC617+Spectre（先拉起 Cadence license）/ Vivado 小设计
+- **R4 F2**：golden model bug 修复验证（intf_connect.sv:130 非法 part select）——解锁全 case 数字核心验证
+- **R5 性能基准（P 组）**：VCS 编译 -j 调优 / FSDB 写入吞吐 / fsdb2vcd 抽取吞吐
 - 每轮结束更新本页 + PROGRESS.md，可再生产物随手清理
 </script>
 
