@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>八、探测实验：虚拟机五维探查（持续更新）· Agent 遥控 EDA 虚拟机</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./assets/style.css">
+  <script src="./js/marked.min.js"></script>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a class="navbar-brand" href="./">AGENT_VM</a>
+      <div class="navbar-links" id="navbar-links"></div>
+    </div>
+  </nav>
+
+  <div class="container with-toc">
+    <aside class="toc-wrapper">
+      <div class="toc" id="toc"></div>
+    </aside>
+
+    <div class="content">
+      <article class="article" id="article"></article>
+      <div class="page-nav">
+        <a class="prev" href="./7-loop.html"><span class="label">← 上一章</span><span class="title">七、60h 自主循环：双芯片穷尽探索</span></a>
+        <a class="next" href="./index.html"><span class="label">回到首页 →</span><span class="title">工作模式总览</span></a>
+      </div>
+    </div>
+  </div>
+
+  <div class="lightbox" id="lightbox">
+    <span class="close" id="lightbox-close">&times;</span>
+    <img id="lightbox-img" src="" alt="">
+    <div class="hint">滚轮缩放 · 拖拽移动 · Esc 或点击空白处关闭</div>
+  </div>
+
+<script type="text/template" id="md">
+# 八、探测实验：虚拟机五维探查（2026-10-26 起，持续更新）
+
+第七章的 60h 循环完成了"穷尽探索"；本章是第二阶段——**聚焦实验**：未定论问题深挖（DRA 收敛）、多厂商工具功能冒烟（装过 ≠ 能用）、性能量化基线、数据资产深盘。每轮实验结果追加到本章，源记录在 VM 隔离工作区 `/home/ICer/work/probe_lab_1026/PROGRESS.md`。
+
+## 1. 框架与硬约束
+
+| 项 | 内容 |
+|------|------|
+| 工作区 | `/home/ICer/work/probe_lab_1026`（隔离，logs/results/scripts 三分） |
+| 硬约束一 | 绝不破坏原环境：HK1V11 / HV2M23 / vu440_sim 只读，一切写操作落 probe_lab |
+| 硬约束二 | 绝不阻塞等待：长任务 nohup + ≤180s 短轮询 |
+| 资源纪律 | 编前查 free（<400M 先 drop_caches）；实验后清理可再生产物 |
+
+## 2. 实验菜单（五维）
+
+| 编号 | 实验 | 维度 | 状态 |
+|------|------|------|------|
+| F1 | DRA 模拟模型收敛深潜（506 case 失败根因） | 功能 | 🔄 计划 |
+| F2 | golden model bug 修复验证（intf_connect.sv:130 非法 part select） | 功能 | 🔄 计划 |
+| F3 | CDR PLL 收敛条件（stuck 11 case） | 功能 | 🔄 计划 |
+| F4 | CS_SYNC 训练脉冲机制（CHPI 3 case） | 功能 | 🔄 计划 |
+| T1 | QuestaSim 功能冒烟（mentorall license） | 工具 | 🔄 计划 |
+| T2 | Calibre 2015 DRC/LVS 冒烟（TSMC PDK） | 工具 | 🔄 计划 |
+| T3 | ICC2 冒烟 | 工具 | 🔄 计划 |
+| T4 | IC617 + Spectre（MMSIM151）冒烟 | 工具 | 🔄 计划 |
+| T5 | Vivado 2019.1 小设计全流程 | 工具 | 🔄 计划 |
+| T6 | PT 已有网表时序分析 | 工具 | 🔄 计划 |
+| T7 | ARM FastModels 9.4 能力探测（新发现） | 工具 | 🔄 计划 |
+| T8 | KVM/libvirt 嵌套虚拟化探测（新发现） | 工具 | 🔄 计划 |
+| P1 | VCS 编译 -j 调优基准 | 性能 | 🔄 计划 |
+| P2 | FSDB 写入吞吐 | 性能 | 🔄 计划 |
+| P3 | fsdb2vcd 抽取吞吐 | 性能 | 🔄 计划 |
+| P4 | Icarus vs VCS 速度对比 | 性能 | 🔄 计划 |
+| D1 | /sim_dd 全资产盘点 | 数据 | 🔄 进行中 |
+| D2 | /home/ICer/work 全资产盘点 | 数据 | ✅ R1 |
+| D3 | 3GB FSDB 深度解析 | 数据 | 🔄 计划 |
+| D4 | PPM 池与输入数据 | 数据 | 🔄 计划 |
+| E1 | 三厂商 license 容量盘点 | 环境 | ✅ R1 |
+| E2 | OS/服务/网络层 | 环境 | ✅ R1 |
+| E3 | 工具版本全景 | 环境 | ✅ R1 |
+
+## 3. 第 1 轮：环境全景（10-26）
+
+### 3.1 三厂商 license 服务器（全部本地自建、全部在运行）
+
+| 厂商 | 守护进程 | 端口 | 容量 |
+|------|---------|------|------|
+| Synopsys | lmgrd + snpslmd | 27000 | INCREMENT 格式，~99 许可/feature（VCS/Verdi/DC/PT/ICC2 全家），当前 0 在用 |
+| Mentor | lmgrd + mgcld | 5280 | **mentorall_s 全家桶**（QuestaSim/Falcon/ICLayout/Board/MixedSignal/Reliability/Cable...） |
+| Cadence | cdslmd | 5281 | 100 uncounted（IC617） |
+
+结论：三厂商许可全部本地自建、零外部依赖；当前 0 在用 = 大规模并行实验无许可瓶颈。
+
+### 3.2 工具全景（本轮新发现，补全第七章）
+
+| 位置 | 内容 | 备注 |
+|------|------|------|
+| `/home/mentor/ARM` | **ARM FastModels 9.4**（Portfolio + Tools） | 新发现：CPU/SoC 快速模型平台，60h 循环未触碰 |
+| KVM/libvirtd | active，无客户机、无镜像 | 嵌套虚拟化条件具备（T8 探测） |
+| `/home/synopsys/fpga` | N-2018.03-SP1 / O-2018.06-SP1 | Synopsys FPGA 版工具 |
+| `/home/synopsys` | SpyGlass-L2016.06 / icc2 / pts / syn / vcs-mx / verdi / identify / lc | 全家 |
+| `/home/mentor` | Calibre2015 / quasim / ARM | 全家 |
+| `/home/cadence` | IC617 / INCISIVE152 / MMSIM151（Spectre）/ InstallScape / patch | 全家 |
+
+### 3.3 数据资产盘点
+
+| 位置 | 大小 | 内容 |
+|------|------|------|
+| `/home/ICer/work/HK1V11` | 29G | 主项目（HDL/DV_TCON_C/服务器回传包） |
+| `/home/ICer/work/HV2M23` | 13G | 第二芯片 |
+| `/home/ICer/work/vu440_sim` | 3.4G | 60h 循环工作区（交付物已固化） |
+| `/home/ICer/work/HK1V11_bak_1010` | 914M | 10-10 备份 |
+| `/sim_dd/ICer/HK1V11` | 12G | 仿真产物（VERIFICATION/run/...） |
+| `/sim_dd/ICer/HV2M23` | 1.4G | 仿真产物 |
+
+### 3.4 OS 层
+
+- CentOS 7.9.2009 / 内核 3.10 / **54 个运行中服务**
+- 双网卡：ens33 `192.168.206.128/24`（宿主 LAN）+ virbr0 `192.168.122.1/24`（KVM 桥）；DNS 192.168.206.2
+- 资源：内存 3.7G（本轮 1.8G 可用）/ `/home` 309G（63% 用，117G 空）
+- 3 个旧 Verdi GUI 常驻（10-22 / 10-23 启动），合计 ~1.4G 内存——实验高峰期可作释放对象
+
+## 4. 后续轮次
+
+- **R2 工具冒烟电池**：QuestaSim / Calibre / ICC2 / IC617 / Vivado——证明多厂商平台"能用"而不只是"装着"
+- **R3 DRA 收敛深潜（F1）**：506 case 失败的最后大未定论——模拟模型为什么不收敛，能否修复
+- **R4 性能基准（P 组）**：给这台 VM 建立量化基线（编译/波形/抽取三组数字）
+- 每轮结束更新本页 + PROGRESS.md，可再生产物随手清理
+</script>
+
+<script>
+    const chapters = [
+      ['index', '首页'],
+      ['1-deploy', '环境部署'],
+      ['2-data', '数据回迁'],
+      ['3-first-sim', 'UVM 首跑'],
+      ['4-correct-boot', '正确启动'],
+      ['5-agent-manual', '遥控手册'],
+      ['6-hk1v11', 'HK1V11 实录'],
+      ['7-loop', '60h 循环'],
+      ['8-probe', '探测实验']
+    ];
+const currentPath = location.pathname.split('/').pop() || 'index.html';
+const linksContainer = document.getElementById('navbar-links');
+chapters.forEach(([slug, label]) => {
+  const href = slug === 'index' ? './' : `./${slug}.html`;
+  const filename = slug === 'index' ? 'index.html' : `${slug}.html`;
+  const a = document.createElement('a');
+  a.href = href;
+  a.textContent = label;
+  if (currentPath === filename || currentPath.endsWith('/' + filename)) a.classList.add('active');
+  linksContainer.appendChild(a);
+});
+</script>
+<script>
+const md = document.getElementById('md').textContent;
+document.getElementById('article').innerHTML = marked.parse(md);
+
+const toc = document.getElementById('toc');
+const headings = document.querySelectorAll('.article h2, .article h3');
+const tocLinks = [];
+headings.forEach(h => {
+  const id = h.textContent.trim().replace(/\s+/g, '-').replace(/[^\w\u4e00-\u9fa5-]/g, '');
+  h.id = id;
+  const cls = h.tagName === 'H2' ? 'toc-h2' : 'toc-h3';
+  const a = document.createElement('a');
+  a.href = '#' + id;
+  a.textContent = h.textContent;
+  a.className = cls;
+  toc.appendChild(a);
+  tocLinks.push(a);
+});
+
+tocLinks.forEach((link, i) => {
+  if (!link.classList.contains('toc-h2')) return;
+  const children = [];
+  for (let j = i + 1; j < tocLinks.length && tocLinks[j].classList.contains('toc-h3'); j++) children.push(tocLinks[j]);
+  if (!children.length) return;
+  link.classList.add('toc-parent');
+  const arrow = document.createElement('span');
+  arrow.className = 'toc-arrow';
+  arrow.textContent = '▸';
+  link.prepend(arrow);
+  children.forEach(c => c.parentLink = link);
+  arrow.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const collapsed = link.classList.toggle('collapsed');
+    children.forEach(c => c.style.display = collapsed ? 'none' : '');
+  });
+});
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      tocLinks.forEach(l => l.classList.remove('active'));
+      let active = tocLinks.find(a => a.getAttribute('href') === '#' + entry.target.id);
+      if (active && active.style.display === 'none' && active.parentLink) active = active.parentLink;
+      if (active) active.classList.add('active');
+    }
+  });
+}, { rootMargin: '-10% 0px -75% 0px' });
+headings.forEach(h => observer.observe(h));
+</script>
+<script>
+const lightbox = document.getElementById('lightbox');
+const lbImg = document.getElementById('lightbox-img');
+const lbClose = document.getElementById('lightbox-close');
+let scale = 1;
+let isDragging = false;
+let startX = 0, startY = 0, translateX = 0, translateY = 0;
+function openLightbox(src) { lbImg.src = src; scale = 1; translateX = 0; translateY = 0; updateTransform(); lightbox.classList.add('active'); document.body.style.overflow = 'hidden'; }
+function closeLightbox() { lightbox.classList.remove('active'); document.body.style.overflow = ''; }
+function updateTransform() { lbImg.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`; }
+document.addEventListener('click', (e) => { const img = e.target.closest('img'); if (!img || img.id === 'lightbox-img' || !img.closest('.article')) return; openLightbox(img.src); });
+lbClose.addEventListener('click', closeLightbox);
+lightbox.addEventListener('click', (e) => { if (e.target === lightbox) closeLightbox(); });
+lightbox.addEventListener('wheel', (e) => { e.preventDefault(); const d = e.deltaY > 0 ? -0.12 : 0.12; scale = Math.min(Math.max(0.5, scale + d), 5); updateTransform(); });
+lbImg.addEventListener('mousedown', (e) => { isDragging = true; startX = e.clientX - translateX; startY = e.clientY - translateY; lbImg.classList.add('grabbing'); e.preventDefault(); });
+document.addEventListener('mousemove', (e) => { if (!isDragging) return; translateX = e.clientX - startX; translateY = e.clientY - startY; updateTransform(); });
+document.addEventListener('mouseup', () => { isDragging = false; lbImg.classList.remove('grabbing'); });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && lightbox.classList.contains('active')) closeLightbox(); });
+</script>
+
+</body>
+</html>
