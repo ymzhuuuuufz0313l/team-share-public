@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>六、HK1V11 bring-up：从 50 错到 0 错干净跑 · Agent 遥控 EDA 虚拟机</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./assets/style.css">
+  <script src="./js/marked.min.js"></script>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a class="navbar-brand" href="./">AGENT_VM</a>
+      <div class="navbar-links" id="navbar-links"></div>
+    </div>
+  </nav>
+
+  <div class="container with-toc">
+    <aside class="toc-wrapper">
+      <div class="toc" id="toc"></div>
+    </aside>
+
+    <div class="content">
+      <article class="article" id="article"></article>
+      <div class="page-nav">
+        <a class="prev" href="./5-agent-manual.html"><span class="label">← 上一章</span><span class="title">五、Agent 遥控手册</span></a>
+        <a class="next" href="./index.html"><span class="label">回到首页 →</span><span class="title">工作模式总览</span></a>
+      </div>
+    </div>
+  </div>
+
+  <div class="lightbox" id="lightbox">
+    <span class="close" id="lightbox-close">&times;</span>
+    <img id="lightbox-img" src="" alt="">
+    <div class="hint">滚轮缩放 · 拖拽移动 · Esc 或点击空白处关闭</div>
+  </div>
+
+<script type="text/template" id="md">
+# 六、HK1V11 bring-up：从 50 错到 0 错干净跑（10-22 → 10-23）
+
+同一台 IC_EDA，10-22 起跑起 HV2M23 的兄弟项目 HK1V11（同 DV_TCON_C 框架）。环境三件套（`eda_env.sh` / 软链 / license）原样复用零改动，只多一步 `source /home/ICer/work/HK1V11/HK1V11.env`。本章记录 1920 case 的 bring-up 全程：PPM 映射、50 错根因定案、checker 关干净跑、以及 Verdi 标准流程固化。
+
+## 1. Case 入口：run_tc.sh 一行
+
+```bash
+cd /home/ICer/work/HK1V11/DV_TCON_C/script
+source /home/ICer/work/HK1V11/HK1V11.env
+bash run_tc.sh TOP t_H1920_V16_FPS280_PORT_NUM6 chip_tb_top random clean
+```
+
+单 case 约 2.5 分钟（编译 + 仿真）；产物落 `/sim_dd/ICer/HK1V11/VERIFICATION/run/TOP_TCON_C/<case>/`。**重跑前必备份 run 目录**——本章所有对照实验都靠备份目录站住脚（`bak_1023_pn6_nopat` / `bak_1023_pn6_dplc0_ppm` / `_bak_1023_r4` / `_bak_1023_r5_ckfail`）。
+
+## 2. PPM 映射：pattern 双 symlink 规则
+
+cmodel `pic_process` 读**无扩展名**的 `frame_N`，SV `$fopen` 读**带 .ppm** 的 `frame_N.ppm`——两个名字都要存在：
+
+```bash
+cd tests/<case>/pattern
+ln -s frame_0.ppm frame_0    # × 8 帧
+```
+
+224 个 1920/3840 case 全部补齐；官方 case 的原始 PPM 备份在 `pattern_orig_1023`（155MB）。
+
+## 3. 50 错之谜：五连跑矩阵定根因
+
+PORT_NUM6 case 每次跑都报 50 条 `[analog pol error]`（奇数口期望 10101010）。逐一变量做五连跑矩阵：
+
+| Run | 变量 | 结果 |
+|---|---|---|
+| r1 | 无 pattern（基线） | 50 错 |
+| r2 | 官方 PPM + DPLC_MODE=0 | 50 错，完全一致 |
+| r3/r4 | DPLC_MODE=1（A/B 对照） | 50 错，完全一致 |
+| r5 | 官方 case + 官方 PPM | 50 错，完全一致 |
+
+**结论：与 PPM 内容、DPLC_MODE、PORT_NUM 全部无关**——是 DUT/RTL 问题，不是数据或配置问题。
+
+信号级实锤（fsdb2vcd 全时序解码）：
+
+- `ana_SIM_OUT[9660:0]` 整场仿真只被 TB 锁存 5 次；两次有效拍（323.59us / 326.78us）中 **100 个口的 pol 位（每口 10bit 的 MSB）全部为 0**——H4INV=1 时 DUT 输出数据路径**没有执行反相**
+- checker 采样时刻（339.49us）总线为 X，X 被强转 `bit` 类型后显示 0——错误信息里的 `00000000` 其实是 X
+
+## 4. checker 关干净跑：0 错、满 8 帧
+
+**第一个坑**：checker 开关不在 `env_cfg` 类默认值里——第一次改类默认值无效（r5 仍 50 错）。真正的开关**硬编码在 case 的 test 文件 build_phase**：
+
+```systemverilog
+// t_H1920_V16_FPS280_PORT_NUM6.sv
+env_cfg.analog_check_on = 1;   // 改成 0
+```
+
+r6（checker 关）：**UVM_ERROR 0**，$finish 961.176us 跑满 8 帧（此前 50 错会 339.76us 就 quit）。干净波形实拍（数字字节组 DBL/DBR + 面板时钟；frame7 两拍有效数据锁存 @884.3/884.6us）：
+
+![PORT_NUM6 r6 干净跑波形（checker 关，0 错）](img/pn6_r6_waves_1023.png)
+
+## 5. Verdi 标准流程（一而再再而三的坑 → 已固化 skill）
+
+| ❌ 错 | ✅ 对 |
+|---|---|
+| 裸 `verdi -ssf chip_tb_top_000.fsdb`——只有波形，**设计树空白**（反复踩 3 次的"project 没加载"） | `cd <run dir> && verdi -dbdir simv.daidir -ssf chip_tb_top.vf -sswr <waves.rc>` |
+
+四个必需环境变量（缺任何一个 GUI 起不来）：
+
+```bash
+export DISPLAY=:0
+export XAUTHORITY=/run/gdm/auth-for-gdm-7oNnYV/database
+export SNPSLMD_LICENSE_FILE=27000@IC_EDA
+export VCS_HOME=/home/synopsys/vcs-mx/O-2018.09-1   # -dbdir 走 simflow 检查，必须
+```
+
+**`.rc` 预加载**（一键还原信号组 / 窗口 / 光标）：
+
+```
+Magic 271485
+Revision Verdi_O-2018.09-SP2
+openDirFile -d / "" "<run dir>/chip_tb_top.vf"
+zoom 875.000000 895.000000 1u
+cursor 884.500000
+marker 884.500000
+addGroup "G1 pol cfg"
+addSignal -h 15 /chip_tb_top/ana_data_output_if/H4INV
+addSignal -h 15 -UNSIGNED -HEX /chip_tb_top/ana_data_output_if/ana_SIM_OUT[59:0]
+```
+
+信号清单参考项目自带的 `t_8b1lane_waves.rc`（路径形如 `/chip_tb_top/u_HK1V11/...`）。
+
+## 6. 日常坑清单（全部实测踩过）
+
+| 坑 | 症状 | 解法 |
+|---|---|---|
+| 裸 `-ssf` | 设计树空白只有波形 | 加 `-dbdir simv.daidir` |
+| `-dbdir` 报 VCS_HOME unset | simflow 检查 | `export VCS_HOME=...` |
+| ASCII locale | 中文输出 UnicodeEncodeError | `PYTHONIOENCODING=utf-8` |
+| 编译 OOM | VM 3.7G，free <400M 时开编 | 先 `drop_caches` + 确认 free 再编 |
+| fsdb2vcd 多个 `-s` | 只抽出最后一个信号 | 用 `-s <scope> -level 1` 形式 |
+| fsdb2vcd 窗口抽取 | 无初始值（只有窗口内跳变） | 窗口起点状态用全量程抽取 |
+| nWave 信号红色 | 不在 FSDB，或值是 X | 加信号前先 fsdb2vcd 探一下 |
+| 接口信号未驱动 | `pol`/`polc` 被 VCS 优化掉、FSDB 不存在 | .rc 里别加 |
+
+## 7. 资产清单
+
+- **skill**：`hk1v11-vm-flow`（本机 DSH skill，含完整流程、坑清单、设计事实）
+- **run 目录备份**：见 §1；当前 = r6（checker 关、0 错）
+- **test 文件 checker 开关现为 0**（备份 `.bak_1023_ckoff`）——要跑全 check 先改回 1
+- **待跟进**：对照项目回归确认 1920 case 的 analog check 是否通过（怀疑 VM 的 RTL 版本旧于项目）；t_8b1lane 服务器 cfg 的 DPLC_MODE 残留（本地 git=1、服务器=0）待恢复
+</script>
+
+<script>
+    const chapters = [
+      ['index', '首页'],
+      ['1-deploy', '环境部署'],
+      ['2-data', '数据回迁'],
+      ['3-first-sim', 'UVM 首跑'],
+      ['4-correct-boot', '正确启动'],
+      ['5-agent-manual', '遥控手册'],
+      ['6-hk1v11', 'HK1V11 实录']
+    ];
+const currentPath = location.pathname.split('/').pop() || 'index.html';
+const linksContainer = document.getElementById('navbar-links');
+chapters.forEach(([slug, label]) => {
+  const href = slug === 'index' ? './' : `./${slug}.html`;
+  const filename = slug === 'index' ? 'index.html' : `${slug}.html`;
+  const a = document.createElement('a');
+  a.href = href;
+  a.textContent = label;
+  if (currentPath === filename || currentPath.endsWith('/' + filename)) a.classList.add('active');
+  linksContainer.appendChild(a);
+});
+</script>
+<script>
+const md = document.getElementById('md').textContent;
+document.getElementById('article').innerHTML = marked.parse(md);
+
+const toc = document.getElementById('toc');
+const headings = document.querySelectorAll('.article h2, .article h3');
+const tocLinks = [];
+headings.forEach(h => {
+  const id = h.textContent.trim().replace(/\s+/g, '-').replace(/[^\w\u4e00-\u9fa5-]/g, '');
+  h.id = id;
+  const cls = h.tagName === 'H2' ? 'toc-h2' : 'toc-h3';
+  const a = document.createElement('a');
+  a.href = '#' + id;
+  a.textContent = h.textContent;
+  a.className = cls;
+  toc.appendChild(a);
+  tocLinks.push(a);
+});
+
+tocLinks.forEach((link, i) => {
+  if (!link.classList.contains('toc-h2')) return;
+  const children = [];
+  for (let j = i + 1; j < tocLinks.length && tocLinks[j].classList.contains('toc-h3'); j++) children.push(tocLinks[j]);
+  if (!children.length) return;
+  link.classList.add('toc-parent');
+  const arrow = document.createElement('span');
+  arrow.className = 'toc-arrow';
+  arrow.textContent = '▸';
+  link.prepend(arrow);
+  children.forEach(c => c.parentLink = link);
+  arrow.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const collapsed = link.classList.toggle('collapsed');
+    children.forEach(c => c.style.display = collapsed ? 'none' : '');
+  });
+});
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      tocLinks.forEach(l => l.classList.remove('active'));
+      let active = tocLinks.find(a => a.getAttribute('href') === '#' + entry.target.id);
+      if (active && active.style.display === 'none' && active.parentLink) active = active.parentLink;
+      if (active) active.classList.add('active');
+    }
+  });
+}, { rootMargin: '-10% 0px -75% 0px' });
+headings.forEach(h => observer.observe(h));
+</script>
+<script>
+const lightbox = document.getElementById('lightbox');
+const lbImg = document.getElementById('lightbox-img');
+const lbClose = document.getElementById('lightbox-close');
+let scale = 1;
+let isDragging = false;
+let startX = 0, startY = 0, translateX = 0, translateY = 0;
+function openLightbox(src) { lbImg.src = src; scale = 1; translateX = 0; translateY = 0; updateTransform(); lightbox.classList.add('active'); document.body.style.overflow = 'hidden'; }
+function closeLightbox() { lightbox.classList.remove('active'); document.body.style.overflow = ''; }
+function updateTransform() { lbImg.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`; }
+document.addEventListener('click', (e) => { const img = e.target.closest('img'); if (!img || img.id === 'lightbox-img' || !img.closest('.article')) return; openLightbox(img.src); });
+lbClose.addEventListener('click', closeLightbox);
+lightbox.addEventListener('click', (e) => { if (e.target === lightbox) closeLightbox(); });
+lightbox.addEventListener('wheel', (e) => { e.preventDefault(); const d = e.deltaY > 0 ? -0.12 : 0.12; scale = Math.min(Math.max(0.5, scale + d), 5); updateTransform(); });
+lbImg.addEventListener('mousedown', (e) => { isDragging = true; startX = e.clientX - translateX; startY = e.clientY - translateY; lbImg.classList.add('grabbing'); e.preventDefault(); });
+document.addEventListener('mousemove', (e) => { if (!isDragging) return; translateX = e.clientX - startX; translateY = e.clientY - startY; updateTransform(); });
+document.addEventListener('mouseup', () => { isDragging = false; lbImg.classList.remove('grabbing'); });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && lightbox.classList.contains('active')) closeLightbox(); });
+</script>
+
+</body>
+</html>

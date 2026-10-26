@@ -382,11 +382,11 @@
     <div class="hero-inner">
       <div class="kicker">HV2M23 · DV · LOCAL AGENT → REMOTE VM</div>
       <h1>Agent 遥控 EDA 虚拟机<br>工作<span class="thin">模式</span></h1>
-      <p class="lead">一台 973G"开箱即用"的 CentOS 虚拟机 + 一个跑在本机的大模型 Agent：五包数据回迁，两次 UVM PASSED，一次从误杀到自愈的启动修复全记录。</p>
+      <p class="lead">一台 973G"开箱即用"的 CentOS 虚拟机 + 一个跑在本机的大模型 Agent：五包数据回迁、两次 UVM PASSED、一次从误杀到自愈的启动修复全记录；10-22 起同一台 VM 再扛起 HK1V11 bring-up——50 错根因定案、0 错干净跑、Verdi 标准流程固化。</p>
       <div class="meta">
         <span>AUTHOR <b>ymzhuuuu</b></span>
-        <span>PROJECT <b>HV2M23</b></span>
-        <span>SPAN <b>2026-09-15 → 2026-10-09</b></span>
+        <span>PROJECT <b>HV2M23 / HK1V11</b></span>
+        <span>SPAN <b>2026-09-15 → 2026-10-26</b></span>
       </div>
       <div class="hero-hint">
         <span>⭐</span>
@@ -394,8 +394,8 @@
       </div>
       <div class="reg">
         CURRENT
-        <span class="ver">10-09</span>
-        REV 2026-10-09
+        <span class="ver">10-26</span>
+        REV 2026-10-26
       </div>
     </div>
   </header>
@@ -404,21 +404,22 @@
     <div class="latest">
       <div class="badge">
         <span class="tag">LATEST</span>
-        <span class="num">1009</span>
+        <span class="num">1023</span>
       </div>
       <div class="body">
-        <div class="t">1009 · 虚拟机"打不开"攻坚收官：正确启动五步法沉淀，t_8b1lane 复跑 PASSED 且与首跑逐位一致</div>
+        <div class="t">1023 · HK1V11 bring-up 收官：五连跑矩阵定根因，checker 关干净跑 0 错，Verdi 标准流程固化 skill</div>
         <ul>
-          <li>因果链定案：一次误判冻死的 <code>stop hard</code> 弄脏 XFS 日志 → 每次开机做恢复 → 恢复被反复打断 → "打不开"假象</li>
-          <li>正解 = 静置轮询 50 分钟零干预；复跑 <code>TEST CASE PASSED / UVM_ERROR 0</code>，fsdb 4.3G 顺畅打开</li>
+          <li>50×[analog pol error] 与 PPM/DPLC_MODE/PORT_NUM 均无关；信号级实锤 DUT H4INV 极性通路未生效（100 口 pol 位全 0）</li>
+          <li>真正的 checker 开关硬编码在 case test 文件（改类默认值无效）；r6 干净跑 <code>UVM_ERROR 0</code> 满 8 帧 961μs</li>
+          <li>裸 <code>verdi -ssf</code> 设计树空白的反复坑 → 标准式 <code>-dbdir simv.daidir -ssf chip_tb_top.vf -sswr &lt;rc&gt;</code></li>
         </ul>
       </div>
-      <a class="more" href="./4-correct-boot.html">复盘全记录 →</a>
+      <a class="more" href="./6-hk1v11.html">HK1V11 实录 →</a>
     </div>
 
     <div class="stats">
-      <div class="stat"><div class="v">6</div><div class="k">Sheet 页面</div></div>
-      <div class="stat"><div class="v">2</div><div class="k">UVM case PASSED</div></div>
+      <div class="stat"><div class="v">7</div><div class="k">Sheet 页面</div></div>
+      <div class="stat"><div class="v">3</div><div class="k">UVM case PASSED / 0 错</div></div>
       <div class="stat"><div class="v">5</div><div class="k">数据包回传归位</div></div>
       <div class="stat"><div class="v">973<em>G</em></div><div class="k">虚拟机磁盘（48 分片）</div></div>
     </div>
@@ -448,7 +449,12 @@
       <a class="chapter-card" href="./5-agent-manual.html">
         <div class="num">五</div>
         <div class="title">Agent 遥控手册</div>
-        <div class="desc">SSH/vmrun/HGFS/VNC 四通道对照、常用命令块原文、坑清单（VNC 单请求 / X 不可见 / captureScreen 依赖）</div>
+        <div class="desc">dsh-ssh 标准通道 + SSH/vmrun/HGFS/VNC 四通道对照、常用命令块原文、坑清单（VNC 单请求 / X 不可见 / captureScreen 依赖）</div>
+      </a>
+      <a class="chapter-card" href="./6-hk1v11.html">
+        <div class="num">六</div>
+        <div class="title">HK1V11 bring-up 实录<span class="star">新增</span></div>
+        <div class="desc">run_tc.sh 一行跑 case、PPM 双 symlink、五连跑矩阵定根因、checker 关 0 错干净跑、Verdi 标准流程与日常坑</div>
       </a>
     </div>
 
@@ -481,7 +487,8 @@
       ['2-data', '数据回迁'],
       ['3-first-sim', 'UVM 首跑'],
       ['4-correct-boot', '正确启动'],
-      ['5-agent-manual', '遥控手册']
+      ['5-agent-manual', '遥控手册'],
+      ['6-hk1v11', 'HK1V11 实录']
     ];
     const currentPath = location.pathname.split('/').pop() || 'index.html';
     const linksContainer = document.getElementById('navbar-links');

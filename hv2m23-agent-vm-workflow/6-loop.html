@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>六、60h 自主循环：双芯片穷尽探索 · Agent 遥控 EDA 虚拟机</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./assets/style.css">
+  <script src="./js/marked.min.js"></script>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a class="navbar-brand" href="./">AGENT_VM</a>
+      <div class="navbar-links" id="navbar-links"></div>
+    </div>
+  </nav>
+
+  <div class="container with-toc">
+    <aside class="toc-wrapper">
+      <div class="toc" id="toc"></div>
+    </aside>
+
+    <div class="content">
+      <article class="article" id="article"></article>
+      <div class="page-nav">
+        <a class="prev" href="./5-agent-manual.html"><span class="label">← 上一章</span><span class="title">五、Agent 遥控手册：通道、命令与坑</span></a>
+        <a class="next" href="./"><span class="label">主题首页 →</span><span class="title">回到系列首页</span></a>
+      </div>
+    </div>
+  </div>
+  
+  <div class="lightbox" id="lightbox">
+    <span class="close" id="lightbox-close">&times;</span>
+    <img id="lightbox-img" src="" alt="">
+    <div class="hint">滚轮缩放 · 拖拽移动 · Esc 或点击空白处关闭</div>
+  </div>
+
+<script type="text/template" id="md">
+# 六、60h 自主循环：双芯片穷尽探索（10/23 → 10/26）
+
+前五章解决的是"怎么把这台虚拟机用起来"；本章记录的是"用起来之后能走多远"——一次 60 小时、零用户介入的自主探索循环。
+
+## 1. 循环是怎么定义的
+
+10/23 起，宿主机 DSH 用目标循环驱动本次工作（116 rounds、73+ 个里程碑），全程无人参与：
+
+| 项 | 内容 |
+|------|------|
+| 目标 | ① 穷尽探索 VM 环境 ② XDC 约束审查 ③ 构建"芯片器件模拟"方案 ④ 持续迭代、穷尽一切方法 |
+| 硬约束一 | **绝不破坏服务器环境**：只写隔离工作区 `/home/ICer/work/vu440_sim`，原工程 HK1V11 / HV2M23 只读 |
+| 硬约束二 | **绝不阻塞等待**：长任务 nohup 后台 + 短轮询日志，模型永不 sleep 挂起 |
+
+## 2. 两条铁律（全部从实操沉淀）
+
+| 纪律 | 具体做法 |
+|------|------|
+| 不阻塞等待 | 长编译/长仿真一律 `nohup ... &` 落日志，Agent 每 ≤180s 轮询一次日志尾部；SSH 单次命令控制在 ~180s 内 |
+| 隔离安全 | 所有产物落 `vu440_sim`；对原工程只有读操作；循环结束前主动清理可再生文件 |
+
+## 3. 60 小时做出了什么
+
+| 板块 | 结果 |
+|------|------|
+| HK1V11 632-case 全量回归 | 577/632 完成，**五类 100% 定性**：PASS 46 / 50err 506 / COMPILE_FAIL 11 / stuck 11 / CHPI 3 → **0 个数字 DUT bug** |
+| 50err（506 case）根因 | DRA 晶体管级模拟模型不收敛（SIM_OUT=X，X 强转 0）——非数字 bug；golden model 驱动模拟输出可证明数字核心正确 |
+| stuck（11）/ CHPI（3）根因 | CDR PLL "Both RB and SB enabled" + link training 不收敛；CS_SYNC 仅训练脉冲时锁值，TP 未激活 → 保持 0 |
+| COMPILE_FAIL（11）根因 | test 侧问题：SFCOR 缺文件 + 跨模块引用（与 DUT 无关） |
+| HV2M23 第二芯片验证 | 纯数字 I2C 批量：383/391 = **98%** 寄存器读正确；串行数据路径全族 PPM 依赖（load ppm 后 early exit） |
+| 多厂商 EDA 盘点 | VCS/Verdi/DC/PT/ICC2 + QuestaSim 10.7c + Calibre 2015.2 + Cadence IC617/Spectre + RISC-V gcc 11 + qemu + TSMC PDK 65/90/130nm——完整多厂商平台 |
+| 器件模拟方案 | Icarus 全 top（59 RTL + 39 行为 stub）+ VCS UVM 芯片级 + golden model 三层体系；顺带抓出 1 处潜在 RTL 连接问题（端口连接缺逗号） |
+| DC 结构综合 | digital_top 29168 leaf（and_or.db 无 SDC，属结构综合非真实时序收敛） |
+| 无 GUI 波形探针 | fsdb2vcd 从 3GB FSDB 抽信号级数据：AVE 平均 / 420b 长码两条功能链的门控机制确认 |
+
+## 4. 环境完整性审计（收官验收）
+
+| 项 | 结果 |
+|------|------|
+| 内存 | 3.7G 总 / 2.1G 可用，60h 无泄漏 |
+| 进程 | 无残留（vu440_sim / batch_* 无运行） |
+| 原工程 | HK1V11（282 RTL）/ HV2M23 完整未动 |
+| 磁盘 | vcs/ 每-test 可再生大产物 79G → 1.4G，/home 88% → 63%（循环结束前主动清理） |
+
+结论：**60 小时连续作业未破坏服务器环境**，两条硬约束全程满足。
+
+## 5. 沉淀的交付物
+
+- `PROGRESS.md`：73+ 个里程碑全记录 + 附录 A 交付物清单（VM 上 `/home/ICer/work/vu440_sim/`）
+- 7 类可复用模板：Icarus 器件仿真 / VCS 回归 / golden model / DC 综合 / EDA 全栈演示 / HV2M23 批量 / fsdb2vcd 探针，另有 6 个 Python 分析工具
+- 验证报告 + XDC 审查报告终版（宿主机 docs）
+- 第 4 章五步启动法、第 5 章遥控手册在循环中全程复用：没有一次 stop hard、没有一次阻塞等待
+
+## 6. 想在自己的项目上复刻？
+
+1. DSH 目标循环（长时限 + 最大轮数），零用户介入
+2. 两条硬约束写进目标原文：隔离工作区 + 不阻塞等待
+3. 长任务统一 nohup + 短轮询（≤180s），结果全部落工作区日志
+4. 定期跑"环境完整性审计"（内存 / 进程 / 原工程 / 磁盘）
+5. 收官时清理可再生文件，只留结果与脚本
+</script>
+
+<script>
+    const chapters = [
+      ['index', '首页'],
+      ['1-deploy', '环境部署'],
+      ['2-data', '数据回迁'],
+      ['3-first-sim', 'UVM 首跑'],
+      ['4-correct-boot', '正确启动'],
+      ['5-agent-manual', '遥控手册'],
+      ['6-loop', '60h 循环']
+    ];
+const currentPath = location.pathname.split('/').pop() || 'index.html';
+const linksContainer = document.getElementById('navbar-links');
+chapters.forEach(([slug, label]) => {
+  const href = slug === 'index' ? './' : `./${slug}.html`;
+  const filename = slug === 'index' ? 'index.html' : `${slug}.html`;
+  const a = document.createElement('a');
+  a.href = href;
+  a.textContent = label;
+  if (currentPath === filename || currentPath.endsWith('/' + filename)) a.classList.add('active');
+  linksContainer.appendChild(a);
+});
+</script>
+<script>
+const md = document.getElementById('md').textContent;
+document.getElementById('article').innerHTML = marked.parse(md);
+
+const toc = document.getElementById('toc');
+const headings = document.querySelectorAll('.article h2, .article h3');
+const tocLinks = [];
+headings.forEach(h => {
+  const id = h.textContent.trim().replace(/\s+/g, '-').replace(/[^\w\u4e00-\u9fa5-]/g, '');
+  h.id = id;
+  const cls = h.tagName === 'H2' ? 'toc-h2' : 'toc-h3';
+  const a = document.createElement('a');
+  a.href = '#' + id;
+  a.textContent = h.textContent;
+  a.className = cls;
+  toc.appendChild(a);
+  tocLinks.push(a);
+});
+
+tocLinks.forEach((link, i) => {
+  if (!link.classList.contains('toc-h2')) return;
+  const children = [];
+  for (let j = i + 1; j < tocLinks.length && tocLinks[j].classList.contains('toc-h3'); j++) children.push(tocLinks[j]);
+  if (!children.length) return;
+  link.classList.add('toc-parent');
+  const arrow = document.createElement('span');
+  arrow.className = 'toc-arrow';
+  arrow.textContent = '▸';
+  link.prepend(arrow);
+  children.forEach(c => c.parentLink = link);
+  arrow.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const collapsed = link.classList.toggle('collapsed');
+    children.forEach(c => c.style.display = collapsed ? 'none' : '');
+  });
+});
+
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      tocLinks.forEach(l => l.classList.remove('active'));
+      let active = tocLinks.find(a => a.getAttribute('href') === '#' + entry.target.id);
+      if (active && active.style.display === 'none' && active.parentLink) active = active.parentLink;
+      if (active) active.classList.add('active');
+    }
+  });
+}, { rootMargin: '-10% 0px -75% 0px' });
+headings.forEach(h => observer.observe(h));
+</script>
+<script>
+const lightbox = document.getElementById('lightbox');
+const lbImg = document.getElementById('lightbox-img');
+const lbClose = document.getElementById('lightbox-close');
+let scale = 1;
+let isDragging = false;
+let startX = 0, startY = 0, translateX = 0, translateY = 0;
+function openLightbox(src) { lbImg.src = src; scale = 1; translateX = 0; translateY = 0; updateTransform(); lightbox.classList.add('active'); document.body.style.overflow = 'hidden'; }
+function closeLightbox() { lightbox.classList.remove('active'); document.body.style.overflow = ''; }
+function updateTransform() { lbImg.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`; }
+document.addEventListener('click', (e) => { const img = e.target.closest('img'); if (!img || img.id === 'lightbox-img' || !img.closest('.article')) return; openLightbox(img.src); });
+lbClose.addEventListener('click', closeLightbox);
+lightbox.addEventListener('click', (e) => { if (e.target === lightbox) closeLightbox(); });
+lightbox.addEventListener('wheel', (e) => { e.preventDefault(); const d = e.deltaY > 0 ? -0.12 : 0.12; scale = Math.min(Math.max(0.5, scale + d), 5); updateTransform(); });
+lbImg.addEventListener('mousedown', (e) => { isDragging = true; startX = e.clientX - translateX; startY = e.clientY - translateY; lbImg.classList.add('grabbing'); e.preventDefault(); });
+document.addEventListener('mousemove', (e) => { if (!isDragging) return; translateX = e.clientX - startX; translateY = e.clientY - startY; lbImg.classList.add('grabbing'); });
+document.addEventListener('mouseup', () => { isDragging = false; lbImg.classList.remove('grabbing'); });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && lightbox.classList.contains('active')) closeLightbox(); });
+</script>
+
+</body>
+</html>
