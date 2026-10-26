@@ -363,6 +363,14 @@
       margin: 0 auto;
       box-shadow: var(--shadow);
     }
+    .flow-overview .fig-note {
+      max-width: 720px;
+      margin: 12px auto 0;
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--muted);
+      text-align: center;
+    }
 
     /* conclusion panel */
     .panel {
@@ -558,7 +566,8 @@
 
     <div class="section-title">整体流程</div>
     <div class="flow-overview">
-      <img src="./script-flow-overview.svg" alt="脚本调用关系总图（综合 → LEC → 签核 → prePT/postPT → 汇总）">
+      <img src="./image/anim/script-flow-overview.svg" alt="脚本调用关系总图（综合 → LEC → 签核 → prePT/postPT → 汇总）">
+      <div class="fig-note">动画版（逐层 reveal + 动态特效）；静态版 fallback 为 <code>script-flow-overview.svg</code>。</div>
     </div>
 
     <div class="section-title">一句话结论</div>
