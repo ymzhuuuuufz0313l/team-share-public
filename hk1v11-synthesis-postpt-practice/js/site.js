@@ -250,6 +250,70 @@
       io.observe(img);
     });
 
+    /* mermaid 流程图：marked 把 ```mermaid 渲成 pre>code.language-mermaid
+       → 转成 pre.mermaid 交给 mermaid 渲染（站点色板主题）；
+       滚动到视口前 240px 加 .play 启动动画：节点阶梯淡入 + 边线画线（一次性 ≤2.5s）
+       + 节点接力柔光（infinite 6s，纯装饰，reduced-motion 时整段跳过=完整静态图）（2026-10-26 ymzhu） */
+    if (window.mermaid) {
+      var mmNodes = [];
+      art.querySelectorAll('pre code.language-mermaid').forEach(function (code) {
+        var pre = document.createElement('pre');
+        pre.className = 'mermaid';
+        pre.textContent = code.textContent;
+        code.parentElement.replaceWith(pre);
+        mmNodes.push(pre);
+      });
+      if (mmNodes.length) {
+        mermaid.initialize({
+          startOnLoad: false,
+          theme: 'default',
+          themeVariables: {
+            fontFamily: '"Microsoft YaHei", "PingFang SC", sans-serif',
+            fontSize: '15px',
+            background: '#f4f1ea',
+            primaryColor: '#fffdf7',
+            primaryTextColor: '#1c2534',
+            primaryBorderColor: '#b45309',
+            lineColor: '#5b6675',
+            secondaryColor: '#f7e8d4',
+            tertiaryColor: '#f4f1ea',
+            edgeLabelBackground: '#fffdf7'
+          }
+        });
+        mermaid.run({ nodes: mmNodes }).then(function () {
+          var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+          mmNodes.forEach(function (pre) {
+            var arm = function () {
+              if (reduced) return;
+              /* mmRelay 不给 fill-mode：delay 前不生效（否则它会以 0%关键帧 opacity:1 覆盖 mmNode 的淡入）；
+                 delay 2.8s 起=入场(≤2s)播完后才接管；周期 8s 容纳 ≤11 节点按序接力（2.8+10*0.45=7.3<8） */
+              var i = 0;
+              pre.querySelectorAll('g.node').forEach(function (g) {
+                g.style.animation = 'mmNode .6s ease-out ' + (0.1 + i * 0.12) + 's both, mmRelay 8s ease-in-out ' + (2.8 + i * 0.45) + 's infinite';
+                i++;
+              });
+              pre.querySelectorAll('.edgePath path, .flowchart-link').forEach(function (p, j) {
+                p.style.strokeDasharray = '1400';
+                p.style.strokeDashoffset = '1400';
+                p.style.animation = 'mmDash .9s ease-out ' + (0.3 + j * 0.12) + 's forwards';
+              });
+            };
+            var r = pre.getBoundingClientRect();
+            if (r.top < window.innerHeight && r.bottom > 0) { pre.classList.add('play'); arm(); return; }
+            var mio = new IntersectionObserver(function (entries) {
+              entries.forEach(function (e) {
+                if (!e.isIntersecting) return;
+                mio.unobserve(pre);
+                pre.classList.add('play');
+                arm();
+              });
+            }, { rootMargin: '240px 0px' });
+            mio.observe(pre);
+          });
+        });
+      }
+    }
+
     var toc = document.getElementById('toc');
     var headings = document.querySelectorAll('.article h2, .article h3');
     var tocLinks = [];

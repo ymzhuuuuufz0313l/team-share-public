@@ -932,4 +932,29 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
 .lb-overlay .lb-next { right: 20px; top: 50%; transform: translateY(-50%); }
 @media print { .lb-overlay { display: none !important; } }
 
-/* ymzhu 2026-10-21 12:24 */
+/* mermaid 流程图（2026-10-26）：站点色板主题 + 滚动触发动画
+   动画由 site.js 内联启动（节点阶梯淡入 mmNode + 边线画线 mmDash = 一次性；
+   节点接力柔光 mmRelay = infinite 8s 纯装饰，delay 2.8s 起=入场播完后接管，
+   且不给 fill-mode——否则 0%关键帧 opacity:1 会覆盖 mmNode 淡入（2026-10-26 实测））；
+   默认态=完整静态图。
+   注意：mmNode 只用 opacity——g.node 自带 transform 属性，CSS transform 动画会覆盖它导致节点错位。 */
+.mermaid {
+  background: transparent; border: none; padding: 0;
+  box-shadow: none; text-align: center; margin: 24px 0;
+  overflow-x: auto;
+}
+.mermaid[data-lang]::before { display: none; }   /* 图不需要语言标签 */
+.mermaid .code-copy { display: none; }           /* 图不需要复制按钮 */
+.mermaid svg { max-width: 100%; height: auto; }
+/* 节点贴站点色板（themeVariables 在部分版本不吃，CSS 覆盖更可靠） */
+.mermaid g.node rect { fill: #fffdf7; stroke: #b45309; }
+.mermaid g.node text, .mermaid g.node .nodeLabel { fill: #1c2534; }
+.mermaid .edgeLabel { fill: #5b6675; }
+@keyframes mmNode { from { opacity: 0; } }
+@keyframes mmDash { to { stroke-dashoffset: 0; } }
+@keyframes mmRelay { 0%, 100% { opacity: 1; } 15% { opacity: 0.78; } }
+@media (prefers-reduced-motion: reduce) {
+  .mermaid g, .mermaid path { animation: none !important; }
+}
+
+/* ymzhu 2026-10-26 19:00 */
