@@ -359,6 +359,8 @@ LC_CPUWR 的寄存器更新核心机制：**写入一个寄存器需要连续 3 
 
 `unmatch_cnt_a` 在首帧 `match=0` 时也会 +1，因此 case 设计不应硬编码帧号，而应动态监测 `unlock_latch_a`。
 
+> **1023v1 更新**：首帧的"比较"与"计数"本身都是非法的（`prev_xsum_a` 复位为 0，首帧若全零会幻影 match；首帧 mismatch 又会提前污染 unlock 计数）。1023v1 已加 `prev_valid_a` + `frm_seen_start_a` 双标志防护，非法帧尾不比较、不计数（保持），详见 §9。
+
 ### 5.3 one-shot unlock 验证陷阱
 
 one-shot unlock 实现后 checker 曾出现解锁帧内期望值误判（checker 在 unlock 帧已把 `expected[]` 切到下一帧 cfg，而 RTL 解锁帧内 shadow 保持当前帧）——详见[验证同步](./verification.html) §2.1「0618 one-shot unlock 误判修复」。
@@ -418,6 +420,45 @@ frame_end = 0x27
 - 0810v1 新增/变更的寄存器（FSEL@reg146、EOL@reg56、BCC@reg147/160/161、reg50/51/53 字段修正）都不在 checksum 参与范围（`0x00~0x1F` 之外）
 - Seg2（`0x20~0x38`）仍为直写、不做 checksum
 - checker 期望、DV 环境、回归行为不因此改变
+
+## 9. 1023v1 match 首帧/幻影防护（prev_valid + frm_seen_start）
+
+1023v1 修复了 match 比较链上长期存在的**幻影比较**问题：`prev_xsum_a` 复位为 0，而 match 判据是 `(xsum_a ^ xdata_a) == prev_xsum_a`——只要帧 XOR 结果"撞上"一个不来自真实完整帧的 prev 值，就会非法 match 提交。
+
+### 9.1 问题全案例（t1 七案分析）
+
+| # | 场景 | 判定 | 1023v1 防护 |
+|---|------|------|-------------|
+| ① | 复位后首帧 vs 幻影 prev=0（全零帧必中；1 真帧+1 幻影帧也提交） | 非法 | `prev_valid_a=0` |
+| ② | 真实帧 XOR 恰为 0x00（与幻影值不可区分） | 本身合法 | 靠**有效性标志**而非值区分：prev_valid=1 时值为 0 也是真帧，照常比较/提交 |
+| ③ | 模式退出再进入（I_TEST 脉冲 / 0x07 写 5 再改回 / K1 掉再升） | 无残留（!chksum_mode 时五状态全清零）→ 再进入首帧=新幻影、帧中途再进入=残帧 | `prev_valid` 随 !chksum_mode 清零，自动归入 ①/⑦ |
+| ④ | unlock 之后 | **合法无需改**：prev 持有真实帧值，自恢复闭环成立 | 不加多余门控 |
+| ⑤ | 首帧幻影 mismatch 污染 `unmatch_cnt_a`（NG Unlock 提前 1 帧） | 非法 | `cmp_valid` 门控计数：非法帧尾**既不计数也不清零**（保持） |
+| ⑥ | K1 上升与帧首拍同拍（1023v1 打拍后新版错过首字节 → 截断帧，且不会帧尾自愈） | 非法（对拍 TB 实证） | `frm_seen_start_a=0` |
+| ⑦ | 无 ADDR00 起始的残帧 frame_end（主机半帧/中途再进入） | 非法，连锁污染最大 | `frm_seen_start_a=0` |
+
+防护不是逐场景打补丁，而是封住两个根因：`prev_valid_a` 封"比较基准不来自真实完整帧"，`frm_seen_start_a` 封"没见过帧头的帧尾"。任何新场景只要落到这两类结构之一即天然被防住。
+
+### 9.2 实现（四消费点门控）
+
+```
+prev_valid_a     : frame_end && frm_seen_start_a 时置位；复位 / !chksum_mode 清零
+frm_seen_start_a : frame_start（ADDR00_F）拍置位；frame_end / !chksum_mode / 复位清零
+cmp_valid_a  = prev_valid_a & frm_seen_start_a
+match_eff_a  = match_a & cmp_valid_a
+
+update_en_a     = chksum_mode ? (match_cnt_a & match_eff_a) : 1'b0
+unmatch_cnt_a   : cmp_valid_a && mismatch 才 +1；非法帧尾保持（不清零、不计数）
+unlock_one_shot_a: (unmatch_cnt_a == 3'd4) && cmp_valid_a && !match_a
+```
+
+有意不防的边界（契约不变）：防护粒度是"帧完整性 = 见过 ADDR00 头"，**不校验帧长/中间节拍齐全性**——两帧一致但中间缺行的短帧照样 match 提交（checksum 职责是"两帧一致性"而非"协议完备性"，旧逻辑同样如此）。
+
+### 9.3 时序契约验证
+
+用户口径"两帧算好、第三帧 ADDR39 当拍一次性写入全部 checksum 参与计算的寄存器"精确保留：guard 寄存器在 frame_end 沿（NBA）清零，而组合 `update_en_a` 用的是**沿前旧值**——F3 帧尾提交拍逐拍不变（同沿非阻塞语义；guard TB S3 场景断言）。
+
+**证据**：t1 七案分析 + guard TB 10 场景（全 PASS）+ 最小对拍 TB（1022v1 vs 1023v1，C1/C2/C3 全 0）+ 对抗评审 PASS（critical=0/high=0）；详见[验证同步](./verification.html) §9。
 
   </script>
   <script>
@@ -508,4 +549,4 @@ const article = document.getElementById('article');
 </body>
 </html>
 
-<!-- ymzhu 2026-10-09 14:50 -->
+<!-- ymzhu 2026-10-26 14:55 -->

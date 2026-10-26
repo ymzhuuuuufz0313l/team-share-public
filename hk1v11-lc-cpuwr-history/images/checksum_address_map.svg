@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="940" height="1764" viewBox="0 0 940 1764" style="background:#ffffff">
 <rect width="940" height="1764" fill="#ffffff"/>
-<text x="470.0" y="40" text-anchor="middle" font-size="22" font-weight="bold" fill="#1e293b">LC_CPUWR 0827v1 参与 checksum 的地址（chip_sel=0 / chip_sel=1 对照）</text>
+<text x="470.0" y="40" text-anchor="middle" font-size="22" font-weight="bold" fill="#1e293b">LC_CPUWR 1023v1 参与 checksum 的地址（chip_sel=0 / chip_sel=1 对照）</text>
 <text x="300.0" y="116" text-anchor="middle" font-size="12" fill="#64748b">[7]</text>
 <text x="380.0" y="116" text-anchor="middle" font-size="12" fill="#64748b">[6]</text>
 <text x="460.0" y="116" text-anchor="middle" font-size="12" fill="#64748b">[5]</text>
@@ -137,7 +137,7 @@
 <text x="699.5" y="941.0" text-anchor="middle" font-size="7.0" fill="#64748b">1'b0</text>
 <rect x="740" y="910" width="79" height="40" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="779.5" y="927.0" text-anchor="middle" font-size="8.0" font-weight="500" fill="#1e293b">reg_eq_rbc1</text>
-<text x="779.5" y="941.0" text-anchor="middle" font-size="7.0" fill="#64748b">1'b1</text>
+<text x="779.5" y="941.0" text-anchor="middle" font-size="7.0" fill="#64748b">1'b0</text>
 <rect x="820" y="910" width="79" height="40" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="859.5" y="927.0" text-anchor="middle" font-size="8.0" font-weight="500" fill="#1e293b">reg_eq_rbc0</text>
 <text x="859.5" y="941.0" text-anchor="middle" font-size="7.0" fill="#64748b">1'b0</text>

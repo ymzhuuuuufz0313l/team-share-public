@@ -352,6 +352,18 @@
 4. 部分 Reserved 位在 RTL 中仍有存储单元，是否区分 `Reserved (stored)` / `Reserved (unimplemented)`。
 5. `LC_REG_MAPPING` 下游信号映射需逐位核对。
 
+## 7. HK1V11_Register_20261022.xlsm 交叉验证（1023v1）
+
+2026-10-23，1023v1 新增 `SCS_PKT_HALF` 的规格提取与落地，执行了独立双路交叉验证（t2 规格提取 + t10 独立复核）：
+
+- **提取口径**：`HK1V11_Register_20261022.xlsm` history!B3（2026-10-21 变更行）——0x2F[0] 原 Reserved 改 `SCS_PKT_HALF`，默认 `1'b0`，R/W，LSI_PRTECT
+- **独立交叉验证**：12/12 字段一致（位置/名称/默认/访问/保护/功能描述/输出端口/门控/LSI 窗口/cs=0 与 cs=1 一致性等）
+- **落地**：`R_SCS_PKT_HALF = LSI_PRTECT ? R_REG47_F[0] : 1'b0`；bit0 存储/复位/写译码/读回复用既有逻辑，零结构变更
+- **errata（引用级）**：t2 规格文档引用 "Reg_1V11!O44"，实际单元格为 N44——仅文档引用位置偏差，字段内容无影响（xcheck 报告留痕，规格文档保持原样）
+- **同表另一变更**：SMART_CS 编码语义（0111=256pkt / 1111=128pkt / 其他=off）——已决策归 FUNCTION 侧不落地（见[寄存器 §31](./regmap.html)）
+
+报告：`LC_CPUWR_history/markdownfile/1023v1_xcheck/scs_pkt_half_spec_xcheck.md`。
+
 这些事项与 [八、当前状态与后续](./status.html) 中的待确认项相互引用。
 
     </script>
@@ -443,4 +455,4 @@ const article = document.getElementById('article');
 </body>
 </html>
 
-<!-- ymzhu 2026-10-09 14:50 -->
+<!-- ymzhu 2026-10-26 14:55 -->

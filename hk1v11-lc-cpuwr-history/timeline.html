@@ -639,6 +639,46 @@
 - 0919 裁决的规格回填 5 项（0x08=0X02、0x33=0X00、0x04 行 9dB 残留、0x34 Access、0x43[7]）0929 表仍未执行，继续挂规格 owner
 - 报告：`script/reg20260929_audit_glm53flash.md` + 独立 diff `reg20260929_vs_0919_diff_captain.txt`（HK1V11 commit 8d1808c1）
 
+### 5.27 1022v1 服务器 1022 包状态采纳为本地最新版
+
+2026-10-23 用户拍板"服务器下载回来的作为最新版本"：0918v1/0920v1 之后两模块的演进全部来自服务器侧（他人修改、已经相关方允许），本地版本线未跟进，history 根文件与 `HDL/` 工作区脱钩（09-24/10-15/10-22 三轮包覆盖只写 `HDL/`）。本版将服务器 `PACK_TAR_1022V1`（2026-10-22 拉取）状态正式采纳为本地最新版。
+
+**LC_CPUWR（=1015 包同版）**：
+
+- `update_en_a` 由内部 wire 升为模块 OUTPUT（帧提交信号 → LC_MONBLOCK 生成 FRAME_WR_FLAG）
+- **0x08[1] `reg_eq_rbc1` 默认值服务器回退 `1'b1 → 1'b0`**（`shadow_08_F[1]` + `R_REG08_F[1]` 两 ifdef 分支共三处；0x08 字节默认 `0x02→0x00`）——0918v1 本地请求在服务器侧被改回，随本版一并接受；0x36 `reg_eq_bias_tune` 默认 `8'h17` 保留
+
+**LC_REG_MAPPING（1022 包新版）**：
+
+- 端口重构：新增输入 `PWRC_TIME[1:0]`（ANCTL 反馈）、`SRE_pre/SRER_P_pre/SREF_P_pre/SRER_N_pre/SREF_N_pre`、`VPS_EN_0`、`EOL_DET/reg_pin_eol_det/reg_eol_det`、`SDID_EQ_EN_flag`；新增输出 `SRE/SRER_P/SREF_P/SRER_N/SREF_N`、`CS_SET`（内部 wire 升端口）、`eol_det_en`；`SR_PR/SR_PF/SR_NR/SR_NF`、`PWRC_P/N/PA/PB/NA/NB`、`sw_reg_lane_ctrl0~4` 转内部 wire
+- `VBK_EN` chip_sel=1 初值 `0→1`（服务器注释 "as discussed"）
+- PWRC 重构：`PWRC_DOWN = R_BKDU & VPS_EN_0`；cs=1 侧改用 `PWRC_TIME` 反馈编码，`R_PWRCP/N_COP` 在 CHIP_SEL=1 时不再受 `STB_PE_DLY` 门控（旧 casex 逻辑注释保留）
+- `CS_SET_1H` 增加 `&SMART_CS[2:0]` 门控（仅 SMART_CS=3'b111 时 CS_SET 有效）
+- EQ 查表编码 ECO 化：`eq_3/6/12/19db_inv` 反相寄存器 + `u_gate_eq_*` INVX2 实例（`` `ifdef VU440_FPGA `` 直通旁路）；12dB=`5'b10100`（0920v1 编码保留）；`AUTO_EQ_EN` 改与 `SDID_EQ_EN_flag` 相与
+- 新增 `eol_det_en = reg_pin_eol_det ? EOL_DET : reg_eol_det`
+
+**边界与验收**：服务器包采纳（非本地功能修改），RTL 三关不适用（0923 口径）；iverilog 语法抽查通过（仅 FF_DLY 宏未定义警告，属预期）；服务器自己的旧版本头（0903_v1 / 0920_v1）原样保留在版本头下方——服务器侧不升版本头。
+
+### 5.28 1023v1 K1 打拍 + SCS_PKT_HALF + match 首帧/幻影防护
+
+2026-10-23 用户三项需求，由 Agent Teams 团队（GLM-5.3 主力 + Qwen 辅助，10 任务 DAG：分析/规格/实现×3/交叉验证/追踪/评审）执行，三关全过。
+
+**① K1 时序防护打一拍**：新增 `K1_FIND_LATCH_1D` @ posedge WCK1_A、异步复位 N_RST_NLOCK_NORMAL 默认 `1'b0`；`chksum_mode` 改用打拍信号（LC_CPUWR 内唯一消费者已审计；外部 LC_MONBLOCK/LINK_IO_CTRL 保持直连不变）。
+
+**② 新增 SCS_PKT_HALF @ 0x2F[0]**（依 HK1V11_Register_20261022.xlsm，独立交叉验证 12/12 字段一致）：1bit R/W 默认 `1'b0`，LSI_PRTECT 门控输出 `R_SCS_PKT_HALF`（0x30 写 0x72 使能，窗 0x20~0x2F & 0x31~0x39）；功能：SCS on-time 对应 packet 数减半（0: disable / 1: enable）；bit0 存储/复位/写译码/读回为既有（原 Reserved），零逻辑结构变更；上层消费连接（LINK_CONFIG_CTRL/LINK_LOGIC/CHPI_SD_CTRL）挂账未接。SMART_CS 新编码语义（256pkt/128pkt/off）已决策不落地（FUNCTION 侧职责）。
+
+**③ match 首帧/幻影防护（t1 七案分析后实施）**：`prev_xsum_a` 复位为 0，首帧若恰为全零帧会幻影 match 提交；且 K1 同拍/残帧等截断帧会污染计数（NG unlock 偏早 1 帧）。加双标志防护：
+
+- `prev_valid_a`：完整帧帧尾置位（←`frm_seen_start_a`）；复位 / !chksum_mode 清零
+- `frm_seen_start_a`：ADDR00 帧首拍置位；帧尾 / !chksum_mode / 复位清零
+- `cmp_valid_a = prev_valid_a & frm_seen_start_a` → `match_eff_a = match_a & cmp_valid_a` 门控 `update_en_a` / `match_cnt_a` / `unmatch_cnt_a` / `unlock_one_shot_a` 四消费点
+- 覆盖七案：① 复位后首帧幻影 ② 真实全零帧（靠有效性标志区分，不误杀）③ 模式退出/再进入（状态清零无残留）④ unlock 后（合法自恢复，无需改）⑤ 幻影 mismatch 污染 unmatch_cnt（NG unlock 提前 1 帧，已消除）⑥ K1 上升与帧首拍同拍（错过首字节，截断帧）⑦ 无帧首的残帧 frame_end
+- **F3 时序契约保留**：两帧算好、第三帧 ADDR39_F_TEST 拍一次性全量提交的逐拍时序不变（同沿非阻塞旧值语义；guard TB S3 场景断言验证）
+
+**验收三关**：① iverilog 桩库口径 exit 0（裸命令 21 个 CLKINVX4AL9 缺库为 HEAD 基线既有）；② rtl-code-review 对抗评审 **PASS（critical=0/high=0，medium=2/low=3/info=2）**，含 G13 重定时消费者审计单独成节；③ rtl-signal-trace Workflow C 成对消费拍差审计（K1 拍差表全覆盖；R1=LC_MONBLOCK 混拍仅 MONI_OUT[0] 监控脚低风险；SCS/guard 链路同域无 CDC）。
+
+**G13 对拍证据**：最小对拍 TB（1022v1 vs 1023v1-K1 单变量隔离）**VERDICT: PASS**（C1/C2/C3 全 0）；角相位（K1 与帧拍同拍：旧版当拍处理/新版错过首字节）文档化于 `pair_tb_notes.md`，该洞已由防护③隔离。guard TB 10 场景 = 七案全覆盖 + 角相位，全 PASS。Excel 登记 NO47（K1 打拍）/NO48（match 防护）/NO49（SCS_PKT_HALF）。
+
   </script>
   <script>
     document.getElementById('article').innerHTML = marked.parse(document.getElementById('md').textContent.trim());
@@ -728,4 +768,4 @@ const article = document.getElementById('article');
 </body>
 </html>
 
-<!-- ymzhu 2026-10-09 14:50 -->
+<!-- ymzhu 2026-10-26 14:55 -->

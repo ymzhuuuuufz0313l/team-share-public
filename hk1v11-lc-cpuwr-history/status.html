@@ -248,10 +248,12 @@
 
 ## 1. 当前版本
 
-当前最新版本为 **0920v1**（`LC_REG_MAPPING.v` 文件头 0920v1：依 HK1V11_Register_20260919——EQ 引脚查表 12dB 编码修正，`EQ[0:2]=100/101` 由 `5'b10000` 改 `5'b10100`；`LC_CPUWR.v`/`LINK_CONFIG_CTRL.v` 保持 0918v1：EQ 默认值调整 + 服务器 09-17 基线重建）：
+当前最新版本为 **1023v1**（`LC_CPUWR.v` 文件头 1023v1：K1 打拍 + SCS_PKT_HALF 新寄存器 + match 首帧/幻影防护，三关全过；`LC_REG_MAPPING.v` 保持 1022v1：服务器 1022 包接口重构/EQ 编码 ECO 化/VBK_EN cs=1 初值 1）：
 
 | 版本 | 主要状态 |
 |------|----------|
+| **1023v1** | **本地功能修改（10-23，三关全过）：①`K1_FIND_LATCH` 入口打一拍（`K1_FIND_LATCH_1D`，WCK1_A 域默认 0，chksum_mode 唯一消费者）②新增 `SCS_PKT_HALF` @ 0x2F[0]（默认 0，R/W，LSI_PRTECT，输出 `R_SCS_PKT_HALF`，上层连线挂账）③match 首帧/幻影防护（`prev_valid_a`+`frm_seen_start_a` 门控四消费点，t1 七案全覆盖，F3 帧尾全量提交时序逐拍等价）；Excel 登记 NO47/NO48/NO49** ✅ |
+| **1022v1** | **服务器 `PACK_TAR_1022V1` 状态采纳为本地最新（10-23 用户拍板）：LC_CPUWR——`update_en_a` 升模块输出、0x08[1] `reg_eq_rbc1` 默认 1→0 回退（0x08 字节 0x02→0x00，0x36 保留 0x17）；LC_REG_MAPPING——SRE/PWRC 接口重构（`PWRC_TIME` 反馈）、`VBK_EN` cs=1 初值 0→1、`CS_SET` 加 SMART_CS=111 门控并升端口、EQ 编码 ECO 化（`u_gate_eq_*`）、AUTO_EQ 加 `SDID_EQ_EN_flag`、新增 `eol_det_en`（服务器包采纳，三关不适用）** ✅ |
 | **20260929 表审查** | **非 RTL 版本（审查记录，09-29）：HK1V11_Register_20260929 全量审查通过——12 条变更全为描述类（SP_S→dummy、VBK/TP_F_AHEAD/HIZ_MIN_* 描述），Reg_1V11 零变化，三件套保持 0918v1/0920v1 不动；SP_S 链路与 HIZ_MIN_VAL 量纲 2 项待设计确认（见 §3）** ✅ |
 | **0920v1** | **EQ 引脚查表 12dB 编码修正（仅 LC_REG_MAPPING）：`EQ[0:2]=100/101` → `reg_lane_ctrl=5'b10100`（原 `5'b10000`）；其余表项（3dB/6dB/19dB）与 mux 优先级不变；验收三关通过** ✅ |
 | **0918v1** | **EQ 默认值调整 + 服务器 0917 基线重建：`reg_eq_bias_tune[7:0]`（0x36）默认 `8'h55→8'h17`（0x36 字节 `0x55→0x17`）；`reg_eq_rbc1`（0x08[1]）默认 `1'b0→1'b1`（0x08 字节 `0x00→0x02`）；`reg_eq_rbc0` 保持 `1'b0`；chip_sel=0/1 共用；env 默认值未同步（用户决策，挂账）** ✅ |
@@ -271,6 +273,20 @@
 | 0721v1 | `LCONFIG_DATA`/`FCONFIG_DATA` 16bit→24bit（每步 3 寄存器）；checksum XOR 总量不变 ✅ |
 | 0716v1 | 新增 `FSEL[1:0]` @ `0x35`；已归档为 `0716_v1_work` ✅ |
 | 0714v1 | chip_sel=0 默认值 + `LC_REG_MAPPING` 回拼 chip_sel=1 默认值；回归通过 ✅ |
+
+1023v1 交付物：
+
+- 根级固定文件 `LC_CPUWR.v`（文件头 1023v1，含三项变更：K1 打拍 / SCS_PKT_HALF / match 防护；2416 行，HDL 工作区双份同 MD5）；`LC_REG_MAPPING.v` 保持 1022v1 不动
+- 文档：`markdownfile/1023v1/`（t1 七案分析 / SCS_PKT_HALF 规格 / 对拍 TB + 角相位说明 / 信号追踪 Workflow C）+ `markdownfile/1023v1_rtl/`（guard TB 10 场景 / 实施报告 ×2 / 对抗评审报告 PASS）+ `markdownfile/1023v1_xcheck/`（规格交叉验证 12/12）
+- 双轨记录：目录级 `CHANGES.md` + 根级 `修改记录/CHANGES.md`；chip_sel0/1 地址表 MD 同步（0x2F[0] SCS_PKT_HALF 行）；`back3.HK1V11_changelist.xlsx` Register Change NO47/NO48/NO49
+- 验收三关：① iverilog 桩库口径 exit 0；② rtl-code-review PASS（critical=0/high=0，含 G13 重定时消费者审计）；③ rtl-signal-trace Workflow C 成对消费拍差审计（R1=LC_MONBLOCK 混拍仅 MONI_OUT[0] 监控脚低风险）
+- G13 对拍 TB（1022v1 vs 1023v1-K1 单变量隔离）VERDICT: PASS（C1/C2/C3 全 0）
+
+1022v1 交付物：
+
+- 根级三件套采纳服务器 `PACK_TAR_1022V1` 状态（LC_CPUWR=1015 包同版、LC_REG_MAPPING=1022 包新版）；`HDL/HK1V11_digital_top/seperated_code/` 两文件与根级同 MD5 同步
+- 双轨记录：目录级 `CHANGES.md`（服务器 diff 明细）+ 根级 `修改记录/CHANGES.md`；服务器自己的旧版本头（0903_v1/0920_v1）原样保留在版本头下方
+- 验收：服务器包采纳（非本地功能修改），三关不适用（0923 口径）；iverilog 语法抽查通过
 
 0920v1 交付物：
 
@@ -337,6 +353,8 @@
 - **0918v1 EQ 默认值 + 服务器基线重建**：`reg_eq_bias_tune` 默认 `8'h55→8'h17`、`reg_eq_rbc1` 默认 `0→1`、`reg_eq_rbc0` 保持 0（0x08/0x36 字节默认 `0x00→0x02`/`0x55→0x17`）；根级三件套基线重建为服务器 0917 版，0827v1 集成挂账清零（cr_done_filter 接通、sw_reg_lane_ctrl 旧连接清除）；验收三关全过
 - **0920v1 EQ 查表编码修正**：仅 LC_REG_MAPPING——`EQ[0:2]=100/101` → `reg_lane_ctrl=5'b10100`（原 `5'b10000`），其余表项不变；验收三关全过
 - **20260929 表审查**：12 条变更全为描述类（SP_S→dummy、VBK/TP_F_AHEAD/HIZ_MIN_* 描述），Reg_1V11 零变化，三件套保持不动；SP_S 链清理与 HIZ_MIN_VAL 量纲 2 项待设计确认（glm-5.3 团队 + captain 独立 diff 交叉）
+- **1022v1 服务器包采纳**：服务器 `PACK_TAR_1022V1` 状态采纳为本地最新（0918v1/0920v1 后服务器侧他人修改、已经允许）——LC_CPUWR `update_en_a` 升模块输出 + `reg_eq_rbc1` 默认 1→0 回退（0x08 字节 0x02→0x00）；LC_REG_MAPPING SRE/PWRC 接口重构、`VBK_EN` cs=1 初值 0→1、`CS_SET` 加 SMART_CS=111 门控、EQ 编码 ECO 化、AUTO_EQ 加 `SDID_EQ_EN_flag`、新增 `eol_det_en`
+- **1023v1 三项本地功能修改**（Agent Teams 团队执行，三关全过）：① `K1_FIND_LATCH` 打一拍（WCK1_A 域，chksum_mode 唯一消费者改用打拍信号，外部 LC_MONBLOCK/LINK_IO_CTRL 直连不变）② 新增 `SCS_PKT_HALF` @ 0x2F[0]（默认 0，LSI_PRTECT，输出 `R_SCS_PKT_HALF`，上层连线挂账；规格交叉验证 12/12）③ match 首帧/幻影防护（`prev_valid_a`+`frm_seen_start_a` 双标志门控 update_en/match_cnt/unmatch_cnt/unlock 四消费点，NG unlock 偏早 1 帧消除，F3 帧尾全量提交时序逐拍等价）
 
 ## 3. 待确认项
 
@@ -353,7 +371,12 @@
 | 上游 `CHPI_CONFIG_L0` 升 24bit | **外部依赖** | 每拍 3 字节采样；全芯片 FCONFIG 流仿真联调前提 |
 | SP_S 输出链清理 | **待设计确认（20260929）** | 规格已将 `SP_S[2:0]` @0x1D 标为 dummy register；RTL 仍驱动 LC_REG_MAPPING.v:196→LOGIC_CENTER 顶层输出。保留透传合规，断链为可选清理项 |
 | HIZ_MIN_VAL 量纲对齐 | **待设计确认（20260929）** | 规格新公式 `HIZ_MIN_VAL×4PKT+4PKT`、门控 `TP_F_AHEAD==1 & LD_F==1`；RTL CHPI_SD_CTRL.v:187 原值直用且无新门控——LD_W 计数单位是否隐含 ×4 需与规格/模拟侧对齐 |
-| 规格表回填 5 项 | **⚠️ 挂规格 owner** | 0919 裁决的回填清单（0x08=0X02、0x33=0X00、0x04 行 EQ 9dB 残留、0x34 Access=R、0x43[7] VPS_BK 删行）在 0929 版仍未执行，规格表已滞后 RTL 两版 |
+| `SCS_PKT_HALF` 上层连线 | **挂账（1023v1）** | 输出 `R_SCS_PKT_HALF` 仅加 LC_CPUWR 端口；LINK_CONFIG_CTRL/LINK_LOGIC/CHPI_SD_CTRL.v:210 消费连接未接（功能消费属上层，ymzhu 三件套边界外） |
+| SMART_CS 新编码语义 | **已决策不落地（10-23）** | HK1V11_Register_20261022 history!B3（0111=256pkt / 1111=128pkt / 其他=off）归 FUNCTION 侧，RTL CHPI_SD_CTRL 无 off 档，1023v1 不实现（用户："我只管 history 目录下的文件"） |
+| LC_CPUWR.v:2274 注释↔代码不符 | **待用户拍板** | 5'h04 拍注释称 `C^D`，mux 实为 C-only（0x0A 字节不入 XOR）——0721v1 遗留，评审 MEDIUM；修注释或补 `^DATA_D` 二选一 |
+| DV checker checksum/NG-unlock 冒烟 | **待 DV 窗口** | 1023v1 match 防护改动后，checksum/NG-unlock case 需冒烟确认（本地不跑仿真，VM 上执行） |
+| R1 MONI_OUT[0] 新旧波形回归 | **低优先** | K1 打拍后 LC_MONBLOCK 混拍（update_en_a_ext 延 1 拍 vs ~K1 直连）仅在 K1 下降与合法 match 帧尾对齐时展宽 ~15 拍，仅监控脚，无功能路径 |
+| 规格表回填 5 项 | **⚠️ 挂规格 owner** | 0919 裁决的回填清单（0x33=0X00、0x04 行 EQ 9dB 残留、0x34 Access=R、0x43[7] VPS_BK 删行）在 0929 版仍未执行；其中 **0x08=0X02 项已被 1022v1 推翻**（服务器回退 rbc1 1→0，0x08 回 0X00，规格表原始值恢复正确） |
 | `LINK_LOGIC` `[23:16]` tie-off 删除 | 待上游升版 | 过渡期防 X 传播，上游 24bit 输出到位后删除
 
 ## 4. 后续建议
@@ -361,8 +384,9 @@
 1. **BCC 写回接入（转交同事）**：方向已定论——`BCC_M` 由 I2C 写入后经 LC_CPUWR 输出下发 bcc_ctrl；`SDID`/`AEQ_reg_lane_ctrl`/`regr_AEQ/BCC_FF/PASS` 由 bcc_ctrl 驱动写回/监视（服务器 LINK_CONFIG_CTRL 已接通 SDID input）。
 2. **DV env 同步**：确认后统一更新 `env_cfg.sv`（reg51 位偏移、reg56 EOL 打包、CDR/BCC 打包）、`reg_model.sv`（替换旧模板）、`reg_define.csv`。
 3. **跟进上游 `CHPI_CONFIG_L0` 24bit 升版**（owner/时间节点待定），全芯片 FCONFIG 流仿真联调前提；上游升版后删除 `LINK_LOGIC` tie-off。
-4. 回归：checksum 全量 + I2C 读回 + reset（chip_sel=0/1）。
+4. 回归：checksum 全量 + I2C 读回 + reset（chip_sel=0/1）；1023v1 后补 checksum/NG-unlock 冒烟（match 防护改动）。
 5. **Loop_sel**：projectleader 确认 PIN 命名/来源后接入真实 PIN；引测点（TESTO）由相关模块处理。
+6. **SCS_PKT_HALF 上层消费**：`R_SCS_PKT_HALF` 输出端口已就位（1023v1），上层 LINK_CONFIG_CTRL/LINK_LOGIC/CHPI_SD_CTRL 连接由上层模块 owner 排期。
 
   </script>
   <script>
@@ -453,4 +477,4 @@ const article = document.getElementById('article');
 </body>
 </html>
 
-<!-- ymzhu 2026-10-09 14:50 -->
+<!-- ymzhu 2026-10-26 14:55 -->

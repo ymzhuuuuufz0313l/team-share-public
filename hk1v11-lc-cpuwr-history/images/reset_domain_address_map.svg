@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="866" height="2956" viewBox="0 0 866 2956" style="background:#ffffff">
 <rect width="866" height="2956" fill="#ffffff"/>
-<text x="433.0" y="40" text-anchor="middle" font-size="22" font-weight="bold" fill="#1e293b">LC_CPUWR 0827v1 复位域分类</text>
+<text x="433.0" y="40" text-anchor="middle" font-size="22" font-weight="bold" fill="#1e293b">LC_CPUWR 1023v1 复位域分类</text>
 <text x="211.0" y="110" text-anchor="middle" font-size="12" fill="#64748b">[7]</text>
 <text x="293.0" y="110" text-anchor="middle" font-size="12" fill="#64748b">[6]</text>
 <text x="375.0" y="110" text-anchor="middle" font-size="12" fill="#64748b">[5]</text>
@@ -129,7 +129,7 @@
 <text x="620.5" y="575.0" text-anchor="middle" font-size="7.0" fill="#64748b">1'b0</text>
 <rect x="662" y="540" width="81" height="46" fill="#dbeafe" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="702.5" y="561.0" text-anchor="middle" font-size="8.0" font-weight="500" fill="#1e293b">reg_eq_rbc1</text>
-<text x="702.5" y="575.0" text-anchor="middle" font-size="7.0" fill="#64748b">1'b1</text>
+<text x="702.5" y="575.0" text-anchor="middle" font-size="7.0" fill="#64748b">1'b0</text>
 <rect x="744" y="540" width="81" height="46" fill="#dbeafe" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="784.5" y="561.0" text-anchor="middle" font-size="8.0" font-weight="500" fill="#1e293b">reg_eq_rbc0</text>
 <text x="784.5" y="575.0" text-anchor="middle" font-size="7.0" fill="#64748b">1'b0</text>
@@ -395,8 +395,8 @@
 <text x="702.5" y="1705.0" text-anchor="middle" font-size="8.0" font-weight="500" fill="#1e293b">HIZ_MIN_SEL</text>
 <text x="702.5" y="1719.0" text-anchor="middle" font-size="7.0" fill="#64748b">1'b0</text>
 <rect x="744" y="1684" width="81" height="46" fill="#dbeafe" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="784.5" y="1705.0" text-anchor="middle" font-size="8.0" font-weight="500" fill="#1e293b">Reserved</text>
-<text x="784.5" y="1719.0" text-anchor="middle" font-size="7.0" fill="#64748b">0</text>
+<text x="784.5" y="1705.0" text-anchor="middle" font-size="7.5" font-weight="500" fill="#1e293b">SCS_PKT_HALF</text>
+<text x="784.5" y="1719.0" text-anchor="middle" font-size="7.0" fill="#64748b">1'b0</text>
 <text x="158" y="1764.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x30 (48)</text>
 <rect x="170" y="1736" width="655" height="46" fill="#f97316" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="497.5" y="1757.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">TEST_PRTCT[7:0]</text>

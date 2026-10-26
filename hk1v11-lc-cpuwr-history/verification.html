@@ -417,6 +417,22 @@ DV env 同步继续暂缓期间，RTL 侧每个版本仍独立完成验收三关
 >
 > **0903v1（09-03 表同步）**：env/reg_model 无功能变化（无寄存器地址/map 变化），无新增 env 缺口。
 
+## 9. 1023v1 验收：对拍 TB + guard TB（G13 重定时条款）
+
+1023v1 含**重定时/打拍类变更**（K1_FIND_LATCH_1D），按 0929 G13 双事故后新增条款，静态推演不得单独作为 pass 依据，必须附**最小对拍 TB（新旧 RTL 同激励差分比事件序列）**：
+
+| 项 | 内容 | 结果 |
+|----|------|------|
+| 对拍 TB | 1022v1 vs 1023v1-K1 **单变量隔离**（同一激励、旧/新 RTL 各跑一遍，事件序列逐拍差分，C1/C2/C3 三类计数器） | **VERDICT: PASS**（C1/C2/C3 全 0，`pair_tb_run2_clean.log`） |
+| 角相位（文档化） | K1 上升与帧首拍同拍：旧版当拍处理、新版错过首字节（单拍丢失，**非 +1 偏移、不帧尾自愈**，sticky 污染） | 已知行为差异，已由 1023v1 match 防护③隔离（`frm_seen_start_a=0` 该帧不比较）；`pair_tb_notes.md` |
+| guard TB | 10 场景 = t1 七案全覆盖（① 复位后首帧幻影 ② 全零帧 ③ 模式退出/再进入 ④ unlock 后 ⑤ 幻影 mismatch 污染计数 ⑥ K1 同拍截断帧 ⑦ 残帧）+ 角相位；含全零首帧断言、NG-unlock 防回归断言（第 5 个真实 mismatch 恰好触发）、F3 帧尾提交时序断言（S3） | 全 PASS（`tb_guard_1023v1.sv`） |
+| 对抗评审 | rtl-code-review（G13 重定时消费者审计单独成节） | PASS（critical=0/high=0, medium=2/low=3/info=2） |
+| 信号追踪 | rtl-signal-trace Workflow C 成对消费拍差审计（K1 拍差表全覆盖） | R1=LC_MONBLOCK 混拍仅 MONI_OUT[0] 监控脚低风险；SCS/guard 链路同域无 CDC |
+
+**DV 侧待办**：match 防护改动后，checksum/NG-unlock case 需冒烟确认（本地不跑仿真，VM 上执行，见[状态 §3](./status.html)）。
+
+报告：`LC_CPUWR_history/markdownfile/1023v1/`（对拍 + 角相位 + 信号追踪）+ `1023v1_rtl/`（guard TB + 评审 + 实施报告）。
+
   </script>
   <script>
     document.getElementById('article').innerHTML = marked.parse(document.getElementById('md').textContent.trim());
@@ -506,4 +522,4 @@ const article = document.getElementById('article');
 </body>
 </html>
 
-<!-- ymzhu 2026-10-09 14:50 -->
+<!-- ymzhu 2026-10-26 14:55 -->

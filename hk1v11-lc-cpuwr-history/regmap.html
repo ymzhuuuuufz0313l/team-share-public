@@ -731,6 +731,36 @@ chip_sel=0/1 默认字节映射、checksum 地址覆盖、LSI 保护范围、复
 
 → [二、寄存器图解 Sheet](./diagrams.html)
 
+## 30. 1022v1 服务器 1022 包采纳：寄存器数据变化
+
+服务器 `PACK_TAR_1022V1`（2026-10-22）状态采纳为本地最新后，寄存器层面的变化：
+
+| 地址 | 字段 | 变化 | 说明 |
+|------|------|------|------|
+| 0x08[1] | `reg_eq_rbc1` | 默认 `1'b1 → 1'b0` | 服务器回退 0918v1 的本地请求；0x08 字节默认 `0x02→0x00`（rbc[1:0]=2'b00 终局） |
+| 0x36[7:0] | `reg_eq_bias_tune` | 保持 `8'h17` | 0918v1 调整保留 |
+
+`LC_REG_MAPPING` 侧（非 LC_CPUWR 地址空间，寄存器表无变化）：`VBK_EN` chip_sel=1 初值 `0→1`（服务器注释 "as discussed"，cs=1 下 0x1F 仍为 PWRC_* 字段、无独立 VBK_EN 字段，地图无变化）；`CS_SET` 加 SMART_CS=111 门控并升端口；EQ 查表编码 ECO 化（INVX2 反相，12dB=`5'b10100` 编码保留）；新增 `eol_det_en`。
+
+## 31. 1023v1 新增 SCS_PKT_HALF @ 0x2F[0]
+
+依 `HK1V11_Register_20261022.xlsm` history!B3（2026-10-21，独立交叉验证 12/12 字段一致）：
+
+| 项 | 值 |
+|----|-----|
+| 位置 | 0x2F[0]（十进制 47，原 Reserved） |
+| 名称 | `SCS_PKT_HALF` |
+| 默认 | `1'b0`（0x2F 字节默认仍 `0x00`） |
+| 访问 | R/W |
+| 保护 | LSI_PRTECT（0x30 写 0x72 使能，窗 0x20~0x2F & 0x31~0x39） |
+| 功能 | SCS on-time 对应 packet 数减半（0: disable / 1: enable） |
+| 输出 | `R_SCS_PKT_HALF = LSI_PRTECT ? R_REG47_F[0] : 1'b0`（上层消费挂账未接） |
+| chip_sel 差异 | 字段规格 cs=0/1 一致；作用对象 `SMART_CS`（0x02）为 cs=1 专有，cs=0 时该 bit 可读写回显但无功能作用 |
+
+零逻辑结构变更：bit0 的存储/复位/写译码/读回为既有（原 Reserved），仅新增一条 LSI_PRTECT 门控输出 assign。地址表 chip_sel0/1 同步（0x2F[0] Reserved→SCS_PKT_HALF），四张 SVG 大图同步（chip_sel0/1 + LSI + 复位域）。
+
+**SMART_CS 编码语义**（同表 history!B3：0111=256pkt / 1111=128pkt / 其他=off）**已决策不落地**——归 FUNCTION 侧（RTL CHPI_SD_CTRL 无 off 档），1023v1 不实现，仅在此留痕。
+
   </script>
   <script>
     document.getElementById('article').innerHTML = marked.parse(document.getElementById('md').textContent.trim());
@@ -820,4 +850,4 @@ const article = document.getElementById('article');
 </body>
 </html>
 
-<!-- ymzhu 2026-10-09 14:50 -->
+<!-- ymzhu 2026-10-26 14:55 -->
