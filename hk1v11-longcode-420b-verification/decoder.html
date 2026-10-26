@@ -506,7 +506,9 @@
 
 ## 1. 离线解码（当前实际工作路径）
 
-![收发结构框图：脚本离线验证](./pydec_tx_rx_structure.svg?v=20260720)
+> 🎬 本页图均为纯 CSS 动画 SVG（在 `anim/` 目录，滚动到视口时重播）；静态原版保留在同名路径作 fallback。
+
+![收发结构框图：脚本离线验证](./anim/pydec_tx_rx_structure.svg?v=20261026)
 
 ### 1.1 工作流程
 
@@ -597,6 +599,22 @@
 
   <script>
     document.getElementById('article').innerHTML = marked.parse(document.getElementById('md').textContent.trim());
+    /* 动画 SVG 滚动重播：长页面里 SVG 多为下方图，一次性入场动画在加载时就播完、用户滚到时看不到
+       → 首进视口前 240px 重播（src 加 query 强制 <img> 内 SVG 重新渲染）；加载时已在视口内的不重播（2026-10-26 ymzhu） */
+    document.querySelectorAll('img[src$=".svg"]').forEach(function (img) {
+      var r = img.getBoundingClientRect();
+      if (r.top < window.innerHeight && r.bottom > 0) return;
+      img.loading = 'lazy';
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (!e.isIntersecting) return;
+          io.unobserve(img);
+          var base = (img.getAttribute('src') || '').split('?')[0];
+          img.src = base + '?v=' + Date.now();
+        });
+      }, { rootMargin: '240px 0px' });
+      io.observe(img);
+    });
 const lightbox = document.getElementById('lightbox');
     const lightboxImg = document.getElementById('lightbox-img');
     const lightboxClose = document.getElementById('lightbox-close');
@@ -658,3 +676,5 @@ const lightbox = document.getElementById('lightbox');
   </script>
 </body>
 </html>
+
+<!-- ymzhu 2026-10-26 19:22 -->

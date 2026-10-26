@@ -512,7 +512,9 @@
 
 ## 1. 413b → 420b 编码
 
-![413b → 420b 分组标签替换](./spec_tag_replacement.svg?v=20260720)
+> 🎬 本页图均为纯 CSS 动画 SVG（在 `anim/` 目录，滚动到视口时重播）；静态原版保留在同名路径作 fallback。
+
+![413b → 420b 分组标签替换](./anim/spec_tag_replacement.svg?v=20261026)
 
 ### 1.1 分组与 tag
 
@@ -524,7 +526,7 @@
 
 ## 2. 加扰规则
 
-![Scramble key 滚动机制](./spec_scramble_rolling.svg?v=20260720)
+![Scramble key 滚动机制](./anim/spec_scramble_rolling.svg?v=20261026)
 
 ### 2.1 payload 加扰
 
@@ -540,7 +542,7 @@ IDLE K5~K8 **不加扰**。
 
 ## 3. 发送顺序
 
-![数据传输方向（LSB-first）](./spec_bit_order.svg?v=20260720)
+![数据传输方向（LSB-first）](./anim/spec_bit_order.svg?v=20261026)
 
 ### 3.1 420b LSB-first
 
@@ -562,7 +564,7 @@ Header 为 `{tag[5:0], toggle}`，toggle 位于 bit0，**toggle 先发**，随�
 
 ## 4. 跨 lane 70-bit 对齐
 
-![非 413b 整数倍数据处理](./spec_dummy_70b.svg?v=20260720)
+![非 413b 整数倍数据处理](./anim/spec_dummy_70b.svg?v=20261026)
 
 ### 4.1 对齐原则
 
@@ -637,6 +639,22 @@ Header 为 `{tag[5:0], toggle}`，toggle 位于 bit0，**toggle 先发**，随�
 
   <script>
     document.getElementById('article').innerHTML = marked.parse(document.getElementById('md').textContent.trim());
+    /* 动画 SVG 滚动重播：长页面里 SVG 多为下方图，一次性入场动画在加载时就播完、用户滚到时看不到
+       → 首进视口前 240px 重播（src 加 query 强制 <img> 内 SVG 重新渲染）；加载时已在视口内的不重播（2026-10-26 ymzhu） */
+    document.querySelectorAll('img[src$=".svg"]').forEach(function (img) {
+      var r = img.getBoundingClientRect();
+      if (r.top < window.innerHeight && r.bottom > 0) return;
+      img.loading = 'lazy';
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (!e.isIntersecting) return;
+          io.unobserve(img);
+          var base = (img.getAttribute('src') || '').split('?')[0];
+          img.src = base + '?v=' + Date.now();
+        });
+      }, { rootMargin: '240px 0px' });
+      io.observe(img);
+    });
 const lightbox = document.getElementById('lightbox');
     const lightboxImg = document.getElementById('lightbox-img');
     const lightboxClose = document.getElementById('lightbox-close');
@@ -698,3 +716,5 @@ const lightbox = document.getElementById('lightbox');
   </script>
 </body>
 </html>
+
+<!-- ymzhu 2026-10-26 19:22 -->
