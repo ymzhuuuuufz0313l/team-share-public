@@ -74,8 +74,8 @@
 | P1 | VCS 编译 -j 调优基准 | 性能 | ✅ R4 完成（~20s，无并行收益） |
 | P2 | FSDB 写入吞吐 | 性能 | 🔄 计划 |
 | P3 | fsdb2vcd 抽取吞吐 | 性能 | ✅ R5 完成（索引访问，与文件大小无关） |
-| P4 | Icarus vs VCS 速度对比 | 性能 | 🔄 计划 |
-| D1 | /sim_dd 全资产盘点 | 数据 | 🔄 进行中 |
+| P4 | Icarus vs VCS 速度对比 | 性能 | ✅ R10 定案（小设计快 35 倍；UVM/全设计必须 VCS） |
+| D1 | /sim_dd 全资产盘点 | 数据 | ✅ R9 盘点完成（13G 双项目 + cmodel 参考在位） |
 | D2 | /home/ICer/work 全资产盘点 | 数据 | ✅ R1 |
 | D3 | 3GB FSDB 深度解析 | 数据 | ✅ R5 完成（与 P3 合并：4.3GB 实测） |
 | D4 | PPM 池与输入数据 | 数据 | ✅ R9 盘点（/sim_dd 13G + cmodel 参考 200 文件 38MB 在位） |
@@ -278,11 +278,27 @@ CHPI 是 5 类回归中**唯一既非模拟模型限制、也非 test 侧文件�
 4. **定论**：F1 最终确认——50err = 晶体管级 DRA 在事件驱动 VCS 下不收敛（输出 X）→ checker 采 X→0 → 与 cmodel 期望失配。**非真实 analog 差异、非数字 bug**。VM/服务器差异的已证实机理至此共三个：F1（xprop 排除 + X→0）、F4（CS_SYNC 锁存点竞态）、本条（DRA 收敛性）
 5. 项目状态已恢复（t_8b1lane.sv 回到 ck=0）
 
-## 10. 后续轮次
+## 10. 第 10 轮：P4 定案——Icarus vs VCS 速度对比与能力边界（10-26）
 
+**速度**（同 2 文件 4 级流水线，compile+run 一体）：
+| 工具 | 耗时 | 备注 |
+|---|---|---|
+| Icarus 12.0 | **0.027s** | iverilog+vvp，无 license |
+| VCS O-2018.09 | 0.96s | -R 一体化，含 license 交互 |
 
-- **R7 性能基准收尾（P 组）**：P4 Icarus vs VCS 速度对比（60h 循环三层仿真体系的量化）
-- **R10**：P4 Icarus vs VCS 速度对比（开源工具链定位）/ D1 剩余盘点项 / 全项目总结（所有 F/T/P/D 收官后的最终判定页）
+小设计 Icarus 快 **~35 倍**（无 elaborate 管线、无 license 开销）。
+
+**能力边界**（HK1V11 全列表 102 个 verilog 文件）：
+1. iverilog 编译全列表 **0.7s 通过**（仅 `ifnone` timing check 非致命警告）
+2. **SV class / UVM 不支持**（`class` = syntax error）→ **UVM 回归不能跑 Icarus**
+3. 含 analog macro 的全设计仿真：**重复 module 声明 fatal**（M31 model 与 RXPHY_X1_TOP 同定义 stdcell——VCS 按 last-wins 容忍，iverilog 视为错误）
+4. 去重后仍不可行：**PDK 自动生成 model 按上下文重命名 cell**（`DFFRBQBX1AS9_RXPHY_X1_TOP` 式）→ 纯名 cell（AND3X2AL9 等）缺失，完整 top 仿真断链
+
+**定论**：Icarus 定位 = 自包含模块/纯数字逻辑的**秒级快速 sanity 与无 license 冒烟**（模块开发调试利器）；HK1V11 的 UVM 回归与含 analog 全设计仿真**必须 VCS**。开源工具链是 VCS 的补充，不是替代。
+
+## 11. 后续轮次
+
+- **R11 收官**：全项目总结页——所有 F/T/P/D 项目的最终判定汇总 + VM 平台能力矩阵 + 给设计 owner 的完整结论（VM 与服务器流程差异的已证实机理清单）
 - 每轮结束更新本页 + PROGRESS.md，可再生产物随手清理
 </script>
 
