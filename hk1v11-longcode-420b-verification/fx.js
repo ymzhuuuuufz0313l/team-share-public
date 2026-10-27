@@ -55,8 +55,8 @@
     var s = (img.getAttribute('src') || '').split('?')[0];
     var idx = s.indexOf('/anim/');
     if (idx === -1) return s;
-    var prefix = s.slice(0, idx);
-    return (prefix || './') + nameOf(img);
+    var prefix = s.slice(0, idx).replace(/\/+$/, '');
+    return (prefix ? prefix + '/' : './') + nameOf(img);
   }
   function applySvg(replayNow) {
     svgImgs().forEach(function (img) {
@@ -322,4 +322,4 @@
   }
 })();
 
-/* ymzhu 2026-10-27 13:52 */
+/* ymzhu 2026-10-27 15:22 */

@@ -222,6 +222,7 @@
     }
     .lightbox .close:hover { background: rgba(255,255,255,0.15); color: #fff; }
   </style>
+  <link rel="stylesheet" href="./fx.css">
 </head>
 <body>
   <nav class="navbar">
@@ -485,7 +486,8 @@ const article = document.getElementById('article');
     window.addEventListener('mouseup', () => { isDragging = false; lightboxImg.classList.remove('grabbing'); });
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeLightbox(); });
   </script>
+  <script src="./fx.js"></script>
 </body>
 </html>
 
-<!-- ymzhu 2026-10-27 10:31 -->
+<!-- ymzhu 2026-10-27 14:00 -->
