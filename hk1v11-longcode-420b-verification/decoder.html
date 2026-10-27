@@ -11,6 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet">
   <title>420b 解码链 RTL · HK1V11 420b 长编码验证体系</title>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <link rel="stylesheet" href="./fx.css">
   <style>
 :root {
       --bg: #f4f1ea;
@@ -614,70 +615,6 @@
 
   <script>
     document.getElementById('article').innerHTML = marked.parse(document.getElementById('md').textContent.trim());
-    /* 动画/静态一键切换 + 滚动重播（2026-10-27 ymzhu v2）
-       模式优先级：URL ?motion=static|anim > localStorage('motion-mode') > prefers-reduced-motion > 动画
-       切换 = 换 <img> src（anim/ 动画版 ↔ 根目录静态原版，即 fallback 原图，零额外资源）
-       修复 v1 selector bug：img[src$=".svg"] 匹配不到带 ?v= 的引用，滚动重播实际未生效 */
-    (function () {
-      var mq = window.matchMedia ? matchMedia('(prefers-reduced-motion: reduce)') : null;
-      var param = new URLSearchParams(location.search).get('motion');
-      var stored = null;
-      try { stored = localStorage.getItem('motion-mode'); } catch (e) {}
-      var mode = param === 'static' || param === 'anim' ? param
-        : (stored === 'static' || stored === 'anim') ? stored
-        : (mq && mq.matches ? 'static' : 'anim');
-      var btn = document.getElementById('motionToggle');
-      var io = null;
-      function nameOf(img) {
-        var p = new URL(img.getAttribute('src') || '', location.href).pathname;
-        return p.split('/').pop();
-      }
-      function svgImgs() {
-        return Array.prototype.filter.call(document.querySelectorAll('img'), function (img) {
-          return /\.svg(\?|$)/.test(img.getAttribute('src') || '');
-        });
-      }
-      function baseAnim(img) {
-        var s = img.getAttribute('src') || '';
-        var p = new URL(s, location.href).pathname;
-        return (p.indexOf('/anim/') !== -1 ? s.split('?')[0] : './anim/' + nameOf(img));
-      }
-      function apply(replayNow) {
-        svgImgs().forEach(function (img) {
-          img.loading = 'lazy';
-          img.src = (mode === 'anim')
-            ? baseAnim(img) + (replayNow ? '?v=' + Date.now() : '')
-            : './' + nameOf(img);
-        });
-        if (btn) {
-          btn.textContent = mode === 'anim' ? '🎬 动效' : '🖼 静态';
-          btn.setAttribute('aria-pressed', mode === 'anim' ? 'true' : 'false');
-        }
-        observe();
-      }
-      function observe() {
-        if (io) { io.disconnect(); io = null; }
-        if (mode !== 'anim') return;
-        io = new IntersectionObserver(function (entries) {
-          entries.forEach(function (e) {
-            if (!e.isIntersecting) return;
-            io.unobserve(e.target);
-            if (mode === 'anim') e.target.src = baseAnim(e.target) + '?v=' + Date.now();
-          });
-        }, { rootMargin: '240px 0px' });
-        svgImgs().forEach(function (img) {
-          var r = img.getBoundingClientRect();
-          if (r.top < window.innerHeight && r.bottom > 0) return;
-          io.observe(img);
-        });
-      }
-      if (btn) btn.addEventListener('click', function () {
-        mode = (mode === 'anim') ? 'static' : 'anim';
-        try { localStorage.setItem('motion-mode', mode); } catch (e) {}
-        apply(true);
-      });
-      apply(false);
-    })();
 const lightbox = document.getElementById('lightbox');
     const lightboxImg = document.getElementById('lightbox-img');
     const lightboxClose = document.getElementById('lightbox-close');
@@ -737,7 +674,8 @@ const lightbox = document.getElementById('lightbox');
     window.addEventListener('scroll', updateTocActive);
     updateTocActive();
   </script>
+  <script src="./fx.js"></script>
 </body>
 </html>
 
-<!-- ymzhu 2026-10-27 10:56 -->
+<!-- ymzhu 2026-10-27 11:13 -->
