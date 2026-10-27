@@ -10,3 +10,6 @@ synthesis-integration-flow-guide/*.pptx
 
 # PPT 导出图片的暂存目录（正式图在 image/ 下），不入库
 synthesis-integration-flow-guide/pptimage/
+
+# 图表动画化 PNG 预览缓存（正式图为 images/ 下 SVG，页面未引用），不入库
+hk1v11-synthesis-postpt-practice/png_preview/
