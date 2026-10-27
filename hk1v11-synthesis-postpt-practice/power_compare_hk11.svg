@@ -47,6 +47,8 @@ text{font-family:ui-monospace,Consolas,monospace,"Microsoft YaHei",sans-serif;fo
 .maxpulse{animation:maxpulse 2.8s ease-in-out infinite;opacity:1;}
 @keyframes cmpsweep{0%{transform:translateX(-150px);opacity:0}8%{opacity:.3}32%{opacity:.3}37.5%{transform:translateX(625px);opacity:0}100%{transform:translateX(625px);opacity:0}}
 .cmpband{transform-box:fill-box;transform-origin:left center;opacity:0;animation:cmpsweep 4s ease-in-out 1s infinite;}
+.breath2{animation:breathe 2.4s ease-in-out infinite;opacity:.4;}
+.cmpband2{transform-box:fill-box;transform-origin:left center;opacity:0;animation:cmpsweep 4s ease-in-out 1s infinite;}
 @keyframes bardot{0%{opacity:0}10%{opacity:.5}22%{opacity:0}100%{opacity:0}}
 .dot{opacity:0;animation:bardot 5.2s ease-in-out infinite;}
 .d0{animation-delay:0s;}.d1{animation-delay:.35s;}.d2{animation-delay:.70s;}.d3{animation-delay:1.05s;}.d4{animation-delay:1.40s;}.d5{animation-delay:1.75s;}.d6{animation-delay:2.10s;}.d7{animation-delay:2.45s;}.d8{animation-delay:2.80s;}.d9{animation-delay:3.15s;}.d10{animation-delay:3.50s;}.d11{animation-delay:3.85s;}.d12{animation-delay:4.20s;}.d13{animation-delay:4.55s;}.d14{animation-delay:4.90s;}.d15{animation-delay:5.25s;}.d16{animation-delay:5.60s;}
@@ -68,6 +70,7 @@ text{font-family:ui-monospace,Consolas,monospace,"Microsoft YaHei",sans-serif;fo
 <linearGradient id="gCmp" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fffdf7" stop-opacity="0"/><stop offset="0.5" stop-color="#fffdf7" stop-opacity="1"/><stop offset="1" stop-color="#fffdf7" stop-opacity="0"/></linearGradient>
 <linearGradient id="gZeb" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fffdf7" stop-opacity="0"/><stop offset="0.5" stop-color="#fffdf7" stop-opacity="1"/><stop offset="1" stop-color="#fffdf7" stop-opacity="0"/></linearGradient>
 <clipPath id="cCmp"><rect x="1" y="255" width="603" height="20"/><rect x="1" y="387" width="603" height="20"/></clipPath>
+<clipPath id="cCmp2"><rect x="1" y="276" width="603" height="20"/><rect x="1" y="408" width="603" height="20"/></clipPath>
 <clipPath id="cBody"><rect x="0" y="56" width="605" height="374"/></clipPath>
 </defs>
 <rect x="0" y="0" width="605" height="444" fill="#f4f1ea"/>
@@ -358,7 +361,9 @@ text{font-family:ui-monospace,Consolas,monospace,"Microsoft YaHei",sans-serif;fo
 <rect x="1" y="255" width="603" height="20" rx="3"/>
 <rect x="1" y="387" width="603" height="20" rx="3"/>
 </g>
+<g class="breath2" fill="#1d4ed8"><rect x="1" y="276" width="603" height="20" rx="3"/><rect x="1" y="408" width="603" height="20" rx="3"/></g>
 <g clip-path="url(#cCmp)"><rect class="cmpband" x="0" y="255" width="150" height="152" fill="url(#gCmp)"/></g>
+<g clip-path="url(#cCmp2)"><rect class="cmpband2" x="0" y="276" width="150" height="152" fill="url(#gCmp)"/></g>
 <rect x="0.5" y="0.5" width="604" height="443" fill="none" stroke="#ddd6c8" stroke-width="1"/>
-<!-- ymzhu 2026-10-27 17:38 -->
+<!-- ymzhu 2026-10-27 17:52 -->
 </svg>
