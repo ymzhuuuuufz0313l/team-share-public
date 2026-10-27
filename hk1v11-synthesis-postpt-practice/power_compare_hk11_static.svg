@@ -1,9 +1,7 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="605" height="444" viewBox="0 0 605 444">
 <style>text{font-family:ui-monospace,Consolas,monospace,"Microsoft YaHei",sans-serif;font-size:11px;}</style>
 <defs>
-<linearGradient id="gCmp" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fffdf7" stop-opacity="0"/><stop offset="0.5" stop-color="#fffdf7" stop-opacity="1"/><stop offset="1" stop-color="#fffdf7" stop-opacity="0"/></linearGradient>
 <linearGradient id="gZeb" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fffdf7" stop-opacity="0"/><stop offset="0.5" stop-color="#fffdf7" stop-opacity="1"/><stop offset="1" stop-color="#fffdf7" stop-opacity="0"/></linearGradient>
-<clipPath id="cCmp"><rect x="1" y="255" width="603" height="20"/><rect x="1" y="387" width="603" height="20"/></clipPath>
 <clipPath id="cBody"><rect x="0" y="56" width="605" height="374"/></clipPath>
 </defs>
 <rect x="0" y="0" width="605" height="444" fill="#f4f1ea"/>
@@ -150,7 +148,6 @@
 </g>
 <g>
 <rect x="0" y="276" width="605" height="22" fill="#1d4ed8" fill-opacity="0.20"/>
-<rect x="406" y="278" width="48" height="18" rx="9" fill="#1d4ed8" fill-opacity="0.35"/>
 <g>
 <rect x="366" y="280" width="20" height="14" rx="2" fill="#1d4ed8" fill-opacity="0.85"/>
 <path d="M441 290 L447 290 L444 284 Z" fill="#1d4ed8"/>
@@ -240,7 +237,6 @@
 </g>
 <g>
 <rect x="0" y="408" width="605" height="22" fill="#1d4ed8" fill-opacity="0.20"/>
-<rect x="406" y="410" width="48" height="18" rx="9" fill="#1d4ed8" fill-opacity="0.35"/>
 <rect x="366" y="412" width="28" height="14" rx="2" fill="#1d4ed8" fill-opacity="0.85"/>
 <path d="M441 422 L447 422 L444 416 Z" fill="#1d4ed8"/>
 <circle cx="394" cy="419" r="2.5" fill="#1d4ed8"/>
@@ -288,11 +284,6 @@
 <line x1="0" y1="408" x2="605" y2="408"/>
 <line x1="0" y1="430" x2="605" y2="430"/>
 </g>
-<g fill="#b45309">
-<rect x="1" y="255" width="603" height="20" rx="3"/>
-<rect x="1" y="387" width="603" height="20" rx="3"/>
-</g>
-<g clip-path="url(#cCmp)"><rect x="0" y="255" width="150" height="152" fill="url(#gCmp)"/></g>
 <rect x="0.5" y="0.5" width="604" height="443" fill="none" stroke="#ddd6c8" stroke-width="1"/>
-<!-- ymzhu 2026-10-27 17:38 -->
+<!-- ymzhu 2026-10-27 17:57 -->
 </svg>

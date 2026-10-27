@@ -43,7 +43,6 @@
 </g>
 <g>
 <rect x="0" y="100" width="605" height="22" fill="#1d4ed8" fill-opacity="0.20"/>
-<rect x="406" y="102" width="48" height="18" rx="9" fill="#1d4ed8" fill-opacity="0.35"/>
 <rect x="366" y="104" width="20" height="14" rx="2" fill="#1d4ed8" fill-opacity="0.85"/>
 <path d="M441 114 L447 114 L444 108 Z" fill="#1d4ed8"/>
 <circle cx="386" cy="111" r="2.5" fill="#1d4ed8"/>
@@ -58,7 +57,6 @@
 </g>
 <g>
 <rect x="0" y="122" width="605" height="22" fill="#1d4ed8" fill-opacity="0.20"/>
-<rect x="406" y="124" width="48" height="18" rx="9" fill="#1d4ed8" fill-opacity="0.35"/>
 <rect x="366" y="126" width="28" height="14" rx="2" fill="#1d4ed8" fill-opacity="0.85"/>
 <path d="M441 136 L447 136 L444 130 Z" fill="#1d4ed8"/>
 <circle cx="394" cy="133" r="2.5" fill="#1d4ed8"/>
@@ -89,5 +87,5 @@
 <line x1="0" y1="144" x2="605" y2="144"/>
 </g>
 <rect x="0.5" y="0.5" width="604" height="157" fill="none" stroke="#ddd6c8" stroke-width="1"/>
-<!-- ymzhu 2026-10-27 17:52 -->
+<!-- ymzhu 2026-10-27 17:57 -->
 </svg>
