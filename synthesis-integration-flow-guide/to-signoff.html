@@ -480,16 +480,16 @@ NOTE: 最新版本（8/17）1P 的 setup 违例已全部消除——`RX0_CLK` �
 
 | 报告 | 行数 | buf type 分布 | STATUS 分布 |
 |------|------|---------------|-------------|
-| `input_port_first_buf_type.tsv` | 103（52 端口） | 51 端口各 `APR_CDM` + `CLKBUFX8AS9` 两行；例外 `DPSEL_I` 无首级 buf | 102 × `MULTI_LOAD(2)`；例外 `DPSEL_I — NO_LOAD_CELL` |
-| `output_port_last_buf_type.tsv` | 476 | 475 × `CLKBUFX8AS9`；例外 `reg_lane_pd_L1` 无末级 buf | 475 × `OK`；例外 `reg_lane_pd_L1 — NO_DRIVER_CELL` |
+| `input_port_first_buf_type.tsv` | 104（52 端口） | 52 端口各 `APR_CDM` + `CLKBUFX8AS9` 两行；无例外 | 104 × `MULTI_LOAD(2)` |
+| `output_port_last_buf_type.tsv` | 476 | 476 × `CLKBUFX8AS9`；无例外 | 476 × `OK` |
 
-两个例外端口（`DPSEL_I` 无负载、`reg_lane_pd_L1` 无驱动）需各自确认是否符合预期，不能只看统计分布。
+当前归档实例无例外端口；若报告出现 `NO_LOAD_CELL` / `NO_DRIVER_CELL` 端口，需逐个确认是否符合预期，不能只看统计分布。
 
-NOTE: `NO_LOAD_CELL` / `NO_DRIVER_CELL` 不是时序或连接错误，而是脚本 trace 不到 leaf cell 的标记——`NO_LOAD_CELL` = 输入端口在网表中没有扇出到任何 leaf cell；`NO_DRIVER_CELL` = 输出端口没有 leaf cell 驱动（被 tie 到常数）。本例两个例外同出一源：`DPSEL_I` 被 `set_case_analysis` 固定（2P 模式），综合/APR 常量传播后 `DPSEL_I` 的扇出全部被吸收（→ `NO_LOAD_CELL`），同时 `reg_lane_pd_L1` 的驱动门（DC 网表中为 `NAND2B1X1AS9 U12 (.B2(N_PD_PHY0), .I1(DP_SEL), .O(N_PD_PHY1))`）退化为常数输出（→ `NO_DRIVER_CELL`）。属 2P 固化的预期现象，确认无误即可。
+NOTE: `NO_LOAD_CELL` / `NO_DRIVER_CELL` 不是时序或连接错误，而是脚本 trace 不到 leaf cell 的标记——`NO_LOAD_CELL` = 输入端口在网表中没有扇出到任何 leaf cell；`NO_DRIVER_CELL` = 输出端口没有 leaf cell 驱动（被 tie 到常数）。历史上 2P 固化实例曾出现两个此类例外（当前归档实例无）：`DPSEL_I` 被 `set_case_analysis` 固定（2P 模式），综合/APR 常量传播后 `DPSEL_I` 的扇出全部被吸收（→ `NO_LOAD_CELL`），同时 `reg_lane_pd_L1` 的驱动门（DC 网表中为 `NAND2B1X1AS9 U12 (.B2(N_PD_PHY0), .I1(DP_SEL), .O(N_PD_PHY1))`）退化为常数输出（→ `NO_DRIVER_CELL`）。属 2P 固化的预期现象，确认无误即可。
 
 WARNING: 换库前（LVT 时代）buf type 是 `CLKBUFX8AL9`，换 **SVT** 后变为 `CLKBUFX8AS9`（`AL9→AS9`，L=LVT / S=SVT 后缀）。看到 `AL9` 说明报告是换库前的旧版，需重新跑 postPT 确认。
 
-![input / output buf type 统计（APR_CDM + CLKBUFX8AS9，SVT；例外端口标红）](./image/anim/38_buf_type.svg)
+![input / output buf type 统计（APR_CDM + CLKBUFX8AS9，SVT）](./image/anim/38_buf_type.svg)
 
 原始文件：
 
