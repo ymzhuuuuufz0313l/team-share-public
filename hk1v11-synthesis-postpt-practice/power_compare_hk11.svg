@@ -50,8 +50,10 @@ text{font-family:ui-monospace,Consolas,monospace,"Microsoft YaHei",sans-serif;fo
 .d0{animation-delay:0s;}.d1{animation-delay:.35s;}.d2{animation-delay:.70s;}.d3{animation-delay:1.05s;}.d4{animation-delay:1.40s;}.d5{animation-delay:1.75s;}.d6{animation-delay:2.10s;}.d7{animation-delay:2.45s;}.d8{animation-delay:2.80s;}.d9{animation-delay:3.15s;}.d10{animation-delay:3.50s;}.d11{animation-delay:3.85s;}.d12{animation-delay:4.20s;}.d13{animation-delay:4.55s;}.d14{animation-delay:4.90s;}.d15{animation-delay:5.25s;}
 @keyframes peakglow{0%,100%{opacity:0}50%{opacity:.22}}
 .peakglow{opacity:0;animation:peakglow 3.2s ease-in-out .8s infinite;}
-@keyframes greenbreathe{0%,100%{opacity:.14}50%{opacity:.32}}
-.gglow{opacity:.14;animation:greenbreathe 3.6s ease-in-out .5s infinite;}
+@keyframes bluebreathe{0%,100%{opacity:.18}50%{opacity:.45}}
+.gglow{opacity:.18;animation:bluebreathe 3.6s ease-in-out .5s infinite;}
+@keyframes v15pulse{0%,100%{opacity:.75}50%{opacity:1}}
+.v15pulse{animation:v15pulse 3.4s ease-in-out infinite;}
 @keyframes tealbreathe{0%,100%{opacity:.12}50%{opacity:.28}}
 .tglow{opacity:.12;animation:tealbreathe 5.6s ease-in-out 1.7s infinite;}
 @keyframes zebasweep{0%{transform:skewX(-18deg) translateX(-260px);opacity:0}12%{opacity:.06}45%{opacity:.06}58%{transform:skewX(-18deg) translateX(740px);opacity:0}100%{transform:skewX(-18deg) translateX(740px);opacity:0}}
@@ -280,16 +282,19 @@ text{font-family:ui-monospace,Consolas,monospace,"Microsoft YaHei",sans-serif;fo
 </g>
 <g class="r15">
 <rect x="0" y="386" width="605" height="22" fill="#1c2534" fill-opacity="0.045"/>
-<rect x="0" y="386" width="605" height="22" fill="#1d4ed8" fill-opacity="0.07"/>
-<rect class="gglow" x="406" y="388" width="38" height="18" rx="9" fill="#047857"/>
-<rect class="bar b15" x="366" y="390" width="28" height="14" rx="2" fill="#1d4ed8" fill-opacity="0.25"/>
+<rect x="0" y="386" width="605" height="22" fill="#1d4ed8" fill-opacity="0.20"/>
+<rect class="gglow" x="406" y="388" width="48" height="18" rx="9" fill="#1d4ed8"/>
+<g class="v15pulse">
+<rect class="bar b15" x="366" y="390" width="28" height="14" rx="2" fill="#1d4ed8" fill-opacity="0.85"/>
+<path d="M441 400 L447 400 L444 394 Z" fill="#1d4ed8"/>
+</g>
 <circle class="dot d15" cx="394" cy="397" r="2.5" fill="#1d4ed8"/>
 <text x="10" y="397.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HK1V11 (1027)</text>
 <text x="192" y="397.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">4G</text>
 <text x="254" y="397.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
 <text x="310" y="397.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">299276</text>
 <text x="354" y="397.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1L</text>
-<text x="440" y="397.0" text-anchor="end" dominant-baseline="central" fill="#065F46" font-weight="bold">24.42</text>
+<text x="440" y="397.0" text-anchor="end" dominant-baseline="central" fill="#1d4ed8" font-weight="bold">24.42</text>
 <text x="514" y="397.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
 <text x="594" y="397.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
 </g>
@@ -333,5 +338,5 @@ text{font-family:ui-monospace,Consolas,monospace,"Microsoft YaHei",sans-serif;fo
 </g>
 <g clip-path="url(#cCmp)"><rect class="cmpband" x="0" y="255" width="150" height="108" fill="url(#gCmp)"/></g>
 <rect x="0.5" y="0.5" width="604" height="421" fill="none" stroke="#ddd6c8" stroke-width="1"/>
-<!-- ymzhu 2026-10-27 16:55 -->
+<!-- ymzhu 2026-10-27 17:12 -->
 </svg>

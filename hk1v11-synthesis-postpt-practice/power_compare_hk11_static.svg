@@ -222,16 +222,17 @@
 </g>
 <g>
 <rect x="0" y="386" width="605" height="22" fill="#1c2534" fill-opacity="0.045"/>
-<rect x="0" y="386" width="605" height="22" fill="#1d4ed8" fill-opacity="0.07"/>
-<rect x="406" y="388" width="38" height="18" rx="9" fill="#047857"/>
-<rect x="366" y="390" width="28" height="14" rx="2" fill="#1d4ed8" fill-opacity="0.25"/>
+<rect x="0" y="386" width="605" height="22" fill="#1d4ed8" fill-opacity="0.20"/>
+<rect x="406" y="388" width="48" height="18" rx="9" fill="#1d4ed8" fill-opacity="0.35"/>
+<rect x="366" y="390" width="28" height="14" rx="2" fill="#1d4ed8" fill-opacity="0.85"/>
+<path d="M441 400 L447 400 L444 394 Z" fill="#1d4ed8"/>
 <circle cx="394" cy="397" r="2.5" fill="#1d4ed8"/>
 <text x="10" y="397.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HK1V11 (1027)</text>
 <text x="192" y="397.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">4G</text>
 <text x="254" y="397.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
 <text x="310" y="397.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">299276</text>
 <text x="354" y="397.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1L</text>
-<text x="440" y="397.0" text-anchor="end" dominant-baseline="central" fill="#065F46" font-weight="bold">24.42</text>
+<text x="440" y="397.0" text-anchor="end" dominant-baseline="central" fill="#1d4ed8" font-weight="bold">24.42</text>
 <text x="514" y="397.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
 <text x="594" y="397.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
 </g>
@@ -275,5 +276,5 @@
 </g>
 <g clip-path="url(#cCmp)"><rect x="0" y="255" width="150" height="108" fill="url(#gCmp)"/></g>
 <rect x="0.5" y="0.5" width="604" height="421" fill="none" stroke="#ddd6c8" stroke-width="1"/>
-<!-- ymzhu 2026-10-27 16:55 -->
+<!-- ymzhu 2026-10-27 17:12 -->
 </svg>
