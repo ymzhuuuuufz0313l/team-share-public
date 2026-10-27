@@ -1,0 +1,646 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2519" height="1169" viewBox="0 0 2519 1169" font-family="Consolas, 'SFMono-Regular', Menlo, 'Courier New', monospace">
+<rect x="0" y="0" width="2519" height="1169" fill="#ffffff"/>
+<g class="head">
+<rect x="0" y="0" width="2519" height="58" fill="#157a6a"/>
+<text x="25" y="37.12" font-size="30" font-weight="bold" fill="#ffffff">report_setup.csv (2P)</text>
+<text x="2494" y="37.12" font-size="26" fill="#ffffff" text-anchor="end">setup/max 路径违例总表</text>
+</g>
+<g class="head">
+<rect x="0" y="58" width="2519" height="54" fill="#2e8b6a"/>
+<text x="35" y="91.48" font-size="19" fill="#ffffff">metric</text>
+<text x="645.3" y="91.48" font-size="19" fill="#ffffff" text-anchor="middle" class="chn">lt_cbest_m40</text>
+<text x="839.9" y="91.48" font-size="19" fill="#ffffff" text-anchor="middle" class="chn">lt_cworst_m40</text>
+<text x="1034.5" y="91.48" font-size="19" fill="#ffffff" text-anchor="middle" class="chn">lt_typical_m40</text>
+<text x="1229.1" y="91.48" font-size="19" fill="#ffffff" text-anchor="middle" class="chn">ml_cbest_125</text>
+<text x="1423.7" y="91.48" font-size="19" fill="#ffffff" text-anchor="middle" class="chn">tt_cbest_25</text>
+<text x="1618.3" y="91.48" font-size="19" fill="#ffffff" text-anchor="middle" class="chn">tt_cworst_25</text>
+<text x="1812.9" y="91.48" font-size="19" fill="#ffffff" text-anchor="middle" class="chn">tt_typical_25</text>
+<text x="2007.5" y="91.48" font-size="19" fill="#ffffff" text-anchor="middle" class="chn">wc_cbest_125</text>
+<text x="2202.1" y="91.48" font-size="19" fill="#ffffff" text-anchor="middle" class="chn">wc_cworst_125</text>
+<text x="2396.7" y="91.48" font-size="19" fill="#ffffff" text-anchor="middle" class="chn">wc_typical_125</text>
+</g>
+<g class="row">
+<rect x="0" y="112" width="2519" height="44.042" fill="#ffffff"/>
+<text x="35" y="140.187" font-size="19" fill="#2d2d2d" class="lbl">CLK_L0_DTCTL_OD_DIV1P5 (biggest violation)</text>
+<text x="728.6" y="140.187" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">1.663788</text>
+<text x="923.2" y="140.187" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">1.790635</text>
+<text x="1117.8" y="140.187" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">1.693495</text>
+<text x="1312.4" y="140.187" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">1.366846</text>
+<text x="1507" y="140.187" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">1.252645</text>
+<text x="1701.6" y="140.187" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">1.328942</text>
+<text x="1896.2" y="140.187" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">1.663788</text>
+<text x="2090.8" y="140.187" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">0.148613</text>
+<text x="2285.4" y="140.187" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">0.093393</text>
+<text x="2480" y="140.187" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">0.134530</text>
+<line x1="25" y1="156.042" x2="2494" y2="156.042" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="548" y1="112" x2="548" y2="156.042" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="742.6" y1="112" x2="742.6" y2="156.042" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="937.2" y1="112" x2="937.2" y2="156.042" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1131.8" y1="112" x2="1131.8" y2="156.042" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1326.4" y1="112" x2="1326.4" y2="156.042" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1521" y1="112" x2="1521" y2="156.042" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1715.6" y1="112" x2="1715.6" y2="156.042" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1910.2" y1="112" x2="1910.2" y2="156.042" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="2104.8" y1="112" x2="2104.8" y2="156.042" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="2299.4" y1="112" x2="2299.4" y2="156.042" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="2494" y1="112" x2="2494" y2="156.042" stroke="#d7dbd7" stroke-width="1"/>
+</g>
+<g class="row">
+<rect x="0" y="156.042" width="2519" height="44.042" fill="#f4f6f4"/>
+<text x="35" y="184.228" font-size="19" fill="#2d2d2d" class="lbl">CLK_L1_ADJ_DTCTL_OD_DIV1P5 (biggest violation)</text>
+<text x="728.6" y="184.228" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
+<text x="923.2" y="184.228" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
+<text x="1117.8" y="184.228" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
+<text x="1312.4" y="184.228" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
+<text x="1507" y="184.228" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
+<text x="1701.6" y="184.228" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
+<text x="1896.2" y="184.228" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
+<text x="2090.8" y="184.228" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
+<text x="2285.4" y="184.228" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
+<text x="2480" y="184.228" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
+<line x1="25" y1="200.083" x2="2494" y2="200.083" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="548" y1="156.042" x2="548" y2="200.083" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="742.6" y1="156.042" x2="742.6" y2="200.083" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="937.2" y1="156.042" x2="937.2" y2="200.083" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1131.8" y1="156.042" x2="1131.8" y2="200.083" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1326.4" y1="156.042" x2="1326.4" y2="200.083" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1521" y1="156.042" x2="1521" y2="200.083" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1715.6" y1="156.042" x2="1715.6" y2="200.083" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1910.2" y1="156.042" x2="1910.2" y2="200.083" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="2104.8" y1="156.042" x2="2104.8" y2="200.083" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="2299.4" y1="156.042" x2="2299.4" y2="200.083" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="2494" y1="156.042" x2="2494" y2="200.083" stroke="#d7dbd7" stroke-width="1"/>
+</g>
+<g class="row">
+<rect x="0" y="200.083" width="2519" height="44.042" fill="#ffffff"/>
+<text x="35" y="228.27" font-size="19" fill="#2d2d2d" class="lbl">CLK_L1_DTCTL_OD_DIV1P5 (biggest violation)</text>
+<text x="728.6" y="228.27" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">1.680150</text>
+<text x="923.2" y="228.27" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">1.828999</text>
+<text x="1117.8" y="228.27" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">1.684607</text>
+<text x="1312.4" y="228.27" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">1.408954</text>
+<text x="1507" y="228.27" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">1.279195</text>
+<text x="1701.6" y="228.27" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">1.445076</text>
+<text x="1896.2" y="228.27" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">1.680150</text>
+<text x="2090.8" y="228.27" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">0.157763</text>
+<text x="2285.4" y="228.27" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">0.358562</text>
+<text x="2480" y="228.27" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">0.275344</text>
+<line x1="25" y1="244.125" x2="2494" y2="244.125" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="548" y1="200.083" x2="548" y2="244.125" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="742.6" y1="200.083" x2="742.6" y2="244.125" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="937.2" y1="200.083" x2="937.2" y2="244.125" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1131.8" y1="200.083" x2="1131.8" y2="244.125" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1326.4" y1="200.083" x2="1326.4" y2="244.125" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1521" y1="200.083" x2="1521" y2="244.125" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1715.6" y1="200.083" x2="1715.6" y2="244.125" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1910.2" y1="200.083" x2="1910.2" y2="244.125" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="2104.8" y1="200.083" x2="2104.8" y2="244.125" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="2299.4" y1="200.083" x2="2299.4" y2="244.125" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="2494" y1="200.083" x2="2494" y2="244.125" stroke="#d7dbd7" stroke-width="1"/>
+</g>
+<g class="row">
+<rect x="0" y="244.125" width="2519" height="44.042" fill="#f4f6f4"/>
+<text x="35" y="272.312" font-size="19" fill="#2d2d2d" class="lbl">I2C_CLK (biggest violation)</text>
+<text x="728.6" y="272.312" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">245.170212</text>
+<text x="923.2" y="272.312" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">245.158234</text>
+<text x="1117.8" y="272.312" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">245.148346</text>
+<text x="1312.4" y="272.312" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">244.719803</text>
+<text x="1507" y="272.312" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">244.312653</text>
+<text x="1701.6" y="272.312" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">244.271118</text>
+<text x="1896.2" y="272.312" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">245.170212</text>
+<text x="2090.8" y="272.312" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">241.900482</text>
+<text x="2285.4" y="272.312" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">241.771393</text>
+<text x="2480" y="272.312" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">241.854950</text>
+<line x1="25" y1="288.167" x2="2494" y2="288.167" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="548" y1="244.125" x2="548" y2="288.167" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="742.6" y1="244.125" x2="742.6" y2="288.167" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="937.2" y1="244.125" x2="937.2" y2="288.167" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1131.8" y1="244.125" x2="1131.8" y2="288.167" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1326.4" y1="244.125" x2="1326.4" y2="288.167" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1521" y1="244.125" x2="1521" y2="288.167" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1715.6" y1="244.125" x2="1715.6" y2="288.167" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1910.2" y1="244.125" x2="1910.2" y2="288.167" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="2104.8" y1="244.125" x2="2104.8" y2="288.167" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="2299.4" y1="244.125" x2="2299.4" y2="288.167" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="2494" y1="244.125" x2="2494" y2="288.167" stroke="#d7dbd7" stroke-width="1"/>
+</g>
+<g class="row">
+<rect x="0" y="288.167" width="2519" height="44.042" fill="#ffffff"/>
+<text x="35" y="316.353" font-size="19" fill="#2d2d2d" class="lbl">LS_CLK (biggest violation)</text>
+<text x="728.6" y="316.353" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">97.442795</text>
+<text x="923.2" y="316.353" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">97.427628</text>
+<text x="1117.8" y="316.353" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">97.436737</text>
+<text x="1312.4" y="316.353" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">97.305267</text>
+<text x="1507" y="316.353" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">97.160316</text>
+<text x="1701.6" y="316.353" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">97.138687</text>
+<text x="1896.2" y="316.353" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">97.442795</text>
+<text x="2090.8" y="316.353" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">96.330025</text>
+<text x="2285.4" y="316.353" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">96.289764</text>
+<text x="2480" y="316.353" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">96.312019</text>
+<line x1="25" y1="332.208" x2="2494" y2="332.208" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="548" y1="288.167" x2="548" y2="332.208" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="742.6" y1="288.167" x2="742.6" y2="332.208" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="937.2" y1="288.167" x2="937.2" y2="332.208" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1131.8" y1="288.167" x2="1131.8" y2="332.208" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1326.4" y1="288.167" x2="1326.4" y2="332.208" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1521" y1="288.167" x2="1521" y2="332.208" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1715.6" y1="288.167" x2="1715.6" y2="332.208" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1910.2" y1="288.167" x2="1910.2" y2="332.208" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="2104.8" y1="288.167" x2="2104.8" y2="332.208" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="2299.4" y1="288.167" x2="2299.4" y2="332.208" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="2494" y1="288.167" x2="2494" y2="332.208" stroke="#d7dbd7" stroke-width="1"/>
+</g>
+<g class="row">
+<rect x="0" y="332.208" width="2519" height="44.042" fill="#f4f6f4"/>
+<text x="35" y="360.395" font-size="19" fill="#2d2d2d" class="lbl">OSC_CLK_IN (biggest violation)</text>
+<text x="728.6" y="360.395" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">3.089735</text>
+<text x="923.2" y="360.395" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">3.075946</text>
+<text x="1117.8" y="360.395" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">3.040671</text>
+<text x="1312.4" y="360.395" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">2.871559</text>
+<text x="1507" y="360.395" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">2.645545</text>
+<text x="1701.6" y="360.395" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">2.622093</text>
+<text x="1896.2" y="360.395" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">3.089735</text>
+<text x="2090.8" y="360.395" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">0.468933</text>
+<text x="2285.4" y="360.395" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">0.651071</text>
+<text x="2480" y="360.395" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">0.651733</text>
+<line x1="25" y1="376.25" x2="2494" y2="376.25" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="548" y1="332.208" x2="548" y2="376.25" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="742.6" y1="332.208" x2="742.6" y2="376.25" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="937.2" y1="332.208" x2="937.2" y2="376.25" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1131.8" y1="332.208" x2="1131.8" y2="376.25" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1326.4" y1="332.208" x2="1326.4" y2="376.25" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1521" y1="332.208" x2="1521" y2="376.25" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1715.6" y1="332.208" x2="1715.6" y2="376.25" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1910.2" y1="332.208" x2="1910.2" y2="376.25" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="2104.8" y1="332.208" x2="2104.8" y2="376.25" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="2299.4" y1="332.208" x2="2299.4" y2="376.25" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="2494" y1="332.208" x2="2494" y2="376.25" stroke="#d7dbd7" stroke-width="1"/>
+</g>
+<g class="row">
+<rect x="0" y="376.25" width="2519" height="44.042" fill="#ffffff"/>
+<text x="35" y="404.437" font-size="19" fill="#2d2d2d" class="lbl">POWERON_CLK (biggest violation)</text>
+<text x="728.6" y="404.437" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
+<text x="923.2" y="404.437" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
+<text x="1117.8" y="404.437" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
+<text x="1312.4" y="404.437" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
+<text x="1507" y="404.437" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
+<text x="1701.6" y="404.437" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
+<text x="1896.2" y="404.437" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
+<text x="2090.8" y="404.437" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
+<text x="2285.4" y="404.437" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
+<text x="2480" y="404.437" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
+<line x1="25" y1="420.292" x2="2494" y2="420.292" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="548" y1="376.25" x2="548" y2="420.292" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="742.6" y1="376.25" x2="742.6" y2="420.292" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="937.2" y1="376.25" x2="937.2" y2="420.292" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1131.8" y1="376.25" x2="1131.8" y2="420.292" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1326.4" y1="376.25" x2="1326.4" y2="420.292" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1521" y1="376.25" x2="1521" y2="420.292" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1715.6" y1="376.25" x2="1715.6" y2="420.292" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1910.2" y1="376.25" x2="1910.2" y2="420.292" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="2104.8" y1="376.25" x2="2104.8" y2="420.292" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="2299.4" y1="376.25" x2="2299.4" y2="420.292" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="2494" y1="376.25" x2="2494" y2="420.292" stroke="#d7dbd7" stroke-width="1"/>
+</g>
+<g class="row">
+<rect x="0" y="420.292" width="2519" height="44.042" fill="#f4f6f4"/>
+<text x="35" y="448.478" font-size="19" fill="#2d2d2d" class="lbl">RX0_CLK_DIV1P5_1P (biggest violation)</text>
+<text x="728.6" y="448.478" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
+<text x="923.2" y="448.478" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
+<text x="1117.8" y="448.478" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
+<text x="1312.4" y="448.478" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
+<text x="1507" y="448.478" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
+<text x="1701.6" y="448.478" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
+<text x="1896.2" y="448.478" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
+<text x="2090.8" y="448.478" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
+<text x="2285.4" y="448.478" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
+<text x="2480" y="448.478" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
+<line x1="25" y1="464.333" x2="2494" y2="464.333" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="548" y1="420.292" x2="548" y2="464.333" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="742.6" y1="420.292" x2="742.6" y2="464.333" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="937.2" y1="420.292" x2="937.2" y2="464.333" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1131.8" y1="420.292" x2="1131.8" y2="464.333" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1326.4" y1="420.292" x2="1326.4" y2="464.333" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1521" y1="420.292" x2="1521" y2="464.333" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1715.6" y1="420.292" x2="1715.6" y2="464.333" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1910.2" y1="420.292" x2="1910.2" y2="464.333" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="2104.8" y1="420.292" x2="2104.8" y2="464.333" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="2299.4" y1="420.292" x2="2299.4" y2="464.333" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="2494" y1="420.292" x2="2494" y2="464.333" stroke="#d7dbd7" stroke-width="1"/>
+</g>
+<g class="row">
+<rect x="0" y="464.333" width="2519" height="44.042" fill="#ffffff"/>
+<text x="35" y="492.52" font-size="19" fill="#2d2d2d" class="lbl">RX0_CLK_DIV1P5 (biggest violation)</text>
+<text x="728.6" y="492.52" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">4.281528</text>
+<text x="923.2" y="492.52" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">4.299304</text>
+<text x="1117.8" y="492.52" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">4.238581</text>
+<text x="1312.4" y="492.52" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">4.041843</text>
+<text x="1507" y="492.52" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">3.819267</text>
+<text x="1701.6" y="492.52" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">3.832098</text>
+<text x="1896.2" y="492.52" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">4.281528</text>
+<text x="2090.8" y="492.52" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">2.460687</text>
+<text x="2285.4" y="492.52" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">2.446704</text>
+<text x="2480" y="492.52" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">2.456081</text>
+<line x1="25" y1="508.375" x2="2494" y2="508.375" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="548" y1="464.333" x2="548" y2="508.375" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="742.6" y1="464.333" x2="742.6" y2="508.375" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="937.2" y1="464.333" x2="937.2" y2="508.375" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1131.8" y1="464.333" x2="1131.8" y2="508.375" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1326.4" y1="464.333" x2="1326.4" y2="508.375" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1521" y1="464.333" x2="1521" y2="508.375" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1715.6" y1="464.333" x2="1715.6" y2="508.375" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1910.2" y1="464.333" x2="1910.2" y2="508.375" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="2104.8" y1="464.333" x2="2104.8" y2="508.375" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="2299.4" y1="464.333" x2="2299.4" y2="508.375" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="2494" y1="464.333" x2="2494" y2="508.375" stroke="#d7dbd7" stroke-width="1"/>
+</g>
+<g class="row">
+<rect x="0" y="508.375" width="2519" height="44.042" fill="#f4f6f4"/>
+<text x="35" y="536.562" font-size="19" fill="#2d2d2d" class="lbl">RX0_CLK (biggest violation)</text>
+<text x="728.6" y="536.562" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">5.034613</text>
+<text x="923.2" y="536.562" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">5.511131</text>
+<text x="1117.8" y="536.562" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">5.289508</text>
+<text x="1312.4" y="536.562" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">4.075079</text>
+<text x="1507" y="536.562" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">3.808776</text>
+<text x="1701.6" y="536.562" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">4.374849</text>
+<text x="1896.2" y="536.562" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">5.034613</text>
+<text x="2090.8" y="536.562" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">0.468480</text>
+<text x="2285.4" y="536.562" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">1.205338</text>
+<text x="2480" y="536.562" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">1.027345</text>
+<line x1="25" y1="552.417" x2="2494" y2="552.417" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="548" y1="508.375" x2="548" y2="552.417" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="742.6" y1="508.375" x2="742.6" y2="552.417" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="937.2" y1="508.375" x2="937.2" y2="552.417" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1131.8" y1="508.375" x2="1131.8" y2="552.417" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1326.4" y1="508.375" x2="1326.4" y2="552.417" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1521" y1="508.375" x2="1521" y2="552.417" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1715.6" y1="508.375" x2="1715.6" y2="552.417" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1910.2" y1="508.375" x2="1910.2" y2="552.417" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="2104.8" y1="508.375" x2="2104.8" y2="552.417" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="2299.4" y1="508.375" x2="2299.4" y2="552.417" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="2494" y1="508.375" x2="2494" y2="552.417" stroke="#d7dbd7" stroke-width="1"/>
+</g>
+<g class="row">
+<rect x="0" y="552.417" width="2519" height="44.042" fill="#ffffff"/>
+<text x="35" y="580.603" font-size="19" fill="#2d2d2d" class="lbl">RX0_OD_CLK_DIV2 (biggest violation)</text>
+<text x="728.6" y="580.603" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">1.060063</text>
+<text x="923.2" y="580.603" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">0.914687</text>
+<text x="1117.8" y="580.603" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">0.968730</text>
+<text x="1312.4" y="580.603" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">1.368423</text>
+<text x="1507" y="580.603" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">1.506086</text>
+<text x="1701.6" y="580.603" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">1.337529</text>
+<text x="1896.2" y="580.603" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">1.060063</text>
+<text x="2090.8" y="580.603" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">1.413399</text>
+<text x="2285.4" y="580.603" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">1.318987</text>
+<text x="2480" y="580.603" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">1.365732</text>
+<line x1="25" y1="596.458" x2="2494" y2="596.458" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="548" y1="552.417" x2="548" y2="596.458" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="742.6" y1="552.417" x2="742.6" y2="596.458" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="937.2" y1="552.417" x2="937.2" y2="596.458" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1131.8" y1="552.417" x2="1131.8" y2="596.458" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1326.4" y1="552.417" x2="1326.4" y2="596.458" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1521" y1="552.417" x2="1521" y2="596.458" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1715.6" y1="552.417" x2="1715.6" y2="596.458" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1910.2" y1="552.417" x2="1910.2" y2="596.458" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="2104.8" y1="552.417" x2="2104.8" y2="596.458" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="2299.4" y1="552.417" x2="2299.4" y2="596.458" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="2494" y1="552.417" x2="2494" y2="596.458" stroke="#d7dbd7" stroke-width="1"/>
+</g>
+<g class="row">
+<rect x="0" y="596.458" width="2519" height="44.042" fill="#f4f6f4"/>
+<text x="35" y="624.645" font-size="19" fill="#2d2d2d" class="lbl">RX0_OD_CLK (biggest violation)</text>
+<text x="728.6" y="624.645" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">1.330955</text>
+<text x="923.2" y="624.645" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">1.327341</text>
+<text x="1117.8" y="624.645" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">1.327773</text>
+<text x="1312.4" y="624.645" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">1.307822</text>
+<text x="1507" y="624.645" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">1.173105</text>
+<text x="1701.6" y="624.645" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">1.169952</text>
+<text x="1896.2" y="624.645" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">1.330955</text>
+<text x="2090.8" y="624.645" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">0.161099</text>
+<text x="2285.4" y="624.645" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">0.135863</text>
+<text x="2480" y="624.645" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">0.161428</text>
+<line x1="25" y1="640.5" x2="2494" y2="640.5" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="548" y1="596.458" x2="548" y2="640.5" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="742.6" y1="596.458" x2="742.6" y2="640.5" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="937.2" y1="596.458" x2="937.2" y2="640.5" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1131.8" y1="596.458" x2="1131.8" y2="640.5" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1326.4" y1="596.458" x2="1326.4" y2="640.5" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1521" y1="596.458" x2="1521" y2="640.5" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1715.6" y1="596.458" x2="1715.6" y2="640.5" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1910.2" y1="596.458" x2="1910.2" y2="640.5" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="2104.8" y1="596.458" x2="2104.8" y2="640.5" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="2299.4" y1="596.458" x2="2299.4" y2="640.5" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="2494" y1="596.458" x2="2494" y2="640.5" stroke="#d7dbd7" stroke-width="1"/>
+</g>
+<g class="row">
+<rect x="0" y="640.5" width="2519" height="44.042" fill="#ffffff"/>
+<text x="35" y="668.687" font-size="19" fill="#2d2d2d" class="lbl">RX1_CLK_DIV1P5_ADJ (biggest violation)</text>
+<text x="728.6" y="668.687" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
+<text x="923.2" y="668.687" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
+<text x="1117.8" y="668.687" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
+<text x="1312.4" y="668.687" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
+<text x="1507" y="668.687" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
+<text x="1701.6" y="668.687" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
+<text x="1896.2" y="668.687" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
+<text x="2090.8" y="668.687" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
+<text x="2285.4" y="668.687" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
+<text x="2480" y="668.687" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
+<line x1="25" y1="684.542" x2="2494" y2="684.542" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="548" y1="640.5" x2="548" y2="684.542" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="742.6" y1="640.5" x2="742.6" y2="684.542" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="937.2" y1="640.5" x2="937.2" y2="684.542" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1131.8" y1="640.5" x2="1131.8" y2="684.542" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1326.4" y1="640.5" x2="1326.4" y2="684.542" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1521" y1="640.5" x2="1521" y2="684.542" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1715.6" y1="640.5" x2="1715.6" y2="684.542" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1910.2" y1="640.5" x2="1910.2" y2="684.542" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="2104.8" y1="640.5" x2="2104.8" y2="684.542" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="2299.4" y1="640.5" x2="2299.4" y2="684.542" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="2494" y1="640.5" x2="2494" y2="684.542" stroke="#d7dbd7" stroke-width="1"/>
+</g>
+<g class="row">
+<rect x="0" y="684.542" width="2519" height="44.042" fill="#f4f6f4"/>
+<text x="35" y="712.728" font-size="19" fill="#2d2d2d" class="lbl">RX1_CLK_DIV1P5 (biggest violation)</text>
+<text x="728.6" y="712.728" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">4.339871</text>
+<text x="923.2" y="712.728" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">4.239635</text>
+<text x="1117.8" y="712.728" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">4.226124</text>
+<text x="1312.4" y="712.728" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">4.057353</text>
+<text x="1507" y="712.728" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">3.799107</text>
+<text x="1701.6" y="712.728" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">3.663560</text>
+<text x="1896.2" y="712.728" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">4.339871</text>
+<text x="2090.8" y="712.728" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">2.245768</text>
+<text x="2285.4" y="712.728" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">2.013237</text>
+<text x="2480" y="712.728" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">2.129853</text>
+<line x1="25" y1="728.583" x2="2494" y2="728.583" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="548" y1="684.542" x2="548" y2="728.583" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="742.6" y1="684.542" x2="742.6" y2="728.583" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="937.2" y1="684.542" x2="937.2" y2="728.583" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1131.8" y1="684.542" x2="1131.8" y2="728.583" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1326.4" y1="684.542" x2="1326.4" y2="728.583" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1521" y1="684.542" x2="1521" y2="728.583" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1715.6" y1="684.542" x2="1715.6" y2="728.583" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1910.2" y1="684.542" x2="1910.2" y2="728.583" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="2104.8" y1="684.542" x2="2104.8" y2="728.583" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="2299.4" y1="684.542" x2="2299.4" y2="728.583" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="2494" y1="684.542" x2="2494" y2="728.583" stroke="#d7dbd7" stroke-width="1"/>
+</g>
+<g class="row">
+<rect x="0" y="728.583" width="2519" height="44.042" fill="#ffffff"/>
+<text x="35" y="756.77" font-size="19" fill="#2d2d2d" class="lbl">RX1_CLK (biggest violation)</text>
+<text x="728.6" y="756.77" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
+<text x="923.2" y="756.77" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
+<text x="1117.8" y="756.77" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
+<text x="1312.4" y="756.77" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
+<text x="1507" y="756.77" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
+<text x="1701.6" y="756.77" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
+<text x="1896.2" y="756.77" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
+<text x="2090.8" y="756.77" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
+<text x="2285.4" y="756.77" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
+<text x="2480" y="756.77" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
+<line x1="25" y1="772.625" x2="2494" y2="772.625" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="548" y1="728.583" x2="548" y2="772.625" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="742.6" y1="728.583" x2="742.6" y2="772.625" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="937.2" y1="728.583" x2="937.2" y2="772.625" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1131.8" y1="728.583" x2="1131.8" y2="772.625" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1326.4" y1="728.583" x2="1326.4" y2="772.625" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1521" y1="728.583" x2="1521" y2="772.625" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1715.6" y1="728.583" x2="1715.6" y2="772.625" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1910.2" y1="728.583" x2="1910.2" y2="772.625" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="2104.8" y1="728.583" x2="2104.8" y2="772.625" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="2299.4" y1="728.583" x2="2299.4" y2="772.625" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="2494" y1="728.583" x2="2494" y2="772.625" stroke="#d7dbd7" stroke-width="1"/>
+</g>
+<g class="row">
+<rect x="0" y="772.625" width="2519" height="44.042" fill="#f4f6f4"/>
+<text x="35" y="800.812" font-size="19" fill="#2d2d2d" class="lbl">RX1_OD_CLK_DIV2 (biggest violation)</text>
+<text x="728.6" y="800.812" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">0.122495</text>
+<text x="923.2" y="800.812" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">0.104150</text>
+<text x="1117.8" y="800.812" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">0.107451</text>
+<text x="1312.4" y="800.812" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">0.182979</text>
+<text x="1507" y="800.812" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">0.200582</text>
+<text x="1701.6" y="800.812" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">0.178114</text>
+<text x="1896.2" y="800.812" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">0.122495</text>
+<text x="2090.8" y="800.812" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">0.408247</text>
+<text x="2285.4" y="800.812" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">0.382814</text>
+<text x="2480" y="800.812" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">0.389324</text>
+<line x1="25" y1="816.667" x2="2494" y2="816.667" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="548" y1="772.625" x2="548" y2="816.667" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="742.6" y1="772.625" x2="742.6" y2="816.667" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="937.2" y1="772.625" x2="937.2" y2="816.667" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1131.8" y1="772.625" x2="1131.8" y2="816.667" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1326.4" y1="772.625" x2="1326.4" y2="816.667" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1521" y1="772.625" x2="1521" y2="816.667" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1715.6" y1="772.625" x2="1715.6" y2="816.667" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1910.2" y1="772.625" x2="1910.2" y2="816.667" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="2104.8" y1="772.625" x2="2104.8" y2="816.667" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="2299.4" y1="772.625" x2="2299.4" y2="816.667" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="2494" y1="772.625" x2="2494" y2="816.667" stroke="#d7dbd7" stroke-width="1"/>
+</g>
+<g class="row">
+<rect x="0" y="816.667" width="2519" height="44.042" fill="#ffffff"/>
+<text x="35" y="844.853" font-size="19" fill="#2d2d2d" class="lbl">RX1_OD_CLK (biggest violation)</text>
+<text x="728.6" y="844.853" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">1.306120</text>
+<text x="923.2" y="844.853" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">1.306301</text>
+<text x="1117.8" y="844.853" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">1.306209</text>
+<text x="1312.4" y="844.853" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">1.287834</text>
+<text x="1507" y="844.853" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">1.302334</text>
+<text x="1701.6" y="844.853" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">1.302679</text>
+<text x="1896.2" y="844.853" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">1.306120</text>
+<text x="2090.8" y="844.853" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">1.300474</text>
+<text x="2285.4" y="844.853" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">1.301286</text>
+<text x="2480" y="844.853" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">1.300932</text>
+<line x1="25" y1="860.708" x2="2494" y2="860.708" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="548" y1="816.667" x2="548" y2="860.708" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="742.6" y1="816.667" x2="742.6" y2="860.708" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="937.2" y1="816.667" x2="937.2" y2="860.708" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1131.8" y1="816.667" x2="1131.8" y2="860.708" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1326.4" y1="816.667" x2="1326.4" y2="860.708" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1521" y1="816.667" x2="1521" y2="860.708" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1715.6" y1="816.667" x2="1715.6" y2="860.708" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1910.2" y1="816.667" x2="1910.2" y2="860.708" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="2104.8" y1="816.667" x2="2104.8" y2="860.708" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="2299.4" y1="816.667" x2="2299.4" y2="860.708" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="2494" y1="816.667" x2="2494" y2="860.708" stroke="#d7dbd7" stroke-width="1"/>
+</g>
+<g class="row">
+<rect x="0" y="860.708" width="2519" height="44.042" fill="#f4f6f4"/>
+<text x="35" y="888.895" font-size="19" fill="#2d2d2d" class="lbl">STB_CLK (biggest violation)</text>
+<text x="728.6" y="888.895" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">4.587985</text>
+<text x="923.2" y="888.895" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">4.579813</text>
+<text x="1117.8" y="888.895" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">4.581395</text>
+<text x="1312.4" y="888.895" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">4.491709</text>
+<text x="1507" y="888.895" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">4.389459</text>
+<text x="1701.6" y="888.895" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">4.376954</text>
+<text x="1896.2" y="888.895" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">4.587985</text>
+<text x="2090.8" y="888.895" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">3.800912</text>
+<text x="2285.4" y="888.895" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">3.773332</text>
+<text x="2480" y="888.895" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">3.789081</text>
+<line x1="25" y1="904.75" x2="2494" y2="904.75" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="548" y1="860.708" x2="548" y2="904.75" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="742.6" y1="860.708" x2="742.6" y2="904.75" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="937.2" y1="860.708" x2="937.2" y2="904.75" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1131.8" y1="860.708" x2="1131.8" y2="904.75" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1326.4" y1="860.708" x2="1326.4" y2="904.75" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1521" y1="860.708" x2="1521" y2="904.75" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1715.6" y1="860.708" x2="1715.6" y2="904.75" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1910.2" y1="860.708" x2="1910.2" y2="904.75" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="2104.8" y1="860.708" x2="2104.8" y2="904.75" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="2299.4" y1="860.708" x2="2299.4" y2="904.75" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="2494" y1="860.708" x2="2494" y2="904.75" stroke="#d7dbd7" stroke-width="1"/>
+</g>
+<g class="row">
+<rect x="0" y="904.75" width="2519" height="44.042" fill="#ffffff"/>
+<text x="35" y="932.937" font-size="19" fill="#2d2d2d" class="lbl">VS_CLK (biggest violation)</text>
+<text x="728.6" y="932.937" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">97.528397</text>
+<text x="923.2" y="932.937" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">97.511932</text>
+<text x="1117.8" y="932.937" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">97.519516</text>
+<text x="1312.4" y="932.937" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">97.435669</text>
+<text x="1507" y="932.937" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">97.314453</text>
+<text x="1701.6" y="932.937" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">97.293007</text>
+<text x="1896.2" y="932.937" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">97.528397</text>
+<text x="2090.8" y="932.937" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">96.647423</text>
+<text x="2285.4" y="932.937" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">96.610870</text>
+<text x="2480" y="932.937" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">96.631264</text>
+<line x1="25" y1="948.792" x2="2494" y2="948.792" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="548" y1="904.75" x2="548" y2="948.792" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="742.6" y1="904.75" x2="742.6" y2="948.792" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="937.2" y1="904.75" x2="937.2" y2="948.792" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1131.8" y1="904.75" x2="1131.8" y2="948.792" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1326.4" y1="904.75" x2="1326.4" y2="948.792" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1521" y1="904.75" x2="1521" y2="948.792" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1715.6" y1="904.75" x2="1715.6" y2="948.792" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1910.2" y1="904.75" x2="1910.2" y2="948.792" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="2104.8" y1="904.75" x2="2104.8" y2="948.792" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="2299.4" y1="904.75" x2="2299.4" y2="948.792" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="2494" y1="904.75" x2="2494" y2="948.792" stroke="#d7dbd7" stroke-width="1"/>
+</g>
+<g class="row">
+<rect x="0" y="948.792" width="2519" height="44.042" fill="#f4f6f4"/>
+<text x="35" y="976.978" font-size="19" fill="#2d2d2d" class="lbl">WCLK1_A_DCLK (biggest violation)</text>
+<text x="728.6" y="976.978" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">13.382212</text>
+<text x="923.2" y="976.978" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">13.292783</text>
+<text x="1117.8" y="976.978" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">13.338302</text>
+<text x="1312.4" y="976.978" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">12.789993</text>
+<text x="1507" y="976.978" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">12.273368</text>
+<text x="1701.6" y="976.978" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">12.106496</text>
+<text x="1896.2" y="976.978" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">13.382212</text>
+<text x="2090.8" y="976.978" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">9.102544</text>
+<text x="2285.4" y="976.978" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">8.708344</text>
+<text x="2480" y="976.978" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">8.950740</text>
+<line x1="25" y1="992.833" x2="2494" y2="992.833" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="548" y1="948.792" x2="548" y2="992.833" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="742.6" y1="948.792" x2="742.6" y2="992.833" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="937.2" y1="948.792" x2="937.2" y2="992.833" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1131.8" y1="948.792" x2="1131.8" y2="992.833" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1326.4" y1="948.792" x2="1326.4" y2="992.833" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1521" y1="948.792" x2="1521" y2="992.833" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1715.6" y1="948.792" x2="1715.6" y2="992.833" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1910.2" y1="948.792" x2="1910.2" y2="992.833" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="2104.8" y1="948.792" x2="2104.8" y2="992.833" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="2299.4" y1="948.792" x2="2299.4" y2="992.833" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="2494" y1="948.792" x2="2494" y2="992.833" stroke="#d7dbd7" stroke-width="1"/>
+</g>
+<g class="row">
+<rect x="0" y="992.833" width="2519" height="44.042" fill="#ffffff"/>
+<text x="35" y="1021.02" font-size="19" fill="#2d2d2d" class="lbl">WCLK1_A_I2C (biggest violation)</text>
+<text x="728.6" y="1021.02" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">248.654755</text>
+<text x="923.2" y="1021.02" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">248.606293</text>
+<text x="1117.8" y="1021.02" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">248.611877</text>
+<text x="1312.4" y="1021.02" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">248.343323</text>
+<text x="1507" y="1021.02" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">248.097855</text>
+<text x="1701.6" y="1021.02" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">247.999908</text>
+<text x="1896.2" y="1021.02" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">248.654755</text>
+<text x="2090.8" y="1021.02" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">246.458511</text>
+<text x="2285.4" y="1021.02" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">246.326782</text>
+<text x="2480" y="1021.02" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">246.426163</text>
+<line x1="25" y1="1036.875" x2="2494" y2="1036.875" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="548" y1="992.833" x2="548" y2="1036.875" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="742.6" y1="992.833" x2="742.6" y2="1036.875" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="937.2" y1="992.833" x2="937.2" y2="1036.875" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1131.8" y1="992.833" x2="1131.8" y2="1036.875" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1326.4" y1="992.833" x2="1326.4" y2="1036.875" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1521" y1="992.833" x2="1521" y2="1036.875" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1715.6" y1="992.833" x2="1715.6" y2="1036.875" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1910.2" y1="992.833" x2="1910.2" y2="1036.875" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="2104.8" y1="992.833" x2="2104.8" y2="1036.875" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="2299.4" y1="992.833" x2="2299.4" y2="1036.875" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="2494" y1="992.833" x2="2494" y2="1036.875" stroke="#d7dbd7" stroke-width="1"/>
+</g>
+<g class="row">
+<rect x="0" y="1036.875" width="2519" height="44.042" fill="#f4f6f4"/>
+<text x="35" y="1065.062" font-size="19" fill="#2d2d2d" class="lbl">async (biggest violation)</text>
+<text x="728.6" y="1065.062" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
+<text x="923.2" y="1065.062" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
+<text x="1117.8" y="1065.062" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
+<text x="1312.4" y="1065.062" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
+<text x="1507" y="1065.062" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
+<text x="1701.6" y="1065.062" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
+<text x="1896.2" y="1065.062" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
+<text x="2090.8" y="1065.062" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
+<text x="2285.4" y="1065.062" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
+<text x="2480" y="1065.062" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
+<line x1="25" y1="1080.917" x2="2494" y2="1080.917" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="548" y1="1036.875" x2="548" y2="1080.917" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="742.6" y1="1036.875" x2="742.6" y2="1080.917" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="937.2" y1="1036.875" x2="937.2" y2="1080.917" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1131.8" y1="1036.875" x2="1131.8" y2="1080.917" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1326.4" y1="1036.875" x2="1326.4" y2="1080.917" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1521" y1="1036.875" x2="1521" y2="1080.917" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1715.6" y1="1036.875" x2="1715.6" y2="1080.917" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1910.2" y1="1036.875" x2="1910.2" y2="1080.917" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="2104.8" y1="1036.875" x2="2104.8" y2="1080.917" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="2299.4" y1="1036.875" x2="2299.4" y2="1080.917" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="2494" y1="1036.875" x2="2494" y2="1080.917" stroke="#d7dbd7" stroke-width="1"/>
+</g>
+<g class="row">
+<rect x="0" y="1080.917" width="2519" height="44.042" fill="#ffffff"/>
+<text x="35" y="1109.103" font-size="19" fill="#2d2d2d" class="lbl">gating (biggest violation)</text>
+<text x="728.6" y="1109.103" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
+<text x="923.2" y="1109.103" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
+<text x="1117.8" y="1109.103" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
+<text x="1312.4" y="1109.103" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
+<text x="1507" y="1109.103" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
+<text x="1701.6" y="1109.103" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
+<text x="1896.2" y="1109.103" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
+<text x="2090.8" y="1109.103" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">0.260895</text>
+<text x="2285.4" y="1109.103" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">0.206734</text>
+<text x="2480" y="1109.103" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">0.247479</text>
+<line x1="25" y1="1124.958" x2="2494" y2="1124.958" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="548" y1="1080.917" x2="548" y2="1124.958" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="742.6" y1="1080.917" x2="742.6" y2="1124.958" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="937.2" y1="1080.917" x2="937.2" y2="1124.958" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1131.8" y1="1080.917" x2="1131.8" y2="1124.958" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1326.4" y1="1080.917" x2="1326.4" y2="1124.958" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1521" y1="1080.917" x2="1521" y2="1124.958" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1715.6" y1="1080.917" x2="1715.6" y2="1124.958" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1910.2" y1="1080.917" x2="1910.2" y2="1124.958" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="2104.8" y1="1080.917" x2="2104.8" y2="1124.958" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="2299.4" y1="1080.917" x2="2299.4" y2="1124.958" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="2494" y1="1080.917" x2="2494" y2="1124.958" stroke="#d7dbd7" stroke-width="1"/>
+</g>
+<g class="row">
+<rect x="0" y="1124.958" width="2519" height="44.042" fill="#f4f6f4"/>
+<text x="35" y="1153.145" font-size="19" fill="#2d2d2d" class="lbl">setup.rpt (biggest violation)</text>
+<text x="728.6" y="1153.145" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">0.122495</text>
+<text x="923.2" y="1153.145" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">0.104150</text>
+<text x="1117.8" y="1153.145" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">0.107451</text>
+<text x="1312.4" y="1153.145" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">0.182979</text>
+<text x="1507" y="1153.145" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">0.200582</text>
+<text x="1701.6" y="1153.145" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">0.178114</text>
+<text x="1896.2" y="1153.145" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">0.122495</text>
+<text x="2090.8" y="1153.145" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">0.148613</text>
+<text x="2285.4" y="1153.145" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">0.093393</text>
+<text x="2480" y="1153.145" font-size="19" fill="#2d2d2d" text-anchor="end" class="val chg">0.134530</text>
+<line x1="25" y1="1169" x2="2494" y2="1169" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="548" y1="1124.958" x2="548" y2="1169" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="742.6" y1="1124.958" x2="742.6" y2="1169" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="937.2" y1="1124.958" x2="937.2" y2="1169" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1131.8" y1="1124.958" x2="1131.8" y2="1169" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1326.4" y1="1124.958" x2="1326.4" y2="1169" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1521" y1="1124.958" x2="1521" y2="1169" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1715.6" y1="1124.958" x2="1715.6" y2="1169" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1910.2" y1="1124.958" x2="1910.2" y2="1169" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="2104.8" y1="1124.958" x2="2104.8" y2="1169" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="2299.4" y1="1124.958" x2="2299.4" y2="1169" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="2494" y1="1124.958" x2="2494" y2="1169" stroke="#d7dbd7" stroke-width="1"/>
+</g>
+</svg>

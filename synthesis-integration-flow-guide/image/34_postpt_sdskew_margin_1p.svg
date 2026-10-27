@@ -1,0 +1,390 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2241" height="1170" viewBox="0 0 2241 1170" font-family="Consolas, 'Cascadia Mono', 'Courier New', monospace">
+<g class="head">
+<rect x="0" y="0" width="2241" height="60" fill="#0e7c6b"/>
+<text x="16" y="38.5" font-size="26" font-weight="bold" fill="#ffffff">report_sd_busskew.csv (1P)</text>
+<text x="2225" y="36.5" font-size="20" fill="#ffffff" text-anchor="end">SD skew margin, 规格 [-1, +6] ns</text>
+<rect x="0" y="60" width="2241" height="52" fill="#0e7c6b"/>
+<text x="12" y="92" font-size="20" font-weight="bold" fill="#ffffff">report_files</text>
+<text x="417" y="92" font-size="20" font-weight="bold" fill="#ffffff" text-anchor="middle">lt_cbest_m40</text>
+<text x="609" y="92" font-size="20" font-weight="bold" fill="#ffffff" text-anchor="middle">lt_cworst_m40</text>
+<text x="801" y="92" font-size="20" font-weight="bold" fill="#ffffff" text-anchor="middle">lt_typical_m40</text>
+<text x="993" y="92" font-size="20" font-weight="bold" fill="#ffffff" text-anchor="middle">ml_cbest_125</text>
+<text x="1185" y="92" font-size="20" font-weight="bold" fill="#ffffff" text-anchor="middle">tt_cbest_25</text>
+<text x="1377" y="92" font-size="20" font-weight="bold" fill="#ffffff" text-anchor="middle">tt_cworst_25</text>
+<text x="1569" y="92" font-size="20" font-weight="bold" fill="#ffffff" text-anchor="middle">tt_typical_25</text>
+<text x="1761" y="92" font-size="20" font-weight="bold" fill="#ffffff" text-anchor="middle">wc_cbest_125</text>
+<text x="1953" y="92" font-size="20" font-weight="bold" fill="#ffffff" text-anchor="middle">wc_cworst_125</text>
+<text x="2145" y="92" font-size="20" font-weight="bold" fill="#ffffff" text-anchor="middle">wc_typical_125</text>
+</g>
+<g class="row">
+<rect x="0" y="112" width="2241" height="44" fill="#ffffff"/>
+<text class="lab" x="12" y="140" font-size="20" fill="#212529">sd_l_1p_margin_a_max</text>
+<text class="val breath" x="499" y="140" font-size="20" fill="#212529" text-anchor="end">1.285254</text>
+<text class="val breath" x="691" y="140" font-size="20" fill="#212529" text-anchor="end">1.309552</text>
+<text class="val breath" x="883" y="140" font-size="20" fill="#212529" text-anchor="end">1.292389</text>
+<text class="val breath" x="1075" y="140" font-size="20" fill="#212529" text-anchor="end">1.634946</text>
+<text class="val breath" x="1267" y="140" font-size="20" fill="#212529" text-anchor="end">1.906742</text>
+<text class="val breath" x="1459" y="140" font-size="20" fill="#212529" text-anchor="end">1.947857</text>
+<text class="val breath" x="1651" y="140" font-size="20" fill="#212529" text-anchor="end">1.285254</text>
+<text class="val breath" x="1843" y="140" font-size="20" fill="#212529" text-anchor="end">3.657629</text>
+<text class="val breath" x="2035" y="140" font-size="20" fill="#212529" text-anchor="end">3.73864</text>
+<text class="val breath" x="2227" y="140" font-size="20" fill="#212529" text-anchor="end">3.678899</text>
+</g>
+<g class="row">
+<rect x="0" y="156" width="2241" height="44" fill="#f4f8f7"/>
+<text class="lab" x="12" y="184" font-size="20" fill="#212529">sd_l_1p_margin_a_min</text>
+<text class="val breath" x="499" y="184" font-size="20" fill="#212529" text-anchor="end">0.395963</text>
+<text class="val breath" x="691" y="184" font-size="20" fill="#212529" text-anchor="end">0.411612</text>
+<text class="val breath" x="883" y="184" font-size="20" fill="#212529" text-anchor="end">0.380412</text>
+<text class="val breath" x="1075" y="184" font-size="20" fill="#212529" text-anchor="end">0.489808</text>
+<text class="val breath" x="1267" y="184" font-size="20" fill="#212529" text-anchor="end">0.541155</text>
+<text class="val breath" x="1459" y="184" font-size="20" fill="#212529" text-anchor="end">0.563231</text>
+<text class="val breath" x="1651" y="184" font-size="20" fill="#212529" text-anchor="end">0.395963</text>
+<text class="val breath" x="1843" y="184" font-size="20" fill="#212529" text-anchor="end">1.034828</text>
+<text class="val breath" x="2035" y="184" font-size="20" fill="#212529" text-anchor="end">1.082163</text>
+<text class="val breath" x="2227" y="184" font-size="20" fill="#212529" text-anchor="end">1.044553</text>
+</g>
+<g class="row">
+<rect x="0" y="200" width="2241" height="44" fill="#ffffff"/>
+<text class="lab" x="12" y="228" font-size="20" fill="#212529">sd_l_2p_l0_margin_a_max</text>
+<text class="val" x="499" y="228" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="691" y="228" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="883" y="228" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1075" y="228" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1267" y="228" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1459" y="228" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1651" y="228" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1843" y="228" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="2035" y="228" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="2227" y="228" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+</g>
+<g class="row">
+<rect x="0" y="244" width="2241" height="44" fill="#f4f8f7"/>
+<text class="lab" x="12" y="272" font-size="20" fill="#212529">sd_l_2p_l0_margin_a_min</text>
+<text class="val" x="499" y="272" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="691" y="272" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="883" y="272" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1075" y="272" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1267" y="272" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1459" y="272" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1651" y="272" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1843" y="272" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="2035" y="272" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="2227" y="272" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+</g>
+<g class="row">
+<rect x="0" y="288" width="2241" height="44" fill="#ffffff"/>
+<text class="lab" x="12" y="316" font-size="20" fill="#212529">sd_l_2p_l1_margin_a_max</text>
+<text class="val" x="499" y="316" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="691" y="316" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="883" y="316" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1075" y="316" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1267" y="316" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1459" y="316" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1651" y="316" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1843" y="316" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="2035" y="316" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="2227" y="316" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+</g>
+<g class="row">
+<rect x="0" y="332" width="2241" height="44" fill="#f4f8f7"/>
+<text class="lab" x="12" y="360" font-size="20" fill="#212529">sd_l_2p_l1_margin_a_min</text>
+<text class="val" x="499" y="360" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="691" y="360" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="883" y="360" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1075" y="360" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1267" y="360" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1459" y="360" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1651" y="360" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1843" y="360" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="2035" y="360" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="2227" y="360" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+</g>
+<g class="row">
+<rect x="0" y="376" width="2241" height="44" fill="#ffffff"/>
+<text class="lab" x="12" y="404" font-size="20" fill="#212529">sd_r_1p_margin_a_max</text>
+<text class="val breath" x="499" y="404" font-size="20" fill="#212529" text-anchor="end">1.415047</text>
+<text class="val breath" x="691" y="404" font-size="20" fill="#212529" text-anchor="end">1.53504</text>
+<text class="val breath" x="883" y="404" font-size="20" fill="#212529" text-anchor="end">1.429132</text>
+<text class="val breath" x="1075" y="404" font-size="20" fill="#212529" text-anchor="end">1.617923</text>
+<text class="val breath" x="1267" y="404" font-size="20" fill="#212529" text-anchor="end">2.009894</text>
+<text class="val breath" x="1459" y="404" font-size="20" fill="#212529" text-anchor="end">2.181854</text>
+<text class="val breath" x="1651" y="404" font-size="20" fill="#212529" text-anchor="end">1.415047</text>
+<text class="val breath" x="1843" y="404" font-size="20" fill="#212529" text-anchor="end">3.681252</text>
+<text class="val breath" x="2035" y="404" font-size="20" fill="#212529" text-anchor="end">4.005709</text>
+<text class="val breath" x="2227" y="404" font-size="20" fill="#212529" text-anchor="end">3.808475</text>
+</g>
+<g class="row">
+<rect x="0" y="420" width="2241" height="44" fill="#f4f8f7"/>
+<text class="lab" x="12" y="448" font-size="20" fill="#212529">sd_r_1p_margin_a_min</text>
+<text class="val breath" x="499" y="448" font-size="20" fill="#212529" text-anchor="end">0.35235</text>
+<text class="val breath" x="691" y="448" font-size="20" fill="#212529" text-anchor="end">0.476186</text>
+<text class="val breath" x="883" y="448" font-size="20" fill="#212529" text-anchor="end">0.360384</text>
+<text class="val breath" x="1075" y="448" font-size="20" fill="#212529" text-anchor="end">0.288559</text>
+<text class="val breath" x="1267" y="448" font-size="20" fill="#212529" text-anchor="end">0.425119</text>
+<text class="val breath" x="1459" y="448" font-size="20" fill="#212529" text-anchor="end">0.593935999999999</text>
+<text class="val breath" x="1651" y="448" font-size="20" fill="#212529" text-anchor="end">0.35235</text>
+<text class="val breath" x="1843" y="448" font-size="20" fill="#212529" text-anchor="end">0.677087000000001</text>
+<text class="val breath" x="2035" y="448" font-size="20" fill="#212529" text-anchor="end">0.97444</text>
+<text class="val breath" x="2227" y="448" font-size="20" fill="#212529" text-anchor="end">0.808876000000001</text>
+</g>
+<g class="row">
+<rect x="0" y="464" width="2241" height="44" fill="#ffffff"/>
+<text class="lab" x="12" y="492" font-size="20" fill="#212529">sd_r_2p_l0_margin_a_max</text>
+<text class="val" x="499" y="492" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="691" y="492" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="883" y="492" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1075" y="492" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1267" y="492" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1459" y="492" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1651" y="492" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1843" y="492" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="2035" y="492" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="2227" y="492" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+</g>
+<g class="row">
+<rect x="0" y="508" width="2241" height="44" fill="#f4f8f7"/>
+<text class="lab" x="12" y="536" font-size="20" fill="#212529">sd_r_2p_l0_margin_a_min</text>
+<text class="val" x="499" y="536" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="691" y="536" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="883" y="536" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1075" y="536" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1267" y="536" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1459" y="536" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1651" y="536" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1843" y="536" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="2035" y="536" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="2227" y="536" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+</g>
+<g class="row">
+<rect x="0" y="552" width="2241" height="44" fill="#ffffff"/>
+<text class="lab" x="12" y="580" font-size="20" fill="#212529">sd_r_2p_l1_margin_a_max</text>
+<text class="val" x="499" y="580" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="691" y="580" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="883" y="580" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1075" y="580" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1267" y="580" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1459" y="580" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1651" y="580" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1843" y="580" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="2035" y="580" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="2227" y="580" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+</g>
+<g class="row">
+<rect x="0" y="596" width="2241" height="44" fill="#f4f8f7"/>
+<text class="lab" x="12" y="624" font-size="20" fill="#212529">sd_r_2p_l1_margin_a_min</text>
+<text class="val" x="499" y="624" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="691" y="624" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="883" y="624" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1075" y="624" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1267" y="624" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1459" y="624" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1651" y="624" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1843" y="624" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="2035" y="624" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="2227" y="624" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+</g>
+<g class="row">
+<rect x="0" y="640" width="2241" height="44" fill="#ffffff"/>
+<text class="lab" x="12" y="668" font-size="20" fill="#212529">sd_l_1p_margin_b_max</text>
+<text class="val breath" x="499" y="668" font-size="20" fill="#212529" text-anchor="end">1.359784</text>
+<text class="val breath" x="691" y="668" font-size="20" fill="#212529" text-anchor="end">1.376001</text>
+<text class="val breath" x="883" y="668" font-size="20" fill="#212529" text-anchor="end">1.357535</text>
+<text class="val breath" x="1075" y="668" font-size="20" fill="#212529" text-anchor="end">1.679544</text>
+<text class="val breath" x="1267" y="668" font-size="20" fill="#212529" text-anchor="end">1.948448</text>
+<text class="val breath" x="1459" y="668" font-size="20" fill="#212529" text-anchor="end">1.987977</text>
+<text class="val breath" x="1651" y="668" font-size="20" fill="#212529" text-anchor="end">1.359784</text>
+<text class="val breath" x="1843" y="668" font-size="20" fill="#212529" text-anchor="end">3.685135</text>
+<text class="val breath" x="2035" y="668" font-size="20" fill="#212529" text-anchor="end">3.786322</text>
+<text class="val breath" x="2227" y="668" font-size="20" fill="#212529" text-anchor="end">3.715409</text>
+</g>
+<g class="row">
+<rect x="0" y="684" width="2241" height="44" fill="#f4f8f7"/>
+<text class="lab" x="12" y="712" font-size="20" fill="#212529">sd_l_1p_margin_b_min</text>
+<text class="val breath" x="499" y="712" font-size="20" fill="#212529" text-anchor="end">0.555835</text>
+<text class="val breath" x="691" y="712" font-size="20" fill="#212529" text-anchor="end">0.58472</text>
+<text class="val breath" x="883" y="712" font-size="20" fill="#212529" text-anchor="end">0.540233</text>
+<text class="val breath" x="1075" y="712" font-size="20" fill="#212529" text-anchor="end">0.688352</text>
+<text class="val breath" x="1267" y="712" font-size="20" fill="#212529" text-anchor="end">0.78252</text>
+<text class="val breath" x="1459" y="712" font-size="20" fill="#212529" text-anchor="end">0.829954</text>
+<text class="val breath" x="1651" y="712" font-size="20" fill="#212529" text-anchor="end">0.555835</text>
+<text class="val breath" x="1843" y="712" font-size="20" fill="#212529" text-anchor="end">1.466308</text>
+<text class="val breath" x="2035" y="712" font-size="20" fill="#212529" text-anchor="end">1.562364</text>
+<text class="val breath" x="2227" y="712" font-size="20" fill="#212529" text-anchor="end">1.498529</text>
+</g>
+<g class="row">
+<rect x="0" y="728" width="2241" height="44" fill="#ffffff"/>
+<text class="lab" x="12" y="756" font-size="20" fill="#212529">sd_l_2p_l0_margin_b_max</text>
+<text class="val" x="499" y="756" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="691" y="756" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="883" y="756" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1075" y="756" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1267" y="756" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1459" y="756" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1651" y="756" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1843" y="756" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="2035" y="756" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="2227" y="756" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+</g>
+<g class="row">
+<rect x="0" y="772" width="2241" height="44" fill="#f4f8f7"/>
+<text class="lab" x="12" y="800" font-size="20" fill="#212529">sd_l_2p_l0_margin_b_min</text>
+<text class="val" x="499" y="800" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="691" y="800" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="883" y="800" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1075" y="800" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1267" y="800" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1459" y="800" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1651" y="800" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1843" y="800" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="2035" y="800" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="2227" y="800" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+</g>
+<g class="row">
+<rect x="0" y="816" width="2241" height="44" fill="#ffffff"/>
+<text class="lab" x="12" y="844" font-size="20" fill="#212529">sd_l_2p_l1_margin_b_max</text>
+<text class="val" x="499" y="844" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="691" y="844" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="883" y="844" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1075" y="844" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1267" y="844" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1459" y="844" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1651" y="844" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1843" y="844" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="2035" y="844" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="2227" y="844" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+</g>
+<g class="row">
+<rect x="0" y="860" width="2241" height="44" fill="#f4f8f7"/>
+<text class="lab" x="12" y="888" font-size="20" fill="#212529">sd_l_2p_l1_margin_b_min</text>
+<text class="val" x="499" y="888" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="691" y="888" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="883" y="888" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1075" y="888" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1267" y="888" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1459" y="888" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1651" y="888" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1843" y="888" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="2035" y="888" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="2227" y="888" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+</g>
+<g class="row">
+<rect x="0" y="904" width="2241" height="44" fill="#ffffff"/>
+<text class="lab" x="12" y="932" font-size="20" fill="#212529">sd_r_1p_margin_b_max</text>
+<text class="val breath" x="499" y="932" font-size="20" fill="#212529" text-anchor="end">1.236126</text>
+<text class="val breath" x="691" y="932" font-size="20" fill="#212529" text-anchor="end">1.21805</text>
+<text class="val breath" x="883" y="932" font-size="20" fill="#212529" text-anchor="end">1.177878</text>
+<text class="val breath" x="1075" y="932" font-size="20" fill="#212529" text-anchor="end">1.515303</text>
+<text class="val breath" x="1267" y="932" font-size="20" fill="#212529" text-anchor="end">1.718045</text>
+<text class="val breath" x="1459" y="932" font-size="20" fill="#212529" text-anchor="end">1.721827</text>
+<text class="val breath" x="1651" y="932" font-size="20" fill="#212529" text-anchor="end">1.236126</text>
+<text class="val breath" x="1843" y="932" font-size="20" fill="#212529" text-anchor="end">3.042675</text>
+<text class="val breath" x="2035" y="932" font-size="20" fill="#212529" text-anchor="end">3.128673</text>
+<text class="val breath" x="2227" y="932" font-size="20" fill="#212529" text-anchor="end">3.053083</text>
+</g>
+<g class="row">
+<rect x="0" y="948" width="2241" height="44" fill="#f4f8f7"/>
+<text class="lab" x="12" y="976" font-size="20" fill="#212529">sd_r_1p_margin_b_min</text>
+<text class="val breath" x="499" y="976" font-size="20" fill="#212529" text-anchor="end">0.482293</text>
+<text class="val breath" x="691" y="976" font-size="20" fill="#212529" text-anchor="end">0.45614</text>
+<text class="val breath" x="883" y="976" font-size="20" fill="#212529" text-anchor="end">0.399886</text>
+<text class="val breath" x="1075" y="976" font-size="20" fill="#212529" text-anchor="end">0.515034</text>
+<text class="val breath" x="1267" y="976" font-size="20" fill="#212529" text-anchor="end">0.581061</text>
+<text class="val breath" x="1459" y="976" font-size="20" fill="#212529" text-anchor="end">0.584692</text>
+<text class="val breath" x="1651" y="976" font-size="20" fill="#212529" text-anchor="end">0.482293</text>
+<text class="val breath" x="1843" y="976" font-size="20" fill="#212529" text-anchor="end">0.859944</text>
+<text class="val breath" x="2035" y="976" font-size="20" fill="#212529" text-anchor="end">0.965289</text>
+<text class="val breath" x="2227" y="976" font-size="20" fill="#212529" text-anchor="end">0.888507</text>
+</g>
+<g class="row">
+<rect x="0" y="992" width="2241" height="44" fill="#ffffff"/>
+<text class="lab" x="12" y="1020" font-size="20" fill="#212529">sd_r_2p_l0_margin_b_max</text>
+<text class="val" x="499" y="1020" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="691" y="1020" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="883" y="1020" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1075" y="1020" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1267" y="1020" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1459" y="1020" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1651" y="1020" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1843" y="1020" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="2035" y="1020" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="2227" y="1020" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+</g>
+<g class="row">
+<rect x="0" y="1036" width="2241" height="44" fill="#f4f8f7"/>
+<text class="lab" x="12" y="1064" font-size="20" fill="#212529">sd_r_2p_l0_margin_b_min</text>
+<text class="val" x="499" y="1064" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="691" y="1064" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="883" y="1064" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1075" y="1064" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1267" y="1064" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1459" y="1064" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1651" y="1064" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1843" y="1064" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="2035" y="1064" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="2227" y="1064" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+</g>
+<g class="row">
+<rect x="0" y="1080" width="2241" height="44" fill="#ffffff"/>
+<text class="lab" x="12" y="1108" font-size="20" fill="#212529">sd_r_2p_l1_margin_b_max</text>
+<text class="val" x="499" y="1108" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="691" y="1108" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="883" y="1108" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1075" y="1108" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1267" y="1108" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1459" y="1108" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1651" y="1108" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1843" y="1108" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="2035" y="1108" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="2227" y="1108" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+</g>
+<g class="row">
+<rect x="0" y="1124" width="2241" height="44" fill="#f4f8f7"/>
+<text class="lab" x="12" y="1152" font-size="20" fill="#212529">sd_r_2p_l1_margin_b_min</text>
+<text class="val" x="499" y="1152" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="691" y="1152" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="883" y="1152" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1075" y="1152" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1267" y="1152" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1459" y="1152" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1651" y="1152" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1843" y="1152" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="2035" y="1152" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="2227" y="1152" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+</g>
+<line x1="513" y1="60" x2="513" y2="1168" stroke="#d0d8d6" stroke-width="1"/>
+<line x1="705" y1="60" x2="705" y2="1168" stroke="#d0d8d6" stroke-width="1"/>
+<line x1="897" y1="60" x2="897" y2="1168" stroke="#d0d8d6" stroke-width="1"/>
+<line x1="1089" y1="60" x2="1089" y2="1168" stroke="#d0d8d6" stroke-width="1"/>
+<line x1="1281" y1="60" x2="1281" y2="1168" stroke="#d0d8d6" stroke-width="1"/>
+<line x1="1473" y1="60" x2="1473" y2="1168" stroke="#d0d8d6" stroke-width="1"/>
+<line x1="1665" y1="60" x2="1665" y2="1168" stroke="#d0d8d6" stroke-width="1"/>
+<line x1="1857" y1="60" x2="1857" y2="1168" stroke="#d0d8d6" stroke-width="1"/>
+<line x1="2049" y1="60" x2="2049" y2="1168" stroke="#d0d8d6" stroke-width="1"/>
+<line x1="2241" y1="60" x2="2241" y2="1168" stroke="#d0d8d6" stroke-width="1"/>
+<line x1="1" y1="112" x2="2240" y2="112" stroke="#d0d8d6" stroke-width="1"/>
+<line x1="1" y1="156" x2="2240" y2="156" stroke="#d0d8d6" stroke-width="1"/>
+<line x1="1" y1="200" x2="2240" y2="200" stroke="#d0d8d6" stroke-width="1"/>
+<line x1="1" y1="244" x2="2240" y2="244" stroke="#d0d8d6" stroke-width="1"/>
+<line x1="1" y1="288" x2="2240" y2="288" stroke="#d0d8d6" stroke-width="1"/>
+<line x1="1" y1="332" x2="2240" y2="332" stroke="#d0d8d6" stroke-width="1"/>
+<line x1="1" y1="376" x2="2240" y2="376" stroke="#d0d8d6" stroke-width="1"/>
+<line x1="1" y1="420" x2="2240" y2="420" stroke="#d0d8d6" stroke-width="1"/>
+<line x1="1" y1="464" x2="2240" y2="464" stroke="#d0d8d6" stroke-width="1"/>
+<line x1="1" y1="508" x2="2240" y2="508" stroke="#d0d8d6" stroke-width="1"/>
+<line x1="1" y1="552" x2="2240" y2="552" stroke="#d0d8d6" stroke-width="1"/>
+<line x1="1" y1="596" x2="2240" y2="596" stroke="#d0d8d6" stroke-width="1"/>
+<line x1="1" y1="640" x2="2240" y2="640" stroke="#d0d8d6" stroke-width="1"/>
+<line x1="1" y1="684" x2="2240" y2="684" stroke="#d0d8d6" stroke-width="1"/>
+<line x1="1" y1="728" x2="2240" y2="728" stroke="#d0d8d6" stroke-width="1"/>
+<line x1="1" y1="772" x2="2240" y2="772" stroke="#d0d8d6" stroke-width="1"/>
+<line x1="1" y1="816" x2="2240" y2="816" stroke="#d0d8d6" stroke-width="1"/>
+<line x1="1" y1="860" x2="2240" y2="860" stroke="#d0d8d6" stroke-width="1"/>
+<line x1="1" y1="904" x2="2240" y2="904" stroke="#d0d8d6" stroke-width="1"/>
+<line x1="1" y1="948" x2="2240" y2="948" stroke="#d0d8d6" stroke-width="1"/>
+<line x1="1" y1="992" x2="2240" y2="992" stroke="#d0d8d6" stroke-width="1"/>
+<line x1="1" y1="1036" x2="2240" y2="1036" stroke="#d0d8d6" stroke-width="1"/>
+<line x1="1" y1="1080" x2="2240" y2="1080" stroke="#d0d8d6" stroke-width="1"/>
+<line x1="1" y1="1124" x2="2240" y2="1124" stroke="#d0d8d6" stroke-width="1"/>
+<rect x="1" y="1" width="2239" height="1168" fill="none" stroke="#c0c6c6" stroke-width="2"/>
+</svg>

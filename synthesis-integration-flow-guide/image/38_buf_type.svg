@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1318" height="364" viewBox="0 0 1318 364">
+<rect x="0" y="0" width="1318" height="364" fill="#ffffff"/>
+<rect x="0" y="0" width="1318" height="2" fill="#c0c6c6"/>
+<rect x="0" y="362" width="1318" height="2" fill="#c0c6c6"/>
+<rect x="0" y="0" width="2" height="364" fill="#c0c6c6"/>
+<rect x="1316" y="0" width="2" height="364" fill="#c0c6c6"/>
+<g class="rev d0">
+<rect x="2" y="2" width="1314" height="58" fill="#0e7c6b"/>
+<text x="20" y="32" font-size="26" fill="#ffffff" font-family="Consolas, 'Microsoft YaHei', monospace" font-weight="bold">IO 首/末级 buffer type 统计（SVT 换库后）</text>
+<text x="1298" y="40" font-size="20" fill="#cdebe5" font-family="'Microsoft YaHei', Consolas, monospace" text-anchor="end">report_input_last_buf.tcl / report_output_last_buf.tcl 输出</text>
+</g>
+<g class="rev d0">
+<text x="20" y="106" font-size="24" fill="#0b5e52" font-family="'Microsoft YaHei', Consolas, monospace" font-weight="bold">input_port_first_buf_type.tsv（52 端口 / 104 行）</text>
+<rect x="21" y="129" width="614" height="119" fill="none" stroke="#d0d8d6" stroke-width="2"/>
+<rect x="22" y="130" width="612" height="39" fill="#0e7c6b"/>
+<text x="28" y="154" font-size="22" fill="#ffffff" font-family="Consolas, 'Microsoft YaHei', monospace" font-weight="bold">cell 类型</text>
+<text x="563" y="154" font-size="22" fill="#ffffff" font-family="Consolas, 'Microsoft YaHei', monospace" font-weight="bold">记录数</text>
+<rect x="22" y="169" width="612" height="39" fill="#ffffff"/>
+<text x="28" y="191" font-size="22" fill="#212529" font-family="Consolas, 'Microsoft YaHei', monospace">APR_CDM</text>
+<text x="563" y="191" font-size="22" fill="#212529" font-family="Consolas, 'Microsoft YaHei', monospace" class="br b0">52</text>
+<rect x="22" y="208" width="612" height="39" fill="#f4f8f7"/>
+<text x="28" y="230" font-size="22" fill="#212529" font-family="Consolas, 'Microsoft YaHei', monospace">CLKBUFX8AS9</text>
+<text x="563" y="230" font-size="22" fill="#212529" font-family="Consolas, 'Microsoft YaHei', monospace" class="br b1">52</text>
+<rect x="21" y="265" width="614" height="79" fill="none" stroke="#d0d8d6" stroke-width="2"/>
+<rect x="22" y="266" width="612" height="39" fill="#0e7c6b"/>
+<text x="28" y="290" font-size="22" fill="#ffffff" font-family="Consolas, 'Microsoft YaHei', monospace" font-weight="bold">STATUS</text>
+<text x="563" y="290" font-size="22" fill="#ffffff" font-family="Consolas, 'Microsoft YaHei', monospace" font-weight="bold">记录数</text>
+<g class="br b2"><rect x="22" y="305" width="612" height="38" fill="#ffffff"/><text x="28" y="327" font-size="22" fill="#212529" font-family="Consolas, 'Microsoft YaHei', monospace">MULTI_LOAD(2)</text><text x="563" y="327" font-size="22" fill="#212529" font-family="Consolas, 'Microsoft YaHei', monospace">104</text></g>
+</g>
+<g class="rev d3">
+<text x="683" y="106" font-size="24" fill="#0b5e52" font-family="'Microsoft YaHei', Consolas, monospace" font-weight="bold">output_port_last_buf_type.tsv（476 端口 / 476 行）</text>
+<rect x="684" y="129" width="614" height="79" fill="none" stroke="#d0d8d6" stroke-width="2"/>
+<rect x="685" y="130" width="612" height="39" fill="#0e7c6b"/>
+<text x="691" y="154" font-size="22" fill="#ffffff" font-family="Consolas, 'Microsoft YaHei', monospace" font-weight="bold">cell 类型</text>
+<text x="1226" y="154" font-size="22" fill="#ffffff" font-family="Consolas, 'Microsoft YaHei', monospace" font-weight="bold">记录数</text>
+<rect x="685" y="169" width="612" height="38" fill="#ffffff"/>
+<text x="691" y="191" font-size="22" fill="#212529" font-family="Consolas, 'Microsoft YaHei', monospace">CLKBUFX8AS9</text>
+<text x="1226" y="191" font-size="22" fill="#212529" font-family="Consolas, 'Microsoft YaHei', monospace" class="br b3">476</text>
+<rect x="684" y="225" width="614" height="79" fill="none" stroke="#d0d8d6" stroke-width="2"/>
+<rect x="685" y="226" width="612" height="39" fill="#0e7c6b"/>
+<text x="691" y="250" font-size="22" fill="#ffffff" font-family="Consolas, 'Microsoft YaHei', monospace" font-weight="bold">STATUS</text>
+<text x="1226" y="250" font-size="22" fill="#ffffff" font-family="Consolas, 'Microsoft YaHei', monospace" font-weight="bold">记录数</text>
+<rect x="685" y="265" width="612" height="38" fill="#ffffff"/>
+<text x="691" y="287" font-size="22" fill="#212529" font-family="Consolas, 'Microsoft YaHei', monospace">OK</text>
+<text x="1226" y="287" font-size="22" fill="#212529" font-family="Consolas, 'Microsoft YaHei', monospace" class="br b4">476</text>
+</g>
+</svg>
