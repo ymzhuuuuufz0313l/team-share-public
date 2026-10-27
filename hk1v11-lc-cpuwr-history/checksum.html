@@ -251,6 +251,10 @@
 
 LC_CPUWR 的寄存器更新核心机制：**写入一个寄存器需要连续 3 次 CHPI 帧 blank 期间数据一致，才会真正更新**。
 
+![Seg1 checksum 实现逻辑全景（动画版：主干流光点=数据流向；★5'h04 卡呼吸=1027v1-B 修复点；绿色提交门呼吸）](./images/anim/checksum_logic_flow.svg)
+
+> **实现逻辑全景图**（2026-10-27 新增，随 1027v1-B 交付）：四层阅读——① 帧数据流（3B/beat，`xdata_a` 按拍选择参与字节，★卡即 1027v1-B 修复的 `5'h04: C^D`）→ ② 累加与锁存（`xsum_a` 运行 XOR / `prev_xsum_a` 帧尾锁存）→ ③ 帧尾比较 + 1023v1 合法性防护（`match_eff_a`）→ ④ 提交门控（`update_en_a`）与 mismatch 计数（连续 5 次 unlock）。静态原版在 `images/checksum_logic_flow.svg`。
+
 ### 1.1 机制来源
 
 该机制最早来自 2026-04-30 的变更：增加寄存器判断功能，只有寄存器信息稳定且多帧得到相同信息时才更新进寄存器表。
@@ -584,4 +588,4 @@ const article = document.getElementById('article');
 </body>
 </html>
 
-<!-- ymzhu 2026-10-27 17:51 -->
+<!-- ymzhu 2026-10-27 19:32 -->
