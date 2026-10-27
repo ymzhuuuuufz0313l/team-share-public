@@ -6,8 +6,8 @@
 1. 行标签 = <text x="158" ... font-weight="600">（每行一个），把行标签起（含行尾 pill）
    到下一行标签前的全部元素包进 <g class="row" style="animation-delay: 行序号*0.03s">；
    标题/位号列/POR 表头包进第一个 <g class="head">，图例+脚注包进第二个 <g class="head">。
-2. 变更单元格脉冲：0x2F 行 SCS_PKT_HALF 单元格、0x08 行 reg_eq_rbc1 单元格
-   （各 = rect + label text + value text 三连行）包进 <g class="chg">。
+2. 变更单元格脉冲：0x1D 行 khead_20b_sel[4:0] 单元格（1027v1 变更；
+   = rect + label text + value text 三连行）包进 <g class="chg">。
 3. 内嵌 <style>（@keyframes rowIn / chgPulse）；fill forwards，动画终态与源图一致。
 4. 自检：a) xml.etree 解析 OK；b) 源/输出 <text> 文本多重集一致；c) 输出 > 1KB。
 """
@@ -72,10 +72,8 @@ def convert() -> None:
         end = label_pos[k + 1] if k + 1 < len(label_pos) else legend_pos
         seg = list(body[start:end])
         label = seg[0]
-        if "0x08 (8)" in label:
-            seg = wrap_chg(seg, "reg_eq_rbc1")
-        elif "0x2F (47)" in label:
-            seg = wrap_chg(seg, "SCS_PKT_HALF")
+        if "0x1D (29)" in label:
+            seg = wrap_chg(seg, "khead_20b_sel[4:0]")
         out.append('<g class="row" style="animation-delay: %.2fs">' % (k * DELAY_STEP))
         out.extend(seg)
         out.append("</g>")
@@ -141,4 +139,4 @@ if __name__ == "__main__":
     ok = selfcheck()
     raise SystemExit(0 if ok else 1)
 
-# ymzhu 2026-10-26 15:06
+# ymzhu 2026-10-27 10:42

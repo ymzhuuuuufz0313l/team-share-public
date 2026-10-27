@@ -679,6 +679,15 @@
 
 **G13 对拍证据**：最小对拍 TB（1022v1 vs 1023v1-K1 单变量隔离）**VERDICT: PASS**（C1/C2/C3 全 0）；角相位（K1 与帧拍同拍：旧版当拍处理/新版错过首字节）文档化于 `pair_tb_notes.md`，该洞已由防护③隔离。guard TB 10 场景 = 七案全覆盖 + 角相位，全 PASS。Excel 登记 NO47（K1 打拍）/NO48（match 防护）/NO49（SCS_PKT_HALF）。
 
+### 5.29 1027v1 khead_20b_sel @0x1D[7:3] 输出端口
+
+2026-10-26 表到货（`HK1V11_Register_20261026.xlsm`），1022→1026 全量 diff 唯一功能变更：0x1D[7:3] Reserved → `khead_20b_sel[4:0]`（R/W 默认 `5'b00000`；`5'b10101`=20-bit mode / Others=40-bit mode default）。TESTO sheet 10-23 改动（TESTO_SEL 表）两版内容一致，无新增。用户 2026-10-27 确认三点：① 0x1D 不加 LSI_PRTECT 门控；② 版本号 1027v1；③ 十进制地址≤31 的字段输出从 LC_REG_MAPPING 出（区别于 SCS_PKT_HALF@0x2F=47>31 直接从 LC_CPUWR 出）。
+
+- **RTL（仅 LC_REG_MAPPING 升 1027v1）**：新增输出端口 `R_KHEAD_20B_SEL[4:0] = R_REG29_F[7:3]`（纯组合、无门控、与 SP_S 同输入同域 WCK1_A）；LC_CPUWR 零功能改动保持 1023v1（0x1D 存储/写/复位 8'h00/整字节读回/checksum 全部既有，写路径与 checksum 机制零变化）
+- **验收三关**：① iverilog 受控对照（vs 1022v1 基线同命令，错误集逐行一致，20 个 INVX2 均 1022v1 服务器代码既有标准单元缺库，无新增）；② rtl-code-review **PASS（critical=0/high=0/low=2，均为已知取舍）**；③ rtl-signal-trace 全链路 6 跳单域 WCK1_A 无 CDC，Workflow C 未触发（无重定时），读回/checksum 路径未动
+- **挂账**：`R_KHEAD_20B_SEL` 上层消费连接未接（FUNCTION 侧，同 SCS_PKT_HALF 先例）；表内笔误 history 条目 `@0x1D[7:5]` vs 寄存器表正文 `[7:3]`，以正文为准（待反馈 spec owner）
+- Excel 登记 NO50；chip_sel0/1 地址表 + 六张图解 SVG（含动画版，khead 单元格脉冲）同步
+
   </script>
   <script>
     document.getElementById('article').innerHTML = marked.parse(document.getElementById('md').textContent.trim());
@@ -768,4 +777,4 @@ const article = document.getElementById('article');
 </body>
 </html>
 
-<!-- ymzhu 2026-10-26 14:55 -->
+<!-- ymzhu 2026-10-27 10:52 -->

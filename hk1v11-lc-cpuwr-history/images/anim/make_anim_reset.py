@@ -14,7 +14,7 @@ make_anim_reset.py — 把静态 SVG 转成纯 CSS 动画 SVG（确定性行级�
      背景 <rect> 保持顶层（始终可见，白底白底无视觉差异）。
   2. <svg> 后注入 <style>：
      .row/.head 入场（opacity 0→1 + translateY 6px，0.4s，forwards，最终态与源一致）；
-     .chg 对 0x2F 行 SCS_PKT_HALF 单元格（rect + 两个 text）轻微脉冲
+     .chg 对 0x1D 行 khead_20b_sel[4:0] 单元格（1027v1 变更；rect + 两个 text）轻微脉冲
      （2s ease-in-out，4s 起，infinite，只动 opacity 不动配色）。
   3. 纯 CSS（SVG 内 <style> + @keyframes），无 <script>、无外部资源，<img> 可播放。
   4. width/height/viewBox 与源一致。
@@ -31,9 +31,9 @@ SRC = r"E:\project\team-share-public\hk1v11-lc-cpuwr-history\images\reset_domain
 DST = r"E:\project\team-share-public\hk1v11-lc-cpuwr-history\images\anim\reset_domain_address_map.svg"
 
 ROW_LABEL_X = "158"          # 行标签列 x 坐标
-CHG_FIELD = "SCS_PKT_HALF"   # 变更单元格字段名
-CHG_ROW_PREFIX = "0x2F"      # 变更所在行
-CHG_ROW_NEXT = "0x30"        # 变更行的下一行标签
+CHG_FIELD = "khead_20b_sel[4:0]"   # 变更单元格字段名（1027v1）
+CHG_ROW_PREFIX = "0x1D"            # 变更所在行
+CHG_ROW_NEXT = "0x1E"              # 变更行的下一行标签
 LEGEND_TEXT = "图例"
 ROW_DELAY_S = 0.03
 
@@ -98,19 +98,19 @@ def transform(src, dst):
     if legend_start is None:
         raise ValueError("legend (图例) not found after last row")
 
-    # ---- 定位 0x2F 行的 SCS_PKT_HALF 单元格（rect + 两个 text，连续三行）----
+    # ---- 定位 0x1D 行的 khead_20b_sel[4:0] 单元格（1027v1 变更；rect + 两个 text，连续三行）----
     i2f = next(i for i in row_idxs if (get_text_content(lines[i]) or "").startswith(CHG_ROW_PREFIX))
     i30 = next(i for i in row_idxs if (get_text_content(lines[i]) or "").startswith(CHG_ROW_NEXT))
     if not i2f < i30:
-        raise ValueError("0x2F / 0x30 rows not in order")
+        raise ValueError("0x1D / 0x1E rows not in order")
     t = next((i for i in range(i2f + 1, i30)
               if CHG_FIELD in (get_text_content(lines[i]) or "")), None)
     if t is None:
         raise ValueError(f"{CHG_FIELD} cell not found in {CHG_ROW_PREFIX} row")
     if get_open_tag(lines[t - 1])[0] != "rect":
-        raise ValueError("cell <rect> not found before SCS_PKT_HALF text")
+        raise ValueError("cell <rect> not found before khead_20b_sel text")
     if get_open_tag(lines[t + 1])[0] != "text":
-        raise ValueError("cell default <text> not found after SCS_PKT_HALF text")
+        raise ValueError("cell default <text> not found after khead_20b_sel text")
     chg = (t - 1, t, t + 1)
 
     # ---- 分区: 顶部 head / N 个 row / 底部 head；背景 rect 保持顶层 ----
@@ -225,3 +225,5 @@ def main():
 
 if __name__ == "__main__":
     sys.exit(main())
+
+# ymzhu 2026-10-27 10:42

@@ -248,10 +248,11 @@
 
 ## 1. 当前版本
 
-当前最新版本为 **1023v1**（`LC_CPUWR.v` 文件头 1023v1：K1 打拍 + SCS_PKT_HALF 新寄存器 + match 首帧/幻影防护，三关全过；`LC_REG_MAPPING.v` 保持 1022v1：服务器 1022 包接口重构/EQ 编码 ECO 化/VBK_EN cs=1 初值 1）：
+当前最新版本为 **1027v1**（`LC_REG_MAPPING.v` 文件头 1027v1：新增 `khead_20b_sel[4:0]` @0x1D[7:3] 输出端口 `R_KHEAD_20B_SEL`，三关全过；`LC_CPUWR.v` 保持 1023v1 零改动：K1 打拍 + SCS_PKT_HALF + match 防护）：
 
 | 版本 | 主要状态 |
 |------|----------|
+| **1027v1** | **本地功能修改（10-27，三关全过，仅 LC_REG_MAPPING 升版）：依 HK1V11_Register_20261026.xlsm 新增 `khead_20b_sel[4:0]` @0x1D[7:3]（R/W 默认 5'b00000；5'b10101=20-bit mode / Others=40-bit mode default；无 LSI_PRTECT 门控）——LC_REG_MAPPING 新增输出 `R_KHEAD_20B_SEL[4:0]=R_REG29_F[7:3]`（十进制地址≤31 字段输出走 regmapping；上层连接挂账）；0x1D 为 Seg1 checksum 参与寄存器，存储/写/复位/读回/checksum 全部既有，写路径零改动；LC_CPUWR 保持 1023v1；Excel 登记 NO50** ✅ |
 | **1023v1** | **本地功能修改（10-23，三关全过）：①`K1_FIND_LATCH` 入口打一拍（`K1_FIND_LATCH_1D`，WCK1_A 域默认 0，chksum_mode 唯一消费者）②新增 `SCS_PKT_HALF` @ 0x2F[0]（默认 0，R/W，LSI_PRTECT，输出 `R_SCS_PKT_HALF`，上层连线挂账）③match 首帧/幻影防护（`prev_valid_a`+`frm_seen_start_a` 门控四消费点，t1 七案全覆盖，F3 帧尾全量提交时序逐拍等价）；Excel 登记 NO47/NO48/NO49** ✅ |
 | **1022v1** | **服务器 `PACK_TAR_1022V1` 状态采纳为本地最新（10-23 用户拍板）：LC_CPUWR——`update_en_a` 升模块输出、0x08[1] `reg_eq_rbc1` 默认 1→0 回退（0x08 字节 0x02→0x00，0x36 保留 0x17）；LC_REG_MAPPING——SRE/PWRC 接口重构（`PWRC_TIME` 反馈）、`VBK_EN` cs=1 初值 0→1、`CS_SET` 加 SMART_CS=111 门控并升端口、EQ 编码 ECO 化（`u_gate_eq_*`）、AUTO_EQ 加 `SDID_EQ_EN_flag`、新增 `eol_det_en`（服务器包采纳，三关不适用）** ✅ |
 | **20260929 表审查** | **非 RTL 版本（审查记录，09-29）：HK1V11_Register_20260929 全量审查通过——12 条变更全为描述类（SP_S→dummy、VBK/TP_F_AHEAD/HIZ_MIN_* 描述），Reg_1V11 零变化，三件套保持 0918v1/0920v1 不动；SP_S 链路与 HIZ_MIN_VAL 量纲 2 项待设计确认（见 §3）** ✅ |
@@ -273,6 +274,13 @@
 | 0721v1 | `LCONFIG_DATA`/`FCONFIG_DATA` 16bit→24bit（每步 3 寄存器）；checksum XOR 总量不变 ✅ |
 | 0716v1 | 新增 `FSEL[1:0]` @ `0x35`；已归档为 `0716_v1_work` ✅ |
 | 0714v1 | chip_sel=0 默认值 + `LC_REG_MAPPING` 回拼 chip_sel=1 默认值；回归通过 ✅ |
+
+1027v1 交付物：
+
+- 根级固定文件 `LC_REG_MAPPING.v`（文件头 1027v1：新增输出端口 `R_KHEAD_20B_SEL[4:0]` + assign；HDL 工作区双份同 MD5）；`LC_CPUWR.v` 保持 1023v1 零改动（0x1D 字段存储/写/复位/读回全部既有）
+- 文档：双轨 `CHANGES.md`（目录级 + 根级）+ README 升版；chip_sel0/1 地址表 MD 同步（0x1D[7:3] Reserved→`khead_20b_sel[4:0]`，初始值 5'b00000）；`back3.HK1V11_changelist.xlsx` Register Change NO50
+- 验收三关：① iverilog 受控对照（vs 1022v1 基线同命令，错误集逐行一致，20 个 INVX2 均服务器代码既有缺库）；② rtl-code-review PASS（critical=0/high=0/low=2 已知取舍）；③ rtl-signal-trace 全链路 6 跳单域 WCK1_A 无 CDC，Workflow C 未触发，读回/checksum 路径未动
+- 挂账：`R_KHEAD_20B_SEL` 上层消费连接未接（FUNCTION 侧，同 SCS_PKT_HALF 先例）；表内笔误 [7:5]/[7:3] 待反馈 spec owner
 
 1023v1 交付物：
 
@@ -355,6 +363,7 @@
 - **20260929 表审查**：12 条变更全为描述类（SP_S→dummy、VBK/TP_F_AHEAD/HIZ_MIN_* 描述），Reg_1V11 零变化，三件套保持不动；SP_S 链清理与 HIZ_MIN_VAL 量纲 2 项待设计确认（glm-5.3 团队 + captain 独立 diff 交叉）
 - **1022v1 服务器包采纳**：服务器 `PACK_TAR_1022V1` 状态采纳为本地最新（0918v1/0920v1 后服务器侧他人修改、已经允许）——LC_CPUWR `update_en_a` 升模块输出 + `reg_eq_rbc1` 默认 1→0 回退（0x08 字节 0x02→0x00）；LC_REG_MAPPING SRE/PWRC 接口重构、`VBK_EN` cs=1 初值 0→1、`CS_SET` 加 SMART_CS=111 门控、EQ 编码 ECO 化、AUTO_EQ 加 `SDID_EQ_EN_flag`、新增 `eol_det_en`
 - **1023v1 三项本地功能修改**（Agent Teams 团队执行，三关全过）：① `K1_FIND_LATCH` 打一拍（WCK1_A 域，chksum_mode 唯一消费者改用打拍信号，外部 LC_MONBLOCK/LINK_IO_CTRL 直连不变）② 新增 `SCS_PKT_HALF` @ 0x2F[0]（默认 0，LSI_PRTECT，输出 `R_SCS_PKT_HALF`，上层连线挂账；规格交叉验证 12/12）③ match 首帧/幻影防护（`prev_valid_a`+`frm_seen_start_a` 双标志门控 update_en/match_cnt/unmatch_cnt/unlock 四消费点，NG unlock 偏早 1 帧消除，F3 帧尾全量提交时序逐拍等价）
+- **1027v1 khead_20b_sel 输出**（三关全过，仅 LC_REG_MAPPING 升版）：依 HK1V11_Register_20261026.xlsm 新增 `khead_20b_sel[4:0]` @0x1D[7:3]（R/W 默认 `5'b00000`；`5'b10101`=20-bit mode / Others=40-bit mode default；无 LSI_PRTECT 门控，用户 2026-10-27 确认）——LC_REG_MAPPING 新增输出 `R_KHEAD_20B_SEL[4:0]=R_REG29_F[7:3]`（十进制地址≤31 字段输出走 regmapping；上层连接挂账）；0x1D 为 Seg1 checksum 参与寄存器，存储/写/复位/读回/checksum 全部既有，写路径零改动；LC_CPUWR 保持 1023v1 零改动
 
 ## 3. 待确认项
 
@@ -371,6 +380,7 @@
 | 上游 `CHPI_CONFIG_L0` 升 24bit | **外部依赖** | 每拍 3 字节采样；全芯片 FCONFIG 流仿真联调前提 |
 | SP_S 输出链清理 | **待设计确认（20260929）** | 规格已将 `SP_S[2:0]` @0x1D 标为 dummy register；RTL 仍驱动 LC_REG_MAPPING.v:196→LOGIC_CENTER 顶层输出。保留透传合规，断链为可选清理项 |
 | HIZ_MIN_VAL 量纲对齐 | **待设计确认（20260929）** | 规格新公式 `HIZ_MIN_VAL×4PKT+4PKT`、门控 `TP_F_AHEAD==1 & LD_F==1`；RTL CHPI_SD_CTRL.v:187 原值直用且无新门控——LD_W 计数单位是否隐含 ×4 需与规格/模拟侧对齐 |
+| `khead_20b_sel` 上层连线 | **挂账（1027v1）** | 输出 `R_KHEAD_20B_SEL[4:0]` 仅加 LC_REG_MAPPING 端口（=R_REG29_F[7:3]，无门控）；上层消费连接未接（FUNCTION 侧，ymzhu 三件套边界外，同 SCS_PKT_HALF 先例） |
 | `SCS_PKT_HALF` 上层连线 | **挂账（1023v1）** | 输出 `R_SCS_PKT_HALF` 仅加 LC_CPUWR 端口；LINK_CONFIG_CTRL/LINK_LOGIC/CHPI_SD_CTRL.v:210 消费连接未接（功能消费属上层，ymzhu 三件套边界外） |
 | SMART_CS 新编码语义 | **已决策不落地（10-23）** | HK1V11_Register_20261022 history!B3（0111=256pkt / 1111=128pkt / 其他=off）归 FUNCTION 侧，RTL CHPI_SD_CTRL 无 off 档，1023v1 不实现（用户："我只管 history 目录下的文件"） |
 | LC_CPUWR.v:2274 注释↔代码不符 | **待用户拍板** | 5'h04 拍注释称 `C^D`，mux 实为 C-only（0x0A 字节不入 XOR）——0721v1 遗留，评审 MEDIUM；修注释或补 `^DATA_D` 二选一 |
@@ -387,6 +397,7 @@
 4. 回归：checksum 全量 + I2C 读回 + reset（chip_sel=0/1）；1023v1 后补 checksum/NG-unlock 冒烟（match 防护改动）。
 5. **Loop_sel**：projectleader 确认 PIN 命名/来源后接入真实 PIN；引测点（TESTO）由相关模块处理。
 6. **SCS_PKT_HALF 上层消费**：`R_SCS_PKT_HALF` 输出端口已就位（1023v1），上层 LINK_CONFIG_CTRL/LINK_LOGIC/CHPI_SD_CTRL 连接由上层模块 owner 排期。
+7. **khead_20b_sel 上层消费**：`R_KHEAD_20B_SEL[4:0]` 输出端口已就位（1027v1，LC_REG_MAPPING 侧），上层连接由 FUNCTION 侧 owner 排期。
 
   </script>
   <script>
@@ -477,4 +488,4 @@ const article = document.getElementById('article');
 </body>
 </html>
 
-<!-- ymzhu 2026-10-26 14:55 -->
+<!-- ymzhu 2026-10-27 10:31 -->

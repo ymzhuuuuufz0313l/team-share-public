@@ -761,6 +761,23 @@ chip_sel=0/1 默认字节映射、checksum 地址覆盖、LSI 保护范围、复
 
 **SMART_CS 编码语义**（同表 history!B3：0111=256pkt / 1111=128pkt / 其他=off）**已决策不落地**——归 FUNCTION 侧（RTL CHPI_SD_CTRL 无 off 档），1023v1 不实现，仅在此留痕。
 
+## 32. 1027v1 新增 khead_20b_sel @ 0x1D[7:3]
+
+依 `HK1V11_Register_20261026.xlsm`（1022→1026 全量 diff 唯一功能变更；TESTO sheet 10-23 改动两版内容一致，无新增）：
+
+| 项 | 值 |
+|----|-----|
+| 位置 | 0x1D[7:3]（十进制 29，原 Reserved） |
+| 名称 | `khead_20b_sel[4:0]` |
+| 默认 | `5'b00000`（0x1D 字节默认仍 `0x00`） |
+| 访问 | R/W |
+| 保护 | 无 LSI_PRTECT 门控（用户 2026-10-27 确认）；0x1D 为 Seg1 checksum 参与寄存器 |
+| 功能 | `5'b10101`=20-bit mode，Others=40-bit mode（default） |
+| 输出 | LC_REG_MAPPING 新增端口 `R_KHEAD_20B_SEL[4:0] = R_REG29_F[7:3]`（纯组合、无门控；十进制地址≤31 字段输出走 regmapping；上层连接挂账） |
+| chip_sel 差异 | 字段规格 cs=0/1 一致 |
+
+零逻辑结构变更：0x1D 的存储/写入/复位（`8'h00` → 默认 `00000` ✓）/整字节读回全部既有（LC_CPUWR 保持 1023v1 零改动）；写路径与 checksum 机制不变。验收三关全过（iverilog 受控对照 / 对抗评审 critical=0 high=0 / 信号追踪单域 WCK1_A 无 CDC）。表内笔误：history 条目 `@0x1D[7:5]` vs 寄存器表正文 `[7:3]`，以正文为准（待反馈 spec owner）。
+
   </script>
   <script>
     document.getElementById('article').innerHTML = marked.parse(document.getElementById('md').textContent.trim());
@@ -850,4 +867,4 @@ const article = document.getElementById('article');
 </body>
 </html>
 
-<!-- ymzhu 2026-10-26 14:55 -->
+<!-- ymzhu 2026-10-27 10:31 -->

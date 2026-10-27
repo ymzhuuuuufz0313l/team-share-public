@@ -134,8 +134,8 @@
 <text x="666" y="621" text-anchor="middle" font-size="12" fill="#64748b">⋯ 全 Reserved ⋯（不受保护）</text>
 <text x="158" y="672" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x1D (29)</text>
 <rect x="170" y="644" width="620" height="46" fill="#bbf7d0" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="480.0" y="665" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">Reserved</text>
-<text x="480.0" y="680" text-anchor="middle" font-size="9" fill="#64748b">0</text>
+<text x="480.0" y="665" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">khead_20b_sel[4:0]</text>
+<text x="480.0" y="680" text-anchor="middle" font-size="9" fill="#64748b">5'b00000</text>
 <rect x="790" y="644" width="372" height="46" fill="#bbf7d0" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="976.0" y="665" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">SP_S[2:0]</text>
 <text x="976.0" y="680" text-anchor="middle" font-size="9" fill="#64748b">3'b000</text>

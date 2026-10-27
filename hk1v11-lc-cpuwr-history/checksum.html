@@ -360,6 +360,8 @@ LC_CPUWR 的寄存器更新核心机制：**写入一个寄存器需要连续 3 
 `unmatch_cnt_a` 在首帧 `match=0` 时也会 +1，因此 case 设计不应硬编码帧号，而应动态监测 `unlock_latch_a`。
 
 > **1023v1 更新**：首帧的"比较"与"计数"本身都是非法的（`prev_xsum_a` 复位为 0，首帧若全零会幻影 match；首帧 mismatch 又会提前污染 unlock 计数）。1023v1 已加 `prev_valid_a` + `frm_seen_start_a` 双标志防护，非法帧尾不比较、不计数（保持），详见 §9。
+>
+> **1027v1 注记**：新增 `khead_20b_sel` @0x1D[7:3] 仅为字段输出（LC_REG_MAPPING 侧），checksum 机制零改动——0x1D 为既有 Seg1 参与地址，写路径/读回/复位均不变。
 
 ### 5.3 one-shot unlock 验证陷阱
 
@@ -549,4 +551,4 @@ const article = document.getElementById('article');
 </body>
 </html>
 
-<!-- ymzhu 2026-10-26 14:55 -->
+<!-- ymzhu 2026-10-27 10:52 -->

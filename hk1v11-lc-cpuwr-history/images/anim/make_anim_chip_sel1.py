@@ -12,8 +12,8 @@ make_anim_chip_sel1.py — 确定性转换：静态 SVG -> 动画 SVG（纯 CSS�
      X = 行序号(0 基) * 0.03s。标题 / 位号列 [7]..[0] / POR 默认值 与 图例 包进
      <g class="head">（无 delay）。白色背景 rect 保持顶层静态（根 svg 本身已有白底）。
   2. 在 <svg> 内加 <style>：.row/.head 用 rowIn 淡入上移；.chg 用 chgPulse 脉冲。
-     变更单元格：0x2F 行含 SCS_PKT_HALF 的单元格（rect + 两个 text）与
-     0x08 行 label 为 reg_eq_rbc1 的单元格（rect + 两个 text）包进 <g class="chg">。
+     变更单元格：0x1D 行 label 为 khead_20b_sel[4:0] 的单元格（1027v1 变更；
+     rect + 两个 text）包进 <g class="chg">。
   3. 逐行包裹：所有源行字节内容原样保留，只插入 <g> 包裹行与 <style> 块，
      不改动任何数据文本 / 几何 / 颜色；width/height/viewBox 与源一致。
   4. 自检：a) 输出 XML well-formed；b) 源/输出全部 <text> 文本多重集完全一致；
@@ -35,7 +35,7 @@ SVG_NS = "http://www.w3.org/2000/svg"
 ROW_LABEL_RE = re.compile(r'^<text\b[^>]*\bx="158"[^>]*>\s*0x')
 LEGEND_RE = re.compile(r'>图例</text>')
 ELEM_RE = re.compile(r'^<(rect|text|circle)\b')
-CHG_MARKER_RE = re.compile(r'>\s*(SCS_PKT_HALF|reg_eq_rbc1)\s*<')
+CHG_MARKER_RE = re.compile(r'>\s*khead_20b_sel\[4:0\]\s*<')
 
 CSS = (
     ".head { opacity:0; animation: rowIn 0.4s ease forwards; }\n"
@@ -112,11 +112,10 @@ def main() -> None:
     if len(set(row_starts)) != len(row_starts):
         fail("行标签重复")
 
-    # 变更单元格定位（全文件各恰好一处）
-    n_half = sum(1 for l in body if "SCS_PKT_HALF" in l)
-    n_rbc1 = sum(1 for l in body if "reg_eq_rbc1" in l)
-    if n_half != 1 or n_rbc1 != 1:
-        fail(f"SCS_PKT_HALF/reg_eq_rbc1 出现次数异常: {n_half}/{n_rbc1}")
+    # 变更单元格定位（全文件恰好一处）
+    n_khead = sum(1 for l in body if "khead_20b_sel[4:0]" in l)
+    if n_khead != 1:
+        fail(f"khead_20b_sel[4:0] 出现次数异常: {n_khead}")
 
     # ---- 组装输出 ----
     out: list[str] = []
@@ -152,8 +151,8 @@ def main() -> None:
     out.append("</svg>")
     out.append("")  # 末尾换行
 
-    if n_chg != 2:
-        fail(f"chg 单元格包裹数异常: {n_chg}（期望 2）")
+    if n_chg != 1:
+        fail(f"chg 单元格包裹数异常: {n_chg}（期望 1，1027v1 khead_20b_sel）")
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text("\n".join(out), encoding="utf-8")
 
@@ -200,4 +199,4 @@ def main() -> None:
 if __name__ == "__main__":
     main()
 
-# ymzhu 2026-10-26 15:14
+# ymzhu 2026-10-27 10:42

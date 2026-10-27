@@ -433,6 +433,18 @@ DV env 同步继续暂缓期间，RTL 侧每个版本仍独立完成验收三关
 
 报告：`LC_CPUWR_history/markdownfile/1023v1/`（对拍 + 角相位 + 信号追踪）+ `1023v1_rtl/`（guard TB + 评审 + 实施报告）。
 
+## 10. 1027v1 验收：三关（无重定时，无对拍 TB）
+
+1027v1 为**纯组合直通输出**（`R_KHEAD_20B_SEL[4:0] = R_REG29_F[7:3]`，与既有 SP_S 同输入同域），无打拍/移 tap/换域——G13 重定时条款不触发，不需要对拍 TB：
+
+| 关卡 | 口径 | 结果 |
+|------|------|------|
+| ① iverilog | **受控对照**：1027v1 vs 1022v1 基线同命令（`-Wall` + HDL_define.v） | 错误集逐行一致（20 个 INVX2 均 1022v1 服务器代码既有标准单元缺库，行号偏移 +9），无新增错误 |
+| ② rtl-code-review | 对抗评审（ruthless） | **PASS（critical=0/high=0/low=2）**——low 均为已知取舍（上层悬空挂账、ILA 探针未含新信号） |
+| ③ rtl-signal-trace | I2C 写 0x1D → R_KHEAD_20B_SEL 全链路 | 6 跳单域 WCK1_A 无 CDC；Workflow C 未触发（无重定时）；读回/checksum 路径未动 |
+
+**DV 侧影响**：无——0x1D 的 I2C 读写行为、checksum 行为、复位行为均不变（仅语义命名 Reserved→khead_20b_sel），现有 case 无需新增。
+
   </script>
   <script>
     document.getElementById('article').innerHTML = marked.parse(document.getElementById('md').textContent.trim());
@@ -522,4 +534,4 @@ const article = document.getElementById('article');
 </body>
 </html>
 
-<!-- ymzhu 2026-10-26 14:55 -->
+<!-- ymzhu 2026-10-27 10:52 -->

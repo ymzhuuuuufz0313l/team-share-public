@@ -370,7 +370,7 @@
     <div class="hero-inner">
       <div class="kicker">HK1V11 · TCON · CPU 写寄存器接口</div>
       <h1>LC_CPUWR<br>代码修改<span class="thin">全记录</span></h1>
-      <p class="lead">一个寄存器接口模块六个月的演进档案：从 0612 基线重构，到 1022v1 服务器版采纳，再到 1023v1 K1 打拍 / match 首帧幻影防护 / SCS_PKT_HALF 新寄存器。</p>
+      <p class="lead">一个寄存器接口模块六个月的演进档案：从 0612 基线重构，到 1022v1 服务器版采纳，再到 1023v1 K1 打拍 / match 首帧幻影防护 / SCS_PKT_HALF 新寄存器，直至 1027v1 khead_20b_sel 输出端口。</p>
       <div class="meta">
         <span>AUTHOR <b>ymzhuuuu</b></span>
         <span>SPAN <b>2026-04 → 2026-10</b></span>
@@ -382,8 +382,8 @@
       </div>
       <div class="reg">
         CURRENT
-        <span class="ver">1023v1</span>
-        REV 2026-10-23
+        <span class="ver">1027v1</span>
+        REV 2026-10-27
       </div>
     </div>
   </header>
@@ -392,15 +392,15 @@
     <div class="latest">
       <div class="badge">
         <span class="tag">LATEST</span>
-        <span class="num">1023v1</span>
+        <span class="num">1027v1</span>
       </div>
       <div class="body">
-        <div class="t">1023v1 · K1 打拍 + SCS_PKT_HALF 新寄存器 + match 首帧/幻影防护（10-23，本地功能修改，三关全过）</div>
+        <div class="t">1027v1 · khead_20b_sel @0x1D[7:3] 输出端口（10-27，本地功能修改，三关全过）</div>
         <ul>
-          <li><code>K1_FIND_LATCH</code> 入口打一拍（<code>K1_FIND_LATCH_1D</code>，WCK1_A 域默认 0），<code>chksum_mode</code> 唯一消费者改用打拍信号</li>
-          <li>新增 <code>SCS_PKT_HALF</code> @ 0x2F[0]（默认 0，R/W，LSI_PRTECT，输出 <code>R_SCS_PKT_HALF</code>，上层连线挂账）</li>
-          <li>match 比较加 <code>prev_valid_a</code> + <code>frm_seen_start_a</code> 双标志防护：首帧/全零帧幻影命中、截断帧、残帧不再非法比较或计数（t1 七案全覆盖，帧尾全量提交时序逐拍等价）</li>
-          <li>前置：1022v1 采纳服务器 1022 包为本地最新（<code>reg_eq_rbc1</code> 默认 1→0 回退等，详见时间线）</li>
+          <li>依 HK1V11_Register_20261026.xlsm 新增 <code>khead_20b_sel[4:0]</code> @ 0x1D[7:3]（R/W 默认 <code>5'b00000</code>；<code>5'b10101</code>=20-bit mode / Others=40-bit mode default，无 LSI_PRTECT 门控）</li>
+          <li>LC_REG_MAPPING 新增输出 <code>R_KHEAD_20B_SEL[4:0] = R_REG29_F[7:3]</code>（十进制地址≤31 字段输出走 regmapping；上层连接挂账）</li>
+          <li>0x1D 为 Seg1 checksum 参与寄存器：存储/写/复位/读回全部既有，写路径与 checksum 机制零改动；LC_CPUWR 保持 1023v1 零改动</li>
+          <li>前置：1023v1 K1 打拍 / SCS_PKT_HALF / match 防护（详见时间线）</li>
         </ul>
       </div>
       <a class="more" href="./timeline.html">全部版本演进 →</a>
@@ -408,7 +408,7 @@
 
     <div class="stats">
       <div class="stat"><div class="v">8</div><div class="k">章节页面</div></div>
-      <div class="stat"><div class="v">40</div><div class="k">归档版本（0612 → 1023v1）</div></div>
+      <div class="stat"><div class="v">41</div><div class="k">归档版本（0612 → 1027v1）</div></div>
       <div class="stat"><div class="v">3</div><div class="k">道验收关（iverilog / review / trace）</div></div>
       <div class="stat"><div class="v">06-15</div><div class="k">归档体系建立</div></div>
     </div>
@@ -416,13 +416,13 @@
     <div class="section-title">章节索引</div>
     <div class="chapter-grid">
       <a class="chapter-card" href="./intro.html"><div class="num">01</div><div class="title">引言与归档体系</div><div class="desc">模块定位、目录结构与归档规则</div></a>
-      <a class="chapter-card" href="./diagrams.html"><div class="num">02</div><div class="title">寄存器图解 Sheet<span class="star">先看图</span></div><div class="desc">chip_sel 默认字节映射、checksum、LSI、复位域、0721v1 拍重组对照（1023v1 数据 + 动画版）</div></a>
-      <a class="chapter-card" href="./timeline.html"><div class="num">03</div><div class="title">核心变更时间线</div><div class="desc">从 0612 基线重构到 1023v1 K1 打拍 / match 防护 / SCS_PKT_HALF</div></a>
-      <a class="chapter-card" href="./checksum.html"><div class="num">04</div><div class="title">校验和机制演进</div><div class="desc">双段 checksum、NG Unlock、Seg2 删除、1023v1 首帧/幻影防护</div></a>
-      <a class="chapter-card" href="./regmap.html"><div class="num">05</div><div class="title">寄存器映射与命名规范化</div><div class="desc">位段迁移、chip_sel 默认值、十进制命名、1022v1 rbc 回退、1023v1 SCS_PKT_HALF</div></a>
+      <a class="chapter-card" href="./diagrams.html"><div class="num">02</div><div class="title">寄存器图解 Sheet<span class="star">先看图</span></div><div class="desc">chip_sel 默认字节映射、checksum、LSI、复位域、0721v1 拍重组对照（1027v1 数据 + 动画版）</div></a>
+      <a class="chapter-card" href="./timeline.html"><div class="num">03</div><div class="title">核心变更时间线</div><div class="desc">从 0612 基线重构到 1027v1 khead_20b_sel 输出端口</div></a>
+      <a class="chapter-card" href="./checksum.html"><div class="num">04</div><div class="title">校验和机制演进</div><div class="desc">双段 checksum、NG Unlock、Seg2 删除、1023v1 首帧/幻影防护（1027v1 机制不变）</div></a>
+      <a class="chapter-card" href="./regmap.html"><div class="num">05</div><div class="title">寄存器映射与命名规范化</div><div class="desc">位段迁移、chip_sel 默认值、十进制命名、1022v1 rbc 回退、1023v1 SCS_PKT_HALF、1027v1 khead_20b_sel</div></a>
       <a class="chapter-card" href="./register-research.html"><div class="num">06</div><div class="title">寄存器规格交叉验证</div><div class="desc">RTL / Excel / 地址映射三方核对、属性总表</div></a>
       <a class="chapter-card" href="./verification.html"><div class="num">07</div><div class="title">验证同步与 Checker 统一</div><div class="desc">checker 迁移、case 同步、仿真计划</div></a>
-      <a class="chapter-card" href="./status.html"><div class="num">08</div><div class="title">当前状态与后续</div><div class="desc">1023v1 状态、SCS_PKT_HALF 上层连线挂账、BCC 待接入、DV 待同步</div></a>
+      <a class="chapter-card" href="./status.html"><div class="num">08</div><div class="title">当前状态与后续</div><div class="desc">1027v1 状态、khead_20b_sel / SCS_PKT_HALF 上层连线挂账、BCC 待接入、DV 待同步</div></a>
     </div>
 
     <div class="footer">SHARED FROM TEAM KNOWLEDGE BASE</div>
@@ -457,4 +457,4 @@
 </body>
 </html>
 
-<!-- ymzhu 2026-10-26 14:55 -->
+<!-- ymzhu 2026-10-27 10:52 -->

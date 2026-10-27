@@ -364,6 +364,16 @@
 
 报告：`LC_CPUWR_history/markdownfile/1023v1_xcheck/scs_pkt_half_spec_xcheck.md`。
 
+## 8. HK1V11_Register_20261026.xlsm 全量 diff（1027v1）
+
+2026-10-27，对 1026 新表与 1022 旧表执行 COM 全量 dump 逐 sheet diff（两文件 1875/1883 行，diff 仅 4 个 hunk）：
+
+- **hunk ①②（history sheet）**：+2 条变更条目——10-26 `khead_20b_sel`（0x1D[7:3]，R/W 默认 5'b00000，5'b10101=20-bit mode / Others=40-bit mode default）与 10-23 TESTO_SEL 表；后者在 1022 文件中已存在，**无新增**
+- **hunk ③④（Reg_1V11 / Reg_description_F_CHIP_SEL=1 / =0）**：0x1D 行字段列 `[7:3] Reserved` → `khead_20b_sel[4:0]`；SP_S[2:0] 保留不变
+- **TESTO sheet**：两版逐字节一致，无动作
+- **errata**：history 条目写 `@0x1D[7:5]`，寄存器表正文为 `[7:3]`（5bit 与 [4:0] 对应）——以正文为准，待反馈 spec owner
+- **落地**：LC_REG_MAPPING 1027v1 新增输出 `R_KHEAD_20B_SEL[4:0] = R_REG29_F[7:3]`（无 LSI_PRTECT 门控，用户 2026-10-27 确认；≤31 十进制地址字段输出走 regmapping）；LC_CPUWR 零功能改动（字段存储/写/复位/读回/checksum 全部既有）
+
 这些事项与 [八、当前状态与后续](./status.html) 中的待确认项相互引用。
 
     </script>
@@ -455,4 +465,4 @@ const article = document.getElementById('article');
 </body>
 </html>
 
-<!-- ymzhu 2026-10-26 14:55 -->
+<!-- ymzhu 2026-10-27 10:52 -->
