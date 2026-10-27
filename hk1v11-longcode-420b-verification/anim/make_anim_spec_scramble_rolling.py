@@ -1,21 +1,21 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""make_anim_spec_scramble_rolling.py
-把 spec_scramble_rolling.svg 转成纯 CSS 动画 SVG（确定性分组变换，无手工编辑）。
+"""make_anim_spec_scramble_rolling.py  (v2 — Motion Kit v2)
 
-特效：
-- 标题（head）/ 编码前行（.row 0.10s）/ 编码后行（.row 0.20s）/
-  图例条组（.row 0.30s，含绿色"加扰区间"bar breathe 呼吸）/
-  右侧小图例（head 0.30s）/ LFSR 回环+标签（.row 0.40s）/ n+1 行（.row 0.50s）
-- 绿色虚线反馈回环（LFSR 连续，d="M 660 292 C 700 320 660 360 620 372 L 220 372 L 220 388"）
-  复制为 flowdot（#059669），L 由 Python 采样三次贝塞尔+线段精确计算 —— 关键"滚动"动效
-- 纯 CSS <style>，无 script，无外部资源；
-  零改动数据文本/几何/颜色/width/height/viewBox
+按 MOTION_KIT.md §4.5 把 spec_scramble_rolling.svg 升级为 v2 动画：
+- 入场编排（row/head）：标题(0) → 编码前(0.2) → 编码后(0.5) → 三条横条
+  (0.85/0.95/1.05) → LFSR 回环(1.15) → n+1 行(1.25) → 图例(1.4)
+- draw：编码前→编码后 ↓箭头；三条横条（rect）加 pathLength="100" 依次绘出
+  （0.55s，错 0.1s）
+- march：绿色虚线 LFSR 反馈环持续行进
+- flow：绿条 1 包、蓝条 1 包（左→右，错 phase）
+- cellwave：编码后行 K5~K8 黄格 + 末尾 K5（0.3s 递增，2.4s 周期）
+- glow-g（1）："n 行截止状态 → n+1 行起始状态（LFSR 连续）" 注释
 
-自检：1 XML well-formed  2 <text> 多重集==源  3 无 <script>
-     4 ≥1 @keyframes  5 <svg> 开头标签一致  6 size>1024  7 打印分组计数
+铁律：源 SVG 只读；text 多重集 / <svg> 开标签 / 几何颜色零改动；纯 CSS 无
+script；kit <style> 逐字嵌入为第 3 行（第 2 行字体 <style> 原样保留）；
+确定性幂等（只依赖源文件内容）。
 """
-import math
 import re
 import sys
 import xml.etree.ElementTree as ET
@@ -25,206 +25,214 @@ from pathlib import Path
 BASE = Path(r"E:\project\team-share-public\hk1v11-longcode-420b-verification")
 SRC = BASE / "spec_scramble_rolling.svg"
 OUT = BASE / "anim" / "spec_scramble_rolling.svg"
+NAME = "make_anim_spec_scramble_rolling"
+
+# MOTION_KIT.md §2 — 逐字（不得增删类）
+KIT_STYLE = (
+    "<style>\n"
+    ".row{opacity:0;animation:rowIn .5s cubic-bezier(.22,.7,.3,1) forwards}\n"
+    ".head{opacity:0;animation:rowIn .5s cubic-bezier(.22,.7,.3,1) forwards}\n"
+    "@keyframes rowIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}\n"
+    ".draw{stroke-dasharray:100;animation:drawIn .55s ease-out forwards}\n"
+    "@keyframes drawIn{from{stroke-dashoffset:100}to{stroke-dashoffset:0}}\n"
+    ".fade{opacity:0;animation:fadeIn .6s ease forwards}\n"
+    "@keyframes fadeIn{to{opacity:1}}\n"
+    ".fademarch{opacity:0;animation:fadeIn .6s ease forwards,march 1.8s linear infinite}\n"
+    ".breathe{animation:br 3.2s ease-in-out infinite}\n"
+    "@keyframes br{0%,100%{opacity:1}50%{opacity:.55}}\n"
+    ".cellwave{animation:wave 3s ease-in-out infinite}\n"
+    "@keyframes wave{0%,100%{opacity:1}50%{opacity:.68}}\n"
+    ".march{animation:march 1.8s linear infinite}\n"
+    "@keyframes march{to{stroke-dashoffset:-16}}\n"
+    ".flowdot{fill:none;stroke-linecap:round;stroke-dasharray:12 88;animation:flow 2s linear infinite}\n"
+    "@keyframes flow{to{stroke-dashoffset:-100}}\n"
+    ".glow-b{animation:glowB 2.8s ease-in-out infinite}\n"
+    "@keyframes glowB{0%,100%{filter:drop-shadow(0 0 0 rgba(37,99,235,0))}50%{filter:drop-shadow(0 0 6px rgba(37,99,235,.85))}}\n"
+    ".glow-g{animation:glowG 2.8s ease-in-out infinite}\n"
+    "@keyframes glowG{0%,100%{filter:drop-shadow(0 0 0 rgba(22,163,74,0))}50%{filter:drop-shadow(0 0 6px rgba(22,163,74,.85))}}\n"
+    ".glow-o{animation:glowO 2.8s ease-in-out infinite}\n"
+    "@keyframes glowO{0%,100%{filter:drop-shadow(0 0 0 rgba(217,119,6,0))}50%{filter:drop-shadow(0 0 6px rgba(217,119,6,.85))}}\n"
+    ".step{animation:stepLit 6s ease-in-out infinite}\n"
+    "@keyframes stepLit{0%,16%{filter:drop-shadow(0 0 7px rgba(37,99,235,.9))}24%,92%{filter:drop-shadow(0 0 0 rgba(37,99,235,0))}100%{filter:drop-shadow(0 0 7px rgba(37,99,235,.9))}}\n"
+    "@media (prefers-reduced-motion:reduce){*{animation:none!important}.row,.head,.fade,.fademarch{opacity:1!important}.flowdot{display:none!important}}\n"
+    "</style>"
+)
 
 
-def path_length(d, n=200):
-    """绝对 M/L/C 段路径总长；C 段按 n 点采样。"""
-    segs = re.findall(r"([MCL])\s*([-\d.]+(?:\s+[-\d.]+)*)", d)
-    pts = []
-    cur = None
-    for cmd, args in segs:
-        nums = [float(x) for x in args.split()]
-        if cmd == "M":
-            cur = (nums[0], nums[1])
-            pts.append(cur)
-        elif cmd == "L":
-            cur = (nums[0], nums[1])
-            pts.append(cur)
-        elif cmd == "C":
-            p0, p1, p2, p3 = cur, (nums[0], nums[1]), (nums[2], nums[3]), (nums[4], nums[5])
-            for k in range(1, n + 1):
-                t = k / n
-                u = 1 - t
-                x = u**3*p0[0] + 3*u*u*t*p1[0] + 3*u*t*t*p2[0] + t**3*p3[0]
-                y = u**3*p0[1] + 3*u*u*t*p1[1] + 3*u*t*t*p2[1] + t**3*p3[1]
-                pts.append((x, y))
-            cur = p3
-    return sum(math.hypot(b[0]-a[0], b[1]-a[1]) for a, b in zip(pts, pts[1:]))
+def idx(lines, *subs, lo=0):
+    """唯一命中含全部子串的行号（assert 保护）。"""
+    hits = [i for i in range(lo, len(lines)) if all(s in lines[i] for s in subs)]
+    assert len(hits) == 1, f"锚点非唯一命中 {subs}: {hits}"
+    return hits[0]
 
 
-def _f(x):
-    """CSS 数值：整数去小数点，否则 3 位小数。"""
-    xf = float(x)
-    return str(int(xf)) if xf.is_integer() else f"{xf:.3f}".rstrip("0").rstrip(".")
+def tag_draw(line, delay):
+    """给自闭合元素加 class="draw" pathLength="100" + delay。"""
+    assert line.rstrip().endswith("/>"), f"非自闭合元素: {line}"
+    return (line.rstrip()[:-2].rstrip()
+            + f' class="draw" pathLength="100" style="animation-delay:{delay}s"/>')
+
+
+def tag_class(line, cls, extra=""):
+    assert line.rstrip().endswith("/>"), f"非自闭合元素: {line}"
+    ins = f' class="{cls}"' + (f' {extra}' if extra else "")
+    return line.rstrip()[:-2].rstrip() + ins + "/>"
 
 
 def build():
     raw = SRC.read_text(encoding="utf-8", newline="")
     eol = "\r\n" if "\r\n" in raw else "\n"
     lines = raw.split(eol)
-    tail_nl = raw.endswith(eol)
-
+    tail = raw.endswith(eol)
     assert lines[0].lstrip().startswith("<svg"), "line1 应为 <svg>"
+    assert lines[1].lstrip().startswith("<style"), "line2 应为字体 <style>"
     assert lines[-1].strip() == "</svg>", "末行应为 </svg>"
+
+    # ---- 结构锚点（源行号，0 基） ----
+    title = idx(lines, "滚动机制")
+    subtitle = title + 1
+    assert "scramble" in lines[subtitle].lower()
+    pre_label = idx(lines, ">编码前<")
+    arrow = idx(lines, '<line x1="470" y1="158"')
+    arrow_label = arrow + 1
+    assert "编码后" in lines[arrow_label]
+    post_label = idx(lines, ">编码后<", lo=arrow_label + 1)
+    bar_g = idx(lines, '<rect x="120" y="282"', 'fill="#16a34a"')
+    bar_o = idx(lines, '<rect x="120" y="304"', 'fill="#ea580c"')
+    bar_b = idx(lines, '<rect x="214" y="326"', 'fill="#2563eb"')
+    bar_label = idx(lines, "加扰区间")
+    bar_note = idx(lines, "K 码期间 scramble 停止滚动", lo=bar_label + 1)
+    sw1 = idx(lines, '<rect x="1010" y="282"')
+    loop = idx(lines, "<path", "M 660 292")
+    loop_label = loop + 1
+    assert "LFSR" in lines[loop_label]
+    next_label = idx(lines, ">n+1 行<")
+    bar_low = idx(lines, '<rect x="120" y="444"')
+    low_label = bar_low + 1
+    assert "继续滚动" in lines[low_label]
     end = len(lines) - 1
 
-    # ---- 按内容定位结构单元 ----
-    title_i = next(i for i in range(2, end) if "滚动机制" in lines[i])
-    subtitle_i = title_i + 1
-    assert "scramble" in lines[subtitle_i].lower(), "标题下一行应为副标题"
+    # 编码后行黄格（K5~K8 + 末尾 K5）：rect(x, y=210, #fef9c3) 与其 text 成对
+    yellow = [(i, i + 1) for i in range(post_label, bar_g)
+              if lines[i].strip().startswith("<rect") and 'fill="#fef9c3"' in lines[i]
+              and 'y="210"' in lines[i]]
+    for r, t in yellow:
+        assert lines[t].strip().startswith("<text"), "黄格 rect 后应紧跟 text"
+    assert len(yellow) == 5, f"黄格应为 5 组，实际 {len(yellow)}"
 
-    pre_i = next(i for i in range(subtitle_i + 1, end) if ">编码前<" in lines[i])
-    arrow_i = next(i for i in range(pre_i + 1, end) if 'x1="470" y1="158"' in lines[i])
-    assert lines[arrow_i].strip().startswith("<line"), "编码箭头应为 <line>"
-    pre_start, pre_end = pre_i, arrow_i - 1
-    assert pre_end >= pre_start, "编码前行应为非空段"
+    out = [lines[0], lines[1], KIT_STYLE.replace("\n", eol)]
+    out.extend(lines[2:title])          # defs + 背景白 rect
 
-    bar_start = next(i for i in range(arrow_i + 1, end)
-                     if lines[i].strip().startswith("<rect")
-                     and 'y="282"' in lines[i] and 'width="540"' in lines[i])
-    assert 'fill="#16a34a"' in lines[bar_start], "图例首条应为绿色加扰区间 bar"
-    post_start, post_end = arrow_i, bar_start - 1
-    assert post_end >= post_start, "编码后行应为非空段"
-
-    swatch_start = next(i for i in range(bar_start + 1, end)
-                        if lines[i].strip().startswith('<rect x="1010"'))
-    bar_end = swatch_start - 1
-
-    loop_i = next(i for i in range(swatch_start, end)
-                  if lines[i].strip().startswith("<path") and "M 660 292" in lines[i])
-    loop_label_i = loop_i + 1
-    assert "LFSR" in lines[loop_label_i], "回环次行应为 LFSR 标签"
-
-    next_i = next(i for i in range(loop_label_i + 1, end) if ">n+1 行<" in lines[i])
-    next_start, next_end = next_i, end - 1
-    assert next_end >= next_start, "n+1 行应为非空段"
-
-    m = re.search(r'd="([^"]+)"', lines[loop_i])
-    d_loop = m.group(1)
-    L = path_length(d_loop)
-    P = L + 88   # keyframes 位移区间 / dash 周期
-    G = L + 80   # dash gap
-
-    style = (
-        "<style>\n"
-        ".row { opacity:0; animation: rowIn 0.4s ease forwards; }\n"
-        "@keyframes rowIn { from { opacity:0; transform: translateY(6px); } to { opacity:1; transform: none; } }\n"
-        ".head { opacity:0; animation: rowIn 0.4s ease forwards; }\n"
-        ".breathe { animation: br 3.2s ease-in-out infinite; }\n"
-        "@keyframes br { 0%,100% { opacity:1; } 50% { opacity:0.55; } }\n"
-        f".flowdot {{ stroke-dasharray: 8 {_f(G)}; animation: pkt1 {_f(P / 150.0)}s linear infinite; }}\n"
-        f"@keyframes pkt1 {{ from {{ stroke-dashoffset: {_f(P)}; }} to {{ stroke-dashoffset: 0; }} }}\n"
-        "@media (prefers-reduced-motion: reduce) { * { animation: none !important; } .row, .head { opacity: 1 !important; } }\n"
-        "</style>"
-    )
-
-    # ---- 组装 ----
-    out = []
-    out.append(lines[0])            # <svg ...>（width/height/viewBox 原样）
-    out.append(style)               # 动画 <style>（紧随 line 1）
-    out.append(lines[1])            # 字体 <style>（KEEP）
-    out.extend(lines[2:title_i])    # defs + 白色背景 rect
-
-    out.append('<g class="head">')                                # 标题 + 副标题
-    out.extend(lines[title_i:subtitle_i + 1])
+    # 标题(0)
+    out.append('<g class="head">')
+    out.extend(lines[title:subtitle + 1])
     out.append("</g>")
 
-    out.append('<g class="row" style="animation-delay:0.10s">')   # 编码前行
-    out.extend(lines[pre_start:pre_end + 1])
+    # 编码前(0.2)：标签 + 全部格子
+    out.append('<g class="row" style="animation-delay:0.2s">')
+    out.extend(lines[pre_label:arrow])
     out.append("</g>")
 
-    out.append('<g class="row" style="animation-delay:0.20s">')   # 编码后行（含下行箭头/标签）
-    out.extend(lines[post_start:post_end + 1])
+    # 编码前→编码后 ↓箭头：draw（源面板 delay 0.5 + 0.35 = 0.85），标签 fade
+    out.append('<g class="fade" style="animation-delay:0.85s">')
+    out.append(tag_draw(lines[arrow], 0.85))
+    out.append(lines[arrow_label])
     out.append("</g>")
 
-    out.append('<g class="row" style="animation-delay:0.30s">')   # 图例条组（3 bar + 左标签 + 灰注）
-    i = bar_start
-    while i <= bar_end:
-        if i == bar_start:
-            out.append('<g class="breathe">')   # 绿色"加扰区间"bar 呼吸
-            out.append(lines[i])
-            out.append("</g>")
-        else:
-            out.append(lines[i])
-        i += 1
+    # 编码后(0.5)：标签 + 格子；黄格 cellwave（0.3s 递增，2.4s 周期）
+    out.append('<g class="row" style="animation-delay:0.5s">')
+    out.extend(lines[post_label:yellow[0][0]])
+    for k, (r, t) in enumerate(yellow):
+        out.append('<g class="cellwave" style="animation-duration:2.4s;animation-delay:%gs">' % (0.3 * k))
+        out.extend(lines[r:t + 1])
+        out.append("</g>")
+        if k < len(yellow) - 1:
+            nxt = yellow[k + 1][0]
+            out.extend(lines[t + 1:nxt])
+    out.extend(lines[yellow[-1][1] + 1:bar_g])
     out.append("</g>")
 
-    out.append('<g class="head" style="animation-delay:0.30s">')  # 右侧小图例
-    out.extend(lines[swatch_start:loop_i])
+    # 三条横条：row 入场 + rect .draw 依次绘出（0.85/0.95/1.05）；
+    # 绿/蓝条各 1 包 flowdot（左→右，错 phase）
+    out.append('<g class="row" style="animation-delay:0.85s">')
+    out.append(lines[bar_label])
+    out.append(tag_draw(lines[bar_g], 0.85))
+    out.append('<path class="flowdot" d="M 120 287 L 660 287" stroke="#16a34a" '
+               'stroke-width="2.5" pathLength="100" '
+               'style="animation-duration:1.6s;animation-delay:1.9s"/>')
+    out.append("</g>")
+    out.append('<g class="row" style="animation-delay:0.95s">')
+    out.append(lines[bar_note])
+    out.append(tag_draw(lines[bar_o], 0.95))
+    out.append("</g>")
+    out.append('<g class="row" style="animation-delay:1.05s">')
+    out.append(tag_draw(lines[bar_b], 1.05))
+    out.append('<path class="flowdot" d="M 214 331 L 570 331" stroke="#2563eb" '
+               'stroke-width="2.5" pathLength="100" '
+               'style="animation-duration:1.6s;animation-delay:2.6s"/>')
     out.append("</g>")
 
-    out.append('<g class="row" style="animation-delay:0.40s">')   # LFSR 回环 + 标签 + flowdot
-    out.append(lines[loop_i])
-    out.append(f'<path class="flowdot" d="{d_loop}" fill="none" '
-               'stroke="#059669" stroke-width="2.5" stroke-linecap="round"/>')
-    out.append(lines[loop_label_i])
+    # 图例(1.4)
+    out.append('<g class="head" style="animation-delay:1.4s">')
+    out.extend(lines[sw1:loop])
     out.append("</g>")
 
-    out.append('<g class="row" style="animation-delay:0.50s">')   # n+1 行
-    out.extend(lines[next_start:next_end + 1])
+    # LFSR 回环(1.15)：绿色虚线环 .march 持续行进；标签 glow-g
+    out.append('<g class="row" style="animation-delay:1.15s">')
+    out.append(tag_class(lines[loop], "march"))
+    out.append('<g class="glow-g" style="animation-delay:1.4s">')
+    out.append(lines[loop_label])
+    out.append("</g>")
+    out.append("</g>")
+
+    # n+1 行(1.25)：标签 + 格子 + 底部"scramble 继续滚动"绿条 + 注释
+    out.append('<g class="row" style="animation-delay:1.25s">')
+    out.extend(lines[next_label:bar_low])
+    out.append(lines[bar_low])
+    out.append(lines[low_label])
     out.append("</g>")
 
     out.append(lines[end])
-    text = eol.join(out)
-    if tail_nl:
-        text += eol
+    text = eol.join(out) + (eol if tail else "")
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(text, encoding="utf-8", newline="")
-    return L
-
-
-NS = "{http://www.w3.org/2000/svg}"
 
 
 def check():
     import os
+    NS = "{http://www.w3.org/2000/svg}"
     res = {}
     try:
         ET.parse(str(OUT))
         res["xml"] = "OK"
     except ET.ParseError as e:
-        res["xml"] = f"NG: {e}"
-        return res
-
-    def texts(p):
-        root = ET.parse(str(p)).getroot()
-        return Counter(el.text or "" for el in root.iter(f"{NS}text"))
-
-    try:
-        res["text_multiset"] = "OK" if texts(SRC) == texts(OUT) else "NG"
-    except ET.ParseError as e:
-        res["text_multiset"] = f"NG: {e}"
-
+        res["xml"] = f"NG {e}"
+    texts = lambda p: Counter(el.text or "" for el in
+                              ET.parse(str(p)).getroot().iter(f"{NS}text"))
+    res["text"] = "OK" if texts(SRC) == texts(OUT) else "NG"
     data = OUT.read_text(encoding="utf-8")
-    res["no_script"] = "OK" if "<script" not in data else "NG"
-    nk = data.count("@keyframes")
-    res["keyframes"] = f"OK ({nk})" if nk >= 1 else "NG"
-
-    def svgtag(p):
-        m = re.search(r"<svg[^>]*>", p.read_text(encoding="utf-8"))
-        return m.group(0) if m else ""
-
-    res["svg_tag"] = "OK" if svgtag(SRC) == svgtag(OUT) else "NG"
-    size = os.path.getsize(OUT)
-    res["size"] = f"OK ({size} bytes)" if size > 1024 else "NG"
-    res["groups"] = (
-        f"row={data.count('class=\"row\"')} head={data.count('class=\"head\"')} "
-        f"breathe={data.count('class=\"breathe\"')} flowdot={data.count('class=\"flowdot\"')}"
-    )
-    return res
+    res["noscript"] = "OK" if "<script" not in data else "NG"
+    res["keyframes"] = "OK" if data.count("@keyframes") >= 4 else "NG"
+    tag = lambda p: re.search(r"<svg[^>]*>", p.read_text(encoding="utf-8")).group(0)
+    res["svgtag"] = "OK" if tag(SRC) == tag(OUT) else "NG"
+    res["size"] = "OK" if os.path.getsize(OUT) > 1024 else "NG"
+    res["rmfix"] = "OK" if (
+        re.search(r"prefers-reduced-motion.*?flowdot\{display:none!important\}", data, re.S)
+        and re.search(r"prefers-reduced-motion.*?opacity:1!important", data, re.S)
+    ) else "NG"
+    for k, v in res.items():
+        print(f"  {k}: {v}")
+    return all(v == "OK" for v in res.values())
 
 
 def main():
-    L = build()
-    res = check()
-    print(f"[make_anim_spec_scramble_rolling] L_loop={L:.2f}")
-    for k, v in res.items():
-        print(f"  {k}: {v}")
-    ok = all(str(v).startswith("OK") for k, v in res.items() if k != "groups")
+    build()
+    print(f"[{NAME}]")
+    ok = check()
     print("  RESULT:", "PASS" if ok else "FAIL")
     sys.exit(0 if ok else 1)
 
 
 if __name__ == "__main__":
     main()
-# ymzhu 2026-10-26 18:41
+# ymzhu 2026-10-27 10:20

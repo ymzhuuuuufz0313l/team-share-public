@@ -1,20 +1,32 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 980" width="1200" height="980">
-<style>
-.row { opacity:0; animation: rowIn 0.4s ease forwards; }
-@keyframes rowIn { from { opacity:0; transform: translateY(6px); } to { opacity:1; transform: none; } }
-.head { opacity:0; animation: rowIn 0.4s ease forwards; }
-.breathe { animation: br 3.2s ease-in-out infinite; }
-@keyframes br { 0%,100% { opacity:1; } 50% { opacity:0.55; } }
-.flowdot { fill:none; }
-/* flow packet 1: blue serial 20-bit | L=393 | period=3.2067s */
-.f1 { stroke-dasharray: 8 473; animation: pkt1 3.2067s linear infinite; }
-@keyframes pkt1 { from { stroke-dashoffset: 481; } to { stroke-dashoffset: 0; } }
-/* flow packet 2: green offline tap | L=1472 | period=10.4s */
-.f2 { stroke-dasharray: 8 1552; animation: pkt2 10.4s linear infinite; animation-delay: 1.6s; }
-@keyframes pkt2 { from { stroke-dashoffset: 1560; } to { stroke-dashoffset: 0; } }
-@media (prefers-reduced-motion:reduce){*{animation:none!important}.row,.head{opacity:1!important}}
-</style>
   <style>text { font-family: 'Helvetica Neue', Helvetica, Arial, 'PingFang SC', 'Microsoft YaHei', 'Microsoft JhengHei', 'SimHei', sans-serif; }</style>
+<style>
+.row{opacity:0;animation:rowIn .5s cubic-bezier(.22,.7,.3,1) forwards}
+.head{opacity:0;animation:rowIn .5s cubic-bezier(.22,.7,.3,1) forwards}
+@keyframes rowIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.draw{stroke-dasharray:100;animation:drawIn .55s ease-out forwards}
+@keyframes drawIn{from{stroke-dashoffset:100}to{stroke-dashoffset:0}}
+.fade{opacity:0;animation:fadeIn .6s ease forwards}
+@keyframes fadeIn{to{opacity:1}}
+.fademarch{opacity:0;animation:fadeIn .6s ease forwards,march 1.8s linear infinite}
+.breathe{animation:br 3.2s ease-in-out infinite}
+@keyframes br{0%,100%{opacity:1}50%{opacity:.55}}
+.cellwave{animation:wave 3s ease-in-out infinite}
+@keyframes wave{0%,100%{opacity:1}50%{opacity:.68}}
+.march{animation:march 1.8s linear infinite}
+@keyframes march{to{stroke-dashoffset:-16}}
+.flowdot{fill:none;stroke-linecap:round;stroke-dasharray:12 88;animation:flow 2s linear infinite}
+@keyframes flow{to{stroke-dashoffset:-100}}
+.glow-b{animation:glowB 2.8s ease-in-out infinite}
+@keyframes glowB{0%,100%{filter:drop-shadow(0 0 0 rgba(37,99,235,0))}50%{filter:drop-shadow(0 0 6px rgba(37,99,235,.85))}}
+.glow-g{animation:glowG 2.8s ease-in-out infinite}
+@keyframes glowG{0%,100%{filter:drop-shadow(0 0 0 rgba(22,163,74,0))}50%{filter:drop-shadow(0 0 6px rgba(22,163,74,.85))}}
+.glow-o{animation:glowO 2.8s ease-in-out infinite}
+@keyframes glowO{0%,100%{filter:drop-shadow(0 0 0 rgba(217,119,6,0))}50%{filter:drop-shadow(0 0 6px rgba(217,119,6,.85))}}
+.step{animation:stepLit 6s ease-in-out infinite}
+@keyframes stepLit{0%,16%{filter:drop-shadow(0 0 7px rgba(37,99,235,.9))}24%,92%{filter:drop-shadow(0 0 0 rgba(37,99,235,0))}100%{filter:drop-shadow(0 0 7px rgba(37,99,235,.9))}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}.row,.head,.fade,.fademarch{opacity:1!important}.flowdot{display:none!important}}
+</style>
   <defs>
     <marker id="ar-blue" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#2563eb"/></marker>
     <marker id="ar-green" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#059669"/></marker>
@@ -23,11 +35,11 @@
     <marker id="ar-gray" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#9ca3af"/></marker>
   </defs>
   <rect width="1200" height="980" fill="#ffffff"/>
-<g class="head">
+<g class="head" style="animation-delay:0s">
 <text x="600" y="40" font-size="22" fill="#1e293b" text-anchor="middle" font-weight="600">HK1V11 420b 长编码验证环境 · 整体架构</text>
 <text x="600" y="64" font-size="12" fill="#64748b" text-anchor="middle">0720v1 现状 · 基于 DV_TCON_C 8B/10B 环境重建 · `CHPI_MODE_420B` 宏隔离 · 新增接收端离线验证路径（不看 RTL 解码器）</text>
 </g>
-<g class="row" style="animation-delay:0.00s">
+<g class="row" style="animation-delay:0.15s">
 <rect x="40" y="88" width="1120" height="86" rx="10" fill="#f8fafc" stroke="#e2e8f0" stroke-width="2"/>
 <text x="56" y="110" font-size="13" fill="#475569" text-anchor="start" font-weight="600">Test / Config Layer</text>
 <rect x="70" y="118" width="250" height="48" rx="8" fill="#fff7ed" stroke="#fed7aa" stroke-width="1.5"/>
@@ -43,7 +55,7 @@
 <text x="955.0" y="137.5" font-size="11.5" fill="#9a3412" text-anchor="middle" font-weight="600">env_cfg</text>
 <text x="955.0" y="153.5" font-size="9.5" fill="#9a3412" text-anchor="middle">SCREN · HACT · VACT · LANE_NUM · get_ctrlL/F_reg</text>
 </g>
-<g class="row" style="animation-delay:0.04s">
+<g class="row" style="animation-delay:0.4s">
 <rect x="40" y="192" width="696" height="292" rx="10" fill="#f8fafc" stroke="#e2e8f0" stroke-width="2"/>
 <text x="56" y="214" font-size="13" fill="#0f766e" text-anchor="start" font-weight="600">发送端 TX · isptx_sequence.sv（420b 分支）</text>
 <rect x="64" y="226" width="280" height="42" rx="8" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
@@ -84,7 +96,7 @@
 <text x="634" y="364" font-size="9" fill="#64748b" text-anchor="middle">encoded_bits_</text>
 <text x="634" y="380" font-size="9" fill="#64748b" text-anchor="middle">70aligned()</text>
 </g>
-<g class="row" style="animation-delay:0.08s">
+<g class="row" style="animation-delay:0.8s">
 <rect x="40" y="504" width="696" height="106" rx="10" fill="#f8fafc" stroke="#e2e8f0" stroke-width="2"/>
 <text x="56" y="526" font-size="13" fill="#475569" text-anchor="start" font-weight="600">Transaction / Driver</text>
 <rect x="64" y="534" width="300" height="56" rx="8" fill="#f0fdf4" stroke="#bbf7d0" stroke-width="1.5"/>
@@ -96,14 +108,14 @@
 <text x="558.0" y="565.5" font-size="9.5" fill="#64748b" text-anchor="middle">drv_one_pkt_20b() · LSB-first</text>
 <text x="558.0" y="581.5" font-size="9.5" fill="#64748b" text-anchor="middle">drv_kx_key_420b() → vif.rxn0/rxp0</text>
 </g>
-<g class="row" style="animation-delay:0.12s">
+<g class="row" style="animation-delay:0.6s">
 <rect x="776" y="192" width="384" height="418" rx="10" fill="#f8fafc" stroke="#e2e8f0" stroke-width="2"/>
 <text x="792" y="214" font-size="13" fill="#991b1b" text-anchor="start" font-weight="600">接收端 RX · DUT（HDL long_encoding）</text>
 <rect x="800" y="226" width="336" height="62" rx="8" fill="#ffffff" stroke="#059669" stroke-width="2"/>
 <text x="968" y="248" font-size="11" fill="#1e293b" text-anchor="middle" font-weight="600">CHPI_KCODE_ALIGN_LONG_L0</text>
 <text x="968" y="264" font-size="9.5" fill="#64748b" text-anchor="middle">K1~K4 检测 · 20-bit 对齐</text>
 <text x="968" y="280" font-size="9.5" fill="#059669" text-anchor="middle" font-weight="600">DATA_ALIGN_PRE → tap</text>
-<g class="breathe">
+<g class="glow-b" style="animation-delay:1.2s">
 <rect x="1072" y="232" width="52" height="18" rx="9" fill="#059669" stroke="#059669" stroke-width="1"/>
 <text x="1098" y="245" font-size="10" fill="#ffffff" text-anchor="middle" font-weight="700">TAP</text>
 </g>
@@ -125,7 +137,7 @@
 <rect x="792" y="298" width="352" height="278" rx="8" fill="none" stroke="#9ca3af" stroke-width="1.2" stroke-dasharray="6,3"/>
 <text x="968" y="594" font-size="9.5" fill="#6b7280" text-anchor="middle">灰框内：RTL 解码链 —— 排障焦点，离线验证不依赖</text>
 </g>
-<g class="row" style="animation-delay:0.16s">
+<g class="row" style="animation-delay:1.15s">
 <rect x="40" y="650" width="1120" height="192" rx="10" fill="#f0fdf4" stroke="#bbf7d0" stroke-width="2"/>
 <text x="56" y="672" font-size="13" fill="#059669" text-anchor="start" font-weight="600">接收端离线验证路径 · 不看 RTL 解码器（0717 新增）</text>
 <rect x="64" y="688" width="230" height="60" rx="8" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
@@ -147,42 +159,148 @@
 <rect x="64" y="768" width="280" height="48" rx="8" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
 <text x="204.0" y="787.5" font-size="10" fill="#1e293b" text-anchor="middle" font-weight="600">long_rawbyte_seq_lane0.md</text>
 <text x="204.0" y="803.5" font-size="9" fill="#64748b" text-anchor="middle">发送端编码前 raw byte（期望值）</text>
-<g class="breathe">
+<g class="glow-g" style="animation-delay:1.9s">
 <rect x="566" y="768" width="380" height="48" rx="8" fill="#ecfdf5" stroke="#059669" stroke-width="2"/>
 <text x="756" y="788" font-size="10.5" fill="#047857" text-anchor="middle" font-weight="600">long_pydec_report_lane0.md</text>
 <text x="756" y="806" font-size="9.5" fill="#047857" text-anchor="middle">逐区域比对 verdict：LSP / CTRL_F / LINE 全对 ✅</text>
 </g>
 </g>
-<g class="row" style="animation-delay:0.20s">
+<g class="row" style="animation-delay:1.5s">
 <rect x="40" y="862" width="1120" height="58" rx="10" fill="#f8fafc" stroke="#e2e8f0" stroke-width="2"/>
 <text x="56" y="884" font-size="13" fill="#475569" text-anchor="start" font-weight="600">版本管理 · longcode_ver/</text>
 <text x="300" y="896" font-size="10.5" fill="#475569" text-anchor="start">current_work 当前工作目录（版本 0720v1） · 文件统一命名 *_20260720_v1 · CHANGELOG.md / README.md / migration_checklist.md 同步维护</text>
 </g>
-<g class="row" style="animation-delay:0.24s">
-<line x1="375" y1="174" x2="375" y2="192" stroke="#2563eb" stroke-width="1.5" marker-end="url(#ar-blue)"/>
-<line x1="660" y1="174" x2="660" y2="192" stroke="#2563eb" stroke-width="1.5" marker-end="url(#ar-blue)"/>
-<line x1="955" y1="174" x2="955" y2="192" stroke="#ea580c" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#ar-orange)"/>
-<line x1="540" y1="320" x2="556" y2="320" stroke="#2563eb" stroke-width="1.5" marker-end="url(#ar-blue)"/>
-<line x1="375" y1="484" x2="375" y2="504" stroke="#2563eb" stroke-width="1.5" marker-end="url(#ar-blue)"/>
-<line x1="364" y1="562" x2="404" y2="562" stroke="#2563eb" stroke-width="1.5" marker-end="url(#ar-blue)"/>
-<path d="M 712 562 L 756 562 L 756 257 L 800 257" stroke="#2563eb" stroke-width="2" fill="none" marker-end="url(#ar-blue)"/>
+<g class="fade" style="animation-delay:0.5s">
+<line x1="375" y1="174" x2="375" y2="192" stroke="#2563eb" stroke-width="1.5" marker-end="url(#ar-blue)" class="draw" pathLength="100" style="animation-delay:0.5s"/>
+</g>
+<g class="fade" style="animation-delay:0.5s">
+<line x1="660" y1="174" x2="660" y2="192" stroke="#2563eb" stroke-width="1.5" marker-end="url(#ar-blue)" class="draw" pathLength="100" style="animation-delay:0.5s"/>
+</g>
+<line x1="955" y1="174" x2="955" y2="192" stroke="#ea580c" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#ar-orange)" class="fademarch" style="animation-delay:0.5s"/>
+<g class="fade" style="animation-delay:0.75s">
+<line x1="540" y1="320" x2="556" y2="320" stroke="#2563eb" stroke-width="1.5" marker-end="url(#ar-blue)" class="draw" pathLength="100" style="animation-delay:0.75s"/>
+</g>
+<g class="fade" style="animation-delay:0.75s">
+<line x1="375" y1="484" x2="375" y2="504" stroke="#2563eb" stroke-width="1.5" marker-end="url(#ar-blue)" class="draw" pathLength="100" style="animation-delay:0.75s"/>
+</g>
+<g class="fade" style="animation-delay:1.15s">
+<line x1="364" y1="562" x2="404" y2="562" stroke="#2563eb" stroke-width="1.5" marker-end="url(#ar-blue)" class="draw" pathLength="100" style="animation-delay:1.15s"/>
+</g>
+<g class="fade" style="animation-delay:1.15s">
+<path d="M 712 562 L 756 562 L 756 257 L 800 257" stroke="#2563eb" stroke-width="2" fill="none" marker-end="url(#ar-blue)" class="draw" pathLength="100" style="animation-delay:1.15s"/>
+</g>
+<g class="fade" style="animation-delay:1.15s">
 <text transform="rotate(-90 748 420)" x="748" y="420" font-size="10" fill="#2563eb" text-anchor="middle">20-bit 包流 / 40-bit K 码 · 串行链路</text>
-<line x1="968" y1="288" x2="968" y2="304" stroke="#2563eb" stroke-width="1.5" marker-end="url(#ar-blue)"/>
-<line x1="968" y1="358" x2="968" y2="374" stroke="#2563eb" stroke-width="1.5" marker-end="url(#ar-blue)"/>
-<line x1="968" y1="428" x2="968" y2="444" stroke="#2563eb" stroke-width="1.5" marker-end="url(#ar-blue)"/>
-<line x1="968" y1="498" x2="968" y2="514" stroke="#2563eb" stroke-width="1.5" marker-end="url(#ar-blue)"/>
-<path d="M 1136 257 L 1178 257 L 1178 632 L 179 632 L 179 688" stroke="#059669" stroke-width="2" fill="none" stroke-dasharray="6,3" marker-end="url(#ar-green)"/>
+</g>
+<g class="fade" style="animation-delay:0.95s">
+<line x1="968" y1="288" x2="968" y2="304" stroke="#2563eb" stroke-width="1.5" marker-end="url(#ar-blue)" class="draw" pathLength="100" style="animation-delay:0.95s"/>
+</g>
+<g class="fade" style="animation-delay:0.95s">
+<line x1="968" y1="358" x2="968" y2="374" stroke="#2563eb" stroke-width="1.5" marker-end="url(#ar-blue)" class="draw" pathLength="100" style="animation-delay:0.95s"/>
+</g>
+<g class="fade" style="animation-delay:0.95s">
+<line x1="968" y1="428" x2="968" y2="444" stroke="#2563eb" stroke-width="1.5" marker-end="url(#ar-blue)" class="draw" pathLength="100" style="animation-delay:0.95s"/>
+</g>
+<g class="fade" style="animation-delay:0.95s">
+<line x1="968" y1="498" x2="968" y2="514" stroke="#2563eb" stroke-width="1.5" marker-end="url(#ar-blue)" class="draw" pathLength="100" style="animation-delay:0.95s"/>
+</g>
+<path d="M 1136 257 L 1178 257 L 1178 632 L 179 632 L 179 688" stroke="#059669" stroke-width="2" fill="none" stroke-dasharray="6,3" marker-end="url(#ar-green)" class="fademarch" style="animation-delay:0.95s"/>
+<g class="fade" style="animation-delay:0.95s">
 <text x="700" y="624" font-size="10" fill="#059669" text-anchor="middle">tap DATA_ALIGN_PRE（每拍 20-bit 对齐数据）</text>
-<path d="M 204 610 L 204 768" stroke="#7c3aed" stroke-width="1.5" fill="none" stroke-dasharray="5,3" marker-end="url(#ar-purple)"/>
+</g>
+<path d="M 204 610 L 204 768" stroke="#7c3aed" stroke-width="1.5" fill="none" stroke-dasharray="5,3" marker-end="url(#ar-purple)" class="fademarch" style="animation-delay:1.5s"/>
+<g class="fade" style="animation-delay:1.5s">
 <path d="M 204 626 A 5.5 5.5 0 0 1 204 638" stroke="#7c3aed" stroke-width="1.5" fill="none"/>
-<line x1="294" y1="718" x2="330" y2="718" stroke="#059669" stroke-width="1.5" marker-end="url(#ar-green)"/>
-<line x1="526" y1="718" x2="562" y2="718" stroke="#059669" stroke-width="1.5" marker-end="url(#ar-green)"/>
-<line x1="808" y1="718" x2="844" y2="718" stroke="#059669" stroke-width="1.5" marker-end="url(#ar-green)"/>
-<line x1="944" y1="748" x2="944" y2="768" stroke="#059669" stroke-width="1.5" marker-end="url(#ar-green)"/>
-<line x1="344" y1="792" x2="566" y2="792" stroke="#7c3aed" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#ar-purple)"/>
+</g>
+<g class="fade" style="animation-delay:1.5s">
+<line x1="294" y1="718" x2="330" y2="718" stroke="#059669" stroke-width="1.5" marker-end="url(#ar-green)" class="draw" pathLength="100" style="animation-delay:1.5s"/>
+</g>
+<g class="fade" style="animation-delay:1.5s">
+<line x1="526" y1="718" x2="562" y2="718" stroke="#059669" stroke-width="1.5" marker-end="url(#ar-green)" class="draw" pathLength="100" style="animation-delay:1.5s"/>
+</g>
+<g class="fade" style="animation-delay:1.5s">
+<line x1="808" y1="718" x2="844" y2="718" stroke="#059669" stroke-width="1.5" marker-end="url(#ar-green)" class="draw" pathLength="100" style="animation-delay:1.5s"/>
+</g>
+<g class="fade" style="animation-delay:1.5s">
+<line x1="944" y1="748" x2="944" y2="768" stroke="#059669" stroke-width="1.5" marker-end="url(#ar-green)" class="draw" pathLength="100" style="animation-delay:1.5s"/>
+</g>
+<line x1="344" y1="792" x2="566" y2="792" stroke="#7c3aed" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#ar-purple)" class="fademarch" style="animation-delay:1.5s"/>
+<g class="fade" style="animation-delay:1.5s">
 <text x="455" y="784" font-size="9.5" fill="#7c3aed" text-anchor="middle">逐区域 diff</text>
 </g>
-<g class="head">
+<g class="fade" style="animation-delay:1s">
+<path class="flowdot" d="M 450 268 L 450 278" stroke="#2563eb" stroke-width="2.5" pathLength="100" style="animation-duration:0.7s;animation-delay:1s"/>
+</g>
+<g class="fade" style="animation-delay:1.35s">
+<path class="flowdot" d="M 450 268 L 450 278" stroke="#2563eb" stroke-width="2.5" pathLength="100" style="animation-duration:0.7s;animation-delay:1.35s"/>
+</g>
+<g class="fade" style="animation-delay:1.15s">
+<path class="flowdot" d="M 450 320 L 450 330" stroke="#2563eb" stroke-width="2.5" pathLength="100" style="animation-duration:0.7s;animation-delay:1.15s"/>
+</g>
+<g class="fade" style="animation-delay:1.5s">
+<path class="flowdot" d="M 450 320 L 450 330" stroke="#2563eb" stroke-width="2.5" pathLength="100" style="animation-duration:0.7s;animation-delay:1.5s"/>
+</g>
+<g class="fade" style="animation-delay:1.3s">
+<path class="flowdot" d="M 540 320 L 556 320" stroke="#2563eb" stroke-width="2.5" pathLength="100" style="animation-duration:0.7s;animation-delay:1.3s"/>
+</g>
+<g class="fade" style="animation-delay:1.65s">
+<path class="flowdot" d="M 540 320 L 556 320" stroke="#2563eb" stroke-width="2.5" pathLength="100" style="animation-duration:0.7s;animation-delay:1.65s"/>
+</g>
+<g class="fade" style="animation-delay:1.45s">
+<path class="flowdot" d="M 712 562 L 756 562 L 756 257 L 800 257" stroke="#2563eb" stroke-width="2.5" pathLength="100" style="animation-duration:0.7s;animation-delay:1.45s"/>
+</g>
+<g class="fade" style="animation-delay:1.8s">
+<path class="flowdot" d="M 712 562 L 756 562 L 756 257 L 800 257" stroke="#2563eb" stroke-width="2.5" pathLength="100" style="animation-duration:0.7s;animation-delay:1.8s"/>
+</g>
+<g class="fade" style="animation-delay:1.6s">
+<path class="flowdot" d="M 968 288 L 968 304" stroke="#2563eb" stroke-width="2.5" pathLength="100" style="animation-duration:0.7s;animation-delay:1.6s"/>
+</g>
+<g class="fade" style="animation-delay:1.95s">
+<path class="flowdot" d="M 968 288 L 968 304" stroke="#2563eb" stroke-width="2.5" pathLength="100" style="animation-duration:0.7s;animation-delay:1.95s"/>
+</g>
+<g class="fade" style="animation-delay:1.75s">
+<path class="flowdot" d="M 968 358 L 968 374" stroke="#2563eb" stroke-width="2.5" pathLength="100" style="animation-duration:0.7s;animation-delay:1.75s"/>
+</g>
+<g class="fade" style="animation-delay:2.1s">
+<path class="flowdot" d="M 968 358 L 968 374" stroke="#2563eb" stroke-width="2.5" pathLength="100" style="animation-duration:0.7s;animation-delay:2.1s"/>
+</g>
+<g class="fade" style="animation-delay:1.9s">
+<path class="flowdot" d="M 968 428 L 968 444" stroke="#2563eb" stroke-width="2.5" pathLength="100" style="animation-duration:0.7s;animation-delay:1.9s"/>
+</g>
+<g class="fade" style="animation-delay:2.25s">
+<path class="flowdot" d="M 968 428 L 968 444" stroke="#2563eb" stroke-width="2.5" pathLength="100" style="animation-duration:0.7s;animation-delay:2.25s"/>
+</g>
+<g class="fade" style="animation-delay:2.05s">
+<path class="flowdot" d="M 968 498 L 968 514" stroke="#2563eb" stroke-width="2.5" pathLength="100" style="animation-duration:0.7s;animation-delay:2.05s"/>
+</g>
+<g class="fade" style="animation-delay:2.4s">
+<path class="flowdot" d="M 968 498 L 968 514" stroke="#2563eb" stroke-width="2.5" pathLength="100" style="animation-duration:0.7s;animation-delay:2.4s"/>
+</g>
+<g class="fade" style="animation-delay:1.6s">
+<path class="flowdot" d="M 294 718 L 330 718" stroke="#059669" stroke-width="2.5" pathLength="100" style="animation-duration:0.7s;animation-delay:1.6s"/>
+</g>
+<g class="fade" style="animation-delay:1.95s">
+<path class="flowdot" d="M 294 718 L 330 718" stroke="#059669" stroke-width="2.5" pathLength="100" style="animation-duration:0.7s;animation-delay:1.95s"/>
+</g>
+<g class="fade" style="animation-delay:1.75s">
+<path class="flowdot" d="M 526 718 L 562 718" stroke="#059669" stroke-width="2.5" pathLength="100" style="animation-duration:0.7s;animation-delay:1.75s"/>
+</g>
+<g class="fade" style="animation-delay:2.1s">
+<path class="flowdot" d="M 526 718 L 562 718" stroke="#059669" stroke-width="2.5" pathLength="100" style="animation-duration:0.7s;animation-delay:2.1s"/>
+</g>
+<g class="fade" style="animation-delay:1.9s">
+<path class="flowdot" d="M 808 718 L 844 718" stroke="#059669" stroke-width="2.5" pathLength="100" style="animation-duration:0.7s;animation-delay:1.9s"/>
+</g>
+<g class="fade" style="animation-delay:2.25s">
+<path class="flowdot" d="M 808 718 L 844 718" stroke="#059669" stroke-width="2.5" pathLength="100" style="animation-duration:0.7s;animation-delay:2.25s"/>
+</g>
+<g class="fade" style="animation-delay:2.05s">
+<path class="flowdot" d="M 944 748 L 944 768" stroke="#059669" stroke-width="2.5" pathLength="100" style="animation-duration:0.7s;animation-delay:2.05s"/>
+</g>
+<g class="fade" style="animation-delay:2.4s">
+<path class="flowdot" d="M 944 748 L 944 768" stroke="#059669" stroke-width="2.5" pathLength="100" style="animation-duration:0.7s;animation-delay:2.4s"/>
+</g>
+<g class="head" style="animation-delay:1.7s">
 <line x1="60" y1="952" x2="92" y2="952" stroke="#2563eb" stroke-width="2" marker-end="url(#ar-blue)"/>
 <text x="98" y="956" font-size="11" fill="#64748b" text-anchor="start">主数据流</text>
 <line x1="180" y1="952" x2="212" y2="952" stroke="#7c3aed" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#ar-purple)"/>
@@ -192,6 +310,4 @@
 <line x1="640" y1="952" x2="672" y2="952" stroke="#ea580c" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#ar-orange)"/>
 <text x="678" y="956" font-size="11" fill="#64748b" text-anchor="start">配置 / 控制</text>
 </g>
-<path class="flowdot f1" d="M 712 562 L 756 562 L 756 257 L 800 257" fill="none" stroke="#2563eb" stroke-width="2.5" stroke-linecap="round"/>
-<path class="flowdot f2" d="M 1136 257 L 1178 257 L 1178 632 L 179 632 L 179 688" fill="none" stroke="#059669" stroke-width="2.5" stroke-linecap="round" style="animation-delay:1.6s"/>
 </svg>

@@ -1,15 +1,32 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 520" width="1200" height="520">
-<style>
-.row { opacity:0; animation: rowIn 0.4s ease forwards; }
-@keyframes rowIn { from { opacity:0; transform: translateY(6px); } to { opacity:1; transform: none; } }
-.head { opacity:0; animation: rowIn 0.4s ease forwards; }
-.breathe { animation: br 3.2s ease-in-out infinite; }
-@keyframes br { 0%,100% { opacity:1; } 50% { opacity:0.55; } }
-.flowdot { stroke-dasharray: 8 610.964; animation: pkt1 4.126s linear infinite; }
-@keyframes pkt1 { from { stroke-dashoffset: 618.964; } to { stroke-dashoffset: 0; } }
-@media (prefers-reduced-motion: reduce) { * { animation: none !important; } .row, .head { opacity: 1 !important; } }
-</style>
   <style>text { font-family: 'Helvetica Neue', Helvetica, Arial, 'PingFang SC', 'Microsoft YaHei', 'Microsoft JhengHei', 'SimHei', sans-serif; }</style>
+<style>
+.row{opacity:0;animation:rowIn .5s cubic-bezier(.22,.7,.3,1) forwards}
+.head{opacity:0;animation:rowIn .5s cubic-bezier(.22,.7,.3,1) forwards}
+@keyframes rowIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.draw{stroke-dasharray:100;animation:drawIn .55s ease-out forwards}
+@keyframes drawIn{from{stroke-dashoffset:100}to{stroke-dashoffset:0}}
+.fade{opacity:0;animation:fadeIn .6s ease forwards}
+@keyframes fadeIn{to{opacity:1}}
+.fademarch{opacity:0;animation:fadeIn .6s ease forwards,march 1.8s linear infinite}
+.breathe{animation:br 3.2s ease-in-out infinite}
+@keyframes br{0%,100%{opacity:1}50%{opacity:.55}}
+.cellwave{animation:wave 3s ease-in-out infinite}
+@keyframes wave{0%,100%{opacity:1}50%{opacity:.68}}
+.march{animation:march 1.8s linear infinite}
+@keyframes march{to{stroke-dashoffset:-16}}
+.flowdot{fill:none;stroke-linecap:round;stroke-dasharray:12 88;animation:flow 2s linear infinite}
+@keyframes flow{to{stroke-dashoffset:-100}}
+.glow-b{animation:glowB 2.8s ease-in-out infinite}
+@keyframes glowB{0%,100%{filter:drop-shadow(0 0 0 rgba(37,99,235,0))}50%{filter:drop-shadow(0 0 6px rgba(37,99,235,.85))}}
+.glow-g{animation:glowG 2.8s ease-in-out infinite}
+@keyframes glowG{0%,100%{filter:drop-shadow(0 0 0 rgba(22,163,74,0))}50%{filter:drop-shadow(0 0 6px rgba(22,163,74,.85))}}
+.glow-o{animation:glowO 2.8s ease-in-out infinite}
+@keyframes glowO{0%,100%{filter:drop-shadow(0 0 0 rgba(217,119,6,0))}50%{filter:drop-shadow(0 0 6px rgba(217,119,6,.85))}}
+.step{animation:stepLit 6s ease-in-out infinite}
+@keyframes stepLit{0%,16%{filter:drop-shadow(0 0 7px rgba(37,99,235,.9))}24%,92%{filter:drop-shadow(0 0 0 rgba(37,99,235,0))}100%{filter:drop-shadow(0 0 7px rgba(37,99,235,.9))}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}.row,.head,.fade,.fademarch{opacity:1!important}.flowdot{display:none!important}}
+</style>
   <defs>
     <marker id="ar-blue" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#2563eb"/></marker>
     <marker id="ar-green" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#059669"/></marker>
@@ -22,7 +39,7 @@
 <text x="600" y="40" font-size="21" fill="#1e293b" text-anchor="middle" font-weight="600">Scramble key 滚动机制</text>
 <text x="600" y="64" font-size="12" fill="#64748b" text-anchor="middle">K 码不加扰，K 码期间 scramble 停止滚动；第 n+1 行 scramble 起始状态顺承第 n 行截止状态</text>
 </g>
-<g class="row" style="animation-delay:0.10s">
+<g class="row" style="animation-delay:0.2s">
 <text x="50" y="138" font-size="10.5" fill="#64748b" text-anchor="end">编码前</text>
 <rect x="60" y="112" width="56" height="40" rx="8" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
 <text x="88.0" y="135.5" font-size="10" fill="#166534" text-anchor="middle" font-weight="600">K1</text>
@@ -35,9 +52,11 @@
 <rect x="694" y="112" width="300" height="40" rx="8" fill="#f3f4f6" stroke="#d1d5db" stroke-width="1.5"/>
 <text x="844.0" y="135.5" font-size="11" fill="#6b7280" text-anchor="middle" font-weight="600">HBP</text>
 </g>
-<g class="row" style="animation-delay:0.20s">
-<line x1="470" y1="158" x2="470" y2="204" stroke="#2563eb" stroke-width="2" marker-end="url(#ar-blue)"/>
+<g class="fade" style="animation-delay:0.85s">
+<line x1="470" y1="158" x2="470" y2="204" stroke="#2563eb" stroke-width="2" marker-end="url(#ar-blue)" class="draw" pathLength="100" style="animation-delay:0.85s"/>
 <text x="480" y="186" font-size="10" fill="#2563eb" text-anchor="start">编码后</text>
+</g>
+<g class="row" style="animation-delay:0.5s">
 <text x="50" y="236" font-size="10.5" fill="#64748b" text-anchor="end">编码后</text>
 <rect x="60" y="210" width="56" height="40" rx="8" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
 <text x="88.0" y="233.5" font-size="10" fill="#166534" text-anchor="middle" font-weight="600">K1</text>
@@ -49,28 +68,42 @@
 <text x="617.0" y="233.5" font-size="10" fill="#6b7280" text-anchor="middle" font-weight="600">Dmy</text>
 <rect x="664" y="210" width="56" height="40" rx="8" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
 <text x="692.0" y="233.5" font-size="10" fill="#166534" text-anchor="middle" font-weight="600">K2</text>
+<g class="cellwave" style="animation-duration:2.4s;animation-delay:0s">
 <rect x="724" y="210" width="40" height="40" rx="8" fill="#fef9c3" stroke="#fde047" stroke-width="1.5"/>
 <text x="744.0" y="233.5" font-size="10" fill="#854d0e" text-anchor="middle" font-weight="600">K5</text>
+</g>
+<g class="cellwave" style="animation-duration:2.4s;animation-delay:0.3s">
 <rect x="768" y="210" width="40" height="40" rx="8" fill="#fef9c3" stroke="#fde047" stroke-width="1.5"/>
 <text x="788.0" y="233.5" font-size="10" fill="#854d0e" text-anchor="middle" font-weight="600">K6</text>
+</g>
+<g class="cellwave" style="animation-duration:2.4s;animation-delay:0.6s">
 <rect x="812" y="210" width="40" height="40" rx="8" fill="#fef9c3" stroke="#fde047" stroke-width="1.5"/>
 <text x="832.0" y="233.5" font-size="10" fill="#854d0e" text-anchor="middle" font-weight="600">K7</text>
+</g>
+<g class="cellwave" style="animation-duration:2.4s;animation-delay:0.9s">
 <rect x="856" y="210" width="40" height="40" rx="8" fill="#fef9c3" stroke="#fde047" stroke-width="1.5"/>
 <text x="876.0" y="233.5" font-size="10" fill="#854d0e" text-anchor="middle" font-weight="600">K8</text>
+</g>
 <text x="910" y="236" font-size="13" fill="#64748b" text-anchor="middle">…</text>
+<g class="cellwave" style="animation-duration:2.4s;animation-delay:1.2s">
 <rect x="936" y="210" width="40" height="40" rx="8" fill="#fef9c3" stroke="#fde047" stroke-width="1.5"/>
 <text x="956.0" y="233.5" font-size="10" fill="#854d0e" text-anchor="middle" font-weight="600">K5</text>
 </g>
-<g class="row" style="animation-delay:0.30s">
-<g class="breathe">
-<rect x="120" y="282" width="540" height="10" rx="5" fill="#16a34a" stroke="#16a34a" stroke-width="1"/>
 </g>
-<rect x="120" y="304" width="540" height="10" rx="5" fill="#ea580c" stroke="#ea580c" stroke-width="1"/>
-<rect x="214" y="326" width="356" height="10" rx="5" fill="#2563eb" stroke="#2563eb" stroke-width="1"/>
+<g class="row" style="animation-delay:0.85s">
 <text x="120" y="274" font-size="9.5" fill="#16a34a" text-anchor="start">加扰区间（CTR_L ~ Dmy）</text>
-<text x="730" y="282" font-size="9.5" fill="#9ca3af" text-anchor="start">K 码期间 scramble 停止滚动</text>
+<rect x="120" y="282" width="540" height="10" rx="5" fill="#16a34a" stroke="#16a34a" stroke-width="1" class="draw" pathLength="100" style="animation-delay:0.85s"/>
+<path class="flowdot" d="M 120 287 L 660 287" stroke="#16a34a" stroke-width="2.5" pathLength="100" style="animation-duration:1.6s;animation-delay:1.9s"/>
 </g>
-<g class="head" style="animation-delay:0.30s">
+<g class="row" style="animation-delay:0.95s">
+<text x="730" y="282" font-size="9.5" fill="#9ca3af" text-anchor="start">K 码期间 scramble 停止滚动</text>
+<rect x="120" y="304" width="540" height="10" rx="5" fill="#ea580c" stroke="#ea580c" stroke-width="1" class="draw" pathLength="100" style="animation-delay:0.95s"/>
+</g>
+<g class="row" style="animation-delay:1.05s">
+<rect x="214" y="326" width="356" height="10" rx="5" fill="#2563eb" stroke="#2563eb" stroke-width="1" class="draw" pathLength="100" style="animation-delay:1.05s"/>
+<path class="flowdot" d="M 214 331 L 570 331" stroke="#2563eb" stroke-width="2.5" pathLength="100" style="animation-duration:1.6s;animation-delay:2.6s"/>
+</g>
+<g class="head" style="animation-delay:1.4s">
 <rect x="1010" y="282" width="14" height="10" rx="3" fill="#16a34a" stroke="#16a34a" stroke-width="1"/>
 <text x="1030" y="291" font-size="10" fill="#64748b" text-anchor="start">SCR_KEY update</text>
 <rect x="1010" y="304" width="14" height="10" rx="3" fill="#ea580c" stroke="#ea580c" stroke-width="1"/>
@@ -78,12 +111,13 @@
 <rect x="1010" y="326" width="14" height="10" rx="3" fill="#2563eb" stroke="#2563eb" stroke-width="1"/>
 <text x="1030" y="335" font-size="10" fill="#64748b" text-anchor="start">413/420 ENC</text>
 </g>
-<g class="row" style="animation-delay:0.40s">
-<path d="M 660 292 C 700 320 660 360 620 372 L 220 372 L 220 388" stroke="#059669" stroke-width="2" fill="none" stroke-dasharray="6,3" marker-end="url(#ar-green)"/>
-<path class="flowdot" d="M 660 292 C 700 320 660 360 620 372 L 220 372 L 220 388" fill="none" stroke="#059669" stroke-width="2.5" stroke-linecap="round"/>
+<g class="row" style="animation-delay:1.15s">
+<path d="M 660 292 C 700 320 660 360 620 372 L 220 372 L 220 388" stroke="#059669" stroke-width="2" fill="none" stroke-dasharray="6,3" marker-end="url(#ar-green)" class="march"/>
+<g class="glow-g" style="animation-delay:1.4s">
 <text x="560" y="364" font-size="10" fill="#16a34a" text-anchor="middle">n 行截止状态 → n+1 行起始状态（LFSR 连续）</text>
 </g>
-<g class="row" style="animation-delay:0.50s">
+</g>
+<g class="row" style="animation-delay:1.25s">
 <text x="50" y="414" font-size="10.5" fill="#64748b" text-anchor="end">n+1 行</text>
 <rect x="60" y="390" width="56" height="40" rx="8" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
 <text x="88.0" y="413.5" font-size="10" fill="#166534" text-anchor="middle" font-weight="600">K1</text>
