@@ -256,7 +256,7 @@
 
 在 2026-04 → 2026-10 的开发周期中，LC_CPUWR 经历了密集迭代：校验和双段→单段、NG Unlock 收敛为 one-shot、寄存器命名全面十进制化、并按 `chip_sel0/1` 重构了默认值体系。**逐版本完整演进见 [三、核心变更时间线](./timeline.html)**。
 
-**里程碑速览**：`0807v1` 寄存器通路迁入新模块 LINK_CONFIG_CTRL ・ `0810v1` 寄存器表同步（FSEL/EOL/BCC）・ `0819v1` 复位改名 RSTN ・ `0819v2` Loop_sel 选择 CDR/KVCO 默认值 ・ `0827v1` lane_ctrl 拆 5 单 bit + reg_eol ・ `0903v1` 0x29 默认值变更 + FPGA SCREN 常开 ・ `0907v1` CHIP_SEL 门控防误写外漏 ・ `0909v1` SCREN 口径对齐服务器 ・ `0918v1` EQ 默认值调整 + 服务器 0917 基线重建 ・ `0920v1` EQ 引脚查表 12dB 编码修正 ・ `1022v1` 服务器 1022 包状态采纳为本地最新（rbc1 回退 0） ・ `1023v1` K1 打拍 + SCS_PKT_HALF 新寄存器 + match 首帧/幻影防护 ・ `1027v1` khead_20b_sel @0x1D[7:3] 输出端口
+**里程碑速览**：`0807v1` 寄存器通路迁入新模块 LINK_CONFIG_CTRL ・ `0810v1` 寄存器表同步（FSEL/EOL/BCC）・ `0819v1` 复位改名 RSTN ・ `0819v2` Loop_sel 选择 CDR/KVCO 默认值 ・ `0827v1` lane_ctrl 拆 5 单 bit + reg_eol ・ `0903v1` 0x29 默认值变更 + FPGA SCREN 常开 ・ `0907v1` CHIP_SEL 门控防误写外漏 ・ `0909v1` SCREN 口径对齐服务器 ・ `0918v1` EQ 默认值调整 + 服务器 0917 基线重建 ・ `0920v1` EQ 引脚查表 12dB 编码修正 ・ `1022v1` 服务器 1022 包状态采纳为本地最新（rbc1 回退 0） ・ `1023v1` K1 打拍 + SCS_PKT_HALF 新寄存器 + match 首帧/幻影防护 ・ `1027v1` khead_20b_sel @0x1D[7:3] 输出端口（LC_REG_MAPPING） ・ `1027v1-B` 修复 Seg1 checksum 0x0A XOR 覆盖丢失（LC_CPUWR，0721v1 重排回归）
 
 为了管理这些密集变更，项目于 2026-06-15 建立了 `LC_CPUWR_history` 归档目录，集中保存 RTL 快照、changelist、modify plan、compliance report 及验证同步资料。
 
@@ -279,7 +279,7 @@
 
 | 文件 | 用途 |
 |------|------|
-| `LC_CPUWR.v` | 当前 LC_CPUWR RTL（文件头 1023v1：K1 打拍 / SCS_PKT_HALF @0x2F[0] / match 首帧幻影防护；1022v1 基线 = 服务器 1022 包，`reg_eq_rbc1` 默认回退 `1'b0`、`reg_eq_bias_tune` 默认 `8'h17`） |
+| `LC_CPUWR.v` | 当前 LC_CPUWR RTL（文件头 1027v1-B：修复 Seg1 checksum 0x0A XOR 覆盖丢失——0721v1 重排漏写 `5'h04` 分支，`xdata_a` 落默认只 XOR 0x09，0x0A 从未进入运行 XOR，DV boundary_chip1 F30 假提交暴露，代码级验证全过；1023v1：K1 打拍 / SCS_PKT_HALF / match 首帧幻影防护；1022v1 基线 = 服务器 1022 包，`reg_eq_rbc1` 默认回退 `1'b0`、`reg_eq_bias_tune` 默认 `8'h17`） |
 | `LC_REG_MAPPING.v` | 寄存器映射模块（1027v1：新增 `R_KHEAD_20B_SEL[4:0]` 输出（khead_20b_sel @0x1D[7:3]，无门控，上层挂账）；1022v1 基线 = 服务器 1022 包接口重构——SRE/PWRC 反馈、VBK_EN cs=1 初值 1、CS_SET 加 SMART_CS=111 门控、EQ 编码 ECO 化；0920v1 12dB 编码 `5'b10100` 保留） |
 | `LINK_CONFIG_CTRL.v` | 寄存器通路承载模块（0807v1 起实例化 LC_CPUWR + LC_REG_MAPPING；0918v1 基线 = 服务器 0917，cr_done_filter 接通、0827v1 集成挂账清零；1022/1023/1027 未升版，上层 SCS_PKT_HALF / khead_20b_sel 连线挂账） |
 | `CHANGES.md` | 目录内全版本变更总览 |
@@ -395,4 +395,4 @@ const article = document.getElementById('article');
 </body>
 </html>
 
-<!-- ymzhu 2026-10-27 14:00 -->
+<!-- ymzhu 2026-10-27 17:58 -->

@@ -8,7 +8,7 @@
   每个地址行（行标签起，至下一行标签前，含 chip_sel=0/1 小标注）包进
   <g class="row" style="animation-delay: Xs">，X = 行序号 × 0.03s。
 - 标题 + 位号列头 与 图例（含底部注释）分别包 <g class="head">。
-- 0x1D 行中 khead_20b_sel[4:0] 单元格（1027v1 变更；rect + 2 个 text）包 <g class="chg">（脉冲高亮）。
+- 0x0A 行 cs=1 的 PWRC_P[1:0] 单元格（LC_CPUWR 1027v1 checksum 覆盖修复的受影响字节；rect + 2 个 text）包 <g class="chg">（脉冲高亮）。
 - <svg> 内加 <style>（纯 CSS，无 script，无外部资源）。
 - 不改动任何数据文本/几何/颜色；width/height/viewBox 与源一致。
 - 输出后用 xml.etree 自检：well-formed、<text> 多重集与源一致、文件 >1KB、无 <script>。
@@ -61,10 +61,10 @@ def build():
     assert legend_idx > row_starts[-1], "图例应在所有行之后"
     chg_label = next(
         i for i in range(2, svg_end_idx)
-        if lines[i].strip().startswith("<text") and ">khead_20b_sel[4:0]<" in lines[i]
+        if lines[i].strip().startswith("<text") and ">PWRC_P[1:0]<" in lines[i]
     )
-    assert lines[chg_label - 1].strip().startswith("<rect"), "khead_20b_sel 前一行应为 rect"
-    assert lines[chg_label + 1].strip().startswith("<text"), "khead_20b_sel 后一行应为 value text"
+    assert lines[chg_label - 1].strip().startswith("<rect"), "PWRC_P[1:0] 前一行应为 rect"
+    assert lines[chg_label + 1].strip().startswith("<text"), "PWRC_P[1:0] 后一行应为 value text"
     chg_rect, chg_value = chg_label - 1, chg_label + 1
 
     out = []
@@ -86,7 +86,7 @@ def build():
         i = start
         while i < end:
             if i == chg_rect:
-                # khead_20b_sel[4:0] 单元格（rect + label + value）脉冲高亮
+                # 0x0A PWRC_P[1:0] 单元格（rect + label + value）脉冲高亮（LC_CPUWR 1027v1）
                 out.append('<g class="chg">')
                 out.append(lines[i])
                 out.append(lines[i + 1])
@@ -159,4 +159,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-# ymzhu 2026-10-27 10:42
+# ymzhu 2026-10-27 17:50

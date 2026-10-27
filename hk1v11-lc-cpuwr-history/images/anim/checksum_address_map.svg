@@ -198,9 +198,11 @@
 <rect x="260" y="1186" width="159" height="40" fill="#bbf7d0" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="339.5" y="1203.0" text-anchor="middle" font-size="9.0" font-weight="500" fill="#1e293b">PWRC_N[1:0]</text>
 <text x="339.5" y="1217.0" text-anchor="middle" font-size="8.0" fill="#64748b">2'b10</text>
+<g class="chg">
 <rect x="420" y="1186" width="159" height="40" fill="#bbf7d0" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="499.5" y="1203.0" text-anchor="middle" font-size="9.0" font-weight="500" fill="#1e293b">PWRC_P[1:0]</text>
 <text x="499.5" y="1217.0" text-anchor="middle" font-size="8.0" fill="#64748b">2'b10</text>
+</g>
 <rect x="580" y="1186" width="159" height="40" fill="#bbf7d0" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="659.5" y="1203.0" text-anchor="middle" font-size="9.0" font-weight="500" fill="#1e293b">PWRC_TB[1:0]</text>
 <text x="659.5" y="1217.0" text-anchor="middle" font-size="8.0" fill="#64748b">2'b01</text>
@@ -210,11 +212,9 @@
 </g>
 <g class="row" style="animation-delay:0.33s">
 <text x="170" y="1270" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x1D (29)</text>
-<g class="chg">
 <rect x="260" y="1280" width="399" height="40" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="459.5" y="1297.0" text-anchor="middle" font-size="9.0" font-weight="500" fill="#1e293b">khead_20b_sel[4:0]</text>
 <text x="459.5" y="1311.0" text-anchor="middle" font-size="8.0" fill="#64748b">5'b00000</text>
-</g>
 <rect x="660" y="1280" width="239" height="40" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="779.5" y="1297.0" text-anchor="middle" font-size="9.0" font-weight="500" fill="#1e293b">SP_S[2:0]</text>
 <text x="779.5" y="1311.0" text-anchor="middle" font-size="8.0" fill="#64748b">3'b000</text>

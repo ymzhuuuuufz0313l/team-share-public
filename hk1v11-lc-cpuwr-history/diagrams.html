@@ -285,7 +285,7 @@
 
 > ⭐ **本章优先级最高**：建议在读完后文之前，先浏览本章六张全景图，建立 LC_CPUWR 寄存器空间的整体印象，再深入各个变更细节。
 
-> **1027v1 注记**：本章各大图数据已同步 **1027v1**——`0x1D[7:3]` 新增 `khead_20b_sel[4:0]`（1027v1，原 Reserved，默认 `5'b00000`，`5'b10101`=20-bit mode / Others=40-bit mode，无 LSI_PRTECT 门控，详见[寄存器 §32](./regmap.html)）；`0x08` 字节默认 `0x00`（`reg_eq_rbc1` 1022v1 服务器回退 1→0，rbc[1:0]=2'b00 终局）、`0x36=0x17`（0918v1 保留）、`0x2F[0]` 新增 `SCS_PKT_HALF`（1023v1，默认 0，LSI_PRTECT，详见[寄存器 §31](./regmap.html)）；仅图中 `0x29` 仍显示旧值 `0x00`，读图时按 0918v1 值 `0x02` 修正（详见[寄存器 §23/§26](./regmap.html)）。`SCREN`：0903v1 曾引入 FPGA 强制常开分支，**0909v1 起已注释停用**——全平台（含 FPGA）`R_SCREN=R_REG00_F[4]` 由软件控制（默认关，详见[寄存器 §25](./regmap.html)）。
+> **1027v1 注记**：本章各大图数据已同步 **1027v1**——`0x1D[7:3]` 新增 `khead_20b_sel[4:0]`（1027v1，原 Reserved，默认 `5'b00000`，`5'b10101`=20-bit mode / Others=40-bit mode，无 LSI_PRTECT 门控，详见[寄存器 §32](./regmap.html)）；**LC_CPUWR 侧同日修复 Seg1 checksum 0x0A XOR 覆盖丢失**（0721v1 重排回归，图 3/图 6 注记详见[校验和 §10](./checksum.html)）；`0x08` 字节默认 `0x00`（`reg_eq_rbc1` 1022v1 服务器回退 1→0，rbc[1:0]=2'b00 终局）、`0x36=0x17`（0918v1 保留）、`0x2F[0]` 新增 `SCS_PKT_HALF`（1023v1，默认 0，LSI_PRTECT，详见[寄存器 §31](./regmap.html)）；仅图中 `0x29` 仍显示旧值 `0x00`，读图时按 0918v1 值 `0x02` 修正（详见[寄存器 §23/§26](./regmap.html)）。`SCREN`：0903v1 曾引入 FPGA 强制常开分支，**0909v1 起已注释停用**——全平台（含 FPGA）`R_SCREN=R_REG00_F[4]` 由软件控制（默认关，详见[寄存器 §25](./regmap.html)）。
 >
 > **动画版**：六张图均已提供动画版（行级渐入 + 变更字段高亮），页面默认加载 `images/anim/` 下的动画 SVG；静态原版保留在 `images/` 同名文件。
 
@@ -315,7 +315,7 @@ chip_sel=1 模式下 POR 后默认值；红色标出与 chip_sel=0 不同、由 
 
 ## 3. Checksum 地址覆盖
 
-这张图基于 `LC_CPUWR.v` Part 18 的 checksum 逻辑（参与地址范围自 0810v1 起未变：`0x00~0x1F` 除 0x07，frame_end=0x27），标出参与 XOR 累加的地址范围，帮助确认 0x07 控制寄存器、0x27 frame end 边界以及 Seg1/Seg2 的 checksum 覆盖范围。0827v1 后 0x02 因 cs0/cs1 字段不同继续双行对照，0x03/0x04 的 lane_ctrl 单 bit 两种模式一致、单行展示。图内默认值已同步 **1027v1**（`0x1D[7:3]` 新增 `khead_20b_sel` 默认 `5'b00000`；0x08 rbc1=0）；1027v1 不改 checksum 机制（0x1D 为既有 Seg1 参与地址，写路径/读回不变）；checksum 机制本身 1023v1 增加了首帧/幻影防护（不参与地址范围不变，见[校验和 §9](./checksum.html)）。
+这张图基于 `LC_CPUWR.v` Part 18 的 checksum 逻辑（参与地址范围自 0810v1 起未变：`0x00~0x1F` 除 0x07，frame_end=0x27），标出参与 XOR 累加的地址范围，帮助确认 0x07 控制寄存器、0x27 frame end 边界以及 Seg1/Seg2 的 checksum 覆盖范围。0827v1 后 0x02 因 cs0/cs1 字段不同继续双行对照，0x03/0x04 的 lane_ctrl 单 bit 两种模式一致、单行展示。图内默认值已同步 **1027v1**（`0x1D[7:3]` 新增 `khead_20b_sel` 默认 `5'b00000`；0x08 rbc1=0）。**LC_CPUWR 1027v1（2026-10-27 晚）修复 0x0A XOR 覆盖丢失**（0721v1 重排回归，DV boundary_chip1 F30 假提交暴露，详见[校验和 §10](./checksum.html)）：本图所示参与集自始为设计意图，修复后 RTL 才真正兑现——**图中脉冲已移至 0x0A 行 PWRC_P[1:0] 单元格**（F30 写入的字段）；checksum 机制本身 1023v1 增加了首帧/幻影防护（不参与地址范围不变，见[校验和 §9](./checksum.html)）。
 
 标出参与 checksum XOR 累加的地址；同一地址在两种 chip_sel 下字段不同时拆成双行展示。
 
@@ -352,7 +352,7 @@ SPEC 中「I2C_EN=1 时所有寄存器不做 unlock reset」的 RTL 路径为：
 - **流内字节顺序不变**：FCONFIG 60B（30 拍 → 20 拍）、LCONFIG 6B（3 拍 → 2 拍），恰好整除无 pad
 - **拍内位置定数据源**：第 1/2/3 字节分别为 C/D/F（LCONFIG 为 A/B/E）
 - **区域 B 是关键难点**：`0x1E/0x1F` 与 `0x20` 同拍跨 Segment1 边界，checksum 必须按字节有效性折叠
-- **绿色汇总框**：XOR 总量与旧版完全相同（结合律），checker / DV 回归行为不变
+- **绿色汇总框**：XOR 总量与旧版完全相同（结合律），checker / DV 回归行为不变（⚠️ 2026-10-27 勘误：此为设计意图，RTL `xdata_a` 漏写 5'h04 分支致 0x0A 实际从未进入 XOR，LC_CPUWR 1027v1 已修复，见[校验和 §10](./checksum.html)）
 - **橙色汇总框**：上游 `CHPI_CONFIG_L0` 未升 24bit 前，`LINK_LOGIC` 将 `[23:16]` tie-off 防 X 传播
 
 ![0721v1 配置拍重组对照](./images/anim/config_data_beat_regroup_0721.svg)
@@ -512,4 +512,4 @@ const chapters = [
 </body>
 </html>
 
-<!-- ymzhu 2026-10-27 14:00 -->
+<!-- ymzhu 2026-10-27 17:58 -->

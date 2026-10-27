@@ -446,6 +446,21 @@ DV env 同步继续暂缓期间，RTL 侧每个版本仍独立完成验收三关
 
 **DV 侧影响**：无——0x1D 的 I2C 读写行为、checksum 行为、复位行为均不变（仅语义命名 Reserved→khead_20b_sel），现有 case 无需新增。
 
+## 11. 1027v1-B 验收：代码级交叉验证（用户指定口径，无仿真无 VM）
+
+LC_CPUWR 1027v1-B（Seg1 checksum 0x0A XOR 覆盖修复）按用户 2026-10-27 指定口径验收——**纯代码分析，不上 VM、不跑仿真**。修复为纯组合一分支（无重定时），G13 对拍 TB 条款不触发：
+
+| 关卡 | 口径 | 结果 |
+|------|------|------|
+| ① iverilog | 受控对照：vs 1023v1 基线同命令（`-Wall` + HDL_define.v） | 错误集逐行一致（20×CLKINVX4AL9 均 1022v1 服务器代码既有 std-cell 缺库），无新增 |
+| ② 评审（时序/可维护/综合/接口/功能） | diff 级评审 + **同类错误六轴排查**（`script/xcheck_1027v1_similar.py`） | **PASS（critical=0/high=0/low=1）**——low：xsum_a 锥新增一级 XOR（可忽略）；六轴：影子写入槽位 13/13=解码槽位、0x07 直写 R_REG07_F 属设计、参与拍↔xor_en 使能拍一一对应、0x07 正确排除 XOR、0x00-0x1F 读回齐全、LC_REG_MAPPING 回拼无槽选择面——**无其他同类错误** |
+| ③ 信号链 | xdata_a 全消费者枚举 | xsum_a / prev_xsum_a / match_a→match_eff_a→update_en_a(含输出)/match_cnt_a/unmatch_cnt_a/unlock_one_shot_a 全 WCK1_A 单域无 CDC；无重定时，Workflow C 未触发 |
+| **四轴交叉验证**（本版核心证据） | `script/xcheck_1027v1_xdata_a.py` | **PASS**：A 解码线性律 14/14；B 头注释表↔修复表达式逐拍一致（原 bug 正是二者矛盾）；C 参与集=0716v1_work 等价集；D 旧→新增量恰为 {0x0A}+每个使能拍显式分支守卫 |
+
+**DV 侧待办（VM 恢复后）**：`t_8b1lane_checksum_boundary_chip1` 复跑（F30 应转 mismatch 不提交）；`t_8b1lane_checksum_pwrc_p1/p2/p3` 期望值按正确行为复核；建议补一帧"改 0x0A+正确校验"的合法提交路径回归。
+
+**方法论沉淀**：同类错误的最小拦截检查 = 注释/文档表格 ↔ RTL 表达式的**逐拍×逐槽枚举比对**（B 轴）——结构重排类变更（如 0721v1）的"集合级等价推理"（XOR 结合律）不能替代该枚举核对。
+
   </script>
   <script>
     document.getElementById('article').innerHTML = marked.parse(document.getElementById('md').textContent.trim());
@@ -536,4 +551,4 @@ const article = document.getElementById('article');
 </body>
 </html>
 
-<!-- ymzhu 2026-10-27 14:00 -->
+<!-- ymzhu 2026-10-27 17:58 -->

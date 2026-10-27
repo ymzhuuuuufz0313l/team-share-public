@@ -689,6 +689,17 @@
 - **挂账**：`R_KHEAD_20B_SEL` 上层消费连接未接（FUNCTION 侧，同 SCS_PKT_HALF 先例）；表内笔误 history 条目 `@0x1D[7:5]` vs 寄存器表正文 `[7:3]`，以正文为准（待反馈 spec owner）
 - Excel 登记 NO50；chip_sel0/1 地址表 + 六张图解 SVG（含动画版，khead 单元格脉冲）同步
 
+### 5.30 1027v1-B LC_CPUWR 修复 Seg1 checksum 0x0A XOR 覆盖丢失
+
+2026-10-27 晚，DV `t_8b1lane_checksum_boundary_chip1` F30 报 `addr=0a active actual=10 expected=00`（改 0x0A PWRC_P 且预期不提交的帧被假匹配误提交）。设计确认（纯代码分析，用户指定口径，VM 未参与）：
+
+- **根因**：`xdata_a` 三元链无 `5'h04` 分支、落默认 `DATA_C`——beat 5'h04（C=0x09、**D=0x0A**、F=0x0B gap）只 XOR 0x09，**0x0A 自 0721v1（1b574b63）3B/beat 重排起从未进入运行 XOR**，而 RTL 头注释与本站 §7.1 表格一直正确写着 `5'h04: C^D`；0721 之前的 0716 代码（旧 2B 布局 beat6 C 字节）是覆盖 0x0A 的——**重排引入回归**，git 实证表达式 0721 后零改动、历代服务器代际同源
+- **双向破坏**：仅改 0x0A+陈旧校验 → 假匹配误提交（F30 实测，unmatch_cnt 被误清）；改 0x0A+正确校验 → 假 mismatch（提交被阻+unmatch 污染，5 连可误触发 unlock）；1023v1 match 防护管不住（防幻影/残帧，不防完整帧的数据覆盖洞）
+- **修复**：补一行 `(FREG_CHPI == 5'h04) ? (DATA_C ^ DATA_D)`，LC_CPUWR 1023v1→1027v1；纯组合一分支，其余拍逐字节不变
+- **验证（代码级三件套）**：四轴交叉验证 PASS（解码线性律/注释↔代码/0716 等价集/增量恰为 {0x0A}）；同类错误六轴排查 PASS（**无其他同类错误**：影子槽位 13/13、0x07 直写属设计、参与拍↔使能拍一一对应、读回齐全、回拼无槽选择面）；iverilog 受控对照错误集一致
+- **成因复盘**：结构重排用"XOR 结合律总量不变"集合级推理验收，未做逐拍×逐槽枚举核对；三元链默认分支静默吞掉漏写项；三关纪律与 G13 条款（0929）彼时未建立；DV pwrc case 同 commit 交付未跑到暴露窗口。最小拦截检查（注释/表格↔表达式逐拍比对）已沉淀为 `script/xcheck_1027v1_xdata_a.py` B 轴
+- Excel 登记 NO51；站点 checksum.html §10 + §7 勘误 + 脉冲移至 0x0A PWRC_P
+
   </script>
   <script>
     document.getElementById('article').innerHTML = marked.parse(document.getElementById('md').textContent.trim());
@@ -779,4 +790,4 @@ const article = document.getElementById('article');
 </body>
 </html>
 
-<!-- ymzhu 2026-10-27 14:00 -->
+<!-- ymzhu 2026-10-27 17:58 -->

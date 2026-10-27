@@ -362,7 +362,7 @@ LC_CPUWR 的寄存器更新核心机制：**写入一个寄存器需要连续 3 
 
 > **1023v1 更新**：首帧的"比较"与"计数"本身都是非法的（`prev_xsum_a` 复位为 0，首帧若全零会幻影 match；首帧 mismatch 又会提前污染 unlock 计数）。1023v1 已加 `prev_valid_a` + `frm_seen_start_a` 双标志防护，非法帧尾不比较、不计数（保持），详见 §9。
 >
-> **1027v1 注记**：新增 `khead_20b_sel` @0x1D[7:3] 仅为字段输出（LC_REG_MAPPING 侧），checksum 机制零改动——0x1D 为既有 Seg1 参与地址，写路径/读回/复位均不变。
+> **1027v1 注记（两部分）**：①LC_REG_MAPPING 侧新增 `khead_20b_sel` @0x1D[7:3] 仅为字段输出，checksum 机制零改动（0x1D 为既有 Seg1 参与地址）；②**LC_CPUWR 侧修复 Seg1 checksum 0x0A XOR 覆盖丢失**（0721v1 重排回归，详见 §10）——0x0A 同为既有参与地址，修复后 RTL 参与集才与本页各表真正一致。
 
 ### 5.3 one-shot unlock 验证陷阱
 
@@ -408,6 +408,8 @@ frame_end = 0x27
 ```
 
 因此 **checker 期望、DV 环境、回归行为全部不变**——这是本次协议级变更中刻意保持的不变量。
+
+> ⚠️ **2026-10-27 勘误（LC_CPUWR 1027v1，详见 §10）**：上表为 0721v1 的**设计意图**且本节表格一直正确，但 RTL `xdata_a` 表达式漏写了 `5'h04` 分支（落默认 `DATA_C`），**0x0A 实际从未进入 XOR**——"总量不变"性质直到 1027v1 修复才真正成立。教训：结构重排类变更必须做逐拍×逐槽枚举核对（本站表格 ↔ RTL 表达式的比对正是最小拦截检查）。
 
 ### 7.3 frame_end 位置迁移
 
@@ -462,6 +464,35 @@ unlock_one_shot_a: (unmatch_cnt_a == 3'd4) && cmp_valid_a && !match_a
 用户口径"两帧算好、第三帧 ADDR39 当拍一次性写入全部 checksum 参与计算的寄存器"精确保留：guard 寄存器在 frame_end 沿（NBA）清零，而组合 `update_en_a` 用的是**沿前旧值**——F3 帧尾提交拍逐拍不变（同沿非阻塞语义；guard TB S3 场景断言）。
 
 **证据**：t1 七案分析 + guard TB 10 场景（全 PASS）+ 最小对拍 TB（1022v1 vs 1023v1，C1/C2/C3 全 0）+ 对抗评审 PASS（critical=0/high=0）；详见[验证同步](./verification.html) §9。
+
+## 10. 1027v1 Seg1 checksum 0x0A XOR 覆盖修复（0721v1 重排回归）
+
+DV `t_8b1lane_checksum_boundary_chip1` F30（chip_sel=1）暴露：改 0x0A PWRC_P 00→01 且预期不提交的帧，实际 active 读到 0x10——shadow 经 `update_en_a` 误提交。
+
+### 10.1 根因
+
+`xdata_a` 三元链**没有 `5'h04` 分支**，该拍落默认 `DATA_C`：beat 5'h04（C=0x09、D=0x0A、F=0x0B gap）只 XOR 了 0x09，**0x0A 自 0721v1 起从未进入运行 XOR**——而 §7.1 表格与 RTL 头注释一直正确写着 `5'h04: C^D`。git 实证（`git log -L`）：表达式仅 0721v1（1b574b63）写过一次、此后零改动；0721 之前的 0716 代码在旧 2B 布局下覆盖 0x0A——**重排引入回归**，所有 ≥0721 服务器代际同源。
+
+### 10.2 双向破坏机理
+
+| 场景 | RTL 行为（bug 下） | 后果 |
+|------|-------------------|------|
+| 仅改 0x0A + 陈旧/错校验 | XOR 无增量 → `(xsum_a^xdata_a)==prev_xsum_a` 假成立 | **假匹配误提交**（F30 实测；unmatch_cnt 被误清零） |
+| 改 0x0A + 正确校验 | RTL 侧增量 0x10 不可见 | **假 mismatch**：提交被阻 + unmatch_cnt 污染，5 连可误触发 unlock |
+
+1023v1 的 match 防护（§9）管不住：它防幻影/残帧（帧完整性），不防数据覆盖洞（完整合法帧的字节缺失）。
+
+### 10.3 修复与验证（代码级，无仿真）
+
+修复一行：`(FREG_CHPI == 5'h04) ? (DATA_C ^ DATA_D)`。验证三件套全 PASS：
+
+- **四轴交叉验证**（`script/xcheck_1027v1_xdata_a.py`）：解码线性律 14/14 ✓ / 头注释↔表达式逐拍一致 ✓ / 参与集 = 0716v1_work 等价集 `{0x00-0x06,0x08,0x09,0x0A,0x1D,0x1E,0x1F}`+0x27 ✓ / 增量恰为 {0x0A} 且每个使能拍显式分支 ✓
+- **同类错误六轴排查**（`script/xcheck_1027v1_similar.py`）：13/13 影子写入槽位=解码槽位 ✓ / 0x07 直写 R_REG07_F（设计如此）✓ / 参与拍↔使能拍一一对应 ✓ / 0x07 正确排除 XOR ✓ / 读回齐全 ✓ / LC_REG_MAPPING 回拼无槽选择面 ✓ —— **无其他同类错误**
+- **iverilog 受控对照**：vs 1023v1 基线错误集逐行一致（20×CLKINVX4AL9 均既有）
+
+### 10.4 成因复盘与教训
+
+0721v1 属结构重排，当时用"XOR 结合律总量不变"的**集合级推理**验收，未做**逐拍×逐槽枚举核对**；三元链默认分支静默吞掉漏写项；三关纪律与 G13"静态推演不得单独作为 pass 依据"条款（0929）彼时未建立；DV pwrc 家族 case 与 env 同 commit 交付但未跑到暴露窗口。**最小拦截检查 = 注释/文档表 ↔ RTL 表达式的逐拍比对**（B 轴），已沉淀为可复跑脚本；DV 侧待办：boundary_chip1 复跑（F30 应转 mismatch）、pwrc_p1/p2/p3 期望复核、补"改 0x0A+正确校验"合法提交路径。
 
   </script>
   <script>
@@ -553,4 +584,4 @@ const article = document.getElementById('article');
 </body>
 </html>
 
-<!-- ymzhu 2026-10-27 14:00 -->
+<!-- ymzhu 2026-10-27 17:51 -->
