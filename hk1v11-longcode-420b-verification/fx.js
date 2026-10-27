@@ -20,6 +20,17 @@
     : (mq && mq.matches ? 'static' : 'anim');
 
   var btn = document.getElementById('motionToggle');
+  var btnFloat = false;
+  if (!btn) {
+    /* 多站点通用：页面无既有按钮时自动注入（导航链接栏优先，否则浮动按钮） */
+    btn = document.createElement('button');
+    btn.type = 'button';
+    btn.id = 'motionToggle';
+    btn.title = '点击切换 动画 / 静态 版本';
+    btn.setAttribute('aria-pressed', 'true');
+    btnFloat = !document.querySelector('.navbar-links');
+    btn.className = btnFloat ? 'float-motion' : 'navbar-motion';
+  }
 
   /* ===================== 2. SVG img src 交换 + 滚动重播（原样搬入） =====================
      anim/ 动画版 ↔ 根目录静态原版（零额外资源）；
@@ -39,12 +50,20 @@
     var p = new URL(s, location.href).pathname;
     return (p.indexOf('/anim/') !== -1 ? s.split('?')[0] : './anim/' + nameOf(img));
   }
+  function staticSrc(img) {
+    /* 通用静态回退：去掉 src 中的 /anim/ 段（anim/foo.svg → ./foo.svg；images/anim/foo.svg → images/foo.svg） */
+    var s = (img.getAttribute('src') || '').split('?')[0];
+    var idx = s.indexOf('/anim/');
+    if (idx === -1) return s;
+    var prefix = s.slice(0, idx);
+    return (prefix || './') + nameOf(img);
+  }
   function applySvg(replayNow) {
     svgImgs().forEach(function (img) {
       img.loading = 'lazy';
       img.src = (mode === 'anim')
         ? baseAnim(img) + (replayNow ? '?v=' + Date.now() : '')
-        : './' + nameOf(img);
+        : staticSrc(img);
     });
     observe();
   }
@@ -93,6 +112,8 @@
   /* ===================== 4. 滚动显现标记 + 表格行级联 + 章节标题画线 ===================== */
   var REVEAL_SEL = [
     '#article h2', '#article h3', '#article table', '#article figure',
+    'main h2', 'main h3', 'main table', 'main figure',
+    '.container h2', '.container h3', '.container table', '.container figure',
     '.article > p:first-of-type', '.stat', '.hero-hint', '.page-nav a'
   ];
   var revealEls = [];
@@ -271,10 +292,16 @@
     statHTML = statEls.map(function (v) { return v.innerHTML; });
 
     document.body.appendChild(progress);
-    document.body.appendChild(topBtn);
-    topBtn.addEventListener('click', function () {
-      window.scrollTo({ top: 0, behavior: mode === 'anim' ? 'smooth' : 'auto' });
-    });
+    if (btn && !btn.parentNode) {
+      (btnFloat ? document.body : document.querySelector('.navbar-links')).appendChild(btn);
+    }
+    /* 站点已有自带返回顶部（如 #toTop）时跳过，避免双按钮 */
+    if (!document.getElementById('toTop')) {
+      document.body.appendChild(topBtn);
+      topBtn.addEventListener('click', function () {
+        window.scrollTo({ top: 0, behavior: mode === 'anim' ? 'smooth' : 'auto' });
+      });
+    }
     window.addEventListener('scroll', onScroll, { passive: true });
 
     if (btn) btn.addEventListener('click', function () {
@@ -295,4 +322,4 @@
   }
 })();
 
-/* ymzhu 2026-10-27 11:12 */
+/* ymzhu 2026-10-27 13:52 */
