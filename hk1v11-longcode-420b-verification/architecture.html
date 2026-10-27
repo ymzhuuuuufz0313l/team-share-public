@@ -461,6 +461,20 @@
   .fbox b { color: var(--accent-strong); }
   .fbox code { font-size: 12.5px; }
   .farrow { align-self: center; font-family: var(--font-mono); font-size: 22px; color: var(--accent); font-weight: 600; }
+    .navbar-links button.navbar-motion {
+      padding: 5px 10px;
+      border-radius: 6px;
+      font-size: 13.5px;
+      font-family: var(--font-mono);
+      white-space: nowrap;
+      cursor: pointer;
+      background: transparent;
+      border: 1px dashed var(--line);
+      color: var(--muted);
+    }
+    .navbar-links button.navbar-motion:hover { background: var(--chip); color: var(--text); }
+    .navbar-links button.navbar-motion[aria-pressed="true"] { border-color: var(--accent); color: var(--accent); }
+    @media (max-width: 640px) { .navbar-links button.navbar-motion { font-size: 12.5px; padding: 4px 8px; } }
 </style>
 </head>
 <body>
@@ -480,6 +494,7 @@
       <a href="./issues.html">问题</a>
       <a href="./debug-log.html">排障</a>
       <a href="./next.html">后续</a>
+      <button type="button" class="navbar-motion" id="motionToggle" title="点击切换 动画 / 静态 版本" aria-pressed="true">🎬 动效</button>
     </div>
   </div>
 </nav>
@@ -511,7 +526,7 @@
 
 ## 1. 验证环境总览
 
-> 🎬 本页图均为纯 CSS 动画 SVG（在 `anim/` 目录，滚动到视口时重播）；静态原版保留在同名路径作 fallback。
+> 🎬 本页图均为纯 CSS 动画 SVG（在 `anim/` 目录，滚动到视口时重播；顶部导航可一键切换 动画/静态）；静态原版保留在同名路径作 fallback。
 
 ![longcode 验证架构](./anim/longcode_verification_architecture.svg?v=20261027)
 
@@ -633,22 +648,70 @@
 
   <script>
     document.getElementById('article').innerHTML = marked.parse(document.getElementById('md').textContent.trim());
-    /* 动画 SVG 滚动重播：长页面里 SVG 多为下方图，一次性入场动画在加载时就播完、用户滚到时看不到
-       → 首进视口前 240px 重播（src 加 query 强制 <img> 内 SVG 重新渲染）；加载时已在视口内的不重播（2026-10-26 ymzhu） */
-    document.querySelectorAll('img[src$=".svg"]').forEach(function (img) {
-      var r = img.getBoundingClientRect();
-      if (r.top < window.innerHeight && r.bottom > 0) return;
-      img.loading = 'lazy';
-      var io = new IntersectionObserver(function (entries) {
-        entries.forEach(function (e) {
-          if (!e.isIntersecting) return;
-          io.unobserve(img);
-          var base = (img.getAttribute('src') || '').split('?')[0];
-          img.src = base + '?v=' + Date.now();
+    /* 动画/静态一键切换 + 滚动重播（2026-10-27 ymzhu v2）
+       模式优先级：URL ?motion=static|anim > localStorage('motion-mode') > prefers-reduced-motion > 动画
+       切换 = 换 <img> src（anim/ 动画版 ↔ 根目录静态原版，即 fallback 原图，零额外资源）
+       修复 v1 selector bug：img[src$=".svg"] 匹配不到带 ?v= 的引用，滚动重播实际未生效 */
+    (function () {
+      var mq = window.matchMedia ? matchMedia('(prefers-reduced-motion: reduce)') : null;
+      var param = new URLSearchParams(location.search).get('motion');
+      var stored = null;
+      try { stored = localStorage.getItem('motion-mode'); } catch (e) {}
+      var mode = param === 'static' || param === 'anim' ? param
+        : (stored === 'static' || stored === 'anim') ? stored
+        : (mq && mq.matches ? 'static' : 'anim');
+      var btn = document.getElementById('motionToggle');
+      var io = null;
+      function nameOf(img) {
+        var p = new URL(img.getAttribute('src') || '', location.href).pathname;
+        return p.split('/').pop();
+      }
+      function svgImgs() {
+        return Array.prototype.filter.call(document.querySelectorAll('img'), function (img) {
+          return /\.svg(\?|$)/.test(img.getAttribute('src') || '');
         });
-      }, { rootMargin: '240px 0px' });
-      io.observe(img);
-    });
+      }
+      function baseAnim(img) {
+        var s = img.getAttribute('src') || '';
+        var p = new URL(s, location.href).pathname;
+        return (p.indexOf('/anim/') !== -1 ? s.split('?')[0] : './anim/' + nameOf(img));
+      }
+      function apply(replayNow) {
+        svgImgs().forEach(function (img) {
+          img.loading = 'lazy';
+          img.src = (mode === 'anim')
+            ? baseAnim(img) + (replayNow ? '?v=' + Date.now() : '')
+            : './' + nameOf(img);
+        });
+        if (btn) {
+          btn.textContent = mode === 'anim' ? '🎬 动效' : '🖼 静态';
+          btn.setAttribute('aria-pressed', mode === 'anim' ? 'true' : 'false');
+        }
+        observe();
+      }
+      function observe() {
+        if (io) { io.disconnect(); io = null; }
+        if (mode !== 'anim') return;
+        io = new IntersectionObserver(function (entries) {
+          entries.forEach(function (e) {
+            if (!e.isIntersecting) return;
+            io.unobserve(e.target);
+            if (mode === 'anim') e.target.src = baseAnim(e.target) + '?v=' + Date.now();
+          });
+        }, { rootMargin: '240px 0px' });
+        svgImgs().forEach(function (img) {
+          var r = img.getBoundingClientRect();
+          if (r.top < window.innerHeight && r.bottom > 0) return;
+          io.observe(img);
+        });
+      }
+      if (btn) btn.addEventListener('click', function () {
+        mode = (mode === 'anim') ? 'static' : 'anim';
+        try { localStorage.setItem('motion-mode', mode); } catch (e) {}
+        apply(true);
+      });
+      apply(false);
+    })();
 const lightbox = document.getElementById('lightbox');
     const lightboxImg = document.getElementById('lightbox-img');
     const lightboxClose = document.getElementById('lightbox-close');
@@ -711,4 +774,4 @@ const lightbox = document.getElementById('lightbox');
 </body>
 </html>
 
-<!-- ymzhu 2026-10-27 10:26 -->
+<!-- ymzhu 2026-10-27 10:56 -->
