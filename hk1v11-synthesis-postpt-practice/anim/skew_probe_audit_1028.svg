@@ -285,8 +285,8 @@
 <text x="804" y="1102" font-size="12">rx0_00_max（setup slack）</text>
 <rect x="965" y="1096" width="18" height="4" fill="#1d4ed8"/>
 <text x="989" y="1102" font-size="12">rx0_00_min（hold slack）</text>
-<text x="780" y="1116" font-size="11" fill="#1d4ed8">min 行 7.0~9.0：DIV2(10.08ns) 整周期 hold 边沿差贡献 71%</text>
-<text x="740" y="1152" font-size="10.5" fill="#1d4ed8">（launch 12.6 vs capture 2.52 恰差 1 个 DIV2 周期；input delay=0 且 DIV2 无 uncertainty）</text>
+<text x="780" y="1116" font-size="11" fill="#1d4ed8">min 行 7.0~9.0：DIV2 整周期边沿差 10.08 一项即达 slack 的 1.39 倍</text>
+<text x="740" y="1152" font-size="10.5" fill="#1d4ed8">（launch 12.6 vs capture 2.52 恰差 1 个 DIV2 周期 10.08，占数据到达 14.153 的 71%；input delay=0 且无 uncertainty）</text>
 <text x="740" y="1170" font-size="10.5" fill="#1d4ed8">跨项目差 ~6.7ns 属口径差非电路差，max−min 差距不能当裕度跨项目比</text>
 <rect class="fade" style="animation-delay:.45s" x="40" y="1226" width="1360" height="262" rx="2" fill="#fffdf7" stroke="#c9bfa8" stroke-width="1.5"/>
 <text x="60" y="1254" font-size="16.5" font-weight="bold" letter-spacing="0.05em">④ INPUT / OUTPUT / MAX_DELAY 三种约束如何决定 csv（有没有这行、行是什么）</text>
