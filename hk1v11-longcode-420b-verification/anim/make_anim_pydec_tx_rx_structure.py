@@ -1,20 +1,22 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""make_anim_pydec_tx_rx_structure.py  (Motion Kit v2)
+"""make_anim_pydec_tx_rx_structure.py  (Motion Kit v4 整体重写)
 
-把 pydec_tx_rx_structure.svg 升级为 v2 纯 CSS in-SVG 动画：
-- 入场编排（.row/.head，行序：标题0 → TX .2 → RX .45 → 离线 band .85 → 图例 1.1）
-- 箭头自绘（.draw + pathLength=100：TX 内部 2↓、CHPI 蓝色串行 2 边、
-  RX→脚本 3 箭头、离线 lane0→report 箭头；delay = 源面板 delay + 0.35）
-- 数据列车（.flowdot：绿脚本链 3 边 ×2 包 0.7s，0.15s 相位递增；
-  蓝 K 码对齐 2 边 ×2 包）
-- 虚线行进（.fademarch：RTL 解码链虚线盒、紫色期望值连接器、
-  绿色 lane0↓ 虚线、灰色"传统路径"）
-- 英雄辉光（.glow-b TAP 徽章 / .glow-g ✅ verdict 盒）
-- 呼吸（.breathe："dout_24b + 2-bit valid" 文本）
-
-铁律：源 SVG 只读；数据/几何/颜色零改动；纯 CSS 无 <script>；kit CSS 逐字嵌入；
-reduced-motion 媒体块原样保留。确定性、幂等、无第三方依赖。
+MOTION_KIT.md §6.2 规格（1200x680 TX/RX + 离线比对 band）：
+- 入场编排 §5：标题0 → TX .20 → RX .45 → 离线 band .85 → 图例 1.5；
+  箭头 delay = max(两端面板)+0.55s（修 v2 悬浮箭头）。
+- 稳态族（3 族 + breathe 辅助）：
+  * 列车 train：绿脚本链 3 边（tap_debug→decode_dap→pydec→…）每边 2 包+flowtail
+    拖尾，0.7s；蓝 K 码对齐（CHPI 串行）2 边每边 2 包。
+  * 脉冲 pulse：TAP 徽章 pulse-b(-1.4s)；✅ verdict 盒 pulse-t(-0.7s)。
+  * 扫光 sweepband：离线比对 band 区域 1 处（§4 配方：defs 渐变+clipPath，
+    P=区域宽+240，X0=区域左-0.54P 保证 t=0 光带完全在区域左侧、8s 无缝左→右扫）。
+  * breathe 辅助（不计数）："dout_24b + 2-bit valid" 文本。
+- march 辅助（不计数）：灰色"传统路径"、RTL 虚线盒边框、紫 dump↓、
+  绿 lane0↓、紫"期望值"虚线。
+铁律：源 SVG 只读；text/几何/颜色零改动；纯 CSS in-SVG；kit CSS §2 逐字；
+保留源 defs + 背景 rect + 第 2 行字体 style；reduced-motion 块原样；
+确定性幂等；零第三方依赖。
 """
 import re
 from pathlib import Path
@@ -23,34 +25,53 @@ BASE = Path(r"E:\project\team-share-public\hk1v11-longcode-420b-verification")
 SRC = BASE / "pydec_tx_rx_structure.svg"
 OUT = BASE / "anim" / "pydec_tx_rx_structure.svg"
 
-# ---- Motion Kit v2 CSS（MOTION_KIT.md §2 逐字，勿改）----
+# ---- Motion Kit v4 CSS（MOTION_KIT.md §2 逐字，勿改）----
 KIT_CSS = """<style>
-.row{opacity:0;animation:rowIn .5s cubic-bezier(.22,.7,.3,1) forwards}
-.head{opacity:0;animation:rowIn .5s cubic-bezier(.22,.7,.3,1) forwards}
-@keyframes rowIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-.draw{stroke-dasharray:100;animation:drawIn .55s ease-out forwards}
+.row{opacity:0;animation:rowIn .55s cubic-bezier(.22,.7,.3,1) forwards}
+.head{opacity:0;animation:rowIn .55s cubic-bezier(.22,.7,.3,1) forwards}
+@keyframes rowIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.draw{stroke-dasharray:100;animation:drawIn .6s cubic-bezier(.4,0,.2,1) forwards}
 @keyframes drawIn{from{stroke-dashoffset:100}to{stroke-dashoffset:0}}
 .fade{opacity:0;animation:fadeIn .6s ease forwards}
 @keyframes fadeIn{to{opacity:1}}
-.fademarch{opacity:0;animation:fadeIn .6s ease forwards,march 1.8s linear infinite}
+.flowdot{fill:none;stroke-linecap:round;stroke-dasharray:9 91;stroke-width:3.5;animation:flow 1.5s linear infinite}
+@keyframes flow{to{stroke-dashoffset:-100}}
+.flowtail{fill:none;stroke-linecap:round;stroke-dasharray:4 96;stroke-width:8;opacity:.25;animation:flow 1.5s linear infinite}
+.pulse{transform-box:fill-box;transform-origin:center;animation:pulse 2.8s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1);filter:drop-shadow(0 0 0 rgba(180,83,9,0))}50%{transform:scale(1.03);filter:drop-shadow(0 0 12px rgba(180,83,9,.8))}}
+.pulse-t{transform-box:fill-box;transform-origin:center;animation:pulseT 2.8s ease-in-out infinite}
+@keyframes pulseT{0%,100%{transform:scale(1);filter:drop-shadow(0 0 0 rgba(14,116,144,0))}50%{transform:scale(1.03);filter:drop-shadow(0 0 12px rgba(14,116,144,.8))}}
+.pulse-b{transform-box:fill-box;transform-origin:center;animation:pulseB 2.8s ease-in-out infinite}
+@keyframes pulseB{0%,100%{transform:scale(1);filter:drop-shadow(0 0 0 rgba(29,78,216,0))}50%{transform:scale(1.03);filter:drop-shadow(0 0 12px rgba(29,78,216,.8))}}
+.sweepband{opacity:.85;animation:sweepMove 8s linear infinite}
+@keyframes sweepMove{to{transform:translateX(var(--sweepP,160px))}}
+.dashgrow{stroke-dasharray:7 5;animation:dashgrow 2.6s linear infinite}
+@keyframes dashgrow{from{stroke-dashoffset:72}to{stroke-dashoffset:0}}
+.march{animation:march 1.5s linear infinite}
+@keyframes march{to{stroke-dashoffset:-16}}
+.cellwave{transform-box:fill-box;transform-origin:center;animation:wave 2.6s ease-in-out infinite}
+@keyframes wave{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.72;transform:scale(1.01)}}
 .breathe{animation:br 3.2s ease-in-out infinite}
 @keyframes br{0%,100%{opacity:1}50%{opacity:.55}}
-.cellwave{animation:wave 3s ease-in-out infinite}
-@keyframes wave{0%,100%{opacity:1}50%{opacity:.68}}
-.march{animation:march 1.8s linear infinite}
-@keyframes march{to{stroke-dashoffset:-16}}
-.flowdot{fill:none;stroke-linecap:round;stroke-dasharray:12 88;animation:flow 2s linear infinite}
-@keyframes flow{to{stroke-dashoffset:-100}}
-.glow-b{animation:glowB 2.8s ease-in-out infinite}
-@keyframes glowB{0%,100%{filter:drop-shadow(0 0 0 rgba(37,99,235,0))}50%{filter:drop-shadow(0 0 6px rgba(37,99,235,.85))}}
-.glow-g{animation:glowG 2.8s ease-in-out infinite}
-@keyframes glowG{0%,100%{filter:drop-shadow(0 0 0 rgba(22,163,74,0))}50%{filter:drop-shadow(0 0 6px rgba(22,163,74,.85))}}
-.glow-o{animation:glowO 2.8s ease-in-out infinite}
-@keyframes glowO{0%,100%{filter:drop-shadow(0 0 0 rgba(217,119,6,0))}50%{filter:drop-shadow(0 0 6px rgba(217,119,6,.85))}}
-.step{animation:stepLit 6s ease-in-out infinite}
-@keyframes stepLit{0%,16%{filter:drop-shadow(0 0 7px rgba(37,99,235,.9))}24%,92%{filter:drop-shadow(0 0 0 rgba(37,99,235,0))}100%{filter:drop-shadow(0 0 7px rgba(37,99,235,.9))}}
-@media (prefers-reduced-motion:reduce){*{animation:none!important}.row,.head,.fade,.fademarch{opacity:1!important}.flowdot{display:none!important}}
+.step{transform-box:fill-box;transform-origin:center;animation:stepLit 6s ease-in-out infinite}
+@keyframes stepLit{0%,16%{filter:drop-shadow(0 0 9px rgba(29,78,216,.85));transform:scale(1.02)}24%,92%{filter:drop-shadow(0 0 0 rgba(29,78,216,0));transform:none}100%{filter:drop-shadow(0 0 9px rgba(29,78,216,.85));transform:scale(1.02)}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}.row,.head,.fade{opacity:1!important}.flowdot,.flowtail,.sweepband{display:none!important}}
 </style>"""
+
+# ---- 扫光带几何（§4 配方）：离线比对 band rect x=40 y=480 w=1120 h=130 ----
+SW_L, SW_Y, SW_W, SW_H = 40, 480, 1120, 130
+SW_P = SW_W + 240                                   # P = 区域宽 + 240 = 1360
+SW_X0 = SW_L - 0.54 * SW_P                          # -694.4：t=0 光带右缘恰在区域左缘
+SW_DEFS = f"""    <linearGradient id="sweepG-1" gradientUnits="userSpaceOnUse" x1="{SW_X0:g}" y1="0" x2="{SW_X0 + SW_P:g}" y2="0">
+      <stop offset="0" stop-color="rgba(180,83,9,0)"/>
+      <stop offset="0.46" stop-color="rgba(180,83,9,0)"/>
+      <stop offset="0.5" stop-color="rgba(180,83,9,.3)"/>
+      <stop offset="0.54" stop-color="rgba(180,83,9,0)"/>
+      <stop offset="1" stop-color="rgba(180,83,9,0)"/>
+    </linearGradient>
+    <clipPath id="sweepC-1"><rect x="{SW_L}" y="{SW_Y}" width="{SW_W}" height="{SW_H}"/></clipPath>"""
+SW_BAND = (f'<g clip-path="url(#sweepC-1)"><rect class="sweepband" x="{SW_X0:g}" y="{SW_Y}" '
+           f'width="{SW_P:g}" height="{SW_H}" fill="url(#sweepG-1)" style="--sweepP:{SW_P:g}px"/></g>')
 
 
 def fmt(v):
@@ -67,10 +88,6 @@ def tag_draw(line, delay):
     return add_attrs(line, f'class="draw" pathLength="100" style="animation-delay:{fmt(delay)}s"')
 
 
-def tag_cls(line, cls, delay):
-    return add_attrs(line, f'class="{cls}" style="animation-delay:{fmt(delay)}s"')
-
-
 def line_to_d(line):
     x1 = re.search(r'x1="([-\d.]+)"', line).group(1)
     y1 = re.search(r'y1="([-\d.]+)"', line).group(1)
@@ -83,11 +100,18 @@ def get_d(line):
     return re.search(r'd="([^"]+)"', line).group(1)
 
 
-def flowdot(d, color, delay, dur=0.7, width="2.5"):
-    g_open = f'<g class="fade" style="animation-delay:{fmt(delay)}s">'
-    p = (f'<path class="flowdot" d="{d}" stroke="{color}" stroke-width="{width}" '
-         f'pathLength="100" style="animation-duration:{fmt(dur)}s;animation-delay:{fmt(delay)}s"/>')
-    return [g_open, p, "</g>"]
+def train_edge(d, color, dur, phase, enter, tail=True):
+    """数据列车：2 包（错半周期），tail=True 时每包带 flowtail 拖尾；外包 .fade 隐藏到入场。"""
+    out = [f'<g class="fade" style="animation-delay:{fmt(enter)}s">']
+    for p in (0, 1):
+        dl = phase - p * dur / 2.0
+        if tail:
+            out.append(f'<path class="flowtail" d="{d}" stroke="{color}" pathLength="100" '
+                       f'style="animation-duration:{fmt(dur)}s;animation-delay:{fmt(dl)}s"/>')
+        out.append(f'<path class="flowdot" d="{d}" stroke="{color}" pathLength="100" '
+                   f'style="animation-duration:{fmt(dur)}s;animation-delay:{fmt(dl)}s"/>')
+    out.append("</g>")
+    return out
 
 
 def build():
@@ -124,60 +148,64 @@ def build():
     i_vd_rect = idx("<rect x=\"470\" y=\"520\"")
     i_vd_text = next(i for i in range(i_off, len(lines)) if "long_pydec_report_lane0.md" in lines[i])
     assert i_vd_rect + 1 == i_vd_text and i_off < i_vd_rect < i_leg
-    i_dout = next(i for i in range(i_rx, len(lines)) if "descramble_7b → dout_24b" in lines[i])  # breathe 目标文本
-    assert i_rx < i_dout < i_rtl + 7 and i_dout > i_rtl   # 在 RTL 盒内
+    i_dout = next(i for i in range(i_rx, len(lines)) if "descramble_7b → dout_24b" in lines[i])
+    assert i_rtl < i_dout < i_rtl + 7                    # breathe 目标文本在 RTL 盒内
+    assert lines[i_rtl].find("stroke-dasharray") >= 0, "RTL 盒应为虚线"
 
-    # 箭头/连接器逐条规格：(行号, 内容前缀, 类型, delay)
+    # ---- 箭头/连接器逐条规格（0 基行号, 前缀, 类型, 入场 delay）----
     EDGES = [
-        # TX 内部 2 ↓（含在箭头区，源面板 TX=0.2 → delay 0.55）
-        (70, '<line x1="230" y1="188"', "draw", 0.55),
-        (71, '<line x1="230" y1="264"', "draw", 0.55),
-        # 灰色"传统路径"虚线
-        (72, '<line x1="674" y1="192"', "march", 0.80),
-        (73, '<text x="700" y="206"', "fade", 0.80),
-        # RX→脚本 3 箭头（RX=0.45 → delay 0.8）
-        (74, '<line x1="824" y1="160"', "draw", 0.80),
-        (75, '<line x1="1003" y1="192"', "draw", 0.80),
-        (76, '<line x1="1003" y1="276"', "draw", 0.80),
-        # 离线 band 连接（0.85 → delay 1.2）
-        (77, '<path d="M 214 424', "march", 1.20),      # 紫 dump→离线 rawbyte
-        (78, '<path d="M 1003 364', "march", 1.20),     # 绿 lane0↓ 虚线
-        (79, '<line x1="364" y1="552"', "march", 1.20), # 紫 rawbyte→report 期望值
-        (80, '<text x="417" y="544"', "fade", 1.20),    # 期望值 标签
-        (81, '<line x1="846" y1="552"', "draw", 1.20),  # lane0→report 实际值（实线）
-        (82, '<text x="838" y="544"', "fade", 1.20),    # 实际值 标签
+        # TX 内部 2 ↓（TX=.20 → delay .75）
+        (70, '<line x1="230" y1="188"', "draw", 0.75),
+        (71, '<line x1="230" y1="264"', "draw", 0.75),
+        # 灰色"传统路径"虚线（RX=.45 → 1.0）
+        (72, '<line x1="674" y1="192"', "march", 1.00),
+        (73, '<text x="700" y="206"', "fade", 1.00),
+        # RX→脚本 3 箭头（RX=.45 → 1.0）
+        (74, '<line x1="824" y1="160"', "draw", 1.00),
+        (75, '<line x1="1003" y1="192"', "draw", 1.00),
+        (76, '<line x1="1003" y1="276"', "draw", 1.00),
+        # 离线 band 连接（band=.85 → 1.4）
+        (77, '<path d="M 214 424', "march", 1.40),      # 紫 dump → 离线 rawbyte
+        (78, '<path d="M 1003 364', "march", 1.40),     # 绿 lane0 ↓ 虚线
+        (79, '<line x1="364" y1="552"', "march", 1.40), # 紫 rawbyte→report 期望值
+        (80, '<text x="417" y="544"', "fade", 1.40),    # 期望值 标签
+        (81, '<line x1="846" y1="552"', "draw", 1.40),  # lane0→report 实际值（实线）
+        (82, '<text x="838" y="544"', "fade", 1.40),    # 实际值 标签
     ]
     for i, pref, _t, _d in EDGES:
         assert lines[i].lstrip().startswith(pref), f"edge anchor mismatch @line {i+1}: {lines[i]}"
-    assert lines[i_rtl].find("stroke-dasharray") >= 0, "RTL 盒应为虚线"
 
-    # ---- 数据列车边几何 ----
+    # ---- 列车边几何 ----
     green_edges = [line_to_d(lines[i]) for i in (74, 75, 76)]   # tap→脚本链 3 边
     blue_edges = [get_d(lines[i_ser1]), get_d(lines[i_ser2])]   # CHPI K 码对齐 2 边
 
     # ---- 组装 ----
-    out = [lines[0], lines[1], KIT_CSS]
-    # 保留源 <defs>（5 个箭头 marker）+ 全页白底 rect（v2.1：Qwen 交叉验证发现缺失 → 箭头端丢失）
+    out = [lines[0], lines[1]] + KIT_CSS.split("\n")
+    # 保留源 <defs>（5 个箭头 marker；末尾追加扫光渐变+clipPath）+ 全页白底 rect
     assert lines[2].strip() == "<defs>", "line3 应为 <defs>"
     d_end = next(i for i, l in enumerate(lines) if l.strip() == "</defs>")
     bg_end = next(i for i in range(d_end, d_end + 3) if 'fill="#ffffff"' in lines[i])
-    out.extend(lines[2:bg_end + 1])
+    out.extend(lines[2:d_end])
+    out.extend(SW_DEFS.split("\n"))
+    out.extend(lines[d_end:bg_end + 1])
 
-    def group(rng, cls, delay, extra=()):
-        """extra: list of (start,end,mode,cls,gdelay) 嵌套子组（glow/breathe）。"""
+    def group(rng, cls, delay, nested=(), insert_after=None, replace=None):
+        """rng [start,end)；nested: (start,end,cls,gdelay)；insert_after: (idx, lines)；
+        replace: {idx: lines}（如 RTL 虚线盒 march 改造）。"""
         out.append(f'<g class="{cls}" style="animation-delay:{fmt(delay)}s">')
         stack = []
         i = rng[0]
         while i < rng[1]:
-            # 组内单行 class 修改（如 RTL 虚线盒 fademarch）
-            ln = lines[i]
-            if i == i_rtl:
-                ln = tag_cls(ln, "fademarch", 0.80)
-            for gs, ge, gc, gd in extra:
+            for gs, ge, gc, gd in nested:
                 if i == gs:
                     out.append(f'<g class="{gc}" style="animation-delay:{fmt(gd)}s">')
                     stack.append(ge)
-            out.append(ln)
+            if replace and i in replace:
+                out.extend(replace[i])
+            else:
+                out.append(lines[i])
+            if insert_after and i == insert_after[0]:
+                out.extend(insert_after[1])
             i += 1
             while stack and i >= stack[-1]:
                 stack.pop()
@@ -185,21 +213,26 @@ def build():
         assert not stack
         out.append("</g>")
 
-    group((i_title, i_title + 2), "head", 0)                       # 标题+副标题
-    group((i_tx, i_ser1), "row", 0.20)                             # TX 面板
-    # 蓝色 CHPI 串行 2 边 + 旋转标签（TX 0.2 → delay 0.55）
-    out.append('<g class="fade" style="animation-delay:0.55s">')
-    out.append(tag_draw(lines[i_ser1], 0.55))
-    out.append(tag_draw(lines[i_ser2], 0.55))
-    out.append(lines[i_ser2 + 1])                                  # rotate(-90) 标签
+    group((i_title, i_title + 2), "head", 0)                        # 标题+副标题
+    group((i_tx, i_ser1), "row", 0.20)                              # TX 面板
+    # 蓝色 CHPI 串行 2 边 + 旋转标签（TX .20 / RX .45 → delay 1.0）
+    out.append('<g class="fade" style="animation-delay:1s">')
+    out.append(tag_draw(lines[i_ser1], 1.0))
+    out.append(tag_draw(lines[i_ser2], 1.0))
+    out.append(lines[i_ser2 + 1])                                   # rotate(-90) 标签
     out.append("</g>")
-    group((i_rx, i_off), "row", 0.45,
-          extra=[(i_tap_rect, i_tap_text + 1, "glow-b", 1.2),
-                 (i_dout, i_dout + 1, "breathe", 0)])              # RX（TAP 辉光 + dout 呼吸）
-    group((i_off, EDGES[0][0]), "row", 0.85,
-          extra=[(i_vd_rect, i_vd_rect + 4, "glow-g", 1.9)])       # 离线 band（verdict 辉光）
+    group((i_rx, i_off), "row", 0.45,                               # RX 面板
+          nested=[(i_tap_rect, i_tap_text + 1, "pulse-b", -1.4),
+                  (i_dout, i_dout + 1, "breathe", 0)],
+          replace={i_rtl: [
+              '<g class="fade" style="animation-delay:1s">',
+              add_attrs(lines[i_rtl], 'class="march" style="animation-delay:-0.5s"'),
+              "</g>"]})
+    group((i_off, EDGES[0][0]), "row", 0.85,                        # 离线 band（面板底色之上、
+          nested=[(i_vd_rect, i_vd_rect + 4, "pulse-t", -0.7)],     # 内容之下插扫光带）
+          insert_after=(i_off, SW_BAND.split("\n")))
 
-    # 箭头区（保持原文档顺序）
+    # 箭头/连接器区（保持原文档顺序）
     for i, _pref, kind, delay in EDGES:
         ln = lines[i]
         if kind == "draw":
@@ -207,23 +240,22 @@ def build():
             out.append(tag_draw(ln, delay))
             out.append("</g>")
         elif kind == "march":
-            out.append(tag_cls(ln, "fademarch", delay))
+            phase = -0.25 if i in (77, 79) else (-0.5 if i == 78 else 0.0)  # 相位错开
+            out.append(f'<g class="fade" style="animation-delay:{fmt(delay)}s">')
+            out.append(add_attrs(ln, f'class="march" style="animation-delay:{fmt(phase)}s"'))
+            out.append("</g>")
         else:
             out.append(f'<g class="fade" style="animation-delay:{fmt(delay)}s">')
             out.append(ln)
             out.append("</g>")
 
-    # 数据列车：绿脚本链 3 边 ×2 包（0.8 起 0.15s 递增）；蓝 K 码 2 边 ×2 包（0.55/0.70 起）
+    # 数据列车：绿脚本链 3 边（2 包+拖尾 0.7s，-0.1s/边）；蓝 K 码 2 边（2 包）
     for k, d in enumerate(green_edges):
-        base = 0.80 + 0.15 * k
-        out.extend(flowdot(d, "#059669", base))
-        out.extend(flowdot(d, "#059669", base + 0.35))
+        out.extend(train_edge(d, "#059669", 0.7, -0.1 * k, 1.0))
     for k, d in enumerate(blue_edges):
-        base = 0.55 + 0.15 * k
-        out.extend(flowdot(d, "#2563eb", base))
-        out.extend(flowdot(d, "#2563eb", base + 0.35))
+        out.extend(train_edge(d, "#2563eb", 0.7, -0.1 * k, 1.0, tail=False))
 
-    group((i_leg, len(lines) - 1), "head", 1.10)                   # 底部图例
+    group((i_leg, len(lines) - 1), "head", 1.50)                    # 底部图例
     out.append("</svg>")
 
     OUT.write_text("\n".join(out) + "\n", encoding="utf-8", newline="\n")
@@ -233,4 +265,4 @@ def build():
 if __name__ == "__main__":
     build()
 
-# ymzhu 2026-10-27 10:37
+# ymzhu 2026-10-28 16:55

@@ -1,7 +1,12 @@
-/* fx.js — PAGE FX v1 特效引擎（2026-10-28 ymzhu，v3 切换修复）
-   接管原内联 IIFE 的全部职责（模式解析 / #motionToggle / img src 交换 / 滚动重播，v2 修复保留）
+/* fx.js — PAGE FX v1 特效引擎（2026-10-28 ymzhu，v4 零重载切换架构）
+   接管原内联 IIFE 的全部职责（模式解析 / #motionToggle / img src 交换 / 滚动重播）
    + 页面级特效：滚动进度条 / 滚动显现 / 蓝图底纹 / 导航阴影 / 返回顶部 /
      hero 网格漂移与光晕 / 标题字级升起（逐字 assert）/ 数字滚动 / 表格行级联 / 章节标题画线。
+   v4 = blueprint-ui-style skill「动画/静态双版 SVG 站点架构 v4」§2 运行时切换契约（治切换错位/闪跳）：
+     ① 布局锁定：SVG img 加载完成即写 aspect-ratio + width:100%/height:auto，此后任何
+        src 变化盒子尺寸恒定 → 切换零位移；② 预载后交换：先 new Image() 预载目标版，
+        onload 才赋 img.src（onerror 保持原 src 防断图），全程禁止 ?v=时间戳 强刷；
+     ③ 滚动重播用 cloneNode：replaceWith(克隆) 重启 CSS 动画，零网络请求。
    纯原生、零依赖；隐藏基态 CSS 全部由 html.fx-on 前缀控制（无 JS = 完整静态页面），
    静态模式 = fx-on 移除 + page-static kill 块双保险。 */
 (function () {
@@ -10,38 +15,43 @@
   var root = document.documentElement;
 
   /* ===================== 1. 模式解析（原 IIFE 逻辑原样保留） =====================
-     优先级：URL ?motion=static|anim > localStorage('motion-mode') > prefers-reduced-motion > anim */
+     优先级：URL ?motion=static|anim > sessionStorage('motion-mode') > prefers-reduced-motion > anim；默认一律动画模式（2026-10-28 定稿：选择仅会话内记忆，关浏览器即重置为动画） */
   var mq = window.matchMedia ? matchMedia('(prefers-reduced-motion: reduce)') : null;
   var param = new URLSearchParams(location.search).get('motion');
   var stored = null;
-  try { stored = localStorage.getItem('motion-mode'); } catch (e) {}
+  try { stored = sessionStorage.getItem('motion-mode'); } catch (e) {}
   var mode = param === 'static' || param === 'anim' ? param
     : (stored === 'static' || stored === 'anim') ? stored
     : (mq && mq.matches ? 'static' : 'anim');
 
   var btn = document.getElementById('motionToggle');
-  var btnFloat = false;
   if (!btn) {
-    /* 多站点通用：页面无既有按钮时自动注入（导航链接栏优先，否则浮动按钮） */
+    /* 全仓库统一模板（2026-10-28）：一律右下角浮动小组件，禁止注入 .navbar-links——
+       各站 navbar-links 布局不一（practice 站为纵向菜单，注入后按钮独占一行） */
     btn = document.createElement('button');
     btn.type = 'button';
     btn.id = 'motionToggle';
     btn.title = '点击切换 动画 / 静态 版本';
     btn.setAttribute('aria-pressed', 'true');
-    btnFloat = !document.querySelector('.navbar-links');
-    btn.className = btnFloat ? 'float-motion' : 'navbar-motion';
+    btn.className = 'float-motion';
   }
 
-  /* ===================== 2. SVG img src 交换 + 滚动重播（v3：dataset 记录原始 anim src） =====================
+  /* ===================== 2. SVG img 零重载交换 + 布局锁定 + cloneNode 重播（v4 契约） =====================
      全站统一 /anim/ 目录约定：页面默认引用动画版；静态模式 = 路径去掉 /anim/ 段。
      首次交换前把原始 src 记入 img.dataset.fxAnim，回程动效模式原样恢复
      （修复 v2 缺陷：静态→动效时把 images/anim/ 错重建为 ./anim/ 导致断图）。
-     无 /anim/ 的单文件图（无静态对照）两模式原样保留。 */
+     无 /anim/ 的单文件图（无静态对照）两模式原样保留。
+     v4 三铁律（SKILL「动画/静态双版 SVG 站点架构 v4」§2，2026-10-28）：
+     a) 布局锁定：加载完成即锁 aspect-ratio，src 任何变化盒子尺寸恒定 → 切换零位移；
+     b) 预载后交换：目标版 onload 才落 src，失败保持原 src；全程禁止 ?v=时间戳 强刷；
+     c) 滚动重播用 cloneNode（重启 CSS 动画，零网络请求），dataset 标记防重复。 */
   var svgIo = null;
+  function isSvgImg(img) {
+    /* 只处理 src 以 .svg 结尾（可带 ?query）的 img */
+    return /\.svg(\?|$)/.test(img.getAttribute('src') || '');
+  }
   function svgImgs() {
-    return Array.prototype.filter.call(document.querySelectorAll('img'), function (img) {
-      return /\.svg(\?|$)/.test(img.getAttribute('src') || '');
-    });
+    return Array.prototype.filter.call(document.querySelectorAll('img'), isSvgImg);
   }
   function staticSrcOf(str) {
     /* 去掉 src 中的 /anim/ 段（anim/foo.svg → ./foo.svg；images/anim/foo.svg → images/foo.svg）；无 /anim/ 原样返回 */
@@ -57,14 +67,50 @@
     img.dataset.fxAnim = s2;
     return s2;
   }
-  function applySvg(replayNow) {
+  /* a) 布局锁定：已加载完成（complete && naturalWidth>0）的立即锁；未加载的挂一次性
+        load 后锁（listener 挂在元素上，中途换 src 不丢失）。静态/动画两版同 viewBox，
+        比例一致 → 盒子在任何 src 变化下恒定，零位移。 */
+  function lockBox(img) {
+    if (img.dataset.fxLocked === '1') return;
+    if (!(img.complete && img.naturalWidth > 0)) return;
+    img.style.aspectRatio = img.naturalWidth + '/' + img.naturalHeight;
+    img.style.width = '100%';
+    img.style.height = 'auto';
+    img.dataset.fxLocked = '1';
+  }
+  function armLock(img) {
+    if (img.complete && img.naturalWidth > 0) { lockBox(img); return; }
+    img.addEventListener('load', function () { lockBox(img); }, { once: true });
+  }
+  /* b) 预载后交换：new Image() 先把目标版拉进缓存，onload 后才赋 img.src（缓存命中时
+        即时，无空白窗口）；onerror 保持原 src 不动（防断图）。__fxWant 记录最新意图，
+        预载期间模式又切走则放弃过期写入。目标与当前 src 相同（含初始化 anim 模式）则
+        完全不动 → 页面加载即播的动画不被打断。全程禁止 Date.now()/随机数 query。 */
+  function swapSrc(img, target) {
+    img.__fxWant = target;
+    if ((img.getAttribute('src') || '').split('?')[0] === target) return;
+    var pre = new Image();
+    pre.onload = function () {
+      if (img.__fxWant === target && (img.getAttribute('src') || '').split('?')[0] !== target) {
+        img.src = target;
+      }
+    };
+    pre.onerror = function () { /* 目标版缺失/不可读：保持原 src */ };
+    pre.src = target;
+  }
+  function applySvg() {
     svgImgs().forEach(function (img) {
       img.loading = 'lazy';
+      armLock(img);
       var a = animSrcOf(img);
-      img.src = (mode === 'anim') ? a + (replayNow ? '?v=' + Date.now() : '') : staticSrcOf(a);
+      swapSrc(img, (mode === 'anim') ? a : staticSrcOf(a));
     });
     observe();
   }
+  /* c) 滚动重播：rootMargin 240px 沿用。图片进入视口且当前是 anim 模式且尚未播过入场
+        → img.replaceWith(img.cloneNode()) 重启 CSS 动画（零网络，克隆节点=全新渲染上下文）。
+        dataset.fxPlayed 防重复：触发前打标，标记随克隆体延续；首屏内图片不重播（页面
+        加载时动画本就在跑）；static 模式不注册 observer。 */
   function observe() {
     if (svgIo) { svgIo.disconnect(); svgIo = null; }
     if (mode !== 'anim') return;
@@ -72,12 +118,22 @@
       entries.forEach(function (e) {
         if (!e.isIntersecting) return;
         svgIo.unobserve(e.target);
-        if (mode === 'anim') e.target.src = animSrcOf(e.target) + '?v=' + Date.now();
+        var img = e.target;
+        if (mode !== 'anim' || img.dataset.fxPlayed === '1') return;
+        img.dataset.fxPlayed = '1';
+        var clone = img.cloneNode();
+        clone.dataset.fxPlayed = '1'; /* 标记设回克隆体：替换后不再被重播 */
+        armLock(clone);               /* 布局锁定随克隆延续（双保险） */
+        img.replaceWith(clone);       /* 重启入场动画，零网络请求 */
       });
     }, { rootMargin: '240px 0px' });
     svgImgs().forEach(function (img) {
+      if (img.dataset.fxPlayed === '1') return;
       var r = img.getBoundingClientRect();
-      if (r.top < window.innerHeight && r.bottom > 0) return;
+      if (r.top < window.innerHeight && r.bottom > 0) {
+        img.dataset.fxPlayed = '1'; /* 首屏内：初始加载即播，不重播 */
+        return;
+      }
       svgIo.observe(img);
     });
   }
@@ -266,7 +322,7 @@
       btn.textContent = mode === 'anim' ? '\ud83c\udfac 动效' : '\ud83d\uDDBC 静态';
       btn.setAttribute('aria-pressed', mode === 'anim' ? 'true' : 'false');
     }
-    applySvg(replay);
+    applySvg();
     /* 页面特效重置（还原数字与 hero 原文）后重新入场 */
     stopNums();
     revealEls.forEach(function (el) { el.classList.remove('fx-in'); });
@@ -289,9 +345,7 @@
     statHTML = statEls.map(function (v) { return v.innerHTML; });
 
     document.body.appendChild(progress);
-    if (btn && !btn.parentNode) {
-      (btnFloat ? document.body : document.querySelector('.navbar-links')).appendChild(btn);
-    }
+    if (btn && !btn.parentNode) document.body.appendChild(btn);
     /* 站点已有自带返回顶部（如 #toTop）时跳过，避免双按钮 */
     if (!document.getElementById('toTop')) {
       document.body.appendChild(topBtn);
@@ -303,7 +357,7 @@
 
     if (btn) btn.addEventListener('click', function () {
       mode = (mode === 'anim') ? 'static' : 'anim';
-      try { localStorage.setItem('motion-mode', mode); } catch (e) {}
+      try { sessionStorage.setItem('motion-mode', mode); } catch (e) {}
       applyMode(true);
     });
 

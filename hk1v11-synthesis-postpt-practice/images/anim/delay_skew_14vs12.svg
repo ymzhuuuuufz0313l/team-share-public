@@ -8,12 +8,46 @@
 <marker id="m_amber" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#b45309"/></marker>
 <marker id="m_blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1d4ed8"/></marker>
 <clipPath id="clipRows2"><rect x="60" y="660" width="620" height="128"/></clipPath>
+<linearGradient id="sweepG-1" gradientUnits="userSpaceOnUse" x1="60" y1="0" x2="920" y2="0"><stop offset="0" stop-color="#b45309" stop-opacity="0"/><stop offset="0.46" stop-color="#b45309" stop-opacity="0"/><stop offset="0.5" stop-color="#b45309" stop-opacity="0.3"/><stop offset="0.54" stop-color="#b45309" stop-opacity="0"/><stop offset="1" stop-color="#b45309" stop-opacity="0"/></linearGradient>
+<clipPath id="sweepC-1"><rect x="60" y="660" width="620" height="128"/></clipPath>
 </defs>
-<style>text{font-family:"Microsoft YaHei","Courier New","Lucida Console","SimHei",monospace;fill:#1c2534}.mono{font-family:"Consolas","Microsoft YaHei","Courier New",monospace}.mut{fill:#667180}.p1{animation:panelIn 0.4s ease-out both}.p2{animation:panelIn 0.4s ease-out both;animation-delay:0.4s}.p3{animation:panelIn 0.4s ease-out both;animation-delay:0.8s}@keyframes panelIn{from{opacity:0}to{opacity:1}}.r1{animation:panelIn 0.3s ease-out both;animation-delay:0.9s}.r2{animation:panelIn 0.3s ease-out both;animation-delay:1.2s}.r3{animation:panelIn 0.3s ease-out both;animation-delay:1.5s}.dClockH{animation:d451 0.35s ease-out both;animation-delay:0.5s}.dClockV{animation:d52 0.25s ease-out both;animation-delay:0.85s}.dDataH{animation:d246 0.35s ease-out both;animation-delay:1.05s}.dDataV{animation:d44 0.25s ease-out both;animation-delay:1.4s}.dGreen{animation:d389 0.5s ease-out both;animation-delay:1.65s}.dRed{animation:d205 0.5s ease-out both;animation-delay:2s}@keyframes d451{from{stroke-dasharray:451;stroke-dashoffset:451}to{stroke-dasharray:451;stroke-dashoffset:0}}@keyframes d52{from{stroke-dasharray:52;stroke-dashoffset:52}to{stroke-dasharray:52;stroke-dashoffset:0}}@keyframes d246{from{stroke-dasharray:246;stroke-dashoffset:246}to{stroke-dasharray:246;stroke-dashoffset:0}}@keyframes d44{from{stroke-dasharray:44;stroke-dashoffset:44}to{stroke-dasharray:44;stroke-dashoffset:0}}@keyframes d389{from{stroke-dasharray:389;stroke-dashoffset:389}to{stroke-dasharray:389;stroke-dashoffset:0}}@keyframes d205{from{stroke-dasharray:205;stroke-dashoffset:205}to{stroke-dasharray:205;stroke-dashoffset:0}}.march{animation:dashMarch 2.5s linear infinite}@keyframes dashMarch{to{stroke-dashoffset:-10}}.glow{animation:glowPulse 2.4s ease-in-out infinite}@keyframes glowPulse{0%,100%{opacity:0.25}50%{opacity:0.55}}.aGreen{animation:arrowIn 0.18s ease-out both;animation-delay:2.15s}.aRed{animation:arrowIn 0.18s ease-out both;animation-delay:2.5s}@keyframes arrowIn{from{opacity:0}to{opacity:1}}.pulseU{animation:glowPulse 3.2s ease-in-out infinite}.tL{animation:tickBreathe 3s ease-in-out infinite}@keyframes tickBreathe{0%,100%{opacity:0.3}50%{opacity:1}}.rowB{animation:rowBreathe 3.2s ease-in-out infinite}@keyframes rowBreathe{0%,100%{opacity:0.04}50%{opacity:0.12}}.nGlow{animation:numGlow 5.2s ease-in-out infinite}@keyframes numGlow{0%,100%{opacity:0}50%{opacity:0.35}}@media (prefers-reduced-motion: reduce){*{animation:none!important}}</style>
+<style>text{font-family:"Microsoft YaHei","Courier New","Lucida Console","SimHei",monospace;fill:#1c2534}.mono{font-family:"Consolas","Microsoft YaHei","Courier New",monospace}.mut{fill:#667180}.p1{animation-delay:2.5s}.pulseU{animation:glowPulse 3.2s ease-in-out infinite}.tL{animation:tickBreathe 3s ease-in-out infinite}.rowB{animation:rowBreathe 3.2s ease-in-out infinite}.nGlow{animation:numGlow 5.2s ease-in-out infinite}@media (prefers-reduced-motion: reduce){*{animation:none!important}}</style>
+<style>
+.row{opacity:0;animation:rowIn .55s cubic-bezier(.22,.7,.3,1) forwards}
+.head{opacity:0;animation:rowIn .55s cubic-bezier(.22,.7,.3,1) forwards}
+@keyframes rowIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.draw{stroke-dasharray:100;animation:drawIn .6s cubic-bezier(.4,0,.2,1) forwards}
+@keyframes drawIn{from{stroke-dashoffset:100}to{stroke-dashoffset:0}}
+.fade{opacity:0;animation:fadeIn .6s ease forwards}
+@keyframes fadeIn{to{opacity:1}}
+.flowdot{fill:none;stroke-linecap:round;stroke-dasharray:9 91;stroke-width:3.5;animation:flow 1.5s linear infinite}
+@keyframes flow{to{stroke-dashoffset:-100}}
+.flowtail{fill:none;stroke-linecap:round;stroke-dasharray:4 96;stroke-width:8;opacity:.25;animation:flow 1.5s linear infinite}
+.pulse{transform-box:fill-box;transform-origin:center;animation:pulse 2.8s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1);filter:drop-shadow(0 0 0 rgba(180,83,9,0))}50%{transform:scale(1.03);filter:drop-shadow(0 0 12px rgba(180,83,9,.8))}}
+.pulse-t{transform-box:fill-box;transform-origin:center;animation:pulseT 2.8s ease-in-out infinite}
+@keyframes pulseT{0%,100%{transform:scale(1);filter:drop-shadow(0 0 0 rgba(14,116,144,0))}50%{transform:scale(1.03);filter:drop-shadow(0 0 12px rgba(14,116,144,.8))}}
+.pulse-b{transform-box:fill-box;transform-origin:center;animation:pulseB 2.8s ease-in-out infinite}
+@keyframes pulseB{0%,100%{transform:scale(1);filter:drop-shadow(0 0 0 rgba(29,78,216,0))}50%{transform:scale(1.03);filter:drop-shadow(0 0 12px rgba(29,78,216,.8))}}
+.sweepband{opacity:.85;animation:sweepMove 8s linear infinite}
+@keyframes sweepMove{to{transform:translateX(var(--sweepP,160px))}}
+.dashgrow{stroke-dasharray:7 5;animation:dashgrow 2.6s linear infinite}
+@keyframes dashgrow{from{stroke-dashoffset:72}to{stroke-dashoffset:0}}
+.march{animation:march 1.5s linear infinite}
+@keyframes march{to{stroke-dashoffset:-16}}
+.cellwave{transform-box:fill-box;transform-origin:center;animation:wave 2.6s ease-in-out infinite}
+@keyframes wave{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.72;transform:scale(1.01)}}
+.breathe{animation:br 3.2s ease-in-out infinite}
+@keyframes br{0%,100%{opacity:1}50%{opacity:.55}}
+.step{transform-box:fill-box;transform-origin:center;animation:stepLit 6s ease-in-out infinite}
+@keyframes stepLit{0%,16%{filter:drop-shadow(0 0 9px rgba(29,78,216,.85));transform:scale(1.02)}24%,92%{filter:drop-shadow(0 0 0 rgba(29,78,216,0));transform:none}100%{filter:drop-shadow(0 0 9px rgba(29,78,216,.85));transform:scale(1.02)}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}.row,.head,.fade{opacity:1!important}.flowdot,.flowtail,.sweepband{display:none!important}}
+</style>
 <rect x="0" y="0" width="1440" height="950" fill="#f4f1ea"/>
 <rect x="0" y="0" width="1440" height="950" fill="url(#grid)" opacity="0.45"/>
-<text x="14" y="42" font-size="11" fill="#b45309" class="mono">HK1V11 · STA SKEW CHAIN · LIVE 10-15 GEN · 10 CORNERS</text>
-<text x="14" y="74" font-size="22" font-weight="bold"><tspan fill="#b45309">DELAY vs SKEW</tspan> — set_max_delay (14 / 12) 与 phy / sd csv 中 skew 数值的关系</text>
+<text x="14" y="42" font-size="11" fill="#b45309" class="mono head" style="animation-delay:0s">HK1V11 · STA SKEW CHAIN · LIVE 10-15 GEN · 10 CORNERS</text>
+<text class="head" style="animation-delay:0.05s" x="14" y="74" font-size="22" font-weight="bold"><tspan fill="#b45309">DELAY vs SKEW</tspan> — set_max_delay (14 / 12) 与 phy / sd csv 中 skew 数值的关系</text>
+<g class="row" style="animation-delay:0.15s">
 <rect x="1040" y="38" width="18" height="4" fill="#1c2534"/>
 <text x="1064" y="44" font-size="12">时钟 arrival</text>
 <rect x="1170" y="38" width="18" height="4" fill="#0e7490"/>
@@ -26,23 +60,44 @@
 <text x="1204" y="66" font-size="12">check=12</text>
 <line x1="1310" y1="62" x2="1328" y2="62" stroke="#1d4ed8" stroke-width="2.5" stroke-dasharray="5,3"/>
 <text x="1334" y="66" font-size="12">check=14</text>
-<g class="p1">
+</g>
+<g class="p1 row" style="animation-delay:0.2s">
 <rect x="40" y="96" width="1360" height="330" rx="2" fill="#fffdf7" stroke="#c9bfa8" stroke-width="1.5"/>
+<g class="fade" style="animation-delay:0.25s">
 <rect class="glow" x="170" y="184" width="825" height="234" rx="14" fill="#b45309" opacity="0.4"/>
-<text x="60" y="124" font-size="16.5" font-weight="bold" letter-spacing="0.05em">① 同一时间轴上的三个量 — 实测：DPLC CLKB_L @ wc_cworst_125（live 10-15 代）</text>
+</g>
+<text class="fade" style="animation-delay:0.4s" x="60" y="124" font-size="16.5" font-weight="bold" letter-spacing="0.05em">① 同一时间轴上的三个量 — 实测：DPLC CLKB_L @ wc_cworst_125（live 10-15 代）</text>
+<g class="fade" style="animation-delay:0.5s">
 <rect x="1000" y="136" width="384" height="78" rx="2" fill="#f7e8d4" stroke="#b45309" stroke-width="1.2"/>
 <text x="1016" y="158" font-size="12.5" fill="#b45309">▲ 名字叫 "busskew"，值是 slack（延迟预算）</text>
 <text x="1016" y="178" font-size="11.5" class="mut">phy csv = 延迟预算（MET/VIOLATED）</text>
 <text x="1016" y="198" font-size="11.5" class="mut">真相对 skew（数据−时钟）= sd csv 的 margin</text>
+</g>
+<g class="fade" style="animation-delay:0.55s">
 <text x="125" y="206" font-size="12.5">时钟发散点</text>
 <text x="125" y="221" font-size="11.5" class="mono mut">CLKGEN u_gate_MUX_DPLC_CLK/O (dplc CLKB 源)</text>
-<line class="dGreen" x1="571" y1="214" x2="960" y2="214" stroke="#047857" stroke-width="2"/>
+</g>
+<g class="pulse-t" style="animation-delay:-0.7s">
+<g class="fade" style="animation-delay:1.0ss">
+<line class="dGreen draw" pathLength="100" style="animation-delay:1.0s" x1="571" y1="214" x2="960" y2="214" stroke="#047857" stroke-width="2"/>
+</g>
+<g class="fade" style="animation-delay:1.45s">
 <path class="aGreen" d="M570.2,214 L578.2,210 L578.2,218 z" fill="#047857"/>
 <path class="aGreen" d="M960.8,214 L952.8,210 L952.8,218 z" fill="#047857"/>
-<text x="765" y="200" font-size="12.5" text-anchor="middle" fill="#047857">slack = 14 − 7.516915 = +6.483085 → phy csv sd_l_dplc_clk_b (MET)</text>
-<line class="dClockH" x1="120" y1="248" x2="571" y2="248" stroke="#1c2534" stroke-width="2.5"/>
-<line class="dClockV" x1="571" y1="248" x2="571" y2="300" stroke="#1c2534" stroke-width="2.5"/>
-<text x="345" y="240" font-size="12.5" text-anchor="middle" fill="#1c2534">时钟树 → CLKB_L arrival = 7.516915 ns</text>
+</g>
+<text class="fade" style="animation-delay:1.5s" x="765" y="200" font-size="12.5" text-anchor="middle" fill="#047857">slack = 14 − 7.516915 = +6.483085 → phy csv sd_l_dplc_clk_b (MET)</text>
+</g>
+<g class="fade" style="animation-delay:0.8ss">
+<line class="dClockH draw" pathLength="100" style="animation-delay:0.8s" x1="120" y1="248" x2="571" y2="248" stroke="#1c2534" stroke-width="2.5"/>
+</g>
+<g class="fade" style="animation-delay:0.95ss">
+<line class="dClockV draw" pathLength="100" style="animation-delay:0.95s" x1="571" y1="248" x2="571" y2="300" stroke="#1c2534" stroke-width="2.5"/>
+</g>
+<path class="flowdot" d="M 120 248 L 571 248" stroke="#1c2534" pathLength="100" style="animation-duration:1.5s;animation-delay:0s"/>
+<path class="flowdot" d="M 120 248 L 571 248" stroke="#1c2534" pathLength="100" style="animation-duration:1.5s;animation-delay:-0.75s"/>
+<path class="flowtail" d="M 120 248 L 571 248" stroke="#1c2534" pathLength="100" style="animation-duration:1.5s;animation-delay:0s"/>
+<text class="fade" style="animation-delay:1.1s" x="345" y="240" font-size="12.5" text-anchor="middle" fill="#1c2534">时钟树 → CLKB_L arrival = 7.516915 ns</text>
+<g class="fade" style="animation-delay:0.6s">
 <line x1="120" y1="300" x2="1320" y2="300" stroke="#667180" stroke-width="1.5"/>
 <line x1="120" y1="300" x2="120" y2="306" stroke="#667180" stroke-width="1"/>
 <text x="120" y="318" font-size="12" text-anchor="middle" class="mono mut">0</text>
@@ -67,36 +122,53 @@
 <line x1="1320" y1="300" x2="1320" y2="306" stroke="#667180" stroke-width="1"/>
 <text x="1320" y="318" font-size="12" text-anchor="middle" class="mono mut">20</text>
 <text x="1332" y="304" font-size="12" class="mono mut">ns</text>
-<rect class="tL" x="118.5" y="296" width="3" height="11" fill="#1c2534" opacity="0" style="animation-delay:0.7s"/>
-<rect class="tL" x="238.5" y="296" width="3" height="11" fill="#1c2534" opacity="0" style="animation-delay:0.82s"/>
-<rect class="tL" x="358.5" y="296" width="3" height="11" fill="#1c2534" opacity="0" style="animation-delay:0.94s"/>
-<rect class="tL" x="478.5" y="296" width="3" height="11" fill="#1c2534" opacity="0" style="animation-delay:1.06s"/>
-<rect class="tL" x="598.5" y="296" width="3" height="11" fill="#1c2534" opacity="0" style="animation-delay:1.18s"/>
-<rect class="tL" x="718.5" y="296" width="3" height="11" fill="#1c2534" opacity="0" style="animation-delay:1.3s"/>
-<rect class="tL" x="838.5" y="296" width="3" height="11" fill="#1c2534" opacity="0" style="animation-delay:1.42s"/>
-<rect class="tL" x="958.5" y="296" width="3" height="11" fill="#1c2534" opacity="0" style="animation-delay:1.54s"/>
-<rect class="tL" x="1078.5" y="296" width="3" height="11" fill="#1c2534" opacity="0" style="animation-delay:1.66s"/>
-<rect class="tL" x="1198.5" y="296" width="3" height="11" fill="#1c2534" opacity="0" style="animation-delay:1.78s"/>
-<rect class="tL" x="1318.5" y="296" width="3" height="11" fill="#1c2534" opacity="0" style="animation-delay:1.9s"/>
+<rect class="tL" x="118.5" y="296" width="3" height="11" fill="#1c2534" opacity="0"/>
+<rect class="tL" x="238.5" y="296" width="3" height="11" fill="#1c2534" opacity="0"/>
+<rect class="tL" x="358.5" y="296" width="3" height="11" fill="#1c2534" opacity="0"/>
+<rect class="tL" x="478.5" y="296" width="3" height="11" fill="#1c2534" opacity="0"/>
+<rect class="tL" x="598.5" y="296" width="3" height="11" fill="#1c2534" opacity="0"/>
+<rect class="tL" x="718.5" y="296" width="3" height="11" fill="#1c2534" opacity="0"/>
+<rect class="tL" x="838.5" y="296" width="3" height="11" fill="#1c2534" opacity="0"/>
+<rect class="tL" x="958.5" y="296" width="3" height="11" fill="#1c2534" opacity="0"/>
+<rect class="tL" x="1078.5" y="296" width="3" height="11" fill="#1c2534" opacity="0"/>
+<rect class="tL" x="1198.5" y="296" width="3" height="11" fill="#1c2534" opacity="0"/>
+<rect class="tL" x="1318.5" y="296" width="3" height="11" fill="#1c2534" opacity="0"/>
 <rect x="114" y="294" width="12" height="12" fill="#1c2534"/>
-<line class="dDataH" x1="120" y1="344" x2="366" y2="344" stroke="#0e7490" stroke-width="2.5"/>
-<line class="dDataV" x1="366" y1="344" x2="366" y2="300" stroke="#0e7490" stroke-width="2.5"/>
-<text x="243" y="362" font-size="12.5" text-anchor="middle" fill="#0e7490">数据总线 → DB1 arrival = 4.098762 ns</text>
-<line class="dRed" x1="366" y1="388" x2="571" y2="388" stroke="#b91c1c" stroke-width="2"/>
+</g>
+<g class="fade" style="animation-delay:1.1ss">
+<line class="dDataH draw" pathLength="100" style="animation-delay:1.1s" x1="120" y1="344" x2="366" y2="344" stroke="#0e7490" stroke-width="2.5"/>
+</g>
+<g class="fade" style="animation-delay:1.25ss">
+<line class="dDataV draw" pathLength="100" style="animation-delay:1.25s" x1="366" y1="344" x2="366" y2="300" stroke="#0e7490" stroke-width="2.5"/>
+</g>
+<path class="flowdot" d="M 120 344 L 366 344" stroke="#0e7490" pathLength="100" style="animation-duration:1.5s;animation-delay:-0.4s"/>
+<path class="flowdot" d="M 120 344 L 366 344" stroke="#0e7490" pathLength="100" style="animation-duration:1.5s;animation-delay:-1.15s"/>
+<path class="flowtail" d="M 120 344 L 366 344" stroke="#0e7490" pathLength="100" style="animation-duration:1.5s;animation-delay:-0.4s"/>
+<text class="fade" style="animation-delay:1.45s" x="243" y="362" font-size="12.5" text-anchor="middle" fill="#0e7490">数据总线 → DB1 arrival = 4.098762 ns</text>
+<g class="fade" style="animation-delay:1.45ss">
+<line class="dRed draw" pathLength="100" style="animation-delay:1.45s" x1="366" y1="388" x2="571" y2="388" stroke="#b91c1c" stroke-width="2"/>
+</g>
+<g class="fade" style="animation-delay:1.7s">
 <path class="aRed" d="M365.2,388 L373.2,384 L373.2,392 z" fill="#b91c1c"/>
 <path class="aRed" d="M571.8,388 L563.8,384 L563.8,392 z" fill="#b91c1c"/>
-<text x="468" y="408" font-size="12.5" text-anchor="middle" fill="#b91c1c">margin = 4.098762 − 7.516915 = −3.418153 → sd csv margin_b_min（出窗 = VIOLATION）</text>
-<line class="march" x1="840" y1="150" x2="840" y2="400" stroke="#b45309" stroke-width="2" stroke-dasharray="6,4"/>
-<text x="840" y="416" font-size="12.5" text-anchor="middle" fill="#b45309" class="mono">12</text>
-<rect class="pulseU" x="832" y="421" width="16" height="2.5" rx="1.25" fill="#b45309" opacity="0"/>
-<line class="march" x1="960" y1="150" x2="960" y2="400" stroke="#1d4ed8" stroke-width="2" stroke-dasharray="6,4"/>
-<text x="960" y="416" font-size="12.5" text-anchor="middle" fill="#1d4ed8" class="mono">14 (ip_cons L222-225)</text>
-<rect class="pulseU" style="animation-delay:-1.2s" x="881" y="421" width="16" height="2.5" rx="1.25" fill="#1d4ed8" opacity="0"/>
 </g>
-<g class="p2">
+<text class="fade" style="animation-delay:1.75s" x="468" y="408" font-size="12.5" text-anchor="middle" fill="#b91c1c">margin = 4.098762 − 7.516915 = −3.418153 → sd csv margin_b_min（出窗 = VIOLATION）</text>
+<g class="fade" style="animation-delay:1.5s">
+<line class="march" x1="840" y1="150" x2="840" y2="400" stroke="#b45309" stroke-width="2" stroke-dasharray="6,4" style="animation:none"/>
+<text x="840" y="416" font-size="12.5" text-anchor="middle" fill="#b45309" class="mono">12</text>
+</g>
+<rect class="pulseU" x="832" y="421" width="16" height="2.5" rx="1.25" fill="#b45309" opacity="0"/>
+<g class="fade" style="animation-delay:1.55s">
+<line class="march" x1="960" y1="150" x2="960" y2="400" stroke="#1d4ed8" stroke-width="2" stroke-dasharray="6,4" style="animation:none"/>
+<text x="960" y="416" font-size="12.5" text-anchor="middle" fill="#1d4ed8" class="mono">14 (ip_cons L222-225)</text>
+</g>
+<rect class="pulseU" x="881" y="421" width="16" height="2.5" rx="1.25" fill="#1d4ed8" opacity="0"/>
+</g>
+<g class="p2 row" style="animation-delay:0.5s">
 <rect x="40" y="446" width="660" height="420" rx="2" fill="#fffdf7" stroke="#c9bfa8" stroke-width="1.5"/>
-<text x="60" y="474" font-size="16.5" font-weight="bold" letter-spacing="0.05em">② 14 vs 12：触发点（报警阈值）差异</text>
-<text x="60" y="498" font-size="12" class="mut">同一时钟树 · 3 种 arrival 场景 × 2 种 check（差值 = check − arrival）</text>
+<text class="fade" style="animation-delay:0.75s" x="60" y="474" font-size="16.5" font-weight="bold" letter-spacing="0.05em">② 14 vs 12：触发点（报警阈值）差异</text>
+<text x="60" y="498" font-size="12" class="mut fade" style="animation-delay:0.8s">同一时钟树 · 3 种 arrival 场景 × 2 种 check（差值 = check − arrival）</text>
+<g class="fade" style="animation-delay:0.85s">
 <line x1="90" y1="590" x2="650" y2="590" stroke="#667180" stroke-width="1.5"/>
 <line x1="90" y1="590" x2="90" y2="596" stroke="#667180" stroke-width="1"/>
 <text x="90" y="606" font-size="12" text-anchor="middle" class="mono mut">0</text>
@@ -111,16 +183,22 @@
 <line x1="650" y1="590" x2="650" y2="596" stroke="#667180" stroke-width="1"/>
 <text x="650" y="606" font-size="12" text-anchor="middle" class="mono mut">20</text>
 <text x="662" y="594" font-size="12" class="mono mut">ns</text>
-<line class="march" x1="426" y1="520" x2="426" y2="580" stroke="#b45309" stroke-width="2" stroke-dasharray="6,4"/>
+</g>
+<g class="fade" style="animation-delay:1.0s"><g class="pulse-b" style="animation-delay:-2.1s">
+<line class="march" x1="426" y1="520" x2="426" y2="580" stroke="#b45309" stroke-width="2" stroke-dasharray="6,4" style="animation:none"/>
 <text x="426" y="596" font-size="12.5" text-anchor="middle" fill="#b45309" class="mono">12</text>
-<line class="march" x1="482" y1="520" x2="482" y2="580" stroke="#1d4ed8" stroke-width="2" stroke-dasharray="6,4"/>
+<line class="march" x1="482" y1="520" x2="482" y2="580" stroke="#1d4ed8" stroke-width="2" stroke-dasharray="6,4" style="animation:none"/>
 <text x="482" y="596" font-size="12.5" text-anchor="middle" fill="#1d4ed8" class="mono">14</text>
+</g></g>
+<g class="fade" style="animation-delay:1.05s">
 <rect x="296" y="586" width="9" height="9" fill="#047857"/>
 <rect x="450" y="586" width="9" height="9" fill="#b45309"/>
 <rect x="506" y="586" width="9" height="9" fill="#b91c1c"/>
 <text x="300" y="624" font-size="12" text-anchor="middle" fill="#047857">7.52 当前实测</text>
 <text x="454" y="624" font-size="12" text-anchor="middle" fill="#b45309">13.0 退化</text>
 <text x="510" y="640" font-size="12" text-anchor="middle" fill="#b91c1c">15.0 严重坏</text>
+</g>
+<g class="fade" style="animation-delay:0.95s">
 <line x1="60" y1="660" x2="680" y2="660" stroke="#ddd6c8" stroke-width="0.8"/>
 <line x1="60" y1="692" x2="680" y2="692" stroke="#ddd6c8" stroke-width="0.8"/>
 <line x1="60" y1="724" x2="680" y2="724" stroke="#ddd6c8" stroke-width="0.8"/>
@@ -130,32 +208,37 @@
 <text x="260" y="682" font-size="12.5" font-weight="bold" fill="#b45309">slack @12</text>
 <text x="390" y="682" font-size="12.5" font-weight="bold" fill="#b45309">slack @14</text>
 <text x="510" y="682" font-size="12.5" font-weight="bold" fill="#b45309">判定</text>
-<g class="r1">
+</g>
+<g clip-path="url(#sweepC-1)"><rect class="sweepband" x="60" y="660" width="860" height="128" fill="url(#sweepG-1)" style="--sweepP:860px"/></g>
+<g class="r1 row" style="animation-delay:1.1s">
 <text x="70" y="714" font-size="12">7.52 ns（当前 ≤8.2）</text>
 <text x="260" y="714" font-size="12" fill="#047857" class="mono">+4.48 MET</text>
 <text x="390" y="714" font-size="12" fill="#047857" class="mono">+6.48 MET</text>
 <text x="510" y="714" font-size="12" fill="#1c2534">双通过（差常数）</text>
 </g>
-<g class="r2">
+<g class="r2 row" style="animation-delay:1.25s">
 <text x="70" y="746" font-size="12">13.0 ns（退化树）</text>
 <text x="260" y="746" font-size="12" fill="#b91c1c" class="mono">−1.00 × 抓住</text>
 <text x="390" y="746" font-size="12" fill="#b45309" class="mono">+1.00 ▲ 过（漏掉）</text>
 <text x="510" y="746" font-size="12" fill="#b45309">只有 12 抓住</text>
 </g>
-<g class="r3">
+<g class="r3 row" style="animation-delay:1.4s">
 <text x="70" y="778" font-size="12">15.0 ns（严重坏树）</text>
 <text x="260" y="778" font-size="12" fill="#b91c1c" class="mono">−3.00 ×</text>
 <text x="390" y="778" font-size="12" fill="#b91c1c" class="mono">−1.00 ×</text>
 <text x="510" y="778" font-size="12" fill="#1c2534">双抓住</text>
 </g>
-<g clip-path="url(#clipRows2)"><rect class="rowB" x="60" y="660" width="620" height="128" fill="#b45309"/></g>
+<g clip-path="url(#clipRows2)"><rect class="rowB" style="opacity:.08" x="60" y="660" width="620" height="128" fill="#b45309"/></g>
+<g class="fade" style="animation-delay:1.55s">
 <text x="60" y="820" font-size="12.5">结论：当前设计（实测 arrival ≤ 8.2 ns），12 与 14 全 MET，</text>
 <text x="60" y="840" font-size="12.5">每格数值差一常数，真实差异 = 触发点：<tspan fill="#b45309" font-weight="bold">12 报警提前 2 ns</tspan>。</text>
 </g>
-<g class="p3">
+</g>
+<g class="p3 row" style="animation-delay:0.8s">
 <rect x="720" y="446" width="680" height="420" rx="2" fill="#fffdf7" stroke="#c9bfa8" stroke-width="1.5"/>
-<text x="740" y="474" font-size="16.5" font-weight="bold" letter-spacing="0.05em">③ 为什么 14 — check 必须夹在「正常包络」和「采样失效点」之间</text>
-<text x="740" y="498" font-size="12" class="mut">绿带 = 10 角实测 arrival 包络；红带 = 失效区（坏树会到，别设太近）</text>
+<text class="fade" style="animation-delay:1.05s" x="740" y="474" font-size="16.5" font-weight="bold" letter-spacing="0.05em">③ 为什么 14 — check 必须夹在「正常包络」和「采样失效点」之间</text>
+<text x="740" y="498" font-size="12" class="mut fade" style="animation-delay:1.1s">绿带 = 10 角实测 arrival 包络；红带 = 失效区（坏树会到，别设太近）</text>
+<g class="fade" style="animation-delay:1.1s">
 <line x1="770" y1="590" x2="1350" y2="590" stroke="#667180" stroke-width="1.5"/>
 <line x1="770" y1="590" x2="770" y2="596" stroke="#667180" stroke-width="1"/>
 <text x="770" y="606" font-size="12" text-anchor="middle" class="mono mut">0</text>
@@ -170,36 +253,55 @@
 <line x1="1350" y1="590" x2="1350" y2="596" stroke="#667180" stroke-width="1"/>
 <text x="1350" y="606" font-size="12" text-anchor="middle" class="mono mut">20</text>
 <text x="1362" y="594" font-size="12" class="mono mut">ns</text>
+</g>
+<g class="fade" style="animation-delay:1.15s">
 <rect x="828" y="520" width="180" height="140" fill="#047857" fill-opacity="0.14" stroke="#047857" stroke-width="1.5" stroke-dasharray="5,3"/>
 <text x="918" y="545" font-size="12" text-anchor="middle" fill="#047857">实测 arrival 包络（10 角）</text>
 <text x="918" y="563" font-size="11.5" text-anchor="middle" class="mono mut">1p ~2.0–6.5 · dplc CLKB ~2.8–8.2 ns</text>
+</g>
+<g class="fade" style="animation-delay:1.2s">
 <rect x="1176" y="520" width="174" height="140" fill="#b91c1c" fill-opacity="0.12" stroke="#b91c1c" stroke-width="1.5" stroke-dasharray="5,3"/>
 <text x="1263" y="545" font-size="12" text-anchor="middle" fill="#b91c1c">时钟树严重 /</text>
 <text x="1263" y="563" font-size="12" text-anchor="middle" fill="#b91c1c">面板采样失效区</text>
 <text x="1263" y="581" font-size="11.5" text-anchor="middle" class="mut">（漏失区）</text>
+</g>
 <ellipse class="nGlow" cx="1118" cy="687" rx="18" ry="11" fill="#b45309" opacity="0"/>
-<ellipse class="nGlow" style="animation-delay:-2.6s" cx="1176" cy="687" rx="18" ry="11" fill="#1d4ed8" opacity="0"/>
-<line class="march" x1="1118" y1="505" x2="1118" y2="675" stroke="#b45309" stroke-width="2" stroke-dasharray="6,4"/>
+<ellipse class="nGlow" cx="1176" cy="687" rx="18" ry="11" fill="#1d4ed8" opacity="0"/>
+<g class="fade" style="animation-delay:1.3s">
+<line class="march" x1="1118" y1="505" x2="1118" y2="675" stroke="#b45309" stroke-width="2" stroke-dasharray="6,4" style="animation:none"/>
 <text x="1118" y="691" font-size="12.5" text-anchor="middle" fill="#b45309" class="mono">12</text>
-<line class="march" x1="1176" y1="505" x2="1176" y2="675" stroke="#1d4ed8" stroke-width="2" stroke-dasharray="6,4"/>
+<line class="march" x1="1176" y1="505" x2="1176" y2="675" stroke="#1d4ed8" stroke-width="2" stroke-dasharray="6,4" style="animation:none"/>
 <text x="1176" y="691" font-size="12.5" text-anchor="middle" fill="#1d4ed8" class="mono">14</text>
+</g>
+<g class="fade" style="animation-delay:1.35s">
 <text x="1063" y="634" font-size="11.5" text-anchor="middle" class="mut">12/14 都在有效区</text>
 <text x="1063" y="650" font-size="11.5" text-anchor="middle" class="mut">12 更紧 · 14 已验证（2M23）</text>
-<line x1="950" y1="692" x2="862" y2="692" stroke="#b45309" stroke-width="2" marker-end="url(#m_amber)"/>
-<text x="906" y="684" font-size="12" text-anchor="middle" fill="#b45309">设在包络以上 → 误报</text>
-<line x1="1200" y1="692" x2="1290" y2="692" stroke="#b91c1c" stroke-width="2" marker-end="url(#m_red)"/>
-<text x="1245" y="684" font-size="12" text-anchor="middle" fill="#b91c1c">设得过远 → 漏失</text>
+</g>
+<g class="fade" style="animation-delay:1.45ss">
+<line class="draw" pathLength="100" style="animation-delay:1.45s" x1="950" y1="692" x2="862" y2="692" stroke="#b45309" stroke-width="2" marker-end="url(#m_amber)"/>
+</g>
+<text class="fade" style="animation-delay:1.65s" x="906" y="684" font-size="12" text-anchor="middle" fill="#b45309">设在包络以上 → 误报</text>
+<g class="fade" style="animation-delay:1.55ss">
+<line class="draw" pathLength="100" style="animation-delay:1.55s" x1="1200" y1="692" x2="1290" y2="692" stroke="#b91c1c" stroke-width="2" marker-end="url(#m_red)"/>
+</g>
+<text class="fade" style="animation-delay:1.7s" x="1245" y="684" font-size="12" text-anchor="middle" fill="#b91c1c">设得过远 → 漏失</text>
+<g class="head" style="animation-delay:1.7s">
 <rect x="750" y="712" width="620" height="136" rx="2" fill="#fffdf7" stroke="#c9bfa8" stroke-width="1.2"/>
 <text x="770" y="738" font-size="12.5">14 = 2M23 同族已验证（HV2M23 ip_cons L657-660，同款 4 端口 set_max_delay 14）</text>
 <text x="770" y="760" font-size="12.5">　　　+ pad 绝对预算（非周期数：5G≈3.67 周期，3G≈2.20 周期）</text>
+<g class="pulse" style="animation-delay:-1.4s">
 <text x="770" y="782" font-size="12.5" fill="#b45309">STATUS: NOT YET CONFIRMED OK — 最终值待系统规格确认</text>
+</g>
 <text x="770" y="804" font-size="12.5">12 = 更紧触发点：当前设计仍全 MET，但能抓住退化树（arrival 12–14 ns）提前 2 ns</text>
 <text x="770" y="828" font-size="12.5" class="mut">→ 14 vs 12 不是「正确 vs 错误」，是「松 vs 紧」的触发点；签核 = 不误报、不漏失、可抓住退化</text>
 </g>
-<text x="14" y="930" font-size="11.5" class="mut">全部数值：live 10-15 代（SDC 10-10 write_sdc）· report_sd_busskew.csv / report_phy_busskew.csv @ wc_cworst_125 · SYNTHESIS/common/ip_cons/HK1V11_digital_top.tcl L222-225 · 2026-10-20 10:30</text>
+</g>
+<text x="14" y="930" font-size="11.5" class="mut fade" style="animation-delay:1.75s">全部数值：live 10-15 代（SDC 10-10 write_sdc）· report_sd_busskew.csv / report_phy_busskew.csv @ wc_cworst_125 · SYNTHESIS/common/ip_cons/HK1V11_digital_top.tcl L222-225 · 2026-10-20 10:30</text>
+<g class="head" style="animation-delay:1.8s">
 <rect x="1080" y="878" width="330" height="58" rx="2" fill="#fffdf7" stroke="#1c2534" stroke-width="0.75"/>
 <line x1="1080" y1="894" x2="1410" y2="894" stroke="#1c2534" stroke-width="0.5"/>
 <text x="1245" y="890" font-size="10" text-anchor="middle" fill="#667180" class="mono" letter-spacing="0.05em">HK1V11 · STA SKEW · DELAY vs SKEW</text>
 <text x="1245" y="924" font-size="13" font-weight="700" text-anchor="middle" fill="#b45309" class="mono" letter-spacing="0.05em">DELAY BUDGET 14 vs 12 · LIVE 10-15 GEN</text>
+</g>
 <!-- ymzhu 2026-10-26 17:07 -->
 </svg>

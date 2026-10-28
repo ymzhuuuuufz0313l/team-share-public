@@ -4,7 +4,7 @@
 .d0{animation-delay:0s;}
 .d3{animation-delay:0.3s;}
 @keyframes revIn{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:none;}}
-.breathe { animation: breathe 2.8s ease-in-out infinite; }
+.breathe { animation: breathe 5s ease-in-out infinite; }
 .b0{animation-delay:0.00s;}
 .b1{animation-delay:0.35s;}
 .b2{animation-delay:0.70s;}

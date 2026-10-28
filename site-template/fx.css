@@ -1,0 +1,207 @@
+/* fx.css — PAGE FX v1（2026-10-27 ymzhu）
+   站点页面级特效样式：滚动进度条 / 滚动显现 / 蓝图底纹 / 导航阴影 / 返回顶部 /
+   hero 网格漂移与光晕 / 标题字级升起 / 表格行级联 / 章节标题画线 / hover 抬升
+   纪律：所有"隐藏基态"只在 html.fx-on 下生效（无 JS → 无 fx-on → 页面完整可见）；
+   静态模式由文件末尾 kill 块双通道（page-static 类 + prefers-reduced-motion）全量关闭。 */
+
+/* ===== 1. 滚动进度条（fx.js 创建；transform 驱动，无布局位移） ===== */
+#fx-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  background: var(--accent, #b45309);
+  transform: scaleX(0);
+  transform-origin: 0 0;
+  z-index: 200;
+  pointer-events: none;
+}
+
+/* ===== 2. 滚动显现基态（仅 fx-on；fx-in 进入视口后浮现） ===== */
+html.fx-on .fx-r {
+  opacity: 0;
+  transform: translateY(14px);
+  transition: opacity .55s ease, transform .55s cubic-bezier(.22, .7, .3, 1);
+}
+html.fx-on .fx-r.fx-in {
+  opacity: 1;
+  transform: none;
+}
+
+/* ===== 3. 正文蓝图底纹（静态纹理，不动画；叠加在原背景色之上） ===== */
+html.fx-on body {
+  background-image:
+    linear-gradient(rgba(28, 37, 52, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(28, 37, 52, 0.03) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+/* ===== 4. 导航滚动阴影（scroll > 10px 切换） ===== */
+.navbar { transition: box-shadow .25s ease; }
+.navbar.scrolled { box-shadow: 0 2px 14px rgba(28, 37, 52, .12); }
+
+/* ===== 5. 返回顶部（fx.js 创建；滚过 600px 淡入） ===== */
+#fx-top {
+  position: fixed;
+  right: 24px;
+  bottom: 28px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: var(--surface, #fffdf7);
+  border: 1px solid var(--line, #ddd6c8);
+  color: var(--text, #1c2534);
+  font-size: 24px;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 90;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px);
+  transition: opacity .3s ease, visibility .3s ease, transform .3s ease, box-shadow .25s ease;
+  box-shadow: 0 6px 18px rgba(28, 37, 52, .14);
+}
+#fx-top.show { opacity: 1; visibility: visible; transform: none; }
+#fx-top:hover { box-shadow: var(--shadow, 0 12px 32px rgba(28, 37, 52, .10)); }
+
+/* ===== 6. hero 蓝图网格漂移（绝对定位 + pointer-events:none，零布局位移） ===== */
+html.fx-on .hero::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  background:
+    repeating-linear-gradient(0deg, rgba(255, 255, 255, .05) 0 1px, transparent 1px 40px),
+    repeating-linear-gradient(90deg, rgba(255, 255, 255, .05) 0 1px, transparent 1px 40px);
+  animation: fxGridPan 46s linear infinite;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ===== 7. hero 光晕漂移（径向渐变圆，缓慢移动 + 呼吸） ===== */
+html.fx-on .hero::after {
+  content: "";
+  position: absolute;
+  top: -80px;
+  right: 8%;
+  width: 380px;
+  height: 380px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(240, 161, 55, 0.18) 0%, transparent 70%);
+  animation: fxGlow 26s ease-in-out infinite alternate;
+  pointer-events: none;
+  z-index: 0;
+}
+html.fx-on .hero .hero-inner { position: relative; z-index: 1; }
+
+@keyframes fxGridPan {
+  from { transform: translate(0, 0); }
+  to { transform: translate(40px, 40px); }
+}
+@keyframes fxGlow {
+  0% { transform: translate(0, 0); opacity: .5; }
+  100% { transform: translate(-70px, 46px); opacity: .85; }
+}
+
+/* ===== 8. 标题字级升起（fx.js 拆 span；逐字 delay 0.06s × i） ===== */
+html.fx-on .fx-w {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(18px);
+  animation: fxWordUp .5s cubic-bezier(.22, .7, .3, 1) forwards;
+}
+@keyframes fxWordUp {
+  to { opacity: 1; transform: none; }
+}
+
+/* ===== 11. 表格行级联（表被 fx-r 标记为 fx-t；行内联 transition-delay 由 JS 设置） ===== */
+html.fx-on .fx-t tr { opacity: 0; transform: translateX(-8px); }
+html.fx-on .fx-t.fx-in tr {
+  opacity: 1;
+  transform: none;
+  transition: opacity .4s ease, transform .4s ease;
+}
+
+/* ===== 12. 章节标题 accent 画线（h2 无既有 ::before 装饰时才加 fx-hdr） ===== */
+html.fx-on .fx-hdr::before {
+  content: "";
+  display: inline-block;
+  width: 26px;
+  height: 3px;
+  background: var(--accent, #b45309);
+  vertical-align: middle;
+  margin-right: 10px;
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  transition: transform .6s ease .15s;
+}
+html.fx-on .fx-hdr.fx-in::before { transform: scaleX(1); }
+
+/* ===== 13. 卡片/图块 hover 抬升（仅 transform + box-shadow） ===== */
+.stat,
+.article figure,
+.page-nav a {
+  transition: transform .25s ease, box-shadow .25s ease;
+}
+.stat:hover,
+.article figure:hover,
+.page-nav a:hover {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow, 0 12px 32px rgba(28, 37, 52, .10));
+}
+/* 既是 fx-r 又有 hover 抬升的元素：合并 transition，保住 reveal 的 opacity 过渡 */
+html.fx-on .fx-r.stat,
+html.fx-on .article figure.fx-r,
+html.fx-on .page-nav a.fx-r {
+  transition: opacity .55s ease, transform .3s cubic-bezier(.22, .7, .3, 1), box-shadow .25s ease;
+}
+
+/* ===== 14. 动效/静态切换按钮（跨站共用：导航链接栏版 + 浮动兜底版） ===== */
+
+button#motionToggle.float-motion {
+  position: fixed;
+  bottom: 100px;
+  right: 24px;
+  z-index: 90;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-family: var(--font-mono, ui-monospace, SFMono-Regular, monospace);
+  white-space: nowrap;
+  cursor: pointer;
+  background: rgba(255, 255, 255, .88);
+  border: 1px dashed var(--line, #ddd6c8);
+  color: var(--text, #1c2534);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
+button#motionToggle.float-motion[aria-pressed="true"] { border-color: var(--accent, #b45309); color: var(--accent, #b45309); }
+button#motionToggle.float-motion:hover { background: #fff; }
+@media (max-width: 640px) { button#motionToggle.float-motion { bottom: 92px; right: 12px; padding: 3px 8px; font-size: 11px; } }
+
+/* ===== PAGE FX 静态 kill（page-static 类 与 系统减少动态效果，双通道） ===== */
+html.page-static *, html.page-static *::before, html.page-static *::after {
+  animation: none !important;
+  transition: none !important;
+}
+html.page-static .fx-r, html.page-static .fx-w, html.page-static .fx-t tr {
+  opacity: 1 !important;
+  transform: none !important;
+}
+html.page-static .fx-hdr::before { transform: none !important; }
+html.page-static #fx-progress, html.page-static #fx-top { display: none !important; }
+html.page-static .navbar { box-shadow: none !important; }
+@media (prefers-reduced-motion: reduce) {
+  html.page-static *, html.page-static *::before, html.page-static *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* ymzhu 2026-10-27 13:52 */

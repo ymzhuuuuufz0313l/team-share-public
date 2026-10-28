@@ -1,72 +1,109 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="605" height="444" viewBox="0 0 605 444">
 <style><![CDATA[
 text{font-family:ui-monospace,Consolas,monospace,"Microsoft YaHei",sans-serif;font-size:11px;}
-@keyframes fadeIn{from{opacity:0}to{opacity:1}}
-@keyframes grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
-@keyframes breathe{0%,100%{opacity:.25}50%{opacity:.55}}
-@keyframes maxpulse{0%,100%{opacity:.7}50%{opacity:1}}
-.in{animation:fadeIn .3s ease-out both;}
-.bar{transform-box:fill-box;transform-origin:left center;animation:grow .7s ease-out both;}
-.r0{animation:fadeIn .3s ease-out both;animation-delay:0.30s;}
-.b0{animation-delay:0.45s;}
-.r1{animation:fadeIn .3s ease-out both;animation-delay:0.34s;}
-.b1{animation-delay:0.49s;}
-.r2{animation:fadeIn .3s ease-out both;animation-delay:0.38s;}
-.b2{animation-delay:0.53s;}
-.r3{animation:fadeIn .3s ease-out both;animation-delay:0.42s;}
-.b3{animation-delay:0.57s;}
-.r4{animation:fadeIn .3s ease-out both;animation-delay:0.46s;}
-.b4{animation-delay:0.61s;}
-.r5{animation:fadeIn .3s ease-out both;animation-delay:0.50s;}
-.b5{animation-delay:0.65s;}
-.r6{animation:fadeIn .3s ease-out both;animation-delay:0.54s;}
-.b6{animation-delay:0.69s;}
-.r7{animation:fadeIn .3s ease-out both;animation-delay:0.58s;}
-.b7{animation-delay:0.73s;}
-.r8{animation:fadeIn .3s ease-out both;animation-delay:0.62s;}
-.b8{animation-delay:0.77s;}
-.r9{animation:fadeIn .3s ease-out both;animation-delay:0.66s;}
-.b9{animation-delay:0.81s;}
-.r10{animation:fadeIn .3s ease-out both;animation-delay:0.70s;}
-.b10{animation-delay:0.85s;}
-.r11{animation:fadeIn .3s ease-out both;animation-delay:0.74s;}
-.b11{animation-delay:0.89s;}
-.r12{animation:fadeIn .3s ease-out both;animation-delay:0.78s;}
-.b12{animation-delay:0.93s;}
-.r13{animation:fadeIn .3s ease-out both;animation-delay:0.82s;}
-.b13{animation-delay:0.97s;}
-.r14{animation:fadeIn .3s ease-out both;animation-delay:0.86s;}
-.b14{animation-delay:1.01s;}
-.r15{animation:fadeIn .3s ease-out both;animation-delay:0.90s;}
-.b15{animation-delay:1.05s;}
-.r16{animation:fadeIn .3s ease-out both;animation-delay:0.94s;}
-.b16{animation-delay:1.09s;}
-.sweep{transform-box:fill-box;transform-origin:left center;animation:grow .5s ease-out .2s both;}
-.cap{animation:fadeIn .3s ease-out both;animation-delay:0.90s;}
-.breath{animation:breathe 2.4s ease-in-out infinite;opacity:.4;}
-.maxpulse{animation:maxpulse 2.8s ease-in-out infinite;opacity:1;}
-@keyframes cmpsweep{0%{transform:translateX(-150px);opacity:0}8%{opacity:.3}32%{opacity:.3}37.5%{transform:translateX(625px);opacity:0}100%{transform:translateX(625px);opacity:0}}
-.cmpband{transform-box:fill-box;transform-origin:left center;opacity:0;animation:cmpsweep 4s ease-in-out 1s infinite;}
-.breath2{animation:breathe 2.4s ease-in-out infinite;opacity:.4;}
-.cmpband2{transform-box:fill-box;transform-origin:left center;opacity:0;animation:cmpsweep 4s ease-in-out 1s infinite;}
-@keyframes bardot{0%{opacity:0}10%{opacity:.5}22%{opacity:0}100%{opacity:0}}
-.dot{opacity:0;animation:bardot 5.2s ease-in-out infinite;}
-.d0{animation-delay:0s;}.d1{animation-delay:.35s;}.d2{animation-delay:.70s;}.d3{animation-delay:1.05s;}.d4{animation-delay:1.40s;}.d5{animation-delay:1.75s;}.d6{animation-delay:2.10s;}.d7{animation-delay:2.45s;}.d8{animation-delay:2.80s;}.d9{animation-delay:3.15s;}.d10{animation-delay:3.50s;}.d11{animation-delay:3.85s;}.d12{animation-delay:4.20s;}.d13{animation-delay:4.55s;}.d14{animation-delay:4.90s;}.d15{animation-delay:5.25s;}.d16{animation-delay:5.60s;}
-@keyframes peakglow{0%,100%{opacity:0}50%{opacity:.22}}
-.peakglow{opacity:0;animation:peakglow 3.2s ease-in-out .8s infinite;}
-@keyframes zebasweep{0%{transform:skewX(-18deg) translateX(-260px);opacity:0}12%{opacity:.06}45%{opacity:.06}58%{transform:skewX(-18deg) translateX(740px);opacity:0}100%{transform:skewX(-18deg) translateX(740px);opacity:0}}
-.zeband{transform-box:fill-box;transform-origin:center;opacity:0;animation:zebasweep 6s linear 2.2s infinite;}
+
+
+
+
+.in{}
+.bar{transform-box:fill-box;transform-origin:left center;}
+.r0{}
+.b0{}
+.r1{}
+.b1{}
+.r2{}
+.b2{}
+.r3{}
+.b3{}
+.r4{}
+.b4{}
+.r5{}
+.b5{}
+.r6{}
+.b6{}
+.r7{}
+.b7{}
+.r8{}
+.b8{}
+.r9{}
+.b9{}
+.r10{}
+.b10{}
+.r11{}
+.b11{}
+.r12{}
+.b12{}
+.r13{}
+.b13{}
+.r14{}
+.b14{}
+.r15{}
+.b15{}
+.r16{}
+.b16{}
+.sweep{transform-box:fill-box;transform-origin:left center;}
+.cap{}
+.breath{opacity:.4;}
+.maxpulse{opacity:1;}
+
+.cmpband{transform-box:fill-box;transform-origin:left center;}
+.breath2{opacity:.4;}
+.cmpband2{transform-box:fill-box;transform-origin:left center;}
+
+.dot{}
+.d0{}.d1{}.d2{}.d3{}.d4{}.d5{}.d6{}.d7{}.d8{}.d9{}.d10{}.d11{}.d12{}.d13{}.d14{}.d15{}.d16{}
+
+.peakglow{}
+
+.zeband{transform-box:fill-box;transform-origin:center;}
 @media (prefers-reduced-motion:reduce){*{animation:none!important}}
 ]]></style>
+<style>
+.row{opacity:0;animation:rowIn .55s cubic-bezier(.22,.7,.3,1) forwards}
+.head{opacity:0;animation:rowIn .55s cubic-bezier(.22,.7,.3,1) forwards}
+@keyframes rowIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.draw{stroke-dasharray:100;animation:drawIn .6s cubic-bezier(.4,0,.2,1) forwards}
+@keyframes drawIn{from{stroke-dashoffset:100}to{stroke-dashoffset:0}}
+.fade{opacity:0;animation:fadeIn .6s ease forwards}
+@keyframes fadeIn{to{opacity:1}}
+.flowdot{fill:none;stroke-linecap:round;stroke-dasharray:9 91;stroke-width:3.5;animation:flow 1.5s linear infinite}
+@keyframes flow{to{stroke-dashoffset:-100}}
+.flowtail{fill:none;stroke-linecap:round;stroke-dasharray:4 96;stroke-width:8;opacity:.25;animation:flow 1.5s linear infinite}
+.pulse{transform-box:fill-box;transform-origin:center;animation:pulse 2.8s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1);filter:drop-shadow(0 0 0 rgba(180,83,9,0))}50%{transform:scale(1.03);filter:drop-shadow(0 0 12px rgba(180,83,9,.8))}}
+.pulse-t{transform-box:fill-box;transform-origin:center;animation:pulseT 2.8s ease-in-out infinite}
+@keyframes pulseT{0%,100%{transform:scale(1);filter:drop-shadow(0 0 0 rgba(14,116,144,0))}50%{transform:scale(1.03);filter:drop-shadow(0 0 12px rgba(14,116,144,.8))}}
+.pulse-b{transform-box:fill-box;transform-origin:center;animation:pulseB 2.8s ease-in-out infinite}
+@keyframes pulseB{0%,100%{transform:scale(1);filter:drop-shadow(0 0 0 rgba(29,78,216,0))}50%{transform:scale(1.03);filter:drop-shadow(0 0 12px rgba(29,78,216,.8))}}
+.sweepband{opacity:.85;animation:sweepMove 8s linear infinite}
+@keyframes sweepMove{to{transform:translateX(var(--sweepP,160px))}}
+.dashgrow{stroke-dasharray:7 5;animation:dashgrow 2.6s linear infinite}
+@keyframes dashgrow{from{stroke-dashoffset:72}to{stroke-dashoffset:0}}
+.march{animation:march 1.5s linear infinite}
+@keyframes march{to{stroke-dashoffset:-16}}
+.cellwave{transform-box:fill-box;transform-origin:center;animation:wave 2.6s ease-in-out infinite}
+@keyframes wave{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.72;transform:scale(1.01)}}
+.breathe{animation:br 3.2s ease-in-out infinite}
+@keyframes br{0%,100%{opacity:1}50%{opacity:.55}}
+.step{transform-box:fill-box;transform-origin:center;animation:stepLit 6s ease-in-out infinite}
+@keyframes stepLit{0%,16%{filter:drop-shadow(0 0 9px rgba(29,78,216,.85));transform:scale(1.02)}24%,92%{filter:drop-shadow(0 0 0 rgba(29,78,216,0));transform:none}100%{filter:drop-shadow(0 0 9px rgba(29,78,216,.85));transform:scale(1.02)}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}.row,.head,.fade{opacity:1!important}.flowdot,.flowtail,.sweepband{display:none!important}}
+</style>
 <defs>
 <linearGradient id="gCmp" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fffdf7" stop-opacity="0"/><stop offset="0.5" stop-color="#fffdf7" stop-opacity="1"/><stop offset="1" stop-color="#fffdf7" stop-opacity="0"/></linearGradient>
 <linearGradient id="gZeb" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fffdf7" stop-opacity="0"/><stop offset="0.5" stop-color="#fffdf7" stop-opacity="1"/><stop offset="1" stop-color="#fffdf7" stop-opacity="0"/></linearGradient>
 <clipPath id="cCmp"><rect x="1" y="255" width="603" height="20"/><rect x="1" y="387" width="603" height="20"/></clipPath>
 <clipPath id="cCmp2"><rect x="1" y="276" width="603" height="20"/><rect x="1" y="408" width="603" height="20"/></clipPath>
 <clipPath id="cBody"><rect x="0" y="56" width="605" height="374"/></clipPath>
+<linearGradient id="sweepG-1" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="845" y2="0"><stop offset="0" stop-color="#b45309" stop-opacity="0"/><stop offset="0.46" stop-color="#b45309" stop-opacity="0"/><stop offset="0.5" stop-color="#b45309" stop-opacity="0.3"/><stop offset="0.54" stop-color="#b45309" stop-opacity="0"/><stop offset="1" stop-color="#b45309" stop-opacity="0"/></linearGradient>
+<clipPath id="sweepC-1"><rect x="0" y="232" width="605" height="66"/></clipPath>
+<linearGradient id="sweepG-2" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="845" y2="0"><stop offset="0" stop-color="#b45309" stop-opacity="0"/><stop offset="0.46" stop-color="#b45309" stop-opacity="0"/><stop offset="0.5" stop-color="#b45309" stop-opacity="0.3"/><stop offset="0.54" stop-color="#b45309" stop-opacity="0"/><stop offset="1" stop-color="#b45309" stop-opacity="0"/></linearGradient>
+<clipPath id="sweepC-2"><rect x="0" y="386" width="605" height="44"/></clipPath>
 </defs>
 <rect x="0" y="0" width="605" height="444" fill="#f4f1ea"/>
-<g class="in">
+<g clip-path="url(#sweepC-1)"><rect class="sweepband" x="0" y="232" width="845" height="66" fill="url(#sweepG-1)" style="--sweepP:845px"/></g>
+<g clip-path="url(#sweepC-2)"><rect class="sweepband" x="0" y="386" width="845" height="44" fill="url(#sweepG-2)" style="--sweepP:845px"/></g>
+<g class="in head">
 <rect x="0" y="0" width="605" height="30" fill="#1c2534"/>
 <text x="10" y="15.0" dominant-baseline="central" fill="#f4f1ea" font-weight="bold">PowerPro 功耗对比 — HK1V11（前仿）vs 其他芯片（后仿）</text>
 <rect class="sweep" x="0" y="29" width="605" height="2" fill="#b45309"/>
@@ -80,9 +117,11 @@ text{font-family:ui-monospace,Consolas,monospace,"Microsoft YaHei",sans-serif;fo
 <text x="514" y="43.0" text-anchor="end" dominant-baseline="central" fill="#f4f1ea" font-weight="bold">DPLC (mW)</text>
 <text x="594" y="43.0" text-anchor="end" dominant-baseline="central" fill="#f4f1ea" font-weight="bold">DRDOD (mW)</text>
 </g>
-<g class="r0">
+<g class="r0 row" style="animation-delay:0.15s">
+<g class="row" style="animation-delay:0.27s">
 <rect class="bar b0" x="366" y="60" width="10" height="14" rx="2" fill="#0e7490" fill-opacity="0.25"/>
 <circle class="dot d0" cx="376" cy="67" r="2.5" fill="#0e7490"/>
+</g>
 <text x="10" y="67.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HV2M23 (opt)</text>
 <text x="192" y="67.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1.8G</text>
 <text x="254" y="67.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
@@ -92,10 +131,12 @@ text{font-family:ui-monospace,Consolas,monospace,"Microsoft YaHei",sans-serif;fo
 <text x="514" y="67.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">9.672</text>
 <text x="594" y="67.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">9.571</text>
 </g>
-<g class="r1">
+<g class="r1 row" style="animation-delay:0.24s">
 <rect x="0" y="78" width="605" height="22" fill="#1c2534" fill-opacity="0.045"/>
+<g class="row" style="animation-delay:0.36s">
 <rect class="bar b1" x="366" y="82" width="15" height="14" rx="2" fill="#0e7490" fill-opacity="0.25"/>
 <circle class="dot d1" cx="381" cy="89" r="2.5" fill="#0e7490"/>
+</g>
 <text x="10" y="89.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HV2M23</text>
 <text x="192" y="89.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1.8G</text>
 <text x="254" y="89.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
@@ -105,9 +146,11 @@ text{font-family:ui-monospace,Consolas,monospace,"Microsoft YaHei",sans-serif;fo
 <text x="514" y="89.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">13.447</text>
 <text x="594" y="89.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">13.65</text>
 </g>
-<g class="r2">
+<g class="r2 row" style="animation-delay:0.33s">
+<g class="row" style="animation-delay:0.45s">
 <rect class="bar b2" x="366" y="104" width="7" height="14" rx="2" fill="#0e7490" fill-opacity="0.25"/>
 <circle class="dot d2" cx="373" cy="111" r="2.5" fill="#0e7490"/>
+</g>
 <text x="10" y="111.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HV2M23</text>
 <text x="192" y="111.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">0.9G</text>
 <text x="254" y="111.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
@@ -117,10 +160,12 @@ text{font-family:ui-monospace,Consolas,monospace,"Microsoft YaHei",sans-serif;fo
 <text x="514" y="111.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">7.519</text>
 <text x="594" y="111.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">7.976</text>
 </g>
-<g class="r3">
+<g class="r3 row" style="animation-delay:0.42s">
 <rect x="0" y="122" width="605" height="22" fill="#1c2534" fill-opacity="0.045"/>
+<g class="row" style="animation-delay:0.54s">
 <rect class="bar b3" x="366" y="126" width="14" height="14" rx="2" fill="#0e7490" fill-opacity="0.25"/>
 <circle class="dot d3" cx="380" cy="133" r="2.5" fill="#0e7490"/>
+</g>
 <text x="10" y="133.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HV3310B1</text>
 <text x="192" y="133.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1.8G</text>
 <text x="254" y="133.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">110</text>
@@ -130,9 +175,11 @@ text{font-family:ui-monospace,Consolas,monospace,"Microsoft YaHei",sans-serif;fo
 <text x="514" y="133.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
 <text x="594" y="133.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
 </g>
-<g class="r4">
+<g class="r4 row" style="animation-delay:0.51s">
+<g class="row" style="animation-delay:0.63s">
 <rect class="bar b4" x="366" y="148" width="12" height="14" rx="2" fill="#0e7490" fill-opacity="0.25"/>
 <circle class="dot d4" cx="378" cy="155" r="2.5" fill="#0e7490"/>
+</g>
 <text x="10" y="155.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HV3310B1</text>
 <text x="192" y="155.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">0.9G</text>
 <text x="254" y="155.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">110</text>
@@ -142,10 +189,12 @@ text{font-family:ui-monospace,Consolas,monospace,"Microsoft YaHei",sans-serif;fo
 <text x="514" y="155.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
 <text x="594" y="155.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
 </g>
-<g class="r5">
+<g class="r5 row" style="animation-delay:0.60s">
 <rect x="0" y="166" width="605" height="22" fill="#1c2534" fill-opacity="0.045"/>
+<g class="row" style="animation-delay:0.72s">
 <rect class="bar b5" x="366" y="170" width="10" height="14" rx="2" fill="#0e7490" fill-opacity="0.25"/>
 <circle class="dot d5" cx="376" cy="177" r="2.5" fill="#0e7490"/>
+</g>
 <text x="10" y="177.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HV1V21</text>
 <text x="192" y="177.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1.8G</text>
 <text x="254" y="177.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
@@ -155,9 +204,11 @@ text{font-family:ui-monospace,Consolas,monospace,"Microsoft YaHei",sans-serif;fo
 <text x="514" y="177.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
 <text x="594" y="177.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
 </g>
-<g class="r6">
+<g class="r6 row" style="animation-delay:0.69s">
+<g class="row" style="animation-delay:0.81s">
 <rect class="bar b6" x="366" y="192" width="7" height="14" rx="2" fill="#0e7490" fill-opacity="0.25"/>
 <circle class="dot d6" cx="373" cy="199" r="2.5" fill="#0e7490"/>
+</g>
 <text x="10" y="199.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HV1V21</text>
 <text x="192" y="199.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">0.9G</text>
 <text x="254" y="199.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
@@ -167,10 +218,12 @@ text{font-family:ui-monospace,Consolas,monospace,"Microsoft YaHei",sans-serif;fo
 <text x="514" y="199.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
 <text x="594" y="199.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
 </g>
-<g class="r7">
+<g class="r7 row" style="animation-delay:0.78s">
 <rect x="0" y="210" width="605" height="22" fill="#1c2534" fill-opacity="0.045"/>
+<g class="row" style="animation-delay:0.90s">
 <rect class="bar b7" x="366" y="214" width="18" height="14" rx="2" fill="#0e7490" fill-opacity="0.25"/>
 <circle class="dot d7" cx="384" cy="221" r="2.5" fill="#0e7490"/>
+</g>
 <text x="10" y="221.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HV1V22</text>
 <text x="192" y="221.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">4G</text>
 <text x="254" y="221.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
@@ -180,10 +233,12 @@ text{font-family:ui-monospace,Consolas,monospace,"Microsoft YaHei",sans-serif;fo
 <text x="514" y="221.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">14.8</text>
 <text x="594" y="221.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
 </g>
-<g class="r8">
+<g class="r8 row" style="animation-delay:0.87s">
 <rect x="0" y="232" width="605" height="22" fill="#b45309" fill-opacity="0.08"/>
+<g class="row" style="animation-delay:0.99s">
 <rect class="bar b8" x="366" y="236" width="13" height="14" rx="2" fill="#b45309" fill-opacity="0.30"/>
 <circle class="dot d8" cx="379" cy="243" r="2.5" fill="#b45309"/>
+</g>
 <text x="10" y="243.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HV1V22 (1015)</text>
 <text x="192" y="243.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">2.67G</text>
 <text x="254" y="243.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
@@ -193,11 +248,13 @@ text{font-family:ui-monospace,Consolas,monospace,"Microsoft YaHei",sans-serif;fo
 <text x="514" y="243.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
 <text x="594" y="243.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
 </g>
-<g class="r9">
+<g class="r9 row" style="animation-delay:0.96s">
 <rect x="0" y="254" width="605" height="22" fill="#1c2534" fill-opacity="0.045"/>
 <rect x="0" y="254" width="605" height="22" fill="#b45309" fill-opacity="0.08"/>
+<g class="row" style="animation-delay:1.08s">
 <rect class="bar b9" x="366" y="258" width="22" height="14" rx="2" fill="#b45309" fill-opacity="0.30"/>
 <circle class="dot d9" cx="388" cy="265" r="2.5" fill="#b45309"/>
+</g>
 <text x="10" y="265.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HV1V22 (1015)</text>
 <text x="192" y="265.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">4.46G</text>
 <text x="254" y="265.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
@@ -207,11 +264,15 @@ text{font-family:ui-monospace,Consolas,monospace,"Microsoft YaHei",sans-serif;fo
 <text x="514" y="265.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
 <text x="594" y="265.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
 </g>
-<g class="r10">
+<g class="r10 row" style="animation-delay:1.05s">
 <rect x="0" y="276" width="605" height="22" fill="#1d4ed8" fill-opacity="0.20"/>
+<g class="row" style="animation-delay:1.17s">
+<g class="pulse-b" style="animation-delay:-1.9s">
 <rect class="bar b10" x="366" y="280" width="20" height="14" rx="2" fill="#1d4ed8" fill-opacity="0.85"/>
 <path d="M441 290 L447 290 L444 284 Z" fill="#1d4ed8"/>
 <circle class="dot d10" cx="386" cy="287" r="2.5" fill="#1d4ed8"/>
+</g>
+</g>
 <text x="10" y="287.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HV1V22 (1027)</text>
 <text x="192" y="287.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">4G</text>
 <text x="254" y="287.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
@@ -221,11 +282,13 @@ text{font-family:ui-monospace,Consolas,monospace,"Microsoft YaHei",sans-serif;fo
 <text x="514" y="287.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
 <text x="594" y="287.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
 </g>
-<g class="r11">
+<g class="r11 row" style="animation-delay:1.14s">
 <rect x="0" y="298" width="605" height="22" fill="#1c2534" fill-opacity="0.045"/>
 <rect x="0" y="298" width="605" height="22" fill="#1d4ed8" fill-opacity="0.07"/>
+<g class="row" style="animation-delay:1.26s">
 <rect class="bar b11" x="366" y="302" width="24" height="14" rx="2" fill="#1d4ed8" fill-opacity="0.25"/>
 <circle class="dot d11" cx="390" cy="309" r="2.5" fill="#1d4ed8"/>
+</g>
 <text x="10" y="309.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HK1V11 (0922)</text>
 <text x="192" y="309.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">2.97G</text>
 <text x="254" y="309.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
@@ -235,14 +298,18 @@ text{font-family:ui-monospace,Consolas,monospace,"Microsoft YaHei",sans-serif;fo
 <text x="514" y="309.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">21.36</text>
 <text x="594" y="309.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
 </g>
-<g class="r12">
+<g class="r12 row" style="animation-delay:1.23s">
 <rect x="0" y="320" width="605" height="22" fill="#1d4ed8" fill-opacity="0.07"/>
+<g class="row" style="animation-delay:1.35s">
+<g class="pulse" style="animation-delay:-0.5s">
 <rect class="peakglow" x="404" y="322" width="48" height="18" rx="9" fill="#b45309"/>
 <g class="maxpulse">
 <rect class="bar b12" x="366" y="324" width="44" height="14" rx="2" fill="#b45309" fill-opacity="0.85"/>
 <path d="M441 334 L447 334 L444 328 Z" fill="#b45309"/>
 </g>
 <circle class="dot d12" cx="410" cy="331" r="2.5" fill="#b45309"/>
+</g>
+</g>
 <text x="10" y="331.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HK1V11 4K180 (0922)</text>
 <text x="192" y="331.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">4.47G</text>
 <text x="254" y="331.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
@@ -252,11 +319,13 @@ text{font-family:ui-monospace,Consolas,monospace,"Microsoft YaHei",sans-serif;fo
 <text x="514" y="331.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
 <text x="594" y="331.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
 </g>
-<g class="r13">
+<g class="r13 row" style="animation-delay:1.32s">
 <rect x="0" y="342" width="605" height="22" fill="#1c2534" fill-opacity="0.045"/>
 <rect x="0" y="342" width="605" height="22" fill="#1d4ed8" fill-opacity="0.07"/>
+<g class="row" style="animation-delay:1.44s">
 <rect class="bar b13" x="366" y="346" width="19" height="14" rx="2" fill="#1d4ed8" fill-opacity="0.25"/>
 <circle class="dot d13" cx="385" cy="353" r="2.5" fill="#1d4ed8"/>
+</g>
 <text x="10" y="353.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HK1V11 (1003)</text>
 <text x="192" y="353.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">2.97G</text>
 <text x="254" y="353.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
@@ -266,10 +335,12 @@ text{font-family:ui-monospace,Consolas,monospace,"Microsoft YaHei",sans-serif;fo
 <text x="514" y="353.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">16.3</text>
 <text x="594" y="353.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
 </g>
-<g class="r14">
+<g class="r14 row" style="animation-delay:1.41s">
 <rect x="0" y="364" width="605" height="22" fill="#1d4ed8" fill-opacity="0.07"/>
+<g class="row" style="animation-delay:1.53s">
 <rect class="bar b14" x="366" y="368" width="34" height="14" rx="2" fill="#1d4ed8" fill-opacity="0.25"/>
 <circle class="dot d14" cx="400" cy="375" r="2.5" fill="#1d4ed8"/>
+</g>
 <text x="10" y="375.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HK1V11 4K180 (1003)</text>
 <text x="192" y="375.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">4.47G</text>
 <text x="254" y="375.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
@@ -279,11 +350,13 @@ text{font-family:ui-monospace,Consolas,monospace,"Microsoft YaHei",sans-serif;fo
 <text x="514" y="375.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
 <text x="594" y="375.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
 </g>
-<g class="r15">
+<g class="r15 row" style="animation-delay:1.50s">
 <rect x="0" y="386" width="605" height="22" fill="#1c2534" fill-opacity="0.045"/>
 <rect x="0" y="386" width="605" height="22" fill="#b45309" fill-opacity="0.08"/>
+<g class="row" style="animation-delay:1.62s">
 <rect class="bar b15" x="366" y="390" width="30" height="14" rx="2" fill="#b45309" fill-opacity="0.30"/>
 <circle class="dot d15" cx="396" cy="397" r="2.5" fill="#b45309"/>
+</g>
 <text x="10" y="397.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HK1V11 (1015)</text>
 <text x="192" y="397.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">4.46G</text>
 <text x="254" y="397.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
@@ -293,11 +366,15 @@ text{font-family:ui-monospace,Consolas,monospace,"Microsoft YaHei",sans-serif;fo
 <text x="514" y="397.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
 <text x="594" y="397.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
 </g>
-<g class="r16">
+<g class="r16 row" style="animation-delay:1.59s">
 <rect x="0" y="408" width="605" height="22" fill="#1d4ed8" fill-opacity="0.20"/>
+<g class="row" style="animation-delay:1.71s">
+<g class="pulse-b" style="animation-delay:-2.6s">
 <rect class="bar b16" x="366" y="412" width="28" height="14" rx="2" fill="#1d4ed8" fill-opacity="0.85"/>
 <path d="M441 422 L447 422 L444 416 Z" fill="#1d4ed8"/>
 <circle class="dot d16" cx="394" cy="419" r="2.5" fill="#1d4ed8"/>
+</g>
+</g>
 <text x="10" y="419.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HK1V11 (1027)</text>
 <text x="192" y="419.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">4G</text>
 <text x="254" y="419.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
@@ -307,11 +384,7 @@ text{font-family:ui-monospace,Consolas,monospace,"Microsoft YaHei",sans-serif;fo
 <text x="514" y="419.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
 <text x="594" y="419.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
 </g>
-<g clip-path="url(#cBody)"><rect class="zeband" x="0" y="50" width="180" height="388" fill="url(#gZeb)"/></g>
-
-
-
-
+<g class="fade" style="animation-delay:0.05s">
 <g stroke="#ddd6c8" stroke-width="1">
 <line x1="0" y1="30" x2="0" y2="443"/>
 <line x1="134" y1="30" x2="134" y2="443"/>
@@ -341,6 +414,7 @@ text{font-family:ui-monospace,Consolas,monospace,"Microsoft YaHei",sans-serif;fo
 <line x1="0" y1="386" x2="605" y2="386"/>
 <line x1="0" y1="408" x2="605" y2="408"/>
 <line x1="0" y1="430" x2="605" y2="430"/>
+</g>
 </g>
 <g class="breath" fill="#b45309">
 <rect x="1" y="255" width="603" height="20" rx="3"/>

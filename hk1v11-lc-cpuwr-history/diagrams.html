@@ -258,7 +258,7 @@
     }
 
   </style>
-  <link rel="stylesheet" href="./fx.css?v=2">
+  <link rel="stylesheet" href="./fx.css?v=3">
 </head>
 <body>
   <nav class="navbar">
@@ -295,7 +295,7 @@
 
 chip_sel=0 模式下 POR 后寄存器默认值全景；绿色为控制、黄色为电源、蓝紫为模拟相关字段。
 
-![chip_sel=0 寄存器默认字节映射](./images/anim/chip_sel0_register_map.svg)
+![chip_sel=0 寄存器默认字节映射](./images/anim/chip_sel0_register_map.svg?v=20261028)
 
 ## 2. chip_sel = 1 默认字节映射
 
@@ -305,7 +305,7 @@ chip_sel=0 模式下 POR 后寄存器默认值全景；绿色为控制、黄色�
 
 chip_sel=1 模式下 POR 后默认值；红色标出与 chip_sel=0 不同、由 LC_REG_MAPPING 回拼的字段。
 
-![chip_sel=1 寄存器默认字节映射](./images/anim/chip_sel1_register_map.svg)
+![chip_sel=1 寄存器默认字节映射](./images/anim/chip_sel1_register_map.svg?v=20261028)
 
 > **0819v2 变更**：上两图中 `reg_cdr_icp`（0x25[7:4]）与 `reg_kvco_ctrl`（0x26[7:4]）的**默认值不再固定**，改由新增输入 `Loop_sel[2:0]` 选择：
 > - `reg_kvco_ctrl`：`Loop_sel[2]=0` → `4'b1010(A)`；`Loop_sel[2]=1` → `4'b1000(8)`
@@ -319,13 +319,13 @@ chip_sel=1 模式下 POR 后默认值；红色标出与 chip_sel=0 不同、由 
 
 标出参与 checksum XOR 累加的地址；同一地址在两种 chip_sel 下字段不同时拆成双行展示。
 
-![参与 checksum 的地址](./images/anim/checksum_address_map.svg)
+![参与 checksum 的地址](./images/anim/checksum_address_map.svg?v=20261028)
 
 ## 4. LSI 保护范围
 
 这张图展示各地址在 LSI_PRTECT 下的保护状态（红色=输出/读回经保护掩码，绿色=不受保护，紫色=密码寄存器 0x30），用于理解密码解锁前后的寄存器可见性差异。**0827v1 全部重生成**：字段名/默认值直接取自 `chip_sel0_register_address_map.md`，保护状态对照 RTL 真值；`0x38[6]` 新增 `reg_eol`（受保护）；`0x33[6:2]` 原 `sw_reg_lane_ctrl` 改 Reserved；`0x02/0x03/0x04` 新增单 bit lane_ctrl（地址 ≤0x1F，不受保护）；保护范围自 0810v1 起不变（reg48/reg160/reg161 无掩码、reg147 保留保护）。**1023v1**：`0x2F[0]` 新增 `SCS_PKT_HALF`（受保护，0x2F 整字节本就在保护窗 0x20~0x2F 内，保护范围不变）。**1027v1**：`0x1D[7:3]` 新增 `khead_20b_sel[4:0]`（无 LSI_PRTECT 门控，0x1D 本就在保护窗外，保护状态不变）。
 
-![LSI 保护范围](./images/anim/lsi_unprotected_address_map.svg)
+![LSI 保护范围](./images/anim/lsi_unprotected_address_map.svg?v=20261028)
 
 ## 5. 复位域分类
 
@@ -341,7 +341,7 @@ SPEC 中「I2C_EN=1 时所有寄存器不做 unlock reset」的 RTL 路径为：
 
 `RSTN_SCR_EN` 是独立的加扰复位，仅作用于 `0x00` 中的 `SCREN` 加扰使能位（实际敏感信号为 `RSTN_SCR_EN_NORMAL = RSTN_SCR_EN || I_TEST_REG_EN`），保证 scramble 相关配置可单独复位而不影响其他寄存器。
 
-![复位域分类](./images/anim/reset_domain_address_map.svg)
+![复位域分类](./images/anim/reset_domain_address_map.svg?v=20261028)
 
 ## 6. 0721v1 配置拍重组对照（2B/拍 → 3B/拍）
 
@@ -355,7 +355,7 @@ SPEC 中「I2C_EN=1 时所有寄存器不做 unlock reset」的 RTL 路径为：
 - **绿色汇总框**：XOR 总量与旧版完全相同（结合律），checker / DV 回归行为不变（⚠️ 2026-10-27 勘误：此为设计意图，RTL `xdata_a` 漏写 5'h04 分支致 0x0A 实际从未进入 XOR，LC_CPUWR 1027v1 已修复，见[校验和 §10](./checksum.html)）
 - **橙色汇总框**：上游 `CHPI_CONFIG_L0` 未升 24bit 前，`LINK_LOGIC` 将 `[23:16]` tie-off 防 X 传播
 
-![0721v1 配置拍重组对照](./images/anim/config_data_beat_regroup_0721.svg)
+![0721v1 配置拍重组对照](./images/anim/config_data_beat_regroup_0721.svg?v=20261028)
 
   </script>
   <script>
@@ -508,7 +508,7 @@ const chapters = [
     window.addEventListener('mouseup', () => { isDragging = false; lightboxImg.classList.remove('grabbing'); });
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeLightbox(); });
   </script>
-  <script src="./fx.js?v=3"></script>
+  <script src="./fx.js?v=4"></script>
 </body>
 </html>
 

@@ -163,25 +163,11 @@ html.fx-on .page-nav a.fx-r {
 }
 
 /* ===== 14. 动效/静态切换按钮（跨站共用：导航链接栏版 + 浮动兜底版） ===== */
-.navbar-links button.navbar-motion {
-  padding: 3px 8px;
-  border-radius: 5px;
-  font-size: 12px;
-  font-family: var(--font-mono, ui-monospace, SFMono-Regular, monospace);
-  white-space: nowrap;
-  cursor: pointer;
-  background: transparent;
-  border: 1px dashed var(--line, #ddd6c8);
-  color: var(--muted, #667180);
-}
-.navbar-links button.navbar-motion:hover { background: var(--chip, #efe9db); color: var(--text, #1c2534); }
-.navbar-links button.navbar-motion[aria-pressed="true"] { border-color: var(--accent, #b45309); color: var(--accent, #b45309); }
-@media (max-width: 640px) { .navbar-links button.navbar-motion { font-size: 11px; padding: 2px 6px; } }
 
 button#motionToggle.float-motion {
   position: fixed;
-  top: 14px;
-  right: 16px;
+  bottom: 100px;
+  right: 24px;
   z-index: 90;
   padding: 4px 10px;
   border-radius: 999px;
@@ -197,7 +183,7 @@ button#motionToggle.float-motion {
 }
 button#motionToggle.float-motion[aria-pressed="true"] { border-color: var(--accent, #b45309); color: var(--accent, #b45309); }
 button#motionToggle.float-motion:hover { background: #fff; }
-@media (max-width: 640px) { button#motionToggle.float-motion { top: 10px; right: 10px; padding: 3px 8px; font-size: 11px; } }
+@media (max-width: 640px) { button#motionToggle.float-motion { bottom: 92px; right: 12px; padding: 3px 8px; font-size: 11px; } }
 
 /* ===== PAGE FX 静态 kill（page-static 类 与 系统减少动态效果，双通道） ===== */
 html.page-static *, html.page-static *::before, html.page-static *::after {

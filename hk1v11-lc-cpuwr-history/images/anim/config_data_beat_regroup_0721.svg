@@ -1,22 +1,52 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1240" height="848" viewBox="0 0 1240 848" font-family="Calibri,Segoe UI,Arial,sans-serif">
 <style>
-.row { opacity:0; animation: rowIn 0.4s ease forwards; }
-@keyframes rowIn { from { opacity:0; transform: translateY(6px); } to { opacity:1; transform: none; } }
-.head { opacity:0; animation: rowIn 0.4s ease forwards; }
-.chg { animation: chgPulse 2s ease-in-out 4s infinite; }
-@keyframes chgPulse { 0%,100% { opacity:1; } 50% { opacity:0.45; } }
-
-.chgrow { animation: chgRowPulse 2.4s ease-in-out 4s infinite; }
-@keyframes chgRowPulse { 0%,100% { opacity:1; } 50% { opacity:0.5; } }
-.brd { animation: brdPulse 2.4s ease-in-out 4s infinite; }
-@keyframes brdPulse { 0%,100% { stroke-opacity: 1; } 50% { stroke-opacity: 0.4; } }
-@keyframes breathe { 0%,100% { opacity: 1; } 50% { opacity: 0.25; } }
-.breathe { animation: breathe 3.2s ease-in-out infinite; }
+.row{opacity:0;animation:rowIn .55s cubic-bezier(.22,.7,.3,1) forwards}
+.head{opacity:0;animation:rowIn .55s cubic-bezier(.22,.7,.3,1) forwards}
+@keyframes rowIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.draw{stroke-dasharray:100;animation:drawIn .6s cubic-bezier(.4,0,.2,1) forwards}
+@keyframes drawIn{from{stroke-dashoffset:100}to{stroke-dashoffset:0}}
+.fade{opacity:0;animation:fadeIn .6s ease forwards}
+@keyframes fadeIn{to{opacity:1}}
+.flowdot{fill:none;stroke-linecap:round;stroke-dasharray:9 91;stroke-width:3.5;animation:flow 1.5s linear infinite}
+@keyframes flow{to{stroke-dashoffset:-100}}
+.flowtail{fill:none;stroke-linecap:round;stroke-dasharray:4 96;stroke-width:8;opacity:.25;animation:flow 1.5s linear infinite}
+.pulse{transform-box:fill-box;transform-origin:center;animation:pulse 2.8s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1);filter:drop-shadow(0 0 0 rgba(180,83,9,0))}50%{transform:scale(1.03);filter:drop-shadow(0 0 12px rgba(180,83,9,.8))}}
+.pulse-t{transform-box:fill-box;transform-origin:center;animation:pulseT 2.8s ease-in-out infinite}
+@keyframes pulseT{0%,100%{transform:scale(1);filter:drop-shadow(0 0 0 rgba(14,116,144,0))}50%{transform:scale(1.03);filter:drop-shadow(0 0 12px rgba(14,116,144,.8))}}
+.pulse-b{transform-box:fill-box;transform-origin:center;animation:pulseB 2.8s ease-in-out infinite}
+@keyframes pulseB{0%,100%{transform:scale(1);filter:drop-shadow(0 0 0 rgba(29,78,216,0))}50%{transform:scale(1.03);filter:drop-shadow(0 0 12px rgba(29,78,216,.8))}}
+.sweepband{opacity:.85;animation:sweepMove 8s linear infinite}
+@keyframes sweepMove{to{transform:translateX(var(--sweepP,160px))}}
+.dashgrow{stroke-dasharray:7 5;animation:dashgrow 2.6s linear infinite}
+@keyframes dashgrow{from{stroke-dashoffset:72}to{stroke-dashoffset:0}}
+.march{animation:march 1.5s linear infinite}
+@keyframes march{to{stroke-dashoffset:-16}}
+.cellwave{transform-box:fill-box;transform-origin:center;animation:wave 2.6s ease-in-out infinite}
+@keyframes wave{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.72;transform:scale(1.01)}}
+.breathe{animation:br 3.2s ease-in-out infinite}
+@keyframes br{0%,100%{opacity:1}50%{opacity:.55}}
+.step{transform-box:fill-box;transform-origin:center;animation:stepLit 6s ease-in-out infinite}
+@keyframes stepLit{0%,16%{filter:drop-shadow(0 0 9px rgba(29,78,216,.85));transform:scale(1.02)}24%,92%{filter:drop-shadow(0 0 0 rgba(29,78,216,0));transform:none}100%{filter:drop-shadow(0 0 9px rgba(29,78,216,.85));transform:scale(1.02)}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}.row,.head,.fade{opacity:1!important}.flowdot,.flowtail,.sweepband{display:none!important}}
 </style>
 <rect width="1240" height="848" fill="#ffffff"/>
-<g class="head">
+<defs>
+<linearGradient id="sweepG-1" gradientUnits="userSpaceOnUse" x1="208" y1="0" x2="1024" y2="0">
+<stop offset="0" stop-color="#b45309" stop-opacity="0"/>
+<stop offset="0.46" stop-color="#b45309" stop-opacity="0"/>
+<stop offset="0.5" stop-color="#b45309" stop-opacity="0.3"/>
+<stop offset="0.54" stop-color="#b45309" stop-opacity="0"/>
+<stop offset="1" stop-color="#b45309" stop-opacity="0"/>
+</linearGradient>
+<clipPath id="sweepC-1"><rect x="648" y="166" width="576" height="590"/></clipPath>
+</defs>
+<g clip-path="url(#sweepC-1)"><rect class="sweepband" x="208" y="166" width="816" height="590" fill="url(#sweepG-1)" style="--sweepP:816px"/></g>
+<g class="head" style="animation-delay:0s">
 <text x="620" y="36" text-anchor="middle" font-size="22" font-weight="800" fill="#1e293b">LC_CPUWR 0721v1 配置拍重组对照（流内字节顺序不变，仅分组 2B/拍 → 3B/拍）</text>
 <text x="620" y="60" text-anchor="middle" font-size="13" fill="#64748b">FCONFIG 60B：30 拍 → 20 拍（END 5'd30 → 5'd20） ｜ LCONFIG 6B：3 拍 → 2 拍（END 3'd4 → 3'd3） ｜ 寄存器地址映射与 XOR 总量均不变</text>
+</g>
+<g class="head" style="animation-delay:0.15s">
 <rect x="70" y="76" width="16" height="16" rx="4" fill="#ecfdf5" stroke="#16a34a" stroke-width="1.5"/>
 <text x="92" y="89" font-size="12" fill="#334155">参与 checksum 字节</text>
 <rect x="294" y="76" width="16" height="16" rx="4" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/>
@@ -25,107 +55,148 @@
 <text x="480" y="89" font-size="12" fill="#334155">0x07 控制寄存器（排除）</text>
 <rect x="682" y="76" width="16" height="16" rx="4" fill="#fefce8" stroke="#eab308" stroke-width="1.5"/>
 <text x="704" y="89" font-size="12" fill="#334155">0x27 frame end</text>
+</g>
+<g class="head" style="animation-delay:0.3s">
 <text x="320" y="128" text-anchor="middle" font-size="15" font-weight="800" fill="#475569">0716_v1_work：2 字节/拍（C, D）</text>
 <text x="920" y="128" text-anchor="middle" font-size="15" font-weight="800" fill="#2563eb">0721_v1：3 字节/拍（C, D, F）</text>
 <line x1="620" y1="110" x2="620" y2="740" stroke="#e2e8f0" stroke-width="2"/>
 </g>
-<g class="row" style="animation-delay:0.00s">
+<g class="row" style="animation-delay:0.45s">
 <text x="60" y="158" font-size="13" font-weight="700" fill="#0f172a">区域 A：0x00 ~ 0x0B（checksum 区开头）</text>
 </g>
-<g class="row" style="animation-delay:0.03s">
+<g class="row" style="animation-delay:0.5s">
+<g class="cellwave" style="animation-duration:4.55s;animation-delay:-0.00s">
 <rect x="36" y="192" width="90" height="50" rx="9" fill="none" stroke="#94a3b8" stroke-width="2"/><text x="81.0" y="184" text-anchor="middle" font-size="11" font-weight="700" fill="#94a3b8">5'h01</text><rect x="44" y="200" width="34" height="34" rx="5" fill="#ecfdf5" stroke="#16a34a" stroke-width="1.5"/><text x="61.0" y="222" text-anchor="middle" font-size="12" font-weight="600" fill="#166534">00</text><rect x="84" y="200" width="34" height="34" rx="5" fill="#ecfdf5" stroke="#16a34a" stroke-width="1.5"/><text x="101.0" y="222" text-anchor="middle" font-size="12" font-weight="600" fill="#166534">01</text><text x="81.0" y="260" text-anchor="middle" font-size="11" fill="#334155">C^D</text>
 </g>
-<g class="row" style="animation-delay:0.06s">
+</g>
+<g class="row" style="animation-delay:0.55s">
+<g class="cellwave" style="animation-duration:4.55s;animation-delay:-0.35s">
 <rect x="132" y="192" width="90" height="50" rx="9" fill="none" stroke="#94a3b8" stroke-width="2"/><text x="177.0" y="184" text-anchor="middle" font-size="11" font-weight="700" fill="#94a3b8">5'h02</text><rect x="140" y="200" width="34" height="34" rx="5" fill="#ecfdf5" stroke="#16a34a" stroke-width="1.5"/><text x="157.0" y="222" text-anchor="middle" font-size="12" font-weight="600" fill="#166534">02</text><rect x="180" y="200" width="34" height="34" rx="5" fill="#ecfdf5" stroke="#16a34a" stroke-width="1.5"/><text x="197.0" y="222" text-anchor="middle" font-size="12" font-weight="600" fill="#166534">03</text><text x="177.0" y="260" text-anchor="middle" font-size="11" fill="#334155">C^D</text>
 </g>
-<g class="row" style="animation-delay:0.09s">
+</g>
+<g class="row" style="animation-delay:0.6s">
+<g class="cellwave" style="animation-duration:4.55s;animation-delay:-0.70s">
 <rect x="228" y="192" width="90" height="50" rx="9" fill="none" stroke="#94a3b8" stroke-width="2"/><text x="273.0" y="184" text-anchor="middle" font-size="11" font-weight="700" fill="#94a3b8">5'h03</text><rect x="236" y="200" width="34" height="34" rx="5" fill="#ecfdf5" stroke="#16a34a" stroke-width="1.5"/><text x="253.0" y="222" text-anchor="middle" font-size="12" font-weight="600" fill="#166534">04</text><rect x="276" y="200" width="34" height="34" rx="5" fill="#ecfdf5" stroke="#16a34a" stroke-width="1.5"/><text x="293.0" y="222" text-anchor="middle" font-size="12" font-weight="600" fill="#166534">05</text><text x="273.0" y="260" text-anchor="middle" font-size="11" fill="#334155">C^D</text>
 </g>
-<g class="row" style="animation-delay:0.12s">
+</g>
+<g class="row" style="animation-delay:0.65s">
+<g class="cellwave" style="animation-duration:4.55s;animation-delay:-1.05s">
 <rect x="324" y="192" width="90" height="50" rx="9" fill="none" stroke="#94a3b8" stroke-width="2"/><text x="369.0" y="184" text-anchor="middle" font-size="11" font-weight="700" fill="#94a3b8">5'h04</text><rect x="332" y="200" width="34" height="34" rx="5" fill="#ecfdf5" stroke="#16a34a" stroke-width="1.5"/><text x="349.0" y="222" text-anchor="middle" font-size="12" font-weight="600" fill="#166534">06</text><rect x="372" y="200" width="34" height="34" rx="5" fill="#fff7ed" stroke="#fb923c" stroke-width="1.5"/><text x="389.0" y="222" text-anchor="middle" font-size="12" font-weight="600" fill="#c2410c">07</text><text x="369.0" y="260" text-anchor="middle" font-size="11" fill="#334155">C</text>
 </g>
-<g class="row" style="animation-delay:0.15s">
+</g>
+<g class="row" style="animation-delay:0.7s">
+<g class="cellwave" style="animation-duration:4.55s;animation-delay:-1.40s">
 <rect x="420" y="192" width="90" height="50" rx="9" fill="none" stroke="#94a3b8" stroke-width="2"/><text x="465.0" y="184" text-anchor="middle" font-size="11" font-weight="700" fill="#94a3b8">5'h05</text><rect x="428" y="200" width="34" height="34" rx="5" fill="#ecfdf5" stroke="#16a34a" stroke-width="1.5"/><text x="445.0" y="222" text-anchor="middle" font-size="12" font-weight="600" fill="#166534">08</text><rect x="468" y="200" width="34" height="34" rx="5" fill="#ecfdf5" stroke="#16a34a" stroke-width="1.5"/><text x="485.0" y="222" text-anchor="middle" font-size="12" font-weight="600" fill="#166534">09</text><text x="465.0" y="260" text-anchor="middle" font-size="11" fill="#334155">C^D</text>
 </g>
-<g class="row" style="animation-delay:0.18s">
-<rect x="516" y="192" width="90" height="50" rx="9" fill="none" stroke="#94a3b8" stroke-width="2"/><text x="561.0" y="184" text-anchor="middle" font-size="11" font-weight="700" fill="#94a3b8">5'h06</text><rect x="524" y="200" width="34" height="34" rx="5" fill="#ecfdf5" stroke="#16a34a" stroke-width="1.5"/><text x="541.0" y="222" text-anchor="middle" font-size="12" font-weight="600" fill="#166534">0A</text><rect x="564" y="200" width="34" height="34" rx="5" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/><text x="581.0" y="222" text-anchor="middle" font-size="12" font-weight="600" fill="#94a3b8">0B</text><text x="561.0" y="260" text-anchor="middle" font-size="11" fill="#334155">C</text>
-</g>
-<g class="row" style="animation-delay:0.21s">
-<rect x="656" y="192" width="130" height="50" rx="9" fill="none" stroke="#2563eb" stroke-width="2"/><text x="721.0" y="184" text-anchor="middle" font-size="11" font-weight="700" fill="#2563eb">5'h01</text><rect x="664" y="200" width="34" height="34" rx="5" fill="#ecfdf5" stroke="#16a34a" stroke-width="1.5"/><text x="681.0" y="222" text-anchor="middle" font-size="12" font-weight="600" fill="#166534">00</text><rect x="704" y="200" width="34" height="34" rx="5" fill="#ecfdf5" stroke="#16a34a" stroke-width="1.5"/><text x="721.0" y="222" text-anchor="middle" font-size="12" font-weight="600" fill="#166534">01</text><rect x="744" y="200" width="34" height="34" rx="5" fill="#ecfdf5" stroke="#16a34a" stroke-width="1.5"/><text x="761.0" y="222" text-anchor="middle" font-size="12" font-weight="600" fill="#166534">02</text><text x="721.0" y="260" text-anchor="middle" font-size="11" fill="#334155">C^D^F</text>
-</g>
-<g class="row" style="animation-delay:0.24s">
-<rect x="802" y="192" width="130" height="50" rx="9" fill="none" stroke="#2563eb" stroke-width="2"/><text x="867.0" y="184" text-anchor="middle" font-size="11" font-weight="700" fill="#2563eb">5'h02</text><rect x="810" y="200" width="34" height="34" rx="5" fill="#ecfdf5" stroke="#16a34a" stroke-width="1.5"/><text x="827.0" y="222" text-anchor="middle" font-size="12" font-weight="600" fill="#166534">03</text><rect x="850" y="200" width="34" height="34" rx="5" fill="#ecfdf5" stroke="#16a34a" stroke-width="1.5"/><text x="867.0" y="222" text-anchor="middle" font-size="12" font-weight="600" fill="#166534">04</text><rect x="890" y="200" width="34" height="34" rx="5" fill="#ecfdf5" stroke="#16a34a" stroke-width="1.5"/><text x="907.0" y="222" text-anchor="middle" font-size="12" font-weight="600" fill="#166534">05</text><text x="867.0" y="260" text-anchor="middle" font-size="11" fill="#334155">C^D^F</text>
-</g>
-<g class="row" style="animation-delay:0.27s">
-<rect x="948" y="192" width="130" height="50" rx="9" fill="none" stroke="#2563eb" stroke-width="2"/><text x="1013.0" y="184" text-anchor="middle" font-size="11" font-weight="700" fill="#2563eb">5'h03</text><rect x="956" y="200" width="34" height="34" rx="5" fill="#ecfdf5" stroke="#16a34a" stroke-width="1.5"/><text x="973.0" y="222" text-anchor="middle" font-size="12" font-weight="600" fill="#166534">06</text><rect x="996" y="200" width="34" height="34" rx="5" fill="#fff7ed" stroke="#fb923c" stroke-width="1.5"/><text x="1013.0" y="222" text-anchor="middle" font-size="12" font-weight="600" fill="#c2410c">07</text><rect x="1036" y="200" width="34" height="34" rx="5" fill="#ecfdf5" stroke="#16a34a" stroke-width="1.5"/><text x="1053.0" y="222" text-anchor="middle" font-size="12" font-weight="600" fill="#166534">08</text><text x="1013.0" y="260" text-anchor="middle" font-size="11" fill="#334155">C^F</text>
-</g>
-<g class="row" style="animation-delay:0.30s">
-<rect x="1094" y="192" width="130" height="50" rx="9" fill="none" stroke="#2563eb" stroke-width="2"/><text x="1159.0" y="184" text-anchor="middle" font-size="11" font-weight="700" fill="#2563eb">5'h04</text><rect x="1102" y="200" width="34" height="34" rx="5" fill="#ecfdf5" stroke="#16a34a" stroke-width="1.5"/><text x="1119.0" y="222" text-anchor="middle" font-size="12" font-weight="600" fill="#166534">09</text><rect x="1142" y="200" width="34" height="34" rx="5" fill="#ecfdf5" stroke="#16a34a" stroke-width="1.5"/><text x="1159.0" y="222" text-anchor="middle" font-size="12" font-weight="600" fill="#166534">0A</text><rect x="1182" y="200" width="34" height="34" rx="5" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/><text x="1199.0" y="222" text-anchor="middle" font-size="12" font-weight="600" fill="#94a3b8">0B</text><text x="1159.0" y="260" text-anchor="middle" font-size="11" fill="#334155">C^D</text>
-</g>
-<g class="row" style="animation-delay:0.33s">
-<text x="60" y="322" font-size="13" font-weight="700" fill="#0f172a">区域 B：0x1B ~ 0x20（跨 Segment1 边界，0721 后 0x1F/0x20 同拍）</text>
-</g>
-<g class="row" style="animation-delay:0.36s">
-<rect x="48" y="356" width="90" height="50" rx="9" fill="none" stroke="#94a3b8" stroke-width="2"/><text x="93.0" y="348" text-anchor="middle" font-size="11" font-weight="700" fill="#94a3b8">5'h0F</text><rect x="56" y="364" width="34" height="34" rx="5" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/><text x="73.0" y="386" text-anchor="middle" font-size="12" font-weight="600" fill="#94a3b8">1C</text><rect x="96" y="364" width="34" height="34" rx="5" fill="#ecfdf5" stroke="#16a34a" stroke-width="1.5"/><text x="113.0" y="386" text-anchor="middle" font-size="12" font-weight="600" fill="#166534">1D</text><text x="93.0" y="424" text-anchor="middle" font-size="11" fill="#334155">D</text>
-</g>
-<g class="row" style="animation-delay:0.39s">
-<rect x="154" y="356" width="90" height="50" rx="9" fill="none" stroke="#94a3b8" stroke-width="2"/><text x="199.0" y="348" text-anchor="middle" font-size="11" font-weight="700" fill="#94a3b8">5'h10</text><rect x="162" y="364" width="34" height="34" rx="5" fill="#ecfdf5" stroke="#16a34a" stroke-width="1.5"/><text x="179.0" y="386" text-anchor="middle" font-size="12" font-weight="600" fill="#166534">1E</text><rect x="202" y="364" width="34" height="34" rx="5" fill="#ecfdf5" stroke="#16a34a" stroke-width="1.5"/><text x="219.0" y="386" text-anchor="middle" font-size="12" font-weight="600" fill="#166534">1F</text><text x="199.0" y="424" text-anchor="middle" font-size="11" fill="#334155">C^D</text>
-</g>
-<g class="row" style="animation-delay:0.42s">
-<rect x="260" y="356" width="90" height="50" rx="9" fill="none" stroke="#94a3b8" stroke-width="2"/><text x="305.0" y="348" text-anchor="middle" font-size="11" font-weight="700" fill="#94a3b8">5'h11</text><rect x="268" y="364" width="34" height="34" rx="5" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/><text x="285.0" y="386" text-anchor="middle" font-size="12" font-weight="600" fill="#94a3b8">20</text><rect x="308" y="364" width="34" height="34" rx="5" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/><text x="325.0" y="386" text-anchor="middle" font-size="12" font-weight="600" fill="#94a3b8">21</text><text x="305.0" y="424" text-anchor="middle" font-size="11" fill="#334155">—</text>
-</g>
-<g class="row" style="animation-delay:0.45s">
-<rect x="656" y="356" width="130" height="50" rx="9" fill="none" stroke="#2563eb" stroke-width="2"/><text x="721.0" y="348" text-anchor="middle" font-size="11" font-weight="700" fill="#2563eb">5'h0A</text><rect x="664" y="364" width="34" height="34" rx="5" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/><text x="681.0" y="386" text-anchor="middle" font-size="12" font-weight="600" fill="#94a3b8">1B</text><rect x="704" y="364" width="34" height="34" rx="5" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/><text x="721.0" y="386" text-anchor="middle" font-size="12" font-weight="600" fill="#94a3b8">1C</text><rect x="744" y="364" width="34" height="34" rx="5" fill="#ecfdf5" stroke="#16a34a" stroke-width="1.5"/><text x="761.0" y="386" text-anchor="middle" font-size="12" font-weight="600" fill="#166534">1D</text><text x="721.0" y="424" text-anchor="middle" font-size="11" fill="#334155">F</text>
-</g>
-<g class="row" style="animation-delay:0.48s">
-<rect x="802" y="356" width="130" height="50" rx="9" fill="none" stroke="#2563eb" stroke-width="2"/><text x="867.0" y="348" text-anchor="middle" font-size="11" font-weight="700" fill="#2563eb">5'h0B</text><rect x="810" y="364" width="34" height="34" rx="5" fill="#ecfdf5" stroke="#16a34a" stroke-width="1.5"/><text x="827.0" y="386" text-anchor="middle" font-size="12" font-weight="600" fill="#166534">1E</text><rect x="850" y="364" width="34" height="34" rx="5" fill="#ecfdf5" stroke="#16a34a" stroke-width="1.5"/><text x="867.0" y="386" text-anchor="middle" font-size="12" font-weight="600" fill="#166534">1F</text><rect x="890" y="364" width="34" height="34" rx="5" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/><text x="907.0" y="386" text-anchor="middle" font-size="12" font-weight="600" fill="#94a3b8">20</text><text x="867.0" y="424" text-anchor="middle" font-size="11" fill="#334155">C^D</text>
-</g>
-<g class="row" style="animation-delay:0.51s">
-<text x="60" y="486" font-size="13" font-weight="700" fill="#0f172a">区域 C：0x27（checksum frame end；每帧最后一笔参与字节）</text>
-</g>
-<g class="row" style="animation-delay:0.54s">
-<rect x="48" y="520" width="90" height="50" rx="9" fill="none" stroke="#94a3b8" stroke-width="2"/><text x="93.0" y="512" text-anchor="middle" font-size="11" font-weight="700" fill="#94a3b8">5'h14</text><rect x="56" y="528" width="34" height="34" rx="5" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/><text x="73.0" y="550" text-anchor="middle" font-size="12" font-weight="600" fill="#94a3b8">26</text><g class="breathe" style="animation-delay: 2.70s"><rect x="96" y="528" width="34" height="34" rx="5" fill="#fefce8" stroke="#eab308" stroke-width="1.5"/><text x="113.0" y="550" text-anchor="middle" font-size="12" font-weight="600" fill="#a16207">27</text></g><text x="93.0" y="588" text-anchor="middle" font-size="11" fill="#334155">frame_end: D</text>
-</g>
-<g class="row" style="animation-delay:0.57s">
-<rect x="656" y="520" width="130" height="50" rx="9" fill="none" stroke="#2563eb" stroke-width="2"/><text x="721.0" y="512" text-anchor="middle" font-size="11" font-weight="700" fill="#2563eb">5'h0E</text><g class="breathe" style="animation-delay: 2.85s"><rect x="664" y="528" width="34" height="34" rx="5" fill="#fefce8" stroke="#eab308" stroke-width="1.5"/><text x="681.0" y="550" text-anchor="middle" font-size="12" font-weight="600" fill="#a16207">27</text></g><rect x="704" y="528" width="34" height="34" rx="5" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/><text x="721.0" y="550" text-anchor="middle" font-size="12" font-weight="600" fill="#94a3b8">28</text><rect x="744" y="528" width="34" height="34" rx="5" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/><text x="761.0" y="550" text-anchor="middle" font-size="12" font-weight="600" fill="#94a3b8">29</text><text x="721.0" y="588" text-anchor="middle" font-size="11" fill="#334155">frame_end: C</text>
-</g>
-<g class="row" style="animation-delay:0.60s">
-<text x="60" y="650" font-size="13" font-weight="700" fill="#0f172a">区域 D：LCONFIG 0x40 ~ 0x44（6B：3 拍 → 2 拍，无 pad）</text>
-</g>
-<g class="row" style="animation-delay:0.63s">
-<rect x="48" y="684" width="90" height="50" rx="9" fill="none" stroke="#94a3b8" stroke-width="2"/><text x="93.0" y="676" text-anchor="middle" font-size="11" font-weight="700" fill="#94a3b8">3'h1</text><rect x="56" y="692" width="34" height="34" rx="5" fill="#ecfdf5" stroke="#16a34a" stroke-width="1.5"/><text x="73.0" y="714" text-anchor="middle" font-size="12" font-weight="600" fill="#166534">40</text><rect x="96" y="692" width="34" height="34" rx="5" fill="#ecfdf5" stroke="#16a34a" stroke-width="1.5"/><text x="113.0" y="714" text-anchor="middle" font-size="12" font-weight="600" fill="#166534">41</text><text x="93.0" y="752" text-anchor="middle" font-size="11" fill="#334155">A,B</text>
-</g>
-<g class="row" style="animation-delay:0.66s">
-<rect x="154" y="684" width="90" height="50" rx="9" fill="none" stroke="#94a3b8" stroke-width="2"/><text x="199.0" y="676" text-anchor="middle" font-size="11" font-weight="700" fill="#94a3b8">3'h2</text><rect x="162" y="692" width="34" height="34" rx="5" fill="#ecfdf5" stroke="#16a34a" stroke-width="1.5"/><text x="179.0" y="714" text-anchor="middle" font-size="12" font-weight="600" fill="#166534">42</text><rect x="202" y="692" width="34" height="34" rx="5" fill="#ecfdf5" stroke="#16a34a" stroke-width="1.5"/><text x="219.0" y="714" text-anchor="middle" font-size="12" font-weight="600" fill="#166534">43</text><text x="199.0" y="752" text-anchor="middle" font-size="11" fill="#334155">A,B</text>
-</g>
-<g class="row" style="animation-delay:0.69s">
-<rect x="260" y="684" width="90" height="50" rx="9" fill="none" stroke="#94a3b8" stroke-width="2"/><text x="305.0" y="676" text-anchor="middle" font-size="11" font-weight="700" fill="#94a3b8">3'h3</text><rect x="268" y="692" width="34" height="34" rx="5" fill="#ecfdf5" stroke="#16a34a" stroke-width="1.5"/><text x="285.0" y="714" text-anchor="middle" font-size="12" font-weight="600" fill="#166534">44</text><rect x="308" y="692" width="34" height="34" rx="5" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/><text x="325.0" y="714" text-anchor="middle" font-size="12" font-weight="600" fill="#94a3b8">--</text><text x="305.0" y="752" text-anchor="middle" font-size="11" fill="#334155">A</text>
-</g>
-<g class="row" style="animation-delay:0.72s">
-<rect x="656" y="684" width="130" height="50" rx="9" fill="none" stroke="#2563eb" stroke-width="2"/><text x="721.0" y="676" text-anchor="middle" font-size="11" font-weight="700" fill="#2563eb">3'h1</text><rect x="664" y="692" width="34" height="34" rx="5" fill="#ecfdf5" stroke="#16a34a" stroke-width="1.5"/><text x="681.0" y="714" text-anchor="middle" font-size="12" font-weight="600" fill="#166534">40</text><rect x="704" y="692" width="34" height="34" rx="5" fill="#ecfdf5" stroke="#16a34a" stroke-width="1.5"/><text x="721.0" y="714" text-anchor="middle" font-size="12" font-weight="600" fill="#166534">41</text><rect x="744" y="692" width="34" height="34" rx="5" fill="#ecfdf5" stroke="#16a34a" stroke-width="1.5"/><text x="761.0" y="714" text-anchor="middle" font-size="12" font-weight="600" fill="#166534">42</text><text x="721.0" y="752" text-anchor="middle" font-size="11" fill="#334155">A,B,E</text>
 </g>
 <g class="row" style="animation-delay:0.75s">
+<g class="cellwave" style="animation-duration:4.55s;animation-delay:-1.75s">
+<rect x="516" y="192" width="90" height="50" rx="9" fill="none" stroke="#94a3b8" stroke-width="2"/><text x="561.0" y="184" text-anchor="middle" font-size="11" font-weight="700" fill="#94a3b8">5'h06</text><rect x="524" y="200" width="34" height="34" rx="5" fill="#ecfdf5" stroke="#16a34a" stroke-width="1.5"/><text x="541.0" y="222" text-anchor="middle" font-size="12" font-weight="600" fill="#166534">0A</text><rect x="564" y="200" width="34" height="34" rx="5" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/><text x="581.0" y="222" text-anchor="middle" font-size="12" font-weight="600" fill="#94a3b8">0B</text><text x="561.0" y="260" text-anchor="middle" font-size="11" fill="#334155">C</text>
+</g>
+</g>
+<g class="row" style="animation-delay:0.8s">
+<g class="cellwave" style="animation-duration:4.55s;animation-delay:-0.17s">
+<rect x="656" y="192" width="130" height="50" rx="9" fill="none" stroke="#2563eb" stroke-width="2"/><text x="721.0" y="184" text-anchor="middle" font-size="11" font-weight="700" fill="#2563eb">5'h01</text><rect x="664" y="200" width="34" height="34" rx="5" fill="#ecfdf5" stroke="#16a34a" stroke-width="1.5"/><text x="681.0" y="222" text-anchor="middle" font-size="12" font-weight="600" fill="#166534">00</text><rect x="704" y="200" width="34" height="34" rx="5" fill="#ecfdf5" stroke="#16a34a" stroke-width="1.5"/><text x="721.0" y="222" text-anchor="middle" font-size="12" font-weight="600" fill="#166534">01</text><rect x="744" y="200" width="34" height="34" rx="5" fill="#ecfdf5" stroke="#16a34a" stroke-width="1.5"/><text x="761.0" y="222" text-anchor="middle" font-size="12" font-weight="600" fill="#166534">02</text><text x="721.0" y="260" text-anchor="middle" font-size="11" fill="#334155">C^D^F</text>
+</g>
+</g>
+<g class="row" style="animation-delay:0.85s">
+<g class="cellwave" style="animation-duration:4.55s;animation-delay:-0.52s">
+<rect x="802" y="192" width="130" height="50" rx="9" fill="none" stroke="#2563eb" stroke-width="2"/><text x="867.0" y="184" text-anchor="middle" font-size="11" font-weight="700" fill="#2563eb">5'h02</text><rect x="810" y="200" width="34" height="34" rx="5" fill="#ecfdf5" stroke="#16a34a" stroke-width="1.5"/><text x="827.0" y="222" text-anchor="middle" font-size="12" font-weight="600" fill="#166534">03</text><rect x="850" y="200" width="34" height="34" rx="5" fill="#ecfdf5" stroke="#16a34a" stroke-width="1.5"/><text x="867.0" y="222" text-anchor="middle" font-size="12" font-weight="600" fill="#166534">04</text><rect x="890" y="200" width="34" height="34" rx="5" fill="#ecfdf5" stroke="#16a34a" stroke-width="1.5"/><text x="907.0" y="222" text-anchor="middle" font-size="12" font-weight="600" fill="#166534">05</text><text x="867.0" y="260" text-anchor="middle" font-size="11" fill="#334155">C^D^F</text>
+</g>
+</g>
+<g class="row" style="animation-delay:0.9s">
+<g class="cellwave" style="animation-duration:4.55s;animation-delay:-0.88s">
+<rect x="948" y="192" width="130" height="50" rx="9" fill="none" stroke="#2563eb" stroke-width="2"/><text x="1013.0" y="184" text-anchor="middle" font-size="11" font-weight="700" fill="#2563eb">5'h03</text><rect x="956" y="200" width="34" height="34" rx="5" fill="#ecfdf5" stroke="#16a34a" stroke-width="1.5"/><text x="973.0" y="222" text-anchor="middle" font-size="12" font-weight="600" fill="#166534">06</text><rect x="996" y="200" width="34" height="34" rx="5" fill="#fff7ed" stroke="#fb923c" stroke-width="1.5"/><text x="1013.0" y="222" text-anchor="middle" font-size="12" font-weight="600" fill="#c2410c">07</text><rect x="1036" y="200" width="34" height="34" rx="5" fill="#ecfdf5" stroke="#16a34a" stroke-width="1.5"/><text x="1053.0" y="222" text-anchor="middle" font-size="12" font-weight="600" fill="#166534">08</text><text x="1013.0" y="260" text-anchor="middle" font-size="11" fill="#334155">C^F</text>
+</g>
+</g>
+<g class="row" style="animation-delay:0.95s">
+<g class="cellwave" style="animation-duration:4.55s;animation-delay:-1.22s">
+<rect x="1094" y="192" width="130" height="50" rx="9" fill="none" stroke="#2563eb" stroke-width="2"/><text x="1159.0" y="184" text-anchor="middle" font-size="11" font-weight="700" fill="#2563eb">5'h04</text><rect x="1102" y="200" width="34" height="34" rx="5" fill="#ecfdf5" stroke="#16a34a" stroke-width="1.5"/><text x="1119.0" y="222" text-anchor="middle" font-size="12" font-weight="600" fill="#166534">09</text><rect x="1142" y="200" width="34" height="34" rx="5" fill="#ecfdf5" stroke="#16a34a" stroke-width="1.5"/><text x="1159.0" y="222" text-anchor="middle" font-size="12" font-weight="600" fill="#166534">0A</text><rect x="1182" y="200" width="34" height="34" rx="5" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/><text x="1199.0" y="222" text-anchor="middle" font-size="12" font-weight="600" fill="#94a3b8">0B</text><text x="1159.0" y="260" text-anchor="middle" font-size="11" fill="#334155">C^D</text>
+</g>
+</g>
+<g class="row" style="animation-delay:1.0s">
+<text x="60" y="322" font-size="13" font-weight="700" fill="#0f172a">区域 B：0x1B ~ 0x20（跨 Segment1 边界，0721 后 0x1F/0x20 同拍）</text>
+</g>
+<g class="row" style="animation-delay:1.05s">
+<g class="cellwave" style="animation-duration:4.55s;animation-delay:-2.10s">
+<rect x="48" y="356" width="90" height="50" rx="9" fill="none" stroke="#94a3b8" stroke-width="2"/><text x="93.0" y="348" text-anchor="middle" font-size="11" font-weight="700" fill="#94a3b8">5'h0F</text><rect x="56" y="364" width="34" height="34" rx="5" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/><text x="73.0" y="386" text-anchor="middle" font-size="12" font-weight="600" fill="#94a3b8">1C</text><rect x="96" y="364" width="34" height="34" rx="5" fill="#ecfdf5" stroke="#16a34a" stroke-width="1.5"/><text x="113.0" y="386" text-anchor="middle" font-size="12" font-weight="600" fill="#166534">1D</text><text x="93.0" y="424" text-anchor="middle" font-size="11" fill="#334155">D</text>
+</g>
+</g>
+<g class="row" style="animation-delay:1.1s">
+<g class="cellwave" style="animation-duration:4.55s;animation-delay:-2.45s">
+<rect x="154" y="356" width="90" height="50" rx="9" fill="none" stroke="#94a3b8" stroke-width="2"/><text x="199.0" y="348" text-anchor="middle" font-size="11" font-weight="700" fill="#94a3b8">5'h10</text><rect x="162" y="364" width="34" height="34" rx="5" fill="#ecfdf5" stroke="#16a34a" stroke-width="1.5"/><text x="179.0" y="386" text-anchor="middle" font-size="12" font-weight="600" fill="#166534">1E</text><rect x="202" y="364" width="34" height="34" rx="5" fill="#ecfdf5" stroke="#16a34a" stroke-width="1.5"/><text x="219.0" y="386" text-anchor="middle" font-size="12" font-weight="600" fill="#166534">1F</text><text x="199.0" y="424" text-anchor="middle" font-size="11" fill="#334155">C^D</text>
+</g>
+</g>
+<g class="row" style="animation-delay:1.15s">
+<g class="cellwave" style="animation-duration:4.55s;animation-delay:-2.80s">
+<rect x="260" y="356" width="90" height="50" rx="9" fill="none" stroke="#94a3b8" stroke-width="2"/><text x="305.0" y="348" text-anchor="middle" font-size="11" font-weight="700" fill="#94a3b8">5'h11</text><rect x="268" y="364" width="34" height="34" rx="5" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/><text x="285.0" y="386" text-anchor="middle" font-size="12" font-weight="600" fill="#94a3b8">20</text><rect x="308" y="364" width="34" height="34" rx="5" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/><text x="325.0" y="386" text-anchor="middle" font-size="12" font-weight="600" fill="#94a3b8">21</text><text x="305.0" y="424" text-anchor="middle" font-size="11" fill="#334155">—</text>
+</g>
+</g>
+<g class="row" style="animation-delay:1.2s">
+<g class="cellwave" style="animation-duration:4.55s;animation-delay:-1.57s">
+<rect x="656" y="356" width="130" height="50" rx="9" fill="none" stroke="#2563eb" stroke-width="2"/><text x="721.0" y="348" text-anchor="middle" font-size="11" font-weight="700" fill="#2563eb">5'h0A</text><rect x="664" y="364" width="34" height="34" rx="5" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/><text x="681.0" y="386" text-anchor="middle" font-size="12" font-weight="600" fill="#94a3b8">1B</text><rect x="704" y="364" width="34" height="34" rx="5" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/><text x="721.0" y="386" text-anchor="middle" font-size="12" font-weight="600" fill="#94a3b8">1C</text><rect x="744" y="364" width="34" height="34" rx="5" fill="#ecfdf5" stroke="#16a34a" stroke-width="1.5"/><text x="761.0" y="386" text-anchor="middle" font-size="12" font-weight="600" fill="#166534">1D</text><text x="721.0" y="424" text-anchor="middle" font-size="11" fill="#334155">F</text>
+</g>
+</g>
+<g class="row" style="animation-delay:1.25s">
+<g class="cellwave" style="animation-duration:4.55s;animation-delay:-1.93s">
+<rect x="802" y="356" width="130" height="50" rx="9" fill="none" stroke="#2563eb" stroke-width="2"/><text x="867.0" y="348" text-anchor="middle" font-size="11" font-weight="700" fill="#2563eb">5'h0B</text><rect x="810" y="364" width="34" height="34" rx="5" fill="#ecfdf5" stroke="#16a34a" stroke-width="1.5"/><text x="827.0" y="386" text-anchor="middle" font-size="12" font-weight="600" fill="#166534">1E</text><rect x="850" y="364" width="34" height="34" rx="5" fill="#ecfdf5" stroke="#16a34a" stroke-width="1.5"/><text x="867.0" y="386" text-anchor="middle" font-size="12" font-weight="600" fill="#166534">1F</text><rect x="890" y="364" width="34" height="34" rx="5" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/><text x="907.0" y="386" text-anchor="middle" font-size="12" font-weight="600" fill="#94a3b8">20</text><text x="867.0" y="424" text-anchor="middle" font-size="11" fill="#334155">C^D</text>
+</g>
+</g>
+<g class="row" style="animation-delay:1.3s">
+<text x="60" y="486" font-size="13" font-weight="700" fill="#0f172a">区域 C：0x27（checksum frame end；每帧最后一笔参与字节）</text>
+</g>
+<g class="row" style="animation-delay:1.35s">
+<g class="cellwave" style="animation-duration:4.55s;animation-delay:-3.15s">
+<rect x="48" y="520" width="90" height="50" rx="9" fill="none" stroke="#94a3b8" stroke-width="2"/><text x="93.0" y="512" text-anchor="middle" font-size="11" font-weight="700" fill="#94a3b8">5'h14</text><rect x="56" y="528" width="34" height="34" rx="5" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/><text x="73.0" y="550" text-anchor="middle" font-size="12" font-weight="600" fill="#94a3b8">26</text><rect x="96" y="528" width="34" height="34" rx="5" fill="#fefce8" stroke="#eab308" stroke-width="1.5"/><text x="113.0" y="550" text-anchor="middle" font-size="12" font-weight="600" fill="#a16207">27</text><text x="93.0" y="588" text-anchor="middle" font-size="11" fill="#334155">frame_end: D</text>
+</g>
+</g>
+<g class="row" style="animation-delay:1.4s">
+<g class="cellwave" style="animation-duration:4.55s;animation-delay:-2.27s">
+<rect x="656" y="520" width="130" height="50" rx="9" fill="none" stroke="#2563eb" stroke-width="2"/><text x="721.0" y="512" text-anchor="middle" font-size="11" font-weight="700" fill="#2563eb">5'h0E</text><rect x="664" y="528" width="34" height="34" rx="5" fill="#fefce8" stroke="#eab308" stroke-width="1.5"/><text x="681.0" y="550" text-anchor="middle" font-size="12" font-weight="600" fill="#a16207">27</text><rect x="704" y="528" width="34" height="34" rx="5" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/><text x="721.0" y="550" text-anchor="middle" font-size="12" font-weight="600" fill="#94a3b8">28</text><rect x="744" y="528" width="34" height="34" rx="5" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/><text x="761.0" y="550" text-anchor="middle" font-size="12" font-weight="600" fill="#94a3b8">29</text><text x="721.0" y="588" text-anchor="middle" font-size="11" fill="#334155">frame_end: C</text>
+</g>
+</g>
+<g class="row" style="animation-delay:1.45s">
+<text x="60" y="650" font-size="13" font-weight="700" fill="#0f172a">区域 D：LCONFIG 0x40 ~ 0x44（6B：3 拍 → 2 拍，无 pad）</text>
+</g>
+<g class="row" style="animation-delay:1.5s">
+<g class="cellwave" style="animation-duration:4.55s;animation-delay:-3.50s">
+<rect x="48" y="684" width="90" height="50" rx="9" fill="none" stroke="#94a3b8" stroke-width="2"/><text x="93.0" y="676" text-anchor="middle" font-size="11" font-weight="700" fill="#94a3b8">3'h1</text><rect x="56" y="692" width="34" height="34" rx="5" fill="#ecfdf5" stroke="#16a34a" stroke-width="1.5"/><text x="73.0" y="714" text-anchor="middle" font-size="12" font-weight="600" fill="#166534">40</text><rect x="96" y="692" width="34" height="34" rx="5" fill="#ecfdf5" stroke="#16a34a" stroke-width="1.5"/><text x="113.0" y="714" text-anchor="middle" font-size="12" font-weight="600" fill="#166534">41</text><text x="93.0" y="752" text-anchor="middle" font-size="11" fill="#334155">A,B</text>
+</g>
+</g>
+<g class="row" style="animation-delay:1.55s">
+<g class="cellwave" style="animation-duration:4.55s;animation-delay:-3.85s">
+<rect x="154" y="684" width="90" height="50" rx="9" fill="none" stroke="#94a3b8" stroke-width="2"/><text x="199.0" y="676" text-anchor="middle" font-size="11" font-weight="700" fill="#94a3b8">3'h2</text><rect x="162" y="692" width="34" height="34" rx="5" fill="#ecfdf5" stroke="#16a34a" stroke-width="1.5"/><text x="179.0" y="714" text-anchor="middle" font-size="12" font-weight="600" fill="#166534">42</text><rect x="202" y="692" width="34" height="34" rx="5" fill="#ecfdf5" stroke="#16a34a" stroke-width="1.5"/><text x="219.0" y="714" text-anchor="middle" font-size="12" font-weight="600" fill="#166534">43</text><text x="199.0" y="752" text-anchor="middle" font-size="11" fill="#334155">A,B</text>
+</g>
+</g>
+<g class="row" style="animation-delay:1.6s">
+<g class="cellwave" style="animation-duration:4.55s;animation-delay:-4.20s">
+<rect x="260" y="684" width="90" height="50" rx="9" fill="none" stroke="#94a3b8" stroke-width="2"/><text x="305.0" y="676" text-anchor="middle" font-size="11" font-weight="700" fill="#94a3b8">3'h3</text><rect x="268" y="692" width="34" height="34" rx="5" fill="#ecfdf5" stroke="#16a34a" stroke-width="1.5"/><text x="285.0" y="714" text-anchor="middle" font-size="12" font-weight="600" fill="#166534">44</text><rect x="308" y="692" width="34" height="34" rx="5" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/><text x="325.0" y="714" text-anchor="middle" font-size="12" font-weight="600" fill="#94a3b8">--</text><text x="305.0" y="752" text-anchor="middle" font-size="11" fill="#334155">A</text>
+</g>
+</g>
+<g class="row" style="animation-delay:1.65s">
+<g class="cellwave" style="animation-duration:4.55s;animation-delay:-2.62s">
+<rect x="656" y="684" width="130" height="50" rx="9" fill="none" stroke="#2563eb" stroke-width="2"/><text x="721.0" y="676" text-anchor="middle" font-size="11" font-weight="700" fill="#2563eb">3'h1</text><rect x="664" y="692" width="34" height="34" rx="5" fill="#ecfdf5" stroke="#16a34a" stroke-width="1.5"/><text x="681.0" y="714" text-anchor="middle" font-size="12" font-weight="600" fill="#166534">40</text><rect x="704" y="692" width="34" height="34" rx="5" fill="#ecfdf5" stroke="#16a34a" stroke-width="1.5"/><text x="721.0" y="714" text-anchor="middle" font-size="12" font-weight="600" fill="#166534">41</text><rect x="744" y="692" width="34" height="34" rx="5" fill="#ecfdf5" stroke="#16a34a" stroke-width="1.5"/><text x="761.0" y="714" text-anchor="middle" font-size="12" font-weight="600" fill="#166534">42</text><text x="721.0" y="752" text-anchor="middle" font-size="11" fill="#334155">A,B,E</text>
+</g>
+</g>
+<g class="row" style="animation-delay:1.7s">
+<g class="cellwave" style="animation-duration:4.55s;animation-delay:-2.97s">
 <rect x="802" y="684" width="130" height="50" rx="9" fill="none" stroke="#2563eb" stroke-width="2"/><text x="867.0" y="676" text-anchor="middle" font-size="11" font-weight="700" fill="#2563eb">3'h2</text><rect x="810" y="692" width="34" height="34" rx="5" fill="#ecfdf5" stroke="#16a34a" stroke-width="1.5"/><text x="827.0" y="714" text-anchor="middle" font-size="12" font-weight="600" fill="#166534">43</text><rect x="850" y="692" width="34" height="34" rx="5" fill="#ecfdf5" stroke="#16a34a" stroke-width="1.5"/><text x="867.0" y="714" text-anchor="middle" font-size="12" font-weight="600" fill="#166534">44</text><rect x="890" y="692" width="34" height="34" rx="5" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/><text x="907.0" y="714" text-anchor="middle" font-size="12" font-weight="600" fill="#94a3b8">--</text><text x="867.0" y="752" text-anchor="middle" font-size="11" fill="#334155">A,B</text>
 </g>
-<g class="row" style="animation-delay:0.78s">
-<g class="chg">
-<g class="breathe" style="animation-delay: 3.90s">
-<rect x="48" y="768" width="560" height="66" rx="10" fill="#ecfdf5" stroke="#16a34a" stroke-width="1.5" class="brd"/>
+</g>
+<g class="row" style="animation-delay:1.75s">
+<g class="pulse-t" style="animation-delay:-2.1s">
+<rect x="48" y="768" width="560" height="66" rx="10" fill="#ecfdf5" stroke="#16a34a" stroke-width="1.5"/>
 <text x="64" y="790" font-size="13" font-weight="700" fill="#166534">XOR 总量不变（结合律）</text>
 <text x="64" y="808" font-size="12" fill="#166534">0x00^01^02^03^04^05^06^08^09^0A^1D^1E^1F，frame_end=0x27</text>
 <text x="64" y="826" font-size="12" fill="#166534">分组变化不改值 → checker / DV 期望与回归行为不变</text>
 </g>
 </g>
-</g>
-<g class="row" style="animation-delay:0.81s"><g class="chgrow">
-
-<g class="breathe" style="animation-delay: 4.05s">
-<rect x="640" y="768" width="560" height="66" rx="10" fill="#fff7ed" stroke="#fb923c" stroke-width="1.5" class="brd"/>
+<g class="row" style="animation-delay:1.85s">
+<g class="pulse" style="animation-delay:-0.7s">
+<rect x="640" y="768" width="560" height="66" rx="10" fill="#fff7ed" stroke="#fb923c" stroke-width="1.5"/>
 <text x="656" y="790" font-size="13" font-weight="700" fill="#c2410c">过渡依赖</text>
 <text x="656" y="808" font-size="12" fill="#c2410c">CHPI_CONFIG_L0 未升 24bit 前，LINK_LOGIC 将 [23:16] tie-off 防 X 传播</text>
 <text x="656" y="826" font-size="12" fill="#c2410c">全芯片 FCONFIG 流仿真待上游升版后联调（END：5'd20 / 3'd3）</text>
 </g>
-
-</g></g>
-
+</g>
 </svg>

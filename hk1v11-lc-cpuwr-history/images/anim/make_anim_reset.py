@@ -1,229 +1,245 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+"""make_anim_reset — reset_domain_address_map.svg 动画版生成器
+（Motion Kit v4；整体重写 v1，v1 类名/delay/呼吸逻辑不沿用）。
+
+源（只读）:  ../checksum_address_map.svg
+输出:        checksum_address_map.svg
+
+v4 规格（866×2956，LC_CPUWR 1023v1 复位域分类 · 51 行）：
+- 入场：head 标题+位号列头(0) → 51 个寄存器行 0.15 起 0.03s 递进
+  （至 1.65）→ 底部图例+脚注 head(1.85)。一次性总长 2.4s ≤ 2.5s。
+- 稳态（2 族，肉眼可辨；取代 v1 的 233 处低幅呼吸）：
+  · 行波 cellwave×51（主角）：全部寄存器行整行组波，自上而下 0.2s/行
+    错相位（周期 10.2s）= 地址扫描波。
+  · 脉冲 pulse×2（错相位 -0.7 / -2.1）：
+    0x1D 行 khead_20b_sel[4:0] 单元格 pulse（琥珀，LC_CPUWR 1027v1 变更格）；
+    0x30 密码寄存器行组（TEST_PRTCT[7:0]，N_RST 复位域、全图少数橙色行）
+    pulse-t（深青）= 特殊复位域指示。
+- 铁律：源 SVG 只读；<text> 多重集 / svg 开标签 / 几何颜色零改动；
+  纯 CSS 无 script 无 SMIL；kit CSS §2 逐字嵌入；背景 rect 保留；
+  reduced-motion 用 kit 原文；确定性幂等（只依赖源 SVG）。
 """
-make_anim_reset.py — 把静态 SVG 转成纯 CSS 动画 SVG（确定性行级变换，不手工编辑大文件）。
-
-源（只读）:  ..\\reset_domain_address_map.svg
-输出:        anim\\reset_domain_address_map.svg
-
-规则（不改动任何数据文本 / 几何 / 颜色，仅包 <g> + 注入 <style>）:
-  1. 以每个行标签（含波段标签 "0xNN ~ 0xNN (n ~ n)"，判定: x=158 + text-anchor=end
-     + font-weight=600）为界，把该行起到下一行标签前的全部元素包进
-     <g class="row" style="animation-delay: Xs">，X = 行序号(0 起) × 0.03s。
-     标题/列头(顶部) 与 图例/尾部说明(底部) 包进 <g class="head">；
-     背景 <rect> 保持顶层（始终可见，白底白底无视觉差异）。
-  2. <svg> 后注入 <style>：
-     .row/.head 入场（opacity 0→1 + translateY 6px，0.4s，forwards，最终态与源一致）；
-     .chg 对 0x1D 行 khead_20b_sel[4:0] 单元格（1027v1 变更；rect + 两个 text）轻微脉冲
-     （2s ease-in-out，4s 起，infinite，只动 opacity 不动配色）。
-  3. 纯 CSS（SVG 内 <style> + @keyframes），无 <script>、无外部资源，<img> 可播放。
-  4. width/height/viewBox 与源一致。
-
-用法:  python make_anim_reset.py   （幂等：总是从源重新生成）
-"""
-import os
-import re
 import sys
 import xml.etree.ElementTree as ET
 from collections import Counter
+from pathlib import Path
+import re
+import os
 
-SRC = r"E:\project\team-share-public\hk1v11-lc-cpuwr-history\images\reset_domain_address_map.svg"
-DST = r"E:\project\team-share-public\hk1v11-lc-cpuwr-history\images\anim\reset_domain_address_map.svg"
+BASE = Path("E:/project/team-share-public/hk1v11-lc-cpuwr-history/images")
+SRC = BASE / "reset_domain_address_map.svg"
+OUT = BASE / "anim" / "reset_domain_address_map.svg"
 
-ROW_LABEL_X = "158"          # 行标签列 x 坐标
-CHG_FIELD = "khead_20b_sel[4:0]"   # 变更单元格字段名（1027v1）
-CHG_ROW_PREFIX = "0x1D"            # 变更所在行
-CHG_ROW_NEXT = "0x1E"              # 变更行的下一行标签
-LEGEND_TEXT = "图例"
-ROW_DELAY_S = 0.03
+# MOTION_KIT.md §2 — Motion Kit CSS v4（逐字嵌入，不增删类）
+KIT_CSS = "\n".join([
+    ".row{opacity:0;animation:rowIn .55s cubic-bezier(.22,.7,.3,1) forwards}",
+    ".head{opacity:0;animation:rowIn .55s cubic-bezier(.22,.7,.3,1) forwards}",
+    "@keyframes rowIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}",
+    ".draw{stroke-dasharray:100;animation:drawIn .6s cubic-bezier(.4,0,.2,1) forwards}",
+    "@keyframes drawIn{from{stroke-dashoffset:100}to{stroke-dashoffset:0}}",
+    ".fade{opacity:0;animation:fadeIn .6s ease forwards}",
+    "@keyframes fadeIn{to{opacity:1}}",
+    ".flowdot{fill:none;stroke-linecap:round;stroke-dasharray:9 91;stroke-width:3.5;animation:flow 1.5s linear infinite}",
+    "@keyframes flow{to{stroke-dashoffset:-100}}",
+    ".flowtail{fill:none;stroke-linecap:round;stroke-dasharray:4 96;stroke-width:8;opacity:.25;animation:flow 1.5s linear infinite}",
+    ".pulse{transform-box:fill-box;transform-origin:center;animation:pulse 2.8s ease-in-out infinite}",
+    "@keyframes pulse{0%,100%{transform:scale(1);filter:drop-shadow(0 0 0 rgba(180,83,9,0))}50%{transform:scale(1.03);filter:drop-shadow(0 0 12px rgba(180,83,9,.8))}}",
+    ".pulse-t{transform-box:fill-box;transform-origin:center;animation:pulseT 2.8s ease-in-out infinite}",
+    "@keyframes pulseT{0%,100%{transform:scale(1);filter:drop-shadow(0 0 0 rgba(14,116,144,0))}50%{transform:scale(1.03);filter:drop-shadow(0 0 12px rgba(14,116,144,.8))}}",
+    ".pulse-b{transform-box:fill-box;transform-origin:center;animation:pulseB 2.8s ease-in-out infinite}",
+    "@keyframes pulseB{0%,100%{transform:scale(1);filter:drop-shadow(0 0 0 rgba(29,78,216,0))}50%{transform:scale(1.03);filter:drop-shadow(0 0 12px rgba(29,78,216,.8))}}",
+    ".sweepband{opacity:.85;animation:sweepMove 8s linear infinite}",
+    "@keyframes sweepMove{to{transform:translateX(var(--sweepP,160px))}}",
+    ".dashgrow{stroke-dasharray:7 5;animation:dashgrow 2.6s linear infinite}",
+    "@keyframes dashgrow{from{stroke-dashoffset:72}to{stroke-dashoffset:0}}",
+    ".march{animation:march 1.5s linear infinite}",
+    "@keyframes march{to{stroke-dashoffset:-16}}",
+    ".cellwave{transform-box:fill-box;transform-origin:center;animation:wave 2.6s ease-in-out infinite}",
+    "@keyframes wave{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.72;transform:scale(1.01)}}",
+    ".breathe{animation:br 3.2s ease-in-out infinite}",
+    "@keyframes br{0%,100%{opacity:1}50%{opacity:.55}}",
+    ".step{transform-box:fill-box;transform-origin:center;animation:stepLit 6s ease-in-out infinite}",
+    "@keyframes stepLit{0%,16%{filter:drop-shadow(0 0 9px rgba(29,78,216,.85));transform:scale(1.02)}24%,92%{filter:drop-shadow(0 0 0 rgba(29,78,216,0));transform:none}100%{filter:drop-shadow(0 0 9px rgba(29,78,216,.85));transform:scale(1.02)}}",
+    "@media (prefers-reduced-motion:reduce){*{animation:none!important}.row,.head,.fade{opacity:1!important}.flowdot,.flowtail,.sweepband{display:none!important}}",
+])
 
-STYLE_BLOCK = [
-    "<style>",
-    ".row { opacity:0; animation: rowIn 0.4s ease forwards; }",
-    "@keyframes rowIn { from { opacity:0; transform: translateY(6px); } to { opacity:1; transform: none; } }",
-    ".head { opacity:0; animation: rowIn 0.4s ease forwards; }",
-    ".chg { animation: chgPulse 2s ease-in-out 4s infinite; }",
-    "@keyframes chgPulse { 0%,100% { opacity:1; } 50% { opacity:0.45; } }",
-    "</style>",
-]
+LABEL_X = "158"        # 行标签列 x
+ROW_STEP = 0.03        # 入场递进（51 行）
+WAVE_STEP = 0.2        # 行波相位步进
+ROW_PULSES = {"0x30": ("pulse-t", "-2.1s")}
+CELL_PULSES = {"0x1D": ("khead_20b_sel[4:0]", "pulse", "-0.7s")}
 
 
-def get_open_tag(line):
-    """返回单行元素的 (标签名, 属性dict)；非元素行返回 (None, None)。"""
+def attrs_of(line):
     m = re.match(r'^\s*<([A-Za-z][\w-]*)((?:\s+[\w-]+="[^"]*")*)\s*/?>', line)
     if not m:
         return None, None
     return m.group(1), dict(re.findall(r'([\w-]+)="([^"]*)"', m.group(2)))
 
 
-def get_text_content(line):
-    """返回单行 <text> 的文本内容；非 text 行返回 None。"""
+def text_of(line):
     m = re.match(r'^\s*<text\b[^>]*>(.*?)</text>\s*$', line)
     return m.group(1) if m else None
 
 
-def is_row_label(line):
-    """行标签: <text x="158" ... text-anchor="end" ... font-weight="600">0xNN (n)</text>
-    或波段标签 "0xNN ~ 0xNN (n ~ n)"（同样的属性形态）。"""
-    tag, attrs = get_open_tag(line)
-    return (tag == "text"
-            and attrs.get("x") == ROW_LABEL_X
-            and attrs.get("text-anchor") == "end"
-            and attrs.get("font-weight") == "600")
-
-
-def transform(src, dst):
-    with open(src, "r", encoding="utf-8", newline="") as f:
-        raw = f.read()
-    EOL = "\r\n" if "\r\n" in raw else "\n"
-    ends_with_eol = raw.endswith(EOL)
-    lines = raw.split(EOL)
-    if ends_with_eol:
+def build():
+    raw = SRC.read_text(encoding="utf-8", newline="")
+    eol = "\r\n" if "\r\n" in raw else "\n"
+    tail_nl = raw.endswith(eol)
+    lines = raw.split(eol)
+    if tail_nl:
         lines = lines[:-1]
+    assert lines[0].startswith("<?xml"), "line1 应为 XML 声明"
+    assert lines[1].lstrip().startswith("<svg"), "line2 应为 <svg>"
+    assert lines[-1].strip() == "</svg>", "末行应为 </svg>"
+    end = len(lines) - 1
+    assert attrs_of(lines[2])[0] == "rect", "line3 应为背景 rect"
 
-    svg_open_idx = next(i for i, l in enumerate(lines) if l.lstrip().startswith("<svg"))
-    svg_close_idx = next(i for i, l in enumerate(lines) if l.strip() == "</svg>")
+    def is_row_label(line):
+        tag, at = attrs_of(line)
+        return (tag == "text" and at.get("x") == LABEL_X
+                and at.get("text-anchor") == "end" and at.get("font-weight") == "600"
+                and (text_of(line) or "").startswith("0x"))
 
-    row_idxs = [i for i, l in enumerate(lines) if is_row_label(l)]
-    if not row_idxs or row_idxs[0] <= svg_open_idx:
-        raise ValueError("row labels not found / misordered")
-    if not all(svg_open_idx < i < svg_close_idx for i in row_idxs):
-        raise ValueError("row label outside <svg> body")
+    row_starts = [i for i in range(3, end) if is_row_label(lines[i])]
+    assert len(row_starts) == 51, f"应 51 个寄存器行，实际 {len(row_starts)}"
+    legend = next(i for i in range(row_starts[-1] + 1, end) if text_of(lines[i]) == "图例")
 
-    legend_start = next(
-        (i for i in range(row_idxs[-1] + 1, svg_close_idx)
-         if get_text_content(lines[i]) == LEGEND_TEXT),
-        None,
-    )
-    if legend_start is None:
-        raise ValueError("legend (图例) not found after last row")
-
-    # ---- 定位 0x1D 行的 khead_20b_sel[4:0] 单元格（1027v1 变更；rect + 两个 text，连续三行）----
-    i2f = next(i for i in row_idxs if (get_text_content(lines[i]) or "").startswith(CHG_ROW_PREFIX))
-    i30 = next(i for i in row_idxs if (get_text_content(lines[i]) or "").startswith(CHG_ROW_NEXT))
-    if not i2f < i30:
-        raise ValueError("0x1D / 0x1E rows not in order")
-    t = next((i for i in range(i2f + 1, i30)
-              if CHG_FIELD in (get_text_content(lines[i]) or "")), None)
-    if t is None:
-        raise ValueError(f"{CHG_FIELD} cell not found in {CHG_ROW_PREFIX} row")
-    if get_open_tag(lines[t - 1])[0] != "rect":
-        raise ValueError("cell <rect> not found before khead_20b_sel text")
-    if get_open_tag(lines[t + 1])[0] != "text":
-        raise ValueError("cell default <text> not found after khead_20b_sel text")
-    chg = (t - 1, t, t + 1)
-
-    # ---- 分区: 顶部 head / N 个 row / 底部 head；背景 rect 保持顶层 ----
-    bg_idx = svg_open_idx + 1
-    if get_open_tag(lines[bg_idx])[0] != "rect":
-        raise ValueError("expected background <rect> right after <svg>")
-    top_head = (bg_idx + 1, row_idxs[0] - 1)
+    # 脉冲定位：行级（标签前缀）与单元格级（rect+2text 三连）
     rows = []
-    for k, ri in enumerate(row_idxs):
-        end = row_idxs[k + 1] - 1 if k + 1 < len(row_idxs) else legend_start - 1
-        rows.append((k, ri, end))
-    bottom_head = (legend_start, svg_close_idx - 1)
+    for k, s in enumerate(row_starts):
+        e = row_starts[k + 1] if k + 1 < len(row_starts) else legend
+        label = text_of(lines[s])
+        prefix = label.split(" ")[0]
+        rows.append((s, e, prefix))
+    row_pulse_map = {}
+    for s, e, prefix in rows:
+        if prefix in ROW_PULSES:
+            row_pulse_map[(s, e)] = ROW_PULSES[prefix]
+    cell_pulse_map = {}
+    for s, e, prefix in rows:
+        if prefix in CELL_PULSES:
+            field, kind, delay = CELL_PULSES[prefix]
+            t = next((i for i in range(s + 1, e) if field in (text_of(lines[i]) or "")), None)
+            assert t is not None, f"{prefix} 行未找到 {field}"
+            assert attrs_of(lines[t - 1])[0] == "rect", f"{field} 前应为 rect"
+            assert attrs_of(lines[t + 1])[0] == "text", f"{field} 后应为 value text"
+            cell_pulse_map[t - 1] = (kind, delay, t + 1)
+    assert len(row_pulse_map) == 1 and len(cell_pulse_map) == 1, "脉冲定位数异常"
 
-    # 连续性校验：覆盖 [bg_idx+1, svg_close_idx-1]，无缺口无重叠
-    prev = top_head[0] - 1
-    for s, e in [top_head] + [(r[1], r[2]) for r in rows] + [bottom_head]:
-        if s != prev + 1 or s > e:
-            raise ValueError(f"section gap/overlap at [{s},{e}]")
-        prev = e
-    if prev != svg_close_idx - 1:
-        raise ValueError("sections do not reach </svg>")
-    if not (rows[0][1] <= chg[0] and chg[2] <= rows[0][2] or
-            any(s <= chg[0] and chg[2] <= e for k, s, e in rows
-                if s <= i2f <= e)):
-        raise ValueError("chg cell outside the 0x2F row section")
+    # ---- 组装 ----
+    o = []
+    o.append(lines[0])                              # <?xml?>
+    o.append(lines[1])                              # <svg ...>
+    o.append("<style>\n" + KIT_CSS + "\n</style>")  # kit CSS（§2 逐字）
+    o.append(lines[2])                              # 白底 rect
 
-    out = []
-    out.extend(lines[:svg_open_idx + 1])   # <?xml?> + <svg ...>
-    out.extend(STYLE_BLOCK)
-    out.append(lines[bg_idx])              # 背景 rect（顶层）
+    o.append('<g class="head">')                    # 标题 + 位号列头 (0)
+    o.extend(lines[3:row_starts[0]])
+    o.append("</g>")
 
-    def emit_head(s, e):
-        out.append('<g class="head">')
-        out.extend(lines[s:e + 1])
-        out.append("</g>")
-
-    def emit_row(rownum, s, e):
-        out.append(f'<g class="row" style="animation-delay: {rownum * ROW_DELAY_S:.2f}s">')
+    n = len(rows)
+    wave_dur = round(WAVE_STEP * n, 1)              # 6.0s
+    for k, (s, e, _) in enumerate(rows):
+        delay = round(0.15 + ROW_STEP * k, 2)
+        o.append(f'<g class="row" style="animation-delay:{delay}s">')
+        if (s, e) in row_pulse_map:
+            kind, pd = row_pulse_map[(s, e)]
+            o.append(f'<g class="{kind}" style="animation-delay:{pd}">')
+        ph = WAVE_STEP * k
+        wd = f"0s" if ph == 0 else f"-{ph:.1f}s"
+        o.append(f'<g class="cellwave" style="animation-duration:{wave_dur}s;animation-delay:{wd}">')
         i = s
-        while i <= e:
-            if i == chg[0]:
-                out.append('<g class="chg">')
-            out.append(lines[i])
-            if i == chg[2]:
-                out.append("</g>")
+        while i < e:
+            if i in cell_pulse_map:
+                kind, pd, stop = cell_pulse_map[i]
+                o.append(f'<g class="{kind}" style="animation-delay:{pd}">')
+                o.extend(lines[i:stop + 1])
+                o.append("</g>")
+                i = stop + 1
+                continue
+            o.append(lines[i])
             i += 1
-        out.append("</g>")
+        o.append("</g>")
+        if (s, e) in row_pulse_map:
+            o.append("</g>")
+        o.append("</g>")
 
-    emit_head(*top_head)
-    for rownum, s, e in rows:
-        emit_row(rownum, s, e)
-    emit_head(*bottom_head)
-    out.extend(lines[svg_close_idx:])      # </svg>
+    o.append('<g class="head" style="animation-delay:1.5s">')  # 图例 + 脚注
+    o.extend(lines[legend:end])
+    o.append("</g>")
 
-    result = EOL.join(out) + (EOL if ends_with_eol else "")
-    os.makedirs(os.path.dirname(dst), exist_ok=True)
-    with open(dst, "w", encoding="utf-8", newline="") as f:
-        f.write(result)
-    return result, len(row_idxs)
-
-
-def _all_text_contents(path):
-    root = ET.parse(path).getroot()
-    c = Counter()
-    for el in root.iter():
-        tag = el.tag
-        if tag == "text" or (isinstance(tag, str) and tag.endswith("}text")):
-            c[el.text if el.text is not None else ""] += 1
-    return c
+    o.append(lines[end])  # </svg>
+    text = eol.join(o)
+    if tail_nl:
+        text += eol
+    OUT.parent.mkdir(parents=True, exist_ok=True)
+    OUT.write_text(text, encoding="utf-8", newline="")
+    return {"cellwave": text.count('class="cellwave"'),
+            "pulse": len(re.findall(r'class="pulse(-[tb])?"', text)),
+            "row": text.count('class="row"'), "head": text.count('class="head"')}
 
 
-def self_check(src, dst):
-    report = {}
+NS = "{http://www.w3.org/2000/svg}"
+
+
+def check():
+    res = {}
     try:
-        ET.parse(dst)
-        report["xml"] = ("OK", "well-formed")
-    except ET.ParseError as ex:
-        report["xml"] = ("NG", str(ex))
+        ET.parse(str(OUT))
+        res["xml"] = "OK"
+    except ET.ParseError as e:
+        res["xml"] = f"NG {e}"
+
+    def texts(p):
+        return Counter(el.text or "" for el in ET.parse(str(p)).getroot().iter(f"{NS}text"))
+
     try:
-        a, b = _all_text_contents(src), _all_text_contents(dst)
-        if a == b:
-            report["text"] = ("OK", f"multiset equal ({sum(a.values())} <text> elements)")
-        else:
-            report["text"] = ("NG", f"only_src={dict(a - b)} only_dst={dict(b - a)}")
-    except ET.ParseError as ex:
-        report["text"] = ("NG", f"parse error: {ex}")
-    if os.path.exists(dst) and os.path.getsize(dst) > 1024:
-        report["size"] = ("OK", f"{os.path.getsize(dst)} bytes (> 1 KB)")
-    else:
-        report["size"] = ("NG", "missing or <= 1 KB")
-    return report
+        res["text"] = "OK" if texts(SRC) == texts(OUT) else "NG"
+    except Exception as e:
+        res["text"] = f"NG {e}"
+
+    data = OUT.read_text(encoding="utf-8")
+    res["noscript"] = "OK" if "<script" not in data else "NG"
+    res["nosmil"] = "OK" if "<animate" not in data else "NG"
+    res["keyframes"] = "OK" if data.count("@keyframes") >= 10 else "NG"
+
+    def svgtag(p):
+        m = re.search(r"<svg[^>]*>", Path(p).read_text(encoding="utf-8"))
+        return m.group(0) if m else ""
+
+    res["svgtag"] = "OK" if svgtag(SRC) == svgtag(OUT) else "NG"
+    res["size"] = "OK" if os.path.getsize(OUT) > 1024 else "NG"
+    res["kit_train"] = "OK" if re.search(r"\.flowdot\{[^}]*stroke-width:3\.5", data) else "NG"
+    res["kit_pulse"] = "OK" if re.search(r"\.pulse(-[tb])?\{[^}]*transform-box:fill-box", data) else "NG"
+    res["kit_sweep"] = "OK" if "var(--sweepP" in data else "NG"
+    rm = re.search(r"prefers-reduced-motion.*?flowdot,.flowtail,.sweepband\{display:none!important\}", data, re.S)
+    res["rmfix"] = "OK" if (rm and re.search(r"prefers-reduced-motion.*?opacity:1!important", data, re.S)) else "NG"
+    res["no_glow"] = "OK" if not re.search(r'class="[^"]*glow-[bgo]', data) else "NG"
+    fam = {"train": len(re.findall(r'class="[^"]*(flowdot|flowtail)', data)),
+           "pulse": len(re.findall(r'class="[^"]*pulse(-[tb])?', data)),
+           "sweep": len(re.findall(r'class="[^"]*sweepband', data)),
+           "grow": len(re.findall(r'class="[^"]*dashgrow', data)),
+           "wave": len(re.findall(r'class="[^"]*cellwave', data)),
+           "step": len(re.findall(r'class="[^"]*step"', data))}
+    n_fam = sum(1 for v in fam.values() if v > 0)
+    res["steady>=2fam"] = f"OK({n_fam})" if n_fam >= 2 else f"NG({n_fam})"
+    return res
 
 
 def main():
-    result, n_rows = transform(SRC, DST)
-    # 额外不变量自检（不进入报告口径，但失败即报错）
-    assert "<script" not in result, "must not contain <script>"
-    assert "http://" not in result.replace("http://www.w3.org/2000/svg", ""), "external resource?"
-    assert result.count('<g class="chg">') == 1, "exactly one chg group expected"
-    assert result.count("<svg") == 1
-    report = self_check(SRC, DST)
-    print(f"src : {SRC}")
-    print(f"dst : {DST}")
-    print(f"rows: {n_rows}  (delays 0.00s .. { (n_rows - 1) * ROW_DELAY_S:.2f}s)")
-    for key in ("xml", "text", "size"):
-        status, msg = report[key]
-        print(f"{key:4}: {status}  {msg}")
-    ok = all(s == "OK" for s, _ in report.values())
-    print("RESULT:", "ALL OK" if ok else "FAILED")
-    return 0 if ok else 1
+    stats = build()
+    res = check()
+    print("[make_anim_reset v4]", stats)
+    ok = True
+    for k, v in res.items():
+        print(f"  {k}: {v}")
+        ok &= (v == "OK" or v.startswith("OK("))
+    print("  RESULT:", "PASS" if ok else "FAIL")
+    sys.exit(0 if ok else 1)
 
 
 if __name__ == "__main__":
-    sys.exit(main())
-
-# ymzhu 2026-10-27 10:42
+    main()
+# ymzhu 2026-10-28 17:36

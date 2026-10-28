@@ -1,200 +1,140 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""make_anim_spec_frame_flow.py — v2（Motion Kit v2 · §4.8 spec_frame_flow）
+"""make_anim_spec_frame_flow.py  (Motion Kit v4 整体重写)
 
-整体重写 v1。规格（kit §4.8）：
-- 行序（入场）：标题(0) → Clock 条(0.15) → LSP 条(0.35) → Frame c 行(0.55)
-  → Active 4 行(0.7/0.85/1.0/1.15) → c+1 行(1.3) → VBK 2 行(1.45/1.6)
-  → 括号+省略(1.75)。一次性总时长 ≤2.5s。
-- cellwave（本图主角·帧滚动波）：所有"行"（Frame c、4 个 Active、c+1、2 个 VBK）
-  整行组包 <g class="cellwave">，自上而下 delay 0.18s 递增，周期 4.5s（内联 duration）。
-- glow（2）：LSP 条（glow-b）；"Config Line · Frame c+1 配置"行盒（glow-g，0717 修复点，delay 1.4s）。
-- 不加 flow/breathe（行波已是主角）；本图无实线箭头 → 无 draw。
-铁律：源 SVG 只读；数据/几何/颜色零改动；纯 CSS 无 script；kit CSS 逐字嵌入；
-reduced-motion 用 kit 给定媒体块；确定性幂等。
+MOTION_KIT.md §6.4 规格（1200x700 420b 帧数据流）：
+- 入场编排 §5：标题(0) → Clock(0.15) → LSP(0.35) → Frame c(0.55)
+  → Active 4 行(0.70/0.85/1.00/1.15) → c+1(1.30) → VBK(1.45/1.60) → 括号(1.75)。
+  一次性总长 1.75+0.6=2.35s ≤2.5s。本图无箭头 → 无 draw（校验软项）。
+- 稳态族（2 族，§6.4 明示不加列车/breathe/sweep）：
+  * 行波 cellwave（主角）：所有"行"（Frame c、Active line1/line2/last、c+1、
+    VBK×2 共 7 行组）整行组包 cellwave，自上而下 0.18s 递增，
+    周期 4.5s（内联 duration）= 帧滚动波。
+  * 脉冲 pulse："Config Line · Frame c+1" 行盒 pulse-t(-0.7s，0717 修复点)；
+    LSP 条 pulse-b(-1.4s)。
+- kit <style> 按铁律 §0.5 放在源图第 2 行字体 <style> 的下一行（修 v2 顺序）。
+- 源图为 CRLF 行尾、末行 </svg> 无换行：原样保留。
+铁律：源 SVG 只读；text/几何/颜色零改动；纯 CSS in-SVG；kit CSS §2 逐字；
+保留源 defs + 背景 rect + 字体 style；reduced-motion 块原样；
+确定性幂等；零第三方依赖。
 """
-import os
-import re
-import sys
-import xml.etree.ElementTree as ET
-from collections import Counter
 from pathlib import Path
 
 BASE = Path(r"E:\project\team-share-public\hk1v11-longcode-420b-verification")
 SRC = BASE / "spec_frame_flow.svg"
 OUT = BASE / "anim" / "spec_frame_flow.svg"
-NAME = "make_anim_spec_frame_flow"
 
-# —— Motion Kit v2 CSS（MOTION_KIT.md §2 逐字）——
-KIT_RULES = [
-    ".row{opacity:0;animation:rowIn .5s cubic-bezier(.22,.7,.3,1) forwards}",
-    ".head{opacity:0;animation:rowIn .5s cubic-bezier(.22,.7,.3,1) forwards}",
-    "@keyframes rowIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}",
-    ".draw{stroke-dasharray:100;animation:drawIn .55s ease-out forwards}",
-    "@keyframes drawIn{from{stroke-dashoffset:100}to{stroke-dashoffset:0}}",
-    ".fade{opacity:0;animation:fadeIn .6s ease forwards}",
-    "@keyframes fadeIn{to{opacity:1}}",
-    ".fademarch{opacity:0;animation:fadeIn .6s ease forwards,march 1.8s linear infinite}",
-    ".breathe{animation:br 3.2s ease-in-out infinite}",
-    "@keyframes br{0%,100%{opacity:1}50%{opacity:.55}}",
-    ".cellwave{animation:wave 3s ease-in-out infinite}",
-    "@keyframes wave{0%,100%{opacity:1}50%{opacity:.68}}",
-    ".march{animation:march 1.8s linear infinite}",
-    "@keyframes march{to{stroke-dashoffset:-16}}",
-    ".flowdot{fill:none;stroke-linecap:round;stroke-dasharray:12 88;animation:flow 2s linear infinite}",
-    "@keyframes flow{to{stroke-dashoffset:-100}}",
-    ".glow-b{animation:glowB 2.8s ease-in-out infinite}",
-    "@keyframes glowB{0%,100%{filter:drop-shadow(0 0 0 rgba(37,99,235,0))}50%{filter:drop-shadow(0 0 6px rgba(37,99,235,.85))}}",
-    ".glow-g{animation:glowG 2.8s ease-in-out infinite}",
-    "@keyframes glowG{0%,100%{filter:drop-shadow(0 0 0 rgba(22,163,74,0))}50%{filter:drop-shadow(0 0 6px rgba(22,163,74,.85))}}",
-    ".glow-o{animation:glowO 2.8s ease-in-out infinite}",
-    "@keyframes glowO{0%,100%{filter:drop-shadow(0 0 0 rgba(217,119,6,0))}50%{filter:drop-shadow(0 0 6px rgba(217,119,6,.85))}}",
-    ".step{animation:stepLit 6s ease-in-out infinite}",
-    "@keyframes stepLit{0%,16%{filter:drop-shadow(0 0 7px rgba(37,99,235,.9))}24%,92%{filter:drop-shadow(0 0 0 rgba(37,99,235,0))}100%{filter:drop-shadow(0 0 7px rgba(37,99,235,.9))}}",
-    "@media (prefers-reduced-motion:reduce){*{animation:none!important}.row,.head,.fade,.fademarch{opacity:1!important}.flowdot{display:none!important}}",
-]
-STYLE = "<style>\n" + "\n".join(KIT_RULES) + "\n</style>"
+# ---- Motion Kit v4 CSS（MOTION_KIT.md §2 逐字，勿改）----
+KIT_CSS = """<style>
+.row{opacity:0;animation:rowIn .55s cubic-bezier(.22,.7,.3,1) forwards}
+.head{opacity:0;animation:rowIn .55s cubic-bezier(.22,.7,.3,1) forwards}
+@keyframes rowIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.draw{stroke-dasharray:100;animation:drawIn .6s cubic-bezier(.4,0,.2,1) forwards}
+@keyframes drawIn{from{stroke-dashoffset:100}to{stroke-dashoffset:0}}
+.fade{opacity:0;animation:fadeIn .6s ease forwards}
+@keyframes fadeIn{to{opacity:1}}
+.flowdot{fill:none;stroke-linecap:round;stroke-dasharray:9 91;stroke-width:3.5;animation:flow 1.5s linear infinite}
+@keyframes flow{to{stroke-dashoffset:-100}}
+.flowtail{fill:none;stroke-linecap:round;stroke-dasharray:4 96;stroke-width:8;opacity:.25;animation:flow 1.5s linear infinite}
+.pulse{transform-box:fill-box;transform-origin:center;animation:pulse 2.8s ease-in-out infinite}
+@keyframes pulse{0%,100%{transform:scale(1);filter:drop-shadow(0 0 0 rgba(180,83,9,0))}50%{transform:scale(1.03);filter:drop-shadow(0 0 12px rgba(180,83,9,.8))}}
+.pulse-t{transform-box:fill-box;transform-origin:center;animation:pulseT 2.8s ease-in-out infinite}
+@keyframes pulseT{0%,100%{transform:scale(1);filter:drop-shadow(0 0 0 rgba(14,116,144,0))}50%{transform:scale(1.03);filter:drop-shadow(0 0 12px rgba(14,116,144,.8))}}
+.pulse-b{transform-box:fill-box;transform-origin:center;animation:pulseB 2.8s ease-in-out infinite}
+@keyframes pulseB{0%,100%{transform:scale(1);filter:drop-shadow(0 0 0 rgba(29,78,216,0))}50%{transform:scale(1.03);filter:drop-shadow(0 0 12px rgba(29,78,216,.8))}}
+.sweepband{opacity:.85;animation:sweepMove 8s linear infinite}
+@keyframes sweepMove{to{transform:translateX(var(--sweepP,160px))}}
+.dashgrow{stroke-dasharray:7 5;animation:dashgrow 2.6s linear infinite}
+@keyframes dashgrow{from{stroke-dashoffset:72}to{stroke-dashoffset:0}}
+.march{animation:march 1.5s linear infinite}
+@keyframes march{to{stroke-dashoffset:-16}}
+.cellwave{transform-box:fill-box;transform-origin:center;animation:wave 2.6s ease-in-out infinite}
+@keyframes wave{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.72;transform:scale(1.01)}}
+.breathe{animation:br 3.2s ease-in-out infinite}
+@keyframes br{0%,100%{opacity:1}50%{opacity:.55}}
+.step{transform-box:fill-box;transform-origin:center;animation:stepLit 6s ease-in-out infinite}
+@keyframes stepLit{0%,16%{filter:drop-shadow(0 0 9px rgba(29,78,216,.85));transform:scale(1.02)}24%,92%{filter:drop-shadow(0 0 0 rgba(29,78,216,0));transform:none}100%{filter:drop-shadow(0 0 9px rgba(29,78,216,.85));transform:scale(1.02)}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}.row,.head,.fade{opacity:1!important}.flowdot,.flowtail,.sweepband{display:none!important}}
+</style>"""
 
-CW_DUR = 4.5  # 帧滚动波周期（kit §4.8）
+CW_DUR = 4.5  # 帧滚动波周期（§6.4 指定，内联 duration）
 
-
-def cont(*subs):
-    def pred(line):
-        return all(s in line for s in subs)
-    return pred
-
-
-# 顺序单元：start/end 谓词 + 入场 delay + cellwave delay（None=不包波） + glow（可选）
+# 顺序单元：(起, 止) 0 基、入场 delay、cellwave delay（None=不包波）、pulse(类, delay)
 UNITS = [
-    dict(start=cont("420b 帧数据流"), end=cont("LSP 训练 →"), row=None, head=True),
-    dict(start=cont('<rect x="210" y="100"'), end=cont("Clock training pattern"), row=0.15),
-    dict(start=cont('<rect x="210" y="146"'), end=cont("LSP（K2"), row=0.35,
-         glow=("glow-b", None)),
-    dict(start=cont('<rect x="210" y="192"'), end=cont("Config Line（Frame c 配置）"),
-         row=0.55, cw=0.00),
-    dict(start=cont('<rect x="210" y="238"'), end=cont("H blanking"), row=0.70, cw=0.18),
-    dict(start=cont('<rect x="210" y="284"'), end=cont('y="356"'), row=0.85, cw=0.36),
-    dict(start=cont('<rect x="210" y="364"'), end=cont("H blanking"), row=1.00, cw=0.54),
-    dict(start=cont("M 194 242"), end=cont(">Video Active<"), row=1.15),
-    dict(start=cont('<rect x="202" y="412"'), end=cont("0717v1：单独成行"), row=1.30,
-         cw=0.72, glow=("glow-g", 1.4)),
-    dict(start=cont('<rect x="210" y="476"'), end=cont("H blanking"), row=1.45, cw=0.90),
-    dict(start=cont('<rect x="210" y="522"'), end=cont("H blanking"), row=1.60, cw=1.08),
-    dict(start=cont('y="592"'), end=cont(">V blanking<"), row=1.75),
+    ((10, 12), 0.00, None, None),            # 标题 + 副标题（head）
+    ((12, 14), 0.15, None, None),            # Clock training 条
+    ((14, 16), 0.35, None, ("pulse-b", -1.4)),   # LSP 条（脉冲）
+    ((16, 27), 0.55, 0.00, None),            # Config Line（Frame c）
+    ((27, 37), 0.70, 0.18, None),            # Video Active line1
+    ((37, 48), 0.85, 0.36, None),            # Video Active line2 + ……
+    ((48, 58), 1.00, 0.54, None),            # Video Active last line
+    ((58, 60), 1.15, None, None),            # Video Active 括号 + 竖排标签
+    ((60, 73), 1.30, 0.72, ("pulse-t", -0.7)),   # Config Line c+1（0717 修复点）
+    ((73, 83), 1.45, 0.90, None),            # V blanking line1
+    ((83, 93), 1.60, 1.08, None),            # V blanking line2
+    ((93, 96), 1.75, None, None),            # …… + V blanking 括号 + 竖排标签
 ]
-
-
-def find_idx(lines, pred, lo, unique=True):
-    hits = [i for i in range(lo, len(lines)) if pred(lines[i])]
-    if unique:
-        assert len(hits) == 1, f"期望唯一命中 (lo={lo})，实际 {len(hits)}: {hits}"
-    assert hits, f"无命中 (lo={lo})"
-    return hits[0]
 
 
 def build():
     raw = SRC.read_text(encoding="utf-8", newline="")
     eol = "\r\n" if "\r\n" in raw else "\n"
-    lines = raw.split(eol)
     tail_nl = raw.endswith(eol)
+    lines = raw.split(eol)
+    if tail_nl:
+        lines.pop()
 
+    # ---- 结构断言（0 基）----
     assert lines[0].startswith("<svg"), "line1 应为 <svg>"
-    assert lines[1].lstrip().startswith("<style"), "line2 应为字体 <style>"
+    assert lines[1].lstrip().startswith("<style>text"), "line2 应为字体 <style>"
+    assert lines[2].strip() == "<defs>", "line3 应为 <defs>"
+    assert lines[8].strip() == "</defs>", "line9 应为 </defs>"
+    assert lines[9].lstrip().startswith('<rect width="1200"'), "line10 应为白底 rect"
     assert lines[-1].strip() == "</svg>", "末行应为 </svg>"
-    svg_end = len(lines) - 1
-    defs_end = next(i for i in range(2, svg_end) if lines[i].strip() == "</defs>")
-    bg = defs_end + 1
-    assert lines[bg].lstrip().startswith('<rect width="1200"'), "defs 后应为白底 rect"
-    content_start = bg + 1
+    assert len(lines) == 97, f"应为 97 行, 实得 {len(lines)}"
+    for i, needle in [(10, "420b 帧数据流"), (13, "Clock training pattern"), (15, "LSP（K2"),
+                      (26, "Config Line（Frame c 配置）"), (47, "……"), (59, ">Video Active<"),
+                      (72, "0717v1：单独成行"), (93, "……"), (95, ">V blanking<")]:
+        assert needle in lines[i], f"line{i+1} 应含 {needle!r}: {lines[i]}"
+    assert (UNITS[0][0][0], UNITS[-1][0][1]) == (10, 96), "单元应覆盖全部内容行"
+    for (a, b), _d, _c, _p in UNITS:
+        assert 10 <= a < b <= 96, f"单元范围越界: {(a, b)}"
 
-    out = [lines[0], STYLE.replace("\n", eol), lines[1]]
-    out.extend(lines[2:bg + 1])
+    # ---- 组装 ----
+    out = [lines[0], lines[1]] + KIT_CSS.split("\n")   # 铁律 §0.5：kit style 在字体 style 下一行
+    out.extend(lines[2:10])                            # 源 <defs> + 白底 rect
 
-    counts = {"row": 0, "head": 0, "cellwave": 0, "glow": 0}
-    cursor = content_start
-    for u in UNITS:
-        s = find_idx(lines, u["start"], cursor, unique=False)
-        e = find_idx(lines, u["end"], s, unique=False)
-        assert e >= s and s == cursor, f"单元范围/空隙异常: cursor={cursor} start={s} end={e}"
-        if u.get("head"):
+    counts = {"row": 0, "head": 0, "cellwave": 0, "pulse": 0}
+    for k, ((a, b), delay, cw, pulse) in enumerate(UNITS):
+        if k == 0:
+            cls = "head"
             counts["head"] += 1
-            out.append('<g class="head">')
+            out.append(f'<g class="{cls}">')
         else:
+            cls = "row"
             counts["row"] += 1
-            out.append(f'<g class="row" style="animation-delay:{u["row"]:.2f}s">')
-        glow = u.get("glow")
-        if u.get("cw") is not None:
+            out.append(f'<g class="{cls}" style="animation-delay:{delay:g}s">')
+        if cw is not None:
             counts["cellwave"] += 1
-            out.append(f'<g class="cellwave" style="animation-delay:{u["cw"]:.2f}s;'
-                       f'animation-duration:{CW_DUR}s">')
-        if glow:
-            counts["glow"] += 1
-            tag = f'<g class="{glow[0]}"'
-            tag += (f' style="animation-delay:{glow[1]:.1f}s">' if glow[1] is not None else '>')
-            out.append(tag)
-        out.extend(lines[s:e + 1])
-        if glow:
+            out.append(f'<g class="cellwave" style="animation-delay:{cw:g}s;'
+                       f'animation-duration:{CW_DUR:g}s">')
+        if pulse:
+            counts["pulse"] += 1
+            out.append(f'<g class="{pulse[0]}" style="animation-delay:{pulse[1]:g}s">')
+        out.extend(lines[a:b])
+        if pulse:
             out.append("</g>")
-        if u.get("cw") is not None:
+        if cw is not None:
             out.append("</g>")
         out.append("</g>")
-        cursor = e + 1
+    out.append(lines[96])                              # </svg>
 
-    assert cursor == svg_end, f"内容行未完全覆盖: cursor={cursor}, svg_end={svg_end}"
-    out.append(lines[svg_end])
-
-    text = eol.join(out)
-    if tail_nl:
-        text += eol
-    OUT.parent.mkdir(parents=True, exist_ok=True)
+    text = eol.join(out) + (eol if tail_nl else "")
     OUT.write_text(text, encoding="utf-8", newline="")
-    return counts
-
-
-NS = "{http://www.w3.org/2000/svg}"
-
-
-def check():
-    res = {}
-    try:
-        ET.parse(str(OUT))
-        res["xml"] = "OK"
-    except ET.ParseError as e:
-        res["xml"] = f"NG: {e}"
-
-    def texts(p):
-        return Counter(el.text or "" for el in ET.parse(str(p)).getroot().iter(f"{NS}text"))
-    try:
-        res["text"] = "OK" if texts(SRC) == texts(OUT) else "NG"
-    except Exception as e:
-        res["text"] = f"NG: {e}"
-
-    data = OUT.read_text(encoding="utf-8")
-    res["noscript"] = "OK" if "<script" not in data else "NG"
-    res["keyframes"] = "OK" if data.count("@keyframes") >= 4 else "NG"
-
-    def svgtag(p):
-        m = re.search(r"<svg[^>]*>", Path(p).read_text(encoding="utf-8"))
-        return m.group(0) if m else ""
-    res["svgtag"] = "OK" if svgtag(SRC) == svgtag(OUT) else "NG"
-    res["size"] = f"OK({os.path.getsize(OUT)})" if os.path.getsize(OUT) > 1024 else "NG"
-    res["rmfix"] = "OK" if (
-        re.search(r"prefers-reduced-motion.*?flowdot\{display:none!important\}", data, re.S)
-        and re.search(r"prefers-reduced-motion.*?opacity:1!important", data, re.S)) else "NG"
-    return res
-
-
-def main():
-    counts = build()
-    res = check()
-    print(f"[{NAME}] effects:", counts)
-    for k, v in res.items():
-        print(f"  {k}: {v}")
-    ok = all(str(v).startswith("OK") for v in res.values())
-    print("  RESULT:", "PASS" if ok else "FAIL")
-    sys.exit(0 if ok else 1)
+    print(f"written: {OUT} ({OUT.stat().st_size} bytes)  effects={counts}")
 
 
 if __name__ == "__main__":
-    main()
-# ymzhu 2026-10-27 10:38
+    build()
+
+# ymzhu 2026-10-28 16:55
