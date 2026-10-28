@@ -278,6 +278,7 @@
 </g>
 </g>
 <g class="row" style="animation-delay:1.19s">
+<g class="pulse" style="animation-delay:0s">
 <g class="cellwave" style="animation-duration:6.0s;animation-delay:-5.2s">
 <text x="170" y="1442" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x1F (31)</text>
 <text x="172" y="1476.0" text-anchor="end" font-size="12" fill="#64748b">chip_sel=0</text>
@@ -318,6 +319,7 @@
 <rect x="740" y="1500" width="159" height="40" fill="#bbf7d0" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="819.5" y="1517.0" text-anchor="middle" font-size="9.0" font-weight="500" fill="#1e293b">PWRC_PA[1:0]</text>
 <text x="819.5" y="1531.0" text-anchor="middle" font-size="8.0" fill="#64748b">2'b10</text>
+</g>
 </g>
 </g>
 <g class="row" style="animation-delay:1.27s">

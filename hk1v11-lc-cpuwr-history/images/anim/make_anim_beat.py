@@ -15,8 +15,12 @@ v4 规格（1240×848，0721v1 配置拍重组对照）：
   · 行波 cellwave×22 拍盒（主角）：左栏（0716 2B/拍，13 盒）按拍序
     0.35s/盒 错相位；右栏（0721 3B/拍，9 盒）同参数但整体相位 +0.175s
     = 两列波半拍错位（分组变化、节拍推进可视化）。周期 4.55s。
-  · 脉冲 pulse×2：绿色汇总框 pulse-t（深青，-2.1s）、橙色过渡依赖框
-    pulse（琥珀，-0.7s）——取代 v1 的低幅呼吸。
+  · 脉冲 pulse×3（v4.1 +1；相位 -0.7 / -1.4 / -2.1）：
+    绿色汇总框 pulse-t（深青，-2.1s）、橙色过渡依赖框 pulse（琥珀，-0.7s）
+    ——取代 v1 的低幅呼吸；v4.1 新增：右栏 3'h2 拍行（43/44/-- 灰格 =
+    CHPI_CONFIG_L0 未升 24bit 的过渡依赖证据行，与橙框同叙事）pulse-b
+    （蓝，-1.4s，嵌在该行 cellwave 之外）。本图源无虚线元素，故不引入
+    dashgrow（宁缺勿造）。
   · 语义扫光 sweepband×1：右栏（0721 新分组侧）区域 x[648,1224]
     y[176,762]，§4 配方（P=816，光带 t=0 藏于区域左外侧，8s 循环）；
     位于拍盒内容之下、白底之上（canonical 分层，缝隙间可见）。
@@ -163,9 +167,13 @@ def build():
     head((headers_i, divider_i + 1), 0.3)  # 两栏列头 + 中缝线
 
     # 行：0.45 起 0.05s 递进；拍盒嵌 cellwave（左/右栏两列波半拍错位）
+    # v4.1：右栏末行（3'h2，43/44/-- 过渡依赖证据行）外加 pulse-b
+    last_right = right_boxes[-1]
     for k, i in enumerate(rows):
         delay = round(0.45 + 0.05 * k, 2)
         o.append(f'<g class="row" style="animation-delay:{delay}s">')
+        if i == last_right:
+            o.append('<g class="pulse-b" style="animation-delay:-1.4s">')
         if i in left_boxes:
             ph = WAVE_STEP * left_boxes.index(i)
             o.append(f'<g class="cellwave" style="animation-duration:{WAVE_DUR}s;animation-delay:-{ph:.2f}s">')
@@ -178,6 +186,8 @@ def build():
             o.append("</g>")
         else:
             o.append(lines[i])
+        if i == last_right:
+            o.append("</g>")
         o.append("</g>")
 
     # 绿框(1.75, pulse-t) / 橙框(1.85, pulse)
@@ -265,4 +275,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-# ymzhu 2026-10-28 17:26
+# ymzhu 2026-10-28 19:20

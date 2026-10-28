@@ -9,7 +9,8 @@ MOTION_KIT.md §6.1 规格（1200x980 六面板架构图）：
 - 稳态族（3 族）：
   * 列车 train：蓝链 8 边（build_bit_stream→pad→encode→long_encoding→
     CHPI_KCODE_ALIGN + RX 内部链 4 边）每边 2 包 + flowtail 拖尾，0.7s/边，
-    按边序错 phase；绿链离线 4 边每边 2 包 + 拖尾，duration 1.4s（×2 慢速支路对比）。
+    按边序错 phase；绿链离线 4 边每边 3 包 + 拖尾（2026-10-28 晚动效加密：
+    2→3 包，更明显的"列车"），duration 1.4s（×2 慢速支路对比）。
   * 脉冲 pulse：TAP 徽章 pulse-b(-1.4s)；✅ verdict 盒 pulse-t(-0.7s)。
   * 生长 dashgrow：紫色"期望值/比对"虚线连接器 2 条（相位错开）。
 - march 辅助（不计数）：橙色配置虚线、绿色 tap 长虚线。
@@ -87,11 +88,12 @@ def get_d(line):
     return re.search(r'd="([^"]+)"', line).group(1)
 
 
-def train_edge(d, color, dur, phase, enter):
-    """一条边的数据列车：2 包（错半周期）+ 各自 flowtail 拖尾，外包 .fade 负责入场前隐藏。"""
+def train_edge(d, color, dur, phase, enter, packets=2):
+    """一条边的数据列车：packets 包（整周期均布 = 错相位）+ 各自 flowtail 拖尾，
+    外包 .fade 负责入场前隐藏。绿链离线 3 包（2026-10-28 加密）。"""
     out = [f'<g class="fade" style="animation-delay:{fmt(enter)}s">']
-    for p in (0, 1):
-        dl = phase - p * dur / 2.0
+    for p in range(packets):
+        dl = phase - p * dur / float(packets)
         out.append(f'<path class="flowtail" d="{d}" stroke="{color}" pathLength="100" '
                    f'style="animation-duration:{fmt(dur)}s;animation-delay:{fmt(dl)}s"/>')
         out.append(f'<path class="flowdot" d="{d}" stroke="{color}" pathLength="100" '
@@ -239,11 +241,12 @@ def build():
             out.append(ln)
             out.append("</g>")
 
-    # 数据列车：蓝链 8 边（0.7s，-0.1s/边错 phase）；绿链 4 边（1.4s 慢速，-0.2s/边）
+    # 数据列车：蓝链 8 边（0.7s，-0.1s/边错 phase）；绿链 4 边（1.4s 慢速，-0.2s/边，
+    # 每边 3 包 = 更明显的慢速列车）
     for k, (d, enter) in enumerate(zip(blue_edges, blue_enter)):
         out.extend(train_edge(d, "#2563eb", 0.7, -0.1 * k, enter))
     for k, (d, enter) in enumerate(zip(green_edges, green_enter)):
-        out.extend(train_edge(d, "#059669", 1.4, -0.2 * k, enter))
+        out.extend(train_edge(d, "#059669", 1.4, -0.2 * k, enter, packets=3))
 
     group((i_leg, len(lines) - 1), "head", 1.70)                    # 底部图例
     out.append("</svg>")
@@ -255,4 +258,4 @@ def build():
 if __name__ == "__main__":
     build()
 
-# ymzhu 2026-10-28 16:55
+# ymzhu 2026-10-28 19:06

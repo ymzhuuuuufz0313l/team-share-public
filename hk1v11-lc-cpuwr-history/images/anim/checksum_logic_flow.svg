@@ -118,7 +118,8 @@
 <g class="fade" style="animation-delay:1.3s">
 <path class="draw" pathLength="100" style="animation-delay:1.3s" d="M 620,202 L 620,236" stroke="#0e7490" stroke-width="2.5" fill="none" marker-end="url(#arr_0e7490)" stroke-linecap="round"/>
 <text x="630" y="226" font-size="11" font-family="Microsoft YaHei, PingFang SC, sans-serif" fill="#0e7490">xdata_a（逐拍送入 XOR）</text>
-<path class="flowdot" d="M 620,202 L 620,236" stroke="#0e7490" pathLength="100" style="animation-duration:2.4s;animation-delay:-0.1s"/>
+<path class="flowdot" d="M 620,202 L 620,236" stroke="#0e7490" pathLength="100" style="animation-duration:1.2s;animation-delay:-0.1s"/>
+<path class="flowdot" d="M 620,202 L 620,236" stroke="#0e7490" pathLength="100" style="animation-duration:1.2s;animation-delay:-0.7s"/>
 </g>
 <g class="row" style="animation-delay:0.55s">
 <text x="40" y="262" font-size="13" font-family="Microsoft YaHei, PingFang SC, sans-serif" fill="#1e293b" font-weight="700">② 累加与锁存</text>
@@ -138,9 +139,10 @@
 <g class="fade" style="animation-delay:1.35s">
 <path class="draw" pathLength="100" style="animation-delay:1.35s" d="M 500,318 L 770,318" stroke="#0e7490" stroke-width="2.5" fill="none" marker-end="url(#arr_0e7490)" stroke-linecap="round"/>
 <text x="635.0" y="308" font-size="10.5" font-family="Microsoft YaHei, PingFang SC, sans-serif" fill="#0e7490" text-anchor="middle">帧尾锁存（^ 0x27 校验字节）</text>
-<path class="flowdot" d="M 500,318 L 770,318" stroke="#0e7490" pathLength="100" style="animation-duration:3s;animation-delay:-0.2s"/>
-<path class="flowdot" d="M 500,318 L 770,318" stroke="#0e7490" pathLength="100" style="animation-duration:3s;animation-delay:-0.95s"/>
-<path class="flowtail" d="M 500,318 L 770,318" stroke="#0e7490" pathLength="100" style="animation-duration:3s;animation-delay:-0.2s"/>
+<path class="flowdot" d="M 500,318 L 770,318" stroke="#0e7490" pathLength="100" style="animation-duration:1.5s;animation-delay:-0.2s"/>
+<path class="flowdot" d="M 500,318 L 770,318" stroke="#0e7490" pathLength="100" style="animation-duration:1.5s;animation-delay:-0.95s"/>
+<path class="flowdot" d="M 500,318 L 770,318" stroke="#0e7490" pathLength="100" style="animation-duration:1.5s;animation-delay:-1.7s"/>
+<path class="flowtail" d="M 500,318 L 770,318" stroke="#0e7490" pathLength="100" style="animation-duration:1.5s;animation-delay:-0.2s"/>
 </g>
 <g class="row" style="animation-delay:0.9s">
 <text x="40" y="396" font-size="13" font-family="Microsoft YaHei, PingFang SC, sans-serif" fill="#1e293b" font-weight="700">③ 帧尾比较 + 合法性防护</text>
@@ -168,20 +170,22 @@
 </g>
 <g class="fade" style="animation-delay:1.55s">
 <path class="draw" pathLength="100" style="animation-delay:1.55s" d="M 320,360 L 320,410" stroke="#0e7490" stroke-width="2.5" fill="none" marker-end="url(#arr_0e7490)" stroke-linecap="round"/>
-<path class="flowdot" d="M 320,360 L 320,410" stroke="#0e7490" pathLength="100" style="animation-duration:2.4s;animation-delay:-0.7s"/>
+<path class="flowdot" d="M 320,360 L 320,410" stroke="#0e7490" pathLength="100" style="animation-duration:1.2s;animation-delay:-0.7s"/>
+<path class="flowdot" d="M 320,360 L 320,410" stroke="#0e7490" pathLength="100" style="animation-duration:1.2s;animation-delay:-1.3s"/>
 </g>
 <g class="fade" style="animation-delay:1.65s">
-<path d="M 940,360 L 940,410" stroke="#6b7280" stroke-width="2" fill="none" stroke-dasharray="5,3" marker-end="url(#arr_6b7280)" stroke-linecap="round"/>
+<path class="dashgrow" style="animation-duration:2.8s;animation-delay:-0.4s" d="M 940,360 L 940,410" stroke="#6b7280" stroke-width="2" fill="none" stroke-dasharray="5,3" marker-end="url(#arr_6b7280)" stroke-linecap="round"/>
 <text x="630.0" y="400" font-size="10.5" font-family="Microsoft YaHei, PingFang SC, sans-serif" fill="#64748b" text-anchor="middle">prev_xsum_a</text>
 </g>
 <g class="fade" style="animation-delay:1.75s">
 <path class="draw" pathLength="100" style="animation-delay:1.75s" d="M 320,506 L 610.0,540" stroke="#0e7490" stroke-width="2.5" fill="none" marker-end="url(#arr_0e7490)" stroke-linecap="round"/>
-<path class="flowdot" d="M 320,506 L 610,540" stroke="#0e7490" pathLength="100" style="animation-duration:3.2s;animation-delay:-0.5s"/>
-<path class="flowdot" d="M 320,506 L 610,540" stroke="#0e7490" pathLength="100" style="animation-duration:3.2s;animation-delay:-1.3s"/>
-<path class="flowtail" d="M 320,506 L 610,540" stroke="#0e7490" pathLength="100" style="animation-duration:3.2s;animation-delay:-0.5s"/>
+<path class="flowdot" d="M 320,506 L 610,540" stroke="#0e7490" pathLength="100" style="animation-duration:1.6s;animation-delay:-0.5s"/>
+<path class="flowdot" d="M 320,506 L 610,540" stroke="#0e7490" pathLength="100" style="animation-duration:1.6s;animation-delay:-1.3s"/>
+<path class="flowdot" d="M 320,506 L 610,540" stroke="#0e7490" pathLength="100" style="animation-duration:1.6s;animation-delay:-2.1s"/>
+<path class="flowtail" d="M 320,506 L 610,540" stroke="#0e7490" pathLength="100" style="animation-duration:1.6s;animation-delay:-0.5s"/>
 </g>
 <g class="fade" style="animation-delay:1.75s">
-<path d="M 940,506 L 690.0,540" stroke="#6b7280" stroke-width="2" fill="none" stroke-dasharray="5,3" marker-end="url(#arr_6b7280)" stroke-linecap="round"/>
+<path class="dashgrow" style="animation-duration:3.0s;animation-delay:-1.2s" d="M 940,506 L 690.0,540" stroke="#6b7280" stroke-width="2" fill="none" stroke-dasharray="5,3" marker-end="url(#arr_6b7280)" stroke-linecap="round"/>
 </g>
 <g class="row" style="animation-delay:1.25s">
 <text x="40" y="626" font-size="13" font-family="Microsoft YaHei, PingFang SC, sans-serif" fill="#1e293b" font-weight="700">④ 提交门控与计数</text>
@@ -210,22 +214,24 @@
 <text x="1055" y="688" font-size="10" font-family="Microsoft YaHei, PingFang SC, sans-serif" fill="#c2410c" text-anchor="middle">直写通路解锁（one-shot）</text>
 </g>
 <g class="fade" style="animation-delay:1.75s">
-<path d="M 650.0,592 L 650.0,610" stroke="#6b7280" stroke-width="2" fill="none" stroke-dasharray="5,3" marker-end="url(#arr_6b7280)" stroke-linecap="round"/>
+<path class="dashgrow" style="animation-duration:2.6s;animation-delay:-0.8s" d="M 650.0,592 L 650.0,610" stroke="#6b7280" stroke-width="2" fill="none" stroke-dasharray="5,3" marker-end="url(#arr_6b7280)" stroke-linecap="round"/>
 </g>
 <g class="fade" style="animation-delay:1.9s;animation-duration:0.45s">
-<path d="M 650.0,610 L 465,636" stroke="#6b7280" stroke-width="2" fill="none" stroke-dasharray="5,3" marker-end="url(#arr_6b7280)" stroke-linecap="round"/>
+<path class="dashgrow" style="animation-duration:3.2s;animation-delay:-1.9s" d="M 650.0,610 L 465,636" stroke="#6b7280" stroke-width="2" fill="none" stroke-dasharray="5,3" marker-end="url(#arr_6b7280)" stroke-linecap="round"/>
 </g>
 <g class="fade" style="animation-delay:1.95s;animation-duration:0.45s">
-<path d="M 650.0,610 L 765,636" stroke="#6b7280" stroke-width="2" fill="none" stroke-dasharray="5,3" marker-end="url(#arr_6b7280)" stroke-linecap="round"/>
+<path class="dashgrow" style="animation-duration:3.2s;animation-delay:-2.7s" d="M 650.0,610 L 765,636" stroke="#6b7280" stroke-width="2" fill="none" stroke-dasharray="5,3" marker-end="url(#arr_6b7280)" stroke-linecap="round"/>
 </g>
 <g class="fade" style="animation-delay:1.9s">
 <path class="draw" pathLength="100" style="animation-delay:1.9s;animation-duration:0.5s" d="M 290,676 L 340,676" stroke="#0e7490" stroke-width="2.5" fill="none" marker-end="url(#arr_0e7490)" stroke-linecap="round"/>
-<path class="flowdot" d="M 290,676 L 340,676" stroke="#0e7490" pathLength="100" style="animation-duration:2.4s;animation-delay:-0.55s"/>
+<path class="flowdot" d="M 290,676 L 340,676" stroke="#0e7490" pathLength="100" style="animation-duration:1.2s;animation-delay:-0.55s"/>
+<path class="flowdot" d="M 290,676 L 340,676" stroke="#0e7490" pathLength="100" style="animation-duration:1.2s;animation-delay:-1.15s"/>
 </g>
 <g class="fade" style="animation-delay:2s;animation-duration:0.45s">
 <path class="draw" pathLength="100" style="animation-delay:2s;animation-duration:0.45s" d="M 870,676 L 930,676" stroke="#b45309" stroke-width="2" fill="none" marker-end="url(#arr_b45309)" stroke-linecap="round"/>
 <text x="990" y="628" font-size="9.5" font-family="Microsoft YaHei, PingFang SC, sans-serif" fill="#64748b" text-anchor="middle">match_eff_a=0 时计数</text>
-<path class="flowdot" d="M 870,676 L 930,676" stroke="#b45309" pathLength="100" style="animation-duration:2.4s;animation-delay:-0.35s"/>
+<path class="flowdot" d="M 870,676 L 930,676" stroke="#b45309" pathLength="100" style="animation-duration:1.2s;animation-delay:-0.35s"/>
+<path class="flowdot" d="M 870,676 L 930,676" stroke="#b45309" pathLength="100" style="animation-duration:1.2s;animation-delay:-0.95s"/>
 </g>
 <g class="row" style="animation-delay:1.6s">
 <rect x="80" y="744" width="1080" height="92" fill="#fff7ed" stroke="#fb923c" stroke-width="1.6" rx="6"/>

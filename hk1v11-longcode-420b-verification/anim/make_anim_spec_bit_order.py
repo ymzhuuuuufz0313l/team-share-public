@@ -10,8 +10,11 @@ pulse 缩放辉光取代 glow-*）；入场箭头 delay 规则 v2 的 +0.35 → 
   → 串行化(0.9) → Case1 条带(1.05) → 时间轴(1.5)。
 - draw（delay = max(两端 row/head delay)+0.55）：
   竖直↑ 1.15（组 0.6）、串行化↓ 1.6（指向 Case1 1.05）、时间轴→ 2.05（head 1.5）。
-- 稳态·列车（族 1）：竖直↑ 2 包 + flowtail（d 同箭头，0.7s，delay 0/-0.35/尾 0，
+- 稳态·列车（族 1）：竖直↑ 3 包 + 每包 flowtail（2026-10-28 晚动效加密 2→3 包：
+  d 同箭头，0.7s，整周期均布 delay 0 / -0.23 / -0.47，tail 随包，
   向上走 = Bit0→Bit7）；时间轴→ 2 包（0.7s，delay -0.2/-0.55，与竖直列错相）。
+  dashgrow 加密项：源图无任何虚线元素（grep stroke-dasharray 零命中）→
+  按"dashgrow 只能用在既有虚线上"跳过（caveat）。
 - 稳态·行波（族 2）：Case1 条带 24 格左→右 0.08s/格（2.9s）= 逐 bit 发送；
   三列网格按列波（R/G/B phase 0/1/2s，列内自下而上 0.08s/格，3.6s）。
 - 稳态·脉冲（族 3）：R0[0] 格 pulse-b（delay -1.4s，"Bit0 最先发出"英雄）。
@@ -189,18 +192,19 @@ def build():
     assert sum(rows_seen.values()) == 24, "网格应 24 格"
     out.append("</g>")
 
-    # row#2 发送顺序箭头组（0.6）：竖箭头 draw(1.15=0.6+0.55) + 列车 2 包+尾
+    # row#2 发送顺序箭头组（0.6）：竖箭头 draw(1.15=0.6+0.55) + 列车 3 包（整周期
+    # 均布 0/-0.23/-0.47）+ 每包 tail（2026-10-28 加密 2→3 包）
     counts["row"] += 1
     out.append('<g class="row" style="animation-delay:0.6s">')
     for j in range(grid_end + 1, byte_start):
         if j == arrow_idx:
             counts["draw"] += 1
             out.append(tag_draw(lines[j], 1.15))
-            counts["flowdot"] += 2
-            counts["flowtail"] += 1
-            out.append(flowdot("M 74 356 L 74 122", "#2563eb", 0.7, 0.0))
-            out.append(flowdot("M 74 356 L 74 122", "#2563eb", 0.7, -0.35))
-            out.append(flowtail("M 74 356 L 74 122", "#2563eb", 0.7, 0.0))
+            counts["flowdot"] += 3
+            counts["flowtail"] += 3
+            for dl in (0.0, -0.23, -0.47):
+                out.append(flowdot("M 74 356 L 74 122", "#2563eb", 0.7, dl))
+                out.append(flowtail("M 74 356 L 74 122", "#2563eb", 0.7, dl))
         else:
             out.append(lines[j])
     out.append("</g>")
@@ -308,4 +312,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-# ymzhu 2026-10-28 16:51
+# ymzhu 2026-10-28 19:06

@@ -13,7 +13,10 @@
   class="cellwave" + 内联 animation-duration:2.4s，delay = 轮换序位置 × 0.6s，
   4 lane 共用时间线 = 轮换偏移可视化（源 SVG 每 lane 行已按轮换序排列单元格，
   序内位置 = 行内单元格序号，确定性）。IDLE 面板 bit 串格 0.4s 递增（3.2s）。
-- 稳态·脉冲（族 2）：VBP 首行行盒 pulse-b（delay -1.4s）。
+- 稳态·脉冲（族 2，2026-10-28 晚动效加密 +1）：IDLE pattern 面板标题组
+  （"IDLE pattern · 10-bit · 不加扰"标题文本，源图该面板无容器 rect → 标题即
+  标题组）pulse-b（delay -2.1s，与 VBP 首行 -1.4s 错 0.7s）；VBP 首行行盒
+  pulse-b（delay -1.4s）。
 - 列车：v4 §6.10 要求"每 lane 格间小箭头（8 条）各 1 包"，但源图 lane 间箭头
   是 text 字形"→"而非 path/line，全图无任何可复制的箭头几何（铁律 §0.3 只允许
   复制箭头得到装饰路径）→ 按 §5"宁缺勿穿"护栏放弃，见报告 caveats。
@@ -80,7 +83,8 @@ def cont(*subs):
 # 单元：start/end 谓词 + 入场 delay + 特效（idlebit / lane / pulse）
 UNITS = [
     dict(start=cont("H/V blanking 与 IDLE"), end=cont("为优化 EMI"), head=True),
-    dict(start=cont("IDLE pattern · 10-bit"), end=cont("0000111100"), row=0.20, idlebit=True),
+    dict(start=cont("IDLE pattern · 10-bit"), end=cont("0000111100"), row=0.20,
+         idlebit=True, idlepulse="pulse-b"),
     dict(start=cont("lane 间轮换（EMI 优化）"), end=cont("lane 间轮换（EMI 优化）"), row=0.50),
     dict(start=cont(">Lane1<"), end=cont(">Lane2<"), end_before=True, row=0.50, lane=True),
     dict(start=cont(">Lane2<"), end=cont(">Lane3<"), end_before=True, row=0.65, lane=True),
@@ -147,7 +151,14 @@ def build():
         seg = lines[s:e + 1]
 
         if u.get("idlebit"):
-            # IDLE 面板：bit 串格（rect x="124" + 其 text）逐格 cellwave，0.4s 递增，3.2s 周期
+            # IDLE 面板：标题组（首行标题文本）pulse-b(-2.1s)；bit 串格
+            # （rect x="124" + 其 text）逐格 cellwave，0.4s 递增，3.2s 周期
+            if u.get("idlepulse"):
+                counts["pulse-b"] += 1
+                out.append(f'<g class="{u["idlepulse"]}" style="animation-delay:-2.1s">')
+                out.append(seg[0])
+                out.append("</g>")
+                seg = seg[1:]
             i, n = 0, 0
             while i < len(seg):
                 if seg[i].strip().startswith('<rect x="124"'):
@@ -247,4 +258,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-# ymzhu 2026-10-28 16:51
+# ymzhu 2026-10-28 19:06

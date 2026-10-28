@@ -514,13 +514,13 @@
 
 > 🎬 本页图均为纯 CSS 动画 SVG（在 `anim/` 目录，滚动到视口时重播；顶部导航可一键切换 动画/静态）；静态原版保留在同名路径作 fallback。
 
-![longcode 验证架构](./anim/longcode_verification_architecture.svg?v=20261030)
+![longcode 验证架构](./anim/longcode_verification_architecture.svg?v=20261031)
 
 ## 2. 收发结构框图：不看 RTL 的脚本离线验证（0717 新增）
 
 接收端验证**不再依赖 DUT 解码结果**：用 `bind` 在 K 码对齐点抓线上 20-bit 数据，Python 直接离线解码，与发送端原始字节逐区域比对。
 
-![收发结构框图：脚本离线验证](./anim/pydec_tx_rx_structure.svg?v=20261030)
+![收发结构框图：脚本离线验证](./anim/pydec_tx_rx_structure.svg?v=20261031)
 
 <div class="flow">
   <div class="fbox"><b>① 抓取</b><br/>在 <code>CHPI_KCODE_ALIGN_LONG_L0</code> 的 <code>DATA_ALIGN_PRE</code>（K 码检测同款对齐数据）tap，<code>long_rtl_tap_debug.sv</code> 以 bind 注入，零 RTL 修改<br/><code>→ long_rtl_dap_lane0.md</code></div>
@@ -693,7 +693,7 @@ const lightbox = document.getElementById('lightbox');
     window.addEventListener('scroll', updateTocActive);
     updateTocActive();
   </script>
-  <script src="./fx.js?v=5"></script>
+  <script src="./fx.js?v=6"></script>
 </body>
 </html>
 

@@ -12,10 +12,12 @@ v4 规格（1100×2946，chip_sel=1 寄存器默认字节映射 · 51 行）：
 - 稳态（3 族，肉眼可辨；取代 v1 的 233 处低幅呼吸）：
   · 行波 cellwave×51（主角）：全部寄存器行（含行尾 POR pill）整行组波，
     自上而下 0.2s/行 错相位（周期 10.2s）= 地址扫描波。
-  · 脉冲 pulse×2（错相位 -0.7 / -1.4）：
+  · 脉冲 pulse×4（v4.1 +2；相位 0 / -0.7 / -1.4 / -2.1 均布）：
     0x1D 行 khead_20b_sel[4:0] 单元格 pulse（琥珀，LC_CPUWR 1027v1 变更格）；
     0x0A 行组（PWRC ★ 回拼行，LC_REG_MAPPING 回拼实现、含 checksum 修复
-    相关 PWRC 字节）pulse-b（蓝，整行组）。
+    相关 PWRC 字节）pulse-b（蓝，整行组）；
+    v4.1 新增：0x09 行组（SR_NF/NR/PF/PR ★ 回拼行）pulse-t（深青，-2.1s）；
+    0x30 行组 TEST_PRTCT[7:0]（密码/受保护行）pulse（琥珀，0s）。
   · 语义扫光 sweepband×1：POR 默认值列（右侧 pill 列，x[836,912]，
     y 覆盖全部 pill）——§4 配方（P=316，8s 循环），位于内容之下、
     白底之上，pill 间缝隙与列空白带可见 = 默认值列周期巡检。
@@ -72,7 +74,9 @@ LABEL_X = "158"
 N_ROWS = 51
 ROW_STEP = 0.03
 WAVE_STEP = 0.2
-ROW_PULSES = {"0x0A": ("pulse-b", "-1.4s")}        # PWRC ★ 回拼行
+ROW_PULSES = {"0x0A": ("pulse-b", "-1.4s"),        # PWRC ★ 回拼行
+              "0x09": ("pulse-t", "-2.1s"),        # v4.1：SR_* ★ 回拼行
+              "0x30": ("pulse", "0s")}             # v4.1：TEST_PRTCT 密码/受保护行
 CELL_PULSES = {"0x1D": ("khead_20b_sel[4:0]", "pulse", "-0.7s")}
 
 
@@ -131,7 +135,7 @@ def build():
             assert attrs_of(lines[t - 1])[0] == "rect", f"{field} 前应为 rect"
             assert attrs_of(lines[t + 1])[0] == "text", f"{field} 后应为 value text"
             cell_pulse_map[t - 1] = (kind, delay, t + 1)
-    assert len(cell_pulse_map) == 1 and len(row_pulse_map) == 1, "脉冲定位数异常"
+    assert len(cell_pulse_map) == 1 and len(row_pulse_map) == 3, "脉冲定位数异常"
 
     # ---- POR 列扫光带（§4 配方）：pill 列 x[842,906]，区域含边距 ----
     pill_re = re.compile(r'^<rect x="842" y="([\d.]+)" width="64" height="26"')
@@ -277,4 +281,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-# ymzhu 2026-10-28 17:34
+# ymzhu 2026-10-28 19:18

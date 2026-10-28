@@ -5,13 +5,15 @@
 dc_gen_summary_table（3928×489，三代总览表，静态版=images/ 同名 svg）规格：
 - 入场（总长 ≤2.5s）：表头 .head(0) → 网格 .fade(0.05) → r1 .row(0.25) → r2 .row(0.55)
   → r3 .row(0.85)；末项 0.85+0.55=1.4s
-- 稳态（3 族）：
-  · 行波 cellwave ×3：三代行整行组包（r1/r2/r3，duration 3.6s，phase 0/-1.2/-2.4）
-    ——自上而下的代际演进波
+- 稳态（3 族；v4.1 二轮加密=行波细化到单元格 + 最差代加脉冲）：
+  · 行波 cellwave（按格）：三代行内 5 个单元格（日期/面积/结构/时序 pl 组/变化）逐格包
+    .cellwave，行间基相 0/-1.2/-2.4（duration 3.6s 代际演进波）、行内相位递增
+    0.25s/格——每代行内自左向右 + 跨行自上而下的二维慢波；行底色/rg/br/wash/diag 不入波
   · 扫光 sweepband ×1（§4 配方，琥珀）：r3 当代行（y396..489，P=4168）——
     "关键路径优化后收敛"结果行语义扫光；置于行底色之上、行文字之下（行内 br 标记后插入）
-  · 脉冲 ×2（错相位）：r2 "452 条 / -1.45 ns / hold 30" .pulse(-1.4s)——最差一代；
-    r3 "11 条 / -0.01 ns / hold 21" .pulse-t(-0.7s)——收敛结果（深青辉光配绿色文本）
+  · 脉冲 ×3（错相位 -0.7/-1.4/-2.1 均布）：r2 "452 条 / -1.45 ns / hold 30" .pulse(-1.4s)
+    ——最差一代；r3 "11 条 / -0.01 ns / hold 21" .pulse-t(-0.7s)——收敛结果（深青辉光配
+    绿色文本）；r2 最差代面积 "294907" .pulse(-2.1s)（最差代第二个关键格，琥珀）
 - 铁律：源 SVG 只读；text 多重集 / svg 开标签 / 几何颜色零改动；纯 CSS 无 script；
   kit CSS §2 逐字嵌入；源 defs（diagF2/clipD2）/背景 rect 保留（assert 保护）；
   源字体 <style> 原样保留（残留 animation 声明惰性、无 kit 同名冲突）；
@@ -148,27 +150,49 @@ def build():
     o.append("</g>")
     o.extend(lines[hdr_g_close + 1:r_g[1][0]])
 
-    # 三代行：.row + 内层 cellwave（phase 0/-1.2/-2.4，duration 3.6s）
-    # r3 行内 br 标记后插扫光带；pl2 文本组加 pulse、pl3 加 pulse-t
+    # 三代行：.row + 按格 .cellwave（行间基相 0/-1.2/-2.4，行内 0.25s/格递增，3.6s）
+    # r3 行内 br 标记后插扫光带；pl2 文本组加 pulse、pl3 加 pulse-t；
+    # r2 面积格（x=454 "294907"）包最差代琥珀 pulse(-2.1s)
     row_d = {1: 0.25, 2: 0.55, 3: 0.85}
-    wave_ph = {1: "0s", 2: "-1.2s", 3: "-2.4s"}
+    wave_base = {1: 0.0, 2: -1.2, 3: -2.4}
+    CELL_STEP = 0.25
     for n in (1, 2, 3):
         ro, rc = r_g[n]
         o.append(f'<g class="r{n} row" style="animation-delay:{row_d[n]}s">')
-        o.append(f'<g class="cellwave" style="animation-duration:3.6s;animation-delay:{wave_ph[n]}">')
+        cells = 0
         for i in range(ro + 1, rc):
-            if n == 2 and i == pl2_g:
-                o.append(lines[i].replace('<g class="pl2">',
-                                          '<g class="pl2 pulse" style="animation-delay:-1.4s">', 1))
-            elif n == 3 and i == pl3_g:
-                o.append(lines[i].replace('<g class="pl3">',
-                                          '<g class="pl3 pulse-t" style="animation-delay:-0.7s">', 1))
-            elif n == 3 and 'class="br"' in lines[i]:
-                o.append(lines[i])
-                o.append(sweep_group(SWEEP))                 # 当代行扫光带
+            s = lines[i]
+            t = s.strip()
+            is_cell = t.startswith("<text") or t.startswith('<g class="pl')
+            cw = (f'<g class="cellwave" style="animation-duration:3.6s;'
+                  f'animation-delay:{wave_base[n] - CELL_STEP * cells:g}s">')
+            if i == pl2_g:
+                o.append(cw)
+                o.append(s.replace('<g class="pl2">',
+                                   '<g class="pl2 pulse" style="animation-delay:-1.4s">', 1))
+                o.append("</g>")
+            elif i == pl3_g:
+                o.append(cw)
+                o.append(s.replace('<g class="pl3">',
+                                   '<g class="pl3 pulse-t" style="animation-delay:-0.7s">', 1))
+                o.append("</g>")
+            elif n == 2 and t.startswith('<text x="454"'):
+                o.append(cw)
+                o.append('<g class="pulse" style="animation-delay:-2.1s">')
+                o.append(s)
+                o.append("</g>")
+                o.append("</g>")
+            elif is_cell:
+                o.append(cw)
+                o.append(s)
+                o.append("</g>")
             else:
-                o.append(lines[i])
-        o.append("</g>")                                     # cellwave
+                o.append(s)
+                if 'class="br"' in s:
+                    o.append(sweep_group(SWEEP))             # 当代行扫光带
+            if is_cell:
+                cells += 1
+        assert cells == 5, f"r{n} 单元格应 5，实得 {cells}"
         o.append("</g>")                                     # row
 
     # 网格 .fade(0.05) + tl 遗留条（opacity=0 原样） + 边框
@@ -237,11 +261,14 @@ def main():
     build()
     res = check()
     data = OUT.read_text(encoding="utf-8")
-    print("[make_anim_dc_gen_summary_table v4]",
+    n_cells = len(re.findall(r'class="cellwave" style="animation-duration:3\.6s', data))
+    assert n_cells == 15, f"按格行波应 15（3 行×5 格），实得 {n_cells}"
+    print("[make_anim_dc_gen_summary_table v4.1]",
           "row=", len(re.findall(r'class="r\d row"', data)),
           "cellwave=", data.count('class="cellwave"'),
+          "(cells", n_cells, ")",
           "sweepband=", data.count('class="sweepband"'),
-          "pulse=", len(re.findall(r'class="pl\d pulse', data)))
+          "pulse=", len(re.findall(r'class="[^"]*\bpulse', data)))
     ok = True
     for k, v in res.items():
         if k != "families":
@@ -254,4 +281,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-# ymzhu 2026-10-28 17:38
+# ymzhu 2026-10-28 21:14

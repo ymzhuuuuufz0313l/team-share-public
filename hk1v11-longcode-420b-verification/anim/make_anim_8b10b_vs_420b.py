@@ -9,10 +9,12 @@ MOTION_KIT.md §6.3 规格（1400x1210 双列 8B/10B vs 420B 对比图）：
 - draw：两列 spine 箭头逐段（左 0.82+0.12e、右 0.97+0.12e；
   delay = max(两端盒 row delay)+0.55）。源图无横向对比箭头 → §6.3 的
   "横向对比箭头"不适用（caveat）。
-- 稳态族（3 族）：
-  * 列车 train（双列赛跑）：左列 spine 5 边每边 2 包+flowtail，stroke 蓝 #1d4ed8；
-    右列同参数整体 phase +0.35s，stroke 琥珀 #b45309。
-  * 行波 cellwave：两列 5+5 个 chip 单元格自上而下 0.1s/格，右列整体 +1.3s（半周期）。
+- 稳态族（3 族；2026-10-28 晚动效加密：行波提速 + 列车加包）：
+  * 列车 train（双列赛跑）：左列 spine 5 边每边 3 包+flowtail（整周期均布），
+    stroke 蓝 #1d4ed8；右列同参数整体 phase +0.35s，stroke 琥珀 #b45309。
+  * 行波 cellwave：两列全部 5+5 个 chip 单元格（源图无更多 bit 格，"扩到全部
+    bit 格"已满足）自上而下 0.07s/格（加密 0.1→0.07，落在 0.06~0.08 档），
+    右列整体 +1.3s（半周期）。
   * 脉冲 pulse：左"线上数据验证"盒 pulse(-1.4s) / 右"线上数据验证（0717 新增）"盒
     pulse-t(-0.7s)（源图无独立"编码效率/编码率"盒 → 选 2 个 verdict 盒，caveat）。
 - 不加 breathe；源图无虚线 → 无 march。
@@ -64,9 +66,9 @@ KIT_CSS = """<style>
 SPINE_Y = [(174, 190), (316, 332), (392, 408), (464, 480), (558, 574)]
 FLOW_PERIOD = 0.7       # 每段列车周期
 FLOW_EDGE_STEP = 0.11   # 相邻段 phase 差（段间接续）
-FLOW_PACKETS = 2        # 每段 2 包，错半周期
+FLOW_PACKETS = 3        # 每段 3 包（2026-10-28 加密 2→3），整周期均布
 RIGHT_PHASE = 0.35      # 右列整体相位偏移（双列赛跑）
-CW_STEP = 0.1           # cellwave 0.1s/格
+CW_STEP = 0.07          # cellwave 0.07s/格（2026-10-28 加密 0.1→0.07，0.06~0.08 档）
 CW_RIGHT_PHASE = 1.3    # 右列行波偏移半周期（cellwave 默认周期 2.6s）
 # draw delay = max(两端盒 row delay) + 0.55（§5 铁律）
 LEFT_DRAW = [0.82, 0.94, 1.06, 1.18, 1.30]    # 盒 .15/.27/.39/.51/.63/.75
@@ -84,11 +86,11 @@ def tag_draw(line: str, delay: float) -> str:
 
 
 def train_edge(x, y0, y1, color, phase, enter):
-    """一段 spine 的数据列车：2 包（错半周期）+ flowtail 拖尾，外包 .fade 到入场才显现。"""
+    """一段 spine 的数据列车：3 包（整周期均布）+ flowtail 拖尾，外包 .fade 到入场才显现。"""
     d = f"M {x} {y0} L {x} {y1}"
     out = [f'<g class="fade" style="animation-delay:{fmt(enter)}s">']
     for p in range(FLOW_PACKETS):
-        dl = phase - p * (FLOW_PERIOD / 2.0)
+        dl = phase - p * (FLOW_PERIOD / float(FLOW_PACKETS))
         out.append(f'<path class="flowtail" d="{d}" stroke="{color}" pathLength="100" '
                    f'style="animation-duration:{fmt(FLOW_PERIOD)}s;animation-delay:{fmt(dl)}s"/>')
         out.append(f'<path class="flowdot" d="{d}" stroke="{color}" pathLength="100" '
@@ -215,4 +217,4 @@ def build():
 if __name__ == "__main__":
     build()
 
-# ymzhu 2026-10-28 16:55
+# ymzhu 2026-10-28 19:06

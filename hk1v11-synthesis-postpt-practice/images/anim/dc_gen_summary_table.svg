@@ -82,37 +82,63 @@
     <rect class="underline" x="0" y="210" width="3928" height="4" fill="#b45309"/>
 </g>
 <g class="r1 row" style="animation-delay:0.25s">
-<g class="cellwave" style="animation-duration:3.6s;animation-delay:0s">
     <rect class="rg1" x="0" y="210" width="3928" height="93" fill="#0e7490" opacity="0"/>
+<g class="cellwave" style="animation-duration:3.6s;animation-delay:0s">
     <text x="24" y="256" dy="0.35em" font-size="38" font-weight="bold" fill="#1c2534" class="mono">2026-09-01</text>
+</g>
+<g class="cellwave" style="animation-duration:3.6s;animation-delay:-0.25s">
     <text x="454" y="256" dy="0.35em" font-size="38" font-weight="bold" fill="#0e7490" class="mono">283496</text>
+</g>
+<g class="cellwave" style="animation-duration:3.6s;animation-delay:-0.5s">
     <text x="854" y="256" dy="0.35em" font-size="38" fill="#1c2534" class="mono">FF 2434 / comb 11344</text>
+</g>
+<g class="cellwave" style="animation-duration:3.6s;animation-delay:-0.75s">
     <g class="pl1"><text x="1474" y="256" dy="0.35em" font-size="38" font-weight="bold" fill="#b91c1c" class="mono pop p1">434 条 / -0.33 ns / hold 87</text></g>
+</g>
+<g class="cellwave" style="animation-duration:3.6s;animation-delay:-1s">
     <text x="3904" y="256" dy="0.35em" font-size="38" fill="#1c2534" text-anchor="end" class="cjk">约束收窄前：部分路径未被真实检查，表面违例少并非真实收敛</text>
 </g>
 </g>
 <g class="r2 row" style="animation-delay:0.55s">
-<g class="cellwave" style="animation-duration:3.6s;animation-delay:-1.2s">
     <rect x="0" y="303" width="3928" height="93" fill="#f4f1ea"/>
     <rect class="rg2" x="0" y="303" width="3928" height="93" fill="#0e7490" opacity="0"/>
+<g class="cellwave" style="animation-duration:3.6s;animation-delay:-1.2s">
     <text x="24" y="350" dy="0.35em" font-size="38" font-weight="bold" fill="#1c2534" class="mono">2026-09-22</text>
+</g>
+<g class="cellwave" style="animation-duration:3.6s;animation-delay:-1.45s">
+<g class="pulse" style="animation-delay:-2.1s">
     <text x="454" y="350" dy="0.35em" font-size="38" font-weight="bold" fill="#0e7490" class="mono">294907</text>
+</g>
+</g>
+<g class="cellwave" style="animation-duration:3.6s;animation-delay:-1.7s">
     <text x="854" y="350" dy="0.35em" font-size="38" fill="#1c2534" class="mono">FF 2526 / comb 12096</text>
+</g>
+<g class="cellwave" style="animation-duration:3.6s;animation-delay:-1.95s">
     <g class="pl2 pulse" style="animation-delay:-1.4s"><text x="1474" y="350" dy="0.35em" font-size="38" font-weight="bold" fill="#b91c1c" class="mono pop p2">452 条 / -1.45 ns / hold 30</text></g>
+</g>
+<g class="cellwave" style="animation-duration:3.6s;animation-delay:-2.2s">
     <text x="3904" y="350" dy="0.35em" font-size="38" fill="#1c2534" text-anchor="end" class="cjk">完成约束收窄：暴露真实信息 + 真实待优化路径：setup 452 条、最差 −1.45ns</text>
 </g>
 </g>
 <g class="r3 row" style="animation-delay:0.85s">
-<g class="cellwave" style="animation-duration:3.6s;animation-delay:-2.4s">
     <g class="wash"><rect class="fill" x="0" y="396" width="3928" height="93" fill="#0e7490" fill-opacity="0.1"/></g>
     <rect class="rg3" x="0" y="396" width="3928" height="93" fill="#0e7490" opacity="0"/>
     <g clip-path="url(#clipD2)"><g class="diag"><rect x="-40" y="360" width="4010" height="160" fill="url(#diagF2)" opacity="0.05"/></g></g>
     <rect class="br" x="0" y="396" width="6" height="93" fill="#0e7490"/>
 <g clip-path="url(#sweepC-1)"><rect class="sweepband" x="0" y="396" width="4168" height="93" fill="url(#sweepG-1)" style="--sweepP:4168px"/></g>
+<g class="cellwave" style="animation-duration:3.6s;animation-delay:-2.4s">
     <text x="24" y="442" dy="0.35em" font-size="38" font-weight="bold" fill="#1c2534" class="mono cB">2026-10-02</text>
+</g>
+<g class="cellwave" style="animation-duration:3.6s;animation-delay:-2.65s">
     <text x="454" y="442" dy="0.35em" font-size="38" font-weight="bold" fill="#0e7490" class="mono cB">314707</text>
+</g>
+<g class="cellwave" style="animation-duration:3.6s;animation-delay:-2.9s">
     <text x="854" y="442" dy="0.35em" font-size="38" fill="#1c2534" class="mono cB">FF 2839 / comb 11773</text>
+</g>
+<g class="cellwave" style="animation-duration:3.6s;animation-delay:-3.15s">
     <g class="pl3 pulse-t" style="animation-delay:-0.7s"><text x="1474" y="442" dy="0.35em" font-size="38" font-weight="bold" fill="#047857" class="mono pop p3 cBx">11 条 / -0.01 ns / hold 21</text></g>
+</g>
+<g class="cellwave" style="animation-duration:3.6s;animation-delay:-3.4s">
     <text x="3904" y="442" dy="0.35em" font-size="38" fill="#1c2534" text-anchor="end" class="cjk cB">关键路径优化 + 约束审核后重新添加：setup 452→11（−97.6%），最差 −0.01ns，面积 +6.7%</text>
 </g>
 </g>

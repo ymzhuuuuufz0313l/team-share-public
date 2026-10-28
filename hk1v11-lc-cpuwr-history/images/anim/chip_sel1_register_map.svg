@@ -248,6 +248,7 @@
 </g>
 </g>
 <g class="row" style="animation-delay:0.42s">
+<g class="pulse-t" style="animation-delay:-2.1s">
 <g class="cellwave" style="animation-duration:10.2s;animation-delay:-1.8s">
 <text x="158" y="620.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x09 (9)</text>
 <rect x="842" y="602.0" width="64" height="26" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" rx="13"/>
@@ -274,6 +275,7 @@
 <circle cx="817" cy="600" r="5" fill="#ef4444"/>
 <text x="817" y="603" text-anchor="middle" font-size="8" fill="white" font-weight="bold">★</text>
 <text x="920" y="619.0" font-size="11" fill="#ef4444" font-weight="600">LC_REG_MAPPING 回拼</text>
+</g>
 </g>
 </g>
 <g class="row" style="animation-delay:0.45s">
@@ -694,6 +696,7 @@
 </g>
 </g>
 <g class="row" style="animation-delay:1.08s">
+<g class="pulse" style="animation-delay:0s">
 <g class="cellwave" style="animation-duration:10.2s;animation-delay:-6.2s">
 <text x="158" y="1764.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x30 (48)</text>
 <rect x="842" y="1746.0" width="64" height="26" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" rx="13"/>
@@ -702,6 +705,7 @@
 <rect x="170" y="1736" width="655" height="46" fill="#ccfbf1" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="497.5" y="1757.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">TEST_PRTCT[7:0]</text>
 <text x="497.5" y="1771.0" text-anchor="middle" font-size="9.0" fill="#64748b">8'b00000000</text>
+</g>
 </g>
 </g>
 <g class="row" style="animation-delay:1.11s">

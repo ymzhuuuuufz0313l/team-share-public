@@ -239,7 +239,7 @@
 <g class="row" style="animation-delay:0.48s">
 <g class="cellwave" style="animation-duration:10.2s;animation-delay:-2.2s">
 <text x="158" y="724.0" text-anchor="end" font-size="13" font-weight="600" fill="#64748b">0x0B ~ 0x1C (11 ~ 28)</text>
-<rect x="170" y="696" width="655" height="46" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1" stroke-dasharray="4,3" rx="4"/>
+<rect class="dashgrow" style="animation-duration:3.0s;animation-delay:-1.2s" x="170" y="696" width="655" height="46" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1" stroke-dasharray="4,3" rx="4"/>
 <text x="497.5" y="723.0" text-anchor="middle" font-size="12" fill="#64748b">⋯ 全 Reserved ⋯</text>
 </g>
 </g>
@@ -650,6 +650,7 @@
 </g>
 </g>
 <g class="row" style="animation-delay:1.29s">
+<g class="pulse-b" style="animation-delay:-1.4s">
 <g class="cellwave" style="animation-duration:10.2s;animation-delay:-7.6s">
 <text x="158" y="2128.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x38 (56)</text>
 <rect x="170" y="2100" width="81" height="46" fill="#dbeafe" stroke="#94a3b8" stroke-width="1" rx="4"/>
@@ -670,6 +671,7 @@
 <rect x="662" y="2100" width="163" height="46" fill="#dbeafe" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="743.5" y="2121.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">UTC_long01_frame[1:0]</text>
 <text x="743.5" y="2135.0" text-anchor="middle" font-size="9.0" fill="#64748b">2'b01</text>
+</g>
 </g>
 </g>
 <g class="row" style="animation-delay:1.32s">

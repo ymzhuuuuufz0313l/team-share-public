@@ -5,15 +5,19 @@
 MOTION_KIT.md §6.2 规格（1200x680 TX/RX + 离线比对 band）：
 - 入场编排 §5：标题0 → TX .20 → RX .45 → 离线 band .85 → 图例 1.5；
   箭头 delay = max(两端面板)+0.55s（修 v2 悬浮箭头）。
-- 稳态族（3 族 + breathe 辅助）：
+- 稳态族（4 族 + breathe 辅助；2026-10-28 晚动效加密 round 新增生长族）：
   * 列车 train：绿脚本链 3 边（tap_debug→decode_dap→pydec→…）每边 2 包+flowtail
     拖尾，0.7s；蓝 K 码对齐（CHPI 串行）2 边每边 2 包。
   * 脉冲 pulse：TAP 徽章 pulse-b(-1.4s)；✅ verdict 盒 pulse-t(-0.7s)。
   * 扫光 sweepband：离线比对 band 区域 1 处（§4 配方：defs 渐变+clipPath，
     P=区域宽+240，X0=区域左-0.54P 保证 t=0 光带完全在区域左侧、8s 无缝左→右扫）。
+  * 生长 dashgrow（新）：紫色"期望值"链 2 条虚线连接器（dump↓ 3.2s/-1.6s、
+    rawbyte→report 期望值 2.8s/-0.5s）+ RTL 虚线盒边（3.0s/-1.0s）持续生长
+    回卷，相位错开；"实际值"连线为实线（draw）→ dashgrow 会把实线伪造成虚线，
+    按"dashgrow 只能用在既有虚线上"放弃（caveat）。
   * breathe 辅助（不计数）："dout_24b + 2-bit valid" 文本。
-- march 辅助（不计数）：灰色"传统路径"、RTL 虚线盒边框、紫 dump↓、
-  绿 lane0↓、紫"期望值"虚线。
+- march 辅助（不计数，缩减）：灰色"传统路径"、绿 lane0↓（实际值侧保持行进，
+  与期望值侧"生长"形成对照）。
 铁律：源 SVG 只读；text/几何/颜色零改动；纯 CSS in-SVG；kit CSS §2 逐字；
 保留源 defs + 背景 rect + 第 2 行字体 style；reduced-motion 块原样；
 确定性幂等；零第三方依赖。
@@ -153,6 +157,8 @@ def build():
     assert lines[i_rtl].find("stroke-dasharray") >= 0, "RTL 盒应为虚线"
 
     # ---- 箭头/连接器逐条规格（0 基行号, 前缀, 类型, 入场 delay）----
+    # dashgrow 规格（2026-10-28 加密）：紫期望值链 2 条，duration 2.8/3.2s 相位错开
+    GROW_SPEC = {77: (3.2, -1.6), 79: (2.8, -0.5)}
     EDGES = [
         # TX 内部 2 ↓（TX=.20 → delay .75）
         (70, '<line x1="230" y1="188"', "draw", 0.75),
@@ -165,9 +171,9 @@ def build():
         (75, '<line x1="1003" y1="192"', "draw", 1.00),
         (76, '<line x1="1003" y1="276"', "draw", 1.00),
         # 离线 band 连接（band=.85 → 1.4）
-        (77, '<path d="M 214 424', "march", 1.40),      # 紫 dump → 离线 rawbyte
+        (77, '<path d="M 214 424', "grow", 1.40),       # 紫 dump → 离线 rawbyte（虚线生长）
         (78, '<path d="M 1003 364', "march", 1.40),     # 绿 lane0 ↓ 虚线
-        (79, '<line x1="364" y1="552"', "march", 1.40), # 紫 rawbyte→report 期望值
+        (79, '<line x1="364" y1="552"', "grow", 1.40),  # 紫 rawbyte→report 期望值（虚线生长）
         (80, '<text x="417" y="544"', "fade", 1.40),    # 期望值 标签
         (81, '<line x1="846" y1="552"', "draw", 1.40),  # lane0→report 实际值（实线）
         (82, '<text x="838" y="544"', "fade", 1.40),    # 实际值 标签
@@ -226,7 +232,8 @@ def build():
                   (i_dout, i_dout + 1, "breathe", 0)],
           replace={i_rtl: [
               '<g class="fade" style="animation-delay:1s">',
-              add_attrs(lines[i_rtl], 'class="march" style="animation-delay:-0.5s"'),
+              add_attrs(lines[i_rtl], 'class="dashgrow" style="animation-duration:3s;'
+                                       'animation-delay:-1s"'),
               "</g>"]})
     group((i_off, EDGES[0][0]), "row", 0.85,                        # 离线 band（面板底色之上、
           nested=[(i_vd_rect, i_vd_rect + 4, "pulse-t", -0.7)],     # 内容之下插扫光带）
@@ -240,9 +247,15 @@ def build():
             out.append(tag_draw(ln, delay))
             out.append("</g>")
         elif kind == "march":
-            phase = -0.25 if i in (77, 79) else (-0.5 if i == 78 else 0.0)  # 相位错开
+            phase = -0.5  # 绿 lane0 ↓（实际值侧行进，与期望值侧生长对照）
             out.append(f'<g class="fade" style="animation-delay:{fmt(delay)}s">')
             out.append(add_attrs(ln, f'class="march" style="animation-delay:{fmt(phase)}s"'))
+            out.append("</g>")
+        elif kind == "grow":
+            gdur, gdl = GROW_SPEC[i]
+            out.append(f'<g class="fade" style="animation-delay:{fmt(delay)}s">')
+            out.append(add_attrs(ln, f'class="dashgrow" style="animation-duration:{fmt(gdur)}s;'
+                                     f'animation-delay:{fmt(gdl)}s"'))
             out.append("</g>")
         else:
             out.append(f'<g class="fade" style="animation-delay:{fmt(delay)}s">')
@@ -265,4 +278,4 @@ def build():
 if __name__ == "__main__":
     build()
 
-# ymzhu 2026-10-28 16:55
+# ymzhu 2026-10-28 19:06

@@ -11,10 +11,15 @@ power_composition_donut_1v11_1v22（1200×578，双环形图，静态版=站点�
     （注：扇区为 pathLength 弧线技巧，其 stroke-dasharray 是几何本身，禁用 .draw 覆盖）
   · 标签组 .fade（左 1.3+0.05k，右 1.45+0.05k）、中心总数 .fade（1.7 / 1.75）
   · 末项 1.75+0.6 = 2.35s ≤ 2.5s
-- 稳态（2 族，纯呼吸系；用户 2026-10-28 验收：不需要行进效果，列车整体移除）：
-  · 行波：左右图例 top-3 图例行（色块 rect + 文字 text 成对）各包一层 .cellwave
-    （opacity .72 呼吸，2.6s），相位错开 0.6s（左 0/0.6/1.2s；右 1.3/1.9/2.5s
+- 稳态（2 族，纯呼吸系；用户 2026-10-28 验收：不需要行进效果，列车整体移除——
+  donut 永不加行进列车；晚间二轮加密=扇区环向呼吸波）：
+  · 行波 A（图例）：左右图例 top-3 图例行（色块 rect + 文字 text 成对）各包一层 .cellwave
+    （opacity .72 呼吸，kit 默认 2.6s），相位错开 0.6s（左 0/0.6/1.2s；右 1.3/1.9/2.5s
     跨侧错拍）——top-3 行与两环 top1 扇区 pulse 呼应；
+  · 行波 B（环向慢波）：两环非 top1 扇区（左 8 + 右 6）逐个包 .cellwave，按环向顺序
+    （=源绘制顺序）相位递增 0.3s/扇区、duration 3.8s（左 delay -0.3k，k=1..8；
+    右 delay -(1.9+0.3k)，k=1..6，右环基相 1.9s=半周期跨侧错拍）——形成绕环慢波；
+    3.8s ≠ 图例 2.6s，两波永不锁相（不与图例行波同相）；top1 扇区已 pulse 不叠波；
   · 脉冲 ×2（错相位）：左环 top1 扇区（短编码解码 41.8%）pulse-t(-0.7s)；
     右环 top1 扇区（LC_CSPIF_L0 35.4%）pulse(-2.1s)
 - 铁律：源 SVG 只读；text 多重集 / svg 开标签 / 几何颜色零改动；纯 CSS 无 script；
@@ -91,6 +96,21 @@ def legend_wave(blk, delays):
     return out
 
 
+def sector_wave(line, fade_d, wave_d):
+    """非 top1 扇区：入场 .fade 外壳 + 环向呼吸 .cellwave 内壳（duration 3.8s）。
+
+    扇区 circle 本行零改动（class/几何/dasharray 原样）——入场与稳态分壳嵌套
+    （§3 冲突规则）；wave_d = 负相位偏移，环向顺序每扇区 -0.3s 递增。
+    """
+    return [
+        f'<g class="fade" style="animation-delay:{fade_d:.2f}s">',
+        f'<g class="cellwave" style="animation-duration:3.8s;animation-delay:{wave_d:g}s">',
+        line,
+        "</g>",
+        "</g>",
+    ]
+
+
 def build():
     raw = SRC.read_text(encoding="utf-8", newline="")
     eol = "\r\n" if "\r\n" in raw else "\n"
@@ -156,6 +176,7 @@ def build():
     o.append("</g>")
 
     # 左环：面板 row(0.5)；扫光环 fade；扇区依次 fade（top1 另包 pulse-t）；
+    #        非 top1 扇区 fade 外壳 + cellwave 环向慢波（3.8s，delay -0.3k）；
     #        标签组 fade；中心 fade(1.7)
     o.append(lines[donL].replace('class="donut donutL"',
                                  'class="donut donutL row" style="animation-delay:0.5s"', 1))
@@ -175,8 +196,7 @@ def build():
     o.append("</g>")
     o.append("</g>")
     for k, i in enumerate(sec[1:], start=1):
-        o.append(blk[i].replace('class="sector"',
-                                f'class="sector fade" style="animation-delay:{0.65 + 0.07 * k:.2f}s"', 1))
+        o.extend(sector_wave(blk[i], 0.65 + 0.07 * k, -0.3 * k))
     # 标签组（上限 = center 组行 ci）
     ci = [i for i, s in enumerate(blk) if 'class="center centerL"' in s][0]
     li = first_lbl
@@ -220,7 +240,9 @@ def build():
     o.extend(blk[ci + 1:cc + 1])
     o.append("</g>")                                   # 关闭 donutL row
 
-    # 右环：面板 row(0.75)；扇区 fade 0.9+0.07k（top1 pulse -2.1）；标签 1.45+0.05k；中心 1.75
+    # 右环：面板 row(0.75)；扇区 fade 0.9+0.07k（top1 pulse -2.1）；非 top1 扇区
+    #        cellwave 环向慢波（3.8s，delay -(1.9+0.3k)，基相 1.9s=半周期跨侧错拍）；
+    #        标签 1.45+0.05k；中心 1.75
     o.append(lines[donR].replace('class="donut donutR"',
                                  'class="donut donutR row" style="animation-delay:0.75s"', 1))
     blk = lines[donR + 1:donR_c]
@@ -235,8 +257,7 @@ def build():
     o.append("</g>")
     o.append("</g>")
     for k, i in enumerate(sec[1:], start=1):
-        o.append(blk[i].replace('class="sector"',
-                                f'class="sector fade" style="animation-delay:{0.9 + 0.07 * k:.2f}s"', 1))
+        o.extend(sector_wave(blk[i], 0.9 + 0.07 * k, -(1.9 + 0.3 * k)))
     ci = [i for i, s in enumerate(blk) if 'class="center centerR"' in s][0]
     li = min(i for i, s in enumerate(blk) if s.strip() == '<g class="lbl">')
     k = 0
@@ -340,10 +361,13 @@ def main():
     build()
     res = check()
     data = OUT.read_text(encoding="utf-8")
-    print("[make_anim_power_composition_donut_1v11_1v22 v4]",
+    sector_waves = len(re.findall(r'class="cellwave" style="animation-duration:3\.8s', data))
+    assert sector_waves == 14, f"环向扇区波应 14（左8+右6），实得 {sector_waves}"
+    print("[make_anim_power_composition_donut_1v11_1v22 v4.1]",
           "head=", len(re.findall(r'class="f-cjk (title|subtitle) head"', data)),
           "row=", len(re.findall(r'class="[^"]*row"', data)),
           "cellwave=", data.count('class="cellwave"'),
+          "(legend 6 + sector", sector_waves, ")",
           "pulse=", len(re.findall(r'class="(pulse|pulse-t)"', data)))
     ok = True
     for k, v in res.items():
@@ -357,4 +381,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-# ymzhu 2026-10-28 18:33
+# ymzhu 2026-10-28 21:05

@@ -123,14 +123,46 @@
   <circle class="sector top1" cx="330" cy="330" r="170" pathLength="100" fill="none" stroke="#0e7490" stroke-opacity="1.00" stroke-width="52" stroke-dasharray="41.7691 58.2309" stroke-dashoffset="25.0000"/>
 </g>
 </g>
-  <circle class="sector fade" style="animation-delay:0.72s" cx="330" cy="330" r="170" pathLength="100" fill="none" stroke="#0e7490" stroke-opacity="0.85" stroke-width="52" stroke-dasharray="19.1398 80.8602" stroke-dashoffset="83.2309"/>
-  <circle class="sector fade" style="animation-delay:0.79s" cx="330" cy="330" r="170" pathLength="100" fill="none" stroke="#0e7490" stroke-opacity="0.72" stroke-width="52" stroke-dasharray="12.2499 87.7501" stroke-dashoffset="64.0911"/>
-  <circle class="sector fade" style="animation-delay:0.86s" cx="330" cy="330" r="170" pathLength="100" fill="none" stroke="#0e7490" stroke-opacity="0.60" stroke-width="52" stroke-dasharray="10.1887 89.8113" stroke-dashoffset="51.8412"/>
-  <circle class="sector fade" style="animation-delay:0.93s" cx="330" cy="330" r="170" pathLength="100" fill="none" stroke="#0e7490" stroke-opacity="0.50" stroke-width="52" stroke-dasharray="6.1879 93.8121" stroke-dashoffset="41.6525"/>
-  <circle class="sector fade" style="animation-delay:1.00s" cx="330" cy="330" r="170" pathLength="100" fill="none" stroke="#0e7490" stroke-opacity="0.42" stroke-width="52" stroke-dasharray="3.4611 96.5389" stroke-dashoffset="35.4646"/>
-  <circle class="sector fade" style="animation-delay:1.07s" cx="330" cy="330" r="170" pathLength="100" fill="none" stroke="#0e7490" stroke-opacity="0.36" stroke-width="52" stroke-dasharray="3.1731 96.8269" stroke-dashoffset="32.0035"/>
-  <circle class="sector fade" style="animation-delay:1.14s" cx="330" cy="330" r="170" pathLength="100" fill="none" stroke="#0e7490" stroke-opacity="0.30" stroke-width="52" stroke-dasharray="2.1424 97.8576" stroke-dashoffset="28.8304"/>
-  <circle class="sector fade" style="animation-delay:1.21s" cx="330" cy="330" r="170" pathLength="100" fill="none" stroke="#0e7490" stroke-opacity="0.25" stroke-width="52" stroke-dasharray="1.6880 98.3120" stroke-dashoffset="26.6880"/>
+<g class="fade" style="animation-delay:0.72s">
+<g class="cellwave" style="animation-duration:3.8s;animation-delay:-0.3s">
+  <circle class="sector" cx="330" cy="330" r="170" pathLength="100" fill="none" stroke="#0e7490" stroke-opacity="0.85" stroke-width="52" stroke-dasharray="19.1398 80.8602" stroke-dashoffset="83.2309"/>
+</g>
+</g>
+<g class="fade" style="animation-delay:0.79s">
+<g class="cellwave" style="animation-duration:3.8s;animation-delay:-0.6s">
+  <circle class="sector" cx="330" cy="330" r="170" pathLength="100" fill="none" stroke="#0e7490" stroke-opacity="0.72" stroke-width="52" stroke-dasharray="12.2499 87.7501" stroke-dashoffset="64.0911"/>
+</g>
+</g>
+<g class="fade" style="animation-delay:0.86s">
+<g class="cellwave" style="animation-duration:3.8s;animation-delay:-0.9s">
+  <circle class="sector" cx="330" cy="330" r="170" pathLength="100" fill="none" stroke="#0e7490" stroke-opacity="0.60" stroke-width="52" stroke-dasharray="10.1887 89.8113" stroke-dashoffset="51.8412"/>
+</g>
+</g>
+<g class="fade" style="animation-delay:0.93s">
+<g class="cellwave" style="animation-duration:3.8s;animation-delay:-1.2s">
+  <circle class="sector" cx="330" cy="330" r="170" pathLength="100" fill="none" stroke="#0e7490" stroke-opacity="0.50" stroke-width="52" stroke-dasharray="6.1879 93.8121" stroke-dashoffset="41.6525"/>
+</g>
+</g>
+<g class="fade" style="animation-delay:1.00s">
+<g class="cellwave" style="animation-duration:3.8s;animation-delay:-1.5s">
+  <circle class="sector" cx="330" cy="330" r="170" pathLength="100" fill="none" stroke="#0e7490" stroke-opacity="0.42" stroke-width="52" stroke-dasharray="3.4611 96.5389" stroke-dashoffset="35.4646"/>
+</g>
+</g>
+<g class="fade" style="animation-delay:1.07s">
+<g class="cellwave" style="animation-duration:3.8s;animation-delay:-1.8s">
+  <circle class="sector" cx="330" cy="330" r="170" pathLength="100" fill="none" stroke="#0e7490" stroke-opacity="0.36" stroke-width="52" stroke-dasharray="3.1731 96.8269" stroke-dashoffset="32.0035"/>
+</g>
+</g>
+<g class="fade" style="animation-delay:1.14s">
+<g class="cellwave" style="animation-duration:3.8s;animation-delay:-2.1s">
+  <circle class="sector" cx="330" cy="330" r="170" pathLength="100" fill="none" stroke="#0e7490" stroke-opacity="0.30" stroke-width="52" stroke-dasharray="2.1424 97.8576" stroke-dashoffset="28.8304"/>
+</g>
+</g>
+<g class="fade" style="animation-delay:1.21s">
+<g class="cellwave" style="animation-duration:3.8s;animation-delay:-2.4s">
+  <circle class="sector" cx="330" cy="330" r="170" pathLength="100" fill="none" stroke="#0e7490" stroke-opacity="0.25" stroke-width="52" stroke-dasharray="1.6880 98.3120" stroke-dashoffset="26.6880"/>
+</g>
+</g>
 <g class="fade" style="animation-delay:1.30s">
   <g class="lbl">
     <polyline class="lead" points="522.4,279.1 535.2,276.3"/>
@@ -211,12 +243,36 @@
   <circle class="sector top1" cx="870" cy="330" r="170" pathLength="100" fill="none" stroke="#b45309" stroke-opacity="1.00" stroke-width="52" stroke-dasharray="35.3589 64.6411" stroke-dashoffset="25.0000"/>
 </g>
 </g>
-  <circle class="sector fade" style="animation-delay:0.97s" cx="870" cy="330" r="170" pathLength="100" fill="none" stroke="#b45309" stroke-opacity="0.85" stroke-width="52" stroke-dasharray="23.2221 76.7779" stroke-dashoffset="89.6411"/>
-  <circle class="sector fade" style="animation-delay:1.04s" cx="870" cy="330" r="170" pathLength="100" fill="none" stroke="#b45309" stroke-opacity="0.70" stroke-width="52" stroke-dasharray="18.2301 81.7699" stroke-dashoffset="66.4190"/>
-  <circle class="sector fade" style="animation-delay:1.11s" cx="870" cy="330" r="170" pathLength="100" fill="none" stroke="#b45309" stroke-opacity="0.56" stroke-width="52" stroke-dasharray="12.1811 87.8189" stroke-dashoffset="48.1889"/>
-  <circle class="sector fade" style="animation-delay:1.18s" cx="870" cy="330" r="170" pathLength="100" fill="none" stroke="#b45309" stroke-opacity="0.44" stroke-width="52" stroke-dasharray="4.0235 95.9765" stroke-dashoffset="36.0078"/>
-  <circle class="sector fade" style="animation-delay:1.25s" cx="870" cy="330" r="170" pathLength="100" fill="none" stroke="#b45309" stroke-opacity="0.35" stroke-width="52" stroke-dasharray="3.2542 96.7458" stroke-dashoffset="31.9843"/>
-  <circle class="sector fade" style="animation-delay:1.32s" cx="870" cy="330" r="170" pathLength="100" fill="none" stroke="#b45309" stroke-opacity="0.27" stroke-width="52" stroke-dasharray="3.7301 96.2699" stroke-dashoffset="28.7301"/>
+<g class="fade" style="animation-delay:0.97s">
+<g class="cellwave" style="animation-duration:3.8s;animation-delay:-2.2s">
+  <circle class="sector" cx="870" cy="330" r="170" pathLength="100" fill="none" stroke="#b45309" stroke-opacity="0.85" stroke-width="52" stroke-dasharray="23.2221 76.7779" stroke-dashoffset="89.6411"/>
+</g>
+</g>
+<g class="fade" style="animation-delay:1.04s">
+<g class="cellwave" style="animation-duration:3.8s;animation-delay:-2.5s">
+  <circle class="sector" cx="870" cy="330" r="170" pathLength="100" fill="none" stroke="#b45309" stroke-opacity="0.70" stroke-width="52" stroke-dasharray="18.2301 81.7699" stroke-dashoffset="66.4190"/>
+</g>
+</g>
+<g class="fade" style="animation-delay:1.11s">
+<g class="cellwave" style="animation-duration:3.8s;animation-delay:-2.8s">
+  <circle class="sector" cx="870" cy="330" r="170" pathLength="100" fill="none" stroke="#b45309" stroke-opacity="0.56" stroke-width="52" stroke-dasharray="12.1811 87.8189" stroke-dashoffset="48.1889"/>
+</g>
+</g>
+<g class="fade" style="animation-delay:1.18s">
+<g class="cellwave" style="animation-duration:3.8s;animation-delay:-3.1s">
+  <circle class="sector" cx="870" cy="330" r="170" pathLength="100" fill="none" stroke="#b45309" stroke-opacity="0.44" stroke-width="52" stroke-dasharray="4.0235 95.9765" stroke-dashoffset="36.0078"/>
+</g>
+</g>
+<g class="fade" style="animation-delay:1.25s">
+<g class="cellwave" style="animation-duration:3.8s;animation-delay:-3.4s">
+  <circle class="sector" cx="870" cy="330" r="170" pathLength="100" fill="none" stroke="#b45309" stroke-opacity="0.35" stroke-width="52" stroke-dasharray="3.2542 96.7458" stroke-dashoffset="31.9843"/>
+</g>
+</g>
+<g class="fade" style="animation-delay:1.32s">
+<g class="cellwave" style="animation-duration:3.8s;animation-delay:-3.7s">
+  <circle class="sector" cx="870" cy="330" r="170" pathLength="100" fill="none" stroke="#b45309" stroke-opacity="0.27" stroke-width="52" stroke-dasharray="3.7301 96.2699" stroke-dashoffset="28.7301"/>
+</g>
+</g>
 <g class="fade" style="animation-delay:1.45s">
   <g class="lbl">
     <polyline class="lead" points="1048.3,241.7 1060.6,237.6"/>

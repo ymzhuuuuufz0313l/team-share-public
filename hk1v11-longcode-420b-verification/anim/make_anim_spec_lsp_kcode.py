@@ -12,8 +12,9 @@ pulse 缩放辉光取代 glow-*）；入场箭头 delay 规则 v2 的 +0.35 → 
   （2.05 = max(两端 K 表行 1.45)+0.55）。
 - 稳态·行波（族 1）：编码前/后两行 0xEA~0xED 橙格左右行进（0.1s/格，3s，
   两行同相）；K 表 4 行 bit 串按行 phase（0/0.5/1.0/1.5s，3.6s）。
-- 稳态·列车（族 2）：先发/后发箭头各 2 包 + flowtail（d 同箭头向上 = 按标注
-  方向走，0.7s；先发 delay 0/-0.35，后发 -0.15/-0.5 错相）。边仅 14px 高且上端
+- 稳态·列车（族 2）：先发/后发箭头各 3 包 + 2 flowtail（2026-10-28 晚动效加密
+  2→3 包：d 同箭头向上 = 按标注方向走，0.7s 整周期均布；先发 delay 0/-0.23/-0.47，
+  后发 -0.15/-0.38/-0.62 错相，tail 随前两包）。边仅 14px 高且上端
   贴 K4 bit 盒 → 按 §5 护栏内联 stroke-width：dot 2.5 / tail 4。
 - 稳态·脉冲（族 3）：编码前行 K3 格 pulse-b（delay -1.4s）；K 表 K3 行 pulse-b
   （delay 0s，phase 差 1.4s）。
@@ -251,26 +252,29 @@ def build():
             out.append("</g>")
         out.append("</g>")
 
-    # 先发/后发(1.7)：2 箭头 draw(2.05 = K4 行 1.45 + 0.55) + 各 2 包 + flowtail
-    # （0.7s；边仅 14px 高且上端贴盒 → §5 护栏内联 stroke-width dot 2.5 / tail 4）
+    # 先发/后发(1.7)：2 箭头 draw(2.05 = K4 行 1.45 + 0.55) + 各 3 包（整周期均布）
+    # + 前 2 包 flowtail（0.7s；2026-10-28 加密 2→3 包；边仅 14px 高且上端贴盒 →
+    # §5 护栏内联 stroke-width dot 2.5 / tail 4）
     counts["row"] += 1
     out.append('<g class="row" style="animation-delay:1.7s">')
     counts["draw"] += 1
     out.append(tag_draw(lines[arrow_first], 2.05))
     out.append(lines[arrow_first_label])
-    counts["flowdot"] += 2
-    counts["flowtail"] += 1
-    out.append(flowdot("M 950 542 L 950 528", "#2563eb", 0.7, 0.0, w=2.5))
-    out.append(flowdot("M 950 542 L 950 528", "#2563eb", 0.7, -0.35, w=2.5))
+    counts["flowdot"] += 3
+    counts["flowtail"] += 2
+    for dl in (0.0, -0.23, -0.47):
+        out.append(flowdot("M 950 542 L 950 528", "#2563eb", 0.7, dl, w=2.5))
     out.append(flowtail("M 950 542 L 950 528", "#2563eb", 0.7, 0.0, w=4))
+    out.append(flowtail("M 950 542 L 950 528", "#2563eb", 0.7, -0.23, w=4))
     counts["draw"] += 1
     out.append(tag_draw(lines[arrow_last], 2.05))
     out.append(lines[arrow_last_label])
-    counts["flowdot"] += 2
-    counts["flowtail"] += 1
-    out.append(flowdot("M 178 542 L 178 528", "#2563eb", 0.7, -0.15, w=2.5))
-    out.append(flowdot("M 178 542 L 178 528", "#2563eb", 0.7, -0.5, w=2.5))
+    counts["flowdot"] += 3
+    counts["flowtail"] += 2
+    for dl in (-0.15, -0.38, -0.62):
+        out.append(flowdot("M 178 542 L 178 528", "#2563eb", 0.7, dl, w=2.5))
     out.append(flowtail("M 178 542 L 178 528", "#2563eb", 0.7, -0.15, w=4))
+    out.append(flowtail("M 178 542 L 178 528", "#2563eb", 0.7, -0.38, w=4))
     out.append(lines[dir_note])
     out.append("</g>")
 
@@ -329,4 +333,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-# ymzhu 2026-10-28 16:51
+# ymzhu 2026-10-28 19:06

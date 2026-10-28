@@ -21,9 +21,15 @@ delay_skew_14vs12（1440×950，三面板 STA skew 讲解图，静态版=images/
     ③ "STATUS: NOT YET CONFIRMED OK" .pulse(-1.4s)
   · 扫光 sweepband ×1（§4 配方，琥珀）：② 场景表三行区（x60..680 / y660..788，P=860）
     ——逐场景扫描语义；置于面板底色之上、行文字之下
-- 源样式中和（assert 保护，均因 kit 定义了同名 keyframes）：
-  · 6 条 class="march" 阈值虚线（源 dasharray 6,4 ≠ -16 位移周期，行进会跳变）
-    → 行内 style="animation:none"
+  · 生长 dashgrow ×6（v4.1 二轮加密）：6 条 12/14 阈值虚线（①②③ 各一对）并入
+    .dashgrow——duration 3.0s、文档序相位 0/-0.4/-0.8/-1.2/-1.6/-2.0s 递进，
+    虚线沿轴生长回卷表达"阈值推进"；列车维持不动
+- 源样式处理（assert 保护）：
+  · 6 条 class="march" 阈值虚线：v4 曾行内 animation:none 中和（dasharray 6,4 与
+    -16 位移不整除→行进跳变）；v4.1 改并入 class="march dashgrow" + 行内钉死
+    animation-name:dashgrow（kit CSS 中 .march 声明在 .dashgrow 之后，不钉死名字
+    会级联回 march 跳变）；.dashgrow 的 stroke-dasharray:7 5（周期 12）整除
+    keyframes 位移 72，循环无缝
   · rowB 行洗矩形：静态剥离版漏带 opacity（静态中渲染为实心琥珀、盖住整表），
     输出恢复原动画设计的中值洗底 opacity:.08（仅动画版，静态版不改）
 - 铁律：源 SVG 只读；text 多重集 / svg 开标签 / 几何颜色零改动；纯 CSS 无 script；
@@ -246,15 +252,24 @@ def build():
     plate_a = find(lambda s: 'x="1080" y="878"' in s)
     plate_z = find(lambda s: "DELAY BUDGET 14 vs 12" in s)
 
-    # march 阈值线全集（6 条，行内中和）
+    # march 阈值线全集（6 条）→ .dashgrow 阈值推进生长（3.0s，文档序 0.4s 递进错相位）
     march_ls = [i for i in range(0, end) if 'class="march"' in lines[i]]
     assert len(march_ls) == 6, f"应有 6 条 march 线，实得 {len(march_ls)}"
 
     # ---- 行内修改 ----
-    for i in march_ls:
+    for j, i in enumerate(march_ls):
         assert 'stroke-dasharray="6,4"/>' in lines[i]
-        lines[i] = lines[i].replace('stroke-dasharray="6,4"/>',
-                                    'stroke-dasharray="6,4" style="animation:none"/>', 1)
+        assert lines[i].strip().startswith('<line class="march" '), "march 行首格式漂移"
+        dl = -0.4 * j
+        dl_s = f"{dl:g}" if dl else "0"
+        lines[i] = lines[i].replace('class="march"', 'class="march dashgrow"', 1)
+        # 注意级联：kit CSS 中 .march 声明在 .dashgrow 之后，同特异度下 .march 的
+        # animation 简写会胜出 → 必须行内钉死 animation-name:dashgrow
+        # （行内 longhand 覆盖两类的 shorthand 分量），否则退化回 march -16 跳变
+        lines[i] = lines[i].replace(
+            'stroke-dasharray="6,4"/>',
+            f'stroke-dasharray="6,4" style="animation-name:dashgrow;'
+            f'animation-duration:3s;animation-delay:{dl_s}s"/>', 1)
     # rowB：恢复原动画设计的洗底中值 opacity（静态剥离版漏带 → 实心琥珀盖表）
     lines[rowb] = lines[rowb].replace('<rect class="rowB" ',
                                       '<rect class="rowB" style="opacity:.08" ', 1)
@@ -408,7 +423,8 @@ def check():
     res["noscript"] = "OK" if "<script" not in data else "NG"
     res["nosmil"] = "OK" if "<animate" not in data else "NG"
     res["keyframes"] = "OK" if data.count("@keyframes") >= 10 else "NG"
-    res["march_killed"] = "OK" if data.count('style="animation:none"') == 6 else "NG"
+    res["march_grow"] = "OK" if (data.count('class="march dashgrow"') == 6
+                                 and 'style="animation:none"' not in data) else "NG"
     res["rowb_wash"] = "OK" if 'class="rowB" style="opacity:.08"' in data else "NG"
 
     def svgtag(p):
@@ -440,11 +456,12 @@ def main():
     build()
     res = check()
     data = OUT.read_text(encoding="utf-8")
-    print("[make_anim_delay_skew_14vs12 v4]",
+    print("[make_anim_delay_skew_14vs12 v4.1]",
           "draw=", data.count(' draw"'),
           "row_g=", len(re.findall(r'class="p\d row"', data)) + len(re.findall(r'class="r\d row"', data)),
           "flowdot=", data.count('class="flowdot"'),
           "flowtail=", data.count('class="flowtail"'),
+          "dashgrow=", data.count('class="march dashgrow"'),
           "pulse=", len(re.findall(r'class="(pulse|pulse-t|pulse-b)"', data)),
           "sweepband=", data.count('class="sweepband"'))
     ok = True
@@ -459,4 +476,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-# ymzhu 2026-10-28 17:45
+# ymzhu 2026-10-28 21:16

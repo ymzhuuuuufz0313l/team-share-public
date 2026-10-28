@@ -9,13 +9,15 @@
 v4 规格（940×1764，LC_CPUWR 1023v1 参与 checksum 的地址 · chip_sel=0/1 对照）：
 - 入场：head 标题+位号列头(0) → 15 个地址行 0.15 起 0.08s 递进（至 1.27）
   → 底部图例+脚注 head(1.5)。一次性总长 1.5+0.55 = 2.05s ≤ 2.5s。
-- 稳态（3 族，肉眼可辨；取代 v1 的 233 处低幅呼吸）：
+- 稳态（2 族 + v4.1 加密脉冲；取代 v1 的 233 处低幅呼吸）：
   · 行波 cellwave×15（主角）：全部地址行整行组波，自上而下 0.4s/行 错相位
     （周期 6.0s）= 地址扫描波。
-  · 脉冲 pulse×3（错相位 -0.7 / -1.4 / -2.1）：
+  · 脉冲 pulse×4（v4.1 +1；相位 0 / -0.7 / -1.4 / -2.1 均布）：
     0x0A cs=1 的 PWRC_P[1:0] 单元格 pulse（琥珀，LC_CPUWR 1027v1 checksum
     覆盖修复受影响字节）；0x02 行组 pulse-b（蓝，唯一 chip_sel=0/1 对照行）；
-    0x27 行组 pulse-t（深青，frame end 校验字节边界行）。
+    0x27 行组 pulse-t（深青，frame end 校验字节边界行）；
+    0x1F 行组 pulse（琥珀，0s，PWRC 控制字节双行 PWRC_P1..N3/CTRL+NB/NA/PB/PA
+    —— 0x27 已有脉冲后按"PWRC 相关另一关键行"选定）。
 - 铁律：源 SVG 只读；<text> 多重集 / svg 开标签 / 几何颜色零改动；
   纯 CSS 无 script 无 SMIL；kit CSS §2 逐字嵌入；背景 rect 保留；
   reduced-motion 用 kit 原文；确定性幂等（只依赖源 SVG）。
@@ -67,7 +69,8 @@ KIT_CSS = "\n".join([
 LABEL_X = "170"        # 行标签列 x
 ROW_STEP = 0.08        # 入场递进（15 行）
 WAVE_STEP = 0.4        # 行波相位步进
-ROW_PULSES = {"0x02": ("pulse-b", "-1.4s"), "0x27": ("pulse-t", "-2.1s")}
+ROW_PULSES = {"0x02": ("pulse-b", "-1.4s"), "0x27": ("pulse-t", "-2.1s"),
+              "0x1F": ("pulse", "0s")}          # v4.1：PWRC 控制字节双行
 CELL_PULSES = {"0x0A": ("PWRC_P[1:0]", "pulse", "-0.7s")}
 
 
@@ -126,7 +129,7 @@ def build():
             assert attrs_of(lines[t - 1])[0] == "rect", f"{field} 前应为 rect"
             assert attrs_of(lines[t + 1])[0] == "text", f"{field} 后应为 value text"
             cell_pulse_map[t - 1] = (kind, delay, t + 1)
-    assert len(row_pulse_map) == 2 and len(cell_pulse_map) == 1, "脉冲定位数异常"
+    assert len(row_pulse_map) == 3 and len(cell_pulse_map) == 1, "脉冲定位数异常"
 
     # ---- 组装 ----
     o = []
@@ -242,4 +245,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-# ymzhu 2026-10-28 17:30
+# ymzhu 2026-10-28 19:14

@@ -149,9 +149,12 @@
 <text x="100" y="360" font-size="10" fill="#64748b" text-anchor="end">Bit0</text>
 <text transform="rotate(-90 52 244)" x="52" y="244" font-size="10.5" fill="#64748b" text-anchor="middle">Packet Data</text>
 <path d="M 74 356 L 74 122" stroke="#2563eb" stroke-width="2" fill="none" marker-end="url(#ar-blue)" class="draw" pathLength="100" style="animation-delay:1.15s"/>
-<path d="M 74 356 L 74 122" stroke="#2563eb" class="flowdot" pathLength="100" style="animation-duration:1.4s;animation-delay:0s"/>
-<path d="M 74 356 L 74 122" stroke="#2563eb" class="flowdot" pathLength="100" style="animation-duration:1.4s;animation-delay:-0.35s"/>
-<path d="M 74 356 L 74 122" stroke="#2563eb" class="flowtail" pathLength="100" style="animation-duration:1.4s;animation-delay:0s"/>
+<path d="M 74 356 L 74 122" stroke="#2563eb" class="flowdot" pathLength="100" style="animation-duration:0.7s;animation-delay:0s"/>
+<path d="M 74 356 L 74 122" stroke="#2563eb" class="flowtail" pathLength="100" style="animation-duration:0.7s;animation-delay:0s"/>
+<path d="M 74 356 L 74 122" stroke="#2563eb" class="flowdot" pathLength="100" style="animation-duration:0.7s;animation-delay:-0.23s"/>
+<path d="M 74 356 L 74 122" stroke="#2563eb" class="flowtail" pathLength="100" style="animation-duration:0.7s;animation-delay:-0.23s"/>
+<path d="M 74 356 L 74 122" stroke="#2563eb" class="flowdot" pathLength="100" style="animation-duration:0.7s;animation-delay:-0.47s"/>
+<path d="M 74 356 L 74 122" stroke="#2563eb" class="flowtail" pathLength="100" style="animation-duration:0.7s;animation-delay:-0.47s"/>
 <text transform="rotate(-90 88 240)" x="88" y="240" font-size="9.5" fill="#2563eb" text-anchor="middle">发送顺序（Bit0 先发）</text>
 </g>
 <g class="row" style="animation-delay:0.7s">
@@ -267,8 +270,8 @@
 </g>
 <g class="head" style="animation-delay:1.5s">
 <line x1="60" y1="540" x2="1140" y2="540" stroke="#2563eb" stroke-width="1.5" marker-end="url(#ar-blue)" class="draw" pathLength="100" style="animation-delay:2.05s"/>
-<path d="M 60 540 L 1140 540" stroke="#2563eb" class="flowdot" pathLength="100" style="animation-duration:1.4s;animation-delay:-0.2s"/>
-<path d="M 60 540 L 1140 540" stroke="#2563eb" class="flowdot" pathLength="100" style="animation-duration:1.4s;animation-delay:-0.55s"/>
+<path d="M 60 540 L 1140 540" stroke="#2563eb" class="flowdot" pathLength="100" style="animation-duration:0.7s;animation-delay:-0.2s"/>
+<path d="M 60 540 L 1140 540" stroke="#2563eb" class="flowdot" pathLength="100" style="animation-duration:0.7s;animation-delay:-0.55s"/>
 <text x="1140" y="532" font-size="10" fill="#2563eb" text-anchor="end">传输时间轴方向</text>
 </g>
 </svg>

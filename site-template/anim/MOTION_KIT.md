@@ -1,6 +1,6 @@
 > **模板版**：复制本目录到新站后，改 §1 路径为本站实际、§6 换成本站分图规格；其余章节（§0~§5、§7~§10）禁改。
 
-# Motion Kit v4 — 电影感纯 CSS in-SVG 动效规范（2026-10-28 定稿）
+# Motion Kit v4.1 — 电影感纯 CSS in-SVG 动效规范（2026-10-28 定稿）
 
 > v4 取代 v2（v2 全文见 git 历史）。上位架构 = `blueprint-ui-style` skill「动画/静态双版 SVG 站点架构（v4）」章。
 > 用户对 v2 的两条判定：①稳态动效不明显（低幅 opacity 呼吸看不出动画）；②入场 0.8s 帧"箭头悬浮在空白面板上"。
@@ -79,7 +79,7 @@
 
 **稳态硬指标（校验器强制）**：每图稳态 ≥2 个族。族 = 列车(flowdot/flowtail) / 脉冲(pulse*) / 扫光(sweepband) / 生长(dashgrow) / 行波(cellwave) / 步骤(step)。march、breathe 不计数。v2 里 glow-* 一律由 pulse 变体取代（glow-b→pulse-b、glow-g→pulse-t、glow-o→pulse）。
 
-**delay 规则**：一次性类（row/head/draw/fade）delay 0~2.2s；无限循环类允许负 delay = 相位偏移（|d| ≤ 周期）；同族必须错相位；持续层 ≤3 族（含 march/breathe）。
+**delay 规则**：一次性类（row/head/draw/fade）delay 0~2.2s；无限循环类允许负 delay = 相位偏移（|d| ≤ 周期）；同族必须错相位；持续层 ≤4 族（含 march/breathe）。
 
 ## 4. 扫光带配方（sweepband 唯一合法实现）
 
@@ -196,7 +196,7 @@ IDLE pattern 面板（K5~K8 4 行）、lane 间轮换面板（Lane1~4）、V bla
 ```
 python anim/validate_kit_v4.py <name1> [name2 ...]
 ```
-全 PASS 才算完成。另加人工检查（写进报告）：源 SVG 无改动（git status 源图无 M）；一次性总长 ≤2.5s；持续族 ≤3；相位错开；flowdot 不穿文字。
+全 PASS 才算完成。另加人工检查（写进报告）：源 SVG 无改动（git status 源图无 M）；一次性总长 ≤2.5s；持续族 ≤4；相位错开；flowdot 不穿文字。
 
 ## 9. 报告格式（DONE 消息）
 
@@ -212,3 +212,4 @@ DONE — <name1> / <name2> ...
 - v4（2026-10-28）：稳态升级（pulse 缩放辉光/扫光带/列车加粗+拖尾/dashgrow），glow-* 废除由 pulse* 取代；入场箭头 delay 规则 +0.35→+0.55 修悬浮箭头；稳态 ≥2 族硬指标；kit CSS 全量替换；校验升级 validate_kit_v4.py。
 - v2.1（2026-10-27）：生成器漏带源 defs/背景 rect 回归修复；无限循环类负 delay 澄清。
 - v2（2026-10-27）：首版 kit（rowIn/drawIn/flowdot/cellwave/glow/step）。
+- v4.1（2026-10-28 晚）：持续层族上限 3→4（用户认可四族词汇并要求加密）；kit CSS 呼吸化 + 列车降速 2.6s。

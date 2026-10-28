@@ -57,19 +57,19 @@
 <rect x="90" y="222" width="130" height="34" rx="8" fill="#f0fdfa" stroke="#99f6e4" stroke-width="1.5"/>
 <text x="155.0" y="242.5" font-size="9.5" fill="#0f766e" text-anchor="middle" font-weight="600">send_LSP_seq()</text>
 </g>
-<g class="cellwave" style="animation-delay:0.1s">
+<g class="cellwave" style="animation-delay:0.07s">
 <rect x="230" y="222" width="130" height="34" rx="8" fill="#f0fdfa" stroke="#99f6e4" stroke-width="1.5"/>
 <text x="295.0" y="242.5" font-size="9.5" fill="#0f766e" text-anchor="middle" font-weight="600">send_CTRLF_seq()</text>
 </g>
-<g class="cellwave" style="animation-delay:0.2s">
+<g class="cellwave" style="animation-delay:0.14s">
 <rect x="370" y="222" width="130" height="34" rx="8" fill="#f0fdfa" stroke="#99f6e4" stroke-width="1.5"/>
 <text x="435.0" y="242.5" font-size="9.5" fill="#0f766e" text-anchor="middle" font-weight="600">send_CTRLL_seq()</text>
 </g>
-<g class="cellwave" style="animation-delay:0.3s">
+<g class="cellwave" style="animation-delay:0.21s">
 <rect x="510" y="222" width="130" height="34" rx="8" fill="#f0fdfa" stroke="#99f6e4" stroke-width="1.5"/>
 <text x="575.0" y="242.5" font-size="9.5" fill="#0f766e" text-anchor="middle" font-weight="600">send_ppm()</text>
 </g>
-<g class="cellwave" style="animation-delay:0.4s">
+<g class="cellwave" style="animation-delay:0.28s">
 <rect x="90" y="266" width="540" height="38" rx="6" fill="#f0fdfa" stroke="#99f6e4" stroke-width="1.5"/>
 <text x="360" y="290" font-size="9.5" fill="#0f766e" text-anchor="middle">8-bit pixel / reg → G24(X) 24-bit scramble() → encode_8b10b() → 10-bit symbol</text>
 </g>
@@ -112,19 +112,19 @@
 <rect x="770" y="222" width="175" height="34" rx="8" fill="#f0fdfa" stroke="#99f6e4" stroke-width="1.5"/>
 <text x="857.5" y="242.5" font-size="9" fill="#0f766e" text-anchor="middle" font-weight="600">send_420b_lsp()</text>
 </g>
-<g class="cellwave" style="animation-delay:1.4s">
+<g class="cellwave" style="animation-delay:1.37s">
 <rect x="955" y="222" width="175" height="34" rx="8" fill="#f0fdfa" stroke="#99f6e4" stroke-width="1.5"/>
 <text x="1042.5" y="242.5" font-size="9" fill="#0f766e" text-anchor="middle" font-weight="600">send_420b_active_line()</text>
 </g>
-<g class="cellwave" style="animation-delay:1.5s">
+<g class="cellwave" style="animation-delay:1.44s">
 <rect x="1140" y="222" width="175" height="34" rx="8" fill="#f0fdfa" stroke="#99f6e4" stroke-width="1.5"/>
 <text x="1227.5" y="242.5" font-size="9" fill="#0f766e" text-anchor="middle" font-weight="600">send_420b_ctrl_f_line()</text>
 </g>
-<g class="cellwave" style="animation-delay:1.6s">
+<g class="cellwave" style="animation-delay:1.51s">
 <rect x="770" y="266" width="175" height="34" rx="8" fill="#f0fdfa" stroke="#99f6e4" stroke-width="1.5"/>
 <text x="857.5" y="286.5" font-size="9" fill="#0f766e" text-anchor="middle" font-weight="600">send_420b_vblank_line()</text>
 </g>
-<g class="cellwave" style="animation-delay:1.7s">
+<g class="cellwave" style="animation-delay:1.58s">
 <rect x="955" y="266" width="175" height="34" rx="8" fill="#f0fdfa" stroke="#99f6e4" stroke-width="1.5"/>
 <text x="1042.5" y="286.5" font-size="9" fill="#0f766e" text-anchor="middle" font-weight="600">send_420b_idle_pattern()</text>
 </g>
@@ -170,64 +170,84 @@
 <line x1="1040" y1="464" x2="1040" y2="480" stroke="#2563eb" stroke-width="1.5" marker-end="url(#ar-blue)" class="draw" pathLength="100" style="animation-delay:1.33s"/>
 <line x1="1040" y1="558" x2="1040" y2="574" stroke="#2563eb" stroke-width="1.5" marker-end="url(#ar-blue)" class="draw" pathLength="100" style="animation-delay:1.45s"/>
 <g class="fade" style="animation-delay:0.82s">
-<path class="flowtail" d="M 360 174 L 360 190" stroke="#1d4ed8" pathLength="100" style="animation-duration:1.4s;animation-delay:-0s"/>
-<path class="flowdot" d="M 360 174 L 360 190" stroke="#1d4ed8" pathLength="100" style="animation-duration:1.4s;animation-delay:-0s"/>
-<path class="flowtail" d="M 360 174 L 360 190" stroke="#1d4ed8" pathLength="100" style="animation-duration:1.4s;animation-delay:-0.35s"/>
-<path class="flowdot" d="M 360 174 L 360 190" stroke="#1d4ed8" pathLength="100" style="animation-duration:1.4s;animation-delay:-0.35s"/>
+<path class="flowtail" d="M 360 174 L 360 190" stroke="#1d4ed8" pathLength="100" style="animation-duration:0.7s;animation-delay:-0s"/>
+<path class="flowdot" d="M 360 174 L 360 190" stroke="#1d4ed8" pathLength="100" style="animation-duration:0.7s;animation-delay:-0s"/>
+<path class="flowtail" d="M 360 174 L 360 190" stroke="#1d4ed8" pathLength="100" style="animation-duration:0.7s;animation-delay:-0.233333s"/>
+<path class="flowdot" d="M 360 174 L 360 190" stroke="#1d4ed8" pathLength="100" style="animation-duration:0.7s;animation-delay:-0.233333s"/>
+<path class="flowtail" d="M 360 174 L 360 190" stroke="#1d4ed8" pathLength="100" style="animation-duration:0.7s;animation-delay:-0.466667s"/>
+<path class="flowdot" d="M 360 174 L 360 190" stroke="#1d4ed8" pathLength="100" style="animation-duration:0.7s;animation-delay:-0.466667s"/>
 </g>
 <g class="fade" style="animation-delay:0.94s">
-<path class="flowtail" d="M 360 316 L 360 332" stroke="#1d4ed8" pathLength="100" style="animation-duration:1.4s;animation-delay:-0.11s"/>
-<path class="flowdot" d="M 360 316 L 360 332" stroke="#1d4ed8" pathLength="100" style="animation-duration:1.4s;animation-delay:-0.11s"/>
-<path class="flowtail" d="M 360 316 L 360 332" stroke="#1d4ed8" pathLength="100" style="animation-duration:1.4s;animation-delay:-0.46s"/>
-<path class="flowdot" d="M 360 316 L 360 332" stroke="#1d4ed8" pathLength="100" style="animation-duration:1.4s;animation-delay:-0.46s"/>
+<path class="flowtail" d="M 360 316 L 360 332" stroke="#1d4ed8" pathLength="100" style="animation-duration:0.7s;animation-delay:-0.11s"/>
+<path class="flowdot" d="M 360 316 L 360 332" stroke="#1d4ed8" pathLength="100" style="animation-duration:0.7s;animation-delay:-0.11s"/>
+<path class="flowtail" d="M 360 316 L 360 332" stroke="#1d4ed8" pathLength="100" style="animation-duration:0.7s;animation-delay:-0.343333s"/>
+<path class="flowdot" d="M 360 316 L 360 332" stroke="#1d4ed8" pathLength="100" style="animation-duration:0.7s;animation-delay:-0.343333s"/>
+<path class="flowtail" d="M 360 316 L 360 332" stroke="#1d4ed8" pathLength="100" style="animation-duration:0.7s;animation-delay:-0.576667s"/>
+<path class="flowdot" d="M 360 316 L 360 332" stroke="#1d4ed8" pathLength="100" style="animation-duration:0.7s;animation-delay:-0.576667s"/>
 </g>
 <g class="fade" style="animation-delay:1.06s">
-<path class="flowtail" d="M 360 392 L 360 408" stroke="#1d4ed8" pathLength="100" style="animation-duration:1.4s;animation-delay:-0.22s"/>
-<path class="flowdot" d="M 360 392 L 360 408" stroke="#1d4ed8" pathLength="100" style="animation-duration:1.4s;animation-delay:-0.22s"/>
-<path class="flowtail" d="M 360 392 L 360 408" stroke="#1d4ed8" pathLength="100" style="animation-duration:1.4s;animation-delay:-0.57s"/>
-<path class="flowdot" d="M 360 392 L 360 408" stroke="#1d4ed8" pathLength="100" style="animation-duration:1.4s;animation-delay:-0.57s"/>
+<path class="flowtail" d="M 360 392 L 360 408" stroke="#1d4ed8" pathLength="100" style="animation-duration:0.7s;animation-delay:-0.22s"/>
+<path class="flowdot" d="M 360 392 L 360 408" stroke="#1d4ed8" pathLength="100" style="animation-duration:0.7s;animation-delay:-0.22s"/>
+<path class="flowtail" d="M 360 392 L 360 408" stroke="#1d4ed8" pathLength="100" style="animation-duration:0.7s;animation-delay:-0.453333s"/>
+<path class="flowdot" d="M 360 392 L 360 408" stroke="#1d4ed8" pathLength="100" style="animation-duration:0.7s;animation-delay:-0.453333s"/>
+<path class="flowtail" d="M 360 392 L 360 408" stroke="#1d4ed8" pathLength="100" style="animation-duration:0.7s;animation-delay:-0.686667s"/>
+<path class="flowdot" d="M 360 392 L 360 408" stroke="#1d4ed8" pathLength="100" style="animation-duration:0.7s;animation-delay:-0.686667s"/>
 </g>
 <g class="fade" style="animation-delay:1.18s">
-<path class="flowtail" d="M 360 464 L 360 480" stroke="#1d4ed8" pathLength="100" style="animation-duration:1.4s;animation-delay:-0.33s"/>
-<path class="flowdot" d="M 360 464 L 360 480" stroke="#1d4ed8" pathLength="100" style="animation-duration:1.4s;animation-delay:-0.33s"/>
-<path class="flowtail" d="M 360 464 L 360 480" stroke="#1d4ed8" pathLength="100" style="animation-duration:1.4s;animation-delay:-0.68s"/>
-<path class="flowdot" d="M 360 464 L 360 480" stroke="#1d4ed8" pathLength="100" style="animation-duration:1.4s;animation-delay:-0.68s"/>
+<path class="flowtail" d="M 360 464 L 360 480" stroke="#1d4ed8" pathLength="100" style="animation-duration:0.7s;animation-delay:-0.33s"/>
+<path class="flowdot" d="M 360 464 L 360 480" stroke="#1d4ed8" pathLength="100" style="animation-duration:0.7s;animation-delay:-0.33s"/>
+<path class="flowtail" d="M 360 464 L 360 480" stroke="#1d4ed8" pathLength="100" style="animation-duration:0.7s;animation-delay:-0.563333s"/>
+<path class="flowdot" d="M 360 464 L 360 480" stroke="#1d4ed8" pathLength="100" style="animation-duration:0.7s;animation-delay:-0.563333s"/>
+<path class="flowtail" d="M 360 464 L 360 480" stroke="#1d4ed8" pathLength="100" style="animation-duration:0.7s;animation-delay:-0.796667s"/>
+<path class="flowdot" d="M 360 464 L 360 480" stroke="#1d4ed8" pathLength="100" style="animation-duration:0.7s;animation-delay:-0.796667s"/>
 </g>
 <g class="fade" style="animation-delay:1.3s">
-<path class="flowtail" d="M 360 558 L 360 574" stroke="#1d4ed8" pathLength="100" style="animation-duration:1.4s;animation-delay:-0.44s"/>
-<path class="flowdot" d="M 360 558 L 360 574" stroke="#1d4ed8" pathLength="100" style="animation-duration:1.4s;animation-delay:-0.44s"/>
-<path class="flowtail" d="M 360 558 L 360 574" stroke="#1d4ed8" pathLength="100" style="animation-duration:1.4s;animation-delay:-0.79s"/>
-<path class="flowdot" d="M 360 558 L 360 574" stroke="#1d4ed8" pathLength="100" style="animation-duration:1.4s;animation-delay:-0.79s"/>
+<path class="flowtail" d="M 360 558 L 360 574" stroke="#1d4ed8" pathLength="100" style="animation-duration:0.7s;animation-delay:-0.44s"/>
+<path class="flowdot" d="M 360 558 L 360 574" stroke="#1d4ed8" pathLength="100" style="animation-duration:0.7s;animation-delay:-0.44s"/>
+<path class="flowtail" d="M 360 558 L 360 574" stroke="#1d4ed8" pathLength="100" style="animation-duration:0.7s;animation-delay:-0.673333s"/>
+<path class="flowdot" d="M 360 558 L 360 574" stroke="#1d4ed8" pathLength="100" style="animation-duration:0.7s;animation-delay:-0.673333s"/>
+<path class="flowtail" d="M 360 558 L 360 574" stroke="#1d4ed8" pathLength="100" style="animation-duration:0.7s;animation-delay:-0.906667s"/>
+<path class="flowdot" d="M 360 558 L 360 574" stroke="#1d4ed8" pathLength="100" style="animation-duration:0.7s;animation-delay:-0.906667s"/>
 </g>
 <g class="fade" style="animation-delay:0.97s">
-<path class="flowtail" d="M 1040 174 L 1040 190" stroke="#b45309" pathLength="100" style="animation-duration:1.4s;animation-delay:0.35s"/>
-<path class="flowdot" d="M 1040 174 L 1040 190" stroke="#b45309" pathLength="100" style="animation-duration:1.4s;animation-delay:0.35s"/>
-<path class="flowtail" d="M 1040 174 L 1040 190" stroke="#b45309" pathLength="100" style="animation-duration:1.4s;animation-delay:0s"/>
-<path class="flowdot" d="M 1040 174 L 1040 190" stroke="#b45309" pathLength="100" style="animation-duration:1.4s;animation-delay:0s"/>
+<path class="flowtail" d="M 1040 174 L 1040 190" stroke="#b45309" pathLength="100" style="animation-duration:0.7s;animation-delay:0.35s"/>
+<path class="flowdot" d="M 1040 174 L 1040 190" stroke="#b45309" pathLength="100" style="animation-duration:0.7s;animation-delay:0.35s"/>
+<path class="flowtail" d="M 1040 174 L 1040 190" stroke="#b45309" pathLength="100" style="animation-duration:0.7s;animation-delay:0.116667s"/>
+<path class="flowdot" d="M 1040 174 L 1040 190" stroke="#b45309" pathLength="100" style="animation-duration:0.7s;animation-delay:0.116667s"/>
+<path class="flowtail" d="M 1040 174 L 1040 190" stroke="#b45309" pathLength="100" style="animation-duration:0.7s;animation-delay:-0.116667s"/>
+<path class="flowdot" d="M 1040 174 L 1040 190" stroke="#b45309" pathLength="100" style="animation-duration:0.7s;animation-delay:-0.116667s"/>
 </g>
 <g class="fade" style="animation-delay:1.09s">
-<path class="flowtail" d="M 1040 316 L 1040 332" stroke="#b45309" pathLength="100" style="animation-duration:1.4s;animation-delay:0.24s"/>
-<path class="flowdot" d="M 1040 316 L 1040 332" stroke="#b45309" pathLength="100" style="animation-duration:1.4s;animation-delay:0.24s"/>
-<path class="flowtail" d="M 1040 316 L 1040 332" stroke="#b45309" pathLength="100" style="animation-duration:1.4s;animation-delay:-0.11s"/>
-<path class="flowdot" d="M 1040 316 L 1040 332" stroke="#b45309" pathLength="100" style="animation-duration:1.4s;animation-delay:-0.11s"/>
+<path class="flowtail" d="M 1040 316 L 1040 332" stroke="#b45309" pathLength="100" style="animation-duration:0.7s;animation-delay:0.24s"/>
+<path class="flowdot" d="M 1040 316 L 1040 332" stroke="#b45309" pathLength="100" style="animation-duration:0.7s;animation-delay:0.24s"/>
+<path class="flowtail" d="M 1040 316 L 1040 332" stroke="#b45309" pathLength="100" style="animation-duration:0.7s;animation-delay:0.00666667s"/>
+<path class="flowdot" d="M 1040 316 L 1040 332" stroke="#b45309" pathLength="100" style="animation-duration:0.7s;animation-delay:0.00666667s"/>
+<path class="flowtail" d="M 1040 316 L 1040 332" stroke="#b45309" pathLength="100" style="animation-duration:0.7s;animation-delay:-0.226667s"/>
+<path class="flowdot" d="M 1040 316 L 1040 332" stroke="#b45309" pathLength="100" style="animation-duration:0.7s;animation-delay:-0.226667s"/>
 </g>
 <g class="fade" style="animation-delay:1.21s">
-<path class="flowtail" d="M 1040 392 L 1040 408" stroke="#b45309" pathLength="100" style="animation-duration:1.4s;animation-delay:0.13s"/>
-<path class="flowdot" d="M 1040 392 L 1040 408" stroke="#b45309" pathLength="100" style="animation-duration:1.4s;animation-delay:0.13s"/>
-<path class="flowtail" d="M 1040 392 L 1040 408" stroke="#b45309" pathLength="100" style="animation-duration:1.4s;animation-delay:-0.22s"/>
-<path class="flowdot" d="M 1040 392 L 1040 408" stroke="#b45309" pathLength="100" style="animation-duration:1.4s;animation-delay:-0.22s"/>
+<path class="flowtail" d="M 1040 392 L 1040 408" stroke="#b45309" pathLength="100" style="animation-duration:0.7s;animation-delay:0.13s"/>
+<path class="flowdot" d="M 1040 392 L 1040 408" stroke="#b45309" pathLength="100" style="animation-duration:0.7s;animation-delay:0.13s"/>
+<path class="flowtail" d="M 1040 392 L 1040 408" stroke="#b45309" pathLength="100" style="animation-duration:0.7s;animation-delay:-0.103333s"/>
+<path class="flowdot" d="M 1040 392 L 1040 408" stroke="#b45309" pathLength="100" style="animation-duration:0.7s;animation-delay:-0.103333s"/>
+<path class="flowtail" d="M 1040 392 L 1040 408" stroke="#b45309" pathLength="100" style="animation-duration:0.7s;animation-delay:-0.336667s"/>
+<path class="flowdot" d="M 1040 392 L 1040 408" stroke="#b45309" pathLength="100" style="animation-duration:0.7s;animation-delay:-0.336667s"/>
 </g>
 <g class="fade" style="animation-delay:1.33s">
-<path class="flowtail" d="M 1040 464 L 1040 480" stroke="#b45309" pathLength="100" style="animation-duration:1.4s;animation-delay:0.02s"/>
-<path class="flowdot" d="M 1040 464 L 1040 480" stroke="#b45309" pathLength="100" style="animation-duration:1.4s;animation-delay:0.02s"/>
-<path class="flowtail" d="M 1040 464 L 1040 480" stroke="#b45309" pathLength="100" style="animation-duration:1.4s;animation-delay:-0.33s"/>
-<path class="flowdot" d="M 1040 464 L 1040 480" stroke="#b45309" pathLength="100" style="animation-duration:1.4s;animation-delay:-0.33s"/>
+<path class="flowtail" d="M 1040 464 L 1040 480" stroke="#b45309" pathLength="100" style="animation-duration:0.7s;animation-delay:0.02s"/>
+<path class="flowdot" d="M 1040 464 L 1040 480" stroke="#b45309" pathLength="100" style="animation-duration:0.7s;animation-delay:0.02s"/>
+<path class="flowtail" d="M 1040 464 L 1040 480" stroke="#b45309" pathLength="100" style="animation-duration:0.7s;animation-delay:-0.213333s"/>
+<path class="flowdot" d="M 1040 464 L 1040 480" stroke="#b45309" pathLength="100" style="animation-duration:0.7s;animation-delay:-0.213333s"/>
+<path class="flowtail" d="M 1040 464 L 1040 480" stroke="#b45309" pathLength="100" style="animation-duration:0.7s;animation-delay:-0.446667s"/>
+<path class="flowdot" d="M 1040 464 L 1040 480" stroke="#b45309" pathLength="100" style="animation-duration:0.7s;animation-delay:-0.446667s"/>
 </g>
 <g class="fade" style="animation-delay:1.45s">
-<path class="flowtail" d="M 1040 558 L 1040 574" stroke="#b45309" pathLength="100" style="animation-duration:1.4s;animation-delay:-0.09s"/>
-<path class="flowdot" d="M 1040 558 L 1040 574" stroke="#b45309" pathLength="100" style="animation-duration:1.4s;animation-delay:-0.09s"/>
-<path class="flowtail" d="M 1040 558 L 1040 574" stroke="#b45309" pathLength="100" style="animation-duration:1.4s;animation-delay:-0.44s"/>
-<path class="flowdot" d="M 1040 558 L 1040 574" stroke="#b45309" pathLength="100" style="animation-duration:1.4s;animation-delay:-0.44s"/>
+<path class="flowtail" d="M 1040 558 L 1040 574" stroke="#b45309" pathLength="100" style="animation-duration:0.7s;animation-delay:-0.09s"/>
+<path class="flowdot" d="M 1040 558 L 1040 574" stroke="#b45309" pathLength="100" style="animation-duration:0.7s;animation-delay:-0.09s"/>
+<path class="flowtail" d="M 1040 558 L 1040 574" stroke="#b45309" pathLength="100" style="animation-duration:0.7s;animation-delay:-0.323333s"/>
+<path class="flowdot" d="M 1040 558 L 1040 574" stroke="#b45309" pathLength="100" style="animation-duration:0.7s;animation-delay:-0.323333s"/>
+<path class="flowtail" d="M 1040 558 L 1040 574" stroke="#b45309" pathLength="100" style="animation-duration:0.7s;animation-delay:-0.556667s"/>
+<path class="flowdot" d="M 1040 558 L 1040 574" stroke="#b45309" pathLength="100" style="animation-duration:0.7s;animation-delay:-0.556667s"/>
 </g>
 <g class="row" style="animation-delay:1.4s">
 <rect x="40" y="690" width="1320" height="484" rx="10" fill="#f8fafc" stroke="#e2e8f0" stroke-width="2"/>

@@ -179,8 +179,10 @@
 </g>
 </g>
 <g class="row" style="animation-delay:1.7s">
+<g class="pulse-b" style="animation-delay:-1.4s">
 <g class="cellwave" style="animation-duration:4.55s;animation-delay:-2.97s">
 <rect x="802" y="684" width="130" height="50" rx="9" fill="none" stroke="#2563eb" stroke-width="2"/><text x="867.0" y="676" text-anchor="middle" font-size="11" font-weight="700" fill="#2563eb">3'h2</text><rect x="810" y="692" width="34" height="34" rx="5" fill="#ecfdf5" stroke="#16a34a" stroke-width="1.5"/><text x="827.0" y="714" text-anchor="middle" font-size="12" font-weight="600" fill="#166534">43</text><rect x="850" y="692" width="34" height="34" rx="5" fill="#ecfdf5" stroke="#16a34a" stroke-width="1.5"/><text x="867.0" y="714" text-anchor="middle" font-size="12" font-weight="600" fill="#166534">44</text><rect x="890" y="692" width="34" height="34" rx="5" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/><text x="907.0" y="714" text-anchor="middle" font-size="12" font-weight="600" fill="#94a3b8">--</text><text x="867.0" y="752" text-anchor="middle" font-size="11" fill="#334155">A,B</text>
+</g>
 </g>
 </g>
 <g class="row" style="animation-delay:1.75s">

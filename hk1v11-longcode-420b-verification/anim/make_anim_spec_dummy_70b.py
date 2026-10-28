@@ -10,8 +10,9 @@ MOTION_KIT.md §6.7 规格（1200×600）：
   · 3 个 Before→After 行箭头 delay 1.45/1.6/1.75（=行 0.9/1.05/1.2 + 0.55），
     各自的“413b/420b”标签随箭头同拍 fade（不再先于箭头出现）
 - step：4 框循环 delay 0 / -1.5 / -3 / -4.5s（6s 周期）
-- 列车：3 pipeline 箭头各 2 包 + flowtail（0.7s，边间错 phase 0.15s）；
-  3 行箭头各 2 包（1.15s，行间错 phase 0.2s）。箭头均在盒间净空隙内，不穿文字。
+- 列车：3 pipeline 箭头各 3 包 + flowtail（0.7s，2026-10-28 晚动效加密 2→3 包，
+  边间错 phase 0.15s）；3 行箭头各 2 包（1.15s，行间错 phase 0.2s）。
+  箭头均在盒间净空隙内，不穿文字。
 - 行波：After ENC 盒 D 格（D·70b×N / D·140b）+ K5~K8（Active/Config 各 1）
   共 4 格 cellwave（0.3s 递增，2.8s）
 - 脉冲：Active 行 “D · 70b×N” 盒 .pulse（琥珀，delay -0.7，套在 cellwave 外层）
@@ -73,8 +74,12 @@ KIT_CSS = "\n".join([
 ROW_ARROW_Y = [220, 340, 460]
 # pipeline 箭头几何：x1/x2 对 + y=106
 PIPE_ARROWS = [(314, 344), (604, 634), (894, 924)]
-# 列车相位（负 delay = 相位偏移，|d| ≤ 周期；同族错相位）
-PIPE_PHASE = [("-0.05s", "-0.4s"), ("-0.2s", "-0.55s"), ("-0.35s", "-0.7s")]
+# 列车相位（负 delay = 相位偏移，|d| ≤ 周期；同族错相位）。
+# 2026-10-28 晚动效加密：pipeline 列车 2→3 包（0.7s 整周期均布 ≈0.2333s 间距；
+# 仅同族加密不加新族——本图已 5 族（step 计入）超过 ≤4 上限，不再新增族）
+PIPE_PHASE = [("-0.05s", "-0.28s", "-0.52s"),
+              ("-0.2s", "-0.43s", "-0.67s"),
+              ("-0.35s", "-0.58s", "-0.82s")]
 ROW_PHASE = [("-0.1s", "-0.65s"), ("-0.3s", "-0.85s"), ("-0.5s", "-1.05s")]
 
 # 扫光带（§4 配方）：区域 = 底部注释带 x[52,532] y[532,572]（宽 R=480）
@@ -225,8 +230,8 @@ def build():
             d = f"M {x1} 106 L {x2} 106"
             o.append(f'<g class="fade" style="animation-delay:{delay}s">')
             o.append(drawify(pipe_arrow_idx[n], delay))
-            o.append(flowdot(d, PIPE_PHASE[n][0], "0.7s"))
-            o.append(flowdot(d, PIPE_PHASE[n][1], "0.7s"))
+            for ph in PIPE_PHASE[n]:            # 3 包（整周期均布，加密）
+                o.append(flowdot(d, ph, "0.7s"))
             o.append(flowtail(d, PIPE_PHASE[n][0], "0.7s"))
             o.append("</g>")
 
@@ -359,4 +364,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-# ymzhu 2026-10-28 16:58
+# ymzhu 2026-10-28 19:06

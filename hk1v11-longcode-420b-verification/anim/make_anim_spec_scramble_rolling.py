@@ -10,10 +10,12 @@ MOTION_KIT.md §6.6 规格（1200×520）：
   三横条 rect .draw + pathLength="100" 依次绘出（随各自 row，0.1s 错开）。
 - 生长（主角）：LFSR 绿色虚线反馈环 .dashgrow（2.6s）—— key 逐轮演化的语义，
   虚段沿“n 行截止 → n+1 行起始”方向持续生长回卷（取代 v2 的 march）。
-- 列车：绿条 1 包、蓝条 1 包 + flowtail（光点在实心条上扫过，左→右错 phase；
-  duration 2.2s，delay -0.4 / -1.5）。用户 2026-10-28 验收：白色拖尾刺眼——
-  flowdot 白色光点保留，flowtail stroke 改链色（蓝条链 #1d4ed8；opacity 走 kit
-  默认 .25），绿条链本就无 tail，不动。
+- 列车：绿条 2 包、蓝条 2 包 + 各包 flowtail（2026-10-28 晚动效加密 各 1→2 包：
+  光点在实心条上扫过，左→右错 phase；duration 2.2s；绿 delay -0.4 / -1.5，
+  蓝 -1.5 / -0.55。用户 2026-10-28 验收：白色拖尾刺眼——flowdot 白色光点
+  保留（含新包：点骑在实心绿/蓝条上，非白底，沿用用户已验收样式保持列车
+  一致性），flowtail stroke 用链色（蓝条链 #1d4ed8；opacity 走 kit 默认 .25），
+  绿条链无 tail 不动。
 - 行波：编码后行 K5~K8 黄格 + 末尾 K5 共 5 格 cellwave（0.3s 递增，2.4s）。
 - 脉冲：“n 行截止状态 → n+1 行起始状态（LFSR 连续）”注释 .pulse-t（delay -0.7）。
 - 铁律：源 SVG 只读；text 多重集 / svg 开标签 / 几何颜色零改动（loop 的
@@ -161,12 +163,14 @@ def build():
     o.append("</g>")
 
     # 三横条 row(0.85/0.95/1.05)：rect .draw+pathLength 依次绘出（0.1s 错开）；
-    # 绿条 1 包、蓝条 1 包+flowtail 白色高亮列车（2.2s，错 phase）
+    # 绿条 2 包、蓝条 2 包（新包带链色 flowtail）（2.2s，条间/条内错 phase）
     o.append('<g class="row" style="animation-delay:0.85s">')
     o.append(lines[bar_label])
     o.append(tag_draw(lines[bar_g], 0.85))
     o.append('<path class="flowdot" d="M 120 287 L 660 287" stroke="#ffffff" '
              'pathLength="100" style="animation-duration:2.2s;animation-delay:-0.4s"/>')
+    o.append('<path class="flowdot" d="M 120 287 L 660 287" stroke="#ffffff" '
+             'pathLength="100" style="animation-duration:2.2s;animation-delay:-1.5s"/>')
     o.append("</g>")
     o.append('<g class="row" style="animation-delay:0.95s">')
     o.append(lines[bar_note])
@@ -176,8 +180,12 @@ def build():
     o.append(tag_draw(lines[bar_b], 1.05))
     o.append('<path class="flowdot" d="M 214 331 L 570 331" stroke="#ffffff" '
              'pathLength="100" style="animation-duration:2.2s;animation-delay:-1.5s"/>')
+    o.append('<path class="flowdot" d="M 214 331 L 570 331" stroke="#ffffff" '
+             'pathLength="100" style="animation-duration:2.2s;animation-delay:-0.55s"/>')
     o.append('<path class="flowtail" d="M 214 331 L 570 331" stroke="#1d4ed8" '
              'pathLength="100" style="animation-duration:2.2s;animation-delay:-1.5s"/>')
+    o.append('<path class="flowtail" d="M 214 331 L 570 331" stroke="#1d4ed8" '
+             'pathLength="100" style="animation-duration:2.2s;animation-delay:-0.55s"/>')
     o.append("</g>")
 
     # LFSR 回环 row(1.15)：绿色虚线环 .dashgrow 持续生长（稳态主角）；
@@ -256,4 +264,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-# ymzhu 2026-10-28 18:33
+# ymzhu 2026-10-28 19:06

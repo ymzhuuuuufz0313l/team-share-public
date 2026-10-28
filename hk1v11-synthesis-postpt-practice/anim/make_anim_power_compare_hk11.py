@@ -10,11 +10,15 @@ power_compare_hk11（605×444，柱状对比表，静态版=站点根目录同�
     末簇 1.71+0.55=2.26s）= 先文字行、后数值条的分层入场
   · 网格线组 .fade(0.05)
 - 稳态（2 族，纯呼吸系；用户 2026-10-28 验收：亮闪扫光刺眼，sweepband 整体移除，
-  生成器不再注入 sweepG 渐变/sweepC clipPath；图内无细长连接线，不造 march）：
-  · 行波：1015/1027 两组的组头标签（x=10 的 "(1015)"/"(1027)" 文字，共 5 处：
+  生成器不再注入 sweepG 渐变/sweepC clipPath；晚间二轮加密=数值条簇行波）：
+  · 行波 A（组头）：1015/1027 两组的组头标签（x=10 的 "(1015)"/"(1027)" 文字，共 5 处：
     r8/r9/r15=1015 组、r10/r16=1027 组）各包一层 .cellwave（opacity .72 呼吸），
-    1015 组 phase 0s、1027 组 phase 1.2s 两组合错相位——"同芯片新旧版本对比"
-    语义由组头标签呼吸承担；
+    1015 组 phase 0s、1027 组 phase 1.2s 两组合错相位（kit 默认 2.6s）；
+  · 行波 B（条簇慢波）：17 行数值条簇（bar+峰值三角+dot；r12 为徽章+条组+dot）逐行包
+    .cellwave，按表格自上而下相位递增 0.1s/行（delay -0.1n，n=0..16）、duration 4s
+    ——自上而下的慢速行波扫过整表数值区；4s ≠ 组头 2.6s，两波永不锁相；
+    r10/r12/r16 的 pulse 簇嵌在 cellwave 内壳（pulse 辉光叠在波上，相位各异）；
+    底部色带（breath/breath2 遗留）无箭头线，dashgrow 跳过；
   · pulse ×3（错相位）：r12 峰值行 37.9（峰值徽章+条+dot，pulse 琥珀 -0.5s）；
     r10 HV1V22(1027) 蓝条 pulse-b(-1.9s)；r16 HK1V11(1027) 蓝条 pulse-b(-2.6s)
 - 铁律：源 SVG 只读；text 多重集 / svg 开标签 / 几何颜色零改动；纯 CSS 无 script；
@@ -153,7 +157,8 @@ def build():
     o.extend(lines[in_g + 1:in_g_close])
     o.append("</g>")
 
-    # 数据行：行组 .row(0.15+0.09n)；数值条簇内层 .row(+0.12)；r10/r12/r16 簇加 pulse；
+    # 数据行：行组 .row(0.15+0.09n)；数值条簇内层 .row(+0.12) 再包 .cellwave 条簇慢波
+    # （duration 4s，delay -0.1n 自上而下递增）；r10/r12/r16 簇在 cellwave 内再加 pulse；
     # 行尾 1015/1027 组头标签包 .cellwave（1015=0s / 1027=1.2s）
     pulse_of = {12: ("pulse", "-0.5s"), 10: ("pulse-b", "-1.9s"), 16: ("pulse-b", "-2.6s")}
     n_hdr = sum(1 for n in range(17) for s in lines[row_spans[n][0] + 1:row_spans[n][1]]
@@ -173,6 +178,10 @@ def build():
         assert blk[cs].strip().startswith("<rect") and blk[ce].strip().startswith("<circle")
         o.extend(blk[:cs])
         o.append(f'<g class="row" style="animation-delay:{d + 0.12:.2f}s">')
+        # 条簇行波：整表 17 行连续慢波（4s，相位 -0.1s/行递增）
+        ph = -0.1 * n
+        ph_s = f"{ph:g}" if ph else "0"
+        o.append(f'<g class="cellwave" style="animation-duration:4s;animation-delay:{ph_s}s">')
         if n in pulse_of:
             cls, ph = pulse_of[n]
             o.append(f'<g class="{cls}" style="animation-delay:{ph}">')
@@ -180,7 +189,8 @@ def build():
             o.append("</g>")
         else:
             o.extend(blk[cs:ce + 1])
-        o.append("</g>")
+        o.append("</g>")                                    # /cellwave
+        o.append("</g>")                                    # /内层 row
         o.extend(header_wave(blk[ce + 1:]))
         o.append("</g>")
 
@@ -253,9 +263,12 @@ def main():
     build()
     res = check()
     data = OUT.read_text(encoding="utf-8")
-    print("[make_anim_power_compare_hk11 v4]",
+    cluster_waves = len(re.findall(r'class="cellwave" style="animation-duration:4s', data))
+    assert cluster_waves == 17, f"条簇行波应 17 行，实得 {cluster_waves}"
+    print("[make_anim_power_compare_hk11 v4.1]",
           "row_g=", len(re.findall(r'class="r\d+ row"', data)),
           "cellwave=", data.count('class="cellwave"'),
+          "(hdr 5 + cluster", cluster_waves, ")",
           "pulse=", len(re.findall(r'class="(pulse|pulse-b)"', data)),
           "fade=", data.count('class="fade"'))
     ok = True
@@ -270,4 +283,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-# ymzhu 2026-10-28 18:33
+# ymzhu 2026-10-28 21:26

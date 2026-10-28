@@ -20,17 +20,22 @@ v4 规格（1240×900，四段式实现逻辑图）：
     虚线控制流 .fade（保留源 dasharray，不用 .draw 以免覆盖虚线几何）：
     A4 1.65 / A6 1.75 / A7 1.75 / A8 1.90 / A9 1.95（内联 0.45s）
     箭头旁标签随箭头同拍 fade。
-- 稳态（3 族，肉眼可辨）：
-  · 列车 flowdot/flowtail（主数据流 teal #0e7490）：
-    A1 1 包(1.2s) / A2 2 包+拖尾(1.5s) / A3 1 包(1.2s) / A5 2 包+拖尾(1.6s)
-    + A11 琥珀 1 包(1.2s)（unmatch→unlock 支路）；全部藏在箭头 fade 组内，
-    入场后随箭头一起现身；同族错相位。
+- 稳态（4 族，v4.1 加密：用户 2026-10-28 定调"呼吸辉光/慢速列车/行波/虚线生长
+  很棒，再进一步增加"，持续层族上限放宽 ≤4）：
+  · 列车 flowdot/flowtail（主数据流 teal #0e7490；v4.1 每链 +1 包）：
+    A1 2 包(1.2s) / A2 3 包+拖尾(1.5s) / A3 2 包(1.2s) / A5 3 包+拖尾(1.6s)
+    / A10 2 包(1.2s) + A11 琥珀 2 包(1.2s)（unmatch→unlock 支路）；
+    全部藏在箭头 fade 组内、入场后随箭头一起现身；同链错相位。
   · 脉冲 pulse×3（错相位 -0.7 / -1.4 / -2.1）：
     5'h04 修复盒+◆（琥珀 pulse）/ update_en_a 提交门（蓝 pulse-b）
     / match_eff_a 判决盒（深青 pulse-t）。
   · 行波 cellwave×6：① 段 6 个实线拍盒（5'h01/02/03/0A/0B/0E）按拍序
     左→右错相位（0.55s/盒，4.2s 周期）= 参与字节逐拍扫描；
     5'h04 用 pulse、gap 虚线盒不参与波。
+  · 虚线生长 dashgrow×5（v4.1 新增，②③④ 区虚线控制连接持续生长回卷；
+    2.6~3.2s 错相位，源 dasharray 属性保留、kit CSS 以 7 5 呈现）：
+    A4 2.8s(-0.4s) / A6 3.0s(-1.2s) / A7 2.6s(-0.8s) / A8 3.2s(-1.9s)
+    / A9 3.2s(-2.7s)；外层 fade 入场照旧。
 - 铁律：源 SVG 只读；<text> 多重集 / svg 开标签 / 几何颜色零改动；
   纯 CSS 无 script 无 SMIL；kit CSS §2 逐字嵌入；源 defs（3 个 marker）
   与背景 rect 原样保留；reduced-motion 用 kit 原文；确定性幂等。
@@ -91,6 +96,15 @@ def flowdot(d, color, delay, dur):
 def flowtail(d, color, delay, dur):
     return ('<path class="flowtail" d="%s" stroke="%s" pathLength="100" '
             'style="animation-duration:%s;animation-delay:%s"/>' % (d, color, dur, delay))
+
+
+def dashgrow(line, dur, delay):
+    """既有虚线 path 打 dashgrow 标签（v4.1：虚线连接持续生长回卷）。
+    只插入 class/style，源属性（d/stroke/dasharray/marker）原样保留。"""
+    assert 'stroke-dasharray' in line, "dashgrow 目标应为源虚线"
+    return line.replace(
+        "<path ", '<path class="dashgrow" '
+                  'style="animation-duration:%s;animation-delay:%s" ' % (dur, delay), 1)
 
 
 def build():
@@ -230,12 +244,13 @@ def build():
             o.extend(lines[s:e + 1])
         o.append("</g>")
 
-    # A1：draw 1.30 + 标签 fade 同拍 + 列车 1 包（短边单点）
+    # A1：draw 1.30 + 标签 fade 同拍 + 列车 2 包（v4.1 +1）
     o.append(f'<g class="fade" style="animation-delay:1.3s">')
     o.append(lines[a1].replace(
         "<path ", '<path class="draw" pathLength="100" style="animation-delay:1.3s" ', 1))
     o.append(lines[a1_lb])
     o.append(flowdot("M 620,202 L 620,236", TEAL, "-0.1s", "1.2s"))
+    o.append(flowdot("M 620,202 L 620,236", TEAL, "-0.7s", "1.2s"))
     o.append("</g>")
 
     # ② 段标(0.55) + 两盒(0.70/0.78)
@@ -245,13 +260,14 @@ def build():
     g_row((acc_rects[0], acc_rects[1] - 1), 0.70)
     g_row((acc_rects[1], a2 - 1), 0.78)
 
-    # A2：draw 1.35 + 标签 + 列车 2 包 + 拖尾（1.5s）
+    # A2：draw 1.35 + 标签 + 列车 3 包 + 拖尾（1.5s；v4.1 +1 包）
     o.append(f'<g class="fade" style="animation-delay:1.35s">')
     o.append(lines[a2].replace(
         "<path ", '<path class="draw" pathLength="100" style="animation-delay:1.35s" ', 1))
     o.append(lines[a2_lb])
     o.append(flowdot("M 500,318 L 770,318", TEAL, "-0.2s", "1.5s"))
     o.append(flowdot("M 500,318 L 770,318", TEAL, "-0.95s", "1.5s"))
+    o.append(flowdot("M 500,318 L 770,318", TEAL, "-1.7s", "1.5s"))
     o.append(flowtail("M 500,318 L 770,318", TEAL, "-0.2s", "1.5s"))
     o.append("</g>")
 
@@ -267,27 +283,29 @@ def build():
     o.append("</g>")
     o.append("</g>")
 
-    # A3（draw 1.55 + 列车 1 包）；A4（虚线 fade 1.65 + prev 标签）
+    # A3（draw 1.55 + 列车 2 包）；A4（虚线 fade 1.65 + prev 标签 + dashgrow）
     o.append(f'<g class="fade" style="animation-delay:1.55s">')
     o.append(lines[a3].replace(
         "<path ", '<path class="draw" pathLength="100" style="animation-delay:1.55s" ', 1))
     o.append(flowdot("M 320,360 L 320,410", TEAL, "-0.7s", "1.2s"))
+    o.append(flowdot("M 320,360 L 320,410", TEAL, "-1.3s", "1.2s"))
     o.append("</g>")
     o.append(f'<g class="fade" style="animation-delay:1.65s">')
-    o.append(lines[a4])
+    o.append(dashgrow(lines[a4], "2.8s", "-0.4s"))
     o.append(lines[prev_lb])
     o.append("</g>")
 
-    # A5（draw 1.75 + 列车 2 包+拖尾 1.6s）；A6（虚线 fade 1.75）
+    # A5（draw 1.75 + 列车 3 包+拖尾 1.6s；v4.1 +1 包）；A6（虚线 fade 1.75 + dashgrow）
     o.append(f'<g class="fade" style="animation-delay:1.75s">')
     o.append(lines[a5].replace(
         "<path ", '<path class="draw" pathLength="100" style="animation-delay:1.75s" ', 1))
     o.append(flowdot("M 320,506 L 610,540", TEAL, "-0.5s", "1.6s"))
     o.append(flowdot("M 320,506 L 610,540", TEAL, "-1.3s", "1.6s"))
+    o.append(flowdot("M 320,506 L 610,540", TEAL, "-2.1s", "1.6s"))
     o.append(flowtail("M 320,506 L 610,540", TEAL, "-0.5s", "1.6s"))
     o.append("</g>")
     o.append(f'<g class="fade" style="animation-delay:1.75s">')
-    o.append(lines[a6])
+    o.append(dashgrow(lines[a6], "3.0s", "-1.2s"))
     o.append("</g>")
 
     # ④ 段标(1.25) + 四盒 1.28/1.34/1.40/1.44（c2 update_en=pulse-b）
@@ -304,23 +322,25 @@ def build():
     g_row((c4, a7 - 1), 1.44)
 
     # A7/A8/A9 虚线控制链 fade 1.75/1.90/1.95（内联 0.45s，收尾 2.40s）
+    # + v4.1 dashgrow（虚线生长，2.6~3.2s 错相位）
     o.append(f'<g class="fade" style="animation-delay:1.75s">')
-    o.append(lines[a7])
+    o.append(dashgrow(lines[a7], "2.6s", "-0.8s"))
     o.append("</g>")
     o.append(f'<g class="fade" style="animation-delay:1.9s;animation-duration:0.45s">')
-    o.append(lines[a8])
+    o.append(dashgrow(lines[a8], "3.2s", "-1.9s"))
     o.append("</g>")
     o.append(f'<g class="fade" style="animation-delay:1.95s;animation-duration:0.45s">')
-    o.append(lines[a9])
+    o.append(dashgrow(lines[a9], "3.2s", "-2.7s"))
     o.append("</g>")
 
-    # A10（draw 1.90 内联 0.5s + 列车 1 包）；A11（琥珀 draw 2.00 内联 0.45s + 1 包）
-    # + match_eff_a=0 注释 fade 2.0
+    # A10（draw 1.90 内联 0.5s + 列车 2 包）；A11（琥珀 draw 2.00 内联 0.45s + 2 包）
+    # + match_eff_a=0 注释 fade 2.0（v4.1 各 +1 包）
     o.append(f'<g class="fade" style="animation-delay:1.9s">')
     o.append(lines[a10].replace(
         "<path ", '<path class="draw" pathLength="100" '
                   'style="animation-delay:1.9s;animation-duration:0.5s" ', 1))
     o.append(flowdot("M 290,676 L 340,676", TEAL, "-0.55s", "1.2s"))
+    o.append(flowdot("M 290,676 L 340,676", TEAL, "-1.15s", "1.2s"))
     o.append("</g>")
     o.append(f'<g class="fade" style="animation-delay:2s;animation-duration:0.45s">')
     o.append(lines[a11].replace(
@@ -328,6 +348,7 @@ def build():
                   'style="animation-delay:2s;animation-duration:0.45s" ', 1))
     o.append(lines[note_eff0])
     o.append(flowdot("M 870,676 L 930,676", AMBER, "-0.35s", "1.2s"))
+    o.append(flowdot("M 870,676 L 930,676", AMBER, "-0.95s", "1.2s"))
     o.append("</g>")
 
     # 修复面板(1.60) + 图例(1.72)
@@ -348,6 +369,7 @@ def build():
             "flowdot": text.count('class="flowdot"'), "flowtail": text.count('class="flowtail"'),
             "pulse": len(re.findall(r'class="pulse(-[tb])?"', text)),
             "cellwave": text.count('class="cellwave"'),
+            "dashgrow": text.count('class="dashgrow"'),
             "row": text.count('class="row"')}
 
 
@@ -412,4 +434,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-# ymzhu 2026-10-28 17:20
+# ymzhu 2026-10-28 19:12

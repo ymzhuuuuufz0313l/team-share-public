@@ -14,10 +14,16 @@ power_module_compare_1v11_1v22（1200×688，双条横向柱状图，静态版=�
   · 末项 1.7+0.6 = 2.3s ≤ 2.5s
 - 稳态（2 族，纯呼吸系；用户 2026-10-28 验收：亮闪扫光极度影响视线，v4.1 数据图表
   不加整区扫光——sweepband 整体移除，生成器不再注入 sweepG 渐变/sweepC clipPath/
-  扫光 rect，与 power_compare_hk11 同款处理；基线 .sweep 装饰条为源几何，原样保留）：
-  · 行波：模块名标签中 3 个故事行各包一层 .cellwave（opacity .72 呼吸）——
+  扫光 rect，与 power_compare_hk11 同款处理；基线 .sweep 装饰条为源几何，原样保留。
+  基线轴（210,620→1150,620）为实线、.sweep 为实心 rect——无数值虚线，dashgrow 跳过；
+  晚间二轮加密=柱对行波）：
+  · 行波 A（模块名）：3 个故事行标签各包一层 .cellwave（opacity .72 呼吸）——
     g0 短编码解码（峰值对）phase 0s、g9 rx_phy(EQ/LEQ)（1V22 独有大条）phase 0.6s、
-    g10 MON_DISP（1V22 独有）phase 1.2s，相位错开，名行呼应条区 pulse；
+    g10 MON_DISP（1V22 独有）phase 1.2s，相位错开，名行呼应条区 pulse（kit 默认 2.6s）；
+  · 行波 B（柱对慢波）：11 组双柱 rect 对逐组包 .cellwave，按组序相位递增 0.15s/组
+    （delay -0.15i，i=0..10）、duration 4s——柱区自上而下的慢速行波；
+    4s ≠ 模块名 2.6s，两波永不锁相；数值文本不入波（保持可读性）；
+    g0/g9 的 pulse 包在 cellwave 外壳内（辉光叠在波上）；
   · pulse ×2（错相位）：g0 峰值对（短编码解码 10294 vs 8590，全图最大条）pulse-t(-0.9s)；
     g9（rx_phy(EQ/LEQ) 4196，1V22 独有大条）pulse(-2.3s)
 - 铁律：源 SVG 只读；text 多重集 / svg 开标签 / 几何颜色零改动；纯 CSS 无 script；
@@ -162,7 +168,8 @@ def build():
         '<g class="hdr">', '<g class="hdr fade" style="animation-delay:0.1s">', 1))
     o.extend(name_wave(lines[names_g + 1:bars_g]))
 
-    # 11 组双条块 .row(0.3+0.1i)；g0 加 pulse-t、g9 加 pulse（注释行之后包住条+值文本）
+    # 11 组双条块 .row(0.3+0.1i)；柱对 rect 包 .cellwave 柱对行波（4s，delay -0.15i/组）；
+    # g0 加 pulse-t、g9 加 pulse（pulse 壳在 cellwave 外、包住条+值文本）
     o.append(lines[bars_g])                                  # <g>
     pulse_of = {0: ("pulse-t", "-0.9s"), 9: ("pulse", "-2.3s")}
     for i, (bs, be) in enumerate(blocks):
@@ -170,15 +177,23 @@ def build():
         o.append(f'<g class="row" style="animation-delay:{d:.1f}s">')
         blk = lines[bs:be]
         assert blk[0].strip().startswith("<!-- g"), "块首应为注释行"
-        o.append(blk[0])
+        bars = [j for j, s in enumerate(blk) if s.strip().startswith('<rect class="bar"')]
+        assert 1 <= len(bars) <= 2 and bars == list(range(bars[0], bars[-1] + 1)), \
+            f"块 {i} 应有相邻 1~2 根 bar rect（0 值系列源图无条），实得 {bars}"
+        o.append(blk[0])                                     # 注释行（pulse 外）
         if i in pulse_of:
             cls, ph = pulse_of[i]
             o.append(f'<g class="{cls}" style="animation-delay:{ph}">')
-            o.extend(blk[1:])
-            o.append("</g>")
-        else:
-            o.extend(blk[1:])
-        o.append("</g>")
+        o.extend(blk[1:bars[0]])
+        ph = -0.15 * i
+        ph_s = f"{ph:g}" if ph else "0"
+        o.append(f'<g class="cellwave" style="animation-duration:4s;animation-delay:{ph_s}s">')
+        o.extend(blk[bars[0]:bars[-1] + 1])
+        o.append("</g>")                                     # /cellwave 柱对
+        o.extend(blk[bars[-1] + 1:])
+        if i in pulse_of:
+            o.append("</g>")                                 # /pulse
+        o.append("</g>")                                     # /row
     o.append(lines[bars_g_close])                            # </g>
 
     # glow 矩形 .fade(1.5 / 1.55)，其余间隔行原样
@@ -270,9 +285,12 @@ def main():
     build()
     res = check()
     data = OUT.read_text(encoding="utf-8")
-    print("[make_anim_power_module_compare_1v11_1v22 v4]",
+    bar_waves = len(re.findall(r'class="cellwave" style="animation-duration:4s', data))
+    assert bar_waves == 11, f"柱对行波应 11 组，实得 {bar_waves}"
+    print("[make_anim_power_module_compare_1v11_1v22 v4.1]",
           "row=", len(re.findall(r'class="row"', data)),
           "cellwave=", data.count('class="cellwave"'),
+          "(name 3 + bar-pair", bar_waves, ")",
           "pulse=", len(re.findall(r'class="(pulse|pulse-t)"', data)),
           "fade=", data.count('fade" style'))
     ok = True
@@ -287,4 +305,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-# ymzhu 2026-10-28 18:46
+# ymzhu 2026-10-28 21:26

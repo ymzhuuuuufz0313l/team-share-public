@@ -1,4 +1,4 @@
-# Motion Kit v4 — 电影感纯 CSS in-SVG 动效规范（hk1v11-synthesis-postpt-practice 站，2026-10-28）
+# Motion Kit v4（本站 v4.1 二轮加密）— 电影感纯 CSS in-SVG 动效规范（hk1v11-synthesis-postpt-practice 站，2026-10-28）
 
 > 本文件由 canonical 站 `hk1v11-longcode-420b-verification/anim/MOTION_KIT.md`（v4）复制而来；
 > §1 路径与 §6 分图规格已替换为本站实际（6 张图，双 anim 目录），§0/§2/§3/§4/§5 与 canonical 逐字一致。
@@ -82,7 +82,7 @@
 
 **稳态硬指标（校验器强制）**：每图稳态 ≥2 个族。族 = 列车(flowdot/flowtail) / 脉冲(pulse*) / 扫光(sweepband) / 生长(dashgrow) / 行波(cellwave) / 步骤(step)。march、breathe 不计数。
 
-**delay 规则**：一次性类（row/head/draw/fade）delay 0~2.2s；无限循环类允许负 delay = 相位偏移（|d| ≤ 周期）；同族必须错相位；**持续层 ≤3 族（含 march/breathe）**。
+**delay 规则**：一次性类（row/head/draw/fade）delay 0~2.2s；无限循环类允许负 delay = 相位偏移（|d| ≤ 周期）；同族必须错相位；**持续层 ≤4 族（含 march/breathe；2026-10-28 晚二轮加密由 ≤3 放宽）**。
 
 **入场 vs 稳态同类冲突（本站实测新增）**：同一元素不得同时挂入场类与稳态类（两条 `animation:` 声明级联只留后者）——需要两者时用嵌套：外层 `.row/.fade`、内层 `.pulse/.cellwave`。
 
@@ -105,31 +105,31 @@
 
 ### 6.1 power_compare_hk11（605×444，功耗柱状对比表）→ anim/
 - 入场：表头组 head(0)；数据行 r0~r16 row，0.15s 起 0.09s 递进（末 1.59）；每行数值条簇（bar+峰值三角+dot；r12 为 徽章+条组+dot）再包内层 row(+0.12，末 1.71+0.55=2.26s)；网格 fade(0.05)。
-- 稳态：sweepband ×2——A=HV1V22 1015 两行+1027 行（y232..298）、B=HK1V11 1015+1027 行（y386..430），P=845，"新旧版本对比"语义；pulse ×3——r12 峰值 37.9 簇 pulse(-0.5s)、r10 pulse-b(-1.9s)、r16 pulse-b(-2.6s)。
+- 稳态（v4.1）：cellwave——组头标签 5 处（1015 组 0s / 1027 组 1.2s）+ 数值条簇 17 行（4s，delay -0.1n/行自上而下递增，pulse 簇嵌波内）；pulse ×3——r12 峰值 37.9 簇 pulse(-0.5s)、r10 pulse-b(-1.9s)、r16 pulse-b(-2.6s)。sweepband 已按用户验收整体移除；底部色带无箭头线，不设 dashgrow。
 - 源遗留（静态外观保留、不激活）：breath/breath2/cmpband/zeband/peakglow/dot 类。
 
 ### 6.2 power_composition_donut_1v11_1v22（1200×578，双环形图）→ anim/
 - 入场：标题 head(0)、副标题 head(0.1)、图例行 ×2 row(0.2/0.35)、环面板 row(0.5/0.75)；扇区 circle 依次 fade（左 9 个 0.65+0.07k、右 7 个 0.9+0.07k；扇区 stroke-dasharray 是弧线几何，**禁 .draw**）；标签组 fade（1.3+0.05k / 1.45+0.05k）；中心 fade(1.7/1.75)。末 2.35s。
-- 稳态：列车——每环孔内 r=118 装饰圆轨道 2 包 flowdot+1 flowtail，3s/圈（左 #0e7490 phase 0/-1.5，右 #b45309 phase -0.75/-2.25），轨道位于中心文字与扇区内缘间净空环带；pulse ×2——左 top1（短编码解码 41.8%）pulse-t(-0.7s)、右 top1（LC_CSPIF_L0 35.4%）pulse(-2.1s)。
+- 稳态（v4.1；**donut 永不加行进列车**——用户点名移除过，加密只用呼吸系）：cellwave——图例 top-3 行 ×2 侧（左 0/0.6/1.2s，右 1.3/1.9/2.5s）+ 扇区环向慢波 14 个（左 8 delay -0.3k、右 6 delay -(1.9+0.3k) 半周期跨侧错拍；3.8s 周期 ≠ 图例 2.6s 永不锁相，相位即环向顺序 0.3s/扇区递增）；pulse ×2——左 top1（短编码解码 41.8%）pulse-t(-0.7s)、右 top1（LC_CSPIF_L0 35.4%）pulse(-2.1s)。
 - 白色扫光环（源 .sweep opacity .08）fade 走外壳包装（§2 禁忌）。
 
 ### 6.3 power_module_compare_1v11_1v22（1200×688，双条横向柱状图）→ anim/
 - 源样式中和：`.hdr` 的 `animation:sweepMove 6s linear infinite` 删除（kit 同名 keyframes 致网格/图例平移，§0.5 例外）。
 - 入场：标题 head(0)、网格 fade(0.05)、模块名 fade(0.1)、11 组双条块 row 0.3+0.1i（末 1.3+0.55=1.85s）、glow 矩形 fade(1.5/1.55)、图例 head(1.65)、基线条 fade(1.7)。
-- 稳态：sweepband ×1——全柱区 x210..1150/y70..620，P=1180，量程扫描（0→10000 µW）；pulse ×2——g0 峰值对（10294/8590）pulse-t(-0.9s)、g9 rx_phy 1V22 独有条（4196）pulse(-2.3s)。
+- 稳态（v4.1）：cellwave——模块名故事行 3 处（g0 0s / g9 0.6s / g10 1.2s）+ 柱对行波 11 组（bar rect 组逐组包，4s，delay -0.15i/组递增；数值文本不入波；0 值系列源图单条也入波）；pulse ×2——g0 峰值对（10294/8590）pulse-t(-0.9s)、g9 rx_phy 1V22 独有条（4196）pulse(-2.3s)，pulse 壳在 cellwave 外。sweepband 已按用户验收整体移除；基线轴为实线（无数值虚线），不设 dashgrow。
 
 ### 6.4 dc_area_evolution_table（2743×1009，DC 三代面积演进表）→ images/anim/
 - 入场：表头 head(0)、网格 fade(0.05)、r1/r2/r3 row(0.2/0.5/0.8)、脚注块 fade(1.1)。末 1.7s。
-- 稳态：cellwave ×3——三代行整行（duration 3.6s，phase 0/-1.2/-2.4）代际演进波；sweepband ×1——r3 当代行（y488..618，P=2983），插在行底色后/行文字前；pulse ×2——r2 "+4.0%"(-0.7s)、r3 "+6.7%"(-2.1s)（pl1/pl2 组类并入）。
+- 稳态（v4.1）：cellwave 按格 ×15——三代行各 5 单元格逐格包（行间基相 0/-1.2/-2.4，行内 0.25s/格递增，3.6s）＝行内自左向右 + 跨行自上而下二维慢波；行底色/rg/br/diag 不入波；sweepband ×1——r3 当代行（y488..618，P=2983），插在行底色后/行文字前；pulse ×3——r2 "+4.0%"(-0.7s)、r3 "+6.7%"(-2.1s)（pl1/pl2 组类并入）、r3 面积峰值 "314707" 琥珀(-1.4s)。
 
 ### 6.5 dc_gen_summary_table（3928×489，DC 三代总览表）→ images/anim/
 - 入场：表头 head(0)、网格 fade(0.05)、r1/r2/r3 row(0.25/0.55/0.85)。末 1.4s。
-- 稳态：cellwave ×3（同 6.4）；sweepband ×1——r3 结果行（y396..489，P=4168）；pulse ×2——r2 最差代 "452 条/-1.45ns" pulse(-1.4s)、r3 收敛 "11 条/-0.01ns" pulse-t(-0.7s)。
+- 稳态（v4.1）：cellwave 按格 ×15（同 6.4：行间基相 0/-1.2/-2.4，行内 0.25s/格，3.6s）；sweepband ×1——r3 结果行（y396..489，P=4168）；pulse ×3——r2 最差代 "452 条/-1.45ns" pulse(-1.4s)、r3 收敛 "11 条/-0.01ns" pulse-t(-0.7s)、r2 最差代面积 "294907" 琥珀(-2.1s)。
 
 ### 6.6 delay_skew_14vs12（1440×950，STA skew 三面板）→ images/anim/
 - 入场：页眉 kicker head(0)/标题 head(0.05)/图例 row(0.15)；面板① row(0.2)：注解框 fade(0.25~0.6)、六支量测箭头 draw（0.8/0.95/1.0/1.1/1.25/1.45，全部 ≥0.2+0.55）、端帽/标签 fade(1.45~1.75)；面板② row(0.5)：轴/表头 fade(0.85~0.95)、阈值线对 fade(1.0)、三行场景 row(1.1/1.25/1.4)、结论 fade(1.55)；面板③ row(0.8)：包络带 fade(1.15/1.2)、阈值对 fade(1.3)、两支标记箭头 draw(1.45/1.55)、徽章框 head(1.7)；页脚 fade(1.75)、铭牌 head(1.8)。末 2.35s。
-- 稳态：列车——①时钟 arrival 边（#1c2530，phase 0/-0.75）+数据 arrival 边（#0e7490，phase -0.4/-1.15）各 2 包+拖尾 1.5s/趟；pulse ×3——①slack 绿线组 pulse-t(-0.7s)、②12/14 阈值线对 pulse-b(-2.1s)、③STATUS 行 pulse(-1.4s)；sweepband ×1——②场景表三行区（x60..680/y660..788，P=860）。
-- 源样式中和 ×2（assert 保护）：6 条 class="march" 阈值虚线（dasharray 6,4 与 -16 位移不整除→行进跳变）行内 `animation:none`；rowB 行洗矩形静态剥离版漏带 opacity（渲染为实心琥珀盖表）→ 动画版恢复 `style="opacity:.08"`（静态版不动，待上游修）。
+- 稳态（v4.1，4 族=新上限）：列车——①时钟 arrival 边（#1c2530，phase 0/-0.75）+数据 arrival 边（#0e7490，phase -0.4/-1.15）各 2 包+拖尾 1.5s/趟（维持不动）；pulse ×3——①slack 绿线组 pulse-t(-0.7s)、②12/14 阈值线对 pulse-b(-2.1s)、③STATUS 行 pulse(-1.4s)；sweepband ×1——②场景表三行区（x60..680/y660..788，P=860）；dashgrow ×6——6 条 12/14 阈值虚线并入 `.march .dashgrow` 双类 + 行内 `animation-name:dashgrow` 钉死（kit CSS 中 .march 声明晚于 .dashgrow，不钉死会级联回 march -16 跳变），3.0s、文档序 0/-0.4/-0.8/-1.2/-1.6/-2.0s 错相位，虚线生长表达阈值推进。
+- 源样式处理 ×2（assert 保护）：上述 6 条阈值虚线（v4 曾行内 `animation:none` 中和，v4.1 起改为 dashgrow 生长）；rowB 行洗矩形静态剥离版漏带 opacity（渲染为实心琥珀盖表）→ 动画版恢复 `style="opacity:.08"`（静态版不动，待上游修）。
 
 ## 7. 生成器要求
 
@@ -144,7 +144,7 @@
 python anim/validate_kit_v4.py power_compare_hk11 power_composition_donut_1v11_1v22 power_module_compare_1v11_1v22 dc_area_evolution_table dc_gen_summary_table delay_skew_14vs12
 ```
 
-全 PASS 才算完成（本站版自动解析 anim/ 与 images/anim/ 双目录及其静态对照）。人工检查项：源 SVG 零改动；一次性总长 ≤2.5s；持续族 ≤3；同族错相位；flowdot 不穿文字；同元素无入场/稳态类冲突；opacity≠1 元素不直接挂 fade/row/head。
+全 PASS 才算完成（本站版自动解析 anim/ 与 images/anim/ 双目录及其静态对照）。人工检查项：源 SVG 零改动；一次性总长 ≤2.5s；持续族 ≤4；同族错相位；flowdot 不穿文字；同元素无入场/稳态类冲突；opacity≠1 元素不直接挂 fade/row/head。
 
 ## 9. 报告格式（DONE 消息）
 
@@ -157,8 +157,9 @@ DONE — <name1> / <name2> ...
 
 ## 10. Changelog
 
-- **v4（2026-10-28，本站升级）**：6 张图旧动效（低幅呼吸/单元格错峰/扫光带不明显）整体升级为 Motion Kit v4——稳态 ≥2 族硬指标（列车/脉冲/扫光/行波）、入场先容器后内容再箭头（箭头 delay ≥ 面板+0.55s）、扫光带按 §4 语义配方重做；全部改为确定性生成器产出（`make_anim_*.py`）；新增本站版 `validate_kit_v4.py`（双 anim 目录解析）。本文件 §0/§2/§3/§4/§5 自 canonical 站 v4 逐字继承，§1/§6 为本站实际。
+- **v4.1（2026-10-28 晚，本站二轮"动效加密"）**：用户定调"呼吸辉光、慢速列车、行波、虚线生长感觉很棒，再进一步增加"——持续层族上限 ≤3 → **≤4**（§3/§8 同步）；六图加密：donut 扇区环向呼吸波（14 扇区 cellwave，3.8s，0.3s/扇区环向递增，永不加列车）；hk11 数值条簇行波（17 行 cellwave，4s，-0.1s/行）；module_compare 柱对行波（11 组 bar rect cellwave，4s，-0.15s/组）；dc_area/dc_gen 行波细化到单元格（每行 5 格 cellwave，行内 0.25s/格 + 行间 0/-1.2/-2.4 基相）各 +1 最差代琥珀 pulse（"314707"/"294907"）；delay_skew 6 条阈值虚线由 animation:none 中和改为 dashgrow 生长（3.0s，0.4s 递进，行内钉死 animation-name 防 .march 级联回退）。同族全部错相位；慢档 wave 3.6–4s；静态源零改动。
+- **v4（2026-10-28，本站升级）**：6 张图旧动效（低幅呼吸/单元格错峰/扫光带不明显）整体升级为 Motion Kit v4——稳态 ≥2 族硬指标（列车/脉冲/扫光/行波）、入场先容器后内容再箭头（箭头 delay ≥ 面板+0.55s）、扫光带按 §4 语义配方重做；全部改为确定性生成器产出（`make_anim_*.py`）；新增本站版 `validate_kit_v4.py`（双 anim 目录解析）。本文件 §0/§2/§3/§4/§5 自 canonical 站 v4 逐字继承，§1/§6 为本站实际（v4.1 起 §3 上限为本站放宽值）。
 - v4 canonical（2026-10-28，longcode 站）：稳态升级（pulse 缩放辉光/扫光带/列车加粗+拖尾/dashgrow）；入场箭头 delay +0.35→+0.55；稳态 ≥2 族硬指标；kit CSS 全量替换；校验 validate_kit_v4.py。
 - 旧版（2026-10-27 前，本站 v1-v3 动效）：fadeIn/grow/breathe 词汇表 + 面板 panelIn + 行扫光，已由 v4 全量取代（旧 anim svg 被生成器输出覆盖，无历史文件保留义务）。
 
-<!-- ymzhu 2026-10-28 17:55 -->
+<!-- ymzhu 2026-10-28 21:22 -->

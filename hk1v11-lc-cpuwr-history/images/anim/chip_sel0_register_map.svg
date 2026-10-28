@@ -625,6 +625,7 @@
 </g>
 </g>
 <g class="row" style="animation-delay:1.02s">
+<g class="pulse-t" style="animation-delay:-1.4s">
 <g class="cellwave" style="animation-duration:9.8s;animation-delay:-5.8s">
 <text x="158" y="1660.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x30 (48)</text>
 <rect x="842" y="1642.0" width="64" height="26" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" rx="13"/>
@@ -633,6 +634,7 @@
 <rect x="170" y="1632" width="655" height="46" fill="#ccfbf1" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="497.5" y="1653.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">TEST_PRTCT[7:0]</text>
 <text x="497.5" y="1667.0" text-anchor="middle" font-size="9.0" fill="#64748b">8'b00000000</text>
+</g>
 </g>
 </g>
 <g class="row" style="animation-delay:1.05s">

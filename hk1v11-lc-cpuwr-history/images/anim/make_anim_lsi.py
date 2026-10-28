@@ -9,13 +9,18 @@
 v4 规格（1198×2894，LC_CPUWR 1023v1 寄存器 LSI_PRTECT 保护状态 · 50 行）：
 - 入场：head 标题+副标题+位号列头(0) → 50 个寄存器行 0.15 起 0.03s 递进
   （至 1.62）→ 底部图例+脚注 head(1.85)。一次性总长 2.4s ≤ 2.5s。
-- 稳态（2 族，肉眼可辨；取代 v1 的 233 处低幅呼吸）：
+- 稳态（3 族 + v4.1 加密；取代 v1 的 233 处低幅呼吸）：
   · 行波 cellwave×50（主角）：全部寄存器行整行组波，自上而下 0.2s/行
     错相位（周期 10.0s）= 地址扫描波。
-  · 脉冲 pulse×3（错相位 -0.7 / -1.4 / -2.1）：
+  · 脉冲 pulse×4（v4.1 +1；相位 0 / -0.7 / -1.4 / -2.1 均布）：
     0x1D 行 khead_20b_sel[4:0] 单元格 pulse（琥珀，LC_CPUWR 1027v1 变更格）；
     0x30 密码寄存器行组（TEST_PRTCT，紫色行，=8'h72 解锁）pulse-t（深青）；
-    0x38 行组（0827v1 新增 reg_eol/reg_eol_det，受保护行）pulse-b（蓝）。
+    0x38 行组（0827v1 新增 reg_eol/reg_eol_det，受保护行）pulse-b（蓝）；
+    v4.1 新增：0x20 行组（受保护域起点行，PWRC_TSEL/TESTO_EN_OPT/
+    R_TESTO_SEL 测试字段入口，红行）pulse（琥珀，0s）。
+  · 虚线生长 dashgrow×1（v4.1 新增）：0x09~0x1C 整行 Reserved 带行的
+    虚线边框持续生长回卷（3.0s，-0.5s；源 dasharray 属性保留、kit CSS
+    以 7 5 呈现；行波已覆盖全部行，仅此 1 条虚线元素）。
 - 铁律：源 SVG 只读；<text> 多重集 / svg 开标签 / 几何颜色零改动；
   纯 CSS 无 script 无 SMIL；kit CSS §2 逐字嵌入；背景 rect 保留；
   reduced-motion 用 kit 原文；确定性幂等（只依赖源 SVG）。
@@ -67,8 +72,11 @@ KIT_CSS = "\n".join([
 LABEL_X = "158"        # 行标签列 x
 ROW_STEP = 0.03        # 入场递进（50 行）
 WAVE_STEP = 0.2        # 行波相位步进
-ROW_PULSES = {"0x30": ("pulse-t", "-2.1s"), "0x38": ("pulse-b", "-1.4s")}
+ROW_PULSES = {"0x30": ("pulse-t", "-2.1s"), "0x38": ("pulse-b", "-1.4s"),
+              "0x20": ("pulse", "0s")}            # v4.1：受保护域起点行
 CELL_PULSES = {"0x1D": ("khead_20b_sel[4:0]", "pulse", "-0.7s")}
+DASHGROW_BANDS = {"0x09"}                          # v4.1：Reserved 带行虚线框
+BAND_GROW = ("3.0s", "-0.5s")
 
 
 def attrs_of(line):
@@ -126,7 +134,20 @@ def build():
             assert attrs_of(lines[t - 1])[0] == "rect", f"{field} 前应为 rect"
             assert attrs_of(lines[t + 1])[0] == "text", f"{field} 后应为 value text"
             cell_pulse_map[t - 1] = (kind, delay, t + 1)
-    assert len(row_pulse_map) == 2 and len(cell_pulse_map) == 1, "脉冲定位数异常"
+    assert len(row_pulse_map) == 3 and len(cell_pulse_map) == 1, "脉冲定位数异常"
+
+    # v4.1 dashgrow：Reserved 带行的虚线 rect（每图 1 条；只插入 class/style）
+    dashgrow_map = {}
+    for s, e, prefix in rows:
+        if prefix in DASHGROW_BANDS:
+            r = next((i for i in range(s + 1, e) if lines[i].strip().startswith("<rect")
+                      and "stroke-dasharray" in lines[i]), None)
+            assert r is not None, f"{prefix} 带行未找到虚线 rect"
+            dur, dly = BAND_GROW
+            dashgrow_map[r] = lines[r].replace(
+                "<rect ", '<rect class="dashgrow" '
+                          'style="animation-duration:%s;animation-delay:%s" ' % (dur, dly), 1)
+    assert len(dashgrow_map) == 1, "带行 dashgrow 应恰 1 处"
 
     # ---- 组装 ----
     o = []
@@ -159,6 +180,10 @@ def build():
                 o.append("</g>")
                 i = stop + 1
                 continue
+            if i in dashgrow_map:
+                o.append(dashgrow_map[i])
+                i += 1
+                continue
             o.append(lines[i])
             i += 1
         o.append("</g>")
@@ -178,6 +203,7 @@ def build():
     OUT.write_text(text, encoding="utf-8", newline="")
     return {"cellwave": text.count('class="cellwave"'),
             "pulse": len(re.findall(r'class="pulse(-[tb])?"', text)),
+            "dashgrow": text.count('class="dashgrow"'),
             "row": text.count('class="row"'), "head": text.count('class="head"')}
 
 
@@ -242,4 +268,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-# ymzhu 2026-10-28 17:36
+# ymzhu 2026-10-28 19:24

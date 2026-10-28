@@ -122,7 +122,7 @@
         var img = e.target;
         if (mode !== 'anim' || img.dataset.fxPlayed === '1') return;
         img.dataset.fxPlayed = '1';
-        armLock(clone);               /* 布局锁定随克隆延续（双保险） */
+        /* 同元素重播：aspect-ratio 锁在元素 style 上，src 重赋值不丢，无需重挂 */
         img.src = img.src;  /* v4.1: same-src reassign restarts in-SVG animations; node & external listeners (lightbox) survive; zero network */
       });
     }, { rootMargin: '240px 0px' });

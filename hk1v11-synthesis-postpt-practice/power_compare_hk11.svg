@@ -46,16 +46,13 @@ text{font-family:ui-monospace,Consolas,monospace,"Microsoft YaHei",sans-serif;fo
 .breath{opacity:.4;}
 .maxpulse{opacity:1;}
 
-.cmpband{transform-box:fill-box;transform-origin:left center;}
 .breath2{opacity:.4;}
-.cmpband2{transform-box:fill-box;transform-origin:left center;}
 
 .dot{}
 .d0{}.d1{}.d2{}.d3{}.d4{}.d5{}.d6{}.d7{}.d8{}.d9{}.d10{}.d11{}.d12{}.d13{}.d14{}.d15{}.d16{}
 
 .peakglow{}
 
-.zeband{transform-box:fill-box;transform-origin:center;}
 @media (prefers-reduced-motion:reduce){*{animation:none!important}}
 ]]></style>
 <defs>

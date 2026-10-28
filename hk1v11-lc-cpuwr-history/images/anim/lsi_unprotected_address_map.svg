@@ -201,7 +201,7 @@
 <g class="row" style="animation-delay:0.42s">
 <g class="cellwave" style="animation-duration:10.0s;animation-delay:-1.8s">
 <text x="158" y="620" text-anchor="end" font-size="13" font-weight="600" fill="#64748b">0x09 ~ 0x1C (9 ~ 28)</text>
-<rect x="170" y="592" width="992" height="46" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1" stroke-dasharray="4,3" rx="4"/>
+<rect class="dashgrow" style="animation-duration:3.0s;animation-delay:-0.5s" x="170" y="592" width="992" height="46" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1" stroke-dasharray="4,3" rx="4"/>
 <text x="666" y="621" text-anchor="middle" font-size="12" fill="#64748b">⋯ 全 Reserved ⋯（不受保护）</text>
 </g>
 </g>
@@ -256,6 +256,7 @@
 </g>
 </g>
 <g class="row" style="animation-delay:0.54s">
+<g class="pulse" style="animation-delay:0s">
 <g class="cellwave" style="animation-duration:10.0s;animation-delay:-2.6s">
 <text x="158" y="828" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x20 (32)</text>
 <rect x="170" y="800" width="124" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
@@ -267,6 +268,7 @@
 <rect x="418" y="800" width="744" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="790.0" y="821" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">R_TESTO_SEL[5:0]</text>
 <text x="790.0" y="836" text-anchor="middle" font-size="9" fill="#64748b">6'b000000</text>
+</g>
 </g>
 </g>
 <g class="row" style="animation-delay:0.57s">
