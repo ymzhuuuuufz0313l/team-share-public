@@ -69,7 +69,7 @@
 >
 > - **1008 代对照**：真值 l −1.762325 / r −0.978207 确为真出窗（当时报告的 −6.42 系污染放大 ~4 倍），1028 run 已把两侧修回窗内——「PR 重平衡 DPLC 时钟树 ~11ns」的建议对象打错（当时 clk_max=10.840927 本身就是数据路径 arrival）。
 > - **margin_a「出窗」= 窗口标签口径，非违例**：CLKA 两模式恒 SD_CLK_INV（`DTCTL.v:791/823` 无 DPLC mux），`dplc_clk_a` 复用 `1p_clk_a` 合法 → dplc margin_a 数值 ≡ 1p；dplc 窗 [−0.9:+4.1] 套 a 侧无规格依据（全部既有文档仅用于 b 侧）→ `sd_r_dplc_margin_a_min` 六角 −0.99~−2.07 悬置，待窗口规格收口（ymzhu 出处 + jjlu DPLC 下 a 侧采样倍率）。
-> - **rx0_00 行语义（同日定案）**：max/min 两行是**不同路径**的最差 slack——max=FF→FF setup（INDATA_SYNC→D1，借 3.81ns 周期）、min=port→FF hold（dout_lane，±0.3 input delay 模型 + 0.15 uncertainty 吃满窗口），不是「skew 最大/最小」；2M23 的 min 7.0~9.0 = DIV2 生成时钟（10.08ns）整周期 hold 边沿差占 71%，跨项目不可比。1028 真违例跟办项：wc_cbest port→FF hold 族 ~50ps（−0.051536 起，多 bit）。
+> - **rx0_00 行语义（同日定案）**：max/min 两行是**不同路径**的最差 slack——max=FF→FF setup（INDATA_SYNC→D1，借 3.81ns 周期）、min=port→FF hold（dout_lane，±0.3 input delay 模型 + 0.15 uncertainty 吃满窗口），不是「skew 最大/最小」；2M23 的 min 7.0~9.0 = DIV2 生成时钟（10.08ns）整周期边沿差一项即达 slack 的 1.39 倍（占数据到达 71%），跨项目不可比。1028 真违例跟办项：wc_cbest port→FF hold 族 ~50ps（−0.051536 起，多 bit）。
 > - **教训重演**：09-16 遗留问题 L46 已记「UITE-416 非法起点回退产生假得合理的 margin，空/回退报告必须显式留空+点名」，09-18 新增的 dplc 探针又踩同一坑且未触发任何哨兵。修复清单 P1-P9（pin 补层 / 3 处错误注释同步 / UITE-416 哨兵 / b 侧数据按 launch 分组 / 窗口收口 / io 约束补齐 / latest 混代清理 / isprx 版本对齐）见审计文档 §5。
 
 ![skew 探针审计四面板图解（动画版：窗口机制 / 污染链 / rx0 语义 / 三约束）](./anim/skew_probe_audit_1028.svg?v=20261030)
