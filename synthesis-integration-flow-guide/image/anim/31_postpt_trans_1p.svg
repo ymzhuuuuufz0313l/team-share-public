@@ -2,9 +2,9 @@
 <style><![CDATA[
 .head{opacity:0;animation:rowIn 0.4s ease forwards;}
 .row{opacity:0;animation:rowIn 0.4s ease forwards;}
-.chg{animation:breath 2.8s ease-in-out infinite;}
+.breathe { animation: breathe 2.8s ease-in-out infinite; }
 @keyframes rowIn{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:none;}}
-@keyframes breath{0%{opacity:1;}50%{opacity:0.55;}100%{opacity:1;}}
+@keyframes breathe { 0%,100% { opacity: 1; } 50% { opacity: 0.45; } }
 ]]></style>
 <rect x="0" y="0" width="2519" height="288.168" fill="#ffffff"/>
 <g class="head">

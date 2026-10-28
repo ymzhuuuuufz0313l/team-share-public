@@ -9,7 +9,10 @@
 .chgrow { animation: chgRowPulse 2.4s ease-in-out 4s infinite; }
 @keyframes chgRowPulse { 0%,100% { opacity:1; } 50% { opacity:0.5; } }
 .brd { animation: brdPulse 2.4s ease-in-out 4s infinite; }
-@keyframes brdPulse { 0%,100% { stroke-opacity: 1; } 50% { stroke-opacity: 0.4; } }</style>
+@keyframes brdPulse { 0%,100% { stroke-opacity: 1; } 50% { stroke-opacity: 0.4; } }
+@keyframes breathe { 0%,100% { opacity: 1; } 50% { opacity: 0.45; } }
+.breathe { animation: breathe 3.2s ease-in-out infinite; }
+</style>
 <rect width="1240" height="848" fill="#ffffff"/>
 <g class="head">
 <text x="620" y="36" text-anchor="middle" font-size="22" font-weight="800" fill="#1e293b">LC_CPUWR 0721v1 配置拍重组对照（流内字节顺序不变，仅分组 2B/拍 → 3B/拍）</text>
@@ -81,10 +84,10 @@
 <text x="60" y="486" font-size="13" font-weight="700" fill="#0f172a">区域 C：0x27（checksum frame end；每帧最后一笔参与字节）</text>
 </g>
 <g class="row" style="animation-delay:0.54s">
-<rect x="48" y="520" width="90" height="50" rx="9" fill="none" stroke="#94a3b8" stroke-width="2"/><text x="93.0" y="512" text-anchor="middle" font-size="11" font-weight="700" fill="#94a3b8">5'h14</text><rect x="56" y="528" width="34" height="34" rx="5" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/><text x="73.0" y="550" text-anchor="middle" font-size="12" font-weight="600" fill="#94a3b8">26</text><rect x="96" y="528" width="34" height="34" rx="5" fill="#fefce8" stroke="#eab308" stroke-width="1.5"/><text x="113.0" y="550" text-anchor="middle" font-size="12" font-weight="600" fill="#a16207">27</text><text x="93.0" y="588" text-anchor="middle" font-size="11" fill="#334155">frame_end: D</text>
+<rect x="48" y="520" width="90" height="50" rx="9" fill="none" stroke="#94a3b8" stroke-width="2"/><text x="93.0" y="512" text-anchor="middle" font-size="11" font-weight="700" fill="#94a3b8">5'h14</text><rect x="56" y="528" width="34" height="34" rx="5" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/><text x="73.0" y="550" text-anchor="middle" font-size="12" font-weight="600" fill="#94a3b8">26</text><g class="breathe" style="animation-delay: 2.70s"><rect x="96" y="528" width="34" height="34" rx="5" fill="#fefce8" stroke="#eab308" stroke-width="1.5"/><text x="113.0" y="550" text-anchor="middle" font-size="12" font-weight="600" fill="#a16207">27</text></g><text x="93.0" y="588" text-anchor="middle" font-size="11" fill="#334155">frame_end: D</text>
 </g>
 <g class="row" style="animation-delay:0.57s">
-<rect x="656" y="520" width="130" height="50" rx="9" fill="none" stroke="#2563eb" stroke-width="2"/><text x="721.0" y="512" text-anchor="middle" font-size="11" font-weight="700" fill="#2563eb">5'h0E</text><rect x="664" y="528" width="34" height="34" rx="5" fill="#fefce8" stroke="#eab308" stroke-width="1.5"/><text x="681.0" y="550" text-anchor="middle" font-size="12" font-weight="600" fill="#a16207">27</text><rect x="704" y="528" width="34" height="34" rx="5" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/><text x="721.0" y="550" text-anchor="middle" font-size="12" font-weight="600" fill="#94a3b8">28</text><rect x="744" y="528" width="34" height="34" rx="5" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/><text x="761.0" y="550" text-anchor="middle" font-size="12" font-weight="600" fill="#94a3b8">29</text><text x="721.0" y="588" text-anchor="middle" font-size="11" fill="#334155">frame_end: C</text>
+<rect x="656" y="520" width="130" height="50" rx="9" fill="none" stroke="#2563eb" stroke-width="2"/><text x="721.0" y="512" text-anchor="middle" font-size="11" font-weight="700" fill="#2563eb">5'h0E</text><g class="breathe" style="animation-delay: 2.85s"><rect x="664" y="528" width="34" height="34" rx="5" fill="#fefce8" stroke="#eab308" stroke-width="1.5"/><text x="681.0" y="550" text-anchor="middle" font-size="12" font-weight="600" fill="#a16207">27</text></g><rect x="704" y="528" width="34" height="34" rx="5" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/><text x="721.0" y="550" text-anchor="middle" font-size="12" font-weight="600" fill="#94a3b8">28</text><rect x="744" y="528" width="34" height="34" rx="5" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/><text x="761.0" y="550" text-anchor="middle" font-size="12" font-weight="600" fill="#94a3b8">29</text><text x="721.0" y="588" text-anchor="middle" font-size="11" fill="#334155">frame_end: C</text>
 </g>
 <g class="row" style="animation-delay:0.60s">
 <text x="60" y="650" font-size="13" font-weight="700" fill="#0f172a">区域 D：LCONFIG 0x40 ~ 0x44（6B：3 拍 → 2 拍，无 pad）</text>
@@ -106,18 +109,22 @@
 </g>
 <g class="row" style="animation-delay:0.78s">
 <g class="chg">
+<g class="breathe" style="animation-delay: 3.90s">
 <rect x="48" y="768" width="560" height="66" rx="10" fill="#ecfdf5" stroke="#16a34a" stroke-width="1.5" class="brd"/>
 <text x="64" y="790" font-size="13" font-weight="700" fill="#166534">XOR 总量不变（结合律）</text>
 <text x="64" y="808" font-size="12" fill="#166534">0x00^01^02^03^04^05^06^08^09^0A^1D^1E^1F，frame_end=0x27</text>
 <text x="64" y="826" font-size="12" fill="#166534">分组变化不改值 → checker / DV 期望与回归行为不变</text>
 </g>
 </g>
+</g>
 <g class="row" style="animation-delay:0.81s"><g class="chgrow">
 
+<g class="breathe" style="animation-delay: 4.05s">
 <rect x="640" y="768" width="560" height="66" rx="10" fill="#fff7ed" stroke="#fb923c" stroke-width="1.5" class="brd"/>
 <text x="656" y="790" font-size="13" font-weight="700" fill="#c2410c">过渡依赖</text>
 <text x="656" y="808" font-size="12" fill="#c2410c">CHPI_CONFIG_L0 未升 24bit 前，LINK_LOGIC 将 [23:16] tie-off 防 X 传播</text>
 <text x="656" y="826" font-size="12" fill="#c2410c">全芯片 FCONFIG 流仿真待上游升版后联调（END：5'd20 / 3'd3）</text>
+</g>
 
 </g></g>
 

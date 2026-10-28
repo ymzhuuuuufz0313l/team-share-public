@@ -4,10 +4,8 @@
 .row  { opacity:0; animation: rowIn 0.4s ease forwards; }
 @keyframes rowIn { from { opacity:0; transform: translateY(4px); }
                    to   { opacity:1; transform: none; } }
-.breath { animation: breathe 2.8s ease-in-out infinite; }
-@keyframes breathe { 0%,100% { opacity:1; } 50% { opacity:0.55; } }
-.frameBreath { animation: frameB 2.8s ease-in-out infinite; }
-@keyframes frameB { 0%,100% { stroke-opacity:1; } 50% { stroke-opacity:0.45; } }
+.breathe { animation: breathe 2.8s ease-in-out infinite; }
+@keyframes breathe { 0%,100% { opacity: 1; } 50% { opacity: 0.45; } }
 </style>
 <g class="head">
 <rect x="0" y="0" width="2350" height="60" fill="#0e7c6b"/>
@@ -96,5 +94,5 @@
 <line x1="1" y1="156" x2="2349" y2="156" stroke="#d0d8d6" stroke-width="1"/>
 <line x1="1" y1="200" x2="2349" y2="200" stroke="#d0d8d6" stroke-width="1"/>
 <line x1="1" y1="244" x2="2349" y2="244" stroke="#d0d8d6" stroke-width="1"/>
-<rect class="frameBreath" x="1" y="1" width="2348" height="288" fill="none" stroke="#c0c6c6" stroke-width="2"/>
+<rect x="1" y="1" width="2348" height="288" fill="none" stroke="#c0c6c6" stroke-width="2"/>
 </svg>

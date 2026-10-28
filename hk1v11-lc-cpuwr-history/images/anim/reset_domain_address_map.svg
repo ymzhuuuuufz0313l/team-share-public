@@ -6,6 +6,8 @@
 .head { opacity:0; animation: rowIn 0.4s ease forwards; }
 .chg { animation: chgPulse 2s ease-in-out 4s infinite; }
 @keyframes chgPulse { 0%,100% { opacity:1; } 50% { opacity:0.45; } }
+@keyframes breathe { 0%,100% { opacity: 1; } 50% { opacity: 0.45; } }
+.breathe { animation: breathe 3.2s ease-in-out infinite; }
 </style>
 <rect width="866" height="2956" fill="#ffffff"/>
 <g class="head">
@@ -24,9 +26,11 @@
 <rect x="170" y="124" width="245" height="46" fill="#dbeafe" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="292.5" y="145.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">AVE_RGBW[2:0]</text>
 <text x="292.5" y="159.0" text-anchor="middle" font-size="9.0" fill="#64748b">3'b000</text>
+<g class="breathe" style="animation-delay: 0.00s">
 <rect x="416" y="124" width="81" height="46" fill="#22c55e" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="456.5" y="145.0" text-anchor="middle" font-size="8.0" font-weight="500" fill="#1e293b">SCREN</text>
 <text x="456.5" y="159.0" text-anchor="middle" font-size="7.0" fill="#64748b">1'b0</text>
+</g>
 <rect x="498" y="124" width="81" height="46" fill="#dbeafe" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="538.5" y="145.0" text-anchor="middle" font-size="8.0" font-weight="500" fill="#1e293b">Reserved</text>
 <text x="538.5" y="159.0" text-anchor="middle" font-size="7.0" fill="#64748b">0</text>
@@ -42,9 +46,11 @@
 <rect x="252" y="176" width="81" height="46" fill="#dbeafe" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="292.5" y="197.0" text-anchor="middle" font-size="8.0" font-weight="500" fill="#1e293b">Reserved</text>
 <text x="292.5" y="211.0" text-anchor="middle" font-size="7.0" fill="#64748b">0</text>
+<g class="breathe" style="animation-delay: 0.15s">
 <rect x="334" y="176" width="81" height="46" fill="#f97316" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="374.5" y="197.0" text-anchor="middle" font-size="8.0" font-weight="500" fill="#1e293b">PORSD</text>
 <text x="374.5" y="211.0" text-anchor="middle" font-size="7.0" fill="#64748b">1'b0</text>
+</g>
 <rect x="416" y="176" width="409" height="46" fill="#dbeafe" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="620.5" y="197.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">Reserved</text>
 <text x="620.5" y="211.0" text-anchor="middle" font-size="9.0" fill="#64748b">0</text>
@@ -96,9 +102,11 @@
 </g>
 <g class="row" style="animation-delay: 0.15s">
 <text x="158" y="412.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x05 (5)</text>
+<g class="breathe" style="animation-delay: 0.75s">
 <rect x="170" y="384" width="245" height="46" fill="#f97316" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="292.5" y="405.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">CH_SEL[2:0]</text>
 <text x="292.5" y="419.0" text-anchor="middle" font-size="9.0" fill="#64748b">3'b011</text>
+</g>
 <rect x="416" y="384" width="409" height="46" fill="#dbeafe" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="620.5" y="405.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">Reserved</text>
 <text x="620.5" y="419.0" text-anchor="middle" font-size="9.0" fill="#64748b">0</text>
@@ -120,12 +128,16 @@
 <rect x="498" y="436" width="81" height="46" fill="#dbeafe" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="538.5" y="457.0" text-anchor="middle" font-size="8.0" font-weight="500" fill="#1e293b">AVE_MODE</text>
 <text x="538.5" y="471.0" text-anchor="middle" font-size="7.0" fill="#64748b">1'b0</text>
+<g class="breathe" style="animation-delay: 0.90s">
 <rect x="580" y="436" width="81" height="46" fill="#f97316" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="620.5" y="457.0" text-anchor="middle" font-size="8.0" font-weight="500" fill="#1e293b">DPLC_MODE</text>
 <text x="620.5" y="471.0" text-anchor="middle" font-size="7.0" fill="#64748b">1'b0</text>
+</g>
+<g class="breathe" style="animation-delay: 0.90s">
 <rect x="662" y="436" width="81" height="46" fill="#f97316" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="702.5" y="457.0" text-anchor="middle" font-size="8.0" font-weight="500" fill="#1e293b">SDC</text>
 <text x="702.5" y="471.0" text-anchor="middle" font-size="7.0" fill="#64748b">1'b1</text>
+</g>
 <rect x="744" y="436" width="81" height="46" fill="#dbeafe" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="784.5" y="457.0" text-anchor="middle" font-size="8.0" font-weight="500" fill="#1e293b">Reserved</text>
 <text x="784.5" y="471.0" text-anchor="middle" font-size="7.0" fill="#64748b">0</text>
@@ -235,9 +247,11 @@
 <rect x="252" y="904" width="81" height="46" fill="#dbeafe" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="292.5" y="925.0" text-anchor="middle" font-size="8.0" font-weight="500" fill="#1e293b">TESTO_EN_OPT</text>
 <text x="292.5" y="939.0" text-anchor="middle" font-size="7.0" fill="#64748b">1'b0</text>
+<g class="breathe" style="animation-delay: 2.25s">
 <rect x="334" y="904" width="491" height="46" fill="#f97316" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="579.5" y="925.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">R_TESTO_SEL[5:0]</text>
 <text x="579.5" y="939.0" text-anchor="middle" font-size="9.0" fill="#64748b">6'b000000</text>
+</g>
 </g>
 <g class="row" style="animation-delay: 0.48s">
 <text x="158" y="984.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x21 (33)</text>
@@ -247,9 +261,11 @@
 <rect x="252" y="956" width="81" height="46" fill="#dbeafe" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="292.5" y="977.0" text-anchor="middle" font-size="8.0" font-weight="500" fill="#1e293b">R_FRM_CHK_MODE</text>
 <text x="292.5" y="991.0" text-anchor="middle" font-size="7.0" fill="#64748b">1b'0</text>
+<g class="breathe" style="animation-delay: 2.40s">
 <rect x="334" y="956" width="163" height="46" fill="#f97316" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="415.5" y="977.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">R_UTC[1:0]</text>
 <text x="415.5" y="991.0" text-anchor="middle" font-size="9.0" fill="#64748b">2b'00</text>
+</g>
 <rect x="498" y="956" width="81" height="46" fill="#dbeafe" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="538.5" y="977.0" text-anchor="middle" font-size="8.0" font-weight="500" fill="#1e293b">Reserved</text>
 <text x="538.5" y="991.0" text-anchor="middle" font-size="7.0" fill="#64748b">0</text>
@@ -472,9 +488,11 @@
 </g>
 <g class="row" style="animation-delay: 0.93s">
 <text x="158" y="1764.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x30 (48)</text>
+<g class="breathe" style="animation-delay: 4.65s">
 <rect x="170" y="1736" width="655" height="46" fill="#f97316" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="497.5" y="1757.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">TEST_PRTCT[7:0]</text>
 <text x="497.5" y="1771.0" text-anchor="middle" font-size="9.0" fill="#64748b">8'b00000000</text>
+</g>
 </g>
 <g class="row" style="animation-delay: 0.96s">
 <text x="158" y="1816.0" text-anchor="end" font-size="13" font-weight="600" fill="#64748b">0x31 ~ 0x32 (49 ~ 50)</text>

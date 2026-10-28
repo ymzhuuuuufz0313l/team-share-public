@@ -6,6 +6,8 @@
 .head { opacity:0; animation: rowIn 0.4s ease forwards; }
 .chg { animation: chgPulse 2s ease-in-out 4s infinite; }
 @keyframes chgPulse { 0%,100% { opacity:1; } 50% { opacity:0.45; } }
+@keyframes breathe { 0%,100% { opacity: 1; } 50% { opacity: 0.45; } }
+.breathe { animation: breathe 3.2s ease-in-out infinite; }
 </style>
 <rect width="1198" height="2894" fill="#ffffff"/>
 <g class="head">
@@ -207,105 +209,159 @@
 </g>
 <g class="row" style="animation-delay: 0.39s">
 <text x="158" y="828" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x20 (32)</text>
+<g class="breathe" style="animation-delay: 1.95s">
 <rect x="170" y="800" width="124" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="232.0" y="821" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">PWRC_TSEL</text>
 <text x="232.0" y="836" text-anchor="middle" font-size="9" fill="#64748b">1'b0</text>
+</g>
+<g class="breathe" style="animation-delay: 1.95s">
 <rect x="294" y="800" width="124" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="356.0" y="821" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">TESTO_EN_OPT</text>
 <text x="356.0" y="836" text-anchor="middle" font-size="9" fill="#64748b">1'b0</text>
+</g>
+<g class="breathe" style="animation-delay: 1.95s">
 <rect x="418" y="800" width="744" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="790.0" y="821" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">R_TESTO_SEL[5:0]</text>
 <text x="790.0" y="836" text-anchor="middle" font-size="9" fill="#64748b">6'b000000</text>
 </g>
+</g>
 <g class="row" style="animation-delay: 0.42s">
 <text x="158" y="880" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x21 (33)</text>
+<g class="breathe" style="animation-delay: 2.10s">
 <rect x="170" y="852" width="124" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="232.0" y="873" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">Reserved</text>
 <text x="232.0" y="888" text-anchor="middle" font-size="9" fill="#64748b">0</text>
+</g>
+<g class="breathe" style="animation-delay: 2.10s">
 <rect x="294" y="852" width="124" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="356.0" y="873" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">R_FRM_CHK_MODE</text>
 <text x="356.0" y="888" text-anchor="middle" font-size="9" fill="#64748b">1'b0</text>
+</g>
+<g class="breathe" style="animation-delay: 2.10s">
 <rect x="418" y="852" width="248" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="542.0" y="873" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">R_UTC[1:0]</text>
 <text x="542.0" y="888" text-anchor="middle" font-size="9" fill="#64748b">2'b00</text>
+</g>
+<g class="breathe" style="animation-delay: 2.10s">
 <rect x="666" y="852" width="124" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="728.0" y="873" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">Reserved</text>
 <text x="728.0" y="888" text-anchor="middle" font-size="9" fill="#64748b">0</text>
+</g>
+<g class="breathe" style="animation-delay: 2.10s">
 <rect x="790" y="852" width="372" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="976.0" y="873" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">R_MON_DC_VOL[2:0]</text>
 <text x="976.0" y="888" text-anchor="middle" font-size="9" fill="#64748b">3'b000</text>
 </g>
+</g>
 <g class="row" style="animation-delay: 0.45s">
 <text x="158" y="932" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x22 (34)</text>
+<g class="breathe" style="animation-delay: 2.25s">
 <rect x="170" y="904" width="124" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="232.0" y="925" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">CVBP_SEPARATE</text>
 <text x="232.0" y="940" text-anchor="middle" font-size="9" fill="#64748b">1'b0</text>
+</g>
+<g class="breathe" style="animation-delay: 2.25s">
 <rect x="294" y="904" width="124" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="356.0" y="925" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">STR</text>
 <text x="356.0" y="940" text-anchor="middle" font-size="9" fill="#64748b">1'b0</text>
+</g>
+<g class="breathe" style="animation-delay: 2.25s">
 <rect x="418" y="904" width="124" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="480.0" y="925" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">SREF_N</text>
 <text x="480.0" y="940" text-anchor="middle" font-size="9" fill="#64748b">1'b0</text>
+</g>
+<g class="breathe" style="animation-delay: 2.25s">
 <rect x="542" y="904" width="124" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="604.0" y="925" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">SRER_N</text>
 <text x="604.0" y="940" text-anchor="middle" font-size="9" fill="#64748b">1'b0</text>
+</g>
+<g class="breathe" style="animation-delay: 2.25s">
 <rect x="666" y="904" width="124" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="728.0" y="925" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">SREF_P</text>
 <text x="728.0" y="940" text-anchor="middle" font-size="9" fill="#64748b">1'b0</text>
+</g>
+<g class="breathe" style="animation-delay: 2.25s">
 <rect x="790" y="904" width="124" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="852.0" y="925" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">SRER_P</text>
 <text x="852.0" y="940" text-anchor="middle" font-size="9" fill="#64748b">1'b0</text>
+</g>
+<g class="breathe" style="animation-delay: 2.25s">
 <rect x="914" y="904" width="124" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="976.0" y="925" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">SRE</text>
 <text x="976.0" y="940" text-anchor="middle" font-size="9" fill="#64748b">1'b0</text>
+</g>
+<g class="breathe" style="animation-delay: 2.25s">
 <rect x="1038" y="904" width="124" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="1100.0" y="925" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">HIZ_SEL</text>
 <text x="1100.0" y="940" text-anchor="middle" font-size="9" fill="#64748b">1'b0</text>
 </g>
+</g>
 <g class="row" style="animation-delay: 0.48s">
 <text x="158" y="984" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x23 (35)</text>
+<g class="breathe" style="animation-delay: 2.40s">
 <rect x="170" y="956" width="496" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="418.0" y="977" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">reg_ana_test_sel[3:0]</text>
 <text x="418.0" y="992" text-anchor="middle" font-size="9" fill="#64748b">4'b0000</text>
+</g>
+<g class="breathe" style="animation-delay: 2.40s">
 <rect x="666" y="956" width="124" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="728.0" y="977" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">R_CH34_HIZ</text>
 <text x="728.0" y="992" text-anchor="middle" font-size="9" fill="#64748b">1'b0</text>
+</g>
+<g class="breathe" style="animation-delay: 2.40s">
 <rect x="790" y="956" width="124" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="852.0" y="977" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">R_CH12_HIZ</text>
 <text x="852.0" y="992" text-anchor="middle" font-size="9" fill="#64748b">1'b0</text>
+</g>
+<g class="breathe" style="animation-delay: 2.40s">
 <rect x="914" y="956" width="248" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="1038.0" y="977" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">Reserved</text>
 <text x="1038.0" y="992" text-anchor="middle" font-size="9" fill="#64748b">0</text>
 </g>
+</g>
 <g class="row" style="animation-delay: 0.51s">
 <text x="158" y="1036" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x24 (36)</text>
+<g class="breathe" style="animation-delay: 2.55s">
 <rect x="170" y="1008" width="248" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="294.0" y="1029" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">cr_done_filter[1:0]</text>
 <text x="294.0" y="1044" text-anchor="middle" font-size="9" fill="#64748b">2'b00</text>
+</g>
+<g class="breathe" style="animation-delay: 2.55s">
 <rect x="418" y="1008" width="744" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="790.0" y="1029" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">reg_cr_done_cnt[5:0]</text>
 <text x="790.0" y="1044" text-anchor="middle" font-size="9" fill="#64748b">6'b010101</text>
 </g>
+</g>
 <g class="row" style="animation-delay: 0.54s">
 <text x="158" y="1088" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x25 (37)</text>
+<g class="breathe" style="animation-delay: 2.70s">
 <rect x="170" y="1060" width="496" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="418.0" y="1081" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">reg_cdr_icp[3:0]</text>
 <text x="418.0" y="1096" text-anchor="middle" font-size="9" fill="#64748b">Loop_sel(4/6/8/C)</text>
+</g>
+<g class="breathe" style="animation-delay: 2.70s">
 <rect x="666" y="1060" width="496" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="914.0" y="1081" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">reg_cdr_rlpf[3:0]</text>
 <text x="914.0" y="1096" text-anchor="middle" font-size="9" fill="#64748b">4'b1100(C)</text>
 </g>
+</g>
 <g class="row" style="animation-delay: 0.57s">
 <text x="158" y="1140" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x26 (38)</text>
+<g class="breathe" style="animation-delay: 2.85s">
 <rect x="170" y="1112" width="496" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="418.0" y="1133" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">reg_kvco_ctrl[3:0]</text>
 <text x="418.0" y="1148" text-anchor="middle" font-size="9" fill="#64748b">Loop_sel(A/8)</text>
+</g>
+<g class="breathe" style="animation-delay: 2.85s">
 <rect x="666" y="1112" width="124" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="728.0" y="1133" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">Reserved</text>
 <text x="728.0" y="1148" text-anchor="middle" font-size="9" fill="#64748b">0</text>
+</g>
+<g class="breathe" style="animation-delay: 2.85s">
 <rect x="790" y="1112" width="372" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="976.0" y="1133" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">reg_icp_bias_tune[2:0]</text>
 <text x="976.0" y="1148" text-anchor="middle" font-size="9" fill="#64748b">3'b100</text>
+</g>
 </g>
 <g class="row" style="animation-delay: 0.60s">
 <text x="158" y="1192" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x27 (39)</text>
@@ -324,135 +380,205 @@
 </g>
 <g class="row" style="animation-delay: 0.63s">
 <text x="158" y="1244" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x28 (40)</text>
+<g class="breathe" style="animation-delay: 3.15s">
 <rect x="170" y="1216" width="124" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="232.0" y="1237" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">DBC_VBK_ON</text>
 <text x="232.0" y="1252" text-anchor="middle" font-size="9" fill="#64748b">1'b0</text>
+</g>
+<g class="breathe" style="animation-delay: 3.15s">
 <rect x="294" y="1216" width="124" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="356.0" y="1237" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">VPS_EN[0]</text>
 <text x="356.0" y="1252" text-anchor="middle" font-size="9" fill="#64748b">1'b0</text>
+</g>
+<g class="breathe" style="animation-delay: 3.15s">
 <rect x="418" y="1216" width="248" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="542.0" y="1237" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">DBCO_DRV[1:0]</text>
 <text x="542.0" y="1252" text-anchor="middle" font-size="9" fill="#64748b">2'b00</text>
+</g>
+<g class="breathe" style="animation-delay: 3.15s">
 <rect x="666" y="1216" width="124" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="728.0" y="1237" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">Reserved</text>
 <text x="728.0" y="1252" text-anchor="middle" font-size="9" fill="#64748b">0</text>
+</g>
+<g class="breathe" style="animation-delay: 3.15s">
 <rect x="790" y="1216" width="124" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="852.0" y="1237" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">R_BAC</text>
 <text x="852.0" y="1252" text-anchor="middle" font-size="9" fill="#64748b">1'b0</text>
+</g>
+<g class="breathe" style="animation-delay: 3.15s">
 <rect x="914" y="1216" width="248" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="1038.0" y="1237" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">AABB[1:0]</text>
 <text x="1038.0" y="1252" text-anchor="middle" font-size="9" fill="#64748b">2'b00</text>
 </g>
+</g>
 <g class="row" style="animation-delay: 0.66s">
 <text x="158" y="1296" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x29 (41)</text>
+<g class="breathe" style="animation-delay: 3.30s">
 <rect x="170" y="1268" width="248" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="294.0" y="1289" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">CP_VBP2R[1:0]</text>
 <text x="294.0" y="1304" text-anchor="middle" font-size="9" fill="#64748b">2'b00</text>
+</g>
+<g class="breathe" style="animation-delay: 3.30s">
 <rect x="418" y="1268" width="248" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="542.0" y="1289" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">CP_VBP1R[1:0]</text>
 <text x="542.0" y="1304" text-anchor="middle" font-size="9" fill="#64748b">2'b00</text>
+</g>
+<g class="breathe" style="animation-delay: 3.30s">
 <rect x="666" y="1268" width="124" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="728.0" y="1289" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">R_MASK_6PIX</text>
 <text x="728.0" y="1304" text-anchor="middle" font-size="9" fill="#64748b">1'b0</text>
+</g>
+<g class="breathe" style="animation-delay: 3.30s">
 <rect x="790" y="1268" width="248" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="914.0" y="1289" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">R_DBC_WIDTH_OPT[1:0]</text>
 <text x="914.0" y="1304" text-anchor="middle" font-size="9" fill="#64748b">2'b00</text>
+</g>
+<g class="breathe" style="animation-delay: 3.30s">
 <rect x="1038" y="1268" width="124" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="1100.0" y="1289" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">DBC</text>
 <text x="1100.0" y="1304" text-anchor="middle" font-size="9" fill="#64748b">1'b0</text>
 </g>
+</g>
 <g class="row" style="animation-delay: 0.69s">
 <text x="158" y="1348" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x2A (42)</text>
+<g class="breathe" style="animation-delay: 3.45s">
 <rect x="170" y="1320" width="248" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="294.0" y="1341" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">CP_VBN2L[1:0]</text>
 <text x="294.0" y="1356" text-anchor="middle" font-size="9" fill="#64748b">2'b00</text>
+</g>
+<g class="breathe" style="animation-delay: 3.45s">
 <rect x="418" y="1320" width="248" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="542.0" y="1341" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">CP_VBN1L[1:0]</text>
 <text x="542.0" y="1356" text-anchor="middle" font-size="9" fill="#64748b">2'b00</text>
+</g>
+<g class="breathe" style="animation-delay: 3.45s">
 <rect x="666" y="1320" width="248" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="790.0" y="1341" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">OVC_NEG[1:0]</text>
 <text x="790.0" y="1356" text-anchor="middle" font-size="9" fill="#64748b">2'b01</text>
+</g>
+<g class="breathe" style="animation-delay: 3.45s">
 <rect x="914" y="1320" width="248" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="1038.0" y="1341" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">OVC_POS[1:0]</text>
 <text x="1038.0" y="1356" text-anchor="middle" font-size="9" fill="#64748b">2'b10</text>
 </g>
+</g>
 <g class="row" style="animation-delay: 0.72s">
 <text x="158" y="1400" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x2B (43)</text>
+<g class="breathe" style="animation-delay: 3.60s">
 <rect x="170" y="1372" width="248" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="294.0" y="1393" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">DC_MON_SEL[1:0]</text>
 <text x="294.0" y="1408" text-anchor="middle" font-size="9" fill="#64748b">2'b00</text>
+</g>
+<g class="breathe" style="animation-delay: 3.60s">
 <rect x="418" y="1372" width="248" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="542.0" y="1393" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">DCBIAS_TOT[1:0]</text>
 <text x="542.0" y="1408" text-anchor="middle" font-size="9" fill="#64748b">2'b00</text>
+</g>
+<g class="breathe" style="animation-delay: 3.60s">
 <rect x="666" y="1372" width="496" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="914.0" y="1393" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">DCBIAS_CHOP[3:0]</text>
 <text x="914.0" y="1408" text-anchor="middle" font-size="9" fill="#64748b">4'b0000</text>
 </g>
+</g>
 <g class="row" style="animation-delay: 0.75s">
 <text x="158" y="1452" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x2C (44)</text>
+<g class="breathe" style="animation-delay: 3.75s">
 <rect x="170" y="1424" width="124" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="232.0" y="1445" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">Reserved</text>
 <text x="232.0" y="1460" text-anchor="middle" font-size="9" fill="#64748b">0</text>
+</g>
+<g class="breathe" style="animation-delay: 3.75s">
 <rect x="294" y="1424" width="372" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="480.0" y="1445" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">BGR_TRIM[2:0]</text>
 <text x="480.0" y="1460" text-anchor="middle" font-size="9" fill="#64748b">3'b000</text>
+</g>
+<g class="breathe" style="animation-delay: 3.75s">
 <rect x="666" y="1424" width="496" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="914.0" y="1445" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">BGR_SEL[3:0]</text>
 <text x="914.0" y="1460" text-anchor="middle" font-size="9" fill="#64748b">4'b0000</text>
 </g>
+</g>
 <g class="row" style="animation-delay: 0.78s">
 <text x="158" y="1504" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x2D (45)</text>
+<g class="breathe" style="animation-delay: 3.90s">
 <rect x="170" y="1476" width="248" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="294.0" y="1497" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">CN_VBP2R[1:0]</text>
 <text x="294.0" y="1512" text-anchor="middle" font-size="9" fill="#64748b">2'b00</text>
+</g>
+<g class="breathe" style="animation-delay: 3.90s">
 <rect x="418" y="1476" width="248" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="542.0" y="1497" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">CN_VBP1R[1:0]</text>
 <text x="542.0" y="1512" text-anchor="middle" font-size="9" fill="#64748b">2'b00</text>
+</g>
+<g class="breathe" style="animation-delay: 3.90s">
 <rect x="666" y="1476" width="248" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="790.0" y="1497" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">LENB_SHIFT[1:0]</text>
 <text x="790.0" y="1512" text-anchor="middle" font-size="9" fill="#64748b">2'b00</text>
+</g>
+<g class="breathe" style="animation-delay: 3.90s">
 <rect x="914" y="1476" width="248" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="1038.0" y="1497" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">Reserved</text>
 <text x="1038.0" y="1512" text-anchor="middle" font-size="9" fill="#64748b">0</text>
 </g>
+</g>
 <g class="row" style="animation-delay: 0.81s">
 <text x="158" y="1556" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x2E (46)</text>
+<g class="breathe" style="animation-delay: 4.05s">
 <rect x="170" y="1528" width="248" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="294.0" y="1549" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">CN_VBN2L[1:0]</text>
 <text x="294.0" y="1564" text-anchor="middle" font-size="9" fill="#64748b">2'b00</text>
+</g>
+<g class="breathe" style="animation-delay: 4.05s">
 <rect x="418" y="1528" width="248" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="542.0" y="1549" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">CN_VBN1L[1:0]</text>
 <text x="542.0" y="1564" text-anchor="middle" font-size="9" fill="#64748b">2'b00</text>
+</g>
+<g class="breathe" style="animation-delay: 4.05s">
 <rect x="666" y="1528" width="124" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="728.0" y="1549" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">TP_F_AHEAD</text>
 <text x="728.0" y="1564" text-anchor="middle" font-size="9" fill="#64748b">1'b0</text>
+</g>
+<g class="breathe" style="animation-delay: 4.05s">
 <rect x="790" y="1528" width="248" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="914.0" y="1549" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">PWRC_LS[1:0]</text>
 <text x="914.0" y="1564" text-anchor="middle" font-size="9" fill="#64748b">2'b00</text>
+</g>
+<g class="breathe" style="animation-delay: 4.05s">
 <rect x="1038" y="1528" width="124" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="1100.0" y="1549" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">R_PTAT_EN</text>
 <text x="1100.0" y="1564" text-anchor="middle" font-size="9" fill="#64748b">1'b0</text>
 </g>
+</g>
 <g class="row" style="animation-delay: 0.84s">
 <text x="158" y="1608" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x2F (47)</text>
+<g class="breathe" style="animation-delay: 4.20s">
 <rect x="170" y="1580" width="124" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="232.0" y="1601" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">LD_D_OPT</text>
 <text x="232.0" y="1616" text-anchor="middle" font-size="9" fill="#64748b">1'b0</text>
+</g>
+<g class="breathe" style="animation-delay: 4.20s">
 <rect x="294" y="1580" width="620" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="604.0" y="1601" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">R_HIZ_MIN_VAL[4:0]</text>
 <text x="604.0" y="1616" text-anchor="middle" font-size="9" fill="#64748b">5'b00000</text>
+</g>
+<g class="breathe" style="animation-delay: 4.20s">
 <rect x="914" y="1580" width="124" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="976.0" y="1601" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">HIZ_MIN_SEL</text>
 <text x="976.0" y="1616" text-anchor="middle" font-size="9" fill="#64748b">1'b0</text>
+</g>
+<g class="breathe" style="animation-delay: 4.20s">
 <rect x="1038" y="1580" width="124" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="1100.0" y="1601" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">SCS_PKT_HALF</text>
 <text x="1100.0" y="1616" text-anchor="middle" font-size="9" fill="#64748b">1'b0</text>
 </g>
+</g>
 <g class="row" style="animation-delay: 0.87s">
 <text x="158" y="1660" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x30 (48)</text>
+<g class="breathe" style="animation-delay: 4.35s">
 <rect x="170" y="1632" width="992" height="46" fill="#e9d5ff" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="666.0" y="1653" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">TEST_PRTCT[7:0]</text>
 <text x="666.0" y="1668" text-anchor="middle" font-size="9" fill="#64748b">8'b00000000</text>
+</g>
 </g>
 <g class="row" style="animation-delay: 0.90s">
 <text x="158" y="1712" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x31 (49)</text>
@@ -466,99 +592,149 @@
 </g>
 <g class="row" style="animation-delay: 0.96s">
 <text x="158" y="1816" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x33 (51)</text>
+<g class="breathe" style="animation-delay: 4.80s">
 <rect x="170" y="1788" width="124" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="232.0" y="1809" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">reg_pin_eq</text>
 <text x="232.0" y="1824" text-anchor="middle" font-size="9" fill="#64748b">1'b0</text>
+</g>
+<g class="breathe" style="animation-delay: 4.80s">
 <rect x="294" y="1788" width="620" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="604.0" y="1809" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">Reserved</text>
 <text x="604.0" y="1824" text-anchor="middle" font-size="9" fill="#64748b">0</text>
+</g>
+<g class="breathe" style="animation-delay: 4.80s">
 <rect x="914" y="1788" width="124" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="976.0" y="1809" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">reg_lane_ck_inv_en</text>
 <text x="976.0" y="1824" text-anchor="middle" font-size="9" fill="#64748b">1'b0</text>
+</g>
+<g class="breathe" style="animation-delay: 4.80s">
 <rect x="1038" y="1788" width="124" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="1100.0" y="1809" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">CG_OFF</text>
 <text x="1100.0" y="1824" text-anchor="middle" font-size="9" fill="#64748b">1'b0</text>
 </g>
+</g>
 <g class="row" style="animation-delay: 0.99s">
 <text x="158" y="1868" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x34 (52)</text>
+<g class="breathe" style="animation-delay: 4.95s">
 <rect x="170" y="1840" width="248" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="294.0" y="1861" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">Reserved</text>
 <text x="294.0" y="1876" text-anchor="middle" font-size="9" fill="#64748b">0</text>
+</g>
+<g class="breathe" style="animation-delay: 4.95s">
 <rect x="418" y="1840" width="124" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="480.0" y="1861" text-anchor="middle" font-size="8" font-weight="500" fill="#1e293b">regr_lane_vctrl_overflow</text>
 <text x="480.0" y="1876" text-anchor="middle" font-size="8" fill="#64748b">1'b0</text>
+</g>
+<g class="breathe" style="animation-delay: 4.95s">
 <rect x="542" y="1840" width="124" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="604.0" y="1861" text-anchor="middle" font-size="7.5" font-weight="500" fill="#1e293b">regr_lane_vctrl_underflow</text>
 <text x="604.0" y="1876" text-anchor="middle" font-size="7" fill="#64748b">1'b0</text>
+</g>
+<g class="breathe" style="animation-delay: 4.95s">
 <rect x="666" y="1840" width="124" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="728.0" y="1861" text-anchor="middle" font-size="8" font-weight="500" fill="#1e293b">regr_lane_pll_lock_flag</text>
 <text x="728.0" y="1876" text-anchor="middle" font-size="8" fill="#64748b">1'b0</text>
+</g>
+<g class="breathe" style="animation-delay: 4.95s">
 <rect x="790" y="1840" width="124" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="852.0" y="1861" text-anchor="middle" font-size="8" font-weight="500" fill="#1e293b">regr_lane_pll_fast_lock</text>
 <text x="852.0" y="1876" text-anchor="middle" font-size="8" fill="#64748b">1'b0</text>
+</g>
+<g class="breathe" style="animation-delay: 4.95s">
 <rect x="914" y="1840" width="124" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="976.0" y="1861" text-anchor="middle" font-size="8" font-weight="500" fill="#1e293b">regr_lane_pll_fine_lock</text>
 <text x="976.0" y="1876" text-anchor="middle" font-size="8" fill="#64748b">1'b0</text>
+</g>
+<g class="breathe" style="animation-delay: 4.95s">
 <rect x="1038" y="1840" width="124" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="1100.0" y="1861" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">regr_lane_pll_done</text>
 <text x="1100.0" y="1876" text-anchor="middle" font-size="9" fill="#64748b">1'b0</text>
 </g>
+</g>
 <g class="row" style="animation-delay: 1.02s">
 <text x="158" y="1920" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x35 (53)</text>
+<g class="breathe" style="animation-delay: 5.10s">
 <rect x="170" y="1892" width="744" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="542.0" y="1913" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">Reserved</text>
 <text x="542.0" y="1928" text-anchor="middle" font-size="9" fill="#64748b">0</text>
+</g>
+<g class="breathe" style="animation-delay: 5.10s">
 <rect x="914" y="1892" width="248" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="1038.0" y="1913" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">reg_fbdiv_clk_sel[1:0]</text>
 <text x="1038.0" y="1928" text-anchor="middle" font-size="9" fill="#64748b">2'b00</text>
 </g>
+</g>
 <g class="row" style="animation-delay: 1.05s">
 <text x="158" y="1972" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x36 (54)</text>
+<g class="breathe" style="animation-delay: 5.25s">
 <rect x="170" y="1944" width="992" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="666.0" y="1965" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">reg_eq_bias_tune[7:0]</text>
 <text x="666.0" y="1980" text-anchor="middle" font-size="9" fill="#64748b">8'b00010111</text>
 </g>
+</g>
 <g class="row" style="animation-delay: 1.08s">
 <text x="158" y="2024" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x37 (55)</text>
+<g class="breathe" style="animation-delay: 5.40s">
 <rect x="170" y="1996" width="124" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="232.0" y="2017" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">Reserved</text>
 <text x="232.0" y="2032" text-anchor="middle" font-size="9" fill="#64748b">0</text>
+</g>
+<g class="breathe" style="animation-delay: 5.40s">
 <rect x="294" y="1996" width="124" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="356.0" y="2017" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">reg_vos_ad_en</text>
 <text x="356.0" y="2032" text-anchor="middle" font-size="9" fill="#64748b">1'b1</text>
+</g>
+<g class="breathe" style="animation-delay: 5.40s">
 <rect x="418" y="1996" width="744" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="790.0" y="2017" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">reg_vos_ctrl[5:0]</text>
 <text x="790.0" y="2032" text-anchor="middle" font-size="9" fill="#64748b">6'b100000</text>
 </g>
+</g>
 <g class="row" style="animation-delay: 1.11s">
 <text x="158" y="2076" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x38 (56)</text>
+<g class="breathe" style="animation-delay: 5.55s">
 <rect x="170" y="2048" width="124" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="232.0" y="2069" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">Reserved</text>
 <text x="232.0" y="2084" text-anchor="middle" font-size="9" fill="#64748b">0</text>
+</g>
+<g class="breathe" style="animation-delay: 5.55s">
 <rect x="294" y="2048" width="124" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="356.0" y="2069" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">reg_eol</text>
 <text x="356.0" y="2084" text-anchor="middle" font-size="9" fill="#64748b">1'b0</text>
+</g>
+<g class="breathe" style="animation-delay: 5.55s">
 <rect x="418" y="2048" width="124" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="480.0" y="2069" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">reg_eol_det</text>
 <text x="480.0" y="2084" text-anchor="middle" font-size="9" fill="#64748b">1'b0</text>
+</g>
+<g class="breathe" style="animation-delay: 5.55s">
 <rect x="542" y="2048" width="124" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="604.0" y="2069" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">reg_pin_eol_det</text>
 <text x="604.0" y="2084" text-anchor="middle" font-size="9" fill="#64748b">1'b1</text>
+</g>
+<g class="breathe" style="animation-delay: 5.55s">
 <rect x="666" y="2048" width="248" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="790.0" y="2069" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">UTC_header_cnt[1:0]</text>
 <text x="790.0" y="2084" text-anchor="middle" font-size="9" fill="#64748b">2'b01</text>
+</g>
+<g class="breathe" style="animation-delay: 5.55s">
 <rect x="914" y="2048" width="248" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="1038.0" y="2069" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">UTC_long01_frame[1:0]</text>
 <text x="1038.0" y="2084" text-anchor="middle" font-size="9" fill="#64748b">2'b01</text>
 </g>
+</g>
 <g class="row" style="animation-delay: 1.14s">
 <text x="158" y="2128" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x39 (57)</text>
+<g class="breathe" style="animation-delay: 5.70s">
 <rect x="170" y="2100" width="620" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="480.0" y="2121" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">Reserved</text>
 <text x="480.0" y="2136" text-anchor="middle" font-size="9" fill="#64748b">0</text>
+</g>
+<g class="breathe" style="animation-delay: 5.70s">
 <rect x="790" y="2100" width="372" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="976.0" y="2121" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">UTC_header_frame[2:0]</text>
 <text x="976.0" y="2136" text-anchor="middle" font-size="9" fill="#64748b">3'b011</text>
+</g>
 </g>
 <g class="row" style="animation-delay: 1.17s">
 <text x="158" y="2180" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x40 (64)</text>
@@ -621,45 +797,65 @@
 </g>
 <g class="row" style="animation-delay: 1.32s">
 <text x="158" y="2440" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x90 (144)</text>
+<g class="breathe" style="animation-delay: 6.60s">
 <rect x="170" y="2412" width="496" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="418.0" y="2433" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">reg_fast_lock_rlpf[3:0]</text>
 <text x="418.0" y="2448" text-anchor="middle" font-size="9" fill="#64748b">4'b0110</text>
+</g>
+<g class="breathe" style="animation-delay: 6.60s">
 <rect x="666" y="2412" width="496" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="914.0" y="2433" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">reg_fast_lock_icp[3:0]</text>
 <text x="914.0" y="2448" text-anchor="middle" font-size="9" fill="#64748b">4'b1000</text>
 </g>
+</g>
 <g class="row" style="animation-delay: 1.35s">
 <text x="158" y="2492" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x91 (145)</text>
+<g class="breathe" style="animation-delay: 6.75s">
 <rect x="170" y="2464" width="496" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="418.0" y="2485" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">reg_fine_lock_rlpf[3:0]</text>
 <text x="418.0" y="2500" text-anchor="middle" font-size="9" fill="#64748b">4'b0011</text>
+</g>
+<g class="breathe" style="animation-delay: 6.75s">
 <rect x="666" y="2464" width="496" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="914.0" y="2485" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">reg_fine_lock_icp[3:0]</text>
 <text x="914.0" y="2500" text-anchor="middle" font-size="9" fill="#64748b">4'b1100</text>
 </g>
+</g>
 <g class="row" style="animation-delay: 1.38s">
 <text x="158" y="2544" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x92 (146)</text>
+<g class="breathe" style="animation-delay: 6.90s">
 <rect x="170" y="2516" width="372" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="356.0" y="2537" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">Reserved</text>
 <text x="356.0" y="2552" text-anchor="middle" font-size="9" fill="#64748b">0</text>
+</g>
+<g class="breathe" style="animation-delay: 6.90s">
 <rect x="542" y="2516" width="248" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="666.0" y="2537" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">FSEL[1:0]</text>
 <text x="666.0" y="2552" text-anchor="middle" font-size="9" fill="#64748b">2'b00</text>
+</g>
+<g class="breathe" style="animation-delay: 6.90s">
 <rect x="790" y="2516" width="124" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="852.0" y="2537" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">reg_pbs_flt</text>
 <text x="852.0" y="2552" text-anchor="middle" font-size="9" fill="#64748b">1'b0</text>
+</g>
+<g class="breathe" style="animation-delay: 6.90s">
 <rect x="914" y="2516" width="248" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="1038.0" y="2537" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">reg_lock_wd_sel[1:0]</text>
 <text x="1038.0" y="2552" text-anchor="middle" font-size="9" fill="#64748b">2'b10</text>
 </g>
+</g>
 <g class="row" style="animation-delay: 1.41s">
 <text x="158" y="2596" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x93 (147)</text>
+<g class="breathe" style="animation-delay: 7.05s">
 <rect x="170" y="2568" width="496" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="418.0" y="2589" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">Reserved</text>
 <text x="418.0" y="2604" text-anchor="middle" font-size="9" fill="#64748b">0</text>
+</g>
+<g class="breathe" style="animation-delay: 7.05s">
 <rect x="666" y="2568" width="496" height="46" fill="#fecaca" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="914.0" y="2589" text-anchor="middle" font-size="10" font-weight="500" fill="#1e293b">BCC_M[3:0]</text>
 <text x="914.0" y="2604" text-anchor="middle" font-size="9" fill="#64748b">4'b0010</text>
+</g>
 </g>
 <g class="row" style="animation-delay: 1.44s">
 <text x="158" y="2648" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0xA0 (160)</text>

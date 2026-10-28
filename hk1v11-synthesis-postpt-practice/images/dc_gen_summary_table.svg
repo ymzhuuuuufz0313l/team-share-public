@@ -7,7 +7,6 @@
     @keyframes growW{from{width:0}}
     @keyframes pop{from{transform:scale(.7)}to{transform:scale(1)}}
     @keyframes breathe{0%,100%{opacity:.25}50%{opacity:.55}}
-    @keyframes sweep{0%{transform:translateX(-320px)}45%{transform:translateX(4250px)}100%{transform:translateX(4250px)}}
     .hdr{animation:fadeIn .3s ease-out both}
     .underline{animation:growW .4s ease-out .15s both}
     .r1{animation:rise .3s ease-out .3s both}
@@ -19,7 +18,6 @@
     .p2{animation-delay:.34s}
     .p3{animation-delay:.38s}
     .br{opacity:.25;animation:breathe 2.4s ease-in-out infinite}
-    .sweep{animation:sweep 4s ease-in-out infinite}
     @keyframes tl{0%{width:0;opacity:0}4%{width:0;opacity:.4}14%{width:1309px;opacity:.4}28%{width:1309px;opacity:.4}38%{width:2718px;opacity:.4}52%{width:2718px;opacity:.4}62%{width:3926px;opacity:.4}90%{width:3926px;opacity:.4}97%{width:3926px;opacity:0}100%{width:0;opacity:0}}
     .tl{animation:tl 6s linear infinite}
     @keyframes rg1{0%{opacity:0}10%{opacity:.16}30%{opacity:.16}40%{opacity:0}100%{opacity:0}}
@@ -32,6 +30,9 @@
     .pl1{animation:pl 3.2s ease-in-out infinite}
     .pl2{animation:pl 3.2s ease-in-out 1.07s infinite}
     .pl3{animation:pl 3.2s ease-in-out 2.13s infinite}
+    @keyframes cellB{0%,100%{opacity:1}50%{opacity:.4}}
+    .cB{animation:cellB 3s ease-in-out infinite}
+    .cBx{animation:pl 3.2s ease-in-out 2.13s infinite,cellB 3s ease-in-out .45s infinite}
     @keyframes wash{0%,100%{opacity:1}50%{opacity:.6}}
     .wash{animation:wash 5.2s ease-in-out infinite}
     @keyframes diag{to{transform:translate(19.8px,19.8px)}}
@@ -39,11 +40,6 @@
     @media (prefers-reduced-motion:reduce){*{animation:none!important}}
   </style>
   <defs>
-    <linearGradient id="shineS" x1="0" y1="0" x2="1" y2="0">
-      <stop offset="0" stop-color="#fffdf7" stop-opacity="0"/>
-      <stop offset="0.5" stop-color="#fffdf7" stop-opacity="0.5"/>
-      <stop offset="1" stop-color="#fffdf7" stop-opacity="0"/>
-    </linearGradient>
     <pattern id="diagF2" width="28" height="28" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
       <rect width="2" height="28" fill="#0e7490"/>
     </pattern>
@@ -83,13 +79,12 @@
     <g class="wash"><rect class="fill" x="0" y="396" width="3928" height="93" fill="#0e7490" fill-opacity="0.1"/></g>
     <rect class="rg3" x="0" y="396" width="3928" height="93" fill="#0e7490" opacity="0"/>
     <g clip-path="url(#clipD2)"><g class="diag"><rect x="-40" y="360" width="4010" height="160" fill="url(#diagF2)" opacity="0.05"/></g></g>
-    <rect class="sweep" x="0" y="396" width="300" height="93" fill="url(#shineS)" opacity="0.6"/>
     <rect class="br" x="0" y="396" width="6" height="93" fill="#0e7490"/>
-    <text x="24" y="442" dy="0.35em" font-size="38" font-weight="bold" fill="#1c2534" class="mono">2026-10-02</text>
-    <text x="454" y="442" dy="0.35em" font-size="38" font-weight="bold" fill="#0e7490" class="mono">314707</text>
-    <text x="854" y="442" dy="0.35em" font-size="38" fill="#1c2534" class="mono">FF 2839 / comb 11773</text>
-    <g class="pl3"><text x="1474" y="442" dy="0.35em" font-size="38" font-weight="bold" fill="#047857" class="mono pop p3">11 条 / -0.01 ns / hold 21</text></g>
-    <text x="3904" y="442" dy="0.35em" font-size="38" fill="#1c2534" text-anchor="end" class="cjk">关键路径优化 + 约束审核后重新添加：setup 452→11（−97.6%），最差 −0.01ns，面积 +6.7%</text>
+    <text x="24" y="442" dy="0.35em" font-size="38" font-weight="bold" fill="#1c2534" class="mono cB">2026-10-02</text>
+    <text x="454" y="442" dy="0.35em" font-size="38" font-weight="bold" fill="#0e7490" class="mono cB" style="animation-delay:.15s">314707</text>
+    <text x="854" y="442" dy="0.35em" font-size="38" fill="#1c2534" class="mono cB" style="animation-delay:.3s">FF 2839 / comb 11773</text>
+    <g class="pl3"><text x="1474" y="442" dy="0.35em" font-size="38" font-weight="bold" fill="#047857" class="mono pop p3 cBx">11 条 / -0.01 ns / hold 21</text></g>
+    <text x="3904" y="442" dy="0.35em" font-size="38" fill="#1c2534" text-anchor="end" class="cjk cB" style="animation-delay:.6s">关键路径优化 + 约束审核后重新添加：setup 452→11（−97.6%），最差 −0.01ns，面积 +6.7%</text>
   </g>
   <g stroke="#ddd6c8" stroke-width="2">
     <line x1="430" y1="110" x2="430" y2="489"/>

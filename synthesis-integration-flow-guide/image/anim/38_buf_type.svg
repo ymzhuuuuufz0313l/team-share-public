@@ -4,13 +4,13 @@
 .d0{animation-delay:0s;}
 .d3{animation-delay:0.3s;}
 @keyframes revIn{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:none;}}
-.br{animation:br 2.8s ease-in-out infinite;}
+.breathe { animation: breathe 2.8s ease-in-out infinite; }
 .b0{animation-delay:0.00s;}
 .b1{animation-delay:0.35s;}
 .b2{animation-delay:0.70s;}
 .b3{animation-delay:1.05s;}
 .b4{animation-delay:1.40s;}
-@keyframes br{0%,100%{opacity:1;}50%{opacity:0.55;}}
+@keyframes breathe { 0%,100% { opacity: 1; } 50% { opacity: 0.45; } }
 </style>
 <rect x="0" y="0" width="1318" height="364" fill="#ffffff"/>
 <rect x="0" y="0" width="1318" height="2" fill="#c0c6c6"/>
@@ -30,15 +30,15 @@
 <text x="563" y="154" font-size="22" fill="#ffffff" font-family="Consolas, 'Microsoft YaHei', monospace" font-weight="bold">记录数</text>
 <rect x="22" y="169" width="612" height="39" fill="#ffffff"/>
 <text x="28" y="191" font-size="22" fill="#212529" font-family="Consolas, 'Microsoft YaHei', monospace">APR_CDM</text>
-<text x="563" y="191" font-size="22" fill="#212529" font-family="Consolas, 'Microsoft YaHei', monospace" class="br b0">52</text>
+<text x="563" y="191" font-size="22" fill="#212529" font-family="Consolas, 'Microsoft YaHei', monospace" class="breathe b0">52</text>
 <rect x="22" y="208" width="612" height="39" fill="#f4f8f7"/>
 <text x="28" y="230" font-size="22" fill="#212529" font-family="Consolas, 'Microsoft YaHei', monospace">CLKBUFX8AS9</text>
-<text x="563" y="230" font-size="22" fill="#212529" font-family="Consolas, 'Microsoft YaHei', monospace" class="br b1">52</text>
+<text x="563" y="230" font-size="22" fill="#212529" font-family="Consolas, 'Microsoft YaHei', monospace" class="breathe b1">52</text>
 <rect x="21" y="265" width="614" height="79" fill="none" stroke="#d0d8d6" stroke-width="2"/>
 <rect x="22" y="266" width="612" height="39" fill="#0e7c6b"/>
 <text x="28" y="290" font-size="22" fill="#ffffff" font-family="Consolas, 'Microsoft YaHei', monospace" font-weight="bold">STATUS</text>
 <text x="563" y="290" font-size="22" fill="#ffffff" font-family="Consolas, 'Microsoft YaHei', monospace" font-weight="bold">记录数</text>
-<g class="br b2"><rect x="22" y="305" width="612" height="38" fill="#ffffff"/><text x="28" y="327" font-size="22" fill="#212529" font-family="Consolas, 'Microsoft YaHei', monospace">MULTI_LOAD(2)</text><text x="563" y="327" font-size="22" fill="#212529" font-family="Consolas, 'Microsoft YaHei', monospace">104</text></g>
+<g><rect x="22" y="305" width="612" height="38" fill="#ffffff"/><text x="28" y="327" font-size="22" fill="#212529" font-family="Consolas, 'Microsoft YaHei', monospace">MULTI_LOAD(2)</text><text x="563" y="327" font-size="22" fill="#212529" font-family="Consolas, 'Microsoft YaHei', monospace" class="breathe b2">104</text></g>
 </g>
 <g class="rev d3">
 <text x="683" y="106" font-size="24" fill="#0b5e52" font-family="'Microsoft YaHei', Consolas, monospace" font-weight="bold">output_port_last_buf_type.tsv（476 端口 / 476 行）</text>
@@ -48,13 +48,13 @@
 <text x="1226" y="154" font-size="22" fill="#ffffff" font-family="Consolas, 'Microsoft YaHei', monospace" font-weight="bold">记录数</text>
 <rect x="685" y="169" width="612" height="38" fill="#ffffff"/>
 <text x="691" y="191" font-size="22" fill="#212529" font-family="Consolas, 'Microsoft YaHei', monospace">CLKBUFX8AS9</text>
-<text x="1226" y="191" font-size="22" fill="#212529" font-family="Consolas, 'Microsoft YaHei', monospace" class="br b3">476</text>
+<text x="1226" y="191" font-size="22" fill="#212529" font-family="Consolas, 'Microsoft YaHei', monospace" class="breathe b3">476</text>
 <rect x="684" y="225" width="614" height="79" fill="none" stroke="#d0d8d6" stroke-width="2"/>
 <rect x="685" y="226" width="612" height="39" fill="#0e7c6b"/>
 <text x="691" y="250" font-size="22" fill="#ffffff" font-family="Consolas, 'Microsoft YaHei', monospace" font-weight="bold">STATUS</text>
 <text x="1226" y="250" font-size="22" fill="#ffffff" font-family="Consolas, 'Microsoft YaHei', monospace" font-weight="bold">记录数</text>
 <rect x="685" y="265" width="612" height="38" fill="#ffffff"/>
 <text x="691" y="287" font-size="22" fill="#212529" font-family="Consolas, 'Microsoft YaHei', monospace">OK</text>
-<text x="1226" y="287" font-size="22" fill="#212529" font-family="Consolas, 'Microsoft YaHei', monospace" class="br b4">476</text>
+<text x="1226" y="287" font-size="22" fill="#212529" font-family="Consolas, 'Microsoft YaHei', monospace" class="breathe b4">476</text>
 </g>
 </svg>
