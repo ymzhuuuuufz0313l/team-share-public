@@ -9,7 +9,7 @@
 <marker id="m_blue" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#1d4ed8"/></marker>
 <clipPath id="clipRows2"><rect x="60" y="660" width="620" height="128"/></clipPath>
 </defs>
-<style>text{font-family:"Microsoft YaHei","Courier New","Lucida Console","SimHei",monospace;fill:#1c2534}.mono{font-family:"Consolas","Microsoft YaHei","Courier New",monospace}.mut{fill:#667180}.p1{animation:panelIn 0.4s ease-out both}.p2{animation:panelIn 0.4s ease-out both;animation-delay:0.4s}.p3{animation:panelIn 0.4s ease-out both;animation-delay:0.8s}@keyframes panelIn{from{opacity:0}to{opacity:1}}.r1{animation:panelIn 0.3s ease-out both;animation-delay:0.9s}.r2{animation:panelIn 0.3s ease-out both;animation-delay:1.2s}.r3{animation:panelIn 0.3s ease-out both;animation-delay:1.5s}.dClockH{animation:d451 0.35s ease-out both;animation-delay:0.5s}.dClockV{animation:d52 0.25s ease-out both;animation-delay:0.85s}.dDataH{animation:d246 0.35s ease-out both;animation-delay:1.05s}.dDataV{animation:d44 0.25s ease-out both;animation-delay:1.4s}.dGreen{animation:d389 0.5s ease-out both;animation-delay:1.65s}.dRed{animation:d205 0.5s ease-out both;animation-delay:2s}@keyframes d451{from{stroke-dasharray:451;stroke-dashoffset:451}to{stroke-dasharray:451;stroke-dashoffset:0}}@keyframes d52{from{stroke-dasharray:52;stroke-dashoffset:52}to{stroke-dasharray:52;stroke-dashoffset:0}}@keyframes d246{from{stroke-dasharray:246;stroke-dashoffset:246}to{stroke-dasharray:246;stroke-dashoffset:0}}@keyframes d44{from{stroke-dasharray:44;stroke-dashoffset:44}to{stroke-dasharray:44;stroke-dashoffset:0}}@keyframes d389{from{stroke-dasharray:389;stroke-dashoffset:389}to{stroke-dasharray:389;stroke-dashoffset:0}}@keyframes d205{from{stroke-dasharray:205;stroke-dashoffset:205}to{stroke-dasharray:205;stroke-dashoffset:0}}.march{animation:dashMarch 2.5s linear infinite}@keyframes dashMarch{to{stroke-dashoffset:-10}}.glow{animation:glowPulse 2.4s ease-in-out infinite}@keyframes glowPulse{0%,100%{opacity:0.25}50%{opacity:0.55}}.aGreen{animation:arrowIn 0.18s ease-out both;animation-delay:2.15s}.aRed{animation:arrowIn 0.18s ease-out both;animation-delay:2.5s}@keyframes arrowIn{from{opacity:0}to{opacity:1}}.pulseU{animation:glowPulse 3.2s ease-in-out infinite}.tL{animation:tickBreathe 3s ease-in-out infinite}@keyframes tickBreathe{0%,100%{opacity:0.3}50%{opacity:1}}.rowB{animation:rowBreathe 3.2s ease-in-out infinite}@keyframes rowBreathe{0%,100%{opacity:0.04}50%{opacity:0.12}}.nGlow{animation:numGlow 5.2s ease-in-out infinite}@keyframes numGlow{0%,100%{opacity:0}50%{opacity:0.35}}@media (prefers-reduced-motion: reduce){*{animation:none!important}}</style>
+<style>text{font-family:"Microsoft YaHei","Courier New","Lucida Console","SimHei",monospace;fill:#1c2534}.mono{font-family:"Consolas","Microsoft YaHei","Courier New",monospace}.mut{fill:#667180}.p1{animation-delay:2.5s}.pulseU{animation:glowPulse 3.2s ease-in-out infinite}.tL{animation:tickBreathe 3s ease-in-out infinite}.rowB{animation:rowBreathe 3.2s ease-in-out infinite}.nGlow{animation:numGlow 5.2s ease-in-out infinite}@media (prefers-reduced-motion: reduce){*{animation:none!important}}</style>
 <rect x="0" y="0" width="1440" height="950" fill="#f4f1ea"/>
 <rect x="0" y="0" width="1440" height="950" fill="url(#grid)" opacity="0.45"/>
 <text x="14" y="42" font-size="11" fill="#b45309" class="mono">HK1V11 · STA SKEW CHAIN · LIVE 10-15 GEN · 10 CORNERS</text>
@@ -67,17 +67,17 @@
 <line x1="1320" y1="300" x2="1320" y2="306" stroke="#667180" stroke-width="1"/>
 <text x="1320" y="318" font-size="12" text-anchor="middle" class="mono mut">20</text>
 <text x="1332" y="304" font-size="12" class="mono mut">ns</text>
-<rect class="tL" x="118.5" y="296" width="3" height="11" fill="#1c2534" opacity="0" style="animation-delay:0.7s"/>
-<rect class="tL" x="238.5" y="296" width="3" height="11" fill="#1c2534" opacity="0" style="animation-delay:0.82s"/>
-<rect class="tL" x="358.5" y="296" width="3" height="11" fill="#1c2534" opacity="0" style="animation-delay:0.94s"/>
-<rect class="tL" x="478.5" y="296" width="3" height="11" fill="#1c2534" opacity="0" style="animation-delay:1.06s"/>
-<rect class="tL" x="598.5" y="296" width="3" height="11" fill="#1c2534" opacity="0" style="animation-delay:1.18s"/>
-<rect class="tL" x="718.5" y="296" width="3" height="11" fill="#1c2534" opacity="0" style="animation-delay:1.3s"/>
-<rect class="tL" x="838.5" y="296" width="3" height="11" fill="#1c2534" opacity="0" style="animation-delay:1.42s"/>
-<rect class="tL" x="958.5" y="296" width="3" height="11" fill="#1c2534" opacity="0" style="animation-delay:1.54s"/>
-<rect class="tL" x="1078.5" y="296" width="3" height="11" fill="#1c2534" opacity="0" style="animation-delay:1.66s"/>
-<rect class="tL" x="1198.5" y="296" width="3" height="11" fill="#1c2534" opacity="0" style="animation-delay:1.78s"/>
-<rect class="tL" x="1318.5" y="296" width="3" height="11" fill="#1c2534" opacity="0" style="animation-delay:1.9s"/>
+<rect class="tL" x="118.5" y="296" width="3" height="11" fill="#1c2534" opacity="0"/>
+<rect class="tL" x="238.5" y="296" width="3" height="11" fill="#1c2534" opacity="0"/>
+<rect class="tL" x="358.5" y="296" width="3" height="11" fill="#1c2534" opacity="0"/>
+<rect class="tL" x="478.5" y="296" width="3" height="11" fill="#1c2534" opacity="0"/>
+<rect class="tL" x="598.5" y="296" width="3" height="11" fill="#1c2534" opacity="0"/>
+<rect class="tL" x="718.5" y="296" width="3" height="11" fill="#1c2534" opacity="0"/>
+<rect class="tL" x="838.5" y="296" width="3" height="11" fill="#1c2534" opacity="0"/>
+<rect class="tL" x="958.5" y="296" width="3" height="11" fill="#1c2534" opacity="0"/>
+<rect class="tL" x="1078.5" y="296" width="3" height="11" fill="#1c2534" opacity="0"/>
+<rect class="tL" x="1198.5" y="296" width="3" height="11" fill="#1c2534" opacity="0"/>
+<rect class="tL" x="1318.5" y="296" width="3" height="11" fill="#1c2534" opacity="0"/>
 <rect x="114" y="294" width="12" height="12" fill="#1c2534"/>
 <line class="dDataH" x1="120" y1="344" x2="366" y2="344" stroke="#0e7490" stroke-width="2.5"/>
 <line class="dDataV" x1="366" y1="344" x2="366" y2="300" stroke="#0e7490" stroke-width="2.5"/>
@@ -91,7 +91,7 @@
 <rect class="pulseU" x="832" y="421" width="16" height="2.5" rx="1.25" fill="#b45309" opacity="0"/>
 <line class="march" x1="960" y1="150" x2="960" y2="400" stroke="#1d4ed8" stroke-width="2" stroke-dasharray="6,4"/>
 <text x="960" y="416" font-size="12.5" text-anchor="middle" fill="#1d4ed8" class="mono">14 (ip_cons L222-225)</text>
-<rect class="pulseU" style="animation-delay:-1.2s" x="881" y="421" width="16" height="2.5" rx="1.25" fill="#1d4ed8" opacity="0"/>
+<rect class="pulseU" x="881" y="421" width="16" height="2.5" rx="1.25" fill="#1d4ed8" opacity="0"/>
 </g>
 <g class="p2">
 <rect x="40" y="446" width="660" height="420" rx="2" fill="#fffdf7" stroke="#c9bfa8" stroke-width="1.5"/>
@@ -178,7 +178,7 @@
 <text x="1263" y="563" font-size="12" text-anchor="middle" fill="#b91c1c">面板采样失效区</text>
 <text x="1263" y="581" font-size="11.5" text-anchor="middle" class="mut">（漏失区）</text>
 <ellipse class="nGlow" cx="1118" cy="687" rx="18" ry="11" fill="#b45309" opacity="0"/>
-<ellipse class="nGlow" style="animation-delay:-2.6s" cx="1176" cy="687" rx="18" ry="11" fill="#1d4ed8" opacity="0"/>
+<ellipse class="nGlow" cx="1176" cy="687" rx="18" ry="11" fill="#1d4ed8" opacity="0"/>
 <line class="march" x1="1118" y1="505" x2="1118" y2="675" stroke="#b45309" stroke-width="2" stroke-dasharray="6,4"/>
 <text x="1118" y="691" font-size="12.5" text-anchor="middle" fill="#b45309" class="mono">12</text>
 <line class="march" x1="1176" y1="505" x2="1176" y2="675" stroke="#1d4ed8" stroke-width="2" stroke-dasharray="6,4"/>

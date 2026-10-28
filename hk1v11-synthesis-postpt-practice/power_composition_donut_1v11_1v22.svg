@@ -2,30 +2,30 @@
 <title>1V11 vs 1V22 功耗组成 @4.46G（PowerPro Initial）</title>
 <style>  .f-cjk { font-family: "Microsoft YaHei", sans-serif; }
   .f-num { font-family: ui-monospace, Consolas, monospace; }
-  .title { animation: fadeIn .3s ease-out 0s both; }
-  .subtitle { animation: fadeIn .4s ease-out .15s both; }
-  .leg { animation: fadeIn .6s ease-out both; }
-  .leg1 { animation-delay: 1.5s; }
-  .leg2 { animation-delay: 1.8s; }
-  .center { animation: fadeUp .6s ease-out both; }
-  .centerL { animation-delay: .9s; }
-  .centerR { animation-delay: 1.2s; }
-  .lbl { animation: fadeUp .5s ease-out calc(var(--d) + .55s) both; }
+  .title {  }
+  .subtitle {  }
+  .leg {  }
+  .leg1 {  }
+  .leg2 {  }
+  .center {  }
+  .centerL {  }
+  .centerR {  }
+  .lbl {  }
   .lead { stroke: #5b6675; stroke-width: .9; opacity: .5; fill: none; }
-  .sector { animation: sweepIn 1.2s ease-out var(--d) both; }
-  .top1 { animation: sweepIn 1.2s ease-out var(--d) both, topPulse 5.2s ease-in-out calc(var(--d) + 1.3s) infinite;
+  .sector {  }
+  .top1 { 
            transform-box: fill-box; transform-origin: 50% 50%; }
-  .glowL { animation: glowPulse 3.2s ease-in-out infinite; }
-  .glowR { animation: glowPulse 4s ease-in-out -1.6s infinite; }
+  .glowL {  }
+  .glowR {  }
   .sweep { opacity: .08; transform-box: fill-box; transform-origin: 50% 50%;
-            animation: orbit 6s linear infinite; }
-  .sweepR { animation-delay: -3s; }
-  @keyframes fadeIn { from { opacity: 0; } }
-  @keyframes fadeUp { from { opacity: 0; transform: translateY(4px); } }
-  @keyframes sweepIn { from { stroke-dasharray: 0 100; } }
-  @keyframes glowPulse { 0%,100% { opacity: .22; } 50% { opacity: .5; } }
-  @keyframes topPulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.02); } }
-  @keyframes orbit { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+             }
+  .sweepR {  }
+  
+  
+  
+  
+  
+  
   @media (prefers-reduced-motion:reduce){*{animation:none!important}}</style>
 <defs><filter id="glowF" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="5"/></filter></defs>
 <rect width="1200" height="578" fill="#f4f1ea"/>
@@ -73,56 +73,56 @@
 </g>
 <g data-gen="1V11" class="donut donutL">
   <circle class="sweep sweepL" cx="330" cy="330" r="210" fill="none" stroke="#fffdf7" stroke-width="5" stroke-dasharray="12 88" pathLength="100"/>
-  <circle class="sector top1" cx="330" cy="330" r="170" pathLength="100" fill="none" stroke="#0e7490" stroke-opacity="1.00" stroke-width="52" stroke-dasharray="41.7691 58.2309" stroke-dashoffset="25.0000" style="--d:0.350s"/>
-  <circle class="sector" cx="330" cy="330" r="170" pathLength="100" fill="none" stroke="#0e7490" stroke-opacity="0.85" stroke-width="52" stroke-dasharray="19.1398 80.8602" stroke-dashoffset="83.2309" style="--d:0.410s"/>
-  <circle class="sector" cx="330" cy="330" r="170" pathLength="100" fill="none" stroke="#0e7490" stroke-opacity="0.72" stroke-width="52" stroke-dasharray="12.2499 87.7501" stroke-dashoffset="64.0911" style="--d:0.470s"/>
-  <circle class="sector" cx="330" cy="330" r="170" pathLength="100" fill="none" stroke="#0e7490" stroke-opacity="0.60" stroke-width="52" stroke-dasharray="10.1887 89.8113" stroke-dashoffset="51.8412" style="--d:0.530s"/>
-  <circle class="sector" cx="330" cy="330" r="170" pathLength="100" fill="none" stroke="#0e7490" stroke-opacity="0.50" stroke-width="52" stroke-dasharray="6.1879 93.8121" stroke-dashoffset="41.6525" style="--d:0.590s"/>
-  <circle class="sector" cx="330" cy="330" r="170" pathLength="100" fill="none" stroke="#0e7490" stroke-opacity="0.42" stroke-width="52" stroke-dasharray="3.4611 96.5389" stroke-dashoffset="35.4646" style="--d:0.650s"/>
-  <circle class="sector" cx="330" cy="330" r="170" pathLength="100" fill="none" stroke="#0e7490" stroke-opacity="0.36" stroke-width="52" stroke-dasharray="3.1731 96.8269" stroke-dashoffset="32.0035" style="--d:0.710s"/>
-  <circle class="sector" cx="330" cy="330" r="170" pathLength="100" fill="none" stroke="#0e7490" stroke-opacity="0.30" stroke-width="52" stroke-dasharray="2.1424 97.8576" stroke-dashoffset="28.8304" style="--d:0.770s"/>
-  <circle class="sector" cx="330" cy="330" r="170" pathLength="100" fill="none" stroke="#0e7490" stroke-opacity="0.25" stroke-width="52" stroke-dasharray="1.6880 98.3120" stroke-dashoffset="26.6880" style="--d:0.830s"/>
-  <g class="lbl" style="--d:0.350s">
+  <circle class="sector top1" cx="330" cy="330" r="170" pathLength="100" fill="none" stroke="#0e7490" stroke-opacity="1.00" stroke-width="52" stroke-dasharray="41.7691 58.2309" stroke-dashoffset="25.0000"/>
+  <circle class="sector" cx="330" cy="330" r="170" pathLength="100" fill="none" stroke="#0e7490" stroke-opacity="0.85" stroke-width="52" stroke-dasharray="19.1398 80.8602" stroke-dashoffset="83.2309"/>
+  <circle class="sector" cx="330" cy="330" r="170" pathLength="100" fill="none" stroke="#0e7490" stroke-opacity="0.72" stroke-width="52" stroke-dasharray="12.2499 87.7501" stroke-dashoffset="64.0911"/>
+  <circle class="sector" cx="330" cy="330" r="170" pathLength="100" fill="none" stroke="#0e7490" stroke-opacity="0.60" stroke-width="52" stroke-dasharray="10.1887 89.8113" stroke-dashoffset="51.8412"/>
+  <circle class="sector" cx="330" cy="330" r="170" pathLength="100" fill="none" stroke="#0e7490" stroke-opacity="0.50" stroke-width="52" stroke-dasharray="6.1879 93.8121" stroke-dashoffset="41.6525"/>
+  <circle class="sector" cx="330" cy="330" r="170" pathLength="100" fill="none" stroke="#0e7490" stroke-opacity="0.42" stroke-width="52" stroke-dasharray="3.4611 96.5389" stroke-dashoffset="35.4646"/>
+  <circle class="sector" cx="330" cy="330" r="170" pathLength="100" fill="none" stroke="#0e7490" stroke-opacity="0.36" stroke-width="52" stroke-dasharray="3.1731 96.8269" stroke-dashoffset="32.0035"/>
+  <circle class="sector" cx="330" cy="330" r="170" pathLength="100" fill="none" stroke="#0e7490" stroke-opacity="0.30" stroke-width="52" stroke-dasharray="2.1424 97.8576" stroke-dashoffset="28.8304"/>
+  <circle class="sector" cx="330" cy="330" r="170" pathLength="100" fill="none" stroke="#0e7490" stroke-opacity="0.25" stroke-width="52" stroke-dasharray="1.6880 98.3120" stroke-dashoffset="26.6880"/>
+  <g class="lbl">
     <polyline class="lead" points="522.4,279.1 535.2,276.3"/>
     <text class="f-cjk" x="529.2" y="271.3" font-size="10" fill="#1c2534" text-anchor="start">短编码解码</text>
     <text class="f-num val" x="529.2" y="285.3" font-size="9.5" fill="#5b6675" text-anchor="start">10294 µW · 41.8%</text>
   </g>
-  <g class="lbl" style="--d:0.410s">
+  <g class="lbl">
     <polyline class="lead" points="313.3,528.3 312.7,534.3"/>
     <text class="f-cjk" x="312.7" y="529.3" font-size="10" fill="#1c2534" text-anchor="middle">显示时序 DTCTL(含DPLC)</text>
     <text class="f-num val" x="312.7" y="543.3" font-size="9.5" fill="#5b6675" text-anchor="middle">4717 µW · 19.1%</text>
   </g>
-  <g class="lbl" style="--d:0.470s">
+  <g class="lbl">
     <polyline class="lead" points="155.4,425.5 143.3,427.9"/>
     <text class="f-cjk" x="149.3" y="422.9" font-size="10" fill="#1c2534" text-anchor="end">面板SD时序族</text>
     <text class="f-num val" x="149.3" y="436.9" font-size="9.5" fill="#5b6675" text-anchor="end">3019 µW · 12.2%</text>
   </g>
-  <g class="lbl" style="--d:0.530s">
+  <g class="lbl">
     <polyline class="lead" points="135.1,289.6 122.3,287.2"/>
     <text class="f-cjk" x="128.3" y="282.2" font-size="10" fill="#1c2534" text-anchor="end">BUFFER_I 输入同步</text>
     <text class="f-num val" x="128.3" y="296.2" font-size="9.5" fill="#5b6675" text-anchor="end">2511 µW · 10.2%</text>
   </g>
-  <g class="lbl" style="--d:0.590s">
+  <g class="lbl">
     <polyline class="lead" points="180.2,198.9 169.0,239.3"/>
     <text class="f-cjk" x="175.0" y="234.3" font-size="10" fill="#1c2534" text-anchor="end">寄存器配置</text>
     <text class="f-num val" x="175.0" y="248.3" font-size="9.5" fill="#5b6675" text-anchor="end">1525 µW · 6.2%</text>
   </g>
-  <g class="lbl" style="--d:0.650s">
+  <g class="lbl">
     <polyline class="lead" points="226.2,160.2 216.5,210.3"/>
     <text class="f-cjk" x="222.5" y="205.3" font-size="10" fill="#1c2534" text-anchor="end">长编码</text>
     <text class="f-num val" x="222.5" y="219.3" font-size="9.5" fill="#5b6675" text-anchor="end">853 µW · 3.5%</text>
   </g>
-  <g class="lbl" style="--d:0.710s">
+  <g class="lbl">
     <polyline class="lead" points="263.6,142.4 255.2,181.3"/>
     <text class="f-cjk" x="261.2" y="176.3" font-size="10" fill="#1c2534" text-anchor="end">ANCTL</text>
     <text class="f-num val" x="261.2" y="190.3" font-size="9.5" fill="#5b6675" text-anchor="end">782 µW · 3.2%</text>
   </g>
-  <g class="lbl" style="--d:0.770s">
+  <g class="lbl">
     <polyline class="lead" points="295.7,134.0 288.5,152.3"/>
     <text class="f-cjk" x="294.5" y="147.3" font-size="10" fill="#1c2534" text-anchor="end">时钟生成</text>
     <text class="f-num val" x="294.5" y="161.3" font-size="9.5" fill="#5b6675" text-anchor="end">528 µW · 2.1%</text>
   </g>
-  <g class="lbl" style="--d:0.830s">
+  <g class="lbl">
     <polyline class="lead" points="319.5,131.3 319.1,123.3"/>
     <text class="f-cjk" x="319.1" y="118.3" font-size="10" fill="#1c2534" text-anchor="middle">其他</text>
     <text class="f-num val" x="319.1" y="132.3" font-size="9.5" fill="#5b6675" text-anchor="middle">416 µW · 1.7%</text>
@@ -137,44 +137,44 @@
 </g>
 <g data-gen="1V22" class="donut donutR">
   <circle class="sweep sweepR" cx="870" cy="330" r="210" fill="none" stroke="#fffdf7" stroke-width="5" stroke-dasharray="12 88" pathLength="100"/>
-  <circle class="sector top1" cx="870" cy="330" r="170" pathLength="100" fill="none" stroke="#b45309" stroke-opacity="1.00" stroke-width="52" stroke-dasharray="35.3589 64.6411" stroke-dashoffset="25.0000" style="--d:0.650s"/>
-  <circle class="sector" cx="870" cy="330" r="170" pathLength="100" fill="none" stroke="#b45309" stroke-opacity="0.85" stroke-width="52" stroke-dasharray="23.2221 76.7779" stroke-dashoffset="89.6411" style="--d:0.710s"/>
-  <circle class="sector" cx="870" cy="330" r="170" pathLength="100" fill="none" stroke="#b45309" stroke-opacity="0.70" stroke-width="52" stroke-dasharray="18.2301 81.7699" stroke-dashoffset="66.4190" style="--d:0.770s"/>
-  <circle class="sector" cx="870" cy="330" r="170" pathLength="100" fill="none" stroke="#b45309" stroke-opacity="0.56" stroke-width="52" stroke-dasharray="12.1811 87.8189" stroke-dashoffset="48.1889" style="--d:0.830s"/>
-  <circle class="sector" cx="870" cy="330" r="170" pathLength="100" fill="none" stroke="#b45309" stroke-opacity="0.44" stroke-width="52" stroke-dasharray="4.0235 95.9765" stroke-dashoffset="36.0078" style="--d:0.890s"/>
-  <circle class="sector" cx="870" cy="330" r="170" pathLength="100" fill="none" stroke="#b45309" stroke-opacity="0.35" stroke-width="52" stroke-dasharray="3.2542 96.7458" stroke-dashoffset="31.9843" style="--d:0.950s"/>
-  <circle class="sector" cx="870" cy="330" r="170" pathLength="100" fill="none" stroke="#b45309" stroke-opacity="0.27" stroke-width="52" stroke-dasharray="3.7301 96.2699" stroke-dashoffset="28.7301" style="--d:1.010s"/>
-  <g class="lbl" style="--d:0.650s">
+  <circle class="sector top1" cx="870" cy="330" r="170" pathLength="100" fill="none" stroke="#b45309" stroke-opacity="1.00" stroke-width="52" stroke-dasharray="35.3589 64.6411" stroke-dashoffset="25.0000"/>
+  <circle class="sector" cx="870" cy="330" r="170" pathLength="100" fill="none" stroke="#b45309" stroke-opacity="0.85" stroke-width="52" stroke-dasharray="23.2221 76.7779" stroke-dashoffset="89.6411"/>
+  <circle class="sector" cx="870" cy="330" r="170" pathLength="100" fill="none" stroke="#b45309" stroke-opacity="0.70" stroke-width="52" stroke-dasharray="18.2301 81.7699" stroke-dashoffset="66.4190"/>
+  <circle class="sector" cx="870" cy="330" r="170" pathLength="100" fill="none" stroke="#b45309" stroke-opacity="0.56" stroke-width="52" stroke-dasharray="12.1811 87.8189" stroke-dashoffset="48.1889"/>
+  <circle class="sector" cx="870" cy="330" r="170" pathLength="100" fill="none" stroke="#b45309" stroke-opacity="0.44" stroke-width="52" stroke-dasharray="4.0235 95.9765" stroke-dashoffset="36.0078"/>
+  <circle class="sector" cx="870" cy="330" r="170" pathLength="100" fill="none" stroke="#b45309" stroke-opacity="0.35" stroke-width="52" stroke-dasharray="3.2542 96.7458" stroke-dashoffset="31.9843"/>
+  <circle class="sector" cx="870" cy="330" r="170" pathLength="100" fill="none" stroke="#b45309" stroke-opacity="0.27" stroke-width="52" stroke-dasharray="3.7301 96.2699" stroke-dashoffset="28.7301"/>
+  <g class="lbl">
     <polyline class="lead" points="1048.3,241.7 1060.6,237.6"/>
     <text class="f-cjk" x="1054.6" y="232.6" font-size="10" fill="#1c2534" text-anchor="start">LC_CSPIF_L0(含SD时序核)</text>
     <text class="f-num val" x="1054.6" y="246.6" font-size="9.5" fill="#5b6675" text-anchor="start">6389 µW · 35.4%</text>
   </g>
-  <g class="lbl" style="--d:0.710s">
+  <g class="lbl">
     <polyline class="lead" points="907.7,525.4 915.0,531.3"/>
     <text class="f-cjk" x="909.0" y="526.3" font-size="10" fill="#1c2534" text-anchor="start">rx_phy(EQ/LEQ)</text>
     <text class="f-num val" x="909.0" y="540.3" font-size="9.5" fill="#5b6675" text-anchor="start">4196 µW · 23.2%</text>
   </g>
-  <g class="lbl" style="--d:0.770s">
+  <g class="lbl">
     <polyline class="lead" points="691.6,418.2 679.3,420.3"/>
     <text class="f-cjk" x="685.3" y="415.3" font-size="10" fill="#1c2534" text-anchor="end">TOTAL_DTCTL(含DPLC)</text>
     <text class="f-num val" x="685.3" y="429.3" font-size="9.5" fill="#5b6675" text-anchor="end">3294 µW · 18.2%</text>
   </g>
-  <g class="lbl" style="--d:0.830s">
+  <g class="lbl">
     <polyline class="lead" points="695.0,235.2 682.9,230.9"/>
     <text class="f-cjk" x="688.9" y="225.9" font-size="10" fill="#1c2534" text-anchor="end">CSPI_CMD_ALIGN</text>
     <text class="f-num val" x="688.9" y="239.9" font-size="9.5" fill="#5b6675" text-anchor="end">2201 µW · 12.2%</text>
   </g>
-  <g class="lbl" style="--d:0.890s">
+  <g class="lbl">
     <polyline class="lead" points="763.4,162.0 753.7,182.4"/>
     <text class="f-cjk" x="759.7" y="177.4" font-size="10" fill="#1c2534" text-anchor="end">LC_CPUWR</text>
     <text class="f-num val" x="759.7" y="191.4" font-size="9.5" fill="#5b6675" text-anchor="end">727 µW · 4.0%</text>
   </g>
-  <g class="lbl" style="--d:0.950s">
+  <g class="lbl">
     <polyline class="lead" points="804.3,142.2 796.0,153.4"/>
     <text class="f-cjk" x="802.0" y="148.4" font-size="10" fill="#1c2534" text-anchor="end">MON_DISP</text>
     <text class="f-num val" x="802.0" y="162.4" font-size="9.5" fill="#5b6675" text-anchor="end">588 µW · 3.3%</text>
   </g>
-  <g class="lbl" style="--d:1.010s">
+  <g class="lbl">
     <polyline class="lead" points="846.7,132.4 845.9,124.4"/>
     <text class="f-cjk" x="845.9" y="119.4" font-size="10" fill="#1c2534" text-anchor="middle">ANCTL+其他</text>
     <text class="f-num val" x="845.9" y="133.4" font-size="9.5" fill="#5b6675" text-anchor="middle">674 µW · 3.7%</text>

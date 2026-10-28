@@ -109,7 +109,7 @@ WARNING: PowerPro 读取的 RTL 必须是可综合代码，无法综合会 inter
 
 ### 4.2 跨项目对比（HK1V11 vs HV2M23 / HV3310B1 / HV1V21 / HV1V22，双组带 run 代）
 
-![HK1V11 vs 其他项目 PowerPro 功耗对比](./power_compare_hk11.svg)
+![HK1V11 vs 其他项目 PowerPro 功耗对比](./anim/power_compare_hk11.svg)
 
 > 数据源：HV2M23/3310B1/1V21 = back_ppt（PowerPro LVT）；**HV1V22 = Nexchip 145nm 实测（Normal=4G 不开 DPLC 15.8，DPLC=3G 开 14.8）**；HV1V31 数据暂缺已移除。**HK1V11 双组带 run 代**：**(0922)** = 21.08 / DPLC 21.36 / 4K180 37.9（Area 294907）；**(1003)**（1008 包 `rep_dir_*_1003` Initial Design）= 16.30 / DPLC 16.30 / 4K180 29.47（Area 314707，1003 DC 报告）；**1027 代（1V11 4G 24.42，Area=299276；1V22 4G 17.00，Area=162475）**。
 
@@ -274,9 +274,9 @@ WARNING: PowerPro 读取的 RTL 必须是可综合代码，无法综合会 inter
 
 #### 功耗组成可视化
 
-![1V11 vs 1V22 Module Power Comparison](./power_module_compare_1v11_1v22.svg)
+![1V11 vs 1V22 Module Power Comparison](./anim/power_module_compare_1v11_1v22.svg)
 
-![1V11 vs 1V22 Power Composition Donut](./power_composition_donut_1v11_1v22.svg)
+![1V11 vs 1V22 Power Composition Donut](./anim/power_composition_donut_1v11_1v22.svg)
 
 #### 模块级功耗对比（按功能块对齐，按差距降序）
 
@@ -326,7 +326,7 @@ WARNING: PowerPro 读取的 RTL 必须是可综合代码，无法综合会 inter
 - PTPX 侧：<a href="./ch07-memory-power.html">七、Memory 与功耗</a>
 </script>
   <script src="./js/site.js"></script>
-  <script src="./fx.js?v=2"></script>
+  <script src="./fx.js?v=3"></script>
 </body>
 </html>
 <!-- ymzhu 2026-10-27 17:41 -->

@@ -2,36 +2,27 @@
   <style>
     .mono{font-family:ui-monospace,Consolas,monospace;}
     .cjk{font-family:'Microsoft YaHei',sans-serif;}
-    @keyframes fadeIn{from{opacity:0}to{opacity:1}}
-    @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
-    @keyframes growW{from{width:0}}
-    @keyframes pop{from{transform:scale(.7)}to{transform:scale(1)}}
-    @keyframes breathe{0%,100%{opacity:.25}50%{opacity:.55}}
-    .hdr{animation:fadeIn .3s ease-out both}
-    .underline{animation:growW .4s ease-out .15s both}
-    .r1{animation:rise .3s ease-out .3s both}
-    .r2{animation:rise .3s ease-out .34s both}
-    .r3{animation:rise .3s ease-out .38s both}
-    .fn{animation:rise .3s ease-out .55s both}
-    .pop{transform-box:fill-box;transform-origin:center;animation:pop .3s ease-out both}
-    .p2{animation-delay:.34s}
-    .p3{animation-delay:.38s}
-    .br{opacity:.25;animation:breathe 2.4s ease-in-out infinite}
-    @keyframes tl{0%{width:0;opacity:0}4%{width:0;opacity:.4}14%{width:914px;opacity:.4}28%{width:914px;opacity:.4}38%{width:1828px;opacity:.4}52%{width:1828px;opacity:.4}62%{width:2742px;opacity:.4}90%{width:2742px;opacity:.4}97%{width:2742px;opacity:0}100%{width:0;opacity:0}}
+    
+    
+    
+    
+    
+    .hdr{transform-origin:center;animation:breathe 2.4s ease-in-out infinite}
+    
     .tl{animation:tl 6s linear infinite}
-    @keyframes rg1{0%{opacity:0}10%{opacity:.16}30%{opacity:.16}40%{opacity:0}100%{opacity:0}}
-    @keyframes rg2{0%{opacity:0}38%{opacity:0}48%{opacity:.16}66%{opacity:.16}76%{opacity:0}100%{opacity:0}}
-    @keyframes rg3{0%{opacity:0}76%{opacity:0}86%{opacity:.16}98%{opacity:.16}100%{opacity:0}}
+    
+    
+    
     .rg1{animation:rg1 5.6s linear infinite}
     .rg2{animation:rg2 5.6s linear infinite}
     .rg3{animation:rg3 5.6s linear infinite}
-    @keyframes pl{0%,100%{opacity:1}50%{opacity:.7}}
+    
     .pl1{animation:pl 3.2s ease-in-out infinite}
     .pl2{animation:pl 3.2s ease-in-out 1.6s infinite}
-    @keyframes cellB{0%,100%{opacity:1}50%{opacity:.25}}
+    
     .cB{animation:cellB 3s ease-in-out infinite}
     .cBx{animation:pl 3.2s ease-in-out 1.6s infinite,cellB 3s ease-in-out .3s infinite}
-    @keyframes diag{to{transform:translate(19.8px,19.8px)}}
+    
     .diag{animation:diag 7s linear infinite}
     @media (prefers-reduced-motion:reduce){*{animation:none!important}}
   </style>
@@ -77,10 +68,10 @@
     <g clip-path="url(#clipD1)"><g class="diag"><rect x="-40" y="450" width="2830" height="180" fill="url(#diagF)" opacity="0.05"/></g></g>
     <rect class="br" x="0" y="488" width="6" height="130" fill="#0e7490"/>
     <text x="24" y="553" dy="0.35em" font-size="42" font-weight="bold" fill="#1c2534" class="mono cB">2026-10-02</text>
-    <text x="344" y="553" dy="0.35em" font-size="42" font-weight="bold" fill="#0e7490" class="mono cB" style="animation-delay:.15s">314707</text>
+    <text x="344" y="553" dy="0.35em" font-size="42" font-weight="bold" fill="#0e7490" class="mono cB">314707</text>
     <g class="pl2"><text x="644" y="553" dy="0.35em" font-size="42" font-weight="bold" fill="#b91c1c" class="mono pop p3 cBx">+6.7% (+19800)</text></g>
-    <text x="1054" y="553" dy="0.35em" font-size="42" fill="#1c2534" class="mono cB" style="animation-delay:.45s">FF 2839 / comb 11773 / ports 6772</text>
-    <text x="2719" y="553" dy="0.35em" font-size="42" fill="#1c2534" text-anchor="end" class="cjk cB" style="animation-delay:.6s">关键路径优化 + 约束审核后重新添加</text>
+    <text x="1054" y="553" dy="0.35em" font-size="42" fill="#1c2534" class="mono cB">FF 2839 / comb 11773 / ports 6772</text>
+    <text x="2719" y="553" dy="0.35em" font-size="42" fill="#1c2534" text-anchor="end" class="cjk cB">关键路径优化 + 约束审核后重新添加</text>
   </g>
   <g stroke="#ddd6c8" stroke-width="2">
     <line x1="320" y1="118" x2="320" y2="618"/>

@@ -1,4 +1,4 @@
-/* fx.js — PAGE FX v1 特效引擎（2026-10-27 ymzhu）
+/* fx.js — PAGE FX v1 特效引擎（2026-10-28 ymzhu，v3 切换修复）
    接管原内联 IIFE 的全部职责（模式解析 / #motionToggle / img src 交换 / 滚动重播，v2 修复保留）
    + 页面级特效：滚动进度条 / 滚动显现 / 蓝图底纹 / 导航阴影 / 返回顶部 /
      hero 网格漂移与光晕 / 标题字级升起（逐字 assert）/ 数字滚动 / 表格行级联 / 章节标题画线。
@@ -32,38 +32,36 @@
     btn.className = btnFloat ? 'float-motion' : 'navbar-motion';
   }
 
-  /* ===================== 2. SVG img src 交换 + 滚动重播（原样搬入） =====================
-     anim/ 动画版 ↔ 根目录静态原版（零额外资源）；
-     保留 v2 修复：匹配 img[src*=".svg"] 含 query 的写法，不退回 src$= */
+  /* ===================== 2. SVG img src 交换 + 滚动重播（v3：dataset 记录原始 anim src） =====================
+     全站统一 /anim/ 目录约定：页面默认引用动画版；静态模式 = 路径去掉 /anim/ 段。
+     首次交换前把原始 src 记入 img.dataset.fxAnim，回程动效模式原样恢复
+     （修复 v2 缺陷：静态→动效时把 images/anim/ 错重建为 ./anim/ 导致断图）。
+     无 /anim/ 的单文件图（无静态对照）两模式原样保留。 */
   var svgIo = null;
-  function nameOf(img) {
-    var p = new URL(img.getAttribute('src') || '', location.href).pathname;
-    return p.split('/').pop();
-  }
   function svgImgs() {
     return Array.prototype.filter.call(document.querySelectorAll('img'), function (img) {
       return /\.svg(\?|$)/.test(img.getAttribute('src') || '');
     });
   }
-  function baseAnim(img) {
-    var s = img.getAttribute('src') || '';
-    var p = new URL(s, location.href).pathname;
-    return (p.indexOf('/anim/') !== -1 ? s.split('?')[0] : './anim/' + nameOf(img));
+  function staticSrcOf(str) {
+    /* 去掉 src 中的 /anim/ 段（anim/foo.svg → ./foo.svg；images/anim/foo.svg → images/foo.svg）；无 /anim/ 原样返回 */
+    var s2 = (str || '').split('?')[0];
+    var idx = s2.indexOf('/anim/');
+    if (idx === -1) return s2;
+    var prefix = s2.slice(0, idx).replace(/\/+$/, '');
+    return (prefix ? prefix + '/' : './') + s2.split('/').pop();
   }
-  function staticSrc(img) {
-    /* 通用静态回退：去掉 src 中的 /anim/ 段（anim/foo.svg → ./foo.svg；images/anim/foo.svg → images/foo.svg） */
-    var s = (img.getAttribute('src') || '').split('?')[0];
-    var idx = s.indexOf('/anim/');
-    if (idx === -1) return s;
-    var prefix = s.slice(0, idx).replace(/\/+$/, '');
-    return (prefix ? prefix + '/' : './') + nameOf(img);
+  function animSrcOf(img) {
+    if (img.dataset.fxAnim) return img.dataset.fxAnim;
+    var s2 = (img.getAttribute('src') || '').split('?')[0];
+    img.dataset.fxAnim = s2;
+    return s2;
   }
   function applySvg(replayNow) {
     svgImgs().forEach(function (img) {
       img.loading = 'lazy';
-      img.src = (mode === 'anim')
-        ? baseAnim(img) + (replayNow ? '?v=' + Date.now() : '')
-        : staticSrc(img);
+      var a = animSrcOf(img);
+      img.src = (mode === 'anim') ? a + (replayNow ? '?v=' + Date.now() : '') : staticSrcOf(a);
     });
     observe();
   }
@@ -74,7 +72,7 @@
       entries.forEach(function (e) {
         if (!e.isIntersecting) return;
         svgIo.unobserve(e.target);
-        if (mode === 'anim') e.target.src = baseAnim(e.target) + '?v=' + Date.now();
+        if (mode === 'anim') e.target.src = animSrcOf(e.target) + '?v=' + Date.now();
       });
     }, { rootMargin: '240px 0px' });
     svgImgs().forEach(function (img) {
@@ -83,7 +81,6 @@
       svgIo.observe(img);
     });
   }
-
   /* ===================== 3. 滚动进度条 / 导航阴影 / 返回顶部（rAF 节流） ===================== */
   var progress = document.createElement('div');
   progress.id = 'fx-progress';
@@ -322,4 +319,4 @@
   }
 })();
 
-/* ymzhu 2026-10-27 15:22 */
+/* ymzhu 2026-10-28 15:42 */

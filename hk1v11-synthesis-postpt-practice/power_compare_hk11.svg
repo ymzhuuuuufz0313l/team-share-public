@@ -1,61 +1,61 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="605" height="444" viewBox="0 0 605 444">
 <style><![CDATA[
 text{font-family:ui-monospace,Consolas,monospace,"Microsoft YaHei",sans-serif;font-size:11px;}
-@keyframes fadeIn{from{opacity:0}to{opacity:1}}
-@keyframes grow{from{transform:scaleX(0)}to{transform:scaleX(1)}}
-@keyframes breathe{0%,100%{opacity:.25}50%{opacity:.55}}
-@keyframes maxpulse{0%,100%{opacity:.7}50%{opacity:1}}
-.in{animation:fadeIn .3s ease-out both;}
-.bar{transform-box:fill-box;transform-origin:left center;animation:grow .7s ease-out both;}
-.r0{animation:fadeIn .3s ease-out both;animation-delay:0.30s;}
-.b0{animation-delay:0.45s;}
-.r1{animation:fadeIn .3s ease-out both;animation-delay:0.34s;}
-.b1{animation-delay:0.49s;}
-.r2{animation:fadeIn .3s ease-out both;animation-delay:0.38s;}
-.b2{animation-delay:0.53s;}
-.r3{animation:fadeIn .3s ease-out both;animation-delay:0.42s;}
-.b3{animation-delay:0.57s;}
-.r4{animation:fadeIn .3s ease-out both;animation-delay:0.46s;}
-.b4{animation-delay:0.61s;}
-.r5{animation:fadeIn .3s ease-out both;animation-delay:0.50s;}
-.b5{animation-delay:0.65s;}
-.r6{animation:fadeIn .3s ease-out both;animation-delay:0.54s;}
-.b6{animation-delay:0.69s;}
-.r7{animation:fadeIn .3s ease-out both;animation-delay:0.58s;}
-.b7{animation-delay:0.73s;}
-.r8{animation:fadeIn .3s ease-out both;animation-delay:0.62s;}
-.b8{animation-delay:0.77s;}
-.r9{animation:fadeIn .3s ease-out both;animation-delay:0.66s;}
-.b9{animation-delay:0.81s;}
-.r10{animation:fadeIn .3s ease-out both;animation-delay:0.70s;}
-.b10{animation-delay:0.85s;}
-.r11{animation:fadeIn .3s ease-out both;animation-delay:0.74s;}
-.b11{animation-delay:0.89s;}
-.r12{animation:fadeIn .3s ease-out both;animation-delay:0.78s;}
-.b12{animation-delay:0.93s;}
-.r13{animation:fadeIn .3s ease-out both;animation-delay:0.82s;}
-.b13{animation-delay:0.97s;}
-.r14{animation:fadeIn .3s ease-out both;animation-delay:0.86s;}
-.b14{animation-delay:1.01s;}
-.r15{animation:fadeIn .3s ease-out both;animation-delay:0.90s;}
-.b15{animation-delay:1.05s;}
-.r16{animation:fadeIn .3s ease-out both;animation-delay:0.94s;}
-.b16{animation-delay:1.09s;}
-.sweep{transform-box:fill-box;transform-origin:left center;animation:grow .5s ease-out .2s both;}
-.cap{animation:fadeIn .3s ease-out both;animation-delay:0.90s;}
-.breath{animation:breathe 2.4s ease-in-out infinite;opacity:.4;}
-.maxpulse{animation:maxpulse 2.8s ease-in-out infinite;opacity:1;}
-@keyframes cmpsweep{0%{transform:translateX(-150px);opacity:0}8%{opacity:.3}32%{opacity:.3}37.5%{transform:translateX(625px);opacity:0}100%{transform:translateX(625px);opacity:0}}
-.cmpband{transform-box:fill-box;transform-origin:left center;opacity:0;animation:cmpsweep 4s ease-in-out 1s infinite;}
-.breath2{animation:breathe 2.4s ease-in-out infinite;opacity:.4;}
-.cmpband2{transform-box:fill-box;transform-origin:left center;opacity:0;animation:cmpsweep 4s ease-in-out 1s infinite;}
-@keyframes bardot{0%{opacity:0}10%{opacity:.5}22%{opacity:0}100%{opacity:0}}
-.dot{opacity:0;animation:bardot 5.2s ease-in-out infinite;}
-.d0{animation-delay:0s;}.d1{animation-delay:.35s;}.d2{animation-delay:.70s;}.d3{animation-delay:1.05s;}.d4{animation-delay:1.40s;}.d5{animation-delay:1.75s;}.d6{animation-delay:2.10s;}.d7{animation-delay:2.45s;}.d8{animation-delay:2.80s;}.d9{animation-delay:3.15s;}.d10{animation-delay:3.50s;}.d11{animation-delay:3.85s;}.d12{animation-delay:4.20s;}.d13{animation-delay:4.55s;}.d14{animation-delay:4.90s;}.d15{animation-delay:5.25s;}.d16{animation-delay:5.60s;}
-@keyframes peakglow{0%,100%{opacity:0}50%{opacity:.22}}
-.peakglow{opacity:0;animation:peakglow 3.2s ease-in-out .8s infinite;}
-@keyframes zebasweep{0%{transform:skewX(-18deg) translateX(-260px);opacity:0}12%{opacity:.06}45%{opacity:.06}58%{transform:skewX(-18deg) translateX(740px);opacity:0}100%{transform:skewX(-18deg) translateX(740px);opacity:0}}
-.zeband{transform-box:fill-box;transform-origin:center;opacity:0;animation:zebasweep 6s linear 2.2s infinite;}
+
+
+
+
+.in{}
+.bar{transform-box:fill-box;transform-origin:left center;}
+.r0{}
+.b0{}
+.r1{}
+.b1{}
+.r2{}
+.b2{}
+.r3{}
+.b3{}
+.r4{}
+.b4{}
+.r5{}
+.b5{}
+.r6{}
+.b6{}
+.r7{}
+.b7{}
+.r8{}
+.b8{}
+.r9{}
+.b9{}
+.r10{}
+.b10{}
+.r11{}
+.b11{}
+.r12{}
+.b12{}
+.r13{}
+.b13{}
+.r14{}
+.b14{}
+.r15{}
+.b15{}
+.r16{}
+.b16{}
+.sweep{transform-box:fill-box;transform-origin:left center;}
+.cap{}
+.breath{opacity:.4;}
+.maxpulse{opacity:1;}
+
+.cmpband{transform-box:fill-box;transform-origin:left center;}
+.breath2{opacity:.4;}
+.cmpband2{transform-box:fill-box;transform-origin:left center;}
+
+.dot{}
+.d0{}.d1{}.d2{}.d3{}.d4{}.d5{}.d6{}.d7{}.d8{}.d9{}.d10{}.d11{}.d12{}.d13{}.d14{}.d15{}.d16{}
+
+.peakglow{}
+
+.zeband{transform-box:fill-box;transform-origin:center;}
 @media (prefers-reduced-motion:reduce){*{animation:none!important}}
 ]]></style>
 <defs>

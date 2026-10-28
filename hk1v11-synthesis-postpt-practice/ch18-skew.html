@@ -343,7 +343,7 @@ set_sense u_LOGIC_CENTER/LC_CLK_RST_GEN/CLKGEN/u_gate_MUX_WCK1_ASEL/CLKMUX2X2/S 
 
 **④ 14 vs 12：差的是触发点，不是对错**：当前实测 arrival 包络 2.0~8.2 ns（10 角 min..max），12 与 14 全 MET、每格数值差常数 2；差别 = 报警提前量——退化树（arrival 12~14 ns）12 提前 2 ns 抓住、14 会漏。check 必须夹在"正常包络"与"面板采样失效点"之间：设小误报、设远漏失。14 = 2M23 同族已验证值（HV2M23 ip_cons L657-660 同款 4 端口）+ pad 绝对预算（非周期数：5G≈3.67 周期 / 3G≈2.20 周期）。
 
-![DELAY vs SKEW — set_max_delay (14/12) 与 skew 数值的关系](./images/delay_skew_14vs12.svg)
+![DELAY vs SKEW — set_max_delay (14/12) 与 skew 数值的关系](./images/anim/delay_skew_14vs12.svg)
 
 四份完整报告（14 判读 / 5G3G 推演 / 2M23 残留审计 / 全量审计裁决）与图解生成脚本见 <a href="./ch19-skew-audit.html">ch19 10-15 代 skew 全量审计与 5G3G 推演</a>。
 
@@ -376,7 +376,7 @@ set_sense u_LOGIC_CENTER/LC_CLK_RST_GEN/CLKGEN/u_gate_MUX_WCK1_ASEL/CLKMUX2X2/S 
 - 999 事件原始分析档：`script/_syn_1008_skew_说明.md`（HK1V11 仓库，commit 6a5e7ec8 附带）
   </script>
   <script src="./js/site.js"></script>
-  <script src="./fx.js?v=2"></script>
+  <script src="./fx.js?v=3"></script>
 </body>
 </html>
 <!-- ymzhu 2026-10-27 14:06 -->

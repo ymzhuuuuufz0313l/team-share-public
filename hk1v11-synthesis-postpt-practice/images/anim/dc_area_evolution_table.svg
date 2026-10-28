@@ -1,0 +1,107 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2743" height="1009" viewBox="0 0 2743 1009" role="img" aria-label="DC 三代面积演进">
+  <style>
+    .mono{font-family:ui-monospace,Consolas,monospace;}
+    .cjk{font-family:'Microsoft YaHei',sans-serif;}
+    @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+    @keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes growW{from{width:0}}
+    @keyframes pop{from{transform:scale(.7)}to{transform:scale(1)}}
+    @keyframes breathe{0%,100%{opacity:.25}50%{opacity:.55}}
+    .hdr{animation:fadeIn .3s ease-out both}
+    .underline{animation:growW .4s ease-out .15s both}
+    .r1{animation:rise .3s ease-out .3s both}
+    .r2{animation:rise .3s ease-out .34s both}
+    .r3{animation:rise .3s ease-out .38s both}
+    .fn{animation:rise .3s ease-out .55s both}
+    .pop{transform-box:fill-box;transform-origin:center;animation:pop .3s ease-out both}
+    .p2{animation-delay:.34s}
+    .p3{animation-delay:.38s}
+    .br{opacity:.25;animation:breathe 2.4s ease-in-out infinite}
+    @keyframes tl{0%{width:0;opacity:0}4%{width:0;opacity:.4}14%{width:914px;opacity:.4}28%{width:914px;opacity:.4}38%{width:1828px;opacity:.4}52%{width:1828px;opacity:.4}62%{width:2742px;opacity:.4}90%{width:2742px;opacity:.4}97%{width:2742px;opacity:0}100%{width:0;opacity:0}}
+    .tl{animation:tl 6s linear infinite}
+    @keyframes rg1{0%{opacity:0}10%{opacity:.16}30%{opacity:.16}40%{opacity:0}100%{opacity:0}}
+    @keyframes rg2{0%{opacity:0}38%{opacity:0}48%{opacity:.16}66%{opacity:.16}76%{opacity:0}100%{opacity:0}}
+    @keyframes rg3{0%{opacity:0}76%{opacity:0}86%{opacity:.16}98%{opacity:.16}100%{opacity:0}}
+    .rg1{animation:rg1 5.6s linear infinite}
+    .rg2{animation:rg2 5.6s linear infinite}
+    .rg3{animation:rg3 5.6s linear infinite}
+    @keyframes pl{0%,100%{opacity:1}50%{opacity:.7}}
+    .pl1{animation:pl 3.2s ease-in-out infinite}
+    .pl2{animation:pl 3.2s ease-in-out 1.6s infinite}
+    @keyframes cellB{0%,100%{opacity:1}50%{opacity:.25}}
+    .cB{animation:cellB 3s ease-in-out infinite}
+    .cBx{animation:pl 3.2s ease-in-out 1.6s infinite,cellB 3s ease-in-out .3s infinite}
+    @keyframes diag{to{transform:translate(19.8px,19.8px)}}
+    .diag{animation:diag 7s linear infinite}
+    @media (prefers-reduced-motion:reduce){*{animation:none!important}}
+  </style>
+  <defs>
+    <pattern id="diagF" width="28" height="28" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+      <rect width="2" height="28" fill="#0e7490"/>
+    </pattern>
+    <clipPath id="clipD1"><rect x="0" y="488" width="2743" height="130"/></clipPath>
+  </defs>
+  <rect x="0" y="0" width="2743" height="1009" fill="#fffdf7"/>
+  <g class="hdr">
+    <rect x="0" y="0" width="2743" height="118" fill="#0e7490"/>
+    <text x="40" y="59" dy="0.35em" font-size="52" font-weight="bold" fill="#fffdf7" class="mono">DC 三代面积演进</text>
+    <line x1="0" y1="118" x2="2743" y2="118" stroke="#fffdf7" stroke-opacity="0.4" stroke-width="2"/>
+    <rect x="0" y="118" width="2743" height="110" fill="#0e7490"/>
+    <text x="24" y="173" dy="0.35em" font-size="42" fill="#fffdf7" class="cjk">日期</text>
+    <text x="344" y="173" dy="0.35em" font-size="42" fill="#fffdf7" class="mono">面积 (um2)</text>
+    <text x="644" y="173" dy="0.35em" font-size="42" fill="#fffdf7" class="cjk">代际增量</text>
+    <text x="1054" y="173" dy="0.35em" font-size="42" fill="#fffdf7" class="mono">结构（FF / comb / ports）</text>
+    <text x="2719" y="173" dy="0.35em" font-size="42" fill="#fffdf7" text-anchor="end" class="cjk">定位</text>
+    <rect class="underline" x="0" y="228" width="2743" height="4" fill="#b45309"/>
+  </g>
+  <g class="r1">
+    <rect class="rg1" x="0" y="228" width="2743" height="130" fill="#0e7490" opacity="0"/>
+    <text x="24" y="293" dy="0.35em" font-size="42" font-weight="bold" fill="#1c2534" class="mono">2026-09-01</text>
+    <text x="344" y="293" dy="0.35em" font-size="42" font-weight="bold" fill="#0e7490" class="mono">283496</text>
+    <text x="644" y="293" dy="0.35em" font-size="42" fill="#1c2534" class="mono">—</text>
+    <text x="1054" y="293" dy="0.35em" font-size="42" fill="#1c2534" class="mono">FF 2434 / comb 11344 / ports 6086</text>
+    <text x="2719" y="293" dy="0.35em" font-size="42" fill="#1c2534" text-anchor="end" class="cjk">约束收窄前</text>
+  </g>
+  <g class="r2">
+    <rect x="0" y="358" width="2743" height="130" fill="#f4f1ea"/>
+    <rect class="rg2" x="0" y="358" width="2743" height="130" fill="#0e7490" opacity="0"/>
+    <text x="24" y="423" dy="0.35em" font-size="42" font-weight="bold" fill="#1c2534" class="mono">2026-09-22</text>
+    <text x="344" y="423" dy="0.35em" font-size="42" font-weight="bold" fill="#0e7490" class="mono">294907</text>
+    <g class="pl1"><text x="644" y="423" dy="0.35em" font-size="42" font-weight="bold" fill="#b91c1c" class="mono pop p2">+4.0% (+11410)</text></g>
+    <text x="1054" y="423" dy="0.35em" font-size="42" fill="#1c2534" class="mono">FF 2526 / comb 12096 / ports 6105</text>
+    <text x="2719" y="423" dy="0.35em" font-size="42" fill="#1c2534" text-anchor="end" class="cjk">完成约束收窄</text>
+  </g>
+  <g class="r3">
+    <rect x="0" y="488" width="2743" height="130" fill="#fffdf7"/>
+    <rect class="rg3" x="0" y="488" width="2743" height="130" fill="#0e7490" opacity="0"/>
+    <g clip-path="url(#clipD1)"><g class="diag"><rect x="-40" y="450" width="2830" height="180" fill="url(#diagF)" opacity="0.05"/></g></g>
+    <rect class="br" x="0" y="488" width="6" height="130" fill="#0e7490"/>
+    <text x="24" y="553" dy="0.35em" font-size="42" font-weight="bold" fill="#1c2534" class="mono cB">2026-10-02</text>
+    <text x="344" y="553" dy="0.35em" font-size="42" font-weight="bold" fill="#0e7490" class="mono cB" style="animation-delay:.15s">314707</text>
+    <g class="pl2"><text x="644" y="553" dy="0.35em" font-size="42" font-weight="bold" fill="#b91c1c" class="mono pop p3 cBx">+6.7% (+19800)</text></g>
+    <text x="1054" y="553" dy="0.35em" font-size="42" fill="#1c2534" class="mono cB" style="animation-delay:.45s">FF 2839 / comb 11773 / ports 6772</text>
+    <text x="2719" y="553" dy="0.35em" font-size="42" fill="#1c2534" text-anchor="end" class="cjk cB" style="animation-delay:.6s">关键路径优化 + 约束审核后重新添加</text>
+  </g>
+  <g stroke="#ddd6c8" stroke-width="2">
+    <line x1="320" y1="118" x2="320" y2="618"/>
+    <line x1="620" y1="118" x2="620" y2="618"/>
+    <line x1="1030" y1="118" x2="1030" y2="618"/>
+    <line x1="1930" y1="118" x2="1930" y2="618"/>
+    <line x1="0" y1="228" x2="2743" y2="228"/>
+    <line x1="0" y1="358" x2="2743" y2="358"/>
+    <line x1="0" y1="488" x2="2743" y2="488"/>
+    <line x1="0" y1="618" x2="2743" y2="618"/>
+  </g>
+  <rect class="tl" x="0" y="234" width="2742" height="6" fill="#0e7490" opacity="0"/>
+  <g class="fn" fill="#5b6675" font-size="32">
+    <text x="40" y="660" dy="0.35em" class="cjk">面积扩大原因（0922→10-02，+6.7% / +19800um2）：</text>
+    <text x="40" y="708" dy="0.35em" class="cjk">① 新增打拍寄存器（+80bit FF）+ 模块时钟域迁移 + 新模块</text>
+    <text x="40" y="756" dy="0.35em" class="cjk">② 约束语法 group_path -weight 3（时序优化权重×3，DC 优先为加权路径加强驱动/插拍换时序）</text>
+    <text x="40" y="804" dy="0.35em" class="cjk">③ 门从小变大（upsizing）实例：加权域 RX→DCLK 的 RX 输入同步 FF 由 X1 换成 X4/X16 驱动（X16 档 2→46 处；同一路径 0922 max.rpt L90912 全 X1 vs 100</text>
+    <text x="40" y="852" dy="0.35em" class="cjk">3 L52800 已 X4），门数不变、单门面积增大即涨面积</text>
+    <text x="40" y="900" dy="0.35em" class="cjk">经与聂老师确认：此类先于 APR 的时序优化方式是被推荐的做法</text>
+    <text x="40" y="948" dy="0.35em" class="cjk">数据来源：面积=.rpt L186/L203/L445；FF=L6305/L6471/L7461；comb=L19857/L20467/L20066；ports=L171/L188/L430</text>
+  </g>
+  <rect x="1.5" y="1.5" width="2740" height="1006" fill="none" stroke="#ddd6c8" stroke-width="3"/>
+</svg>
+<!-- ymzhu 2026-10-26 17:08 -->
