@@ -66,27 +66,27 @@ text{font-family:ui-monospace,Consolas,monospace,"Microsoft YaHei",sans-serif;fo
 @keyframes drawIn{from{stroke-dashoffset:100}to{stroke-dashoffset:0}}
 .fade{opacity:0;animation:fadeIn .6s ease forwards}
 @keyframes fadeIn{to{opacity:1}}
-.flowdot{fill:none;stroke-linecap:round;stroke-dasharray:9 91;stroke-width:3.5;animation:flow 1.5s linear infinite}
+.flowdot{fill:none;stroke-linecap:round;stroke-dasharray:9 91;stroke-width:3.5;animation:flow 2.6s linear infinite}
 @keyframes flow{to{stroke-dashoffset:-100}}
-.flowtail{fill:none;stroke-linecap:round;stroke-dasharray:4 96;stroke-width:8;opacity:.25;animation:flow 1.5s linear infinite}
+.flowtail{fill:none;stroke-linecap:round;stroke-dasharray:4 96;stroke-width:8;opacity:.25;animation:flow 2.6s linear infinite}
 .pulse{transform-box:fill-box;transform-origin:center;animation:pulse 2.8s ease-in-out infinite}
-@keyframes pulse{0%,100%{transform:scale(1);filter:drop-shadow(0 0 0 rgba(180,83,9,0))}50%{transform:scale(1.03);filter:drop-shadow(0 0 12px rgba(180,83,9,.8))}}
+@keyframes pulse{0%,100%{opacity:1;filter:drop-shadow(0 0 0 rgba(180,83,9,0))}50%{opacity:.8;filter:drop-shadow(0 0 10px rgba(180,83,9,.75))}}
 .pulse-t{transform-box:fill-box;transform-origin:center;animation:pulseT 2.8s ease-in-out infinite}
-@keyframes pulseT{0%,100%{transform:scale(1);filter:drop-shadow(0 0 0 rgba(14,116,144,0))}50%{transform:scale(1.03);filter:drop-shadow(0 0 12px rgba(14,116,144,.8))}}
+@keyframes pulseT{0%,100%{opacity:1;filter:drop-shadow(0 0 0 rgba(14,116,144,0))}50%{opacity:.8;filter:drop-shadow(0 0 10px rgba(14,116,144,.75))}}
 .pulse-b{transform-box:fill-box;transform-origin:center;animation:pulseB 2.8s ease-in-out infinite}
-@keyframes pulseB{0%,100%{transform:scale(1);filter:drop-shadow(0 0 0 rgba(29,78,216,0))}50%{transform:scale(1.03);filter:drop-shadow(0 0 12px rgba(29,78,216,.8))}}
+@keyframes pulseB{0%,100%{opacity:1;filter:drop-shadow(0 0 0 rgba(29,78,216,0))}50%{opacity:.8;filter:drop-shadow(0 0 10px rgba(29,78,216,.75))}}
 .sweepband{opacity:.85;animation:sweepMove 8s linear infinite}
 @keyframes sweepMove{to{transform:translateX(var(--sweepP,160px))}}
 .dashgrow{stroke-dasharray:7 5;animation:dashgrow 2.6s linear infinite}
 @keyframes dashgrow{from{stroke-dashoffset:72}to{stroke-dashoffset:0}}
 .march{animation:march 1.5s linear infinite}
 @keyframes march{to{stroke-dashoffset:-16}}
-.cellwave{transform-box:fill-box;transform-origin:center;animation:wave 2.6s ease-in-out infinite}
-@keyframes wave{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.72;transform:scale(1.01)}}
+.cellwave{animation:wave 2.6s ease-in-out infinite}
+@keyframes wave{0%,100%{opacity:1}50%{opacity:.72}}
 .breathe{animation:br 3.2s ease-in-out infinite}
 @keyframes br{0%,100%{opacity:1}50%{opacity:.55}}
-.step{transform-box:fill-box;transform-origin:center;animation:stepLit 6s ease-in-out infinite}
-@keyframes stepLit{0%,16%{filter:drop-shadow(0 0 9px rgba(29,78,216,.85));transform:scale(1.02)}24%,92%{filter:drop-shadow(0 0 0 rgba(29,78,216,0));transform:none}100%{filter:drop-shadow(0 0 9px rgba(29,78,216,.85));transform:scale(1.02)}}
+.step{animation:stepLit 6s ease-in-out infinite}
+@keyframes stepLit{0%,16%{filter:drop-shadow(0 0 9px rgba(29,78,216,.85))}24%,92%{filter:drop-shadow(0 0 0 rgba(29,78,216,0))}100%{filter:drop-shadow(0 0 9px rgba(29,78,216,.85))}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important}.row,.head,.fade{opacity:1!important}.flowdot,.flowtail,.sweepband{display:none!important}}
 </style>
 <defs>
@@ -95,14 +95,8 @@ text{font-family:ui-monospace,Consolas,monospace,"Microsoft YaHei",sans-serif;fo
 <clipPath id="cCmp"><rect x="1" y="255" width="603" height="20"/><rect x="1" y="387" width="603" height="20"/></clipPath>
 <clipPath id="cCmp2"><rect x="1" y="276" width="603" height="20"/><rect x="1" y="408" width="603" height="20"/></clipPath>
 <clipPath id="cBody"><rect x="0" y="56" width="605" height="374"/></clipPath>
-<linearGradient id="sweepG-1" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="845" y2="0"><stop offset="0" stop-color="#b45309" stop-opacity="0"/><stop offset="0.46" stop-color="#b45309" stop-opacity="0"/><stop offset="0.5" stop-color="#b45309" stop-opacity="0.3"/><stop offset="0.54" stop-color="#b45309" stop-opacity="0"/><stop offset="1" stop-color="#b45309" stop-opacity="0"/></linearGradient>
-<clipPath id="sweepC-1"><rect x="0" y="232" width="605" height="66"/></clipPath>
-<linearGradient id="sweepG-2" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="845" y2="0"><stop offset="0" stop-color="#b45309" stop-opacity="0"/><stop offset="0.46" stop-color="#b45309" stop-opacity="0"/><stop offset="0.5" stop-color="#b45309" stop-opacity="0.3"/><stop offset="0.54" stop-color="#b45309" stop-opacity="0"/><stop offset="1" stop-color="#b45309" stop-opacity="0"/></linearGradient>
-<clipPath id="sweepC-2"><rect x="0" y="386" width="605" height="44"/></clipPath>
 </defs>
 <rect x="0" y="0" width="605" height="444" fill="#f4f1ea"/>
-<g clip-path="url(#sweepC-1)"><rect class="sweepband" x="0" y="232" width="845" height="66" fill="url(#sweepG-1)" style="--sweepP:845px"/></g>
-<g clip-path="url(#sweepC-2)"><rect class="sweepband" x="0" y="386" width="845" height="44" fill="url(#sweepG-2)" style="--sweepP:845px"/></g>
 <g class="in head">
 <rect x="0" y="0" width="605" height="30" fill="#1c2534"/>
 <text x="10" y="15.0" dominant-baseline="central" fill="#f4f1ea" font-weight="bold">PowerPro 功耗对比 — HK1V11（前仿）vs 其他芯片（后仿）</text>
@@ -239,7 +233,9 @@ text{font-family:ui-monospace,Consolas,monospace,"Microsoft YaHei",sans-serif;fo
 <rect class="bar b8" x="366" y="236" width="13" height="14" rx="2" fill="#b45309" fill-opacity="0.30"/>
 <circle class="dot d8" cx="379" cy="243" r="2.5" fill="#b45309"/>
 </g>
+<g class="cellwave" style="animation-delay:0s">
 <text x="10" y="243.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HV1V22 (1015)</text>
+</g>
 <text x="192" y="243.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">2.67G</text>
 <text x="254" y="243.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
 <text x="310" y="243.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">162475</text>
@@ -255,7 +251,9 @@ text{font-family:ui-monospace,Consolas,monospace,"Microsoft YaHei",sans-serif;fo
 <rect class="bar b9" x="366" y="258" width="22" height="14" rx="2" fill="#b45309" fill-opacity="0.30"/>
 <circle class="dot d9" cx="388" cy="265" r="2.5" fill="#b45309"/>
 </g>
+<g class="cellwave" style="animation-delay:0s">
 <text x="10" y="265.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HV1V22 (1015)</text>
+</g>
 <text x="192" y="265.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">4.46G</text>
 <text x="254" y="265.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
 <text x="310" y="265.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">162475</text>
@@ -273,7 +271,9 @@ text{font-family:ui-monospace,Consolas,monospace,"Microsoft YaHei",sans-serif;fo
 <circle class="dot d10" cx="386" cy="287" r="2.5" fill="#1d4ed8"/>
 </g>
 </g>
+<g class="cellwave" style="animation-delay:1.2s">
 <text x="10" y="287.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HV1V22 (1027)</text>
+</g>
 <text x="192" y="287.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">4G</text>
 <text x="254" y="287.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
 <text x="310" y="287.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">162475</text>
@@ -357,7 +357,9 @@ text{font-family:ui-monospace,Consolas,monospace,"Microsoft YaHei",sans-serif;fo
 <rect class="bar b15" x="366" y="390" width="30" height="14" rx="2" fill="#b45309" fill-opacity="0.30"/>
 <circle class="dot d15" cx="396" cy="397" r="2.5" fill="#b45309"/>
 </g>
+<g class="cellwave" style="animation-delay:0s">
 <text x="10" y="397.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HK1V11 (1015)</text>
+</g>
 <text x="192" y="397.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">4.46G</text>
 <text x="254" y="397.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
 <text x="310" y="397.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">314707</text>
@@ -375,7 +377,9 @@ text{font-family:ui-monospace,Consolas,monospace,"Microsoft YaHei",sans-serif;fo
 <circle class="dot d16" cx="394" cy="419" r="2.5" fill="#1d4ed8"/>
 </g>
 </g>
+<g class="cellwave" style="animation-delay:1.2s">
 <text x="10" y="419.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HK1V11 (1027)</text>
+</g>
 <text x="192" y="419.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">4G</text>
 <text x="254" y="419.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
 <text x="310" y="419.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">299276</text>

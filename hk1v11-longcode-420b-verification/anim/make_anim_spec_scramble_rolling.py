@@ -10,8 +10,10 @@ MOTION_KIT.md §6.6 规格（1200×520）：
   三横条 rect .draw + pathLength="100" 依次绘出（随各自 row，0.1s 错开）。
 - 生长（主角）：LFSR 绿色虚线反馈环 .dashgrow（2.6s）—— key 逐轮演化的语义，
   虚段沿“n 行截止 → n+1 行起始”方向持续生长回卷（取代 v2 的 march）。
-- 列车：绿条 1 包、蓝条 1 包 + flowtail（白色高亮在实心条上扫过，左→右错 phase；
-  duration 2.2s，delay -0.4 / -1.5）。
+- 列车：绿条 1 包、蓝条 1 包 + flowtail（光点在实心条上扫过，左→右错 phase；
+  duration 2.2s，delay -0.4 / -1.5）。用户 2026-10-28 验收：白色拖尾刺眼——
+  flowdot 白色光点保留，flowtail stroke 改链色（蓝条链 #1d4ed8；opacity 走 kit
+  默认 .25），绿条链本就无 tail，不动。
 - 行波：编码后行 K5~K8 黄格 + 末尾 K5 共 5 格 cellwave（0.3s 递增，2.4s）。
 - 脉冲：“n 行截止状态 → n+1 行起始状态（LFSR 连续）”注释 .pulse-t（delay -0.7）。
 - 铁律：源 SVG 只读；text 多重集 / svg 开标签 / 几何颜色零改动（loop 的
@@ -39,27 +41,27 @@ KIT_CSS = "\n".join([
     "@keyframes drawIn{from{stroke-dashoffset:100}to{stroke-dashoffset:0}}",
     ".fade{opacity:0;animation:fadeIn .6s ease forwards}",
     "@keyframes fadeIn{to{opacity:1}}",
-    ".flowdot{fill:none;stroke-linecap:round;stroke-dasharray:9 91;stroke-width:3.5;animation:flow 1.5s linear infinite}",
+    ".flowdot{fill:none;stroke-linecap:round;stroke-dasharray:9 91;stroke-width:3.5;animation:flow 2.6s linear infinite}",
     "@keyframes flow{to{stroke-dashoffset:-100}}",
-    ".flowtail{fill:none;stroke-linecap:round;stroke-dasharray:4 96;stroke-width:8;opacity:.25;animation:flow 1.5s linear infinite}",
+    ".flowtail{fill:none;stroke-linecap:round;stroke-dasharray:4 96;stroke-width:8;opacity:.25;animation:flow 2.6s linear infinite}",
     ".pulse{transform-box:fill-box;transform-origin:center;animation:pulse 2.8s ease-in-out infinite}",
-    "@keyframes pulse{0%,100%{transform:scale(1);filter:drop-shadow(0 0 0 rgba(180,83,9,0))}50%{transform:scale(1.03);filter:drop-shadow(0 0 12px rgba(180,83,9,.8))}}",
+    "@keyframes pulse{0%,100%{opacity:1;filter:drop-shadow(0 0 0 rgba(180,83,9,0))}50%{opacity:.8;filter:drop-shadow(0 0 10px rgba(180,83,9,.75))}}",
     ".pulse-t{transform-box:fill-box;transform-origin:center;animation:pulseT 2.8s ease-in-out infinite}",
-    "@keyframes pulseT{0%,100%{transform:scale(1);filter:drop-shadow(0 0 0 rgba(14,116,144,0))}50%{transform:scale(1.03);filter:drop-shadow(0 0 12px rgba(14,116,144,.8))}}",
+    "@keyframes pulseT{0%,100%{opacity:1;filter:drop-shadow(0 0 0 rgba(14,116,144,0))}50%{opacity:.8;filter:drop-shadow(0 0 10px rgba(14,116,144,.75))}}",
     ".pulse-b{transform-box:fill-box;transform-origin:center;animation:pulseB 2.8s ease-in-out infinite}",
-    "@keyframes pulseB{0%,100%{transform:scale(1);filter:drop-shadow(0 0 0 rgba(29,78,216,0))}50%{transform:scale(1.03);filter:drop-shadow(0 0 12px rgba(29,78,216,.8))}}",
+    "@keyframes pulseB{0%,100%{opacity:1;filter:drop-shadow(0 0 0 rgba(29,78,216,0))}50%{opacity:.8;filter:drop-shadow(0 0 10px rgba(29,78,216,.75))}}",
     ".sweepband{opacity:.85;animation:sweepMove 8s linear infinite}",
     "@keyframes sweepMove{to{transform:translateX(var(--sweepP,160px))}}",
     ".dashgrow{stroke-dasharray:7 5;animation:dashgrow 2.6s linear infinite}",
     "@keyframes dashgrow{from{stroke-dashoffset:72}to{stroke-dashoffset:0}}",
     ".march{animation:march 1.5s linear infinite}",
     "@keyframes march{to{stroke-dashoffset:-16}}",
-    ".cellwave{transform-box:fill-box;transform-origin:center;animation:wave 2.6s ease-in-out infinite}",
-    "@keyframes wave{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.72;transform:scale(1.01)}}",
+    ".cellwave{animation:wave 2.6s ease-in-out infinite}",
+    "@keyframes wave{0%,100%{opacity:1}50%{opacity:.72}}",
     ".breathe{animation:br 3.2s ease-in-out infinite}",
     "@keyframes br{0%,100%{opacity:1}50%{opacity:.55}}",
-    ".step{transform-box:fill-box;transform-origin:center;animation:stepLit 6s ease-in-out infinite}",
-    "@keyframes stepLit{0%,16%{filter:drop-shadow(0 0 9px rgba(29,78,216,.85));transform:scale(1.02)}24%,92%{filter:drop-shadow(0 0 0 rgba(29,78,216,0));transform:none}100%{filter:drop-shadow(0 0 9px rgba(29,78,216,.85));transform:scale(1.02)}}",
+    ".step{animation:stepLit 6s ease-in-out infinite}",
+    "@keyframes stepLit{0%,16%{filter:drop-shadow(0 0 9px rgba(29,78,216,.85))}24%,92%{filter:drop-shadow(0 0 0 rgba(29,78,216,0))}100%{filter:drop-shadow(0 0 9px rgba(29,78,216,.85))}}",
     "@media (prefers-reduced-motion:reduce){*{animation:none!important}.row,.head,.fade{opacity:1!important}.flowdot,.flowtail,.sweepband{display:none!important}}",
 ])
 
@@ -174,7 +176,7 @@ def build():
     o.append(tag_draw(lines[bar_b], 1.05))
     o.append('<path class="flowdot" d="M 214 331 L 570 331" stroke="#ffffff" '
              'pathLength="100" style="animation-duration:2.2s;animation-delay:-1.5s"/>')
-    o.append('<path class="flowtail" d="M 214 331 L 570 331" stroke="#ffffff" '
+    o.append('<path class="flowtail" d="M 214 331 L 570 331" stroke="#1d4ed8" '
              'pathLength="100" style="animation-duration:2.2s;animation-delay:-1.5s"/>')
     o.append("</g>")
 
@@ -254,4 +256,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-# ymzhu 2026-10-28 16:58
+# ymzhu 2026-10-28 18:33

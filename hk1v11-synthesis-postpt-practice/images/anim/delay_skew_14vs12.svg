@@ -20,27 +20,27 @@
 @keyframes drawIn{from{stroke-dashoffset:100}to{stroke-dashoffset:0}}
 .fade{opacity:0;animation:fadeIn .6s ease forwards}
 @keyframes fadeIn{to{opacity:1}}
-.flowdot{fill:none;stroke-linecap:round;stroke-dasharray:9 91;stroke-width:3.5;animation:flow 1.5s linear infinite}
+.flowdot{fill:none;stroke-linecap:round;stroke-dasharray:9 91;stroke-width:3.5;animation:flow 2.6s linear infinite}
 @keyframes flow{to{stroke-dashoffset:-100}}
-.flowtail{fill:none;stroke-linecap:round;stroke-dasharray:4 96;stroke-width:8;opacity:.25;animation:flow 1.5s linear infinite}
+.flowtail{fill:none;stroke-linecap:round;stroke-dasharray:4 96;stroke-width:8;opacity:.25;animation:flow 2.6s linear infinite}
 .pulse{transform-box:fill-box;transform-origin:center;animation:pulse 2.8s ease-in-out infinite}
-@keyframes pulse{0%,100%{transform:scale(1);filter:drop-shadow(0 0 0 rgba(180,83,9,0))}50%{transform:scale(1.03);filter:drop-shadow(0 0 12px rgba(180,83,9,.8))}}
+@keyframes pulse{0%,100%{opacity:1;filter:drop-shadow(0 0 0 rgba(180,83,9,0))}50%{opacity:.8;filter:drop-shadow(0 0 10px rgba(180,83,9,.75))}}
 .pulse-t{transform-box:fill-box;transform-origin:center;animation:pulseT 2.8s ease-in-out infinite}
-@keyframes pulseT{0%,100%{transform:scale(1);filter:drop-shadow(0 0 0 rgba(14,116,144,0))}50%{transform:scale(1.03);filter:drop-shadow(0 0 12px rgba(14,116,144,.8))}}
+@keyframes pulseT{0%,100%{opacity:1;filter:drop-shadow(0 0 0 rgba(14,116,144,0))}50%{opacity:.8;filter:drop-shadow(0 0 10px rgba(14,116,144,.75))}}
 .pulse-b{transform-box:fill-box;transform-origin:center;animation:pulseB 2.8s ease-in-out infinite}
-@keyframes pulseB{0%,100%{transform:scale(1);filter:drop-shadow(0 0 0 rgba(29,78,216,0))}50%{transform:scale(1.03);filter:drop-shadow(0 0 12px rgba(29,78,216,.8))}}
+@keyframes pulseB{0%,100%{opacity:1;filter:drop-shadow(0 0 0 rgba(29,78,216,0))}50%{opacity:.8;filter:drop-shadow(0 0 10px rgba(29,78,216,.75))}}
 .sweepband{opacity:.85;animation:sweepMove 8s linear infinite}
 @keyframes sweepMove{to{transform:translateX(var(--sweepP,160px))}}
 .dashgrow{stroke-dasharray:7 5;animation:dashgrow 2.6s linear infinite}
 @keyframes dashgrow{from{stroke-dashoffset:72}to{stroke-dashoffset:0}}
 .march{animation:march 1.5s linear infinite}
 @keyframes march{to{stroke-dashoffset:-16}}
-.cellwave{transform-box:fill-box;transform-origin:center;animation:wave 2.6s ease-in-out infinite}
-@keyframes wave{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.72;transform:scale(1.01)}}
+.cellwave{animation:wave 2.6s ease-in-out infinite}
+@keyframes wave{0%,100%{opacity:1}50%{opacity:.72}}
 .breathe{animation:br 3.2s ease-in-out infinite}
 @keyframes br{0%,100%{opacity:1}50%{opacity:.55}}
-.step{transform-box:fill-box;transform-origin:center;animation:stepLit 6s ease-in-out infinite}
-@keyframes stepLit{0%,16%{filter:drop-shadow(0 0 9px rgba(29,78,216,.85));transform:scale(1.02)}24%,92%{filter:drop-shadow(0 0 0 rgba(29,78,216,0));transform:none}100%{filter:drop-shadow(0 0 9px rgba(29,78,216,.85));transform:scale(1.02)}}
+.step{animation:stepLit 6s ease-in-out infinite}
+@keyframes stepLit{0%,16%{filter:drop-shadow(0 0 9px rgba(29,78,216,.85))}24%,92%{filter:drop-shadow(0 0 0 rgba(29,78,216,0))}100%{filter:drop-shadow(0 0 9px rgba(29,78,216,.85))}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important}.row,.head,.fade{opacity:1!important}.flowdot,.flowtail,.sweepband{display:none!important}}
 </style>
 <rect x="0" y="0" width="1440" height="950" fill="#f4f1ea"/>
@@ -93,9 +93,9 @@
 <g class="fade" style="animation-delay:0.95ss">
 <line class="dClockV draw" pathLength="100" style="animation-delay:0.95s" x1="571" y1="248" x2="571" y2="300" stroke="#1c2534" stroke-width="2.5"/>
 </g>
-<path class="flowdot" d="M 120 248 L 571 248" stroke="#1c2534" pathLength="100" style="animation-duration:1.5s;animation-delay:0s"/>
-<path class="flowdot" d="M 120 248 L 571 248" stroke="#1c2534" pathLength="100" style="animation-duration:1.5s;animation-delay:-0.75s"/>
-<path class="flowtail" d="M 120 248 L 571 248" stroke="#1c2534" pathLength="100" style="animation-duration:1.5s;animation-delay:0s"/>
+<path class="flowdot" d="M 120 248 L 571 248" stroke="#1c2534" pathLength="100" style="animation-duration:3s;animation-delay:0s"/>
+<path class="flowdot" d="M 120 248 L 571 248" stroke="#1c2534" pathLength="100" style="animation-duration:3s;animation-delay:-0.75s"/>
+<path class="flowtail" d="M 120 248 L 571 248" stroke="#1c2534" pathLength="100" style="animation-duration:3s;animation-delay:0s"/>
 <text class="fade" style="animation-delay:1.1s" x="345" y="240" font-size="12.5" text-anchor="middle" fill="#1c2534">时钟树 → CLKB_L arrival = 7.516915 ns</text>
 <g class="fade" style="animation-delay:0.6s">
 <line x1="120" y1="300" x2="1320" y2="300" stroke="#667180" stroke-width="1.5"/>
@@ -141,9 +141,9 @@
 <g class="fade" style="animation-delay:1.25ss">
 <line class="dDataV draw" pathLength="100" style="animation-delay:1.25s" x1="366" y1="344" x2="366" y2="300" stroke="#0e7490" stroke-width="2.5"/>
 </g>
-<path class="flowdot" d="M 120 344 L 366 344" stroke="#0e7490" pathLength="100" style="animation-duration:1.5s;animation-delay:-0.4s"/>
-<path class="flowdot" d="M 120 344 L 366 344" stroke="#0e7490" pathLength="100" style="animation-duration:1.5s;animation-delay:-1.15s"/>
-<path class="flowtail" d="M 120 344 L 366 344" stroke="#0e7490" pathLength="100" style="animation-duration:1.5s;animation-delay:-0.4s"/>
+<path class="flowdot" d="M 120 344 L 366 344" stroke="#0e7490" pathLength="100" style="animation-duration:3s;animation-delay:-0.4s"/>
+<path class="flowdot" d="M 120 344 L 366 344" stroke="#0e7490" pathLength="100" style="animation-duration:3s;animation-delay:-1.15s"/>
+<path class="flowtail" d="M 120 344 L 366 344" stroke="#0e7490" pathLength="100" style="animation-duration:3s;animation-delay:-0.4s"/>
 <text class="fade" style="animation-delay:1.45s" x="243" y="362" font-size="12.5" text-anchor="middle" fill="#0e7490">数据总线 → DB1 arrival = 4.098762 ns</text>
 <g class="fade" style="animation-delay:1.45ss">
 <line class="dRed draw" pathLength="100" style="animation-delay:1.45s" x1="366" y1="388" x2="571" y2="388" stroke="#b91c1c" stroke-width="2"/>

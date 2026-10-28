@@ -9,9 +9,12 @@ power_compare_hk11（605×444，柱状对比表，静态版=站点根目录同�
   · 每行数值条簇（bar rect [+峰值三角 path] + dot circle）再包一层 .row（行 delay+0.12s，
     末簇 1.71+0.55=2.26s）= 先文字行、后数值条的分层入场
   · 网格线组 .fade(0.05)
-- 稳态（2 族）：
-  · sweepband ×2（§4 配方，琥珀）：A=HV1V22 1015 两行 vs 1027 行（y232..298）；
-    B=HK1V11 1015 vs 1027 行（y386..430）——"同芯片新旧版本对比"语义扫光，8s 周期
+- 稳态（2 族，纯呼吸系；用户 2026-10-28 验收：亮闪扫光刺眼，sweepband 整体移除，
+  生成器不再注入 sweepG 渐变/sweepC clipPath；图内无细长连接线，不造 march）：
+  · 行波：1015/1027 两组的组头标签（x=10 的 "(1015)"/"(1027)" 文字，共 5 处：
+    r8/r9/r15=1015 组、r10/r16=1027 组）各包一层 .cellwave（opacity .72 呼吸），
+    1015 组 phase 0s、1027 组 phase 1.2s 两组合错相位——"同芯片新旧版本对比"
+    语义由组头标签呼吸承担；
   · pulse ×3（错相位）：r12 峰值行 37.9（峰值徽章+条+dot，pulse 琥珀 -0.5s）；
     r10 HV1V22(1027) 蓝条 pulse-b(-1.9s)；r16 HK1V11(1027) 蓝条 pulse-b(-2.6s)
 - 铁律：源 SVG 只读；text 多重集 / svg 开标签 / 几何颜色零改动；纯 CSS 无 script；
@@ -40,54 +43,47 @@ KIT_CSS = "\n".join([
     "@keyframes drawIn{from{stroke-dashoffset:100}to{stroke-dashoffset:0}}",
     ".fade{opacity:0;animation:fadeIn .6s ease forwards}",
     "@keyframes fadeIn{to{opacity:1}}",
-    ".flowdot{fill:none;stroke-linecap:round;stroke-dasharray:9 91;stroke-width:3.5;animation:flow 1.5s linear infinite}",
+    ".flowdot{fill:none;stroke-linecap:round;stroke-dasharray:9 91;stroke-width:3.5;animation:flow 2.6s linear infinite}",
     "@keyframes flow{to{stroke-dashoffset:-100}}",
-    ".flowtail{fill:none;stroke-linecap:round;stroke-dasharray:4 96;stroke-width:8;opacity:.25;animation:flow 1.5s linear infinite}",
+    ".flowtail{fill:none;stroke-linecap:round;stroke-dasharray:4 96;stroke-width:8;opacity:.25;animation:flow 2.6s linear infinite}",
     ".pulse{transform-box:fill-box;transform-origin:center;animation:pulse 2.8s ease-in-out infinite}",
-    "@keyframes pulse{0%,100%{transform:scale(1);filter:drop-shadow(0 0 0 rgba(180,83,9,0))}50%{transform:scale(1.03);filter:drop-shadow(0 0 12px rgba(180,83,9,.8))}}",
+    "@keyframes pulse{0%,100%{opacity:1;filter:drop-shadow(0 0 0 rgba(180,83,9,0))}50%{opacity:.8;filter:drop-shadow(0 0 10px rgba(180,83,9,.75))}}",
     ".pulse-t{transform-box:fill-box;transform-origin:center;animation:pulseT 2.8s ease-in-out infinite}",
-    "@keyframes pulseT{0%,100%{transform:scale(1);filter:drop-shadow(0 0 0 rgba(14,116,144,0))}50%{transform:scale(1.03);filter:drop-shadow(0 0 12px rgba(14,116,144,.8))}}",
+    "@keyframes pulseT{0%,100%{opacity:1;filter:drop-shadow(0 0 0 rgba(14,116,144,0))}50%{opacity:.8;filter:drop-shadow(0 0 10px rgba(14,116,144,.75))}}",
     ".pulse-b{transform-box:fill-box;transform-origin:center;animation:pulseB 2.8s ease-in-out infinite}",
-    "@keyframes pulseB{0%,100%{transform:scale(1);filter:drop-shadow(0 0 0 rgba(29,78,216,0))}50%{transform:scale(1.03);filter:drop-shadow(0 0 12px rgba(29,78,216,.8))}}",
+    "@keyframes pulseB{0%,100%{opacity:1;filter:drop-shadow(0 0 0 rgba(29,78,216,0))}50%{opacity:.8;filter:drop-shadow(0 0 10px rgba(29,78,216,.75))}}",
     ".sweepband{opacity:.85;animation:sweepMove 8s linear infinite}",
     "@keyframes sweepMove{to{transform:translateX(var(--sweepP,160px))}}",
     ".dashgrow{stroke-dasharray:7 5;animation:dashgrow 2.6s linear infinite}",
     "@keyframes dashgrow{from{stroke-dashoffset:72}to{stroke-dashoffset:0}}",
     ".march{animation:march 1.5s linear infinite}",
     "@keyframes march{to{stroke-dashoffset:-16}}",
-    ".cellwave{transform-box:fill-box;transform-origin:center;animation:wave 2.6s ease-in-out infinite}",
-    "@keyframes wave{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.72;transform:scale(1.01)}}",
+    ".cellwave{animation:wave 2.6s ease-in-out infinite}",
+    "@keyframes wave{0%,100%{opacity:1}50%{opacity:.72}}",
     ".breathe{animation:br 3.2s ease-in-out infinite}",
     "@keyframes br{0%,100%{opacity:1}50%{opacity:.55}}",
-    ".step{transform-box:fill-box;transform-origin:center;animation:stepLit 6s ease-in-out infinite}",
-    "@keyframes stepLit{0%,16%{filter:drop-shadow(0 0 9px rgba(29,78,216,.85));transform:scale(1.02)}24%,92%{filter:drop-shadow(0 0 0 rgba(29,78,216,0));transform:none}100%{filter:drop-shadow(0 0 9px rgba(29,78,216,.85));transform:scale(1.02)}}",
+    ".step{animation:stepLit 6s ease-in-out infinite}",
+    "@keyframes stepLit{0%,16%{filter:drop-shadow(0 0 9px rgba(29,78,216,.85))}24%,92%{filter:drop-shadow(0 0 0 rgba(29,78,216,0))}100%{filter:drop-shadow(0 0 9px rgba(29,78,216,.85))}}",
     "@media (prefers-reduced-motion:reduce){*{animation:none!important}.row,.head,.fade{opacity:1!important}.flowdot,.flowtail,.sweepband{display:none!important}}",
 ])
 
-# §4 扫光带配方（区域宽 + 240 = P；琥珀 rgba(180,83,9,.30)）
-SWEEP_A = dict(x0=0, y=232, w=605, h=66, n=1)   # HV1V22 1015×2 + 1027 行
-SWEEP_B = dict(x0=0, y=386, w=605, h=44, n=2)   # HK1V11 1015 + 1027 行
+def header_wave(blk):
+    """行尾文字块：组头标签（x=10 的 "(1015)"/"(1027)" 文字）各包一层 .cellwave。
 
-
-def sweep_defs(s):
-    p = s["w"] + 240
-    return (
-        f'<linearGradient id="sweepG-{s["n"]}" gradientUnits="userSpaceOnUse" x1="{s["x0"]}" y1="0" x2="{s["x0"] + p}" y2="0">'
-        '<stop offset="0" stop-color="#b45309" stop-opacity="0"/>'
-        '<stop offset="0.46" stop-color="#b45309" stop-opacity="0"/>'
-        '<stop offset="0.5" stop-color="#b45309" stop-opacity="0.3"/>'
-        '<stop offset="0.54" stop-color="#b45309" stop-opacity="0"/>'
-        '<stop offset="1" stop-color="#b45309" stop-opacity="0"/>'
-        '</linearGradient>\n'
-        f'<clipPath id="sweepC-{s["n"]}"><rect x="{s["x0"]}" y="{s["y"]}" width="{s["w"]}" height="{s["h"]}"/></clipPath>'
-    )
-
-
-def sweep_group(s):
-    p = s["w"] + 240
-    return (f'<g clip-path="url(#sweepC-{s["n"]})">'
-            f'<rect class="sweepband" x="{s["x0"]}" y="{s["y"]}" width="{p}" height="{s["h"]}" '
-            f'fill="url(#sweepG-{s["n"]})" style="--sweepP:{p}px"/></g>')
+    1015 组 phase 0s、1027 组 phase 1.2s（两组合错相位 1.2s）；其余文字原样。
+    确定性：只依赖源行文本。
+    """
+    out = []
+    for s in blk:
+        t = s.strip()
+        if t.startswith('<text x="10"') and ("(1015)" in t or "(1027)" in t):
+            d = 0.0 if "(1015)" in t else 1.2
+            out.append(f'<g class="cellwave" style="animation-delay:{d:g}s">')
+            out.append(s)
+            out.append("</g>")
+        else:
+            out.append(s)
+    return out
 
 
 def build():
@@ -149,20 +145,21 @@ def build():
     o.extend(lines[0:style_close + 1])                      # <svg> + 源字体/遗留 class <style>（原样）
     o.append("<style>\n" + KIT_CSS + "\n</style>")          # kit CSS §2 逐字
     o.extend(lines[style_close + 1:defs_close])             # 源 defs（铁律 4：marker/clip 依赖）
-    o.append(sweep_defs(SWEEP_A))
-    o.append(sweep_defs(SWEEP_B))
     o.append(lines[defs_close])                             # </defs>
-    o.extend(lines[defs_close + 1:bg_i + 1])                # 背景 rect
-    o.append(sweep_group(SWEEP_A))                          # 扫光带：内容之下、底色之上
-    o.append(sweep_group(SWEEP_B))
+    o.extend(lines[defs_close + 1:bg_i + 1])                # 背景 rect（扫光带已移除）
 
     # 表头 .head(0)
     o.append('<g class="in head">')
     o.extend(lines[in_g + 1:in_g_close])
     o.append("</g>")
 
-    # 数据行：行组 .row(0.15+0.09n)；数值条簇内层 .row(+0.12)；r10/r12/r16 簇加 pulse
+    # 数据行：行组 .row(0.15+0.09n)；数值条簇内层 .row(+0.12)；r10/r12/r16 簇加 pulse；
+    # 行尾 1015/1027 组头标签包 .cellwave（1015=0s / 1027=1.2s）
     pulse_of = {12: ("pulse", "-0.5s"), 10: ("pulse-b", "-1.9s"), 16: ("pulse-b", "-2.6s")}
+    n_hdr = sum(1 for n in range(17) for s in lines[row_spans[n][0] + 1:row_spans[n][1]]
+                if s.strip().startswith('<text x="10"')
+                and ("(1015)" in s or "(1027)" in s))
+    assert n_hdr == 5, f"1015/1027 组头标签应 5 处，实得 {n_hdr}"
     for n in range(17):
         ro, rc = row_spans[n]
         d = 0.15 + 0.09 * n
@@ -184,7 +181,7 @@ def build():
         else:
             o.extend(blk[cs:ce + 1])
         o.append("</g>")
-        o.extend(blk[ce + 1:])
+        o.extend(header_wave(blk[ce + 1:]))
         o.append("</g>")
 
     # 网格线组 .fade(0.05)
@@ -258,7 +255,7 @@ def main():
     data = OUT.read_text(encoding="utf-8")
     print("[make_anim_power_compare_hk11 v4]",
           "row_g=", len(re.findall(r'class="r\d+ row"', data)),
-          "sweepband=", data.count('class="sweepband"'),
+          "cellwave=", data.count('class="cellwave"'),
           "pulse=", len(re.findall(r'class="(pulse|pulse-b)"', data)),
           "fade=", data.count('class="fade"'))
     ok = True
@@ -273,4 +270,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-# ymzhu 2026-10-28 17:12
+# ymzhu 2026-10-28 18:33

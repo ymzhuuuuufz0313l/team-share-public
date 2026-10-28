@@ -162,12 +162,32 @@ html.fx-on .page-nav a.fx-r {
   transition: opacity .55s ease, transform .3s cubic-bezier(.22, .7, .3, 1), box-shadow .25s ease;
 }
 
-/* ===== 14. 动效/静态切换按钮（跨站共用：导航链接栏版 + 浮动兜底版） ===== */
-
+/* ===== 14. 动效/静态切换按钮（顶部导航版：内联/绝对定位 + 无导航浮动兜底） ===== */
+.navbar-links button.navbar-motion,
+.navbar button.navbar-motion {
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-family: var(--font-mono, ui-monospace, SFMono-Regular, monospace);
+  white-space: nowrap;
+  cursor: pointer;
+  background: var(--surface, #fffdf7);
+  border: 1px dashed var(--line, #ddd6c8);
+  color: var(--muted, #667180);
+}
+button.navbar-motion:hover { background: var(--chip, #efe9db); color: var(--text, #1c2534); }
+button.navbar-motion[aria-pressed="true"] { border-color: var(--accent, #b45309); color: var(--accent, #b45309); }
+button#motionToggle.navbar-abs {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 60;
+}
 button#motionToggle.float-motion {
   position: fixed;
-  bottom: 100px;
-  right: 24px;
+  top: 14px;
+  right: 16px;
   z-index: 90;
   padding: 4px 10px;
   border-radius: 999px;
@@ -183,25 +203,8 @@ button#motionToggle.float-motion {
 }
 button#motionToggle.float-motion[aria-pressed="true"] { border-color: var(--accent, #b45309); color: var(--accent, #b45309); }
 button#motionToggle.float-motion:hover { background: #fff; }
-@media (max-width: 640px) { button#motionToggle.float-motion { bottom: 92px; right: 12px; padding: 3px 8px; font-size: 11px; } }
-
-/* ===== PAGE FX 静态 kill（page-static 类 与 系统减少动态效果，双通道） ===== */
-html.page-static *, html.page-static *::before, html.page-static *::after {
-  animation: none !important;
-  transition: none !important;
+@media (max-width: 640px) {
+  .navbar-links button.navbar-motion, .navbar button.navbar-motion { font-size: 11px; padding: 2px 6px; }
+  button#motionToggle.navbar-abs { right: 8px; }
+  button#motionToggle.float-motion { top: 10px; right: 10px; padding: 3px 8px; font-size: 11px; }
 }
-html.page-static .fx-r, html.page-static .fx-w, html.page-static .fx-t tr {
-  opacity: 1 !important;
-  transform: none !important;
-}
-html.page-static .fx-hdr::before { transform: none !important; }
-html.page-static #fx-progress, html.page-static #fx-top { display: none !important; }
-html.page-static .navbar { box-shadow: none !important; }
-@media (prefers-reduced-motion: reduce) {
-  html.page-static *, html.page-static *::before, html.page-static *::after {
-    animation: none !important;
-    transition: none !important;
-  }
-}
-
-/* ymzhu 2026-10-27 13:52 */

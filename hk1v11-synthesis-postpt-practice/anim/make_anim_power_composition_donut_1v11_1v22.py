@@ -11,10 +11,10 @@ power_composition_donut_1v11_1v22（1200×578，双环形图，静态版=站点�
     （注：扇区为 pathLength 弧线技巧，其 stroke-dasharray 是几何本身，禁用 .draw 覆盖）
   · 标签组 .fade（左 1.3+0.05k，右 1.45+0.05k）、中心总数 .fade（1.7 / 1.75）
   · 末项 1.75+0.6 = 2.35s ≤ 2.5s
-- 稳态（2 族）：
-  · 列车：环孔内侧 r=118 装饰圆轨道，每环 2 包 flowdot + 1 flowtail，3s/圈
-    （左 #0e7490 phase 0/-1.5；右 #b45309 phase -0.75/-2.25）——"组成绕总量循环"；
-    轨道位于中心文字（r≈90）与扇区内缘（r=144）之间的净空环带，不穿任何文字
+- 稳态（2 族，纯呼吸系；用户 2026-10-28 验收：不需要行进效果，列车整体移除）：
+  · 行波：左右图例 top-3 图例行（色块 rect + 文字 text 成对）各包一层 .cellwave
+    （opacity .72 呼吸，2.6s），相位错开 0.6s（左 0/0.6/1.2s；右 1.3/1.9/2.5s
+    跨侧错拍）——top-3 行与两环 top1 扇区 pulse 呼应；
   · 脉冲 ×2（错相位）：左环 top1 扇区（短编码解码 41.8%）pulse-t(-0.7s)；
     右环 top1 扇区（LC_CSPIF_L0 35.4%）pulse(-2.1s)
 - 铁律：源 SVG 只读；text 多重集 / svg 开标签 / 几何颜色零改动；纯 CSS 无 script；
@@ -41,39 +41,53 @@ KIT_CSS = "\n".join([
     "@keyframes drawIn{from{stroke-dashoffset:100}to{stroke-dashoffset:0}}",
     ".fade{opacity:0;animation:fadeIn .6s ease forwards}",
     "@keyframes fadeIn{to{opacity:1}}",
-    ".flowdot{fill:none;stroke-linecap:round;stroke-dasharray:9 91;stroke-width:3.5;animation:flow 1.5s linear infinite}",
+    ".flowdot{fill:none;stroke-linecap:round;stroke-dasharray:9 91;stroke-width:3.5;animation:flow 2.6s linear infinite}",
     "@keyframes flow{to{stroke-dashoffset:-100}}",
-    ".flowtail{fill:none;stroke-linecap:round;stroke-dasharray:4 96;stroke-width:8;opacity:.25;animation:flow 1.5s linear infinite}",
+    ".flowtail{fill:none;stroke-linecap:round;stroke-dasharray:4 96;stroke-width:8;opacity:.25;animation:flow 2.6s linear infinite}",
     ".pulse{transform-box:fill-box;transform-origin:center;animation:pulse 2.8s ease-in-out infinite}",
-    "@keyframes pulse{0%,100%{transform:scale(1);filter:drop-shadow(0 0 0 rgba(180,83,9,0))}50%{transform:scale(1.03);filter:drop-shadow(0 0 12px rgba(180,83,9,.8))}}",
+    "@keyframes pulse{0%,100%{opacity:1;filter:drop-shadow(0 0 0 rgba(180,83,9,0))}50%{opacity:.8;filter:drop-shadow(0 0 10px rgba(180,83,9,.75))}}",
     ".pulse-t{transform-box:fill-box;transform-origin:center;animation:pulseT 2.8s ease-in-out infinite}",
-    "@keyframes pulseT{0%,100%{transform:scale(1);filter:drop-shadow(0 0 0 rgba(14,116,144,0))}50%{transform:scale(1.03);filter:drop-shadow(0 0 12px rgba(14,116,144,.8))}}",
+    "@keyframes pulseT{0%,100%{opacity:1;filter:drop-shadow(0 0 0 rgba(14,116,144,0))}50%{opacity:.8;filter:drop-shadow(0 0 10px rgba(14,116,144,.75))}}",
     ".pulse-b{transform-box:fill-box;transform-origin:center;animation:pulseB 2.8s ease-in-out infinite}",
-    "@keyframes pulseB{0%,100%{transform:scale(1);filter:drop-shadow(0 0 0 rgba(29,78,216,0))}50%{transform:scale(1.03);filter:drop-shadow(0 0 12px rgba(29,78,216,.8))}}",
+    "@keyframes pulseB{0%,100%{opacity:1;filter:drop-shadow(0 0 0 rgba(29,78,216,0))}50%{opacity:.8;filter:drop-shadow(0 0 10px rgba(29,78,216,.75))}}",
     ".sweepband{opacity:.85;animation:sweepMove 8s linear infinite}",
     "@keyframes sweepMove{to{transform:translateX(var(--sweepP,160px))}}",
     ".dashgrow{stroke-dasharray:7 5;animation:dashgrow 2.6s linear infinite}",
     "@keyframes dashgrow{from{stroke-dashoffset:72}to{stroke-dashoffset:0}}",
     ".march{animation:march 1.5s linear infinite}",
     "@keyframes march{to{stroke-dashoffset:-16}}",
-    ".cellwave{transform-box:fill-box;transform-origin:center;animation:wave 2.6s ease-in-out infinite}",
-    "@keyframes wave{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.72;transform:scale(1.01)}}",
+    ".cellwave{animation:wave 2.6s ease-in-out infinite}",
+    "@keyframes wave{0%,100%{opacity:1}50%{opacity:.72}}",
     ".breathe{animation:br 3.2s ease-in-out infinite}",
     "@keyframes br{0%,100%{opacity:1}50%{opacity:.55}}",
-    ".step{transform-box:fill-box;transform-origin:center;animation:stepLit 6s ease-in-out infinite}",
-    "@keyframes stepLit{0%,16%{filter:drop-shadow(0 0 9px rgba(29,78,216,.85));transform:scale(1.02)}24%,92%{filter:drop-shadow(0 0 0 rgba(29,78,216,0));transform:none}100%{filter:drop-shadow(0 0 9px rgba(29,78,216,.85));transform:scale(1.02)}}",
+    ".step{animation:stepLit 6s ease-in-out infinite}",
+    "@keyframes stepLit{0%,16%{filter:drop-shadow(0 0 9px rgba(29,78,216,.85))}24%,92%{filter:drop-shadow(0 0 0 rgba(29,78,216,0))}100%{filter:drop-shadow(0 0 9px rgba(29,78,216,.85))}}",
     "@media (prefers-reduced-motion:reduce){*{animation:none!important}.row,.head,.fade{opacity:1!important}.flowdot,.flowtail,.sweepband{display:none!important}}",
 ])
 
 
-def flow_paths(cx, cy, r, color, phases):
-    d = f"M {cx} {cy - r} A {r} {r} 0 1 1 {cx} {cy + r} A {r} {r} 0 1 1 {cx} {cy - r}"
-    out = []
-    for p in phases:
-        out.append(f'<path class="flowdot" d="{d}" stroke="{color}" pathLength="100" '
-                   f'style="animation-duration:3s;animation-delay:{p}s"/>')
-    out.append(f'<path class="flowtail" d="{d}" stroke="{color}" pathLength="100" '
-               f'style="animation-duration:3s;animation-delay:{phases[0]}s"/>')
+def legend_wave(blk, delays):
+    """图例块：前 len(delays) 条图例行（色块 rect + 文字 text 成对）包 .cellwave。
+
+    色块判定 = <rect 且带 fill-opacity（徽章 rect 无该属性，天然排除）；
+    其余行原样输出。确定性：只依赖源块行序。
+    """
+    out, k, i = [], 0, 0
+    while i < len(blk):
+        if blk[i].strip().startswith("<rect") and "fill-opacity" in blk[i]:
+            assert blk[i + 1].strip().startswith("<text"), "色块后应紧跟文字"
+            if k < len(delays):
+                out.append(f'<g class="cellwave" style="animation-delay:{delays[k]:g}s">')
+                out.extend(blk[i:i + 2])
+                out.append("</g>")
+            else:
+                out.extend(blk[i:i + 2])
+            k += 1
+            i += 2
+        else:
+            out.append(blk[i])
+            i += 1
+    assert k >= len(delays), f"图例行应 ≥{len(delays)}（供 cellwave），实得 {k}"
     return out
 
 
@@ -133,16 +147,16 @@ def build():
                                   'class="f-cjk subtitle head" style="animation-delay:0.1s"', 1))
     o.extend(lines[sub_i + 1:leg1])                   # （无中间内容，防御性保留）
 
-    # 图例行
+    # 图例行：top-3 图例行各包 .cellwave（呼吸，相位 0.6s 错开；跨侧错拍）
     o.append('<g data-gen="1V11" class="row" style="animation-delay:0.2s">')
-    o.extend(lines[leg1 + 1:group_close(leg1)])
+    o.extend(legend_wave(lines[leg1 + 1:group_close(leg1)], (0.0, 0.6, 1.2)))
     o.append("</g>")
     o.append('<g data-gen="1V22" class="row" style="animation-delay:0.35s">')
-    o.extend(lines[leg2 + 1:group_close(leg2)])
+    o.extend(legend_wave(lines[leg2 + 1:group_close(leg2)], (1.3, 1.9, 2.5)))
     o.append("</g>")
 
     # 左环：面板 row(0.5)；扫光环 fade；扇区依次 fade（top1 另包 pulse-t）；
-    #        孔内列车轨道；标签组 fade；中心 fade(1.7)
+    #        标签组 fade；中心 fade(1.7)
     o.append(lines[donL].replace('class="donut donutL"',
                                  'class="donut donutL row" style="animation-delay:0.5s"', 1))
     blk = lines[donL + 1:donL_c]
@@ -163,7 +177,6 @@ def build():
     for k, i in enumerate(sec[1:], start=1):
         o.append(blk[i].replace('class="sector"',
                                 f'class="sector fade" style="animation-delay:{0.65 + 0.07 * k:.2f}s"', 1))
-    o.extend(flow_paths(330, 330, 118, "#0e7490", ["0", "-1.5"]))
     # 标签组（上限 = center 组行 ci）
     ci = [i for i, s in enumerate(blk) if 'class="center centerL"' in s][0]
     li = first_lbl
@@ -207,7 +220,7 @@ def build():
     o.extend(blk[ci + 1:cc + 1])
     o.append("</g>")                                   # 关闭 donutL row
 
-    # 右环：面板 row(0.75)；扇区 fade 0.9+0.07k（top1 pulse -2.1）；列车 -0.75/-2.25；标签 1.45+0.05k；中心 1.75
+    # 右环：面板 row(0.75)；扇区 fade 0.9+0.07k（top1 pulse -2.1）；标签 1.45+0.05k；中心 1.75
     o.append(lines[donR].replace('class="donut donutR"',
                                  'class="donut donutR row" style="animation-delay:0.75s"', 1))
     blk = lines[donR + 1:donR_c]
@@ -224,7 +237,6 @@ def build():
     for k, i in enumerate(sec[1:], start=1):
         o.append(blk[i].replace('class="sector"',
                                 f'class="sector fade" style="animation-delay:{0.9 + 0.07 * k:.2f}s"', 1))
-    o.extend(flow_paths(870, 330, 118, "#b45309", ["-0.75", "-2.25"]))
     ci = [i for i, s in enumerate(blk) if 'class="center centerR"' in s][0]
     li = min(i for i, s in enumerate(blk) if s.strip() == '<g class="lbl">')
     k = 0
@@ -331,8 +343,7 @@ def main():
     print("[make_anim_power_composition_donut_1v11_1v22 v4]",
           "head=", len(re.findall(r'class="f-cjk (title|subtitle) head"', data)),
           "row=", len(re.findall(r'class="[^"]*row"', data)),
-          "flowdot=", data.count('class="flowdot"'),
-          "flowtail=", data.count('class="flowtail"'),
+          "cellwave=", data.count('class="cellwave"'),
           "pulse=", len(re.findall(r'class="(pulse|pulse-t)"', data)))
     ok = True
     for k, v in res.items():
@@ -346,4 +357,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-# ymzhu 2026-10-28 17:20
+# ymzhu 2026-10-28 18:33

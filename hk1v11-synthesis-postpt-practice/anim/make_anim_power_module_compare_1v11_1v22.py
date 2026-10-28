@@ -12,10 +12,12 @@ power_module_compare_1v11_1v22（1200×688，双条横向柱状图，静态版=�
   · 11 组双条块（g0~g10，注释行起整块）.row，0.3s 起 0.1s 递进（末组 1.3+0.55=1.85s）
   · 柔光辉光矩形 .fade(1.5/1.55)；图例 .head(1.65)；基线扫光条 .fade(1.7)
   · 末项 1.7+0.6 = 2.3s ≤ 2.5s
-- 稳态（2 族）：
-  · sweepband ×1（§4 配方，琥珀）：整个柱区 x210..1150 / y70..620，P=1180——
-    "量程扫描"语义，光带自左（0 µW）向右（10000 µW）扫过全部模块条，8s 周期；
-    位于柱/文字之下、底色之上
+- 稳态（2 族，纯呼吸系；用户 2026-10-28 验收：亮闪扫光极度影响视线，v4.1 数据图表
+  不加整区扫光——sweepband 整体移除，生成器不再注入 sweepG 渐变/sweepC clipPath/
+  扫光 rect，与 power_compare_hk11 同款处理；基线 .sweep 装饰条为源几何，原样保留）：
+  · 行波：模块名标签中 3 个故事行各包一层 .cellwave（opacity .72 呼吸）——
+    g0 短编码解码（峰值对）phase 0s、g9 rx_phy(EQ/LEQ)（1V22 独有大条）phase 0.6s、
+    g10 MON_DISP（1V22 独有）phase 1.2s，相位错开，名行呼应条区 pulse；
   · pulse ×2（错相位）：g0 峰值对（短编码解码 10294 vs 8590，全图最大条）pulse-t(-0.9s)；
     g9（rx_phy(EQ/LEQ) 4196，1V22 独有大条）pulse(-2.3s)
 - 铁律：源 SVG 只读；text 多重集 / svg 开标签 / 几何颜色零改动；纯 CSS 无 script；
@@ -42,52 +44,51 @@ KIT_CSS = "\n".join([
     "@keyframes drawIn{from{stroke-dashoffset:100}to{stroke-dashoffset:0}}",
     ".fade{opacity:0;animation:fadeIn .6s ease forwards}",
     "@keyframes fadeIn{to{opacity:1}}",
-    ".flowdot{fill:none;stroke-linecap:round;stroke-dasharray:9 91;stroke-width:3.5;animation:flow 1.5s linear infinite}",
+    ".flowdot{fill:none;stroke-linecap:round;stroke-dasharray:9 91;stroke-width:3.5;animation:flow 2.6s linear infinite}",
     "@keyframes flow{to{stroke-dashoffset:-100}}",
-    ".flowtail{fill:none;stroke-linecap:round;stroke-dasharray:4 96;stroke-width:8;opacity:.25;animation:flow 1.5s linear infinite}",
+    ".flowtail{fill:none;stroke-linecap:round;stroke-dasharray:4 96;stroke-width:8;opacity:.25;animation:flow 2.6s linear infinite}",
     ".pulse{transform-box:fill-box;transform-origin:center;animation:pulse 2.8s ease-in-out infinite}",
-    "@keyframes pulse{0%,100%{transform:scale(1);filter:drop-shadow(0 0 0 rgba(180,83,9,0))}50%{transform:scale(1.03);filter:drop-shadow(0 0 12px rgba(180,83,9,.8))}}",
+    "@keyframes pulse{0%,100%{opacity:1;filter:drop-shadow(0 0 0 rgba(180,83,9,0))}50%{opacity:.8;filter:drop-shadow(0 0 10px rgba(180,83,9,.75))}}",
     ".pulse-t{transform-box:fill-box;transform-origin:center;animation:pulseT 2.8s ease-in-out infinite}",
-    "@keyframes pulseT{0%,100%{transform:scale(1);filter:drop-shadow(0 0 0 rgba(14,116,144,0))}50%{transform:scale(1.03);filter:drop-shadow(0 0 12px rgba(14,116,144,.8))}}",
+    "@keyframes pulseT{0%,100%{opacity:1;filter:drop-shadow(0 0 0 rgba(14,116,144,0))}50%{opacity:.8;filter:drop-shadow(0 0 10px rgba(14,116,144,.75))}}",
     ".pulse-b{transform-box:fill-box;transform-origin:center;animation:pulseB 2.8s ease-in-out infinite}",
-    "@keyframes pulseB{0%,100%{transform:scale(1);filter:drop-shadow(0 0 0 rgba(29,78,216,0))}50%{transform:scale(1.03);filter:drop-shadow(0 0 12px rgba(29,78,216,.8))}}",
+    "@keyframes pulseB{0%,100%{opacity:1;filter:drop-shadow(0 0 0 rgba(29,78,216,0))}50%{opacity:.8;filter:drop-shadow(0 0 10px rgba(29,78,216,.75))}}",
     ".sweepband{opacity:.85;animation:sweepMove 8s linear infinite}",
     "@keyframes sweepMove{to{transform:translateX(var(--sweepP,160px))}}",
     ".dashgrow{stroke-dasharray:7 5;animation:dashgrow 2.6s linear infinite}",
     "@keyframes dashgrow{from{stroke-dashoffset:72}to{stroke-dashoffset:0}}",
     ".march{animation:march 1.5s linear infinite}",
     "@keyframes march{to{stroke-dashoffset:-16}}",
-    ".cellwave{transform-box:fill-box;transform-origin:center;animation:wave 2.6s ease-in-out infinite}",
-    "@keyframes wave{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.72;transform:scale(1.01)}}",
+    ".cellwave{animation:wave 2.6s ease-in-out infinite}",
+    "@keyframes wave{0%,100%{opacity:1}50%{opacity:.72}}",
     ".breathe{animation:br 3.2s ease-in-out infinite}",
     "@keyframes br{0%,100%{opacity:1}50%{opacity:.55}}",
-    ".step{transform-box:fill-box;transform-origin:center;animation:stepLit 6s ease-in-out infinite}",
-    "@keyframes stepLit{0%,16%{filter:drop-shadow(0 0 9px rgba(29,78,216,.85));transform:scale(1.02)}24%,92%{filter:drop-shadow(0 0 0 rgba(29,78,216,0));transform:none}100%{filter:drop-shadow(0 0 9px rgba(29,78,216,.85));transform:scale(1.02)}}",
+    ".step{animation:stepLit 6s ease-in-out infinite}",
+    "@keyframes stepLit{0%,16%{filter:drop-shadow(0 0 9px rgba(29,78,216,.85))}24%,92%{filter:drop-shadow(0 0 0 rgba(29,78,216,0))}100%{filter:drop-shadow(0 0 9px rgba(29,78,216,.85))}}",
     "@media (prefers-reduced-motion:reduce){*{animation:none!important}.row,.head,.fade{opacity:1!important}.flowdot,.flowtail,.sweepband{display:none!important}}",
 ])
 
-SWEEP = dict(x0=210, y=70, w=940, h=550, n=1)
+WAVE_NAMES = {0: "0s", 9: "0.6s", 10: "1.2s"}
 
 
-def sweep_defs(s):
-    p = s["w"] + 240
-    return (
-        f'<linearGradient id="sweepG-{s["n"]}" gradientUnits="userSpaceOnUse" x1="{s["x0"]}" y1="0" x2="{s["x0"] + p}" y2="0">'
-        '<stop offset="0" stop-color="#b45309" stop-opacity="0"/>'
-        '<stop offset="0.46" stop-color="#b45309" stop-opacity="0"/>'
-        '<stop offset="0.5" stop-color="#b45309" stop-opacity="0.3"/>'
-        '<stop offset="0.54" stop-color="#b45309" stop-opacity="0"/>'
-        '<stop offset="1" stop-color="#b45309" stop-opacity="0"/>'
-        '</linearGradient>\n'
-        f'<clipPath id="sweepC-{s["n"]}"><rect x="{s["x0"]}" y="{s["y"]}" width="{s["w"]}" height="{s["h"]}"/></clipPath>'
-    )
-
-
-def sweep_group(s):
-    p = s["w"] + 240
-    return (f'<g clip-path="url(#sweepC-{s["n"]})">'
-            f'<rect class="sweepband" x="{s["x0"]}" y="{s["y"]}" width="{p}" height="{s["h"]}" '
-            f'fill="url(#sweepG-{s["n"]})" style="--sweepP:{p}px"/></g>')
+def name_wave(blk):
+    """模块名标签行：3 个故事行标签（g0 峰值对 / g9 / g10 1V22 独有）各包一层
+    .cellwave（opacity .72 呼吸），相位 0 / 0.6 / 1.2s 错开；其余行原样。
+    确定性：只依赖源行文本。"""
+    out = []
+    hit = set()
+    for s in blk:
+        m = re.search(r'data-label="1" data-g="(\d+)"', s)
+        if m and int(m.group(1)) in WAVE_NAMES:
+            g = int(m.group(1))
+            hit.add(g)
+            out.append(f'<g class="cellwave" style="animation-delay:{WAVE_NAMES[g]}">')
+            out.append(s)
+            out.append("</g>")
+        else:
+            out.append(s)
+    assert hit == set(WAVE_NAMES), f"模块名故事行标签缺失: {sorted(set(WAVE_NAMES) - hit)}"
+    return out
 
 
 def build():
@@ -148,20 +149,18 @@ def build():
     o.extend(lines[0:style_close + 1])                       # <svg> + 源字体 <style>（已中和 sweepMove）
     o.append("<style>\n" + KIT_CSS + "\n</style>")
     o.extend(lines[style_close + 1:defs_close])              # 源 defs（softGlow/sweepGrad）
-    o.append(sweep_defs(SWEEP))
     o.append(lines[defs_close])                              # </defs>
-    o.extend(lines[defs_close + 1:bg_i + 1])                 # 背景 rect
-    o.append(sweep_group(SWEEP))                             # 量程扫描带：柱/文字之下
+    o.extend(lines[defs_close + 1:bg_i + 1])                 # 背景 rect（扫光带已移除）
 
     # 网格/轴线组 .fade(0.05)
     o.append(lines[grid_g].replace(
         '<g class="hdr">', '<g class="hdr fade" style="animation-delay:0.05s">', 1))
     o.extend(lines[grid_g + 1:names_g])
 
-    # 模块名双行组 .fade(0.1)
+    # 模块名双行组 .fade(0.1)；3 个故事行标签包 .cellwave（0 / 0.6 / 1.2s）
     o.append(lines[names_g].replace(
         '<g class="hdr">', '<g class="hdr fade" style="animation-delay:0.1s">', 1))
-    o.extend(lines[names_g + 1:bars_g])
+    o.extend(name_wave(lines[names_g + 1:bars_g]))
 
     # 11 组双条块 .row(0.3+0.1i)；g0 加 pulse-t、g9 加 pulse（注释行之后包住条+值文本）
     o.append(lines[bars_g])                                  # <g>
@@ -273,7 +272,7 @@ def main():
     data = OUT.read_text(encoding="utf-8")
     print("[make_anim_power_module_compare_1v11_1v22 v4]",
           "row=", len(re.findall(r'class="row"', data)),
-          "sweepband=", data.count('class="sweepband"'),
+          "cellwave=", data.count('class="cellwave"'),
           "pulse=", len(re.findall(r'class="(pulse|pulse-t)"', data)),
           "fade=", data.count('fade" style'))
     ok = True
@@ -288,4 +287,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-# ymzhu 2026-10-28 17:26
+# ymzhu 2026-10-28 18:46

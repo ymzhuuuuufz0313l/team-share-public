@@ -35,27 +35,27 @@
 @keyframes drawIn{from{stroke-dashoffset:100}to{stroke-dashoffset:0}}
 .fade{opacity:0;animation:fadeIn .6s ease forwards}
 @keyframes fadeIn{to{opacity:1}}
-.flowdot{fill:none;stroke-linecap:round;stroke-dasharray:9 91;stroke-width:3.5;animation:flow 1.5s linear infinite}
+.flowdot{fill:none;stroke-linecap:round;stroke-dasharray:9 91;stroke-width:3.5;animation:flow 2.6s linear infinite}
 @keyframes flow{to{stroke-dashoffset:-100}}
-.flowtail{fill:none;stroke-linecap:round;stroke-dasharray:4 96;stroke-width:8;opacity:.25;animation:flow 1.5s linear infinite}
+.flowtail{fill:none;stroke-linecap:round;stroke-dasharray:4 96;stroke-width:8;opacity:.25;animation:flow 2.6s linear infinite}
 .pulse{transform-box:fill-box;transform-origin:center;animation:pulse 2.8s ease-in-out infinite}
-@keyframes pulse{0%,100%{transform:scale(1);filter:drop-shadow(0 0 0 rgba(180,83,9,0))}50%{transform:scale(1.03);filter:drop-shadow(0 0 12px rgba(180,83,9,.8))}}
+@keyframes pulse{0%,100%{opacity:1;filter:drop-shadow(0 0 0 rgba(180,83,9,0))}50%{opacity:.8;filter:drop-shadow(0 0 10px rgba(180,83,9,.75))}}
 .pulse-t{transform-box:fill-box;transform-origin:center;animation:pulseT 2.8s ease-in-out infinite}
-@keyframes pulseT{0%,100%{transform:scale(1);filter:drop-shadow(0 0 0 rgba(14,116,144,0))}50%{transform:scale(1.03);filter:drop-shadow(0 0 12px rgba(14,116,144,.8))}}
+@keyframes pulseT{0%,100%{opacity:1;filter:drop-shadow(0 0 0 rgba(14,116,144,0))}50%{opacity:.8;filter:drop-shadow(0 0 10px rgba(14,116,144,.75))}}
 .pulse-b{transform-box:fill-box;transform-origin:center;animation:pulseB 2.8s ease-in-out infinite}
-@keyframes pulseB{0%,100%{transform:scale(1);filter:drop-shadow(0 0 0 rgba(29,78,216,0))}50%{transform:scale(1.03);filter:drop-shadow(0 0 12px rgba(29,78,216,.8))}}
+@keyframes pulseB{0%,100%{opacity:1;filter:drop-shadow(0 0 0 rgba(29,78,216,0))}50%{opacity:.8;filter:drop-shadow(0 0 10px rgba(29,78,216,.75))}}
 .sweepband{opacity:.85;animation:sweepMove 8s linear infinite}
 @keyframes sweepMove{to{transform:translateX(var(--sweepP,160px))}}
 .dashgrow{stroke-dasharray:7 5;animation:dashgrow 2.6s linear infinite}
 @keyframes dashgrow{from{stroke-dashoffset:72}to{stroke-dashoffset:0}}
 .march{animation:march 1.5s linear infinite}
 @keyframes march{to{stroke-dashoffset:-16}}
-.cellwave{transform-box:fill-box;transform-origin:center;animation:wave 2.6s ease-in-out infinite}
-@keyframes wave{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.72;transform:scale(1.01)}}
+.cellwave{animation:wave 2.6s ease-in-out infinite}
+@keyframes wave{0%,100%{opacity:1}50%{opacity:.72}}
 .breathe{animation:br 3.2s ease-in-out infinite}
 @keyframes br{0%,100%{opacity:1}50%{opacity:.55}}
-.step{transform-box:fill-box;transform-origin:center;animation:stepLit 6s ease-in-out infinite}
-@keyframes stepLit{0%,16%{filter:drop-shadow(0 0 9px rgba(29,78,216,.85));transform:scale(1.02)}24%,92%{filter:drop-shadow(0 0 0 rgba(29,78,216,0));transform:none}100%{filter:drop-shadow(0 0 9px rgba(29,78,216,.85));transform:scale(1.02)}}
+.step{animation:stepLit 6s ease-in-out infinite}
+@keyframes stepLit{0%,16%{filter:drop-shadow(0 0 9px rgba(29,78,216,.85))}24%,92%{filter:drop-shadow(0 0 0 rgba(29,78,216,0))}100%{filter:drop-shadow(0 0 9px rgba(29,78,216,.85))}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important}.row,.head,.fade{opacity:1!important}.flowdot,.flowtail,.sweepband{display:none!important}}
 </style>
 <defs><filter id="glowF" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="5"/></filter></defs>
@@ -65,12 +65,18 @@
 <g data-gen="1V11" class="row" style="animation-delay:0.2s">
   <rect x="105.0" y="71" width="30" height="13" rx="3" fill="#0e7490"/>
   <text class="f-cjk" x="120.0" y="81" font-size="8.5" font-weight="bold" fill="#fffdf7" text-anchor="middle">1V11</text>
+<g class="cellwave" style="animation-delay:0s">
   <rect x="143.0" y="72.5" width="9" height="9" rx="2" fill="#0e7490" fill-opacity="1.00"/>
   <text class="f-cjk" x="156.0" y="81" font-size="8" fill="#1c2534">短编码解码 <tspan class="f-num" fill="#5b6675">10294 µW</tspan></text>
+</g>
+<g class="cellwave" style="animation-delay:0.6s">
   <rect x="251.4" y="72.5" width="9" height="9" rx="2" fill="#0e7490" fill-opacity="0.85"/>
   <text class="f-cjk" x="264.4" y="81" font-size="8" fill="#1c2534">显示时序 DTCTL(含DPLC) <tspan class="f-num" fill="#5b6675">4717 µW</tspan></text>
+</g>
+<g class="cellwave" style="animation-delay:1.2s">
   <rect x="410.7" y="72.5" width="9" height="9" rx="2" fill="#0e7490" fill-opacity="0.72"/>
   <text class="f-cjk" x="423.7" y="81" font-size="8" fill="#1c2534">面板SD时序族 <tspan class="f-num" fill="#5b6675">3019 µW</tspan></text>
+</g>
   <rect x="523.6" y="72.5" width="9" height="9" rx="2" fill="#0e7490" fill-opacity="0.60"/>
   <text class="f-cjk" x="536.6" y="81" font-size="8" fill="#1c2534">BUFFER_I 输入同步 <tspan class="f-num" fill="#5b6675">2511 µW</tspan></text>
   <rect x="661.0" y="72.5" width="9" height="9" rx="2" fill="#0e7490" fill-opacity="0.50"/>
@@ -87,12 +93,18 @@
 <g data-gen="1V22" class="row" style="animation-delay:0.35s">
   <rect x="147.4" y="89" width="30" height="13" rx="3" fill="#b45309"/>
   <text class="f-cjk" x="162.4" y="99" font-size="8.5" font-weight="bold" fill="#fffdf7" text-anchor="middle">1V22</text>
+<g class="cellwave" style="animation-delay:1.3s">
   <rect x="185.4" y="90.5" width="9" height="9" rx="2" fill="#b45309" fill-opacity="1.00"/>
   <text class="f-cjk" x="198.4" y="99" font-size="8" fill="#1c2534">LC_CSPIF_L0(含SD时序核) <tspan class="f-num" fill="#5b6675">6389 µW</tspan></text>
+</g>
+<g class="cellwave" style="animation-delay:1.9s">
   <rect x="350.6" y="90.5" width="9" height="9" rx="2" fill="#b45309" fill-opacity="0.85"/>
   <text class="f-cjk" x="363.6" y="99" font-size="8" fill="#1c2534">rx_phy(EQ/LEQ) <tspan class="f-num" fill="#5b6675">4196 µW</tspan></text>
+</g>
+<g class="cellwave" style="animation-delay:2.5s">
   <rect x="479.1" y="90.5" width="9" height="9" rx="2" fill="#b45309" fill-opacity="0.70"/>
   <text class="f-cjk" x="492.1" y="99" font-size="8" fill="#1c2534">TOTAL_DTCTL(含DPLC) <tspan class="f-num" fill="#5b6675">3294 µW</tspan></text>
+</g>
   <rect x="629.6" y="90.5" width="9" height="9" rx="2" fill="#b45309" fill-opacity="0.56"/>
   <text class="f-cjk" x="642.6" y="99" font-size="8" fill="#1c2534">CSPI_CMD_ALIGN <tspan class="f-num" fill="#5b6675">2201 µW</tspan></text>
   <rect x="758.2" y="90.5" width="9" height="9" rx="2" fill="#b45309" fill-opacity="0.44"/>
@@ -119,9 +131,6 @@
   <circle class="sector fade" style="animation-delay:1.07s" cx="330" cy="330" r="170" pathLength="100" fill="none" stroke="#0e7490" stroke-opacity="0.36" stroke-width="52" stroke-dasharray="3.1731 96.8269" stroke-dashoffset="32.0035"/>
   <circle class="sector fade" style="animation-delay:1.14s" cx="330" cy="330" r="170" pathLength="100" fill="none" stroke="#0e7490" stroke-opacity="0.30" stroke-width="52" stroke-dasharray="2.1424 97.8576" stroke-dashoffset="28.8304"/>
   <circle class="sector fade" style="animation-delay:1.21s" cx="330" cy="330" r="170" pathLength="100" fill="none" stroke="#0e7490" stroke-opacity="0.25" stroke-width="52" stroke-dasharray="1.6880 98.3120" stroke-dashoffset="26.6880"/>
-<path class="flowdot" d="M 330 212 A 118 118 0 1 1 330 448 A 118 118 0 1 1 330 212" stroke="#0e7490" pathLength="100" style="animation-duration:3s;animation-delay:0s"/>
-<path class="flowdot" d="M 330 212 A 118 118 0 1 1 330 448 A 118 118 0 1 1 330 212" stroke="#0e7490" pathLength="100" style="animation-duration:3s;animation-delay:-1.5s"/>
-<path class="flowtail" d="M 330 212 A 118 118 0 1 1 330 448 A 118 118 0 1 1 330 212" stroke="#0e7490" pathLength="100" style="animation-duration:3s;animation-delay:0s"/>
 <g class="fade" style="animation-delay:1.30s">
   <g class="lbl">
     <polyline class="lead" points="522.4,279.1 535.2,276.3"/>
@@ -208,9 +217,6 @@
   <circle class="sector fade" style="animation-delay:1.18s" cx="870" cy="330" r="170" pathLength="100" fill="none" stroke="#b45309" stroke-opacity="0.44" stroke-width="52" stroke-dasharray="4.0235 95.9765" stroke-dashoffset="36.0078"/>
   <circle class="sector fade" style="animation-delay:1.25s" cx="870" cy="330" r="170" pathLength="100" fill="none" stroke="#b45309" stroke-opacity="0.35" stroke-width="52" stroke-dasharray="3.2542 96.7458" stroke-dashoffset="31.9843"/>
   <circle class="sector fade" style="animation-delay:1.32s" cx="870" cy="330" r="170" pathLength="100" fill="none" stroke="#b45309" stroke-opacity="0.27" stroke-width="52" stroke-dasharray="3.7301 96.2699" stroke-dashoffset="28.7301"/>
-<path class="flowdot" d="M 870 212 A 118 118 0 1 1 870 448 A 118 118 0 1 1 870 212" stroke="#b45309" pathLength="100" style="animation-duration:3s;animation-delay:-0.75s"/>
-<path class="flowdot" d="M 870 212 A 118 118 0 1 1 870 448 A 118 118 0 1 1 870 212" stroke="#b45309" pathLength="100" style="animation-duration:3s;animation-delay:-2.25s"/>
-<path class="flowtail" d="M 870 212 A 118 118 0 1 1 870 448 A 118 118 0 1 1 870 212" stroke="#b45309" pathLength="100" style="animation-duration:3s;animation-delay:-0.75s"/>
 <g class="fade" style="animation-delay:1.45s">
   <g class="lbl">
     <polyline class="lead" points="1048.3,241.7 1060.6,237.6"/>

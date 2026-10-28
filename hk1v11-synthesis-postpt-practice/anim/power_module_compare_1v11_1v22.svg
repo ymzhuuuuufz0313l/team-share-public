@@ -19,27 +19,27 @@
 @keyframes drawIn{from{stroke-dashoffset:100}to{stroke-dashoffset:0}}
 .fade{opacity:0;animation:fadeIn .6s ease forwards}
 @keyframes fadeIn{to{opacity:1}}
-.flowdot{fill:none;stroke-linecap:round;stroke-dasharray:9 91;stroke-width:3.5;animation:flow 1.5s linear infinite}
+.flowdot{fill:none;stroke-linecap:round;stroke-dasharray:9 91;stroke-width:3.5;animation:flow 2.6s linear infinite}
 @keyframes flow{to{stroke-dashoffset:-100}}
-.flowtail{fill:none;stroke-linecap:round;stroke-dasharray:4 96;stroke-width:8;opacity:.25;animation:flow 1.5s linear infinite}
+.flowtail{fill:none;stroke-linecap:round;stroke-dasharray:4 96;stroke-width:8;opacity:.25;animation:flow 2.6s linear infinite}
 .pulse{transform-box:fill-box;transform-origin:center;animation:pulse 2.8s ease-in-out infinite}
-@keyframes pulse{0%,100%{transform:scale(1);filter:drop-shadow(0 0 0 rgba(180,83,9,0))}50%{transform:scale(1.03);filter:drop-shadow(0 0 12px rgba(180,83,9,.8))}}
+@keyframes pulse{0%,100%{opacity:1;filter:drop-shadow(0 0 0 rgba(180,83,9,0))}50%{opacity:.8;filter:drop-shadow(0 0 10px rgba(180,83,9,.75))}}
 .pulse-t{transform-box:fill-box;transform-origin:center;animation:pulseT 2.8s ease-in-out infinite}
-@keyframes pulseT{0%,100%{transform:scale(1);filter:drop-shadow(0 0 0 rgba(14,116,144,0))}50%{transform:scale(1.03);filter:drop-shadow(0 0 12px rgba(14,116,144,.8))}}
+@keyframes pulseT{0%,100%{opacity:1;filter:drop-shadow(0 0 0 rgba(14,116,144,0))}50%{opacity:.8;filter:drop-shadow(0 0 10px rgba(14,116,144,.75))}}
 .pulse-b{transform-box:fill-box;transform-origin:center;animation:pulseB 2.8s ease-in-out infinite}
-@keyframes pulseB{0%,100%{transform:scale(1);filter:drop-shadow(0 0 0 rgba(29,78,216,0))}50%{transform:scale(1.03);filter:drop-shadow(0 0 12px rgba(29,78,216,.8))}}
+@keyframes pulseB{0%,100%{opacity:1;filter:drop-shadow(0 0 0 rgba(29,78,216,0))}50%{opacity:.8;filter:drop-shadow(0 0 10px rgba(29,78,216,.75))}}
 .sweepband{opacity:.85;animation:sweepMove 8s linear infinite}
 @keyframes sweepMove{to{transform:translateX(var(--sweepP,160px))}}
 .dashgrow{stroke-dasharray:7 5;animation:dashgrow 2.6s linear infinite}
 @keyframes dashgrow{from{stroke-dashoffset:72}to{stroke-dashoffset:0}}
 .march{animation:march 1.5s linear infinite}
 @keyframes march{to{stroke-dashoffset:-16}}
-.cellwave{transform-box:fill-box;transform-origin:center;animation:wave 2.6s ease-in-out infinite}
-@keyframes wave{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.72;transform:scale(1.01)}}
+.cellwave{animation:wave 2.6s ease-in-out infinite}
+@keyframes wave{0%,100%{opacity:1}50%{opacity:.72}}
 .breathe{animation:br 3.2s ease-in-out infinite}
 @keyframes br{0%,100%{opacity:1}50%{opacity:.55}}
-.step{transform-box:fill-box;transform-origin:center;animation:stepLit 6s ease-in-out infinite}
-@keyframes stepLit{0%,16%{filter:drop-shadow(0 0 9px rgba(29,78,216,.85));transform:scale(1.02)}24%,92%{filter:drop-shadow(0 0 0 rgba(29,78,216,0));transform:none}100%{filter:drop-shadow(0 0 9px rgba(29,78,216,.85));transform:scale(1.02)}}
+.step{animation:stepLit 6s ease-in-out infinite}
+@keyframes stepLit{0%,16%{filter:drop-shadow(0 0 9px rgba(29,78,216,.85))}24%,92%{filter:drop-shadow(0 0 0 rgba(29,78,216,0))}100%{filter:drop-shadow(0 0 9px rgba(29,78,216,.85))}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important}.row,.head,.fade{opacity:1!important}.flowdot,.flowtail,.sweepband{display:none!important}}
 </style>
   <defs>
@@ -49,12 +49,9 @@
       <stop offset="0.5" stop-color="#fffdf7" stop-opacity="1"/>
       <stop offset="1" stop-color="#fffdf7" stop-opacity="0"/>
     </linearGradient>
-<linearGradient id="sweepG-1" gradientUnits="userSpaceOnUse" x1="210" y1="0" x2="1390" y2="0"><stop offset="0" stop-color="#b45309" stop-opacity="0"/><stop offset="0.46" stop-color="#b45309" stop-opacity="0"/><stop offset="0.5" stop-color="#b45309" stop-opacity="0.3"/><stop offset="0.54" stop-color="#b45309" stop-opacity="0"/><stop offset="1" stop-color="#b45309" stop-opacity="0"/></linearGradient>
-<clipPath id="sweepC-1"><rect x="210" y="70" width="940" height="550"/></clipPath>
   </defs>
 
   <rect x="0" y="0" width="1200" height="688" fill="#f4f1ea"/>
-<g clip-path="url(#sweepC-1)"><rect class="sweepband" x="210" y="70" width="1180" height="550" fill="url(#sweepG-1)" style="--sweepP:1180px"/></g>
   <g class="hdr fade" style="animation-delay:0.05s">
     <g stroke="#ddd6c8" stroke-width="1" stroke-dasharray="4 4" opacity="0.85">
       <line x1="389" y1="70" x2="389" y2="620"/>
@@ -86,7 +83,9 @@
 
   <!-- 模块名（双行，逐字转录自 mods） -->
   <g class="hdr" font-size="13" text-anchor="end" fill="#1c2534">
+<g class="cellwave" style="animation-delay:0s">
     <text data-label="1" data-g="0" x="200" y="91">短编码解码<tspan x="200" y="107" font-size="11" class="mono">SHORT_ENCODING↔CSPIF</tspan></text>
+</g>
     <text data-label="1" data-g="1" x="200" y="141">显示时序<tspan x="200" y="157" font-size="11" class="mono">DTCTL↔TOTAL_DTCTL</tspan></text>
     <text data-label="1" data-g="2" x="200" y="191">面板SD时序<tspan x="200" y="207" font-size="11" class="mono">PANEL_CTRL(融合)</tspan></text>
     <text data-label="1" data-g="3" x="200" y="241">输入同步<tspan x="200" y="257" font-size="11" class="mono">BUFFER_I→rx_phy</tspan></text>
@@ -95,8 +94,12 @@
     <text data-label="1" data-g="6" x="200" y="399" font-size="12" class="mono">ANCTL</text>
     <text data-label="1" data-g="7" x="200" y="441">时钟生成<tspan x="200" y="457" font-size="11" class="mono">CLKGEN↔CLKGEN_U0</tspan></text>
     <text data-label="1" data-g="8" x="200" y="499">其他小模块</text>
+<g class="cellwave" style="animation-delay:0.6s">
     <text data-label="1" data-g="9" x="200" y="541">rx_phy(EQ/LEQ)<tspan x="200" y="557" font-size="11">1V22独有</tspan></text>
+</g>
+<g class="cellwave" style="animation-delay:1.2s">
     <text data-label="1" data-g="10" x="200" y="591">MON_DISP<tspan x="200" y="607" font-size="11">1V22独有</tspan></text>
+</g>
   </g>
 
   <!-- 双条：组 i 延时 .30s+.06s*i，自基线（左端）生长 -->

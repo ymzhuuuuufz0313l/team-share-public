@@ -6,7 +6,7 @@
      ① 布局锁定：SVG img 加载完成即写 aspect-ratio + width:100%/height:auto，此后任何
         src 变化盒子尺寸恒定 → 切换零位移；② 预载后交换：先 new Image() 预载目标版，
         onload 才赋 img.src（onerror 保持原 src 防断图），全程禁止 ?v=时间戳 强刷；
-     ③ 滚动重播用 cloneNode：replaceWith(克隆) 重启 CSS 动画，零网络请求。
+     (v4.1) scroll replay = same-src reassign (restart animations, zero network, node unchanged). Old clone-node approach dropped: replacing the node lost external listeners (lightbox zoom broke).
    纯原生、零依赖；隐藏基态 CSS 全部由 html.fx-on 前缀控制（无 JS = 完整静态页面），
    静态模式 = fx-on 移除 + page-static kill 块双保险。 */
 (function () {
@@ -26,17 +26,18 @@
 
   var btn = document.getElementById('motionToggle');
   if (!btn) {
-    /* 全仓库统一模板（2026-10-28）：一律右下角浮动小组件，禁止注入 .navbar-links——
-       各站 navbar-links 布局不一（practice 站为纵向菜单，注入后按钮独占一行） */
+    /* 全仓库统一模板（2026-10-28 定稿）：按钮放顶部导航。规则见挂载点：
+       横向 .navbar-links -> 内联小胶囊；纵向/下拉式 links（practice 站）-> 绝对定位于
+       .navbar 右缘居中（不参与 links 布局，绝不独占一行）；无 .navbar -> 右上角固定兜底。 */
     btn = document.createElement('button');
     btn.type = 'button';
     btn.id = 'motionToggle';
     btn.title = '点击切换 动画 / 静态 版本';
     btn.setAttribute('aria-pressed', 'true');
-    btn.className = 'float-motion';
+    btn.className = 'navbar-motion';
   }
 
-  /* ===================== 2. SVG img 零重载交换 + 布局锁定 + cloneNode 重播（v4 契约） =====================
+  /* ===================== 2. SVG img 零重载交换 + 布局锁定 + same-src 重播（v4 契约） =====================
      全站统一 /anim/ 目录约定：页面默认引用动画版；静态模式 = 路径去掉 /anim/ 段。
      首次交换前把原始 src 记入 img.dataset.fxAnim，回程动效模式原样恢复
      （修复 v2 缺陷：静态→动效时把 images/anim/ 错重建为 ./anim/ 导致断图）。
@@ -44,7 +45,7 @@
      v4 三铁律（SKILL「动画/静态双版 SVG 站点架构 v4」§2，2026-10-28）：
      a) 布局锁定：加载完成即锁 aspect-ratio，src 任何变化盒子尺寸恒定 → 切换零位移；
      b) 预载后交换：目标版 onload 才落 src，失败保持原 src；全程禁止 ?v=时间戳 强刷；
-     c) 滚动重播用 cloneNode（重启 CSS 动画，零网络请求），dataset 标记防重复。 */
+     (v4.1) scroll replay = same-src reassign (restart animations, zero network, node unchanged). Old clone-node approach dropped: replacing the node lost external listeners (lightbox zoom broke). */
   var svgIo = null;
   function isSvgImg(img) {
     /* 只处理 src 以 .svg 结尾（可带 ?query）的 img */
@@ -108,7 +109,7 @@
     observe();
   }
   /* c) 滚动重播：rootMargin 240px 沿用。图片进入视口且当前是 anim 模式且尚未播过入场
-        → img.replaceWith(img.cloneNode()) 重启 CSS 动画（零网络，克隆节点=全新渲染上下文）。
+        -> img.src = img.src: same-value reassign restarts CSS animations (zero network, node kept, listeners survive).
         dataset.fxPlayed 防重复：触发前打标，标记随克隆体延续；首屏内图片不重播（页面
         加载时动画本就在跑）；static 模式不注册 observer。 */
   function observe() {
@@ -121,10 +122,8 @@
         var img = e.target;
         if (mode !== 'anim' || img.dataset.fxPlayed === '1') return;
         img.dataset.fxPlayed = '1';
-        var clone = img.cloneNode();
-        clone.dataset.fxPlayed = '1'; /* 标记设回克隆体：替换后不再被重播 */
         armLock(clone);               /* 布局锁定随克隆延续（双保险） */
-        img.replaceWith(clone);       /* 重启入场动画，零网络请求 */
+        img.src = img.src;  /* v4.1: same-src reassign restarts in-SVG animations; node & external listeners (lightbox) survive; zero network */
       });
     }, { rootMargin: '240px 0px' });
     svgImgs().forEach(function (img) {
@@ -345,7 +344,24 @@
     statHTML = statEls.map(function (v) { return v.innerHTML; });
 
     document.body.appendChild(progress);
-    if (btn && !btn.parentNode) document.body.appendChild(btn);
+    if (btn && !btn.parentNode) {
+      var nav = document.querySelector('.navbar');
+      var links = document.querySelector('.navbar-links');
+      var rowLinks = false;
+      if (links) {
+        try { rowLinks = /row/.test(getComputedStyle(links).flexDirection || ''); } catch (e) {}
+      }
+      if (rowLinks) {
+        links.appendChild(btn);              /* 横向导航：内联胶囊 */
+      } else if (nav) {
+        try { if (getComputedStyle(nav).position === 'static') nav.style.position = 'relative'; } catch (e) {}
+        btn.classList.add('navbar-abs');     /* 纵向/下拉式导航：绝对定位于导航条右缘 */
+        nav.appendChild(btn);
+      } else {
+        btn.className = 'float-motion';      /* 无导航条兜底：右上角固定 */
+        document.body.appendChild(btn);
+      }
+    }
     /* 站点已有自带返回顶部（如 #toTop）时跳过，避免双按钮 */
     if (!document.getElementById('toTop')) {
       document.body.appendChild(topBtn);

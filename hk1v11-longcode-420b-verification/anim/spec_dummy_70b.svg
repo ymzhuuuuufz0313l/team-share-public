@@ -1,5 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600" width="1200" height="600">
-  <style>text { font-family: 'Helvetica Neue', Helvetica, Arial, 'PingFang SC', 'Microsoft YaHei', 'Microsoft JhengHei', 'SimHei', sans-serif; }</style>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 600" width="1200" height="600">
+
+  <style>text { font-family: 'Helvetica Neue', Helvetica, Arial, 'PingFang SC', 'Microsoft YaHei', 'Microsoft JhengHei', 'SimHei', sans-serif; }</style>
+
 <style>
 .row{opacity:0;animation:rowIn .55s cubic-bezier(.22,.7,.3,1) forwards}
 .head{opacity:0;animation:rowIn .55s cubic-bezier(.22,.7,.3,1) forwards}
@@ -8,200 +10,374 @@
 @keyframes drawIn{from{stroke-dashoffset:100}to{stroke-dashoffset:0}}
 .fade{opacity:0;animation:fadeIn .6s ease forwards}
 @keyframes fadeIn{to{opacity:1}}
-.flowdot{fill:none;stroke-linecap:round;stroke-dasharray:9 91;stroke-width:3.5;animation:flow 1.5s linear infinite}
+.flowdot{fill:none;stroke-linecap:round;stroke-dasharray:9 91;stroke-width:3.5;animation:flow 2.6s linear infinite}
 @keyframes flow{to{stroke-dashoffset:-100}}
-.flowtail{fill:none;stroke-linecap:round;stroke-dasharray:4 96;stroke-width:8;opacity:.25;animation:flow 1.5s linear infinite}
+.flowtail{fill:none;stroke-linecap:round;stroke-dasharray:4 96;stroke-width:8;opacity:.25;animation:flow 2.6s linear infinite}
 .pulse{transform-box:fill-box;transform-origin:center;animation:pulse 2.8s ease-in-out infinite}
-@keyframes pulse{0%,100%{transform:scale(1);filter:drop-shadow(0 0 0 rgba(180,83,9,0))}50%{transform:scale(1.03);filter:drop-shadow(0 0 12px rgba(180,83,9,.8))}}
+@keyframes pulse{0%,100%{opacity:1;filter:drop-shadow(0 0 0 rgba(180,83,9,0))}50%{opacity:.8;filter:drop-shadow(0 0 10px rgba(180,83,9,.75))}}
 .pulse-t{transform-box:fill-box;transform-origin:center;animation:pulseT 2.8s ease-in-out infinite}
-@keyframes pulseT{0%,100%{transform:scale(1);filter:drop-shadow(0 0 0 rgba(14,116,144,0))}50%{transform:scale(1.03);filter:drop-shadow(0 0 12px rgba(14,116,144,.8))}}
+@keyframes pulseT{0%,100%{opacity:1;filter:drop-shadow(0 0 0 rgba(14,116,144,0))}50%{opacity:.8;filter:drop-shadow(0 0 10px rgba(14,116,144,.75))}}
 .pulse-b{transform-box:fill-box;transform-origin:center;animation:pulseB 2.8s ease-in-out infinite}
-@keyframes pulseB{0%,100%{transform:scale(1);filter:drop-shadow(0 0 0 rgba(29,78,216,0))}50%{transform:scale(1.03);filter:drop-shadow(0 0 12px rgba(29,78,216,.8))}}
+@keyframes pulseB{0%,100%{opacity:1;filter:drop-shadow(0 0 0 rgba(29,78,216,0))}50%{opacity:.8;filter:drop-shadow(0 0 10px rgba(29,78,216,.75))}}
 .sweepband{opacity:.85;animation:sweepMove 8s linear infinite}
 @keyframes sweepMove{to{transform:translateX(var(--sweepP,160px))}}
 .dashgrow{stroke-dasharray:7 5;animation:dashgrow 2.6s linear infinite}
 @keyframes dashgrow{from{stroke-dashoffset:72}to{stroke-dashoffset:0}}
 .march{animation:march 1.5s linear infinite}
 @keyframes march{to{stroke-dashoffset:-16}}
-.cellwave{transform-box:fill-box;transform-origin:center;animation:wave 2.6s ease-in-out infinite}
-@keyframes wave{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.72;transform:scale(1.01)}}
+.cellwave{animation:wave 2.6s ease-in-out infinite}
+@keyframes wave{0%,100%{opacity:1}50%{opacity:.72}}
 .breathe{animation:br 3.2s ease-in-out infinite}
 @keyframes br{0%,100%{opacity:1}50%{opacity:.55}}
-.step{transform-box:fill-box;transform-origin:center;animation:stepLit 6s ease-in-out infinite}
-@keyframes stepLit{0%,16%{filter:drop-shadow(0 0 9px rgba(29,78,216,.85));transform:scale(1.02)}24%,92%{filter:drop-shadow(0 0 0 rgba(29,78,216,0));transform:none}100%{filter:drop-shadow(0 0 9px rgba(29,78,216,.85));transform:scale(1.02)}}
+.step{animation:stepLit 6s ease-in-out infinite}
+@keyframes stepLit{0%,16%{filter:drop-shadow(0 0 9px rgba(29,78,216,.85))}24%,92%{filter:drop-shadow(0 0 0 rgba(29,78,216,0))}100%{filter:drop-shadow(0 0 9px rgba(29,78,216,.85))}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important}.row,.head,.fade{opacity:1!important}.flowdot,.flowtail,.sweepband{display:none!important}}
-</style>
-  <defs>
-    <marker id="ar-blue" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#2563eb"/></marker>
-    <marker id="ar-green" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#059669"/></marker>
-    <marker id="ar-purple" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#7c3aed"/></marker>
-    <marker id="ar-orange" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#ea580c"/></marker>
-    <marker id="ar-gray" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#9ca3af"/></marker>
-<linearGradient id="sweepG-1" gradientUnits="userSpaceOnUse" x1="-336" y1="0" x2="384" y2="0">
-<stop offset="0" stop-color="#b45309" stop-opacity="0"/>
-<stop offset="0.46" stop-color="#b45309" stop-opacity="0"/>
-<stop offset="0.5" stop-color="#b45309" stop-opacity="0.3"/>
-<stop offset="0.54" stop-color="#b45309" stop-opacity="0"/>
-<stop offset="1" stop-color="#b45309" stop-opacity="0"/>
-</linearGradient>
-<clipPath id="sweepC-1"><rect x="52" y="532" width="480" height="40"/></clipPath>
-  </defs>
-  <rect width="1200" height="600" fill="#ffffff"/>
-<g class="head">
-<text x="600" y="40" font-size="21" fill="#1e293b" text-anchor="middle" font-weight="600">非 413b 整数倍数据处理</text>
-<text x="600" y="64" font-size="12" fill="#64748b" text-anchor="middle">编码后去掉补齐的 dummy，但发送数据长度须为 70b 整数倍；通道数不同时按最大 70-bit 整数倍填充</text>
-</g>
-<g class="row" style="animation-delay:0.15s">
-<g class="step" style="animation-delay:0s">
-<rect x="60" y="84" width="250" height="44" rx="8" fill="#f0fdfa" stroke="#99f6e4" stroke-width="1.5"/>
-<text x="185.0" y="109.5" font-size="11.5" fill="#0f766e" text-anchor="middle" font-weight="600">① 补 Dmy(0) 至 413b 整数倍</text>
-</g>
-</g>
-<g class="fade" style="animation-delay:0.85s">
-<line class="draw" pathLength="100" style="animation-delay:0.85s" x1="314" y1="106" x2="344" y2="106" stroke="#2563eb" stroke-width="1.5" marker-end="url(#ar-blue)"/>
-<path class="flowdot" d="M 314 106 L 344 106" stroke="#2563eb" pathLength="100" style="animation-duration:0.7s;animation-delay:-0.05s"/>
-<path class="flowdot" d="M 314 106 L 344 106" stroke="#2563eb" pathLength="100" style="animation-duration:0.7s;animation-delay:-0.4s"/>
-<path class="flowtail" d="M 314 106 L 344 106" stroke="#2563eb" pathLength="100" style="animation-duration:0.7s;animation-delay:-0.05s"/>
-</g>
-<g class="row" style="animation-delay:0.3s">
-<g class="step" style="animation-delay:-1.5s">
-<rect x="350" y="84" width="250" height="44" rx="8" fill="#f0fdfa" stroke="#99f6e4" stroke-width="1.5"/>
-<text x="475.0" y="109.5" font-size="11.5" fill="#0f766e" text-anchor="middle" font-weight="600">② 加扰（SCR EN=1）</text>
-</g>
-</g>
-<g class="fade" style="animation-delay:1.0s">
-<line class="draw" pathLength="100" style="animation-delay:1.0s" x1="604" y1="106" x2="634" y2="106" stroke="#2563eb" stroke-width="1.5" marker-end="url(#ar-blue)"/>
-<path class="flowdot" d="M 604 106 L 634 106" stroke="#2563eb" pathLength="100" style="animation-duration:0.7s;animation-delay:-0.2s"/>
-<path class="flowdot" d="M 604 106 L 634 106" stroke="#2563eb" pathLength="100" style="animation-duration:0.7s;animation-delay:-0.55s"/>
-<path class="flowtail" d="M 604 106 L 634 106" stroke="#2563eb" pathLength="100" style="animation-duration:0.7s;animation-delay:-0.2s"/>
-</g>
-<g class="row" style="animation-delay:0.45s">
-<g class="step" style="animation-delay:-3s">
-<rect x="640" y="84" width="250" height="44" rx="8" fill="#f0fdfa" stroke="#99f6e4" stroke-width="1.5"/>
-<text x="765.0" y="109.5" font-size="11.5" fill="#0f766e" text-anchor="middle" font-weight="600">③ 413b/420b 编码</text>
-</g>
-</g>
-<g class="fade" style="animation-delay:1.15s">
-<line class="draw" pathLength="100" style="animation-delay:1.15s" x1="894" y1="106" x2="924" y2="106" stroke="#2563eb" stroke-width="1.5" marker-end="url(#ar-blue)"/>
-<path class="flowdot" d="M 894 106 L 924 106" stroke="#2563eb" pathLength="100" style="animation-duration:0.7s;animation-delay:-0.35s"/>
-<path class="flowdot" d="M 894 106 L 924 106" stroke="#2563eb" pathLength="100" style="animation-duration:0.7s;animation-delay:-0.7s"/>
-<path class="flowtail" d="M 894 106 L 924 106" stroke="#2563eb" pathLength="100" style="animation-duration:0.7s;animation-delay:-0.35s"/>
-</g>
-<g class="row" style="animation-delay:0.6s">
-<g class="step" style="animation-delay:-4.5s">
-<rect x="930" y="84" width="250" height="44" rx="8" fill="#f0fdfa" stroke="#99f6e4" stroke-width="1.5"/>
-<text x="1055.0" y="109.5" font-size="11.5" fill="#0f766e" text-anchor="middle" font-weight="600">④ 去 dummy · 70b 对齐发送</text>
-</g>
-</g>
-<g class="row" style="animation-delay:0.9s">
-<rect x="60" y="192" width="120" height="44" rx="8" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
-<text x="120.0" y="217.5" font-size="11" fill="#166534" text-anchor="middle" font-weight="600">LSP</text>
-<rect x="200" y="170" width="420" height="100" rx="10" fill="#fff7ed" stroke="#fdba74" stroke-width="1.5"/>
-<text x="214" y="192" font-size="10" fill="#9a3412" text-anchor="start" font-weight="600">Before ENC</text>
-<rect x="214" y="204" width="56" height="38" rx="8" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
-<text x="242.0" y="226.5" font-size="9.5" fill="#166534" text-anchor="middle" font-weight="600">K2</text>
-<rect x="274" y="204" width="280" height="38" rx="8" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
-<text x="414.0" y="226.5" font-size="9.5" fill="#1e293b" text-anchor="middle" font-weight="600">0xEA/EB/EC/ED ×8（32 Byte）</text>
-<rect x="558" y="204" width="56" height="38" rx="8" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
-<text x="586.0" y="226.5" font-size="9.5" fill="#166534" text-anchor="middle" font-weight="600">K3</text>
-<rect x="700" y="170" width="490" height="100" rx="10" fill="#fff7ed" stroke="#fdba74" stroke-width="1.5"/>
-<text x="714" y="192" font-size="10" fill="#9a3412" text-anchor="start" font-weight="600">After ENC</text>
-<rect x="714" y="204" width="56" height="38" rx="8" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
-<text x="742.0" y="226.5" font-size="9.5" fill="#166534" text-anchor="middle" font-weight="600">K2</text>
-<rect x="774" y="204" width="340" height="38" rx="8" fill="#dbeafe" stroke="#93c5fd" stroke-width="1.5"/>
-<text x="944.0" y="226.5" font-size="9.5" fill="#1e40af" text-anchor="middle" font-weight="600">LSP(ENC) · 280b</text>
-<rect x="1118" y="204" width="56" height="38" rx="8" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
-<text x="1146.0" y="226.5" font-size="9.5" fill="#166534" text-anchor="middle" font-weight="600">K3</text>
-<text x="410" y="258" font-size="9" fill="#64748b" text-anchor="middle">训练数据不加扰</text>
-</g>
-<g class="row" style="animation-delay:1.05s">
-<rect x="60" y="312" width="120" height="44" rx="8" fill="#dbeafe" stroke="#93c5fd" stroke-width="1.5"/>
-<text x="120.0" y="337.5" font-size="11" fill="#1e40af" text-anchor="middle" font-weight="600">Active Line</text>
-<rect x="200" y="290" width="420" height="100" rx="10" fill="#fff7ed" stroke="#fdba74" stroke-width="1.5"/>
-<text x="214" y="312" font-size="10" fill="#9a3412" text-anchor="start" font-weight="600">Before ENC</text>
-<rect x="214" y="324" width="50" height="38" rx="8" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
-<text x="239.0" y="346.5" font-size="9.5" fill="#166534" text-anchor="middle" font-weight="600">K1</text>
-<rect x="268" y="324" width="50" height="38" rx="8" fill="#cffafe" stroke="#67e8f9" stroke-width="1.5"/>
-<text x="293.0" y="346.5" font-size="9.5" fill="#155e75" text-anchor="middle" font-weight="600">CL</text>
-<rect x="322" y="324" width="176" height="38" rx="8" fill="#dbeafe" stroke="#93c5fd" stroke-width="1.5"/>
-<text x="410.0" y="346.5" font-size="9.5" fill="#1e40af" text-anchor="middle" font-weight="600">RGB（CL+RGB）</text>
-<rect x="502" y="324" width="50" height="38" rx="8" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
-<text x="527.0" y="346.5" font-size="9.5" fill="#166534" text-anchor="middle" font-weight="600">K2</text>
-<rect x="556" y="324" width="56" height="38" rx="8" fill="#f3f4f6" stroke="#d1d5db" stroke-width="1.5"/>
-<text x="584.0" y="346.5" font-size="9.5" fill="#6b7280" text-anchor="middle" font-weight="600">HBP</text>
-<rect x="700" y="290" width="490" height="100" rx="10" fill="#fff7ed" stroke="#fdba74" stroke-width="1.5"/>
-<text x="714" y="312" font-size="10" fill="#9a3412" text-anchor="start" font-weight="600">After ENC</text>
-<rect x="714" y="324" width="44" height="38" rx="8" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
-<text x="736.0" y="346.5" font-size="9.5" fill="#166534" text-anchor="middle" font-weight="600">K1</text>
-<rect x="762" y="324" width="44" height="38" rx="8" fill="#cffafe" stroke="#67e8f9" stroke-width="1.5"/>
-<text x="784.0" y="346.5" font-size="9.5" fill="#155e75" text-anchor="middle" font-weight="600">CL</text>
-<rect x="810" y="324" width="170" height="38" rx="8" fill="#dbeafe" stroke="#93c5fd" stroke-width="1.5"/>
-<text x="895.0" y="346.5" font-size="9.5" fill="#1e40af" text-anchor="middle" font-weight="600">RGB(ENC) · 420b×N</text>
-<g class="pulse" style="animation-delay:-0.7s">
-<g class="cellwave" style="animation-duration:2.8s;animation-delay:0.0s">
-<rect x="984" y="324" width="80" height="38" rx="8" fill="#e5e7eb" stroke="#d1d5db" stroke-width="1.5"/>
-<text x="1024.0" y="346.5" font-size="9.5" fill="#6b7280" text-anchor="middle" font-weight="600">D · 70b×N</text>
-</g>
-</g>
-<rect x="1068" y="324" width="44" height="38" rx="8" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
-<text x="1090.0" y="346.5" font-size="9.5" fill="#166534" text-anchor="middle" font-weight="600">K2</text>
-<g class="cellwave" style="animation-duration:2.8s;animation-delay:0.3s">
-<rect x="1116" y="324" width="56" height="38" rx="8" fill="#fef9c3" stroke="#fde047" stroke-width="1.5"/>
-<text x="1144.0" y="346.5" font-size="9.5" fill="#854d0e" text-anchor="middle" font-weight="600">K5~K8</text>
-</g>
-<text x="410" y="378" font-size="9" fill="#64748b" text-anchor="middle">像素 / VBK payload 加扰</text>
-</g>
-<g class="row" style="animation-delay:1.2s">
-<rect x="60" y="432" width="120" height="44" rx="8" fill="#fce7f3" stroke="#f9a8d4" stroke-width="1.5"/>
-<text x="120.0" y="457.5" font-size="11" fill="#9d174d" text-anchor="middle" font-weight="600">Config Line</text>
-<rect x="200" y="410" width="420" height="100" rx="10" fill="#fff7ed" stroke="#fdba74" stroke-width="1.5"/>
-<text x="214" y="432" font-size="10" fill="#9a3412" text-anchor="start" font-weight="600">Before ENC</text>
-<rect x="214" y="444" width="50" height="38" rx="8" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
-<text x="239.0" y="466.5" font-size="9.5" fill="#166534" text-anchor="middle" font-weight="600">K4</text>
-<rect x="268" y="444" width="180" height="38" rx="8" fill="#fce7f3" stroke="#f9a8d4" stroke-width="1.5"/>
-<text x="358.0" y="466.5" font-size="9.5" fill="#9d174d" text-anchor="middle" font-weight="600">C.F（6x Byte）</text>
-<rect x="452" y="444" width="50" height="38" rx="8" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
-<text x="477.0" y="466.5" font-size="9.5" fill="#166534" text-anchor="middle" font-weight="600">K2</text>
-<rect x="506" y="444" width="100" height="38" rx="8" fill="#f3f4f6" stroke="#d1d5db" stroke-width="1.5"/>
-<text x="556.0" y="466.5" font-size="9.5" fill="#6b7280" text-anchor="middle" font-weight="600">HBP</text>
-<rect x="700" y="410" width="490" height="100" rx="10" fill="#fff7ed" stroke="#fdba74" stroke-width="1.5"/>
-<text x="714" y="432" font-size="10" fill="#9a3412" text-anchor="start" font-weight="600">After ENC</text>
-<rect x="714" y="444" width="44" height="38" rx="8" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
-<text x="736.0" y="466.5" font-size="9.5" fill="#166534" text-anchor="middle" font-weight="600">K4</text>
-<rect x="762" y="444" width="190" height="38" rx="8" fill="#fce7f3" stroke="#f9a8d4" stroke-width="1.5"/>
-<text x="857.0" y="466.5" font-size="9.5" fill="#9d174d" text-anchor="middle" font-weight="600">C.F(ENC) · 420b</text>
-<g class="cellwave" style="animation-duration:2.8s;animation-delay:0.0s">
-<rect x="956" y="444" width="90" height="38" rx="8" fill="#e5e7eb" stroke="#d1d5db" stroke-width="1.5"/>
-<text x="1001.0" y="466.5" font-size="9.5" fill="#6b7280" text-anchor="middle" font-weight="600">D · 140b</text>
-</g>
-<rect x="1050" y="444" width="44" height="38" rx="8" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
-<text x="1072.0" y="466.5" font-size="9.5" fill="#166534" text-anchor="middle" font-weight="600">K2</text>
-<g class="cellwave" style="animation-duration:2.8s;animation-delay:0.3s">
-<rect x="1098" y="444" width="56" height="38" rx="8" fill="#fef9c3" stroke="#fde047" stroke-width="1.5"/>
-<text x="1126.0" y="466.5" font-size="9.5" fill="#854d0e" text-anchor="middle" font-weight="600">K5~K8</text>
-</g>
-<text x="410" y="498" font-size="9" fill="#64748b" text-anchor="middle">Dmy 内嵌于 413b 零补齐</text>
-</g>
-<g class="fade" style="animation-delay:1.45s">
-<line class="draw" pathLength="100" style="animation-delay:1.45s" x1="630" y1="220" x2="690" y2="220" stroke="#2563eb" stroke-width="2" marker-end="url(#ar-blue)"/>
-<text x="660" y="258" font-size="8.5" fill="#2563eb" text-anchor="middle">413b/420b</text>
-<path class="flowdot" d="M 630 220 L 690 220" stroke="#2563eb" pathLength="100" style="animation-duration:1.15s;animation-delay:-0.1s"/>
-<path class="flowdot" d="M 630 220 L 690 220" stroke="#2563eb" pathLength="100" style="animation-duration:1.15s;animation-delay:-0.65s"/>
-</g>
-<g class="fade" style="animation-delay:1.6s">
-<line class="draw" pathLength="100" style="animation-delay:1.6s" x1="630" y1="340" x2="690" y2="340" stroke="#2563eb" stroke-width="2" marker-end="url(#ar-blue)"/>
-<text x="660" y="378" font-size="8.5" fill="#2563eb" text-anchor="middle">413b/420b</text>
-<path class="flowdot" d="M 630 340 L 690 340" stroke="#2563eb" pathLength="100" style="animation-duration:1.15s;animation-delay:-0.3s"/>
-<path class="flowdot" d="M 630 340 L 690 340" stroke="#2563eb" pathLength="100" style="animation-duration:1.15s;animation-delay:-0.85s"/>
-</g>
-<g class="fade" style="animation-delay:1.75s">
-<line class="draw" pathLength="100" style="animation-delay:1.75s" x1="630" y1="460" x2="690" y2="460" stroke="#2563eb" stroke-width="2" marker-end="url(#ar-blue)"/>
-<text x="660" y="498" font-size="8.5" fill="#2563eb" text-anchor="middle">413b/420b</text>
-<path class="flowdot" d="M 630 460 L 690 460" stroke="#2563eb" pathLength="100" style="animation-duration:1.15s;animation-delay:-0.5s"/>
-<path class="flowdot" d="M 630 460 L 690 460" stroke="#2563eb" pathLength="100" style="animation-duration:1.15s;animation-delay:-1.05s"/>
-</g>
-<g clip-path="url(#sweepC-1)"><rect class="sweepband" x="-336" y="532" width="720" height="40" fill="url(#sweepG-1)" style="--sweepP:720px"/></g>
-<g class="head" style="animation-delay:1.4s">
-<text x="60" y="552" font-size="11" fill="#64748b" text-anchor="start">多通道对齐示例：720 通道 Dmy = N bit、726 通道 Dmy = N+70 bit → 统一按 N+70 bit 填充</text>
-</g>
+</style>
+
+  <defs>
+
+    <marker id="ar-blue" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#2563eb"/></marker>
+
+    <marker id="ar-green" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#059669"/></marker>
+
+    <marker id="ar-purple" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#7c3aed"/></marker>
+
+    <marker id="ar-orange" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#ea580c"/></marker>
+
+    <marker id="ar-gray" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#9ca3af"/></marker>
+
+<linearGradient id="sweepG-1" gradientUnits="userSpaceOnUse" x1="-336" y1="0" x2="384" y2="0">
+
+<stop offset="0" stop-color="#b45309" stop-opacity="0"/>
+
+<stop offset="0.46" stop-color="#b45309" stop-opacity="0"/>
+
+<stop offset="0.5" stop-color="#b45309" stop-opacity="0.3"/>
+
+<stop offset="0.54" stop-color="#b45309" stop-opacity="0"/>
+
+<stop offset="1" stop-color="#b45309" stop-opacity="0"/>
+
+</linearGradient>
+
+<clipPath id="sweepC-1"><rect x="52" y="532" width="480" height="40"/></clipPath>
+
+  </defs>
+
+  <rect width="1200" height="600" fill="#ffffff"/>
+
+<g class="head">
+
+<text x="600" y="40" font-size="21" fill="#1e293b" text-anchor="middle" font-weight="600">非 413b 整数倍数据处理</text>
+
+<text x="600" y="64" font-size="12" fill="#64748b" text-anchor="middle">编码后去掉补齐的 dummy，但发送数据长度须为 70b 整数倍；通道数不同时按最大 70-bit 整数倍填充</text>
+
+</g>
+
+<g class="row" style="animation-delay:0.15s">
+
+<g class="step" style="animation-delay:0s">
+
+<rect x="60" y="84" width="250" height="44" rx="8" fill="#f0fdfa" stroke="#99f6e4" stroke-width="1.5"/>
+
+<text x="185.0" y="109.5" font-size="11.5" fill="#0f766e" text-anchor="middle" font-weight="600">① 补 Dmy(0) 至 413b 整数倍</text>
+
+</g>
+
+</g>
+
+<g class="fade" style="animation-delay:0.85s">
+
+<line class="draw" pathLength="100" style="animation-delay:0.85s" x1="314" y1="106" x2="344" y2="106" stroke="#2563eb" stroke-width="1.5" marker-end="url(#ar-blue)"/>
+
+<path class="flowdot" d="M 314 106 L 344 106" stroke="#2563eb" pathLength="100" style="animation-duration:1.4s;animation-delay:-0.05s"/>
+
+<path class="flowdot" d="M 314 106 L 344 106" stroke="#2563eb" pathLength="100" style="animation-duration:1.4s;animation-delay:-0.4s"/>
+
+<path class="flowtail" d="M 314 106 L 344 106" stroke="#2563eb" pathLength="100" style="animation-duration:1.4s;animation-delay:-0.05s"/>
+
+</g>
+
+<g class="row" style="animation-delay:0.3s">
+
+<g class="step" style="animation-delay:-1.5s">
+
+<rect x="350" y="84" width="250" height="44" rx="8" fill="#f0fdfa" stroke="#99f6e4" stroke-width="1.5"/>
+
+<text x="475.0" y="109.5" font-size="11.5" fill="#0f766e" text-anchor="middle" font-weight="600">② 加扰（SCR EN=1）</text>
+
+</g>
+
+</g>
+
+<g class="fade" style="animation-delay:1.0s">
+
+<line class="draw" pathLength="100" style="animation-delay:1.0s" x1="604" y1="106" x2="634" y2="106" stroke="#2563eb" stroke-width="1.5" marker-end="url(#ar-blue)"/>
+
+<path class="flowdot" d="M 604 106 L 634 106" stroke="#2563eb" pathLength="100" style="animation-duration:1.4s;animation-delay:-0.2s"/>
+
+<path class="flowdot" d="M 604 106 L 634 106" stroke="#2563eb" pathLength="100" style="animation-duration:1.4s;animation-delay:-0.55s"/>
+
+<path class="flowtail" d="M 604 106 L 634 106" stroke="#2563eb" pathLength="100" style="animation-duration:1.4s;animation-delay:-0.2s"/>
+
+</g>
+
+<g class="row" style="animation-delay:0.45s">
+
+<g class="step" style="animation-delay:-3s">
+
+<rect x="640" y="84" width="250" height="44" rx="8" fill="#f0fdfa" stroke="#99f6e4" stroke-width="1.5"/>
+
+<text x="765.0" y="109.5" font-size="11.5" fill="#0f766e" text-anchor="middle" font-weight="600">③ 413b/420b 编码</text>
+
+</g>
+
+</g>
+
+<g class="fade" style="animation-delay:1.15s">
+
+<line class="draw" pathLength="100" style="animation-delay:1.15s" x1="894" y1="106" x2="924" y2="106" stroke="#2563eb" stroke-width="1.5" marker-end="url(#ar-blue)"/>
+
+<path class="flowdot" d="M 894 106 L 924 106" stroke="#2563eb" pathLength="100" style="animation-duration:1.4s;animation-delay:-0.35s"/>
+
+<path class="flowdot" d="M 894 106 L 924 106" stroke="#2563eb" pathLength="100" style="animation-duration:1.4s;animation-delay:-0.7s"/>
+
+<path class="flowtail" d="M 894 106 L 924 106" stroke="#2563eb" pathLength="100" style="animation-duration:1.4s;animation-delay:-0.35s"/>
+
+</g>
+
+<g class="row" style="animation-delay:0.6s">
+
+<g class="step" style="animation-delay:-4.5s">
+
+<rect x="930" y="84" width="250" height="44" rx="8" fill="#f0fdfa" stroke="#99f6e4" stroke-width="1.5"/>
+
+<text x="1055.0" y="109.5" font-size="11.5" fill="#0f766e" text-anchor="middle" font-weight="600">④ 去 dummy · 70b 对齐发送</text>
+
+</g>
+
+</g>
+
+<g class="row" style="animation-delay:0.9s">
+
+<rect x="60" y="192" width="120" height="44" rx="8" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
+
+<text x="120.0" y="217.5" font-size="11" fill="#166534" text-anchor="middle" font-weight="600">LSP</text>
+
+<rect x="200" y="170" width="420" height="100" rx="10" fill="#fff7ed" stroke="#fdba74" stroke-width="1.5"/>
+
+<text x="214" y="192" font-size="10" fill="#9a3412" text-anchor="start" font-weight="600">Before ENC</text>
+
+<rect x="214" y="204" width="56" height="38" rx="8" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
+
+<text x="242.0" y="226.5" font-size="9.5" fill="#166534" text-anchor="middle" font-weight="600">K2</text>
+
+<rect x="274" y="204" width="280" height="38" rx="8" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+
+<text x="414.0" y="226.5" font-size="9.5" fill="#1e293b" text-anchor="middle" font-weight="600">0xEA/EB/EC/ED ×8（32 Byte）</text>
+
+<rect x="558" y="204" width="56" height="38" rx="8" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
+
+<text x="586.0" y="226.5" font-size="9.5" fill="#166534" text-anchor="middle" font-weight="600">K3</text>
+
+<rect x="700" y="170" width="490" height="100" rx="10" fill="#fff7ed" stroke="#fdba74" stroke-width="1.5"/>
+
+<text x="714" y="192" font-size="10" fill="#9a3412" text-anchor="start" font-weight="600">After ENC</text>
+
+<rect x="714" y="204" width="56" height="38" rx="8" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
+
+<text x="742.0" y="226.5" font-size="9.5" fill="#166534" text-anchor="middle" font-weight="600">K2</text>
+
+<rect x="774" y="204" width="340" height="38" rx="8" fill="#dbeafe" stroke="#93c5fd" stroke-width="1.5"/>
+
+<text x="944.0" y="226.5" font-size="9.5" fill="#1e40af" text-anchor="middle" font-weight="600">LSP(ENC) · 280b</text>
+
+<rect x="1118" y="204" width="56" height="38" rx="8" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
+
+<text x="1146.0" y="226.5" font-size="9.5" fill="#166534" text-anchor="middle" font-weight="600">K3</text>
+
+<text x="410" y="258" font-size="9" fill="#64748b" text-anchor="middle">训练数据不加扰</text>
+
+</g>
+
+<g class="row" style="animation-delay:1.05s">
+
+<rect x="60" y="312" width="120" height="44" rx="8" fill="#dbeafe" stroke="#93c5fd" stroke-width="1.5"/>
+
+<text x="120.0" y="337.5" font-size="11" fill="#1e40af" text-anchor="middle" font-weight="600">Active Line</text>
+
+<rect x="200" y="290" width="420" height="100" rx="10" fill="#fff7ed" stroke="#fdba74" stroke-width="1.5"/>
+
+<text x="214" y="312" font-size="10" fill="#9a3412" text-anchor="start" font-weight="600">Before ENC</text>
+
+<rect x="214" y="324" width="50" height="38" rx="8" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
+
+<text x="239.0" y="346.5" font-size="9.5" fill="#166534" text-anchor="middle" font-weight="600">K1</text>
+
+<rect x="268" y="324" width="50" height="38" rx="8" fill="#cffafe" stroke="#67e8f9" stroke-width="1.5"/>
+
+<text x="293.0" y="346.5" font-size="9.5" fill="#155e75" text-anchor="middle" font-weight="600">CL</text>
+
+<rect x="322" y="324" width="176" height="38" rx="8" fill="#dbeafe" stroke="#93c5fd" stroke-width="1.5"/>
+
+<text x="410.0" y="346.5" font-size="9.5" fill="#1e40af" text-anchor="middle" font-weight="600">RGB（CL+RGB）</text>
+
+<rect x="502" y="324" width="50" height="38" rx="8" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
+
+<text x="527.0" y="346.5" font-size="9.5" fill="#166534" text-anchor="middle" font-weight="600">K2</text>
+
+<rect x="556" y="324" width="56" height="38" rx="8" fill="#f3f4f6" stroke="#d1d5db" stroke-width="1.5"/>
+
+<text x="584.0" y="346.5" font-size="9.5" fill="#6b7280" text-anchor="middle" font-weight="600">HBP</text>
+
+<rect x="700" y="290" width="490" height="100" rx="10" fill="#fff7ed" stroke="#fdba74" stroke-width="1.5"/>
+
+<text x="714" y="312" font-size="10" fill="#9a3412" text-anchor="start" font-weight="600">After ENC</text>
+
+<rect x="714" y="324" width="44" height="38" rx="8" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
+
+<text x="736.0" y="346.5" font-size="9.5" fill="#166534" text-anchor="middle" font-weight="600">K1</text>
+
+<rect x="762" y="324" width="44" height="38" rx="8" fill="#cffafe" stroke="#67e8f9" stroke-width="1.5"/>
+
+<text x="784.0" y="346.5" font-size="9.5" fill="#155e75" text-anchor="middle" font-weight="600">CL</text>
+
+<rect x="810" y="324" width="170" height="38" rx="8" fill="#dbeafe" stroke="#93c5fd" stroke-width="1.5"/>
+
+<text x="895.0" y="346.5" font-size="9.5" fill="#1e40af" text-anchor="middle" font-weight="600">RGB(ENC) · 420b×N</text>
+
+<g class="pulse" style="animation-delay:-0.7s">
+
+<g class="cellwave" style="animation-duration:2.8s;animation-delay:0.0s">
+
+<rect x="984" y="324" width="80" height="38" rx="8" fill="#e5e7eb" stroke="#d1d5db" stroke-width="1.5"/>
+
+<text x="1024.0" y="346.5" font-size="9.5" fill="#6b7280" text-anchor="middle" font-weight="600">D · 70b×N</text>
+
+</g>
+
+</g>
+
+<rect x="1068" y="324" width="44" height="38" rx="8" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
+
+<text x="1090.0" y="346.5" font-size="9.5" fill="#166534" text-anchor="middle" font-weight="600">K2</text>
+
+<g class="cellwave" style="animation-duration:2.8s;animation-delay:0.3s">
+
+<rect x="1116" y="324" width="56" height="38" rx="8" fill="#fef9c3" stroke="#fde047" stroke-width="1.5"/>
+
+<text x="1144.0" y="346.5" font-size="9.5" fill="#854d0e" text-anchor="middle" font-weight="600">K5~K8</text>
+
+</g>
+
+<text x="410" y="378" font-size="9" fill="#64748b" text-anchor="middle">像素 / VBK payload 加扰</text>
+
+</g>
+
+<g class="row" style="animation-delay:1.2s">
+
+<rect x="60" y="432" width="120" height="44" rx="8" fill="#fce7f3" stroke="#f9a8d4" stroke-width="1.5"/>
+
+<text x="120.0" y="457.5" font-size="11" fill="#9d174d" text-anchor="middle" font-weight="600">Config Line</text>
+
+<rect x="200" y="410" width="420" height="100" rx="10" fill="#fff7ed" stroke="#fdba74" stroke-width="1.5"/>
+
+<text x="214" y="432" font-size="10" fill="#9a3412" text-anchor="start" font-weight="600">Before ENC</text>
+
+<rect x="214" y="444" width="50" height="38" rx="8" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
+
+<text x="239.0" y="466.5" font-size="9.5" fill="#166534" text-anchor="middle" font-weight="600">K4</text>
+
+<rect x="268" y="444" width="180" height="38" rx="8" fill="#fce7f3" stroke="#f9a8d4" stroke-width="1.5"/>
+
+<text x="358.0" y="466.5" font-size="9.5" fill="#9d174d" text-anchor="middle" font-weight="600">C.F（6x Byte）</text>
+
+<rect x="452" y="444" width="50" height="38" rx="8" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
+
+<text x="477.0" y="466.5" font-size="9.5" fill="#166534" text-anchor="middle" font-weight="600">K2</text>
+
+<rect x="506" y="444" width="100" height="38" rx="8" fill="#f3f4f6" stroke="#d1d5db" stroke-width="1.5"/>
+
+<text x="556.0" y="466.5" font-size="9.5" fill="#6b7280" text-anchor="middle" font-weight="600">HBP</text>
+
+<rect x="700" y="410" width="490" height="100" rx="10" fill="#fff7ed" stroke="#fdba74" stroke-width="1.5"/>
+
+<text x="714" y="432" font-size="10" fill="#9a3412" text-anchor="start" font-weight="600">After ENC</text>
+
+<rect x="714" y="444" width="44" height="38" rx="8" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
+
+<text x="736.0" y="466.5" font-size="9.5" fill="#166534" text-anchor="middle" font-weight="600">K4</text>
+
+<rect x="762" y="444" width="190" height="38" rx="8" fill="#fce7f3" stroke="#f9a8d4" stroke-width="1.5"/>
+
+<text x="857.0" y="466.5" font-size="9.5" fill="#9d174d" text-anchor="middle" font-weight="600">C.F(ENC) · 420b</text>
+
+<g class="cellwave" style="animation-duration:2.8s;animation-delay:0.0s">
+
+<rect x="956" y="444" width="90" height="38" rx="8" fill="#e5e7eb" stroke="#d1d5db" stroke-width="1.5"/>
+
+<text x="1001.0" y="466.5" font-size="9.5" fill="#6b7280" text-anchor="middle" font-weight="600">D · 140b</text>
+
+</g>
+
+<rect x="1050" y="444" width="44" height="38" rx="8" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
+
+<text x="1072.0" y="466.5" font-size="9.5" fill="#166534" text-anchor="middle" font-weight="600">K2</text>
+
+<g class="cellwave" style="animation-duration:2.8s;animation-delay:0.3s">
+
+<rect x="1098" y="444" width="56" height="38" rx="8" fill="#fef9c3" stroke="#fde047" stroke-width="1.5"/>
+
+<text x="1126.0" y="466.5" font-size="9.5" fill="#854d0e" text-anchor="middle" font-weight="600">K5~K8</text>
+
+</g>
+
+<text x="410" y="498" font-size="9" fill="#64748b" text-anchor="middle">Dmy 内嵌于 413b 零补齐</text>
+
+</g>
+
+<g class="fade" style="animation-delay:1.45s">
+
+<line class="draw" pathLength="100" style="animation-delay:1.45s" x1="630" y1="220" x2="690" y2="220" stroke="#2563eb" stroke-width="2" marker-end="url(#ar-blue)"/>
+
+<text x="660" y="258" font-size="8.5" fill="#2563eb" text-anchor="middle">413b/420b</text>
+
+<path class="flowdot" d="M 630 220 L 690 220" stroke="#2563eb" pathLength="100" style="animation-duration:2.3s;animation-delay:-0.1s"/>
+
+<path class="flowdot" d="M 630 220 L 690 220" stroke="#2563eb" pathLength="100" style="animation-duration:2.3s;animation-delay:-0.65s"/>
+
+</g>
+
+<g class="fade" style="animation-delay:1.6s">
+
+<line class="draw" pathLength="100" style="animation-delay:1.6s" x1="630" y1="340" x2="690" y2="340" stroke="#2563eb" stroke-width="2" marker-end="url(#ar-blue)"/>
+
+<text x="660" y="378" font-size="8.5" fill="#2563eb" text-anchor="middle">413b/420b</text>
+
+<path class="flowdot" d="M 630 340 L 690 340" stroke="#2563eb" pathLength="100" style="animation-duration:2.3s;animation-delay:-0.3s"/>
+
+<path class="flowdot" d="M 630 340 L 690 340" stroke="#2563eb" pathLength="100" style="animation-duration:2.3s;animation-delay:-0.85s"/>
+
+</g>
+
+<g class="fade" style="animation-delay:1.75s">
+
+<line class="draw" pathLength="100" style="animation-delay:1.75s" x1="630" y1="460" x2="690" y2="460" stroke="#2563eb" stroke-width="2" marker-end="url(#ar-blue)"/>
+
+<text x="660" y="498" font-size="8.5" fill="#2563eb" text-anchor="middle">413b/420b</text>
+
+<path class="flowdot" d="M 630 460 L 690 460" stroke="#2563eb" pathLength="100" style="animation-duration:2.3s;animation-delay:-0.5s"/>
+
+<path class="flowdot" d="M 630 460 L 690 460" stroke="#2563eb" pathLength="100" style="animation-duration:2.3s;animation-delay:-1.05s"/>
+
+</g>
+
+<g clip-path="url(#sweepC-1)"><rect class="sweepband" x="-336" y="532" width="720" height="40" fill="url(#sweepG-1)" style="--sweepP:720px"/></g>
+
+<g class="head" style="animation-delay:1.4s">
+
+<text x="60" y="552" font-size="11" fill="#64748b" text-anchor="start">多通道对齐示例：720 通道 Dmy = N bit、726 通道 Dmy = N+70 bit → 统一按 N+70 bit 填充</text>
+
+</g>
+
 </svg>
