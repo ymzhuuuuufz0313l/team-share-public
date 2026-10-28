@@ -199,6 +199,6 @@
   <text class="hdr head" style="animation-delay:0s" x="600" y="38" font-size="20" font-weight="bold" text-anchor="middle" fill="#1c2534">1V11 vs 1V22 模块功耗对比 @4.46G</text>
 
   <!-- 基线扫光 -->
-  <rect class="sweep fade" style="animation-delay:1.7s" x="95" y="610" width="120" height="20" fill="url(#sweepGrad)"/>
+  <rect class="sweep fade" style="animation-delay:1.7s" x="95" y="610" width="120" height="20" fill="#efe8d8"/>
 </svg>
 <!-- ymzhu 2026-10-26 17:09 -->

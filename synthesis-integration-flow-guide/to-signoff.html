@@ -415,9 +415,9 @@ flowchart LR
 
 **`report_setup.csv`**（setup / max 路径违例总表）：
 
-![report_setup.csv 2P](./image/anim/30_postpt_setup_2p.svg?v=20261028)
+![report_setup.csv 2P](./image/anim/30_postpt_setup_2p.svg?v=20261030)
 
-![report_setup.csv 1P](./image/anim/31_postpt_setup_1p.svg?v=20261028)
+![report_setup.csv 1P](./image/anim/31_postpt_setup_1p.svg?v=20261030)
 
 NOTE: 最新版本（8/17）1P 的 setup 违例已全部消除——`RX0_CLK` 组在 10 个 corner 下 violation number 全 0、biggest violation 全部为正（此前 1P 曾有 `LENB_R` output delay 违例 `−0.225507`，经 setcase 修复后已不再出现）。1P / 2P 两套 setup 总表现在均无负 slack。
 
@@ -425,33 +425,33 @@ NOTE: 最新版本（8/17）1P 的 setup 违例已全部消除——`RX0_CLK` �
 
 **`report_hold.csv`**（hold / min 路径违例总表）：
 
-![report_hold.csv 2P](./image/anim/30_postpt_hold_2p.svg?v=20261028)
+![report_hold.csv 2P](./image/anim/30_postpt_hold_2p.svg?v=20261030)
 
-![report_hold.csv 1P](./image/anim/31_postpt_hold_1p.svg?v=20261028)
+![report_hold.csv 1P](./image/anim/31_postpt_hold_1p.svg?v=20261030)
 
 原始文件：<a href="./server-reports/postpt_summary/POST_PT_2P/report_hold.csv" target="_blank">report_hold.csv</a>（逐 corner 原始报告见 <a href="./server-reports/postpt_summary/POST_PT_2P/" target="_blank">POST_PT 目录</a>）
 
 **`report_trans.csv`**（max_transition / max_capacitance 违规）：
 
-![report_trans.csv 2P](./image/anim/30_postpt_trans_2p.svg?v=20261028)
+![report_trans.csv 2P](./image/anim/30_postpt_trans_2p.svg?v=20261030)
 
-![report_trans.csv 1P](./image/anim/31_postpt_trans_1p.svg?v=20261028)
+![report_trans.csv 1P](./image/anim/31_postpt_trans_1p.svg?v=20261030)
 
 原始文件：<a href="./server-reports/postpt_summary/POST_PT_2P/report_trans.csv" target="_blank">report_trans.csv</a>（逐 corner 原始报告见 <a href="./server-reports/postpt_summary/POST_PT_2P/" target="_blank">POST_PT 目录</a>）
 
 **`report_phy_busskew.csv`**（PHY bus skew 分组 slack）：
 
-![report_phy_busskew.csv 2P](./image/anim/30_postpt_physkew_2p.svg?v=20261028)
+![report_phy_busskew.csv 2P](./image/anim/30_postpt_physkew_2p.svg?v=20261030)
 
-![report_phy_busskew.csv 1P](./image/anim/31_postpt_physkew_1p.svg?v=20261028)
+![report_phy_busskew.csv 1P](./image/anim/31_postpt_physkew_1p.svg?v=20261030)
 
 原始文件：<a href="./server-reports/postpt_summary/POST_PT_2P/report_phy_busskew.csv" target="_blank">report_phy_busskew.csv</a>（逐 corner 原始报告见 <a href="./server-reports/postpt_summary/POST_PT_2P/" target="_blank">POST_PT 目录</a>）
 
 **`report_sd_busskew.csv`**（SD data/clock skew 分组 margin）：
 
-![report_sd_busskew.csv margin [-1:6] 2P](./image/anim/33_postpt_sdskew_margin_2p.svg?v=20261028)
+![report_sd_busskew.csv margin [-1:6] 2P](./image/anim/33_postpt_sdskew_margin_2p.svg?v=20261030)
 
-![report_sd_busskew.csv margin [-1:6] 1P](./image/anim/34_postpt_sdskew_margin_1p.svg?v=20261028)
+![report_sd_busskew.csv margin [-1:6] 1P](./image/anim/34_postpt_sdskew_margin_1p.svg?v=20261030)
 
 原始文件：<a href="./server-reports/postpt_summary/POST_PT_2P/report_sd_busskew.csv" target="_blank">report_sd_busskew.csv</a>（逐 corner 原始报告见 <a href="./server-reports/postpt_summary/POST_PT_2P/" target="_blank">POST_PT 目录</a>）
 
@@ -490,7 +490,7 @@ NOTE: `NO_LOAD_CELL` / `NO_DRIVER_CELL` 不是时序或连接错误，而是脚�
 
 WARNING: 换库前（LVT 时代）buf type 是 `CLKBUFX8AL9`，换 **SVT** 后变为 `CLKBUFX8AS9`（`AL9→AS9`，L=LVT / S=SVT 后缀）。看到 `AL9` 说明报告是换库前的旧版，需重新跑 postPT 确认。
 
-![input / output buf type 统计（APR_CDM + CLKBUFX8AS9，SVT）](./image/anim/38_buf_type.svg?v=20261028)
+![input / output buf type 统计（APR_CDM + CLKBUFX8AS9，SVT）](./image/anim/38_buf_type.svg?v=20261030)
 
 原始文件：
 

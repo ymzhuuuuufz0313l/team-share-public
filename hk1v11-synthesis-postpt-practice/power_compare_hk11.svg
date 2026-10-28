@@ -59,8 +59,6 @@ text{font-family:ui-monospace,Consolas,monospace,"Microsoft YaHei",sans-serif;fo
 @media (prefers-reduced-motion:reduce){*{animation:none!important}}
 ]]></style>
 <defs>
-<linearGradient id="gCmp" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fffdf7" stop-opacity="0"/><stop offset="0.5" stop-color="#fffdf7" stop-opacity="1"/><stop offset="1" stop-color="#fffdf7" stop-opacity="0"/></linearGradient>
-<linearGradient id="gZeb" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fffdf7" stop-opacity="0"/><stop offset="0.5" stop-color="#fffdf7" stop-opacity="1"/><stop offset="1" stop-color="#fffdf7" stop-opacity="0"/></linearGradient>
 <clipPath id="cCmp"><rect x="1" y="255" width="603" height="20"/><rect x="1" y="387" width="603" height="20"/></clipPath>
 <clipPath id="cCmp2"><rect x="1" y="276" width="603" height="20"/><rect x="1" y="408" width="603" height="20"/></clipPath>
 <clipPath id="cBody"><rect x="0" y="56" width="605" height="374"/></clipPath>
@@ -307,7 +305,7 @@ text{font-family:ui-monospace,Consolas,monospace,"Microsoft YaHei",sans-serif;fo
 <text x="514" y="419.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
 <text x="594" y="419.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
 </g>
-<g clip-path="url(#cBody)"><rect class="zeband" x="0" y="50" width="180" height="388" fill="url(#gZeb)"/></g>
+<g clip-path="url(#cBody)"></g>
 
 
 
@@ -347,8 +345,8 @@ text{font-family:ui-monospace,Consolas,monospace,"Microsoft YaHei",sans-serif;fo
 <rect x="1" y="387" width="603" height="20" rx="3"/>
 </g>
 <g class="breath2" fill="#1d4ed8"><rect x="1" y="276" width="603" height="20" rx="3"/><rect x="1" y="408" width="603" height="20" rx="3"/></g>
-<g clip-path="url(#cCmp)"><rect class="cmpband" x="0" y="255" width="150" height="152" fill="url(#gCmp)"/></g>
-<g clip-path="url(#cCmp2)"><rect class="cmpband2" x="0" y="276" width="150" height="152" fill="url(#gCmp)"/></g>
+<g clip-path="url(#cCmp)"></g>
+<g clip-path="url(#cCmp2)"></g>
 <rect x="0.5" y="0.5" width="604" height="443" fill="none" stroke="#ddd6c8" stroke-width="1"/>
 <!-- ymzhu 2026-10-27 18:55 -->
 </svg>
