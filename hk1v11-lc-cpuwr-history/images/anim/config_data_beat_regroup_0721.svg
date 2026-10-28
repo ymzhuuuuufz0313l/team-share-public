@@ -8,14 +8,7 @@
 
 .chgrow { animation: chgRowPulse 2.4s ease-in-out 4s infinite; }
 @keyframes chgRowPulse { 0%,100% { opacity:1; } 50% { opacity:0.5; } }
-.shine { animation: shineSweep 6s linear infinite; }
-@keyframes shineSweep {
-  0%   { transform: translateX(-152px); opacity: 0; }
-  5%   { opacity: 1; }
-  42%  { transform: translateX(1240px); opacity: 1; }
-  48%  { opacity: 0; }
-  100% { transform: translateX(1240px); opacity: 0; }
-}.brd { animation: brdPulse 2.4s ease-in-out 4s infinite; }
+.brd { animation: brdPulse 2.4s ease-in-out 4s infinite; }
 @keyframes brdPulse { 0%,100% { stroke-opacity: 1; } 50% { stroke-opacity: 0.4; } }</style>
 <rect width="1240" height="848" fill="#ffffff"/>
 <g class="head">
@@ -128,6 +121,4 @@
 
 </g></g>
 
-<defs><linearGradient id="shineGrad" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#f0a137" stop-opacity="0"/><stop offset="0.5" stop-color="#f0a137" stop-opacity="0.18"/><stop offset="1" stop-color="#f0a137" stop-opacity="0"/></linearGradient></defs>
-<rect class="shine" x="0" y="0" width="152" height="848" fill="url(#shineGrad)"/>
 </svg>
