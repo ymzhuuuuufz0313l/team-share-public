@@ -418,11 +418,12 @@
       <!-- LATEST 卡维护规则：时间线每条只写一句话（标题+一句话结论+详情页链接）；完整证据链/commit/判据写入页面底部「状态跟踪总账」对应 details 块（新增主题加块，勿回填时间线） -->
       <div class="badge">
         <span class="tag">LATEST</span>
-        <span class="num">1013</span>
+        <span class="num">1028</span>
       </div>
       <div class="body">
-        <div class="t">1008~1013 · 约束三笔 V3 实证（hold 7563→242）· skew 新窗 ±3.5/−0.9~+4.1 · set_sense 闭环 · 全站收敛</div>
+        <div class="t">1008~1028 · 约束三笔 V3 实证 · skew 探针污染更正（DPLC 假出窗撤回）· set_sense 闭环 · 全站收敛</div>
         <ul>
+          <li><b>1028 skew 探针审计更正</b>——DPLC CLKB「真违例 −6.42」撤回：dplc clk_b 探针少写一层层次 → UITE-416 → 数据路径冒充时钟，真值全角在窗（<a href="./ch19-skew-audit.html">ch19 更正段</a>）</li>
           <li><b>1008 约束三笔 V3 run 实证</b>——WCLK1_A_I2C async 489→0、setup 119→87、hold 7563→242（<a href="./ch14-violation-disposition.html">ch14 §5.3</a>）</li>
           <li><b>skew 链路修复</b>——探针换名失配修复（−900 哨兵定案）+ 规格窗收紧 ±3.5 / −0.9~+4.1（<a href="./ch18-skew.html">ch18</a>）</li>
           <li><b>set_sense 关键命令闭环</b>——S 腿钟传播物理层修法 pt_shell 实测生效（<a href="./ch18-skew.html">ch18 §4.2</a>）</li>
@@ -596,6 +597,11 @@
     </style>
     <div class="st-details">
     <details open>
+      <summary>⚠️ <span class="st-date">1028</span> — skew 探针审计更正：DPLC CLKB 假出窗（探针污染），10-09 核验 −6.42 撤回</summary>
+      <div class="st-body"><b>skew 探针污染定案</b>：`report_timing_skew_sd.tcl:157` dplc clk_b 探针少写 <code>CLKMUX2X2/</code> 层 → UITE-416 → catch-all，56 条 WCLK1 数据路径冒充时钟到达；1028 真值 margin_b 全角在窗（l −0.744 / r −0.817，r 余 0.083）；1008 真值 l −1.762/r −0.978 确真出窗、1028 已修复；margin_a「出窗」= 窗口标签口径（a 侧适用性无规格依据）；rx0_00 max/min = 两类路径最差 slack 非 skew；io 行缺失 = SDA_OE 无 output delay。审计文档 HK1V11 仓库 <code>docs/HK1V11_skew_probe_audit_20261028.md</code>，四面板动画图已入 ch19。</div>
+    </details>
+
+    <details open>
       <summary>🟢 <span class="st-date">1008~1013</span> — 1008 签核收敛：约束三笔 V3 实证 + skew 链路修复 + set_sense 记录 + BKDU 决策</summary>
       <div class="st-body"><b>1008 签核收敛</b>：约束三笔（FLAG_1H mc / K1 latch/E / WCLK1_A_I2C async）V3 run 实证 setup 119→87、hold 7563→242；skew 探针修复 + 新窗 ±3.5/−0.9~+4.1；<code>set_sense -stop_propagation -type clock</code> 实测闭环；BKDU bkdu_sync 拍板不实施、移交 owner。详见 <a href="./ch14-violation-disposition.html">ch14 §5.3/§5.4</a> / <a href="./ch18-skew.html">ch18</a>。</div>
     </details>
@@ -649,7 +655,7 @@
   </div>
 
   <script src="./js/site.js"></script>
-  <script src="./fx.js?v=4"></script>
+  <script src="./fx.js?v=5"></script>
 </body>
 </html>
-<!-- ymzhu 2026-10-27 14:06 -->
+<!-- ymzhu 2026-10-28 19:05 -->
