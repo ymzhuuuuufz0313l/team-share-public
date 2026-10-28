@@ -460,6 +460,8 @@ assign R_REG31_F_RECON = {PWRC_NB, PWRC_NA, PWRC_PB, PWRC_PA};  // 8'hAA
 - 写过时输出对应 `R_REG*_F` 字段
 - 不再依赖 `CHIP_SEL` 分支
 
+> ⚠️ **2026-10-28 勘误（LC_CPUWR 1028v1，详见 §33）**："对应地址被写入时置 1"的**置位时刻**原为裸拍解码（帧内即时），与其修饰数据的生效时刻（帧尾 `update_en_a` 提交）错配——复位→K1→首 K4 帧窗口内 `(WR=1, R_REG=cs0 复位值)` 导致回拼选中 cs=0 复位值。1028v1 起 WR 门控与寄存器控制完全镜像（直写路径拍内、checksum 帧提交沿、复位同清）。
+
 ### 11.7 0708 SMART_CS[3:0]
 
 - `0x02` 增加 `SMART_CS[3:0]` 字段（`[7:6],[3:2]`），默认 `4'b0000`
@@ -779,6 +781,16 @@ chip_sel=0/1 默认字节映射、checksum 地址覆盖、LSI 保护范围、复
 
 零逻辑结构变更：0x1D 的存储/写入/复位（`8'h00` → 默认 `00000` ✓）/整字节读回全部既有（LC_CPUWR 保持 1023v1 零改动）；写路径与 checksum 机制不变。验收三关全过（iverilog 受控对照 / 对抗评审 critical=0 high=0 / 信号追踪单域 WCK1_A 无 CDC）。表内笔误：history 条目 `@0x1D[7:5]` vs 寄存器表正文 `[7:3]`，以正文为准（待反馈 spec owner）。
 
+## 33. 1028v1 修复 chip_sel=1 回拼写标志置位时序（R_REG09/10/31_F_WR）
+
+**暴露**（DV 2026-10-28，chip_sel=1）：正常发数据 → 复位 → TX 直接发 K1、K4。复位后、K4 帧之前 0x09/0x0A/0x1F 的映射输出正确（cs=1 默认）；**第一个 K4 帧内被改写成 cs=0 复位值**——回拼机制失效。
+
+**根因**：三个 WR 标志原为**裸拍解码置位**（`ADDRxx_F` 一到即置 1），而它修饰的 `R_REGxx_F` 活动值按 checksum 门控在帧尾 `update_en_a` 提交（且需连续匹配链）。首帧拍内即出现 `(WR=1, R_REG=cs0 复位值)` 错配 → `LC_REG_MAPPING` 的 `(WR ? R_REG : cs1默认)` mux 选中 cs=0 复位值；错配窗口持续到首个提交，mismatch 帧则无限延长。I2C 读回（REGRD 走 RECON）与功能输出（`SR_PR/PF/NR/NF`、`PWRC_TA/TB/P/N`、`PWRC_PA/PB/NA/NB`）同时受影响。
+
+**修复**（LC_CPUWR 1028v1）：WR 门控与寄存器控制逻辑**完全镜像**——直写路径（`!chksum_mode || unlock_one_shot_a`）拍内置位（与直写同沿）；checksum 帧在 `update_en_a` 置位（与 shadow→active 同沿）；复位同清。**不变式：WR 与 R_REG 在完全相同的沿成对变更，mux 永不再见错配对。**复位→K1→首 K4 帧全程保持 cs=1 默认，首个提交帧后才变帧写入值。
+
+**同类排查**：全仓仅 5 个 `_WR` 标志；`R_REG37/38_F_WR`（0x25/0x26）为测试区直写寄存器（无 shadow/commit，拍内数据+拍内标志时序自洽）不受影响。**验证**（代码级）：逐场景推演表全对（复位/K4 前窗口/首帧拍内/mismatch/提交/I2C/unlock）+ WR 消费者仅 LC_REG_MAPPING + iverilog 受控对照 vs 1027v1 基线错误集逐行一致。Excel 登记 NO52。
+
   </script>
   <script>
     document.getElementById('article').innerHTML = marked.parse(document.getElementById('md').textContent.trim());
@@ -869,4 +881,4 @@ const article = document.getElementById('article');
 </body>
 </html>
 
-<!-- ymzhu 2026-10-27 14:00 -->
+<!-- ymzhu 2026-10-28 13:36 -->

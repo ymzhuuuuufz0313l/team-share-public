@@ -700,6 +700,16 @@
 - **成因复盘**：结构重排用"XOR 结合律总量不变"集合级推理验收，未做逐拍×逐槽枚举核对；三元链默认分支静默吞掉漏写项；三关纪律与 G13 条款（0929）彼时未建立；DV pwrc case 同 commit 交付未跑到暴露窗口。最小拦截检查（注释/表格↔表达式逐拍比对）已沉淀为 `script/xcheck_1027v1_xdata_a.py` B 轴
 - Excel 登记 NO51；站点 checksum.html §10 + §7 勘误 + 脉冲移至 0x0A PWRC_P
 
+### 5.31 1028v1 LC_CPUWR 修复 chip_sel=1 回拼写标志置位时序
+
+2026-10-28，DV 发现（chip_sel=1）：正常发数据 → 复位 → TX 直接 K1、K4。复位后、K4 帧前 0x09/0x0A/0x1F 映射输出正确；**第一个 K4 帧内被改写成 cs=0 复位值**（回拼失效）。
+
+- **根因**：`R_REG09/10/31_F_WR` 置位条件为裸拍解码（`ADDRxx_F` 帧内即时），而其修饰的 `R_REGxx_F` 活动值在帧尾 `update_en_a` 提交（连续匹配链后）——置位时刻 ≠ 数据生效时刻，首帧拍内出现 `(WR=1, R_REG=cs0 复位值)` 错配，`(WR ? R_REG : cs1默认)` mux 选中 cs=0 复位值；mismatch 帧下错配窗口无限延长。I2C 读回（RECON）与 `SR_*/PWRC_*` 功能输出同受影响
+- **修复**：WR 门控与寄存器控制逻辑完全镜像——直写路径（`!chksum_mode || unlock_one_shot_a`）拍内置位（与直写同沿）、checksum 帧在 `update_en_a` 置位（与 shadow→active 同沿）、复位同清；**不变式：WR 与 R_REG 同沿成对变更**。LC_CPUWR 1027v1→1028v1
+- **验证（代码级）**：逐场景推演表七场景（复位/K4 前窗口/首帧拍内/mismatch/提交/I2C/unlock）修复前后全对；WR 消费者全仓仅 LC_REG_MAPPING；同类排查：0x25/0x26 WR 为测试区直写（时序自洽）不受影响、全仓无其他同类；iverilog 受控对照错误集逐行一致
+- DV 复现口径：复位→K1→首 K4 帧全程 0x09/0x0A/0x1F 应保持 cs=1 默认，首个提交帧后才变帧写入值
+- Excel 登记 NO52；站点 regmap §33 + §11.6 勘误注记 + 五页同步
+
   </script>
   <script>
     document.getElementById('article').innerHTML = marked.parse(document.getElementById('md').textContent.trim());
@@ -790,4 +800,4 @@ const article = document.getElementById('article');
 </body>
 </html>
 
-<!-- ymzhu 2026-10-27 17:58 -->
+<!-- ymzhu 2026-10-28 13:36 -->

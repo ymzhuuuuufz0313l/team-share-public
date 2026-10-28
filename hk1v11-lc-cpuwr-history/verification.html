@@ -461,6 +461,21 @@ LC_CPUWR 1027v1-B（Seg1 checksum 0x0A XOR 覆盖修复）按用户 2026-10-27 �
 
 **方法论沉淀**：同类错误的最小拦截检查 = 注释/文档表格 ↔ RTL 表达式的**逐拍×逐槽枚举比对**（B 轴）——结构重排类变更（如 0721v1）的"集合级等价推理"（XOR 结合律）不能替代该枚举核对。
 
+## 12. 1028v1 验收：WR 标志时序修复（代码级，无仿真无 VM）
+
+chip_sel=1 回拼写标志置位时序修复（DV 2026-10-28 序列暴露：cs=1→正常帧→复位→K1+K4 立即，首帧拍内回拼被带成 cs=0 复位值）。纯门控时序修改（无重定时），G13 对拍 TB 条款不触发：
+
+| 关卡 | 口径 | 结果 |
+|------|------|------|
+| ① iverilog | 受控对照：vs 1027v1 基线同命令（`-Wall` + HDL_define.v） | 错误集逐行一致（20×CLKINVX4AL9 均 1022v1 既有 std-cell 缺库），无新增 |
+| ② 评审 + 同类排查 | 门控镜像等价性审查 + 全仓 `_WR` 标志普查 | **PASS（critical=0/high=0）**——WR 门控项与 R_REG09/10/31_F 控制项逐字相同（`!chksum_mode \|\| unlock_one_shot_a` 直写 / `update_en_a` 提交 / 同域复位），不变式 = WR 与 R_REG 同沿成对变更；全仓 5 个 `_WR`，0x25/0x26 为测试区直写（拍内数据+拍内标志自洽）不受影响 |
+| ③ 消费者核查 | `R_REG09/10/31_F_WR` 全仓消费者枚举 | 仅 LC_REG_MAPPING（端口输入 + `SR_*/PWRC_*` mux + RECON 读回链），无其他消费者 |
+| 逐场景推演 | 七场景修复前后对照（复位 / K4 前窗口 / 首帧拍内 / mismatch / 提交 / I2C / unlock） | 全部正确：复位→首提交前 WR=0 → cs=1 默认回拼保持；提交沿 WR 与 R_REG 同置；mismatch 帧 WR 保持 0 |
+
+**DV 侧待办（VM 恢复后）**：复位→K1→首 K4 帧窗口回归（0x09/0x0A/0x1F 应全程 cs=1 默认：SR=11、TA/TB=01、P/N=10、PA~NB=10，读回 0xFF/0xA5/0xAA）；首帧 mismatch 下 WR 保持 0；I2C 直写与 unlock 直写路径冒烟。
+
+**方法论沉淀**：跨模块"标志位 ↔ 数据"配对 invariant——标志的**置位/清零沿**必须与其修饰**数据的变更沿**完全一致（本例 WR 裸拍置位 vs 数据帧尾提交）。评审此类回拼/重建机制的检查点：列出标志与数据各自的所有变更沿，逐沿配对。
+
   </script>
   <script>
     document.getElementById('article').innerHTML = marked.parse(document.getElementById('md').textContent.trim());
@@ -551,4 +566,4 @@ const article = document.getElementById('article');
 </body>
 </html>
 
-<!-- ymzhu 2026-10-27 17:58 -->
+<!-- ymzhu 2026-10-28 13:36 -->
