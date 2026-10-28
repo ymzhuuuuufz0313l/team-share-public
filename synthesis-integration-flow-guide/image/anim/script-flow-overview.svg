@@ -39,7 +39,7 @@
   @keyframes pkt22{from{stroke-dashoffset:66.11}to{stroke-dashoffset:0}}
   /* 3) 门禁节点呼吸(仅 2: signoff / to_signoff): opacity 1↔0.55, 3.2s */
   .breath{animation:breath 3.20s ease-in-out infinite}
-  @keyframes breath{0%,100%{opacity:1}50%{opacity:0.55}}
+  @keyframes breath{0%,100%{opacity:1}50%{opacity:0.25}}
  </style>
 <title>script_flow</title>
 <polygon fill="white" stroke="none" points="-36,36 -36,-2491.75 1167,-2491.75 1167,36 -36,36"/>

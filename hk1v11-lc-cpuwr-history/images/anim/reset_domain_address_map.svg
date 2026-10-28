@@ -6,7 +6,7 @@
 .head { opacity:0; animation: rowIn 0.4s ease forwards; }
 .chg { animation: chgPulse 2s ease-in-out 4s infinite; }
 @keyframes chgPulse { 0%,100% { opacity:1; } 50% { opacity:0.45; } }
-@keyframes breathe { 0%,100% { opacity: 1; } 50% { opacity: 0.45; } }
+@keyframes breathe { 0%,100% { opacity: 1; } 50% { opacity: 0.25; } }
 .breathe { animation: breathe 3.2s ease-in-out infinite; }
 </style>
 <rect width="866" height="2956" fill="#ffffff"/>

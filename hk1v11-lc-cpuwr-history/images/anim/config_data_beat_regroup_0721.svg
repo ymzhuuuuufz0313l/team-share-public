@@ -10,7 +10,7 @@
 @keyframes chgRowPulse { 0%,100% { opacity:1; } 50% { opacity:0.5; } }
 .brd { animation: brdPulse 2.4s ease-in-out 4s infinite; }
 @keyframes brdPulse { 0%,100% { stroke-opacity: 1; } 50% { stroke-opacity: 0.4; } }
-@keyframes breathe { 0%,100% { opacity: 1; } 50% { opacity: 0.45; } }
+@keyframes breathe { 0%,100% { opacity: 1; } 50% { opacity: 0.25; } }
 .breathe { animation: breathe 3.2s ease-in-out infinite; }
 </style>
 <rect width="1240" height="848" fill="#ffffff"/>

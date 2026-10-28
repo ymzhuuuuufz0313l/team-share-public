@@ -30,7 +30,7 @@
     .pl1{animation:pl 3.2s ease-in-out infinite}
     .pl2{animation:pl 3.2s ease-in-out 1.07s infinite}
     .pl3{animation:pl 3.2s ease-in-out 2.13s infinite}
-    @keyframes cellB{0%,100%{opacity:1}50%{opacity:.4}}
+    @keyframes cellB{0%,100%{opacity:1}50%{opacity:.25}}
     .cB{animation:cellB 3s ease-in-out infinite}
     .cBx{animation:pl 3.2s ease-in-out 2.13s infinite,cellB 3s ease-in-out .45s infinite}
     @keyframes wash{0%,100%{opacity:1}50%{opacity:.6}}
