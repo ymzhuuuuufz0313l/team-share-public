@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2352" height="290" viewBox="0 0 2352 290" font-family="Consolas, 'Cascadia Mono', 'Courier New', monospace">
+
+<g class="head">
+<rect x="0" y="0" width="2352" height="60" fill="#0e7c6b"/>
+<text x="16" y="38.5" font-size="26" font-weight="bold" fill="#ffffff">report_trans.csv (HK1V11 1029V0)</text>
+<text x="2336" y="36.5" font-size="20" fill="#ffffff" text-anchor="end">max_trans/cap 约束违例总表</text>
+<rect x="0" y="60" width="2352" height="52" fill="#0e7c6b"/>
+<text x="12" y="92" font-size="20" font-weight="bold" fill="#ffffff">metric</text>
+<text x="526" y="92" font-size="20" font-weight="bold" fill="#ffffff" text-anchor="middle">lt_cbest_m40</text>
+<text x="718" y="92" font-size="20" font-weight="bold" fill="#ffffff" text-anchor="middle">lt_cworst_m40</text>
+<text x="910" y="92" font-size="20" font-weight="bold" fill="#ffffff" text-anchor="middle">lt_typical_m40</text>
+<text x="1102" y="92" font-size="20" font-weight="bold" fill="#ffffff" text-anchor="middle">ml_cbest_125</text>
+<text x="1294" y="92" font-size="20" font-weight="bold" fill="#ffffff" text-anchor="middle">tt_cbest_25</text>
+<text x="1486" y="92" font-size="20" font-weight="bold" fill="#ffffff" text-anchor="middle">tt_cworst_25</text>
+<text x="1678" y="92" font-size="20" font-weight="bold" fill="#ffffff" text-anchor="middle">tt_typical_25</text>
+<text x="1870" y="92" font-size="20" font-weight="bold" fill="#ffffff" text-anchor="middle">wc_cbest_125</text>
+<text x="2062" y="92" font-size="20" font-weight="bold" fill="#ffffff" text-anchor="middle">wc_cworst_125</text>
+<text x="2254" y="92" font-size="20" font-weight="bold" fill="#ffffff" text-anchor="middle">wc_typical_125</text>
+</g>
+<g class="row" style="animation-delay:0.025s">
+<rect x="0" y="112" width="2352" height="44" fill="#ffffff"/>
+<text class="lab" x="12" y="140" font-size="20" fill="#212529">capacitance (biggest violation)</text>
+<text class="val" x="608" y="140" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="800" y="140" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="992" y="140" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val breath" style="animation-delay:0.45s" x="1184" y="140" font-size="20" fill="#b91c1c" text-anchor="end">-0.004338</text>
+<text class="val" x="1376" y="140" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val breath" style="animation-delay:0.75s" x="1568" y="140" font-size="20" fill="#b91c1c" text-anchor="end">-0.003230</text>
+<text class="val" x="1760" y="140" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val breath" style="animation-delay:1.05s" x="1952" y="140" font-size="20" fill="#b91c1c" text-anchor="end">-0.005154</text>
+<text class="val breath" style="animation-delay:1.20s" x="2144" y="140" font-size="20" fill="#b91c1c" text-anchor="end">-0.011070</text>
+<text class="val breath" style="animation-delay:1.35s" x="2336" y="140" font-size="20" fill="#b91c1c" text-anchor="end">-0.007703</text>
+</g>
+<g class="row" style="animation-delay:0.050s">
+<rect x="0" y="156" width="2352" height="44" fill="#f4f8f7"/>
+<text class="lab" x="12" y="184" font-size="20" fill="#212529">clock_period (biggest violation)</text>
+<text class="val" x="608" y="184" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="800" y="184" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="992" y="184" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1184" y="184" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1376" y="184" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1568" y="184" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1760" y="184" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1952" y="184" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="2144" y="184" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="2336" y="184" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+</g>
+<g class="row" style="animation-delay:0.075s">
+<rect x="0" y="200" width="2352" height="44" fill="#ffffff"/>
+<text class="lab" x="12" y="228" font-size="20" fill="#212529">pulse_width (biggest violation)</text>
+<text class="val" x="608" y="228" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="800" y="228" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="992" y="228" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1184" y="228" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1376" y="228" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1568" y="228" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1760" y="228" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1952" y="228" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="2144" y="228" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="2336" y="228" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+</g>
+<g class="row" style="animation-delay:0.100s">
+<rect x="0" y="244" width="2352" height="44" fill="#f4f8f7"/>
+<text class="lab" x="12" y="272" font-size="20" fill="#212529">transition (biggest violation)</text>
+<text class="val" x="608" y="272" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="800" y="272" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="992" y="272" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val breath" style="animation-delay:0.90s" x="1184" y="272" font-size="20" fill="#b91c1c" text-anchor="end">-0.335278</text>
+<text class="val breath" style="animation-delay:1.05s" x="1376" y="272" font-size="20" fill="#b91c1c" text-anchor="end">-0.097204</text>
+<text class="val" x="1568" y="272" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val" x="1760" y="272" font-size="20" fill="#1e8449" text-anchor="end">0</text>
+<text class="val breath" style="animation-delay:1.50s" x="1952" y="272" font-size="20" fill="#b91c1c" text-anchor="end">-0.814575</text>
+<text class="val breath" style="animation-delay:1.65s" x="2144" y="272" font-size="20" fill="#b91c1c" text-anchor="end">-0.991697</text>
+<text class="val breath" style="animation-delay:1.80s" x="2336" y="272" font-size="20" fill="#b91c1c" text-anchor="end">-0.886763</text>
+</g>
+<line x1="622" y1="60" x2="622" y2="288" stroke="#d0d8d6" stroke-width="1"/>
+<line x1="814" y1="60" x2="814" y2="288" stroke="#d0d8d6" stroke-width="1"/>
+<line x1="1006" y1="60" x2="1006" y2="288" stroke="#d0d8d6" stroke-width="1"/>
+<line x1="1198" y1="60" x2="1198" y2="288" stroke="#d0d8d6" stroke-width="1"/>
+<line x1="1390" y1="60" x2="1390" y2="288" stroke="#d0d8d6" stroke-width="1"/>
+<line x1="1582" y1="60" x2="1582" y2="288" stroke="#d0d8d6" stroke-width="1"/>
+<line x1="1774" y1="60" x2="1774" y2="288" stroke="#d0d8d6" stroke-width="1"/>
+<line x1="1966" y1="60" x2="1966" y2="288" stroke="#d0d8d6" stroke-width="1"/>
+<line x1="2158" y1="60" x2="2158" y2="288" stroke="#d0d8d6" stroke-width="1"/>
+<line x1="2350" y1="60" x2="2350" y2="288" stroke="#d0d8d6" stroke-width="1"/>
+<line x1="1" y1="112" x2="2351" y2="112" stroke="#d0d8d6" stroke-width="1"/>
+<line x1="1" y1="156" x2="2351" y2="156" stroke="#d0d8d6" stroke-width="1"/>
+<line x1="1" y1="200" x2="2351" y2="200" stroke="#d0d8d6" stroke-width="1"/>
+<line x1="1" y1="244" x2="2351" y2="244" stroke="#d0d8d6" stroke-width="1"/>
+<rect x="1" y="1" width="2350" height="288" fill="none" stroke="#c0c6c6" stroke-width="2"/>
+</svg>
