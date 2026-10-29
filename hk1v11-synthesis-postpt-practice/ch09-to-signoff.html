@@ -155,7 +155,7 @@ KEY: hold ~1742 条/corner、worst −5.078 是既有 P0（每轮 run 逐条相�
 ![hold 总表](./images/anim/52_signoff_hold_hk11.svg?v=20261030)
 
 - setup 11 违例格 / 4 域，worst −0.368383（gating @wc_cbest_125）；hold 11 格 / 3 域，worst −0.048648（RX_CLK @lt_typical_m40）。
-- 读法照抄 2M23：绿 0 = 零违例；深色正数 = 有 margin 的最差路径余量；红 = biggest violation < 0（呼吸常驻）。
+- 读法照抄 2M23：绿 0 = 零违例；深色正数 = 有 margin 的最差路径余量；深红 = 违例，**括号内为该角该域违例条数**（呼吸常驻）；全表统一 5 位小数。
 
 ### 6.2 trans / cap 总表
 
@@ -167,14 +167,14 @@ KEY: hold ~1742 条/corner、worst −5.078 是既有 P0（每轮 run 逐条相�
 
 ![phy busskew](./images/anim/54_signoff_physkew_hk11.svg?v=20261030)
 
-- 4 角负全在 `rx0_00_min`（lt×3 + ml，最差 −0.048711）＝ port→FF hold 族（±0.3 input delay 模型所致，定性见 ch19 §2.1-2.2）。
+- 4 角负全在 `rx0_00_min`（lt×3 + ml，最差 −0.04871）＝ port→FF hold 族（±0.3 input delay 模型所致，定性见 ch19 §2.1-2.2）；按 2M23 原样负值不红显（深色+呼吸）。
 - `sd_l/r_dplc_clk_b` 两行**首次以真探针产出**（旧 run 为污染值 6.76/7.13 级）。
 
 ### 6.4 SD skew margin（P1 生效实证）
 
 ![sdskew margin](./images/anim/55_signoff_sdskew_margin_hk11.svg?v=20261030)
 
-- **b 组全角收窗**：margin_b_min 全 10 角 ≥ −0.038（l 侧全正 0.26~0.85）；唯一红格 `sd_r_dplc_margin_b_max @wc_cworst_125 = 4.259056` 出上界 +4.1（超 0.159，新关注项，待与 PR/jjlu 确认上界口径）。
+- **b 组全角收窗**：margin_b_min 全 10 角 ≥ −0.038（l 侧全正 0.26~0.85）；唯一红格 `sd_r_dplc_margin_b_max @wc_cworst_125 = 4.25906` 出上界 +4.1（超 0.159，新关注项，待与 PR/jjlu 确认上界口径）。
 - `sd_r_dplc_margin_a_min` 2 红格（−1.244/−0.961）＝ P5 悬置的「dplc 窗套 a 侧」口径问题延续，非新违例（CLKA 两模式恒 SD_CLK_INV，窗口适用性待规格收口）。
 
 ## 交叉引用
