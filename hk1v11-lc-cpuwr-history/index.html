@@ -383,8 +383,8 @@
       </div>
       <div class="reg">
         CURRENT
-        <span class="ver">1028v1</span>
-        REV 2026-10-28
+        <span class="ver">1029v1</span>
+        REV 2026-10-29
       </div>
     </div>
   </header>
@@ -393,12 +393,15 @@
     <div class="latest">
       <div class="badge">
         <span class="tag">LATEST</span>
-        <span class="num">1028v1</span>
+        <span class="num">1029v1</span>
       </div>
       <div class="body">
-        <div class="t">1028v1 · 修复 chip_sel=1 回拼写标志置位时序（10-28，LC_CPUWR Bug Fix，代码级验证全过）</div>
+        <div class="t">1029v1 · khead 移址 + TP_SEL + BACSCR_EOL 三字段落地（10-29，LC_CPUWR + LC_REG_MAPPING 双升版）</div>
         <ul>
-          <li><code>R_REG09/10/31_F_WR</code> 原为裸拍解码置位，与数据生效时刻（帧尾 <code>update_en_a</code> 提交）错配</li>
+          <li>依 HK1V11_Register_20261028.xlsm：<code>khead_20b_sel</code> 移址 <code>0x33[6:2]</code>（输出改 LC_CPUWR + LSI 门控，REG_MAPPING 端口回退）</li>
+          <li>新增 <code>TP_SEL[1:0]</code> @0x34[7:6]（位置经用户确认）与 <code>BACSCR_EOL</code> @0x38[7]，均 LSI 门控输出</li>
+          <li>三字段存储全既有仅加输出；iverilog 双对照一致；三输出上层挂账</li>
+          <li>前置：1028v1 回拼 WR 时序修复 / 1027v1-B checksum 0x0A 修复（详见时间线）</li>
           <li>DV 序列（cs=1→正常帧→复位→K1+K4 立即）：首帧拍内 <code>(WR=1, R_REG=cs0 复位值)</code> → 回拼 mux 选中 cs=0 复位值，<strong>cs=1 默认回拼失效</strong>（mismatch 帧下无限延长）</li>
           <li>修复：WR 门控<strong>完全镜像寄存器控制逻辑</strong>（直写路径拍内 / checksum 帧提交沿 / 复位同清），不变式 = WR 与 R_REG 同沿成对变更；同类排查无其他；iverilog 受控对照一致</li>
           <li>前置：1027v1-B checksum 0x0A 覆盖修复 / 1027v1-A khead_20b_sel（详见时间线）</li>
@@ -409,7 +412,7 @@
 
     <div class="stats">
       <div class="stat"><div class="v">8</div><div class="k">章节页面</div></div>
-      <div class="stat"><div class="v">43</div><div class="k">归档版本（0612 → 1028v1）</div></div>
+      <div class="stat"><div class="v">44</div><div class="k">归档版本（0612 → 1029v1）</div></div>
       <div class="stat"><div class="v">3</div><div class="k">道验收关（iverilog / review / trace）</div></div>
       <div class="stat"><div class="v">06-15</div><div class="k">归档体系建立</div></div>
     </div>
@@ -459,4 +462,4 @@
 </body>
 </html>
 
-<!-- ymzhu 2026-10-28 13:36 -->
+<!-- ymzhu 2026-10-29 11:52 -->

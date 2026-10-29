@@ -224,9 +224,9 @@
 <rect x="842" y="758.0" width="64" height="26" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" rx="13"/>
 <circle cx="854" cy="771.0" r="3.5" fill="#22c55e"/>
 <text x="877.0" y="775.0" text-anchor="middle" font-size="12" font-weight="700" fill="#1e293b" font-family="Consolas, Monaco, monospace">0x00</text>
-<rect x="170" y="748" width="409" height="46" fill="#ccfbf1" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="374.5" y="769.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">khead_20b_sel[4:0]</text>
-<text x="374.5" y="783.0" text-anchor="middle" font-size="9.0" fill="#64748b">5'b00000</text>
+<rect x="170" y="748" width="409" height="46" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="374.5" y="769.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">Reserved</text>
+<text x="374.5" y="783.0" text-anchor="middle" font-size="9.0" fill="#64748b">0</text>
 <rect x="580" y="748" width="245" height="46" fill="#ccfbf1" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="702.5" y="769.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">SP_S[2:0]</text>
 <text x="702.5" y="783.0" text-anchor="middle" font-size="9.0" fill="#64748b">3'b000</text>
@@ -538,9 +538,9 @@
 <rect x="170" y="1840" width="81" height="46" fill="#ccfbf1" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="210.5" y="1861.0" text-anchor="middle" font-size="8.0" font-weight="500" fill="#1e293b">reg_pin_eq</text>
 <text x="210.5" y="1875.0" text-anchor="middle" font-size="7.0" fill="#64748b">1'b0</text>
-<rect x="252" y="1840" width="409" height="46" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="456.5" y="1861.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">Reserved</text>
-<text x="456.5" y="1875.0" text-anchor="middle" font-size="9.0" fill="#64748b">0</text>
+<rect x="252" y="1840" width="409" height="46" fill="#ccfbf1" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="456.5" y="1861.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">khead_20b_sel[4:0]</text>
+<text x="456.5" y="1875.0" text-anchor="middle" font-size="9.0" fill="#64748b">5'b00000</text>
 <rect x="662" y="1840" width="81" height="46" fill="#ccfbf1" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="702.5" y="1861.0" text-anchor="middle" font-size="6.4" font-weight="500" fill="#1e293b">reg_lane_ck_inv_en</text>
 <text x="702.5" y="1875.0" text-anchor="middle" font-size="5.4" fill="#64748b">1'b0</text>
@@ -551,9 +551,9 @@
 <rect x="842" y="1902.0" width="64" height="26" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" rx="13"/>
 <circle cx="854" cy="1915.0" r="3.5" fill="#22c55e"/>
 <text x="877.0" y="1919.0" text-anchor="middle" font-size="12" font-weight="700" fill="#1e293b" font-family="Consolas, Monaco, monospace">0x00</text>
-<rect x="170" y="1892" width="163" height="46" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="251.5" y="1913.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">Reserved</text>
-<text x="251.5" y="1927.0" text-anchor="middle" font-size="9.0" fill="#64748b">0</text>
+<rect x="170" y="1892" width="163" height="46" fill="#ccfbf1" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="251.5" y="1913.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">TP_SEL[1:0]</text>
+<text x="251.5" y="1927.0" text-anchor="middle" font-size="9.0" fill="#64748b">2'b00</text>
 <rect x="334" y="1892" width="81" height="46" fill="#e0f2fe" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="374.5" y="1913.0" text-anchor="middle" font-size="5.0" font-weight="500" fill="#1e293b">regr_lane_vctrl_overflow</text>
 <text x="374.5" y="1927.0" text-anchor="middle" font-size="4.5" fill="#64748b">1'b0</text>
@@ -606,9 +606,9 @@
 <rect x="842" y="2110.0" width="64" height="26" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" rx="13"/>
 <circle cx="854" cy="2123.0" r="3.5" fill="#f59e0b"/>
 <text x="877.0" y="2127.0" text-anchor="middle" font-size="12" font-weight="700" fill="#1e293b" font-family="Consolas, Monaco, monospace">0x15</text>
-<rect x="170" y="2100" width="81" height="46" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="210.5" y="2121.0" text-anchor="middle" font-size="8.0" font-weight="500" fill="#1e293b">Reserved</text>
-<text x="210.5" y="2135.0" text-anchor="middle" font-size="7.0" fill="#64748b">0</text>
+<rect x="170" y="2100" width="81" height="46" fill="#ccfbf1" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="210.5" y="2121.0" text-anchor="middle" font-size="8.0" font-weight="500" fill="#1e293b">BACSCR_EOL</text>
+<text x="210.5" y="2135.0" text-anchor="middle" font-size="7.0" fill="#64748b">1'b0</text>
 <rect x="252" y="2100" width="81" height="46" fill="#ccfbf1" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="292.5" y="2121.0" text-anchor="middle" font-size="8.0" font-weight="500" fill="#1e293b">reg_eol</text>
 <text x="292.5" y="2135.0" text-anchor="middle" font-size="7.0" fill="#64748b">1'b0</text>

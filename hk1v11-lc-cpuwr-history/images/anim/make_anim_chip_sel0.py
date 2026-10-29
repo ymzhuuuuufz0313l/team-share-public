@@ -15,7 +15,7 @@ v4 规格（1100×2842，chip_sel=0 寄存器默认字节映射 · 49 行）：
   · v4.2 删除：49 行整行 cellwave 行波（原 0.2s/行、周期 9.8s 地址扫描
     波）与 POR 默认值列 sweepband 语义扫光（含 defs 渐变/clipPath）。
   · 脉冲 pulse×2 保留（≤3 个语义强调点；相位 -0.7 / -1.4）：
-    0x1D 行 khead_20b_sel[4:0] 单元格（rect+2text 三连）pulse（琥珀，
+    0x33 行 khead_20b_sel[4:0] 单元格（rect+2text 三连）pulse（琥珀，
     -0.7s，LC_CPUWR 1027v1 变更格）；0x30 行组 TEST_PRTCT[7:0]（密码/
     受保护相关行，cs=0 无 ★ 回拼行故选此）pulse-t（深青，-1.4s）。
   · chrome 呼吸 cellwave×1（v4.2 第二稳态族补足，唯一许可方式）：
@@ -74,7 +74,7 @@ LABEL_X = "158"
 N_ROWS = 49
 ROW_STEP = 0.03
 ROW_PULSES = {"0x30": ("pulse-t", "-1.4s")}        # v4.1：TEST_PRTCT 密码/受保护行
-CELL_PULSES = {"0x1D": ("khead_20b_sel[4:0]", "pulse", "-0.7s")}
+CELL_PULSES = {"0x33": ("khead_20b_sel[4:0]", "pulse", "-0.7s")}
 
 
 def attrs_of(line):
@@ -248,4 +248,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-# ymzhu 2026-10-29 10:12
+# ymzhu 2026-10-29 11:52

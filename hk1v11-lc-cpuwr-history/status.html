@@ -249,10 +249,11 @@
 
 ## 1. 当前版本
 
-当前最新版本为 **1028v1**（LC_CPUWR：修复 chip_sel=1 回拼写标志 `R_REG09/10/31_F_WR` 置位时序与数据生效时刻错配，代码级验证全过）；前版 **1027v1** 同日两件（A：LC_REG_MAPPING khead_20b_sel；B：LC_CPUWR checksum 0x0A 覆盖修复）；`LINK_CONFIG_CTRL.v` 保持 0918v1：
+当前最新版本为 **1029v1**（LC_CPUWR + LC_REG_MAPPING 双升版：khead 移址 0x33[6:2] 改 LC_CPUWR 输出+LSI 门控 / TP_SEL @0x34[7:6] / BACSCR_EOL @0x38[7]，依 20261028 表，代码级验证全过）；前版 1028v1（回拼 WR 时序修复）、1027v1（khead 初版+checksum 0x0A 修复）；`LINK_CONFIG_CTRL.v` 保持 0918v1：
 
 | 版本 | 主要状态 |
 |------|----------|
+| **1029v1** | **本地功能修改（10-29，LC_CPUWR + LC_REG_MAPPING 双升版，依 HK1V11_Register_20261028.xlsm）：①khead_20b_sel 移址 0x1D[7:3]→0x33[6:2]**（输出改 LC_CPUWR `R_KHEAD_20B_SEL[4:0]=LSI_PRTECT?R_REG51_F[6:2]:5'b00000`，52>31 规则+加门控；LC_REG_MAPPING 1027v1 端口回退摘除，0x1D[7:3] 回 Reserved）；**②TP_SEL[1:0] @0x34[7:6]**（位置经用户确认，cs=1 描述 0x03[6:5] 为笔误）；**③BACSCR_EOL @0x38[7]**（门控同邻位 reg_eol）。三字段存储全既有仅加输出，三输出上层挂账；iverilog 双对照一致；Excel NO53** ✅ |
 | **1028v1** | **本地 Bug Fix（10-28，仅 LC_CPUWR 升版）：修复 chip_sel=1 回拼写标志置位时序**——`R_REG09/10/31_F_WR` 原为裸拍解码置位（`ADDRxx_F` 即时），与数据生效时刻（帧尾 `update_en_a` 提交）错配；DV 序列（cs=1→正常帧→复位→K1+K4 立即）下首帧拍内 `(WR=1, R_REG=cs0 复位值)` → 回拼 mux 选中 cs=0 复位值，cs=1 默认回拼失效（至首个提交，mismatch 帧无限延长；I2C 读回 RECON 与 `SR_*/PWRC_*` 输出同受影响）。修复：WR 门控与寄存器控制完全镜像（直写路径拍内 / checksum 帧提交沿 / 复位同清），不变式 = WR 与 R_REG 同沿成对变更。同类排查：0x25/0x26 WR 为测试区直写不受影响，全仓无其他同类；验证（代码级）：逐场景推演表 + WR 消费者仅 LC_REG_MAPPING + iverilog 受控对照全 PASS；DV 复现口径：复位→K1→首 K4 帧全程应保持 cs=1 默认；Excel NO52** ✅ |
 | **1027v1-B** | **本地 Bug Fix（10-27 晚，仅 LC_CPUWR 升版）：修复 Seg1 checksum 0x0A XOR 覆盖丢失**——`xdata_a` 漏写 `5'h04` 分支落默认 `DATA_C`，0x0A（D 槽，cs=1 为 PWRC_N/P/TB/TA）自 0721v1（1b574b63）3B/beat 重排起从未进入运行 XOR（头注释/站点表格一直正确）；DV `t_8b1lane_checksum_boundary_chip1` F30 假提交暴露（`addr=0a actual=10 expected=00`）；双向破坏（假匹配误提交 / 正确校验假 mismatch+unmatch 污染）。修复一行 `(5'h04)?(DATA_C^DATA_D)`；验证（代码级，无仿真）：四轴交叉验证 + 六轴同类排查（**无其他同类错误**）+ iverilog 受控对照全 PASS（`script/xcheck_1027v1_xdata_a.py` / `xcheck_1027v1_similar.py`）；DV 待办：boundary_chip1 复跑 + pwrc_p1/p2/p3 期望复核；Excel 登记 NO51** ✅ |
 | **1027v1-A** | **本地功能修改（10-27 上午，三关全过，仅 LC_REG_MAPPING 升版）：依 HK1V11_Register_20261026.xlsm 新增 `khead_20b_sel[4:0]` @0x1D[7:3]（R/W 默认 5'b00000；5'b10101=20-bit mode / Others=40-bit mode default；无 LSI_PRTECT 门控）——LC_REG_MAPPING 新增输出 `R_KHEAD_20B_SEL[4:0]=R_REG29_F[7:3]`（十进制地址≤31 字段输出走 regmapping；上层连接挂账）；0x1D 为 Seg1 checksum 参与寄存器，存储/写/复位/读回/checksum 全部既有，写路径零改动；LC_CPUWR 保持 1023v1；Excel 登记 NO50** ✅ |
@@ -277,6 +278,13 @@
 | 0721v1 | `LCONFIG_DATA`/`FCONFIG_DATA` 16bit→24bit（每步 3 寄存器）；checksum XOR 总量不变 ✅ |
 | 0716v1 | 新增 `FSEL[1:0]` @ `0x35`；已归档为 `0716_v1_work` ✅ |
 | 0714v1 | chip_sel=0 默认值 + `LC_REG_MAPPING` 回拼 chip_sel=1 默认值；回归通过 ✅ |
+
+1029v1 交付物：
+
+- 双文件 RTL（LC_CPUWR 1029v1 三输出+门控 assign；LC_REG_MAPPING 1029v1 摘除 khead 端口；HDL 双份同 MD5）+ 验证（代码级：iverilog 双对照 / 三字段五项既有性 / LINK_CONFIG_CTRL 零残连）
+- 文档：双轨 CHANGES + README ×2 + chip_sel0/1 地址表四行（`script/update_addrmap_1029v1.py`）+ xlsx NO53（`script/add_regchange_1029v1.py`）+ 表源工具沉淀（`script/dump_reg_full.ps1`）
+- 站点：regmap §34 + §32 勘误 + 寄存器图/LSI 图/复位域图四行单元格（静态+动画脉冲移 0x33 khead）+ 五页同步
+- 挂账：R_KHEAD_20B_SEL / R_TP_SEL / R_BACSCR_EOL 三输出上层连线（FUNCTION 侧）；表笔误两条待反馈 spec owner
 
 1028v1 交付物：
 
@@ -380,6 +388,7 @@
 - **20260929 表审查**：12 条变更全为描述类（SP_S→dummy、VBK/TP_F_AHEAD/HIZ_MIN_* 描述），Reg_1V11 零变化，三件套保持不动；SP_S 链清理与 HIZ_MIN_VAL 量纲 2 项待设计确认（glm-5.3 团队 + captain 独立 diff 交叉）
 - **1022v1 服务器包采纳**：服务器 `PACK_TAR_1022V1` 状态采纳为本地最新（0918v1/0920v1 后服务器侧他人修改、已经允许）——LC_CPUWR `update_en_a` 升模块输出 + `reg_eq_rbc1` 默认 1→0 回退（0x08 字节 0x02→0x00）；LC_REG_MAPPING SRE/PWRC 接口重构、`VBK_EN` cs=1 初值 0→1、`CS_SET` 加 SMART_CS=111 门控、EQ 编码 ECO 化、AUTO_EQ 加 `SDID_EQ_EN_flag`、新增 `eol_det_en`
 - **1023v1 三项本地功能修改**（Agent Teams 团队执行，三关全过）：① `K1_FIND_LATCH` 打一拍（WCK1_A 域，chksum_mode 唯一消费者改用打拍信号，外部 LC_MONBLOCK/LINK_IO_CTRL 直连不变）② 新增 `SCS_PKT_HALF` @ 0x2F[0]（默认 0，LSI_PRTECT，输出 `R_SCS_PKT_HALF`，上层连线挂账；规格交叉验证 12/12）③ match 首帧/幻影防护（`prev_valid_a`+`frm_seen_start_a` 双标志门控 update_en/match_cnt/unmatch_cnt/unlock 四消费点，NG unlock 偏早 1 帧消除，F3 帧尾全量提交时序逐拍等价）
+- **1029v1 三字段落地**（LC_CPUWR+LC_REG_MAPPING 双升版）：khead 移址 0x33[6:2]（LC_CPUWR 输出+LSI 门控）+ TP_SEL/BACSCR_EOL（详见[寄存器 §34](./regmap.html)）
 - **1028v1 修复 chip_sel=1 回拼写标志置位时序**（仅 LC_CPUWR 升版，代码级验证全过）：`R_REG09/10/31_F_WR` 裸拍置位与数据提交时刻错配，复位→K1→首 K4 帧窗口回拼被带成 cs=0 复位值（DV 2026-10-28 暴露）；WR 门控镜像寄存器控制后不变式成立（详见[寄存器 §33](./regmap.html)）
 - **1027v1-B 修复 Seg1 checksum 0x0A XOR 覆盖丢失**（仅 LC_CPUWR 升版，代码级验证全过）：DV boundary_chip1 F30 假提交暴露——`xdata_a` 漏写 `5'h04` 分支，0x0A 自 0721v1 重排起从未进入 XOR（注释/表格一直正确）；修复一行，参与集恢复 0716 等价集；同类错误六轴排查**无其他问题**；成因复盘：结构重排用集合级推理验收、未做逐拍×逐槽枚举、三元链默认分支静默吞错（详见[校验和 §10](./checksum.html)）
 - **1027v1-A khead_20b_sel 输出**（三关全过，仅 LC_REG_MAPPING 升版）：依 HK1V11_Register_20261026.xlsm 新增 `khead_20b_sel[4:0]` @0x1D[7:3]（R/W 默认 `5'b00000`；`5'b10101`=20-bit mode / Others=40-bit mode default；无 LSI_PRTECT 门控，用户 2026-10-27 确认）——LC_REG_MAPPING 新增输出 `R_KHEAD_20B_SEL[4:0]=R_REG29_F[7:3]`（十进制地址≤31 字段输出走 regmapping；上层连接挂账）；0x1D 为 Seg1 checksum 参与寄存器，存储/写/复位/读回/checksum 全部既有，写路径零改动；LC_CPUWR 保持 1023v1 零改动
@@ -508,4 +517,4 @@ const article = document.getElementById('article');
 </body>
 </html>
 
-<!-- ymzhu 2026-10-28 13:36 -->
+<!-- ymzhu 2026-10-29 11:52 -->

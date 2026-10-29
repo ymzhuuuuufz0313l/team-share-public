@@ -17,7 +17,7 @@ v4 规格（1100×2946，chip_sel=1 寄存器默认字节映射 · 51 行）：
   · 脉冲 pulse×3（v4.1 为 ×4，密集规则 ≤3 → 删 0x30 TEST_PRTCT 行脉冲，
     该行语义已由 chip_sel0 图的 0x30 pulse 承担；cs=1 独有的 ★ 回拼行
     与 khead 变更格全保留；相位 -0.7 / -1.4 / -2.1）：
-    0x1D 行 khead_20b_sel[4:0] 单元格 pulse（琥珀，LC_CPUWR 1027v1 变更格）；
+    0x33 行 khead_20b_sel[4:0] 单元格 pulse（琥珀，LC_CPUWR 1027v1 变更格）；
     0x0A 行组（PWRC ★ 回拼行，LC_REG_MAPPING 回拼实现、含 checksum 修复
     相关 PWRC 字节）pulse-b（蓝，整行组，-1.4s）；
     0x09 行组（SR_NF/NR/PF/PR ★ 回拼行）pulse-t（深青，-2.1s）。
@@ -80,7 +80,7 @@ ROW_STEP = 0.03
 # 保留 khead 变更格 + cs=1 独有的 0x09/0x0A ★ 回拼行
 ROW_PULSES = {"0x0A": ("pulse-b", "-1.4s"),        # PWRC ★ 回拼行
               "0x09": ("pulse-t", "-2.1s")}        # v4.1：SR_* ★ 回拼行
-CELL_PULSES = {"0x1D": ("khead_20b_sel[4:0]", "pulse", "-0.7s")}
+CELL_PULSES = {"0x33": ("khead_20b_sel[4:0]", "pulse", "-0.7s")}
 
 
 def attrs_of(line):
@@ -254,4 +254,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-# ymzhu 2026-10-29 10:14
+# ymzhu 2026-10-29 11:52

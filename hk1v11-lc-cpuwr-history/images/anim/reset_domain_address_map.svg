@@ -221,11 +221,9 @@
 </g>
 <g class="row" style="animation-delay:0.51s">
 <text x="158" y="776.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x1D (29)</text>
-<g class="pulse" style="animation-delay:-0.7s">
 <rect x="170" y="748" width="409" height="46" fill="#dbeafe" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="374.5" y="769.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">khead_20b_sel[4:0]</text>
-<text x="374.5" y="783.0" text-anchor="middle" font-size="9.0" fill="#64748b">5'b00000</text>
-</g>
+<text x="374.5" y="769.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">Reserved</text>
+<text x="374.5" y="783.0" text-anchor="middle" font-size="9.0" fill="#64748b">0</text>
 <rect x="580" y="748" width="245" height="46" fill="#dbeafe" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="702.5" y="769.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">SP_S[2:0]</text>
 <text x="702.5" y="783.0" text-anchor="middle" font-size="9.0" fill="#64748b">3'b000</text>
@@ -512,9 +510,11 @@
 <rect x="170" y="1840" width="81" height="46" fill="#dbeafe" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="210.5" y="1861.0" text-anchor="middle" font-size="8.0" font-weight="500" fill="#1e293b">reg_pin_eq</text>
 <text x="210.5" y="1875.0" text-anchor="middle" font-size="7.0" fill="#64748b">1'b0</text>
+<g class="pulse" style="animation-delay:-0.7s">
 <rect x="252" y="1840" width="409" height="46" fill="#dbeafe" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="456.5" y="1861.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">Reserved</text>
-<text x="456.5" y="1875.0" text-anchor="middle" font-size="9.0" fill="#64748b">0</text>
+<text x="456.5" y="1861.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">khead_20b_sel[4:0]</text>
+<text x="456.5" y="1875.0" text-anchor="middle" font-size="9.0" fill="#64748b">5'b00000</text>
+</g>
 <rect x="662" y="1840" width="81" height="46" fill="#dbeafe" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="702.5" y="1861.0" text-anchor="middle" font-size="6.4" font-weight="500" fill="#1e293b">reg_lane_ck_inv_en</text>
 <text x="702.5" y="1875.0" text-anchor="middle" font-size="5.4" fill="#64748b">1'b0</text>
@@ -525,8 +525,8 @@
 <g class="row" style="animation-delay:1.17s">
 <text x="158" y="1920.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x34 (52)</text>
 <rect x="170" y="1892" width="163" height="46" fill="#dbeafe" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="251.5" y="1913.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">Reserved</text>
-<text x="251.5" y="1927.0" text-anchor="middle" font-size="9.0" fill="#64748b">0</text>
+<text x="251.5" y="1913.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">TP_SEL[1:0]</text>
+<text x="251.5" y="1927.0" text-anchor="middle" font-size="9.0" fill="#64748b">2'b00</text>
 <rect x="334" y="1892" width="81" height="46" fill="#dbeafe" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="374.5" y="1913.0" text-anchor="middle" font-size="5.0" font-weight="500" fill="#1e293b">regr_lane_vctrl_overflow</text>
 <text x="374.5" y="1927.0" text-anchor="middle" font-size="4.5" fill="#64748b">1'b0</text>
@@ -577,8 +577,8 @@
 <g class="pulse-b" style="animation-delay:-1.4s">
 <text x="158" y="2128.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x38 (56)</text>
 <rect x="170" y="2100" width="81" height="46" fill="#dbeafe" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="210.5" y="2121.0" text-anchor="middle" font-size="8.0" font-weight="500" fill="#1e293b">Reserved</text>
-<text x="210.5" y="2135.0" text-anchor="middle" font-size="7.0" fill="#64748b">0</text>
+<text x="210.5" y="2121.0" text-anchor="middle" font-size="8.0" font-weight="500" fill="#1e293b">BACSCR_EOL</text>
+<text x="210.5" y="2135.0" text-anchor="middle" font-size="7.0" fill="#64748b">1'b0</text>
 <rect x="252" y="2100" width="81" height="46" fill="#dbeafe" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="292.5" y="2121.0" text-anchor="middle" font-size="8.0" font-weight="500" fill="#1e293b">reg_eol</text>
 <text x="292.5" y="2135.0" text-anchor="middle" font-size="7.0" fill="#64748b">1'b0</text>

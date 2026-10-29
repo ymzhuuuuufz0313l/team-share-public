@@ -17,7 +17,7 @@ v4 规格（1198×2894，LC_CPUWR 1023v1 寄存器 LSI_PRTECT 保护状态 · 50
   · 脉冲 pulse×3（v4.1 为 ×4，密集规则 ≤3 → 删 0x38 reg_eol 行脉冲，
     该行在 reset_domain_address_map 图仍有 pulse-b 强调；本图保留
     受保护/不受保护边界的核心语义；相位 -0.7 / -2.1 / 0）：
-    0x1D 行 khead_20b_sel[4:0] 单元格 pulse（琥珀，-0.7s，
+    0x33 行 khead_20b_sel[4:0] 单元格 pulse（琥珀，-0.7s，
     LC_CPUWR 1027v1 变更格）；0x30 密码寄存器行组（TEST_PRTCT，紫色行，
     =8'h72 解锁）pulse-t（深青，-2.1s）；0x20 行组（受保护域起点行，
     PWRC_TSEL/TESTO_EN_OPT/R_TESTO_SEL 测试字段入口，红行）
@@ -80,7 +80,7 @@ ROW_STEP = 0.03        # 入场递进（50 行）
 # 保留 khead 变更格 + 密码行 0x30 + 受保护域起点 0x20
 ROW_PULSES = {"0x30": ("pulse-t", "-2.1s"),
               "0x20": ("pulse", "0s")}            # v4.1：受保护域起点行
-CELL_PULSES = {"0x1D": ("khead_20b_sel[4:0]", "pulse", "-0.7s")}
+CELL_PULSES = {"0x33": ("khead_20b_sel[4:0]", "pulse", "-0.7s")}
 DASHGROW_BANDS = {"0x09"}                          # v4.1：Reserved 带行虚线框
 BAND_GROW = ("3.0s", "-0.5s")
 
@@ -269,4 +269,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-# ymzhu 2026-10-29 10:16
+# ymzhu 2026-10-29 11:52

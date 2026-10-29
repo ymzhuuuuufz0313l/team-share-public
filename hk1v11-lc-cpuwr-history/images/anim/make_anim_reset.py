@@ -16,7 +16,7 @@ v4 规格（866×2956，LC_CPUWR 1023v1 复位域分类 · 51 行）：
     波）。本图无扫光列，无 defs 清理项。
   · 脉冲 pulse×3 保留（≤3 上限内，v4.1 配置原样；相位 -0.7 / -1.4 /
     -2.1 均布）：
-    0x1D 行 khead_20b_sel[4:0] 单元格 pulse（琥珀，LC_CPUWR 1027v1 变更格）；
+    0x33 行 khead_20b_sel[4:0] 单元格 pulse（琥珀，LC_CPUWR 1027v1 变更格）；
     0x30 密码寄存器行组（TEST_PRTCT[7:0]，N_RST 复位域、全图少数橙色行）
     pulse-t（深青）= 特殊复位域指示；
     0x38 行组（0827v1 新增 reg_eol/reg_eol_det，N_RST_NLOCK 淡蓝多数域
@@ -76,7 +76,7 @@ KIT_CSS = "\n".join([
 LABEL_X = "158"        # 行标签列 x
 ROW_STEP = 0.03        # 入场递进（51 行）
 ROW_PULSES = {"0x30": ("pulse-t", "-2.1s"), "0x38": ("pulse-b", "-1.4s")}  # v4.1：+reg_eol 行
-CELL_PULSES = {"0x1D": ("khead_20b_sel[4:0]", "pulse", "-0.7s")}
+CELL_PULSES = {"0x33": ("khead_20b_sel[4:0]", "pulse", "-0.7s")}
 DASHGROW_BANDS = {"0x0B"}                          # v4.1：Reserved 带行虚线框
 BAND_GROW = ("3.0s", "-1.2s")
 
@@ -265,4 +265,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-# ymzhu 2026-10-29 10:17
+# ymzhu 2026-10-29 11:52

@@ -766,6 +766,8 @@ chip_sel=0/1 默认字节映射、checksum 地址覆盖、LSI 保护范围、复
 
 ## 32. 1027v1 新增 khead_20b_sel @ 0x1D[7:3]
 
+> ⚠️ **2026-10-29 起本节已被 §34 移址取代**：khead_20b_sel 迁至 0x33[6:2]，输出改由 LC_CPUWR 承载并加 LSI 门控，0x1D[7:3] 回 Reserved。以下为 1027v1 历史记录。
+
 依 `HK1V11_Register_20261026.xlsm`（1022→1026 全量 diff 唯一功能变更；TESTO sheet 10-23 改动两版内容一致，无新增）：
 
 | 项 | 值 |
@@ -790,6 +792,18 @@ chip_sel=0/1 默认字节映射、checksum 地址覆盖、LSI 保护范围、复
 **修复**（LC_CPUWR 1028v1）：WR 门控与寄存器控制逻辑**完全镜像**——直写路径（`!chksum_mode || unlock_one_shot_a`）拍内置位（与直写同沿）；checksum 帧在 `update_en_a` 置位（与 shadow→active 同沿）；复位同清。**不变式：WR 与 R_REG 在完全相同的沿成对变更，mux 永不再见错配对。**复位→K1→首 K4 帧全程保持 cs=1 默认，首个提交帧后才变帧写入值。
 
 **同类排查**：全仓仅 5 个 `_WR` 标志；`R_REG37/38_F_WR`（0x25/0x26）为测试区直写寄存器（无 shadow/commit，拍内数据+拍内标志时序自洽）不受影响。**验证**（代码级）：逐场景推演表全对（复位/K4 前窗口/首帧拍内/mismatch/提交/I2C/unlock）+ WR 消费者仅 LC_REG_MAPPING + iverilog 受控对照 vs 1027v1 基线错误集逐行一致。Excel 登记 NO52。
+
+## 34. 1029v1 三字段落地：khead 移址 + TP_SEL + BACSCR_EOL（依 HK1V11_Register_20261028.xlsm）
+
+**表源**：20261028 表 COM 全量 diff（新增 `script/dump_reg_full.ps1` + `reg20261028_full_dump.txt`，逐 sheet 结构化对比）。用户 2026-10-29 三项拍板：khead 输出换 LC_CPUWR / 加 LSI 门控 / TP_SEL 位置 = 0x34[7:6]（表内矛盾澄清：history+Reg_1V11=0x34[7:6] vs cs=1 描述=0x03[6:5]（笔误）vs cs=0 缺失）。
+
+| 字段 | 位置 | 默认 | 访问 | 保护 | 输出（均 LC_CPUWR，LSI 门控，上层挂账） |
+|------|------|------|------|------|------------------------------------------|
+| `khead_20b_sel[4:0]` | **0x33[6:2]**（自 0x1D[7:3] 移址，原位回 Reserved） | `5'b00000` | R/W | LSI_PRTECT（0x33 在保护窗 0x31~0x39） | `R_KHEAD_20B_SEL[4:0]=LSI_PRTECT?R_REG51_F[6:2]:5'b00000` |
+| `TP_SEL[1:0]` | 0x34[7:6]（原 Reserved） | `2'b00` | R/W | LSI_PRTECT | `R_TP_SEL[1:0]=LSI_PRTECT?R_REG52_F[7:6]:2'b00`（LD output selection：00=TP&PORSD 默认/01=TP/10=K3/11=setting） |
+| `BACSCR_EOL` | 0x38[7]（原 Reserved） | `1'b0` | R/W | LSI_PRTECT（门控同邻位 reg_eol@bit6） | `R_BACSCR_EOL=LSI_PRTECT?R_REG56_F[7]:1'b0`（0=K3+check eol 默认/1=BAC+ignore eol） |
+
+三字段存储/复位/写译码/读回全部既有（R_REG51_F[6:2] / R_REG52_F[7:6] / R_REG56_F[7]），仅加输出端口+门控 assign；LC_REG_MAPPING 1027v1 的 `R_KHEAD_20B_SEL` 端口整体回退摘除（端口本就挂账未连，LINK_CONFIG_CTRL 零残连）。0x1D 仍为 Seg1 checksum 参与寄存器，回 Reserved 后 checksum 机制不变。0x33 字节默认 0X08→0X00 与 RTL（0827v1 起）一致无动作。验收：iverilog 受控对照双文件错误集逐行一致；三字段五项既有性核实。无动作记录：TESTO_SEL 表重排（消费方三件套外）、reg_define +436 行（不含新字段 define）、TEST_MODE/leak 小改。表笔误待反馈：history "khead @0x1D[7:5]"、cs=1 描述 TP_SEL@0x03[6:5]。Excel 登记 NO53。
 
   </script>
   <script>
@@ -881,4 +895,4 @@ const article = document.getElementById('article');
 </body>
 </html>
 
-<!-- ymzhu 2026-10-28 13:36 -->
+<!-- ymzhu 2026-10-29 11:52 -->

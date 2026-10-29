@@ -710,6 +710,18 @@
 - DV 复现口径：复位→K1→首 K4 帧全程 0x09/0x0A/0x1F 应保持 cs=1 默认，首个提交帧后才变帧写入值
 - Excel 登记 NO52；站点 regmap §33 + §11.6 勘误注记 + 五页同步
 
+### 5.32 1029v1 三字段落地（khead 移址 + TP_SEL + BACSCR_EOL）
+
+2026-10-29，HK1V11_Register_20261028.xlsm 到货（COM 全量 diff 工具沉淀 `script/dump_reg_full.ps1`）。用户三项拍板：khead 输出换 LC_CPUWR / 加 LSI 门控 / TP_SEL=0x34[7:6]（表内矛盾澄清）。
+
+- **khead 移址**：0x1D[7:3]→**0x33[6:2]**（0x1D[7:3] 回 Reserved）。LC_CPUWR 新增 `R_KHEAD_20B_SEL[4:0]=LSI_PRTECT?R_REG51_F[6:2]:5'b00000`（52>31 规则走 CPUWR；加门控）；LC_REG_MAPPING 1027v1 端口+assign 整体回退（本就挂账未连，LINK_CONFIG_CTRL 零残连）
+- **TP_SEL[1:0] @0x34[7:6]**：LD output selection（00=TP&PORSD 默认/01=TP/10=K3/11=setting），`R_TP_SEL[1:0]`（LSI 门控）；cs=1 描述 sheet 0x03[6:5] 为笔误、cs=0 缺行（待反馈 spec owner）
+- **BACSCR_EOL @0x38[7]**：scrambler reset 选择（0=K3+check eol 默认/1=BAC+ignore eol），`R_BACSCR_EOL`（门控同邻位 reg_eol）
+- 三字段存储/复位/写/读回全既有（R_REG51_F[6:2]/R_REG52_F[7:6]/R_REG56_F[7]），零存储改动；三输出上层挂账
+- 验收（代码级）：iverilog 受控对照双文件错误集逐行一致；0x33 默认 0X08→0X00 与 RTL 一致无动作；TESTO_SEL 重排/reg_define/TEST_MODE/leak 均三件套外无动作
+- Excel NO53；chip_sel0/1 地址表四行 + 站点六图（静态+动画脉冲移 0x33）+ regmap §34/§32 勘误 + 五页同步
+
+
   </script>
   <script>
     document.getElementById('article').innerHTML = marked.parse(document.getElementById('md').textContent.trim());
@@ -800,4 +812,4 @@ const article = document.getElementById('article');
 </body>
 </html>
 
-<!-- ymzhu 2026-10-28 13:36 -->
+<!-- ymzhu 2026-10-29 11:52 -->
