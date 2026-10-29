@@ -59,7 +59,7 @@
 > 本章收录 10-15 live 代（10 corner，1V11 = 1p/dplc）skew 链路四份报告的全文 + 一张核心图解。工作副本在 HK1V11 仓库 `docs/`；原理与 1008 包实战见 <a href="./ch18-skew.html">ch18</a>。
 > ⚠️ **2026-10-28 重大更正（1028 run 逐路径取证）**：本章与 `script/_skew_最终核验.md` 的核心违例结论「DPLC CLKB margin_b_min 全 10 角出窗 = 真实违例」基于**被污染的时钟报告**，正式撤回。完整证据链见 HK1V11 仓库 `docs/HK1V11_skew_probe_audit_20261028.md`。
 >
-> **根因**：`report_timing_skew_sd.tcl:157/158` 的 dplc clk_b 探针少写 `CLKMUX2X2/` 层次（其余 6 个时钟探针都带单元层）→ `get_pins` 空 collection → rpt 仅打 `UITE-416` 警告不拦截 → `-from` 失效退化为 catch-all → 报告混入 **56 条 WCLK1 数据路径**（`R_REG05_F/R_REG06_F` 经 mode MUX 的 S 脚组合穿透到 CLKB 端口，被 set_max_delay 14 约束成可报告路径）→ perl 把数据路径 arrival 当成 DPLC 时钟到达 → margin_b 假出窗。rpt 首条即 `R_REG05_F_reg_7_`（WCLK1_A_DCLK_SHORT）→ CLKB_L，arrival 7.238948，slack 6.761052 = 14 − 7.238948。
+> **根因**：`report_timing_skew_sd.tcl:157/158` 的 dplc clk_b 探针少写 `CLKMUX2X2/` 层次（其余 6 个时钟探针都带单元层）→ `get_pins` 半命中（CTS 网表重构后该名解析到 wrapper 边界 pin = 1 个非法起点，非 SEL-005 空匹配，故报告非空、哨兵不响）→ rpt 仅打 `UITE-416` 警告不拦截 → `-from` 失效退化为 catch-all → 报告混入 **56 条 WCLK1 数据路径**（`R_REG05_F/R_REG06_F` 经 mode MUX 的 S 脚组合穿透到 CLKB 端口，被 set_max_delay 14 约束成可报告路径）→ perl 把数据路径 arrival 当成 DPLC 时钟到达 → margin_b 假出窗。rpt 首条即 `R_REG05_F_reg_7_`（WCLK1_A_DCLK_SHORT）→ CLKB_L，arrival 7.238948，slack 6.761052 = 14 − 7.238948。
 >
 > | 指标（wc_cworst_125） | csv 现值（假） | 真值 | 判定 |
 > |---|---|---|---|
