@@ -12,6 +12,8 @@ gen_signoff_tables_hk1v11.py — HK1V11 signoff 表图生成器（1029V0 run, re
   ② setup/hold 违例格在数值旁标注违例条数 "(N)"
   ③ 红色加深 #b91c1c -> #7f1d1d
   ④ 全表数值统一 5 位小数显示
+  rev3：A 族字体/字号与 B 族统一；违例格加浅红背景 #f8dede
+  rev4：sdskew 窗口写入第一列行标签（不再只靠副标题）
 红显规则（改后）：setup/hold violN>0、trans<0、sdskew 出窗 -> 深红 #7f1d1d
 
 输出：../images/5{1..5}_signoff_*.svg（静态）+ ../images/anim/ 同名（动画）
@@ -26,6 +28,7 @@ OUT_STATIC = os.path.join(SITE, "images")
 OUT_ANIM = os.path.join(SITE, "images", "anim")
 
 RED = "#7f1d1d"   # 深红（rev2 加深）
+RED_BG = "#f8dede"  # rev3: 违例格浅红背景
 
 CORNER_HDR = ["lt_cbest_m40", "lt_cworst_m40", "lt_typical_m40", "ml_cbest_125",
               "tt_cbest_25", "tt_cworst_25", "tt_typical_25", "wc_cbest_125",
@@ -86,8 +89,8 @@ A_FIRST_COL_RIGHT = 548
 A_C_BAND, A_C_COLHEAD = "#157a6a", "#2e8b6a"
 A_C_ZEBRA, A_C_GRID = "#f4f6f4", "#d7dbd7"
 A_C_ZERO, A_C_NONZERO, A_C_WHITE = "#1a7a3c", "#2d2d2d", "#ffffff"
-A_FONT = "Consolas, 'SFMono-Regular', Menlo, 'Courier New', monospace"
-A_FS_T, A_FS_S, A_FS_C, A_FS_D = 30, 26, 19, 19
+A_FONT = "Consolas, 'Cascadia Mono', 'Courier New', monospace"  # rev3: 与 B 族统一
+A_FS_T, A_FS_S, A_FS_C, A_FS_D = 30, 26, 20, 20  # rev3: 数据/列头字号与 B 族统一
 
 def fmt(x):
     s = "%.2f" % x
@@ -138,6 +141,8 @@ def build_A(metric, data, subtitle):
             v, fv = disp[k], raw[k]
             x = data_left + (k + 1) * col_w - 14
             if fv < 0:   # 违例（biggest<0 ⟺ violN>0，disp 已带 (N) 条数）
+                p.append('<rect x="%s" y="%s" width="%s" height="%s" fill="%s"/>'
+                         % (fmt(data_left + k * col_w), fmt(ry), fmt(col_w), fmt(row_h), RED_BG))
                 color, cls = RED, ' class="val chg" style="animation-delay:%.2fs"' % ((i + k) * 0.05)
             elif fv == 0:
                 color, cls = A_C_ZERO, ' class="val"'
@@ -211,6 +216,8 @@ def build_B(title, subtitle, label_w, rows, mode, red_fn, zero_frame=False):
         for k in range(10):
             fv = raw[k]
             if red_fn(fv, label):
+                p.append('<rect x="%d" y="%d" width="%d" height="%d" fill="%s"/>'
+                         % (col_x[k], ry, B_COL_W, B_ROW_H, RED_BG))
                 color, cls = RED, 'class="val breath" style="animation-delay:%.2fs"' % ((i + k) * 0.15)
             elif fv == 0:
                 color, cls = B_GREEN, 'class="val"'
@@ -254,13 +261,19 @@ def gen_all():
     outs.append(("54_signoff_physkew_hk11", svg, data))
     sd = read_sdskew(os.path.join(DATA, "report_sd_busskew.csv"))
     win = {lb: (lo, hi) for lb, disp, raw, lo, hi in sd}
-    rows = [(lb, disp, raw) for lb, disp, raw, lo, hi in sd]
-    def red_by_label(fv, lb):
-        lo, hi = win.get(lb, (-1e9, 1e9))
+    def fmt_win(x):
+        return ('%g' % x)
+    # rev4: 窗口写进第一列行标签（如 sd_l_1p_margin_a_min [−3.5,+3.5]），副标题同步保留
+    rows = [("%s [%s,%s]" % (lb, fmt_win(win[lb][0]), fmt_win(win[lb][1])) if lb in win else lb,
+             disp, raw) for lb, disp, raw, lo, hi in sd]
+    # red_by_label 用原始 lb 查窗——改用行首前缀匹配（rows 标签已加后缀）
+    def red_by_label(fv, lbl):
+        base = lbl.split(" [")[0]
+        lo, hi = win.get(base, (-1e9, 1e9))
         return not (lo <= fv <= hi)
     svg = build_B("report_sd_busskew.csv (HK1V11 1029V0)",
                   "SD skew margin, 规格 1p [−3.5,+3.5] / dplc [−0.9,+4.1] ns（出窗红显）",
-                  340, rows, "report_files", red_by_label)
+                  430, rows, "report_files", red_by_label)
     outs.append(("55_signoff_sdskew_margin_hk11", svg, sd))
     return outs
 
