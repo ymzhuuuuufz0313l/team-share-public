@@ -31,7 +31,7 @@
       ['ch17-rtl-1006-sync.html',       '1006同步'],
       ['ch18-skew.html',                'Skew'],
       ['ch19-skew-audit.html',          '10-15 审计'],
-      ['ch20-half-cycle-mutual-blocking.html', 'Setup-Hold互卡']
+      ['ch20-half-cycle-mutual-blocking.html', 'Setup-Hold互卡'],
       ['ch21-skew-probe-audit.html', '10-28 定案']
     ]},
     { label: '学习路径', href: 'learning-path.html', children: [
