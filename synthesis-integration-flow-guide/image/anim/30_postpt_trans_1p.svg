@@ -4,8 +4,7 @@
 .row  { opacity:0; animation: rowIn 0.4s ease forwards; }
 @keyframes rowIn { from { opacity:0; transform: translateY(4px); }
                    to   { opacity:1; transform: none; } }
-.breathe { animation: breathe 5s ease-in-out infinite; }
-@keyframes breathe { 0%,100% { opacity: 1; } 50% { opacity: 0.25; } }
+ 50% { opacity: 0.25; } }
 </style>
 <g class="head">
 <rect x="0" y="0" width="2350" height="60" fill="#0e7c6b"/>

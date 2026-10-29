@@ -9,20 +9,22 @@
 v4 规格（1100×2842，chip_sel=0 寄存器默认字节映射 · 49 行）：
 - 入场：head 标题+位号列+POR 表头(0) → 49 个寄存器行 0.15 起 0.03s 递进
   （至 1.59）→ 底部图例+脚注 head(1.8)。一次性总长 2.35s ≤ 2.5s。
-- 稳态（3 族 + v4.1 加密脉冲；取代 v1 的 233 处低幅呼吸）：
-  · 行波 cellwave×49（主角）：全部寄存器行（含行尾 POR pill）整行组波，
-    自上而下 0.2s/行 错相位（周期 9.8s）= 地址扫描波。
-  · 脉冲 pulse×2（v4.1 +1；相位 -0.7 / -1.4）：
+- 稳态（v4.2 数据密集清效；取代 v1 的 233 处低幅呼吸）：
+  本图 49 行 ≥ 20 行阈值 = 数据密集（§3 数据密度硬指标，2026-10-29
+  用户定调"行列多时呼吸严重影响读数体验"）——数据区禁一切弥漫动效：
+  · v4.2 删除：49 行整行 cellwave 行波（原 0.2s/行、周期 9.8s 地址扫描
+    波）与 POR 默认值列 sweepband 语义扫光（含 defs 渐变/clipPath）。
+  · 脉冲 pulse×2 保留（≤3 个语义强调点；相位 -0.7 / -1.4）：
     0x1D 行 khead_20b_sel[4:0] 单元格（rect+2text 三连）pulse（琥珀，
     -0.7s，LC_CPUWR 1027v1 变更格）；0x30 行组 TEST_PRTCT[7:0]（密码/
     受保护相关行，cs=0 无 ★ 回拼行故选此）pulse-t（深青，-1.4s）。
-  · 语义扫光 sweepband×1：POR 默认值列（右侧 pill 列，x[836,912]，
-    y 覆盖全部 pill）——§4 配方（P=316，8s 循环），位于内容之下、
-    白底之上，pill 间缝隙与列空白带可见 = 默认值列周期巡检。
+  · chrome 呼吸 cellwave×1（v4.2 第二稳态族补足，唯一许可方式）：
+    底部图例+脚注组（非数据 chrome）kit 原幅呼吸（wave 0.72 幅度，
+    2.6s）——数据行零波、读数区静止。
 - 铁律：源 SVG 只读；<text> 多重集 / svg 开标签 / 几何颜色零改动；
-  纯 CSS 无 script 无 SMIL；kit CSS §2 逐字嵌入；背景 rect 保留；
-  扫光渐变/clipPath 为 v4 新增 defs 项；reduced-motion 用 kit 原文；
-  确定性幂等（只依赖源 SVG）。
+  纯 CSS 无 script 无 SMIL；kit CSS §2 逐字嵌入；背景 rect 保留
+  （v4.2 起 defs 扫光项移除，源图本无 defs）；reduced-motion 用 kit
+  原文；确定性幂等（只依赖源 SVG）。
 """
 import sys
 import xml.etree.ElementTree as ET
@@ -71,7 +73,6 @@ KIT_CSS = "\n".join([
 LABEL_X = "158"
 N_ROWS = 49
 ROW_STEP = 0.03
-WAVE_STEP = 0.2
 ROW_PULSES = {"0x30": ("pulse-t", "-1.4s")}        # v4.1：TEST_PRTCT 密码/受保护行
 CELL_PULSES = {"0x1D": ("khead_20b_sel[4:0]", "pulse", "-0.7s")}
 
@@ -133,57 +134,26 @@ def build():
             cell_pulse_map[t - 1] = (kind, delay, t + 1)
     assert len(cell_pulse_map) == 1 and len(row_pulse_map) == 1, "脉冲定位数异常"
 
-    # ---- POR 列扫光带（§4 配方）：pill 列 x[842,906]，区域含边距 ----
-    pill_re = re.compile(r'^<rect x="842" y="([\d.]+)" width="64" height="26"')
-    pill_ys = [float(pill_re.match(lines[i].strip()).group(1))
-               for i in range(3, legend) if pill_re.match(lines[i].strip())]
-    n_pill_rows = len([lb for _, _, _, lb in rows if "~" not in lb])  # 波段行无 POR pill
-    assert len(pill_ys) == n_pill_rows, f"pill 数应 {n_pill_rows}，实际 {len(pill_ys)}"
-    sp = {"RL": 836, "R": 76}
-    sp["Y"] = int(min(pill_ys)) - 6
-    sp["H"] = int(max(pill_ys)) + 26 - sp["Y"] + 6
-    sp["P"] = sp["R"] + 240                        # 316
-    sp["X0"] = sp["RL"] - int(0.54 * sp["P"])      # t=0 光带藏于区域左外侧
-    sweep_defs = [
-        f'<linearGradient id="sweepG-1" gradientUnits="userSpaceOnUse" x1="{sp["X0"]}" y1="0" x2="{sp["X0"] + sp["P"]}" y2="0">',
-        '<stop offset="0" stop-color="#b45309" stop-opacity="0"/>',
-        '<stop offset="0.46" stop-color="#b45309" stop-opacity="0"/>',
-        '<stop offset="0.5" stop-color="#b45309" stop-opacity="0.3"/>',
-        '<stop offset="0.54" stop-color="#b45309" stop-opacity="0"/>',
-        '<stop offset="1" stop-color="#b45309" stop-opacity="0"/>',
-        '</linearGradient>',
-        f'<clipPath id="sweepC-1"><rect x="{sp["RL"]}" y="{sp["Y"]}" width="{sp["R"]}" height="{sp["H"]}"/></clipPath>',
-    ]
-    sweep_g = (f'<g clip-path="url(#sweepC-1)"><rect class="sweepband" x="{sp["X0"]}" '
-               f'y="{sp["Y"]}" width="{sp["P"]}" height="{sp["H"]}" fill="url(#sweepG-1)" '
-               f'style="--sweepP:{sp["P"]}px"/></g>')
+    # ---- v4.2 数据密集清效：不构建 POR 列扫光（defs 渐变/clipPath 一并不产出）----
 
     # ---- 组装 ----
     o = []
     o.append(lines[0])                              # <?xml?>
     o.append(lines[1])                              # <svg ...>
     o.append("<style>\n" + KIT_CSS + "\n</style>")  # kit CSS（§2 逐字）
-    o.append(lines[2])                              # 白底 rect
-    o.append("<defs>")
-    o.extend(sweep_defs)                            # v4 新增：扫光渐变 + clipPath
-    o.append("</defs>")
-    o.append(sweep_g)                               # 白底之上、内容之下
+    o.append(lines[2])                              # 白底 rect（源图无 defs，v4.2 起不再新增扫光 defs）
 
     o.append('<g class="head">')                    # 标题 + 位号列 + POR 表头 (0)
     o.extend(lines[3:row_starts[0]])
     o.append("</g>")
 
-    n = len(rows)
-    wave_dur = round(WAVE_STEP * n, 1)              # 9.8s
+    # v4.2：数据行零稳态波（行波 cellwave 已删），仅保留 ≤3 个语义 pulse
     for k, (s, e, _p, _lb) in enumerate(rows):
         delay = round(0.15 + ROW_STEP * k, 2)
         o.append(f'<g class="row" style="animation-delay:{delay}s">')
         if (s, e) in row_pulse_map:
             kind, pd = row_pulse_map[(s, e)]
             o.append(f'<g class="{kind}" style="animation-delay:{pd}">')
-        ph = WAVE_STEP * k
-        wd = "0s" if ph == 0 else f"-{ph:.1f}s"
-        o.append(f'<g class="cellwave" style="animation-duration:{wave_dur}s;animation-delay:{wd}">')
         i = s
         while i < e:
             if i in cell_pulse_map:
@@ -195,13 +165,14 @@ def build():
                 continue
             o.append(lines[i])
             i += 1
-        o.append("</g>")
         if (s, e) in row_pulse_map:
             o.append("</g>")
         o.append("</g>")
 
     o.append('<g class="head" style="animation-delay:1.8s">')  # 图例 + 脚注
+    o.append('<g class="cellwave">')                # v4.2：非数据 chrome 呼吸（第二稳态族，kit 原幅 2.6s）
     o.extend(lines[legend:end])
+    o.append("</g>")
     o.append("</g>")
 
     o.append(lines[end])  # </svg>
@@ -210,7 +181,7 @@ def build():
         text += eol
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(text, encoding="utf-8", newline="")
-    return {"cellwave": text.count('class="cellwave"'),
+    return {"cellwave_chrome": text.count('class="cellwave"'),
             "pulse": len(re.findall(r'class="pulse(-[tb])?"', text)),
             "sweepband": text.count('class="sweepband"'),
             "row": text.count('class="row"'), "head": text.count('class="head"')}
@@ -277,4 +248,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-# ymzhu 2026-10-28 19:16
+# ymzhu 2026-10-29 10:12

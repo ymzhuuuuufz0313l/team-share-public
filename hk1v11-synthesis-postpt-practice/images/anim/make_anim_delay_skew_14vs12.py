@@ -15,8 +15,10 @@ delay_skew_14vs12（1440×950，三面板 STA skew 讲解图，静态版=images/
   · 页脚 .fade(1.75)、角标铭牌 .head(1.8)；末项 1.8+0.55=2.35s
 - 稳态（3 族）：
   · 列车：① 时钟 arrival 边（#1c2534）与数据 arrival 边（#0e7490）各 2 包+拖尾，
-    1.5s/趟（时钟 phase 0/-0.75，数据 -0.4/-1.15）——两条 arrival 数据流；
+    3.2s/趟（时钟 phase 0/-0.75，数据 -0.4/-1.15）——两条 arrival 数据流；
     路径沿线无文字穿越（标签均在箭头线上/下方留白处）
+    （用户 2026-10-29「列车的速度都要降低」：列车二次降速 1.5→3.2s，
+    仅改 duration，delay 相位不动；dashgrow 3s 已 ≥2.4s 不动）
   · 脉冲 ×3（错相位）：① slack 绿线组 .pulse-t(-0.7s)；② 12/14 阈值线对 .pulse-b(-2.1s)；
     ③ "STATUS: NOT YET CONFIRMED OK" .pulse(-1.4s)
   · 扫光 sweepband ×1（§4 配方，琥珀）：② 场景表三行区（x60..680 / y660..788，P=860）
@@ -107,11 +109,12 @@ def sweep_group(s):
 
 def flow(d, color, delays, tail_delay):
     out = []
+    dur = "3.2s"  # 用户 2026-10-29 列车二次降速：1.5s→3.2s（delay 相位不动）
     for dl in delays:
         out.append(f'<path class="flowdot" d="{d}" stroke="{color}" pathLength="100" '
-                   f'style="animation-duration:1.5s;animation-delay:{dl}s"/>')
+                   f'style="animation-duration:{dur};animation-delay:{dl}s"/>')
     out.append(f'<path class="flowtail" d="{d}" stroke="{color}" pathLength="100" '
-               f'style="animation-duration:1.5s;animation-delay:{tail_delay}s"/>')
+               f'style="animation-duration:{dur};animation-delay:{tail_delay}s"/>')
     return out
 
 

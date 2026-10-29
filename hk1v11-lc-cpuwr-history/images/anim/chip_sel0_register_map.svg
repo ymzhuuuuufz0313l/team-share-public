@@ -32,17 +32,6 @@
 @media (prefers-reduced-motion:reduce){*{animation:none!important}.row,.head,.fade{opacity:1!important}.flowdot,.flowtail,.sweepband{display:none!important}}
 </style>
 <rect width="1100" height="2842" fill="#ffffff"/>
-<defs>
-<linearGradient id="sweepG-1" gradientUnits="userSpaceOnUse" x1="666" y1="0" x2="982" y2="0">
-<stop offset="0" stop-color="#b45309" stop-opacity="0"/>
-<stop offset="0.46" stop-color="#b45309" stop-opacity="0"/>
-<stop offset="0.5" stop-color="#b45309" stop-opacity="0.3"/>
-<stop offset="0.54" stop-color="#b45309" stop-opacity="0"/>
-<stop offset="1" stop-color="#b45309" stop-opacity="0"/>
-</linearGradient>
-<clipPath id="sweepC-1"><rect x="836" y="128" width="76" height="2534"/></clipPath>
-</defs>
-<g clip-path="url(#sweepC-1)"><rect class="sweepband" x="666" y="128" width="316" height="2534" fill="url(#sweepG-1)" style="--sweepP:316px"/></g>
 <g class="head">
 <text x="550.0" y="40" text-anchor="middle" font-size="22" font-weight="bold" fill="#1e293b">chip_sel = 0 寄存器默认字节映射</text>
 <text x="211.0" y="110" text-anchor="middle" font-size="12" fill="#64748b">[7]</text>
@@ -56,7 +45,6 @@
 <text x="874.0" y="96" text-anchor="middle" font-size="10" fill="#64748b" font-weight="600">POR 默认值</text>
 </g>
 <g class="row" style="animation-delay:0.15s">
-<g class="cellwave" style="animation-duration:9.8s;animation-delay:0s">
 <text x="158" y="152.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x00 (0)</text>
 <rect x="842" y="134.0" width="64" height="26" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" rx="13"/>
 <circle cx="854" cy="147.0" r="3.5" fill="#22c55e"/>
@@ -74,9 +62,7 @@
 <text x="702.5" y="145.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">Reserved</text>
 <text x="702.5" y="159.0" text-anchor="middle" font-size="9.0" fill="#64748b">0</text>
 </g>
-</g>
 <g class="row" style="animation-delay:0.18s">
-<g class="cellwave" style="animation-duration:9.8s;animation-delay:-0.2s">
 <text x="158" y="204.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x01 (1)</text>
 <rect x="842" y="186.0" width="64" height="26" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" rx="13"/>
 <circle cx="854" cy="199.0" r="3.5" fill="#22c55e"/>
@@ -94,9 +80,7 @@
 <text x="620.5" y="197.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">Reserved</text>
 <text x="620.5" y="211.0" text-anchor="middle" font-size="9.0" fill="#64748b">0</text>
 </g>
-</g>
 <g class="row" style="animation-delay:0.21s">
-<g class="cellwave" style="animation-duration:9.8s;animation-delay:-0.4s">
 <text x="158" y="256.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x02 (2)</text>
 <rect x="842" y="238.0" width="64" height="26" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" rx="13"/>
 <circle cx="854" cy="251.0" r="3.5" fill="#22c55e"/>
@@ -111,9 +95,7 @@
 <text x="784.5" y="249.0" text-anchor="middle" font-size="6.7" font-weight="500" fill="#1e293b">sw_reg_lane_ctrl3</text>
 <text x="784.5" y="263.0" text-anchor="middle" font-size="5.7" fill="#64748b">1'b0</text>
 </g>
-</g>
 <g class="row" style="animation-delay:0.24s">
-<g class="cellwave" style="animation-duration:9.8s;animation-delay:-0.6s">
 <text x="158" y="308.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x03 (3)</text>
 <rect x="842" y="290.0" width="64" height="26" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" rx="13"/>
 <circle cx="854" cy="303.0" r="3.5" fill="#22c55e"/>
@@ -131,9 +113,7 @@
 <text x="784.5" y="301.0" text-anchor="middle" font-size="6.7" font-weight="500" fill="#1e293b">sw_reg_lane_ctrl1</text>
 <text x="784.5" y="315.0" text-anchor="middle" font-size="5.7" fill="#64748b">1'b0</text>
 </g>
-</g>
 <g class="row" style="animation-delay:0.27s">
-<g class="cellwave" style="animation-duration:9.8s;animation-delay:-0.8s">
 <text x="158" y="360.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x04 (4)</text>
 <rect x="842" y="342.0" width="64" height="26" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" rx="13"/>
 <circle cx="854" cy="355.0" r="3.5" fill="#22c55e"/>
@@ -148,9 +128,7 @@
 <text x="784.5" y="353.0" text-anchor="middle" font-size="6.7" font-weight="500" fill="#1e293b">sw_reg_lane_ctrl0</text>
 <text x="784.5" y="367.0" text-anchor="middle" font-size="5.7" fill="#64748b">1'b0</text>
 </g>
-</g>
 <g class="row" style="animation-delay:0.3s">
-<g class="cellwave" style="animation-duration:9.8s;animation-delay:-1.0s">
 <text x="158" y="412.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x05 (5)</text>
 <rect x="842" y="394.0" width="64" height="26" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" rx="13"/>
 <circle cx="854" cy="407.0" r="3.5" fill="#f59e0b"/>
@@ -162,9 +140,7 @@
 <text x="620.5" y="405.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">Reserved</text>
 <text x="620.5" y="419.0" text-anchor="middle" font-size="9.0" fill="#64748b">0</text>
 </g>
-</g>
 <g class="row" style="animation-delay:0.33s">
-<g class="cellwave" style="animation-duration:9.8s;animation-delay:-1.2s">
 <text x="158" y="464.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x06 (6)</text>
 <rect x="842" y="446.0" width="64" height="26" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" rx="13"/>
 <circle cx="854" cy="459.0" r="3.5" fill="#f59e0b"/>
@@ -194,9 +170,7 @@
 <text x="784.5" y="457.0" text-anchor="middle" font-size="8.0" font-weight="500" fill="#1e293b">Reserved</text>
 <text x="784.5" y="471.0" text-anchor="middle" font-size="7.0" fill="#64748b">0</text>
 </g>
-</g>
 <g class="row" style="animation-delay:0.36s">
-<g class="cellwave" style="animation-duration:9.8s;animation-delay:-1.4s">
 <text x="158" y="516.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x07 (7)</text>
 <rect x="842" y="498.0" width="64" height="26" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" rx="13"/>
 <circle cx="854" cy="511.0" r="3.5" fill="#22c55e"/>
@@ -208,9 +182,7 @@
 <text x="661.5" y="509.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">CTRLF_CHECKSUM[3:0]</text>
 <text x="661.5" y="523.0" text-anchor="middle" font-size="9.0" fill="#64748b">4'b0000</text>
 </g>
-</g>
 <g class="row" style="animation-delay:0.39s">
-<g class="cellwave" style="animation-duration:9.8s;animation-delay:-1.6s">
 <text x="158" y="568.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x08 (8)</text>
 <rect x="842" y="550.0" width="64" height="26" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" rx="13"/>
 <circle cx="854" cy="563.0" r="3.5" fill="#22c55e"/>
@@ -234,16 +206,12 @@
 <text x="784.5" y="561.0" text-anchor="middle" font-size="8.0" font-weight="500" fill="#1e293b">reg_eq_rbc0</text>
 <text x="784.5" y="575.0" text-anchor="middle" font-size="7.0" fill="#64748b">1'b0</text>
 </g>
-</g>
 <g class="row" style="animation-delay:0.42s">
-<g class="cellwave" style="animation-duration:9.8s;animation-delay:-1.8s">
 <text x="158" y="620.0" text-anchor="end" font-size="13" font-weight="600" fill="#64748b">0x09 ~ 0x1C (9 ~ 28)</text>
 <rect x="170" y="592" width="655" height="46" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1" stroke-dasharray="4,3" rx="4"/>
 <text x="497.5" y="619.0" text-anchor="middle" font-size="12" fill="#64748b">⋯ 全 Reserved ⋯</text>
 </g>
-</g>
 <g class="row" style="animation-delay:0.45s">
-<g class="cellwave" style="animation-duration:9.8s;animation-delay:-2.0s">
 <text x="158" y="672.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x1D (29)</text>
 <rect x="842" y="654.0" width="64" height="26" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" rx="13"/>
 <circle cx="854" cy="667.0" r="3.5" fill="#22c55e"/>
@@ -257,9 +225,7 @@
 <text x="702.5" y="665.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">SP_S[2:0]</text>
 <text x="702.5" y="679.0" text-anchor="middle" font-size="9.0" fill="#64748b">3'b000</text>
 </g>
-</g>
 <g class="row" style="animation-delay:0.48s">
-<g class="cellwave" style="animation-duration:9.8s;animation-delay:-2.2s">
 <text x="158" y="724.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x1E (30)</text>
 <rect x="842" y="706.0" width="64" height="26" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" rx="13"/>
 <circle cx="854" cy="719.0" r="3.5" fill="#22c55e"/>
@@ -268,9 +234,7 @@
 <text x="497.5" y="717.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">VBK[7:0]</text>
 <text x="497.5" y="731.0" text-anchor="middle" font-size="9.0" fill="#64748b">8'b00000000</text>
 </g>
-</g>
 <g class="row" style="animation-delay:0.51s">
-<g class="cellwave" style="animation-duration:9.8s;animation-delay:-2.4s">
 <text x="158" y="776.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x1F (31)</text>
 <rect x="842" y="758.0" width="64" height="26" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" rx="13"/>
 <circle cx="854" cy="771.0" r="3.5" fill="#22c55e"/>
@@ -300,9 +264,7 @@
 <text x="784.5" y="769.0" text-anchor="middle" font-size="8.0" font-weight="500" fill="#1e293b">PWRC_CTRL</text>
 <text x="784.5" y="783.0" text-anchor="middle" font-size="7.0" fill="#64748b">1'b0</text>
 </g>
-</g>
 <g class="row" style="animation-delay:0.54s">
-<g class="cellwave" style="animation-duration:9.8s;animation-delay:-2.6s">
 <text x="158" y="828.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x20 (32)</text>
 <rect x="842" y="810.0" width="64" height="26" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" rx="13"/>
 <circle cx="854" cy="823.0" r="3.5" fill="#22c55e"/>
@@ -317,9 +279,7 @@
 <text x="579.5" y="821.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">R_TESTO_SEL[5:0]</text>
 <text x="579.5" y="835.0" text-anchor="middle" font-size="9.0" fill="#64748b">6'b000000</text>
 </g>
-</g>
 <g class="row" style="animation-delay:0.57s">
-<g class="cellwave" style="animation-duration:9.8s;animation-delay:-2.8s">
 <text x="158" y="880.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x21 (33)</text>
 <rect x="842" y="862.0" width="64" height="26" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" rx="13"/>
 <circle cx="854" cy="875.0" r="3.5" fill="#22c55e"/>
@@ -340,9 +300,7 @@
 <text x="702.5" y="873.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">R_MON_DC_VOL[2:0]</text>
 <text x="702.5" y="887.0" text-anchor="middle" font-size="9.0" fill="#64748b">3'b000</text>
 </g>
-</g>
 <g class="row" style="animation-delay:0.6s">
-<g class="cellwave" style="animation-duration:9.8s;animation-delay:-3.0s">
 <text x="158" y="932.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x22 (34)</text>
 <rect x="842" y="914.0" width="64" height="26" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" rx="13"/>
 <circle cx="854" cy="927.0" r="3.5" fill="#22c55e"/>
@@ -372,9 +330,7 @@
 <text x="784.5" y="925.0" text-anchor="middle" font-size="8.0" font-weight="500" fill="#1e293b">HIZ_SEL</text>
 <text x="784.5" y="939.0" text-anchor="middle" font-size="7.0" fill="#64748b">1'b0</text>
 </g>
-</g>
 <g class="row" style="animation-delay:0.63s">
-<g class="cellwave" style="animation-duration:9.8s;animation-delay:-3.2s">
 <text x="158" y="984.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x23 (35)</text>
 <rect x="842" y="966.0" width="64" height="26" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" rx="13"/>
 <circle cx="854" cy="979.0" r="3.5" fill="#22c55e"/>
@@ -392,9 +348,7 @@
 <text x="743.5" y="977.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">Reserved</text>
 <text x="743.5" y="991.0" text-anchor="middle" font-size="9.0" fill="#64748b">0</text>
 </g>
-</g>
 <g class="row" style="animation-delay:0.66s">
-<g class="cellwave" style="animation-duration:9.8s;animation-delay:-3.4s">
 <text x="158" y="1036.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x24 (36)</text>
 <rect x="842" y="1018.0" width="64" height="26" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" rx="13"/>
 <circle cx="854" cy="1031.0" r="3.5" fill="#f59e0b"/>
@@ -406,9 +360,7 @@
 <text x="579.5" y="1029.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">reg_cr_done_cnt[5:0]</text>
 <text x="579.5" y="1043.0" text-anchor="middle" font-size="9.0" fill="#64748b">6'b010101</text>
 </g>
-</g>
 <g class="row" style="animation-delay:0.69s">
-<g class="cellwave" style="animation-duration:9.8s;animation-delay:-3.6s">
 <text x="158" y="1088.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x25 (37)</text>
 <rect x="842" y="1070.0" width="64" height="26" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" rx="13"/>
 <circle cx="854" cy="1083.0" r="3.5" fill="#22c55e"/>
@@ -420,9 +372,7 @@
 <text x="661.5" y="1081.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">reg_cdr_rlpf[3:0]</text>
 <text x="661.5" y="1095.0" text-anchor="middle" font-size="9.0" fill="#64748b">4'b1100(C)</text>
 </g>
-</g>
 <g class="row" style="animation-delay:0.72s">
-<g class="cellwave" style="animation-duration:9.8s;animation-delay:-3.8s">
 <text x="158" y="1140.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x26 (38)</text>
 <rect x="842" y="1122.0" width="64" height="26" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" rx="13"/>
 <circle cx="854" cy="1135.0" r="3.5" fill="#f59e0b"/>
@@ -437,9 +387,7 @@
 <text x="702.5" y="1133.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">reg_icp_bias_tune[2:0]</text>
 <text x="702.5" y="1147.0" text-anchor="middle" font-size="9.0" fill="#64748b">3'b100</text>
 </g>
-</g>
 <g class="row" style="animation-delay:0.75s">
-<g class="cellwave" style="animation-duration:9.8s;animation-delay:-4.0s">
 <text x="158" y="1192.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x27 (39)</text>
 <rect x="842" y="1174.0" width="64" height="26" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" rx="13"/>
 <circle cx="854" cy="1187.0" r="3.5" fill="#22c55e"/>
@@ -457,9 +405,7 @@
 <text x="784.5" y="1185.0" text-anchor="middle" font-size="7.2" font-weight="500" fill="#1e293b">Skip_frame_count</text>
 <text x="784.5" y="1199.0" text-anchor="middle" font-size="6.2" fill="#64748b">0</text>
 </g>
-</g>
 <g class="row" style="animation-delay:0.78s">
-<g class="cellwave" style="animation-duration:9.8s;animation-delay:-4.2s">
 <text x="158" y="1244.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x28 (40)</text>
 <rect x="842" y="1226.0" width="64" height="26" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" rx="13"/>
 <circle cx="854" cy="1239.0" r="3.5" fill="#22c55e"/>
@@ -483,9 +429,7 @@
 <text x="743.5" y="1237.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">AABB[1:0]</text>
 <text x="743.5" y="1251.0" text-anchor="middle" font-size="9.0" fill="#64748b">2b'00</text>
 </g>
-</g>
 <g class="row" style="animation-delay:0.81s">
-<g class="cellwave" style="animation-duration:9.8s;animation-delay:-4.4s">
 <text x="158" y="1296.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x29 (41)</text>
 <rect x="842" y="1278.0" width="64" height="26" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" rx="13"/>
 <circle cx="854" cy="1291.0" r="3.5" fill="#22c55e"/>
@@ -506,9 +450,7 @@
 <text x="784.5" y="1289.0" text-anchor="middle" font-size="8.0" font-weight="500" fill="#1e293b">DBC</text>
 <text x="784.5" y="1303.0" text-anchor="middle" font-size="7.0" fill="#64748b">1'b0</text>
 </g>
-</g>
 <g class="row" style="animation-delay:0.84s">
-<g class="cellwave" style="animation-duration:9.8s;animation-delay:-4.6s">
 <text x="158" y="1348.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x2A (42)</text>
 <rect x="842" y="1330.0" width="64" height="26" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" rx="13"/>
 <circle cx="854" cy="1343.0" r="3.5" fill="#f59e0b"/>
@@ -526,9 +468,7 @@
 <text x="743.5" y="1341.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">OVC_POS[1:0]</text>
 <text x="743.5" y="1355.0" text-anchor="middle" font-size="9.0" fill="#64748b">2'b10</text>
 </g>
-</g>
 <g class="row" style="animation-delay:0.87s">
-<g class="cellwave" style="animation-duration:9.8s;animation-delay:-4.8s">
 <text x="158" y="1400.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x2B (43)</text>
 <rect x="842" y="1382.0" width="64" height="26" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" rx="13"/>
 <circle cx="854" cy="1395.0" r="3.5" fill="#22c55e"/>
@@ -543,9 +483,7 @@
 <text x="661.5" y="1393.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">DCBIAS_CHOP[3:0]</text>
 <text x="661.5" y="1407.0" text-anchor="middle" font-size="9.0" fill="#64748b">4'b0000</text>
 </g>
-</g>
 <g class="row" style="animation-delay:0.9s">
-<g class="cellwave" style="animation-duration:9.8s;animation-delay:-5.0s">
 <text x="158" y="1452.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x2C (44)</text>
 <rect x="842" y="1434.0" width="64" height="26" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" rx="13"/>
 <circle cx="854" cy="1447.0" r="3.5" fill="#22c55e"/>
@@ -560,9 +498,7 @@
 <text x="661.5" y="1445.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">BGR_SEL[3:0]</text>
 <text x="661.5" y="1459.0" text-anchor="middle" font-size="9.0" fill="#64748b">4'b0000</text>
 </g>
-</g>
 <g class="row" style="animation-delay:0.93s">
-<g class="cellwave" style="animation-duration:9.8s;animation-delay:-5.2s">
 <text x="158" y="1504.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x2D (45)</text>
 <rect x="842" y="1486.0" width="64" height="26" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" rx="13"/>
 <circle cx="854" cy="1499.0" r="3.5" fill="#22c55e"/>
@@ -580,9 +516,7 @@
 <text x="743.5" y="1497.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">Reserved</text>
 <text x="743.5" y="1511.0" text-anchor="middle" font-size="9.0" fill="#64748b">0</text>
 </g>
-</g>
 <g class="row" style="animation-delay:0.96s">
-<g class="cellwave" style="animation-duration:9.8s;animation-delay:-5.4s">
 <text x="158" y="1556.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x2E (46)</text>
 <rect x="842" y="1538.0" width="64" height="26" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" rx="13"/>
 <circle cx="854" cy="1551.0" r="3.5" fill="#22c55e"/>
@@ -603,9 +537,7 @@
 <text x="784.5" y="1549.0" text-anchor="middle" font-size="8.0" font-weight="500" fill="#1e293b">R_PTAT_EN</text>
 <text x="784.5" y="1563.0" text-anchor="middle" font-size="7.0" fill="#64748b">1'b0</text>
 </g>
-</g>
 <g class="row" style="animation-delay:0.99s">
-<g class="cellwave" style="animation-duration:9.8s;animation-delay:-5.6s">
 <text x="158" y="1608.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x2F (47)</text>
 <rect x="842" y="1590.0" width="64" height="26" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" rx="13"/>
 <circle cx="854" cy="1603.0" r="3.5" fill="#22c55e"/>
@@ -623,10 +555,8 @@
 <text x="784.5" y="1601.0" text-anchor="middle" font-size="7.5" font-weight="500" fill="#1e293b">SCS_PKT_HALF</text>
 <text x="784.5" y="1615.0" text-anchor="middle" font-size="7.0" fill="#64748b">1'b0</text>
 </g>
-</g>
 <g class="row" style="animation-delay:1.02s">
 <g class="pulse-t" style="animation-delay:-1.4s">
-<g class="cellwave" style="animation-duration:9.8s;animation-delay:-5.8s">
 <text x="158" y="1660.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x30 (48)</text>
 <rect x="842" y="1642.0" width="64" height="26" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" rx="13"/>
 <circle cx="854" cy="1655.0" r="3.5" fill="#22c55e"/>
@@ -636,16 +566,12 @@
 <text x="497.5" y="1667.0" text-anchor="middle" font-size="9.0" fill="#64748b">8'b00000000</text>
 </g>
 </g>
-</g>
 <g class="row" style="animation-delay:1.05s">
-<g class="cellwave" style="animation-duration:9.8s;animation-delay:-6.0s">
 <text x="158" y="1712.0" text-anchor="end" font-size="13" font-weight="600" fill="#64748b">0x31 ~ 0x32 (49 ~ 50)</text>
 <rect x="170" y="1684" width="655" height="46" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1" stroke-dasharray="4,3" rx="4"/>
 <text x="497.5" y="1711.0" text-anchor="middle" font-size="12" fill="#64748b">⋯ 全 Reserved ⋯</text>
 </g>
-</g>
 <g class="row" style="animation-delay:1.08s">
-<g class="cellwave" style="animation-duration:9.8s;animation-delay:-6.2s">
 <text x="158" y="1764.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x33 (51)</text>
 <rect x="842" y="1746.0" width="64" height="26" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" rx="13"/>
 <circle cx="854" cy="1759.0" r="3.5" fill="#22c55e"/>
@@ -663,9 +589,7 @@
 <text x="784.5" y="1757.0" text-anchor="middle" font-size="8.0" font-weight="500" fill="#1e293b">CG_OFF</text>
 <text x="784.5" y="1771.0" text-anchor="middle" font-size="7.0" fill="#64748b">1'b0</text>
 </g>
-</g>
 <g class="row" style="animation-delay:1.11s">
-<g class="cellwave" style="animation-duration:9.8s;animation-delay:-6.4s">
 <text x="158" y="1816.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x34 (52)</text>
 <rect x="842" y="1798.0" width="64" height="26" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" rx="13"/>
 <circle cx="854" cy="1811.0" r="3.5" fill="#22c55e"/>
@@ -692,9 +616,7 @@
 <text x="784.5" y="1809.0" text-anchor="middle" font-size="6.4" font-weight="500" fill="#1e293b">regr_lane_pll_done</text>
 <text x="784.5" y="1823.0" text-anchor="middle" font-size="5.4" fill="#64748b">1'b0</text>
 </g>
-</g>
 <g class="row" style="animation-delay:1.14s">
-<g class="cellwave" style="animation-duration:9.8s;animation-delay:-6.6s">
 <text x="158" y="1868.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x35 (53)</text>
 <rect x="842" y="1850.0" width="64" height="26" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" rx="13"/>
 <circle cx="854" cy="1863.0" r="3.5" fill="#22c55e"/>
@@ -706,9 +628,7 @@
 <text x="743.5" y="1861.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">reg_fbdiv_clk_sel[1:0]</text>
 <text x="743.5" y="1875.0" text-anchor="middle" font-size="9.0" fill="#64748b">2'b00</text>
 </g>
-</g>
 <g class="row" style="animation-delay:1.17s">
-<g class="cellwave" style="animation-duration:9.8s;animation-delay:-6.8s">
 <text x="158" y="1920.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x36 (54)</text>
 <rect x="842" y="1902.0" width="64" height="26" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" rx="13"/>
 <circle cx="854" cy="1915.0" r="3.5" fill="#f59e0b"/>
@@ -717,9 +637,7 @@
 <text x="497.5" y="1913.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">reg_eq_bias_tune[7:0]</text>
 <text x="497.5" y="1927.0" text-anchor="middle" font-size="9.0" fill="#64748b">8'b00010111</text>
 </g>
-</g>
 <g class="row" style="animation-delay:1.2s">
-<g class="cellwave" style="animation-duration:9.8s;animation-delay:-7.0s">
 <text x="158" y="1972.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x37 (55)</text>
 <rect x="842" y="1954.0" width="64" height="26" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" rx="13"/>
 <circle cx="854" cy="1967.0" r="3.5" fill="#f59e0b"/>
@@ -734,9 +652,7 @@
 <text x="579.5" y="1965.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">reg_vos_ctrl[5:0]</text>
 <text x="579.5" y="1979.0" text-anchor="middle" font-size="9.0" fill="#64748b">6'b100000</text>
 </g>
-</g>
 <g class="row" style="animation-delay:1.23s">
-<g class="cellwave" style="animation-duration:9.8s;animation-delay:-7.2s">
 <text x="158" y="2024.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x38 (56)</text>
 <rect x="842" y="2006.0" width="64" height="26" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" rx="13"/>
 <circle cx="854" cy="2019.0" r="3.5" fill="#f59e0b"/>
@@ -760,9 +676,7 @@
 <text x="743.5" y="2017.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">UTC_long01_frame[1:0]</text>
 <text x="743.5" y="2031.0" text-anchor="middle" font-size="9.0" fill="#64748b">2'b01</text>
 </g>
-</g>
 <g class="row" style="animation-delay:1.26s">
-<g class="cellwave" style="animation-duration:9.8s;animation-delay:-7.4s">
 <text x="158" y="2076.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x39 (57)</text>
 <rect x="842" y="2058.0" width="64" height="26" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" rx="13"/>
 <circle cx="854" cy="2071.0" r="3.5" fill="#f59e0b"/>
@@ -774,9 +688,7 @@
 <text x="702.5" y="2069.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">UTC_header_frame[2:0]</text>
 <text x="702.5" y="2083.0" text-anchor="middle" font-size="9.0" fill="#64748b">3'b011</text>
 </g>
-</g>
 <g class="row" style="animation-delay:1.29s">
-<g class="cellwave" style="animation-duration:9.8s;animation-delay:-7.6s">
 <text x="158" y="2128.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x40 (64)</text>
 <rect x="842" y="2110.0" width="64" height="26" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" rx="13"/>
 <circle cx="854" cy="2123.0" r="3.5" fill="#f59e0b"/>
@@ -800,9 +712,7 @@
 <text x="784.5" y="2121.0" text-anchor="middle" font-size="8.0" font-weight="500" fill="#1e293b">FSYNC</text>
 <text x="784.5" y="2135.0" text-anchor="middle" font-size="7.0" fill="#64748b">1'b0</text>
 </g>
-</g>
 <g class="row" style="animation-delay:1.32s">
-<g class="cellwave" style="animation-duration:9.8s;animation-delay:-7.8s">
 <text x="158" y="2180.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x41 (65)</text>
 <rect x="842" y="2162.0" width="64" height="26" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" rx="13"/>
 <circle cx="854" cy="2175.0" r="3.5" fill="#f59e0b"/>
@@ -811,9 +721,7 @@
 <text x="497.5" y="2173.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">LD_R[7:0]</text>
 <text x="497.5" y="2187.0" text-anchor="middle" font-size="9.0" fill="#64748b">8'b00000101</text>
 </g>
-</g>
 <g class="row" style="animation-delay:1.35s">
-<g class="cellwave" style="animation-duration:9.8s;animation-delay:-8.0s">
 <text x="158" y="2232.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x42 (66)</text>
 <rect x="842" y="2214.0" width="64" height="26" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" rx="13"/>
 <circle cx="854" cy="2227.0" r="3.5" fill="#f59e0b"/>
@@ -822,9 +730,7 @@
 <text x="497.5" y="2225.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">LD_W[7:0]</text>
 <text x="497.5" y="2239.0" text-anchor="middle" font-size="9.0" fill="#64748b">8'b00010110</text>
 </g>
-</g>
 <g class="row" style="animation-delay:1.38s">
-<g class="cellwave" style="animation-duration:9.8s;animation-delay:-8.2s">
 <text x="158" y="2284.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x43 (67)</text>
 <rect x="842" y="2266.0" width="64" height="26" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" rx="13"/>
 <circle cx="854" cy="2279.0" r="3.5" fill="#22c55e"/>
@@ -848,16 +754,12 @@
 <text x="743.5" y="2277.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">CS[1:0]</text>
 <text x="743.5" y="2291.0" text-anchor="middle" font-size="9.0" fill="#64748b">2'b00</text>
 </g>
-</g>
 <g class="row" style="animation-delay:1.41s">
-<g class="cellwave" style="animation-duration:9.8s;animation-delay:-8.4s">
 <text x="158" y="2336.0" text-anchor="end" font-size="13" font-weight="600" fill="#64748b">0x44 ~ 0x8F (68 ~ 143)</text>
 <rect x="170" y="2308" width="655" height="46" fill="#e2e8f0" stroke="#94a3b8" stroke-width="1" stroke-dasharray="4,3" rx="4"/>
 <text x="497.5" y="2335.0" text-anchor="middle" font-size="12" fill="#64748b">⋯ 全 Reserved ⋯</text>
 </g>
-</g>
 <g class="row" style="animation-delay:1.44s">
-<g class="cellwave" style="animation-duration:9.8s;animation-delay:-8.6s">
 <text x="158" y="2388.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x90 (144)</text>
 <rect x="842" y="2370.0" width="64" height="26" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" rx="13"/>
 <circle cx="854" cy="2383.0" r="3.5" fill="#f59e0b"/>
@@ -869,9 +771,7 @@
 <text x="661.5" y="2381.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">reg_fast_lock_icp[3:0]</text>
 <text x="661.5" y="2395.0" text-anchor="middle" font-size="9.0" fill="#64748b">4'b1000</text>
 </g>
-</g>
 <g class="row" style="animation-delay:1.47s">
-<g class="cellwave" style="animation-duration:9.8s;animation-delay:-8.8s">
 <text x="158" y="2440.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x91 (145)</text>
 <rect x="842" y="2422.0" width="64" height="26" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" rx="13"/>
 <circle cx="854" cy="2435.0" r="3.5" fill="#f59e0b"/>
@@ -883,9 +783,7 @@
 <text x="661.5" y="2433.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">reg_fine_lock_icp[3:0]</text>
 <text x="661.5" y="2447.0" text-anchor="middle" font-size="9.0" fill="#64748b">4'b1100</text>
 </g>
-</g>
 <g class="row" style="animation-delay:1.5s">
-<g class="cellwave" style="animation-duration:9.8s;animation-delay:-9.0s">
 <text x="158" y="2492.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x92 (146)</text>
 <rect x="842" y="2474.0" width="64" height="26" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" rx="13"/>
 <circle cx="854" cy="2487.0" r="3.5" fill="#f59e0b"/>
@@ -903,9 +801,7 @@
 <text x="743.5" y="2485.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">reg_lock_wd_sel[1:0]</text>
 <text x="743.5" y="2499.0" text-anchor="middle" font-size="9.0" fill="#64748b">2'b10</text>
 </g>
-</g>
 <g class="row" style="animation-delay:1.53s">
-<g class="cellwave" style="animation-duration:9.8s;animation-delay:-9.2s">
 <text x="158" y="2544.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x93 (147)</text>
 <rect x="842" y="2526.0" width="64" height="26" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" rx="13"/>
 <circle cx="854" cy="2539.0" r="3.5" fill="#f59e0b"/>
@@ -917,9 +813,7 @@
 <text x="661.5" y="2537.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">BCC_M[3:0]</text>
 <text x="661.5" y="2551.0" text-anchor="middle" font-size="9.0" fill="#64748b">4'b0010</text>
 </g>
-</g>
 <g class="row" style="animation-delay:1.56s">
-<g class="cellwave" style="animation-duration:9.8s;animation-delay:-9.4s">
 <text x="158" y="2596.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0xA0 (160)</text>
 <rect x="842" y="2578.0" width="64" height="26" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" rx="13"/>
 <circle cx="854" cy="2591.0" r="3.5" fill="#22c55e"/>
@@ -931,9 +825,7 @@
 <text x="620.5" y="2589.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">regr_SDID[4:0]</text>
 <text x="620.5" y="2603.0" text-anchor="middle" font-size="9.0" fill="#64748b">（由 bcc_ctrl 驱动）</text>
 </g>
-</g>
 <g class="row" style="animation-delay:1.59s">
-<g class="cellwave" style="animation-duration:9.8s;animation-delay:-9.6s">
 <text x="158" y="2648.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0xA1 (161)</text>
 <rect x="842" y="2630.0" width="64" height="26" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1" rx="13"/>
 <circle cx="854" cy="2643.0" r="3.5" fill="#22c55e"/>
@@ -954,8 +846,8 @@
 <text x="661.5" y="2641.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">regr_AEQ_lane_ctrl[3:0]</text>
 <text x="661.5" y="2655.0" text-anchor="middle" font-size="9.0" fill="#64748b">（由 bcc_ctrl 驱动）</text>
 </g>
-</g>
 <g class="head" style="animation-delay:1.8s">
+<g class="cellwave">
 <text x="90" y="2752" font-size="13" font-weight="600" fill="#1e293b">图例</text>
 <rect x="90" y="2762" width="14" height="14" fill="#e2e8f0" stroke="#94a3b8" rx="2"/>
 <text x="110" y="2773" font-size="11" fill="#1e293b">Reserved</text>
@@ -972,5 +864,6 @@
 <rect x="750" y="2762" width="14" height="14" fill="#ccfbf1" stroke="#ef4444" stroke-width="2" rx="2"/>
 <text x="770" y="2773" font-size="11" fill="#1e293b">与 chip_sel=0 不同</text>
 <text x="550.0" y="2812" text-anchor="middle" font-size="11" fill="#64748b">0716v1+：右侧标注字节级 POR 默认值（hex）；chip_sel=1 的 0x09/0x0A/0x1F 由 LC_REG_MAPPING 回拼实现</text>
+</g>
 </g>
 </svg>

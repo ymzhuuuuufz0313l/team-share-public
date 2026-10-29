@@ -97,8 +97,8 @@
 <g class="row" style="animation-delay:0.85s">
 <text x="120" y="274" font-size="9.5" fill="#16a34a" text-anchor="start">加扰区间（CTR_L ~ Dmy）</text>
 <rect x="120" y="282" width="540" height="10" rx="5" fill="#16a34a" stroke="#16a34a" stroke-width="1" class="draw" pathLength="100" style="animation-delay:0.85s"/>
-<path class="flowdot" d="M 120 287 L 660 287" stroke="#ffffff" pathLength="100" style="animation-duration:2.2s;animation-delay:-0.4s"/>
-<path class="flowdot" d="M 120 287 L 660 287" stroke="#ffffff" pathLength="100" style="animation-duration:2.2s;animation-delay:-1.5s"/>
+<path class="flowdot" d="M 120 287 L 660 287" stroke="#ffffff" pathLength="100" style="animation-duration:4.2s;animation-delay:-0.75s"/>
+<path class="flowdot" d="M 120 287 L 660 287" stroke="#ffffff" pathLength="100" style="animation-duration:4.2s;animation-delay:-2.85s"/>
 </g>
 <g class="row" style="animation-delay:0.95s">
 <text x="730" y="282" font-size="9.5" fill="#9ca3af" text-anchor="start">K 码期间 scramble 停止滚动</text>
@@ -106,10 +106,10 @@
 </g>
 <g class="row" style="animation-delay:1.05s">
 <rect x="214" y="326" width="356" height="10" rx="5" fill="#2563eb" stroke="#2563eb" stroke-width="1" class="draw" pathLength="100" style="animation-delay:1.05s"/>
-<path class="flowdot" d="M 214 331 L 570 331" stroke="#ffffff" pathLength="100" style="animation-duration:2.2s;animation-delay:-1.5s"/>
-<path class="flowdot" d="M 214 331 L 570 331" stroke="#ffffff" pathLength="100" style="animation-duration:2.2s;animation-delay:-0.55s"/>
-<path class="flowtail" d="M 214 331 L 570 331" stroke="#1d4ed8" pathLength="100" style="animation-duration:2.2s;animation-delay:-1.5s"/>
-<path class="flowtail" d="M 214 331 L 570 331" stroke="#1d4ed8" pathLength="100" style="animation-duration:2.2s;animation-delay:-0.55s"/>
+<path class="flowdot" d="M 214 331 L 570 331" stroke="#ffffff" pathLength="100" style="animation-duration:4.2s;animation-delay:-2.85s"/>
+<path class="flowdot" d="M 214 331 L 570 331" stroke="#ffffff" pathLength="100" style="animation-duration:4.2s;animation-delay:-1.05s"/>
+<path class="flowtail" d="M 214 331 L 570 331" stroke="#1d4ed8" pathLength="100" style="animation-duration:4.2s;animation-delay:-2.85s"/>
+<path class="flowtail" d="M 214 331 L 570 331" stroke="#1d4ed8" pathLength="100" style="animation-duration:4.2s;animation-delay:-1.05s"/>
 </g>
 <g class="row" style="animation-delay:1.15s">
 <path d="M 660 292 C 700 320 660 360 620 372 L 220 372 L 220 388" stroke="#059669" stroke-width="2" fill="none" stroke-dasharray="6,3" marker-end="url(#ar-green)" class="dashgrow"/>

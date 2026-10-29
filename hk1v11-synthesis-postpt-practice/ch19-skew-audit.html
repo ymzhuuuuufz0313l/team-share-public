@@ -72,7 +72,7 @@
 > - **rx0_00 行语义（同日定案）**：max/min 两行是**不同路径**的最差 slack——max=FF→FF setup（INDATA_SYNC→D1，借 3.81ns 周期）、min=port→FF hold（dout_lane，±0.3 input delay 模型 + 0.15 uncertainty 吃满窗口），不是「skew 最大/最小」；2M23 的 min 7.0~9.0 = DIV2 生成时钟（10.08ns）整周期边沿差一项即达 slack 的 1.39 倍（占数据到达 71%），跨项目不可比。1028 真违例跟办项：wc_cbest port→FF hold 族 ~50ps（−0.051536 起，多 bit）。
 > - **教训重演**：09-16 遗留问题 L46 已记「UITE-416 非法起点回退产生假得合理的 margin，空/回退报告必须显式留空+点名」，09-18 新增的 dplc 探针又踩同一坑且未触发任何哨兵。修复清单 P1-P9（pin 补层 / 3 处错误注释同步 / UITE-416 哨兵 / b 侧数据按 launch 分组 / 窗口收口 / io 约束补齐 / latest 混代清理 / isprx 版本对齐）见审计文档 §5。
 
-![skew 探针审计四面板图解（动画版：窗口机制 / 污染链 / rx0 语义 / 三约束）](./anim/skew_probe_audit_1028.svg?v=20261031)
+![skew 探针审计四面板图解（动画版：窗口机制 / 污染链 / rx0 语义 / 三约束）](./anim/skew_probe_audit_1028.svg?v=20261101)
 
 > - **第二轮八路复审（10-28 深夜）**：九角真值逐角在窗（最差 wc_cworst r −0.816993）、1008 对账一致、26 探针 RTL 全对；新挖 8 处 perl 健壮性隐患（修复清单 P10）与 5 处文档行号修正；15.12 之谜 = 时钟族确有 RX0_CLK_DIV1P5_1P（15.12），A 路抓错时钟名。详证：HK1V11 仓库审计文档 §6.1。
 > 静态版 fallback：`./skew_probe_audit_1028.svg`；项目内事实源与生成器：HK1V11 仓库 `docs/skew_probe_audit_1028/`。
@@ -89,7 +89,7 @@
 - **2M23 残留**：F1-F8 全修完（学习笔记重写 + 3 份 SDC NOTE + 2M23 专用脚本标注），live 树功能干净。
 - **全量审计**：12 项发现全部低危（行号漂移/笔误），当场修正；裁决 = 通过。
 
-![DELAY vs SKEW — set_max_delay (14/12) 与 skew 数值的关系](./images/anim/delay_skew_14vs12.svg?v=20261031)
+![DELAY vs SKEW — set_max_delay (14/12) 与 skew 数值的关系](./images/anim/delay_skew_14vs12.svg?v=20261101)
 
 ---
 

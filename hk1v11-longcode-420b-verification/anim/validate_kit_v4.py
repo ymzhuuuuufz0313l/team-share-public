@@ -39,6 +39,9 @@ def check(t):
     r["rmfix"] = "OK" if (rm and re.search(r"prefers-reduced-motion.*?opacity:1!important", data, re.S)) else "NG"
     # v4 废除 glow-*（由 pulse* 取代）
     r["no_glow"] = "OK" if not re.search(r'class="[^"]*glow-[bgo]', data) else "NG"
+    # v4.2: 列车元素时长下限（实例层，防 kit 默认合规而元素内联超速）
+    fast = [m.group(1) for m in re.finditer(r'flow(?:dot|tail)[^"]*"[^>]*animation-duration:([0-9.]+)s', data)]
+    r["train>=2.4s"] = "OK" if all(float(x) >= 2.4 for x in fast) else f"NG({','.join(fast)})"
     # 稳态族 ≥2（march/breathe 不计数）
     fam = {
         "train":   len(re.findall(r'class="[^"]*(flowdot|flowtail)', data)),
@@ -54,7 +57,7 @@ def check(t):
     for k, pat in (("draw", r'class="draw"'), ("row", r'class="row"'), ("march", r'class="(march|fade)"')):
         r[k] = str(len(re.findall(pat, data)))
     hard = ("xml", "text", "noscript", "nosmil", "keyframes", "svgtag", "size",
-            "kit_train", "kit_pulse", "kit_sweep", "rmfix", "no_glow")
+            "kit_train", "kit_pulse", "kit_sweep", "rmfix", "no_glow", "train>=2.4s")
     ok = all(str(r.get(k, "NG")) == "OK" or str(r.get(k, "NG")).startswith("OK(") for k in hard) \
         and str(r["steady>=2fam"]).startswith("OK")
     detail = " ".join(f"{k}={v}" for k, v in r.items() if k not in hard)

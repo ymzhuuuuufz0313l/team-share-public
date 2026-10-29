@@ -7,7 +7,7 @@ MOTION_KIT.md §6.2 规格（1200x680 TX/RX + 离线比对 band）：
   箭头 delay = max(两端面板)+0.55s（修 v2 悬浮箭头）。
 - 稳态族（4 族 + breathe 辅助；2026-10-28 晚动效加密 round 新增生长族）：
   * 列车 train：绿脚本链 3 边（tap_debug→decode_dap→pydec→…）每边 2 包+flowtail
-    拖尾，0.7s；蓝 K 码对齐（CHPI 串行）2 边每边 2 包。
+    拖尾，2.4s（2026-10-29 二次降速 0.7→2.4）；蓝 K 码对齐（CHPI 串行）2 边每边 2 包。
   * 脉冲 pulse：TAP 徽章 pulse-b(-1.4s)；✅ verdict 盒 pulse-t(-0.7s)。
   * 扫光 sweepband：离线比对 band 区域 1 处（§4 配方：defs 渐变+clipPath，
     P=区域宽+240，X0=区域左-0.54P 保证 t=0 光带完全在区域左侧、8s 无缝左→右扫）。
@@ -262,11 +262,12 @@ def build():
             out.append(ln)
             out.append("</g>")
 
-    # 数据列车：绿脚本链 3 边（2 包+拖尾 0.7s，-0.1s/边）；蓝 K 码 2 边（2 包）
+    # 数据列车：绿脚本链 3 边（2 包+拖尾 2.4s，-0.34s/边 ≈ 周期 1/7，随降速等比）；
+    # 蓝 K 码 2 边（2 包，无拖尾）（2026-10-29 二次降速 0.7→2.4）
     for k, d in enumerate(green_edges):
-        out.extend(train_edge(d, "#059669", 0.7, -0.1 * k, 1.0))
+        out.extend(train_edge(d, "#059669", 2.4, -0.34 * k, 1.0))
     for k, d in enumerate(blue_edges):
-        out.extend(train_edge(d, "#2563eb", 0.7, -0.1 * k, 1.0, tail=False))
+        out.extend(train_edge(d, "#2563eb", 2.4, -0.34 * k, 1.0, tail=False))
 
     group((i_leg, len(lines) - 1), "head", 1.50)                    # 底部图例
     out.append("</svg>")
@@ -278,4 +279,4 @@ def build():
 if __name__ == "__main__":
     build()
 
-# ymzhu 2026-10-28 19:06
+# ymzhu 2026-10-29 10:18

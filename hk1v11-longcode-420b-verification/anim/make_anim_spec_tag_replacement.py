@@ -9,8 +9,9 @@ MOTION_KIT.md §6.5 规格（1200×460）：
   · 输入→输出 ↓替换箭头 delay 1.1（两端 max = 输出行 0.55）
   · A→B 发送顺序箭头 delay 1.1（两端 = 输出行 0.55）
 - step：4 框循环 delay 0 / -1.5 / -3 / -4.5s（6s 周期）
-- 列车：A→B 箭头 3 包 + 每包 flowtail（2026-10-28 晚动效加密 2→3 包：
-  duration 1.6s，整周期均布 phase -0.2 / -0.73 / -1.27，tail 随包）
+- 列车：A→B 箭头 3 包 + 每包 flowtail（2026-10-28 晚动效加密 2→3 包；
+  2026-10-29 二次降速 duration 1.6→3.4s，整周期均布 phase -0.43 / -1.56 / -2.7，
+  tail 随包）
 - 行波：输出行全部 10 个单元格（含标签格）左→右 cellwave（0.1s/格，duration 3.4s）
 - 脉冲：全0/全1 两个红格 .pulse（琥珀，delay 0 / -1.4，phase 差 1.4s）
 - march：源图 header 位无虚线（§6.5“若有”条件不成立，跳过）
@@ -183,16 +184,17 @@ def build():
     o.append("</g>")
 
     # A→B 组 row(0.85)：draw 1.1（=输出行 0.55+0.55）+ 列车 3 包（整周期均布）
-    # + 每包 flowtail（1.6s；2026-10-28 加密 2→3 包）
+    # + 每包 flowtail（3.4s；2026-10-28 加密 2→3 包；2026-10-29 二次降速 1.6→3.4，
+    # 相位随新周期重排 -0.43/-1.56/-2.7，间距 3.4/3）
     o.append('<g class="row" style="animation-delay:0.85s">')
     o.append('<g class="fade" style="animation-delay:1.1s">')
     o.append(lines[a2b_i].replace(
         "<line ", '<line class="draw" pathLength="100" style="animation-delay:1.1s" ', 1))
-    for d in ("-0.2s", "-0.73s", "-1.27s"):
+    for d in ("-0.43s", "-1.56s", "-2.7s"):
         o.append('<path class="flowdot" d="M 655 196 L 830 196" stroke="#2563eb" '
-                 f'pathLength="100" style="animation-duration:1.6s;animation-delay:{d}"/>')
+                 f'pathLength="100" style="animation-duration:3.4s;animation-delay:{d}"/>')
         o.append('<path class="flowtail" d="M 655 196 L 830 196" stroke="#2563eb" '
-                 f'pathLength="100" style="animation-duration:1.6s;animation-delay:{d}"/>')
+                 f'pathLength="100" style="animation-duration:3.4s;animation-delay:{d}"/>')
     o.append("</g>")
     o.extend(lines[a2b_label_i:b_i + 1])  # “发送顺序 A → B” + A/B
     o.append("</g>")
@@ -282,4 +284,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-# ymzhu 2026-10-28 19:06
+# ymzhu 2026-10-29 10:18

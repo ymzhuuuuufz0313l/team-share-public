@@ -59,10 +59,10 @@
 </g>
 <g class="fade" style="animation-delay:0.85s">
 <line class="draw" pathLength="100" style="animation-delay:0.85s" x1="314" y1="106" x2="344" y2="106" stroke="#2563eb" stroke-width="1.5" marker-end="url(#ar-blue)"/>
-<path class="flowdot" d="M 314 106 L 344 106" stroke="#2563eb" pathLength="100" style="animation-duration:0.7s;animation-delay:-0.05s"/>
-<path class="flowdot" d="M 314 106 L 344 106" stroke="#2563eb" pathLength="100" style="animation-duration:0.7s;animation-delay:-0.28s"/>
-<path class="flowdot" d="M 314 106 L 344 106" stroke="#2563eb" pathLength="100" style="animation-duration:0.7s;animation-delay:-0.52s"/>
-<path class="flowtail" d="M 314 106 L 344 106" stroke="#2563eb" pathLength="100" style="animation-duration:0.7s;animation-delay:-0.05s"/>
+<path class="flowdot" d="M 314 106 L 344 106" stroke="#2563eb" pathLength="100" style="animation-duration:2.4s;animation-delay:-0.15s"/>
+<path class="flowdot" d="M 314 106 L 344 106" stroke="#2563eb" pathLength="100" style="animation-duration:2.4s;animation-delay:-0.95s"/>
+<path class="flowdot" d="M 314 106 L 344 106" stroke="#2563eb" pathLength="100" style="animation-duration:2.4s;animation-delay:-1.75s"/>
+<path class="flowtail" d="M 314 106 L 344 106" stroke="#2563eb" pathLength="100" style="animation-duration:2.4s;animation-delay:-0.15s"/>
 </g>
 <g class="row" style="animation-delay:0.3s">
 <g class="step" style="animation-delay:-1.5s">
@@ -72,10 +72,10 @@
 </g>
 <g class="fade" style="animation-delay:1.0s">
 <line class="draw" pathLength="100" style="animation-delay:1.0s" x1="604" y1="106" x2="634" y2="106" stroke="#2563eb" stroke-width="1.5" marker-end="url(#ar-blue)"/>
-<path class="flowdot" d="M 604 106 L 634 106" stroke="#2563eb" pathLength="100" style="animation-duration:0.7s;animation-delay:-0.2s"/>
-<path class="flowdot" d="M 604 106 L 634 106" stroke="#2563eb" pathLength="100" style="animation-duration:0.7s;animation-delay:-0.43s"/>
-<path class="flowdot" d="M 604 106 L 634 106" stroke="#2563eb" pathLength="100" style="animation-duration:0.7s;animation-delay:-0.67s"/>
-<path class="flowtail" d="M 604 106 L 634 106" stroke="#2563eb" pathLength="100" style="animation-duration:0.7s;animation-delay:-0.2s"/>
+<path class="flowdot" d="M 604 106 L 634 106" stroke="#2563eb" pathLength="100" style="animation-duration:2.4s;animation-delay:-0.65s"/>
+<path class="flowdot" d="M 604 106 L 634 106" stroke="#2563eb" pathLength="100" style="animation-duration:2.4s;animation-delay:-1.45s"/>
+<path class="flowdot" d="M 604 106 L 634 106" stroke="#2563eb" pathLength="100" style="animation-duration:2.4s;animation-delay:-2.25s"/>
+<path class="flowtail" d="M 604 106 L 634 106" stroke="#2563eb" pathLength="100" style="animation-duration:2.4s;animation-delay:-0.65s"/>
 </g>
 <g class="row" style="animation-delay:0.45s">
 <g class="step" style="animation-delay:-3s">
@@ -85,10 +85,10 @@
 </g>
 <g class="fade" style="animation-delay:1.15s">
 <line class="draw" pathLength="100" style="animation-delay:1.15s" x1="894" y1="106" x2="924" y2="106" stroke="#2563eb" stroke-width="1.5" marker-end="url(#ar-blue)"/>
-<path class="flowdot" d="M 894 106 L 924 106" stroke="#2563eb" pathLength="100" style="animation-duration:0.7s;animation-delay:-0.35s"/>
-<path class="flowdot" d="M 894 106 L 924 106" stroke="#2563eb" pathLength="100" style="animation-duration:0.7s;animation-delay:-0.58s"/>
-<path class="flowdot" d="M 894 106 L 924 106" stroke="#2563eb" pathLength="100" style="animation-duration:0.7s;animation-delay:-0.82s"/>
-<path class="flowtail" d="M 894 106 L 924 106" stroke="#2563eb" pathLength="100" style="animation-duration:0.7s;animation-delay:-0.35s"/>
+<path class="flowdot" d="M 894 106 L 924 106" stroke="#2563eb" pathLength="100" style="animation-duration:2.4s;animation-delay:-1.15s"/>
+<path class="flowdot" d="M 894 106 L 924 106" stroke="#2563eb" pathLength="100" style="animation-duration:2.4s;animation-delay:-1.95s"/>
+<path class="flowdot" d="M 894 106 L 924 106" stroke="#2563eb" pathLength="100" style="animation-duration:2.4s;animation-delay:-2.75s"/>
+<path class="flowtail" d="M 894 106 L 924 106" stroke="#2563eb" pathLength="100" style="animation-duration:2.4s;animation-delay:-1.15s"/>
 </g>
 <g class="row" style="animation-delay:0.6s">
 <g class="step" style="animation-delay:-4.5s">
@@ -188,20 +188,20 @@
 <g class="fade" style="animation-delay:1.45s">
 <line class="draw" pathLength="100" style="animation-delay:1.45s" x1="630" y1="220" x2="690" y2="220" stroke="#2563eb" stroke-width="2" marker-end="url(#ar-blue)"/>
 <text x="660" y="258" font-size="8.5" fill="#2563eb" text-anchor="middle">413b/420b</text>
-<path class="flowdot" d="M 630 220 L 690 220" stroke="#2563eb" pathLength="100" style="animation-duration:1.15s;animation-delay:-0.1s"/>
-<path class="flowdot" d="M 630 220 L 690 220" stroke="#2563eb" pathLength="100" style="animation-duration:1.15s;animation-delay:-0.65s"/>
+<path class="flowdot" d="M 630 220 L 690 220" stroke="#2563eb" pathLength="100" style="animation-duration:3.9s;animation-delay:-0.35s"/>
+<path class="flowdot" d="M 630 220 L 690 220" stroke="#2563eb" pathLength="100" style="animation-duration:3.9s;animation-delay:-2.3s"/>
 </g>
 <g class="fade" style="animation-delay:1.6s">
 <line class="draw" pathLength="100" style="animation-delay:1.6s" x1="630" y1="340" x2="690" y2="340" stroke="#2563eb" stroke-width="2" marker-end="url(#ar-blue)"/>
 <text x="660" y="378" font-size="8.5" fill="#2563eb" text-anchor="middle">413b/420b</text>
-<path class="flowdot" d="M 630 340 L 690 340" stroke="#2563eb" pathLength="100" style="animation-duration:1.15s;animation-delay:-0.3s"/>
-<path class="flowdot" d="M 630 340 L 690 340" stroke="#2563eb" pathLength="100" style="animation-duration:1.15s;animation-delay:-0.85s"/>
+<path class="flowdot" d="M 630 340 L 690 340" stroke="#2563eb" pathLength="100" style="animation-duration:3.9s;animation-delay:-1.05s"/>
+<path class="flowdot" d="M 630 340 L 690 340" stroke="#2563eb" pathLength="100" style="animation-duration:3.9s;animation-delay:-3s"/>
 </g>
 <g class="fade" style="animation-delay:1.75s">
 <line class="draw" pathLength="100" style="animation-delay:1.75s" x1="630" y1="460" x2="690" y2="460" stroke="#2563eb" stroke-width="2" marker-end="url(#ar-blue)"/>
 <text x="660" y="498" font-size="8.5" fill="#2563eb" text-anchor="middle">413b/420b</text>
-<path class="flowdot" d="M 630 460 L 690 460" stroke="#2563eb" pathLength="100" style="animation-duration:1.15s;animation-delay:-0.5s"/>
-<path class="flowdot" d="M 630 460 L 690 460" stroke="#2563eb" pathLength="100" style="animation-duration:1.15s;animation-delay:-1.05s"/>
+<path class="flowdot" d="M 630 460 L 690 460" stroke="#2563eb" pathLength="100" style="animation-duration:3.9s;animation-delay:-1.75s"/>
+<path class="flowdot" d="M 630 460 L 690 460" stroke="#2563eb" pathLength="100" style="animation-duration:3.9s;animation-delay:-3.7s"/>
 </g>
 <g clip-path="url(#sweepC-1)"><rect class="sweepband" x="-336" y="532" width="720" height="40" fill="url(#sweepG-1)" style="--sweepP:720px"/></g>
 <g class="head" style="animation-delay:1.4s">

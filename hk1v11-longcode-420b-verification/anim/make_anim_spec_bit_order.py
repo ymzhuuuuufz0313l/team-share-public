@@ -10,9 +10,10 @@ pulse 缩放辉光取代 glow-*）；入场箭头 delay 规则 v2 的 +0.35 → 
   → 串行化(0.9) → Case1 条带(1.05) → 时间轴(1.5)。
 - draw（delay = max(两端 row/head delay)+0.55）：
   竖直↑ 1.15（组 0.6）、串行化↓ 1.6（指向 Case1 1.05）、时间轴→ 2.05（head 1.5）。
-- 稳态·列车（族 1）：竖直↑ 3 包 + 每包 flowtail（2026-10-28 晚动效加密 2→3 包：
-  d 同箭头，0.7s，整周期均布 delay 0 / -0.23 / -0.47，tail 随包，
-  向上走 = Bit0→Bit7）；时间轴→ 2 包（0.7s，delay -0.2/-0.55，与竖直列错相）。
+- 稳态·列车（族 1）：竖直↑ 3 包 + 每包 flowtail（2026-10-28 晚动效加密 2→3 包；
+  2026-10-29 二次降速 0.7→2.4s：d 同箭头，整周期均布 delay 0 / -0.8 / -1.6，
+  tail 随包，向上走 = Bit0→Bit7）；时间轴→ 2 包（2.4s，delay -0.7/-1.9 半周期
+  均布，与竖直列错相）。
   dashgrow 加密项：源图无任何虚线元素（grep stroke-dasharray 零命中）→
   按"dashgrow 只能用在既有虚线上"跳过（caveat）。
 - 稳态·行波（族 2）：Case1 条带 24 格左→右 0.08s/格（2.9s）= 逐 bit 发送；
@@ -193,7 +194,8 @@ def build():
     out.append("</g>")
 
     # row#2 发送顺序箭头组（0.6）：竖箭头 draw(1.15=0.6+0.55) + 列车 3 包（整周期
-    # 均布 0/-0.23/-0.47）+ 每包 tail（2026-10-28 加密 2→3 包）
+    # 均布 0/-0.8/-1.6，2.4s）+ 每包 tail（2026-10-28 加密 2→3 包；
+    # 2026-10-29 二次降速 0.7→2.4s）
     counts["row"] += 1
     out.append('<g class="row" style="animation-delay:0.6s">')
     for j in range(grid_end + 1, byte_start):
@@ -202,9 +204,9 @@ def build():
             out.append(tag_draw(lines[j], 1.15))
             counts["flowdot"] += 3
             counts["flowtail"] += 3
-            for dl in (0.0, -0.23, -0.47):
-                out.append(flowdot("M 74 356 L 74 122", "#2563eb", 0.7, dl))
-                out.append(flowtail("M 74 356 L 74 122", "#2563eb", 0.7, dl))
+            for dl in (0.0, -0.8, -1.6):
+                out.append(flowdot("M 74 356 L 74 122", "#2563eb", 2.4, dl))
+                out.append(flowtail("M 74 356 L 74 122", "#2563eb", 2.4, dl))
         else:
             out.append(lines[j])
     out.append("</g>")
@@ -243,14 +245,15 @@ def build():
     out.append(lines[strip_end + 1])  # "…" 标注
     out.append("</g>")
 
-    # head#2 时间轴（1.5）：draw(2.05=1.5+0.55) + 列车 2 包（与竖列错相）
+    # head#2 时间轴（1.5）：draw(2.05=1.5+0.55) + 列车 2 包（2.4s 半周期均布，
+    # 与竖列错相；2026-10-29 二次降速 0.7→2.4s）
     counts["head"] += 1
     out.append('<g class="head" style="animation-delay:1.5s">')
     counts["draw"] += 1
     out.append(tag_draw(lines[timeline_idx], 2.05))
     counts["flowdot"] += 2
-    out.append(flowdot("M 60 540 L 1140 540", "#2563eb", 0.7, -0.2))
-    out.append(flowdot("M 60 540 L 1140 540", "#2563eb", 0.7, -0.55))
+    out.append(flowdot("M 60 540 L 1140 540", "#2563eb", 2.4, -0.7))
+    out.append(flowdot("M 60 540 L 1140 540", "#2563eb", 2.4, -1.9))
     out.append(lines[timeline_idx + 1])  # "传输时间轴方向"
     out.append("</g>")
 
@@ -312,4 +315,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-# ymzhu 2026-10-28 19:06
+# ymzhu 2026-10-29 10:18

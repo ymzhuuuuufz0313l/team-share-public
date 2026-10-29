@@ -1,16 +1,17 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1318" height="364" viewBox="0 0 1318 364">
 <style>
+.breathe { animation: breathe 5s ease-in-out infinite; }
+@keyframes breathe { 0%,100% { opacity: 1; } 50% { opacity: 0.25; } }
 .rev{opacity:0;animation:revIn 0.4s ease forwards;}
 .d0{animation-delay:0s;}
 .d3{animation-delay:0.3s;}
 @keyframes revIn{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:none;}}
-.breathe { animation: breathe 5s ease-in-out infinite; }
 .b0{animation-delay:0.00s;}
 .b1{animation-delay:0.35s;}
 .b2{animation-delay:0.70s;}
 .b3{animation-delay:1.05s;}
 .b4{animation-delay:1.40s;}
-@keyframes breathe { 0%,100% { opacity: 1; } 50% { opacity: 0.25; } }
+ 50% { opacity: 0.25; } }
 </style>
 <rect x="0" y="0" width="1318" height="364" fill="#ffffff"/>
 <rect x="0" y="0" width="1318" height="2" fill="#c0c6c6"/>

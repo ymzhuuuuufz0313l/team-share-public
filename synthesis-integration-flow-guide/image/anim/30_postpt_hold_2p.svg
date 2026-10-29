@@ -2,9 +2,8 @@
 <style><![CDATA[
 .head{opacity:0;animation:rowIn 0.4s ease forwards;}
 .row{opacity:0;animation:rowIn 0.4s ease forwards;}
-.breathe { animation: breathe 5s ease-in-out infinite; }
 @keyframes rowIn{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:none;}}
-@keyframes breathe { 0%,100% { opacity: 1; } 50% { opacity: 0.25; } }
+ 50% { opacity: 0.25; } }
 ]]></style>
 <rect x="0" y="0" width="2519" height="1169" fill="#ffffff"/>
 <g class="head">
@@ -81,13 +80,13 @@
 <g class="row" style="animation-delay:0.05s">
 <rect x="0" y="200.083" width="2519" height="44.042" fill="#ffffff"/>
 <text x="35" y="228.27" font-size="19" fill="#2d2d2d" class="lbl">CLK_L1_DTCTL_OD_DIV1P5 (biggest violation)</text>
-<text x="728.6" y="228.27" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:0.357s">0.140974</text>
-<text x="923.2" y="228.27" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:0.536s">0.139960</text>
-<text x="1117.8" y="228.27" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:0.714s">0.144099</text>
-<text x="1312.4" y="228.27" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:0.893s">0.165946</text>
+<text x="728.6" y="228.27" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.140974</text>
+<text x="923.2" y="228.27" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.139960</text>
+<text x="1117.8" y="228.27" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.144099</text>
+<text x="1312.4" y="228.27" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.165946</text>
 <text x="1507" y="228.27" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
 <text x="1701.6" y="228.27" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
-<text x="1896.2" y="228.27" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:1.071s">0.140974</text>
+<text x="1896.2" y="228.27" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.140974</text>
 <text x="2090.8" y="228.27" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
 <text x="2285.4" y="228.27" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
 <text x="2480" y="228.27" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
@@ -107,13 +106,13 @@
 <g class="row" style="animation-delay:0.075s">
 <rect x="0" y="244.125" width="2519" height="44.042" fill="#f4f6f4"/>
 <text x="35" y="272.312" font-size="19" fill="#2d2d2d" class="lbl">I2C_CLK (biggest violation)</text>
-<text x="728.6" y="272.312" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:0.536s">0.082771</text>
-<text x="923.2" y="272.312" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:0.714s">0.084609</text>
-<text x="1117.8" y="272.312" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:0.893s">0.082690</text>
-<text x="1312.4" y="272.312" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:1.071s">0.129146</text>
-<text x="1507" y="272.312" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:1.25s">0.195399</text>
-<text x="1701.6" y="272.312" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:1.429s">0.198188</text>
-<text x="1896.2" y="272.312" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:1.607s">0.082771</text>
+<text x="728.6" y="272.312" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.082771</text>
+<text x="923.2" y="272.312" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.084609</text>
+<text x="1117.8" y="272.312" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.082690</text>
+<text x="1312.4" y="272.312" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.129146</text>
+<text x="1507" y="272.312" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.195399</text>
+<text x="1701.6" y="272.312" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.198188</text>
+<text x="1896.2" y="272.312" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.082771</text>
 <text x="2090.8" y="272.312" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
 <text x="2285.4" y="272.312" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
 <text x="2480" y="272.312" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
@@ -133,13 +132,13 @@
 <g class="row" style="animation-delay:0.1s">
 <rect x="0" y="288.167" width="2519" height="44.042" fill="#ffffff"/>
 <text x="35" y="316.353" font-size="19" fill="#2d2d2d" class="lbl">LS_CLK (biggest violation)</text>
-<text x="728.6" y="316.353" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:0.714s">0.072867</text>
-<text x="923.2" y="316.353" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:0.893s">0.074680</text>
-<text x="1117.8" y="316.353" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:1.071s">0.073601</text>
-<text x="1312.4" y="316.353" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:1.25s">0.118843</text>
-<text x="1507" y="316.353" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:1.429s">0.192251</text>
-<text x="1701.6" y="316.353" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:1.607s">0.195035</text>
-<text x="1896.2" y="316.353" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:1.786s">0.072867</text>
+<text x="728.6" y="316.353" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.072867</text>
+<text x="923.2" y="316.353" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.074680</text>
+<text x="1117.8" y="316.353" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.073601</text>
+<text x="1312.4" y="316.353" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.118843</text>
+<text x="1507" y="316.353" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.192251</text>
+<text x="1701.6" y="316.353" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.195035</text>
+<text x="1896.2" y="316.353" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.072867</text>
 <text x="2090.8" y="316.353" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
 <text x="2285.4" y="316.353" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
 <text x="2480" y="316.353" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
@@ -159,13 +158,13 @@
 <g class="row" style="animation-delay:0.125s">
 <rect x="0" y="332.208" width="2519" height="44.042" fill="#f4f6f4"/>
 <text x="35" y="360.395" font-size="19" fill="#2d2d2d" class="lbl">OSC_CLK_IN (biggest violation)</text>
-<text x="728.6" y="360.395" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:0.893s">0.005736</text>
-<text x="923.2" y="360.395" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:1.071s">0.004993</text>
-<text x="1117.8" y="360.395" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:1.25s">0.001223</text>
-<text x="1312.4" y="360.395" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:1.429s">0.030312</text>
-<text x="1507" y="360.395" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:1.607s">0.083931</text>
-<text x="1701.6" y="360.395" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:1.786s">0.086233</text>
-<text x="1896.2" y="360.395" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:1.964s">0.005736</text>
+<text x="728.6" y="360.395" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.005736</text>
+<text x="923.2" y="360.395" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.004993</text>
+<text x="1117.8" y="360.395" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.001223</text>
+<text x="1312.4" y="360.395" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.030312</text>
+<text x="1507" y="360.395" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.083931</text>
+<text x="1701.6" y="360.395" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.086233</text>
+<text x="1896.2" y="360.395" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.005736</text>
 <text x="2090.8" y="360.395" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
 <text x="2285.4" y="360.395" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
 <text x="2480" y="360.395" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
@@ -237,13 +236,13 @@
 <g class="row" style="animation-delay:0.2s">
 <rect x="0" y="464.333" width="2519" height="44.042" fill="#ffffff"/>
 <text x="35" y="492.52" font-size="19" fill="#2d2d2d" class="lbl">RX0_CLK_DIV1P5 (biggest violation)</text>
-<text x="728.6" y="492.52" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:1.429s">0.124658</text>
-<text x="923.2" y="492.52" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:1.607s">0.123365</text>
-<text x="1117.8" y="492.52" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:1.786s">0.097236</text>
-<text x="1312.4" y="492.52" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:1.964s">0.139680</text>
-<text x="1507" y="492.52" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:2.143s">0.168086</text>
-<text x="1701.6" y="492.52" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:2.321s">0.191130</text>
-<text x="1896.2" y="492.52" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:2.5s">0.124658</text>
+<text x="728.6" y="492.52" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.124658</text>
+<text x="923.2" y="492.52" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.123365</text>
+<text x="1117.8" y="492.52" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.097236</text>
+<text x="1312.4" y="492.52" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.139680</text>
+<text x="1507" y="492.52" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.168086</text>
+<text x="1701.6" y="492.52" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.191130</text>
+<text x="1896.2" y="492.52" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.124658</text>
 <text x="2090.8" y="492.52" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
 <text x="2285.4" y="492.52" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
 <text x="2480" y="492.52" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
@@ -289,13 +288,13 @@
 <g class="row" style="animation-delay:0.25s">
 <rect x="0" y="552.417" width="2519" height="44.042" fill="#ffffff"/>
 <text x="35" y="580.603" font-size="19" fill="#2d2d2d" class="lbl">RX0_OD_CLK_DIV2 (biggest violation)</text>
-<text x="728.6" y="580.603" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:1.786s">0.117542</text>
-<text x="923.2" y="580.603" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:1.964s">0.119272</text>
-<text x="1117.8" y="580.603" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:2.143s">0.116568</text>
-<text x="1312.4" y="580.603" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:2.321s">0.143153</text>
-<text x="1507" y="580.603" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:2.5s">0.186554</text>
-<text x="1701.6" y="580.603" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:2.679s">0.183593</text>
-<text x="1896.2" y="580.603" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:2.857s">0.117542</text>
+<text x="728.6" y="580.603" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.117542</text>
+<text x="923.2" y="580.603" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.119272</text>
+<text x="1117.8" y="580.603" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.116568</text>
+<text x="1312.4" y="580.603" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.143153</text>
+<text x="1507" y="580.603" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.186554</text>
+<text x="1701.6" y="580.603" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.183593</text>
+<text x="1896.2" y="580.603" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.117542</text>
 <text x="2090.8" y="580.603" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
 <text x="2285.4" y="580.603" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
 <text x="2480" y="580.603" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
@@ -315,13 +314,13 @@
 <g class="row" style="animation-delay:0.275s">
 <rect x="0" y="596.458" width="2519" height="44.042" fill="#f4f6f4"/>
 <text x="35" y="624.645" font-size="19" fill="#2d2d2d" class="lbl">RX0_OD_CLK (biggest violation)</text>
-<text x="728.6" y="624.645" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:1.964s">0.077594</text>
-<text x="923.2" y="624.645" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:2.143s">0.081014</text>
-<text x="1117.8" y="624.645" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:2.321s">0.078653</text>
-<text x="1312.4" y="624.645" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:2.5s">0.123961</text>
-<text x="1507" y="624.645" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:2.679s">0.188720</text>
-<text x="1701.6" y="624.645" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:2.857s">0.193939</text>
-<text x="1896.2" y="624.645" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:3.036s">0.077594</text>
+<text x="728.6" y="624.645" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.077594</text>
+<text x="923.2" y="624.645" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.081014</text>
+<text x="1117.8" y="624.645" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.078653</text>
+<text x="1312.4" y="624.645" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.123961</text>
+<text x="1507" y="624.645" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.188720</text>
+<text x="1701.6" y="624.645" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.193939</text>
+<text x="1896.2" y="624.645" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.077594</text>
 <text x="2090.8" y="624.645" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
 <text x="2285.4" y="624.645" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
 <text x="2480" y="624.645" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
@@ -367,13 +366,13 @@
 <g class="row" style="animation-delay:0.325s">
 <rect x="0" y="684.542" width="2519" height="44.042" fill="#f4f6f4"/>
 <text x="35" y="712.728" font-size="19" fill="#2d2d2d" class="lbl">RX1_CLK_DIV1P5 (biggest violation)</text>
-<text x="728.6" y="712.728" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:2.321s">0.140730</text>
-<text x="923.2" y="712.728" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:2.5s">0.139678</text>
-<text x="1117.8" y="712.728" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:2.679s">0.144099</text>
-<text x="1312.4" y="712.728" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:2.857s">0.165946</text>
+<text x="728.6" y="712.728" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.140730</text>
+<text x="923.2" y="712.728" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.139678</text>
+<text x="1117.8" y="712.728" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.144099</text>
+<text x="1312.4" y="712.728" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.165946</text>
 <text x="1507" y="712.728" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
 <text x="1701.6" y="712.728" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
-<text x="1896.2" y="712.728" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:3.036s">0.140730</text>
+<text x="1896.2" y="712.728" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.140730</text>
 <text x="2090.8" y="712.728" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
 <text x="2285.4" y="712.728" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
 <text x="2480" y="712.728" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
@@ -419,13 +418,13 @@
 <g class="row" style="animation-delay:0.375s">
 <rect x="0" y="772.625" width="2519" height="44.042" fill="#f4f6f4"/>
 <text x="35" y="800.812" font-size="19" fill="#2d2d2d" class="lbl">RX1_OD_CLK_DIV2 (biggest violation)</text>
-<text x="728.6" y="800.812" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:2.679s">0.136843</text>
-<text x="923.2" y="800.812" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:2.857s">0.138125</text>
-<text x="1117.8" y="800.812" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:3.036s">0.136845</text>
-<text x="1312.4" y="800.812" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:3.214s">0.164136</text>
+<text x="728.6" y="800.812" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.136843</text>
+<text x="923.2" y="800.812" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.138125</text>
+<text x="1117.8" y="800.812" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.136845</text>
+<text x="1312.4" y="800.812" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.164136</text>
 <text x="1507" y="800.812" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
 <text x="1701.6" y="800.812" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
-<text x="1896.2" y="800.812" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:3.393s">0.136843</text>
+<text x="1896.2" y="800.812" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.136843</text>
 <text x="2090.8" y="800.812" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
 <text x="2285.4" y="800.812" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
 <text x="2480" y="800.812" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
@@ -471,13 +470,13 @@
 <g class="row" style="animation-delay:0.425s">
 <rect x="0" y="860.708" width="2519" height="44.042" fill="#f4f6f4"/>
 <text x="35" y="888.895" font-size="19" fill="#2d2d2d" class="lbl">STB_CLK (biggest violation)</text>
-<text x="728.6" y="888.895" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:3.036s">0.017771</text>
-<text x="923.2" y="888.895" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:3.214s">0.020951</text>
-<text x="1117.8" y="888.895" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:3.393s">0.018615</text>
-<text x="1312.4" y="888.895" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:3.571s">0.045583</text>
-<text x="1507" y="888.895" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:3.75s">0.106706</text>
-<text x="1701.6" y="888.895" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:3.929s">0.112402</text>
-<text x="1896.2" y="888.895" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:4.107s">0.017771</text>
+<text x="728.6" y="888.895" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.017771</text>
+<text x="923.2" y="888.895" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.020951</text>
+<text x="1117.8" y="888.895" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.018615</text>
+<text x="1312.4" y="888.895" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.045583</text>
+<text x="1507" y="888.895" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.106706</text>
+<text x="1701.6" y="888.895" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.112402</text>
+<text x="1896.2" y="888.895" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.017771</text>
 <text x="2090.8" y="888.895" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
 <text x="2285.4" y="888.895" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
 <text x="2480" y="888.895" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
@@ -497,13 +496,13 @@
 <g class="row" style="animation-delay:0.45s">
 <rect x="0" y="904.75" width="2519" height="44.042" fill="#ffffff"/>
 <text x="35" y="932.937" font-size="19" fill="#2d2d2d" class="lbl">VS_CLK (biggest violation)</text>
-<text x="728.6" y="932.937" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:3.214s">0.017771</text>
-<text x="923.2" y="932.937" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:3.393s">0.020951</text>
-<text x="1117.8" y="932.937" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:3.571s">0.018615</text>
-<text x="1312.4" y="932.937" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:3.75s">0.045583</text>
-<text x="1507" y="932.937" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:3.929s">0.106706</text>
-<text x="1701.6" y="932.937" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:4.107s">0.112402</text>
-<text x="1896.2" y="932.937" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:4.286s">0.017771</text>
+<text x="728.6" y="932.937" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.017771</text>
+<text x="923.2" y="932.937" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.020951</text>
+<text x="1117.8" y="932.937" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.018615</text>
+<text x="1312.4" y="932.937" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.045583</text>
+<text x="1507" y="932.937" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.106706</text>
+<text x="1701.6" y="932.937" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.112402</text>
+<text x="1896.2" y="932.937" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.017771</text>
 <text x="2090.8" y="932.937" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
 <text x="2285.4" y="932.937" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
 <text x="2480" y="932.937" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
@@ -523,13 +522,13 @@
 <g class="row" style="animation-delay:0.475s">
 <rect x="0" y="948.792" width="2519" height="44.042" fill="#f4f6f4"/>
 <text x="35" y="976.978" font-size="19" fill="#2d2d2d" class="lbl">WCLK1_A_DCLK (biggest violation)</text>
-<text x="728.6" y="976.978" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:3.393s">0.042058</text>
-<text x="923.2" y="976.978" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:3.571s">0.041145</text>
-<text x="1117.8" y="976.978" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:3.75s">0.039216</text>
-<text x="1312.4" y="976.978" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:3.929s">0.165648</text>
+<text x="728.6" y="976.978" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.042058</text>
+<text x="923.2" y="976.978" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.041145</text>
+<text x="1117.8" y="976.978" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.039216</text>
+<text x="1312.4" y="976.978" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.165648</text>
 <text x="1507" y="976.978" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
 <text x="1701.6" y="976.978" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
-<text x="1896.2" y="976.978" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:4.107s">0.042058</text>
+<text x="1896.2" y="976.978" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.042058</text>
 <text x="2090.8" y="976.978" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
 <text x="2285.4" y="976.978" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
 <text x="2480" y="976.978" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
@@ -575,13 +574,13 @@
 <g class="row" style="animation-delay:0.525s">
 <rect x="0" y="1036.875" width="2519" height="44.042" fill="#f4f6f4"/>
 <text x="35" y="1065.062" font-size="19" fill="#2d2d2d" class="lbl">async (biggest violation)</text>
-<text x="728.6" y="1065.062" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:3.75s">0.059630</text>
-<text x="923.2" y="1065.062" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:3.929s">0.133431</text>
-<text x="1117.8" y="1065.062" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:4.107s">0.085070</text>
-<text x="1312.4" y="1065.062" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:4.286s">0.106182</text>
-<text x="1507" y="1065.062" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:4.464s">0.182215</text>
-<text x="1701.6" y="1065.062" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:4.643s">0.276471</text>
-<text x="1896.2" y="1065.062" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:4.821s">0.059630</text>
+<text x="728.6" y="1065.062" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.059630</text>
+<text x="923.2" y="1065.062" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.133431</text>
+<text x="1117.8" y="1065.062" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.085070</text>
+<text x="1312.4" y="1065.062" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.106182</text>
+<text x="1507" y="1065.062" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.182215</text>
+<text x="1701.6" y="1065.062" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.276471</text>
+<text x="1896.2" y="1065.062" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.059630</text>
 <text x="2090.8" y="1065.062" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
 <text x="2285.4" y="1065.062" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
 <text x="2480" y="1065.062" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
@@ -601,13 +600,13 @@
 <g class="row" style="animation-delay:0.55s">
 <rect x="0" y="1080.917" width="2519" height="44.042" fill="#ffffff"/>
 <text x="35" y="1109.103" font-size="19" fill="#2d2d2d" class="lbl">gating (biggest violation)</text>
-<text x="728.6" y="1109.103" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:3.929s">0.138645</text>
-<text x="923.2" y="1109.103" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:4.107s">0.128728</text>
-<text x="1117.8" y="1109.103" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:4.286s">0.124030</text>
-<text x="1312.4" y="1109.103" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:4.464s">0.199577</text>
-<text x="1507" y="1109.103" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:4.643s">0.274502</text>
-<text x="1701.6" y="1109.103" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:4.821s">0.262924</text>
-<text x="1896.2" y="1109.103" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:5s">0.138645</text>
+<text x="728.6" y="1109.103" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.138645</text>
+<text x="923.2" y="1109.103" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.128728</text>
+<text x="1117.8" y="1109.103" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.124030</text>
+<text x="1312.4" y="1109.103" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.199577</text>
+<text x="1507" y="1109.103" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.274502</text>
+<text x="1701.6" y="1109.103" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.262924</text>
+<text x="1896.2" y="1109.103" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.138645</text>
 <text x="2090.8" y="1109.103" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
 <text x="2285.4" y="1109.103" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
 <text x="2480" y="1109.103" font-size="19" fill="#1a7a3c" text-anchor="end" class="val">0</text>
@@ -627,16 +626,16 @@
 <g class="row" style="animation-delay:0.575s">
 <rect x="0" y="1124.958" width="2519" height="44.042" fill="#f4f6f4"/>
 <text x="35" y="1153.145" font-size="19" fill="#2d2d2d" class="lbl">hold.rpt (biggest violation)</text>
-<text x="728.6" y="1153.145" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:4.107s">0.005736</text>
-<text x="923.2" y="1153.145" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:4.286s">0.004993</text>
-<text x="1117.8" y="1153.145" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:4.464s">0.001223</text>
-<text x="1312.4" y="1153.145" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:4.643s">0.030312</text>
-<text x="1507" y="1153.145" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:4.821s">0.083931</text>
-<text x="1701.6" y="1153.145" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:5s">0.086233</text>
-<text x="1896.2" y="1153.145" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:5.179s">0.005736</text>
-<text x="2090.8" y="1153.145" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:5.357s">0.296921</text>
-<text x="2285.4" y="1153.145" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:5.536s">0.312170</text>
-<text x="2480" y="1153.145" font-size="19" fill="#2d2d2d" text-anchor="end" class="val breathe" style="animation-delay:5.714s">0.308190</text>
+<text x="728.6" y="1153.145" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.005736</text>
+<text x="923.2" y="1153.145" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.004993</text>
+<text x="1117.8" y="1153.145" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.001223</text>
+<text x="1312.4" y="1153.145" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.030312</text>
+<text x="1507" y="1153.145" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.083931</text>
+<text x="1701.6" y="1153.145" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.086233</text>
+<text x="1896.2" y="1153.145" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.005736</text>
+<text x="2090.8" y="1153.145" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.296921</text>
+<text x="2285.4" y="1153.145" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.312170</text>
+<text x="2480" y="1153.145" font-size="19" fill="#2d2d2d" text-anchor="end" class="val" >0.308190</text>
 <line x1="25" y1="1169" x2="2494" y2="1169" stroke="#d7dbd7" stroke-width="1"/>
 <line x1="548" y1="1124.958" x2="548" y2="1169" stroke="#d7dbd7" stroke-width="1"/>
 <line x1="742.6" y1="1124.958" x2="742.6" y2="1169" stroke="#d7dbd7" stroke-width="1"/>

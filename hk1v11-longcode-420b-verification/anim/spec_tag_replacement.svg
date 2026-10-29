@@ -113,12 +113,12 @@
 <g class="row" style="animation-delay:0.85s">
 <g class="fade" style="animation-delay:1.1s">
 <line class="draw" pathLength="100" style="animation-delay:1.1s" x1="655" y1="196" x2="830" y2="196" stroke="#2563eb" stroke-width="1.5" marker-end="url(#ar-blue)"/>
-<path class="flowdot" d="M 655 196 L 830 196" stroke="#2563eb" pathLength="100" style="animation-duration:1.6s;animation-delay:-0.2s"/>
-<path class="flowtail" d="M 655 196 L 830 196" stroke="#2563eb" pathLength="100" style="animation-duration:1.6s;animation-delay:-0.2s"/>
-<path class="flowdot" d="M 655 196 L 830 196" stroke="#2563eb" pathLength="100" style="animation-duration:1.6s;animation-delay:-0.73s"/>
-<path class="flowtail" d="M 655 196 L 830 196" stroke="#2563eb" pathLength="100" style="animation-duration:1.6s;animation-delay:-0.73s"/>
-<path class="flowdot" d="M 655 196 L 830 196" stroke="#2563eb" pathLength="100" style="animation-duration:1.6s;animation-delay:-1.27s"/>
-<path class="flowtail" d="M 655 196 L 830 196" stroke="#2563eb" pathLength="100" style="animation-duration:1.6s;animation-delay:-1.27s"/>
+<path class="flowdot" d="M 655 196 L 830 196" stroke="#2563eb" pathLength="100" style="animation-duration:3.4s;animation-delay:-0.43s"/>
+<path class="flowtail" d="M 655 196 L 830 196" stroke="#2563eb" pathLength="100" style="animation-duration:3.4s;animation-delay:-0.43s"/>
+<path class="flowdot" d="M 655 196 L 830 196" stroke="#2563eb" pathLength="100" style="animation-duration:3.4s;animation-delay:-1.56s"/>
+<path class="flowtail" d="M 655 196 L 830 196" stroke="#2563eb" pathLength="100" style="animation-duration:3.4s;animation-delay:-1.56s"/>
+<path class="flowdot" d="M 655 196 L 830 196" stroke="#2563eb" pathLength="100" style="animation-duration:3.4s;animation-delay:-2.7s"/>
+<path class="flowtail" d="M 655 196 L 830 196" stroke="#2563eb" pathLength="100" style="animation-duration:3.4s;animation-delay:-2.7s"/>
 </g>
 <text x="742" y="188" font-size="9.5" fill="#2563eb" text-anchor="middle">发送顺序 A → B</text>
 <text x="678" y="264" font-size="10" fill="#2563eb" text-anchor="middle" font-weight="700">A</text>

@@ -8,9 +8,10 @@ MOTION_KIT.md §6.1 规格（1200x980 六面板架构图）：
   RX .60 → Transaction .80 → 离线 band 1.15 → 版本条 1.50 → 图例 1.70。
 - 稳态族（3 族）：
   * 列车 train：蓝链 8 边（build_bit_stream→pad→encode→long_encoding→
-    CHPI_KCODE_ALIGN + RX 内部链 4 边）每边 2 包 + flowtail 拖尾，0.7s/边，
-    按边序错 phase；绿链离线 4 边每边 3 包 + 拖尾（2026-10-28 晚动效加密：
-    2→3 包，更明显的"列车"），duration 1.4s（×2 慢速支路对比）。
+    CHPI_KCODE_ALIGN + RX 内部链 4 边）每边 2 包 + flowtail 拖尾，
+    2.4s/边（2026-10-29 二次降速 0.7→2.4），按边序错 phase；绿链离线 4 边
+    每边 3 包 + 拖尾（2026-10-28 晚动效加密：2→3 包，更明显的"列车"），
+    duration 3.2s（二次降速 1.4→3.2；×1.33 慢速支路对比）。
   * 脉冲 pulse：TAP 徽章 pulse-b(-1.4s)；✅ verdict 盒 pulse-t(-0.7s)。
   * 生长 dashgrow：紫色"期望值/比对"虚线连接器 2 条（相位错开）。
 - march 辅助（不计数）：橙色配置虚线、绿色 tap 长虚线。
@@ -241,12 +242,13 @@ def build():
             out.append(ln)
             out.append("</g>")
 
-    # 数据列车：蓝链 8 边（0.7s，-0.1s/边错 phase）；绿链 4 边（1.4s 慢速，-0.2s/边，
-    # 每边 3 包 = 更明显的慢速列车）
+    # 数据列车：蓝链 8 边（2.4s，-0.34s/边错 phase ≈ 周期 1/7，随降速等比放大）；
+    # 绿链 4 边（3.2s 慢速，-0.46s/边，每边 3 包 = 更明显的慢速列车）
+    # （2026-10-29 二次降速：0.7→2.4、1.4→3.2，phase 步长按周期等比）
     for k, (d, enter) in enumerate(zip(blue_edges, blue_enter)):
-        out.extend(train_edge(d, "#2563eb", 0.7, -0.1 * k, enter))
+        out.extend(train_edge(d, "#2563eb", 2.4, -0.34 * k, enter))
     for k, (d, enter) in enumerate(zip(green_edges, green_enter)):
-        out.extend(train_edge(d, "#059669", 1.4, -0.2 * k, enter, packets=3))
+        out.extend(train_edge(d, "#059669", 3.2, -0.46 * k, enter, packets=3))
 
     group((i_leg, len(lines) - 1), "head", 1.70)                    # 底部图例
     out.append("</svg>")
@@ -258,4 +260,4 @@ def build():
 if __name__ == "__main__":
     build()
 
-# ymzhu 2026-10-28 19:06
+# ymzhu 2026-10-29 10:18

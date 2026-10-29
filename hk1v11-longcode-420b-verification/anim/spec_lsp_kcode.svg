@@ -204,18 +204,18 @@
 <g class="row" style="animation-delay:1.7s">
 <line x1="950" y1="542" x2="950" y2="528" stroke="#2563eb" stroke-width="1.5" marker-end="url(#ar-blue)" class="draw" pathLength="100" style="animation-delay:2.05s"/>
 <text x="950" y="560" font-size="11" fill="#2563eb" text-anchor="middle" font-weight="700">先发</text>
-<path d="M 950 542 L 950 528" stroke="#2563eb" class="flowdot" pathLength="100" style="animation-duration:0.7s;animation-delay:0s;stroke-width:2.5"/>
-<path d="M 950 542 L 950 528" stroke="#2563eb" class="flowdot" pathLength="100" style="animation-duration:0.7s;animation-delay:-0.23s;stroke-width:2.5"/>
-<path d="M 950 542 L 950 528" stroke="#2563eb" class="flowdot" pathLength="100" style="animation-duration:0.7s;animation-delay:-0.47s;stroke-width:2.5"/>
-<path d="M 950 542 L 950 528" stroke="#2563eb" class="flowtail" pathLength="100" style="animation-duration:0.7s;animation-delay:0s;stroke-width:4"/>
-<path d="M 950 542 L 950 528" stroke="#2563eb" class="flowtail" pathLength="100" style="animation-duration:0.7s;animation-delay:-0.23s;stroke-width:4"/>
+<path d="M 950 542 L 950 528" stroke="#2563eb" class="flowdot" pathLength="100" style="animation-duration:2.4s;animation-delay:0s;stroke-width:2.5"/>
+<path d="M 950 542 L 950 528" stroke="#2563eb" class="flowdot" pathLength="100" style="animation-duration:2.4s;animation-delay:-0.8s;stroke-width:2.5"/>
+<path d="M 950 542 L 950 528" stroke="#2563eb" class="flowdot" pathLength="100" style="animation-duration:2.4s;animation-delay:-1.6s;stroke-width:2.5"/>
+<path d="M 950 542 L 950 528" stroke="#2563eb" class="flowtail" pathLength="100" style="animation-duration:2.4s;animation-delay:0s;stroke-width:4"/>
+<path d="M 950 542 L 950 528" stroke="#2563eb" class="flowtail" pathLength="100" style="animation-duration:2.4s;animation-delay:-0.8s;stroke-width:4"/>
 <line x1="178" y1="542" x2="178" y2="528" stroke="#2563eb" stroke-width="1.5" marker-end="url(#ar-blue)" class="draw" pathLength="100" style="animation-delay:2.05s"/>
 <text x="178" y="560" font-size="11" fill="#2563eb" text-anchor="middle" font-weight="700">后发</text>
-<path d="M 178 542 L 178 528" stroke="#2563eb" class="flowdot" pathLength="100" style="animation-duration:0.7s;animation-delay:-0.15s;stroke-width:2.5"/>
-<path d="M 178 542 L 178 528" stroke="#2563eb" class="flowdot" pathLength="100" style="animation-duration:0.7s;animation-delay:-0.38s;stroke-width:2.5"/>
-<path d="M 178 542 L 178 528" stroke="#2563eb" class="flowdot" pathLength="100" style="animation-duration:0.7s;animation-delay:-0.62s;stroke-width:2.5"/>
-<path d="M 178 542 L 178 528" stroke="#2563eb" class="flowtail" pathLength="100" style="animation-duration:0.7s;animation-delay:-0.15s;stroke-width:4"/>
-<path d="M 178 542 L 178 528" stroke="#2563eb" class="flowtail" pathLength="100" style="animation-duration:0.7s;animation-delay:-0.38s;stroke-width:4"/>
+<path d="M 178 542 L 178 528" stroke="#2563eb" class="flowdot" pathLength="100" style="animation-duration:2.4s;animation-delay:-0.5s;stroke-width:2.5"/>
+<path d="M 178 542 L 178 528" stroke="#2563eb" class="flowdot" pathLength="100" style="animation-duration:2.4s;animation-delay:-1.3s;stroke-width:2.5"/>
+<path d="M 178 542 L 178 528" stroke="#2563eb" class="flowdot" pathLength="100" style="animation-duration:2.4s;animation-delay:-2.1s;stroke-width:2.5"/>
+<path d="M 178 542 L 178 528" stroke="#2563eb" class="flowtail" pathLength="100" style="animation-duration:2.4s;animation-delay:-0.5s;stroke-width:4"/>
+<path d="M 178 542 L 178 528" stroke="#2563eb" class="flowtail" pathLength="100" style="animation-duration:2.4s;animation-delay:-1.3s;stroke-width:4"/>
 <text x="564" y="560" font-size="10.5" fill="#2563eb" text-anchor="middle">串行发送方向：右 → 左（LSB-first，与 8B/10B 一致）</text>
 </g>
 </svg>
