@@ -25,7 +25,42 @@
   <div class="container with-toc">
     <aside class="toc-wrapper"><div class="toc" id="toc"></div></aside>
     <div class="content">
-      <!-- 对比 · 0918V2 历史基线（两代并置：历史在前，最新在下） -->
+      <!-- 最新 · 1029V0 签核状态 -->
+      <div class="section-title">最新 · 1029V0 post-PT 签核状态（10 corner · skew 探针 P1 修复后首个 run）</div>
+      <div class="chapter-grid" style="margin-bottom: 12px;">
+        <div class="chapter-card card-span card-hero card-center">
+          <div class="num">1029V0 · PACK_TAR_1029V0 · 数据源 <code>summary/latest/report_*.csv</code> · 表图见本章 §6</div>
+          <div class="title" style="font-family: var(--font-mono); font-weight: 600; color: var(--ok);">skew b 组 20/20 在窗</div>
+          <div class="desc" style="margin-top: 8px;">dplc clk_b 224KB 污染报告 → 12KB 纯净时钟报告（探针补 CLKMUX2X2/ 叶层生效，审计见 <a href="./ch21-skew-probe-audit.html">ch21</a>）· setup 11 格/4 域 · hold 11 格/3 域 · trans 10 格/2 域</div>
+        </div>
+        <div class="chapter-card card-center card-mini">
+          <div class="num">setup（10 角）</div>
+          <div class="title" style="font-family: var(--font-mono); color: var(--warn);">11 格 / 4 域</div>
+          <div class="desc">worst −0.36838（gating @wc_cbest）</div>
+        </div>
+        <div class="chapter-card card-center card-mini">
+          <div class="num">hold（10 角）</div>
+          <div class="title" style="font-family: var(--font-mono); color: var(--warn);">11 格 / 3 域</div>
+          <div class="desc">worst −0.04865（RX_CLK @lt_typ）</div>
+        </div>
+        <div class="chapter-card card-center card-mini">
+          <div class="num">skew margin_b</div>
+          <div class="title" style="font-family: var(--font-mono); color: var(--ok);">全角在窗</div>
+          <div class="desc">l 全正 0.26~0.85 · r 最差 −0.038</div>
+        </div>
+        <div class="chapter-card card-center card-mini">
+          <div class="num">新关注（P11）</div>
+          <div class="title" style="font-family: var(--font-mono); color: var(--bad);">4.25906</div>
+          <div class="desc">sd_r_dplc_margin_b_max @wc_cworst 出上界 +4.1</div>
+        </div>
+        <div class="chapter-card card-center card-mini">
+          <div class="num">演进</div>
+          <div class="title" style="font-family: var(--font-mono); color: var(--muted);">0918V2 → 1008V3 → 1029V0</div>
+          <div class="desc">绝对值跨代际不可横比（新 P&R）· 在窗性质与违例域结构可追</div>
+        </div>
+      </div>
+
+      <!-- 历史 · 0918V2 基线（三代并置：最新在顶，历史在下） -->
       <div class="section-title">对比 · 0918V2 历史基线（早期 post-PT 签核状态）</div>
       <div class="chapter-grid" style="margin-bottom: 12px;">
         <div class="chapter-card card-span card-hero card-center">
@@ -187,4 +222,4 @@ KEY: hold ~1742 条/corner、worst −5.078 是既有 P0（每轮 run 逐条相�
   <script src="./fx.js?v=6"></script>
 </body>
 </html>
-<!-- ymzhu 2026-10-30 17:20 -->
+<!-- ymzhu 2026-10-30 19:55 -->
