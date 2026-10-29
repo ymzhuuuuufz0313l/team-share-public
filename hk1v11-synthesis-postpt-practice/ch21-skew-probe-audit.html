@@ -293,464 +293,247 @@ tcl L157/158: -from [get_pins .../u_gate_MUX_DPLC_CLK/O]     ← 少写 CLKMUX2X
 
 
   <script type="text/template" id="md">
+# 二十一、skew 探针污染审计定案（1028 run · 假出窗撤回）
 
-# 二十、Setup-Hold 互卡
+> 审计对象：`report_sd_busskew.csv` / `report_phy_busskew.csv`（1028 run，`SYNTHESIS/top/sta/post/pt/summary/latest/`）及其全链路脚本（`common/report_timing_skew_sd|isprx|io.tcl` + `get_*.pl` + `merge_*.pl`）。
+> 两个焦点问题：① `sd_l/r_dplc_margin_a/b` 出窗；② `report_timing_rx0_00_max/min` 两行差距小（对比 2M23 的 min≈7~9）。
+> 方法：本人直查 + 4 个取证 subagent 并行 + 交叉验证；RTL 逐行核对；1008 代对照。
+> 配图：下方四面板图解（动画版；静态版 `./skew_probe_audit_1028.svg`，生成器 `anim/make_anim_skew_probe_audit_1028.py`）。
+![skew 探针审计四面板图解（①窗口机制 ②污染链 ③rx0 语义 ④三约束）](./anim/skew_probe_audit_1028.svg?v=20261029)
 
-## 1. 什么是互卡
-
-**互卡（mutual blocking）**：两条（或多条）时序路径对同一个调节手段的需求方向相反，导致修一条必然恶化另一条。
-
-在半周期路径中，互卡发生在三个层面：
-
-| 层面 | 描述 | 调节手段 |
-|------|------|----------|
-| **时钟层面** | skew 帮一个方向的 setup 就伤另一个方向的 hold | useful skew |
-| **路径层面** | 缩短路径修 setup 可能触发 hold，加长路径修 hold 可能触发 setup | ECO buffer |
-| **跨方向层面** | 同一个时钟域的入口和出口对 skew 需求相反 | CTS 分支控制 |
-
-## 2. 半周期基础
-
-### 2.1 正常路径 vs 半周期路径
-
-```
-正常路径（全周期 T=3.81ns）：
-  DCLK:  _/‾‾\___/‾‾\___/‾‾\___
-          |         |
-          launch    capture
-          |←── T ──→|          ← 数据有 3.81ns
-
-半周期路径（T/2=1.905ns）：
-  DCLK:      _/‾‾\___/‾‾\___
-  DCLK_INV:  ___/‾‾\___/‾‾\_
-                  |    |
-                  launch capture
-                  |←T/2→|            ← 数据只有 1.905ns！
-```
-
-### 2.2 HK1V11 的 DCLK_INV 域
-
-RTL 设计（`CHPI_SD_CTRL.v` L530-580, `CLKGEN.v` L118-165）：
-
-```verilog
-// 正常相位源寄存器
-always @(posedge DCLK)
-    STB_P <= ...;
-
-// 反相影子寄存器（LD_R timing，20241225 添加）
-assign DCLK_INV = ~DCLK;  // CLKGEN.v L46
-
-always @(posedge DCLK_INV)
-    STB_P_neg <= STB_P;   // 半周期捕获！
-
-// 延时链（也在反相域）
-always @(posedge DCLK_INV)
-    STB_DLY <= {STB_DLY[14:0], STB_A_PRE};  // 16 级移位
-```
-
-**86 个 FF** 分布在 **5 条时钟网**：
-
-| 时钟网 | FF 数 | 内容 |
-|--------|-------|------|
-| ccopt_net__1 | 27 | CS_SIG_SMT_CS_DLY 全链 |
-| ccopt_net__2 | 30 | CS_SIG_DLY + STB_FAKE_DLY + 影子寄存器 |
-| ccopt_net__3 | 25 | STB_DLY + 部分混合 + 影子 |
-| ccopt_net__59 | 3 | short_encoding_phase half_dly |
-| CLK_clone3 | 1 | STB_DLY 个别级 |
-
-## 3. 五组互卡模式
-
-> **一句话总结**：DCLK_INV 域同时被入口 setup 和出口 setup 挤压，任何 skew >0.25ns 都是拆东墙补西墙。治本方案是 RTL 加一级 posedge 打拍。
-
-### 互卡 A：入域 setup ↔ 入域 hold
-
-> **一句话**：skew 帮 setup 修违例，但同时消耗 hold 余量——hold 余量是未知盲区。
-
-**Setup 侧**（8 条违例，worst -0.675ns）：
-
-| 路径 | Slack | 说明 |
-|------|-------|------|
-| PSR_LINE_CNT → STB_DLY_reg_0 | -0.675 | 行计数器→延时链入口 |
-| PSR_LINE_CNT → STB_FAKE_DLY_reg_0 | -0.675 | 伪选通链入口 |
-| CS_SIG_ORG_SMT_CS → _neg | -0.588 | SMART_CS 影子 |
-| CS_SIG_ORG → _neg | -0.488 | 片选影子 |
-| STB_IO_pre → _neg | -0.388 | IO 预选通影子 |
-| STB_FAKE_ORG → _neg | -0.349 | 伪选通影子 |
-| STB_P → _neg | -0.340 | 选通影子 |
-
-**Hold 侧**：零违例（余量未知——PT 报告只列 VIOLATED 不列 MET 余量）。
-
-<details>
-<summary>📋 展开 PT 完整路径（点击展开）</summary>
-
-```
-Startpoint: u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/PSR_LINE_CNT_reg
-             (rising edge-triggered flip-flop clocked by RX_CLK)
-Endpoint:    u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/STB_DLY_reg_0_
-             (rising edge-triggered flip-flop clocked by RX_CLK')
-             data arrival: 4.038  data required: 3.364  slack = -0.675
-
-Startpoint: u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/PSR_LINE_CNT_reg
-             (clocked by RX_CLK)
-Endpoint:    u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/STB_FAKE_DLY_reg_0_
-             (clocked by RX_CLK')  slack = -0.675
-
-Startpoint: u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/CS_SIG_ORG_SMT_CS_reg
-             (clocked by RX_CLK)
-Endpoint:    u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/CS_SIG_ORG_SMT_CS_neg_reg
-             (clocked by RX_CLK')  slack = -0.588
-
-Startpoint: u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/CS_SIG_ORG_reg
-             (clocked by RX_CLK)
-Endpoint:    u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/CS_SIG_ORG_neg_reg
-             (clocked by RX_CLK')  slack = -0.488
-
-Startpoint: u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/STB_IO_pre_reg
-             (clocked by RX_CLK)
-Endpoint:    u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/STB_IO_pre_neg_reg
-             (clocked by RX_CLK')  slack = -0.388
-
-Startpoint: u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/STB_FAKE_ORG_reg
-             (clocked by RX_CLK)
-Endpoint:    u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/STB_FAKE_ORG_neg_reg
-             (clocked by RX_CLK')  slack = -0.349
-
-Startpoint: u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/STB_P_reg
-             (clocked by RX_CLK)
-Endpoint:    u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/STB_P_neg_reg
-             (clocked by RX_CLK')  slack = -0.340
-```
-
-</details>
-
-**解决方案**：
-
-| 方案 | 效果 | 风险 |
-|------|------|------|
-| **RTL 打拍（推荐）** | 彻底消除半周期约束 | 一拍延迟需 designer 确认 |
-| 分别 skew +0.48 | 修 4 条（影子类） | hold 余量未知 |
-| 保守 skew +0.25 | 修 1 条 | hold 风险较小 |
 
 ---
 
-### 互卡 B：出域 setup ↔ 出域 hold
+## 1. 结论速览（TL;DR）
 
-> **一句话**：同一个 skew 帮 hold（-0.690 改善）就伤 setup（+0.259 恶化）。
+| # | 现象 | 定性 | 一句话根因 |
+|---|------|------|-----------|
+| 1 | `sd_l/r_dplc_margin_b_min` 全角出窗（l −2.51 / r −2.59 @wc_cworst） | **假出窗（脚本 bug）** | dplc clk_b 探针少写 `CLKMUX2X2/` 层次 → UITE-416 → `-from` 失效 → 56 条 WCLK1 数据路径冒充时钟到达 |
+| 2 | 同上真值 | **在窗内**（l −0.743596 / r −0.816993 @wc_cworst，窗 [−0.9:+4.1]） | 真 DPLC 时钟到达 l 4.492146~5.470022、r 3.927408~5.104511；r 侧余量仅 0.083，是真正的签核关注点 |
+| 3 | `sd_r_dplc_margin_a_min` 六角 −0.99~−2.07 出窗 | **标签口径出窗，不判真违例** | CLKA 两模式恒 SD_CLK_INV（RTL 证实），dplc_clk_a 复用 1p 合法 → 数值=1p margin_a；dplc 窗 [-0.9:+4.1] 套 a 侧无规格依据（四份文档均只用于 b 侧） |
+| 4 | `rx0_00_max`(0.45~2.06) 与 `rx0_00_min`(−0.05~0.09) 差距小、都贴 0 | **不是 skew，是两类路径的最差 setup/hold slack** | max 行=FF→FF setup（INDATA_SYNC→D1，借 3.81ns 周期）；min 行=port→FF hold（dout_lane，±0.3 input delay 模型吃满窗口）；两角真违例需跟 |
+| 5 | 2M23 `rx0_00_min`=7.0~9.0 悬空 | **真实 slack 但 71% 是时钟架构贡献，跨项目不可比** | DIV2 生成时钟周期 10.08ns，launch 12.6 vs capture 2.52 恰差一个周期；input delay=0 且 DIV2 无 uncertainty |
+| 6 | 1V11 phy csv 无 io 行 | **约束缺失（覆盖缺口）** | SDA_OE 无 set_output_delay、SCL_I 仅 create_clock → "No constrained paths."（736B×2）；2M23 有 ±1 → io 行存在 |
 
-| 路径 | 类型 | Slack | 含义 |
-|------|------|-------|------|
-| STB_DLY_15 → HSR_W_cnt_5 | setup | **+0.259** | 最薄！skew 上限锁死因素 |
-| STB_DLY_3 → LENB1_DLY | hold | **-0.690** | 全设计最差 hold |
-
-<details>
-<summary>📋 展开 PT 完整路径</summary>
-
-```
-【setup 侧，10 条极薄】
-Startpoint: u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/STB_DLY_reg_15_
-             (rising edge-triggered flip-flop clocked by RX_CLK')
-Endpoint:    u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/HSR_W_cnt_reg_5_
-             (rising edge-triggered flip-flop clocked by RX_CLK)
-             launch: RX_CLK'@1.905  capture: RX_CLK@3.810
-             slack (MET) = +0.259  ← 最差余量
-
-（其余 9 条均从 STB_DLY_reg_15_ 出发，slack +0.272~+0.479）
-
-Startpoint: u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/STB_FAKE_DLY_reg_7_
-             (clocked by RX_CLK')
-Endpoint:    u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/HSR_FAKE_reg
-             (clocked by RX_CLK)  slack = +0.479
-
-【hold 侧，全设计最差】
-Startpoint: u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/STB_DLY_reg_3_
-             (rising edge-triggered flip-flop clocked by RX_CLK')
-Endpoint:    u_LOGIC_CENTER/CENTER1/DTCTL/LENB1_DLY_reg_0_
-             (rising edge-triggered flip-flop clocked by DCLK_DATA_MUX_SHORT)
-             launch: RX_CLK'@5.715  capture: DCLK_DATA_MUX_SHORT@5.715
-             slack (VIOLATED) = -0.690
-```
-
-</details>
-
-**互卡推演**：
-
-| skew 量 | setup 效果 | hold 效果 |
-|---------|-----------|-----------|
-| +0.675 | +0.259-0.675 = **-0.416 ❌** | -0.690+0.675 = **-0.015 ✅** |
-| +0.25 | +0.259-0.25 = **+0.009 ✅** | -0.690+0.25 = **-0.44 ⚠️** |
-
-**解决方案**：net__3 只加 +0.25ns（保 setup），hold 残余 -0.44 用 delay buffer 单独修。
+**被本次推翻的旧结论**：`script/_skew_最终核验.md`（10-09）与网站 `ch19-skew-audit.html` 的「DPLC CLKB margin_b_min 全 10 角出窗 = 真实违例，PR 重平衡 ~11ns」——其 clk_b_max=10.840927（1008 代）/ 7.516915（1015 代）本身是 R_REG05_F 数据路径污染值，"~11ns" 打错了对象。**但方向歪打正着一半**：1008 代真值 l_min=−1.762325 / r_min=−0.978207 确实真出窗（超下界 0.862 / 0.078），1028 run 已把两侧修回窗内。
 
 ---
 
-### 互卡 C：入域 setup ↔ 出域 setup（最强互卡）
+## 2. 焦点一：sd margin 出窗的真假判定
 
-> **一句话**：两边都是 setup 且 skew 需求相反——但入口和出口在不同时钟网，可分别控制。
+### 2.1 数值从哪来（公式与窗口）
 
-**网表证据**：
+- 公式（`get_sd_busskew.pl:117-133`）：`margin_max = data_max − clk_min`、`margin_min = data_min − clk_max`；`_clk` 文件取全部非负 `data arrival time` 行的 max/min（L39/L108），数据文件取减去 `clock rise edge` 后的 arrival 包络。
+- 窗口标签（`merge_sd_busskew.pl:61-77` 硬编码）：1p `[−3.5:+3.5]`、dplc `[−0.9:+4.1]`。**出处=ymzhu 本人 2026-10-08 口径**（commit `e6df4922`；`_syn_1008_skew_说明.md` §6.3；旧值链 1p [−2.5:+2.5]/dplc [−1:4]）。仓库内无书面 spec、无 panel 推导；`skew_explainer` L89 与 5G3G 文档 L96/L126 均自标「需系统规格确认」。
+- 48 字段全链一一对应已逐位核对，**无贴错窗、无错位**。
 
-```
-入口 FF:  STB_DLY_reg_0_  .CK = ccopt_net__2  ← 可多加 skew
-出口 FF:  STB_DLY_reg_15_ .CK = ccopt_net__3  ← 只能少加 skew
-                                        ↑ 不同网！
-```
-
-<details>
-<summary>📋 展开 PT 完整路径</summary>
+### 2.2 污染机制（假出窗根因）
 
 ```
-【入口（需要 net__2 skew ↑）】
-Startpoint: u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/PSR_LINE_CNT_reg
-             (rising edge-triggered flip-flop clocked by RX_CLK)
-Endpoint:    u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/STB_DLY_reg_0_
-             (rising edge-triggered flip-flop clocked by RX_CLK')
-             网表: AND2DFFRBQX4AL9 STB_DLY_reg_0_ (.CK(ccopt_net__2))
-             slack (VIOLATED) = -0.675
-
-【出口（需要 net__3 skew ↓）】
-Startpoint: u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/STB_DLY_reg_15_
-             (rising edge-triggered flip-flop clocked by RX_CLK')
-Endpoint:    u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/HSR_W_cnt_reg_5_
-             (rising edge-triggered flip-flop clocked by RX_CLK)
-             网表: DFFRBQX1AL9 STB_DLY_reg_15_ (.CK(ccopt_net__3))
-             slack (MET) = +0.259  ← 不能再少
+tcl L157/158: -from [get_pins .../u_gate_MUX_DPLC_CLK/O]     ← 少写 CLKMUX2X2/ 层
+   → get_pins 空 collection → rpt L14: Warning: There is 1 invalid start point. (UITE-416)
+   → -from 被丢弃，退化为纯 -to CLKB_L/CLKB_R catch-all
+   → 74 条 = 6 真 DPLC 时钟 + 12 SD 时钟（SD_CLK_INV_SHORT / SD_CLK_INV_DPLC_SHORT 各 6）
+            + 56 条数据路径（R_REG05_F/R_REG06_F @WCLK1_A_DCLK_SHORT / WCLK1_A_I2C，
+              经 u_gate_MUX_clkb_1st/2nd 的 S 脚组合穿透到 O，搭同一棵 CTS 树到 pad）
+   → perl 取 max/min → 7.238948 / 4.157456（都是数据路径 arrival）冒充 DPLC 时钟到达
+   → margin_b 假出窗
 ```
 
-</details>
+证据：
+- `report_timing_sd_l_dplc_clk_b.rpt`（wc_cworst_125，1028）L14 UITE-416；L16-59 第一条路径 `Startpoint: .../LC_CPUWR/R_REG05_F_reg_7_ (rising edge-triggered flip-flop clocked by WCLK1_A_DCLK_SHORT)` → `Endpoint: CLKB_L (output port)`，arrival **7.238948**，check `max_delay 14.000000`，slack 6.761052；最晚数据路径经 `u_gate_MUX_clkb_2nd/CLKMUX2X2/O`（L36）与 `C_76__IOBUF/O`（L48）。
+- 真 pin：`read_cons.log:480` `create_generated_clock -name DPLC_CLK_SHORT ... [get_pins {...u_gate_MUX_DPLC_CLK/CLKMUX2X2/O}]`；对照其余 6 个时钟探针全部带单元层（`u_gate_INV_SD_CLK_INV/CLKINVX4/O`，tcl L106/122/135/145/168/169）→ 1p clk_a/b 报告 12 条纯时钟路径（l/r 侧同，grep 实测）、无警告（clk_a 27558B vs 被污染的 dplc_clk_b 224290B）。
+- `read_cons.log:535/537/539/541` `set_max_delay 14 -to CLKA_L/CLKB_L/CLKA_R/CLKB_R`（端口被约束是泄漏数据路径"可报告"的前提）；L518/520 `set_clock_groups -logically_exclusive`（两种 SD launch 互斥）。
+- RTL：`CLKGEN.v:255` `CLKMUX2X2 u_gate_MUX_DPLC_CLK(...)`——连脚本自己的"正确答案"注释都写错：tcl L121 TODO 与 ip_cons L132 注释写成 `MUX2X2/O`，应为 `CLKMUX2X2/O`。
+- 教训重演：`E:\每日记录\HK1V11\遗留问题.md:46`（09/16）已记「UITE-416 非法起点回退产生假得合理的 margin，空/回退报告必须显式留空+日志点名，禁止静默出数」；09/18 新增的 dplc 探针又踩同一坑，且现有四查哨兵（0/1000/−99x）只防"空报告"，不防"混入数据路径"。
 
-**解决方案推演**：
+### 2.3 真值重算（wc_cworst_125；公式同 perl，数据侧取 CSV 包络）
 
-| 方案 | net__2 | net__3 | 入口 | 出口 |
-|------|--------|--------|------|------|
-| 统一 +0.675 | +0.675 | +0.675 | ✅ 全修 | ❌ 全毁 |
-| **分别 skew** | **+0.48** | **+0.25** | ⚠️ -0.195 | ✅ +0.009 |
-| 统一 +0.25 | +0.25 | +0.25 | ❌ -0.425 | ✅ +0.009 |
+**1028 run**（真 DPLC 时钟：l 4.492146~5.470022、r 3.927408~5.104511）：
 
-**推荐**：分别 skew。入口残留 -0.195ns 由 RTL 打拍解决。
-**风险**：链中间 net__2→net__3 过渡处窗口缩 0.23ns，需确认域内 setup 余量。
+| 指标 | CSV 现值 | 真值 | 判定 |
+|---|---|---|---|
+| sd_l_dplc_margin_b_max | 1.870438 | **1.535748**（6.027894−4.492146） | 窗内→窗内 |
+| sd_l_dplc_margin_b_min | −2.512522（假出窗） | **−0.743596**（4.726426−5.470022） | 出窗→**窗内**（余 0.156404） |
+| sd_r_dplc_margin_b_max | 2.922254 | **2.922254**（6.849662−3.927408，r clk_min 恰为真值） | 不变，窗内 |
+| sd_r_dplc_margin_b_min | −2.585920（假出窗） | **−0.816993**（4.287518−5.104511） | 出窗→**窗内**（余仅 0.083007） |
+
+**十角真值总表**（wc_cworst 为双路复核，其余九角为第二轮 QWEN 单路复核，2026-10-28；窗口 [−0.9:+4.1]）：
+
+| 角 | l margin_b_min 真值 | r margin_b_min 真值 | 判定 |
+|---|---|---|---|
+| wc_cworst_125 | −0.743596 | −0.816993 | 在窗（全角最差，r 余 0.083） |
+| wc_typical_125 | −0.596194 | −0.710304 | 在窗 |
+| wc_cbest_125 | −0.395181 | −0.608548 | 在窗 |
+| lt_cworst_m40 | −0.284366 | −0.264832 | 在窗 |
+| lt_cbest_m40 | −0.086396 | −0.160159 | 在窗 |
+| lt_typical_m40 | −0.239143 | −0.231755 | 在窗 |
+| ml_cbest_125 | −0.172700 | −0.224808 | 在窗 |
+| tt_cworst_25 | −0.398438 | −0.380320 | 在窗 |
+| tt_cbest_25 | −0.158864 | −0.251214 | 在窗 |
+| tt_typical_25 | −0.297811 | −0.312853 | 在窗 |
+
+→ **「1028 真值十角全在窗」经逐角复核成立**；最差仍是 wc_cworst r 侧 −0.816993，其次 wc_typical r 侧 −0.710304。
+
+**1008 代对照**（真 DPLC 时钟：l 6.072117~6.594295、r 5.231152~5.514824）：
+
+| 指标 | CSV 现值 | 真值 | 判定 |
+|---|---|---|---|
+| sd_l_dplc_margin_b_min | −6.008957 | **−1.762325**（4.831970−6.594295） | 仍出窗（超 0.862325，**真出窗**） |
+| sd_r_dplc_margin_b_min | −5.254307 | **−0.978207**（4.536617−5.514824） | 仍出窗（超 0.078207，**真出窗**） |
+
+→ 1008 有真出窗、1028 已修复（l 改善 ~1.02ns、r 改善 ~0.16ns）；1028 之后 r 侧余量 0.083 是当前最紧项。注：l 侧走 `clkb_2nd` 分支、r 侧走 `clkb_1st` 分支（rpt 块头证据）。
+
+### 2.4 margin_a 为什么也"出窗"——不是复用 bug，是窗口适用性未定义
+
+- RTL 事实：`DTCTL.v:791-796/823-828` `clka_1st/2nd` 的 ICG `CLKIN` 恒为 `SD_CLK_INV`，**无 DPLC_MODE_TRUE mux**；只有 `clkb_1st/2nd` 有（L815/847）。→ CLKA 两模式同一棵树。
+- 因此 `dplc_clk_a` 文件与 `1p_clk_a` md5 相同（e04c36be/eb10ec30）是**合法复用**（tcl L160-169 注释明说），`sd_*_dplc_clk_a` 与 `1p_clk_a` 行 10 角逐位相同符合设计。
+- 推论：dplc margin_a 数值 ≡ 1p margin_a。`sd_r_dplc_margin_a_min` 六角 −0.99~−2.07（wc_cbest 最差 −2.068876）过不了 dplc 窗左界 −0.9，但同样的数在 1p 窗 [−3.5:+3.5] 内全部合格。
+- **四份既有文档（核验/解释器/5G3G/1008 说明）全部只把 dplc 窗用于 b 侧**，没有任何一处定义 a 侧适用性；5G3G 文档 L45-46/L51 还指出 DPLC 模式下 a 组采样频率已变（CLKA=RX 全速 vs 1p=RX/2），机械沿用 ±3.5 或照贴 −0.9/+4.1 都缺依据。
+- **处置**：不定真违例；待两方收口——① ymzhu：−0.9/+4.1 的原始出处与适用 lane 范围；② jjlu/系统接口：DPLC 模式下 CLKA↔DB0/2/4 的采样倍率（与已挂账的「DPLC_CLKP 口径、窗口随 5G/3G 重定」同族）。
+
+### 2.5 b 侧数据行的第二个隐患：launch 混模
+
+`report_timing_sd_l_dplc_b.rpt` 与 `1p_b.rpt` **逐字节相同**；路径 launch 只有两族：`SD_CLK_INV_SHORT` 与 `SD_CLK_INV_DPLC_SHORT`（read_cons L518/520 互斥组）。b_min=4.726426 属 `SD_CLK_INV_DPLC_SHORT`（DB5_reg_5_，DPLC 模式相关），b_max=6.027894 属 `SD_CLK_INV_SHORT`（DB5_reg_1_，1p 模式路径）。若数据侧也按模式过滤（仅 DPLC launch，l 侧 max=5.548695），则 margin_b_max=**1.056549**，仍在窗内——结论稳，但修完探针后建议数据行也按 launch 分组。
+
+### 2.6 对既有文档/网站的更正清单
+
+| 位置 | 原结论 | 更正 |
+|---|---|---|
+| `script/_skew_最终核验.md` S1-S3 | DPLC CLKB 真违例 −6.42 系列、PR 重平衡 ~11ns | clk_b_max=10.840927 是污染值；真值 1008 l −1.76/r −0.98（真出窗）、1028 全在窗；「窗口倍率待规格确认」诉求反而更必要 |
+| 同上 S2 四查 | 未把 dplc_margin_a 列为查项 | 补查项：a 侧窗口适用性（1.4） |
+| `docs/HK1V11_skew_explainer_20261019.md` L207-213 | 违例清单只含 b_min（基于 1015 代 −1.17~−3.74） | 1015 的 clk_b_max=7.516915 同为污染值；1028 真值在窗 |
+| `docs/delay_skew/` 展示图 Panel A | 用 7.516915 当"时钟树 arrival"、margin −3.418 当出窗示例 | 数字本身是污染值，仅机制讲解仍成立；已加更正注记 |
+| 网站 `ch19-skew-audit.html`（L43/65/285-287/393-405/469/854-857/927） | 「真违例，待规格确认/ECO」「check 主源=R_REG05_F_reg_7_」 | R_REG05_F 是污染源不是 check 主源；本日已在 ch19 加更正段 |
 
 ---
 
-### 互卡 D：ECO 缩短 vs hold
+## 3. 焦点二：rx0_00 max/min 为什么"都小且差距小"
 
-> **一句话**：修 setup 缩短路径→太短可能触发 hold。但此路径差距大（0.90ns），安全。
+### 3.1 这些行测的是什么
 
-| 项目 | 数值 |
-|------|------|
-| 当前 data_delay | 4.04ns |
-| 修 setup 需缩至 | 1.90ns |
-| hold 阈值 | ≈1.0ns |
-| 修完后距阈值 | 0.90ns → **安全** |
+- 探针（isprx tcl）：`report_timing -delay_type ${delay_type} -group RX_CLK -through u_LOGIC_CENTER/BUFFER_I/INDATA_SYNC_reg* -max_paths 100 -nworst 20 -derate`（无 -from/-to）；perl 取每文件第一条 slack（get_phy L28、merge L45-62）。
+- `-through INDATA_SYNC_reg*` 单过滤 → 同一报告混两类路径：**FF→FF**（INDATA_SYNC→INDATA_SYNC_D1）与 **port→FF**（dout_lane[*]→INDATA_SYNC_reg_*）。
+- **max 行（2.050226 @wc_cworst）= FF→FF setup**：`INDATA_SYNC_reg_11_ → INDATA_SYNC_D1_reg_11_`，launch RX_CLK 边沿 0.000000 / capture 3.810000（`read_cons.log:419` create_clock RX_CLK 3.81ns ≈262.5MHz（精确 262.47）），arrival 4.472315、required 6.522541（CK 7.089138 − CRPR 0.013034 − uncertainty 0.400000 + setup 0.179631 计入），slack 2.050226。
+- **min 行（0.081905 @wc_cworst）= port→FF hold**：`dout_lane[7] → INDATA_SYNC_reg_7_`，launch 边沿 3.810000 + `input external delay −0.300000`（`set_input_delay 0.3/−0.3 -clock RX_CLK`，read_cons L1005-1023）+ IOBUF 0.109526 → arrival 3.619526；capture 边沿 0.000000，CK 3.391954 + uncertainty 0.150000 − hold 0.004333 → required 3.537621；slack 0.081905。**±0.3ns input delay 模型 + 0.15ns uncertainty 把 3.81ns 窗口吃到只剩 ~0.08**。
+- 所以「max/min 都贴 0、差距小」的真相：**两行是不同路径、不同窗口的各自最差 slack**——setup 借一个 3.81ns 周期、hold 被 ±0.3 模型压线；数值接近只是两个窗口都紧。这不是 bus skew 的最大/最小，也不跨行可比。
 
-**解决方案**：ECO upsize（2.14ns 幅度太激进）或 RTL 打拍（推荐）。
+### 3.2 两个负角是真违例，量级定性
+
+- **wc_cbest_125 min = −0.051536**：port→FF hold，`dout_lane[5] → INDATA_SYNC_reg_5_`（arrival 3.621104 vs required 3.672640），同型负 slack 一族（−0.050469/−0.050202/−0.049138…）——**~50ps 级多 bit 真 hold 违例，cbest 角时钟最快所致，建议列入跟办**。
+- **lt_typical_m40 min = −0.000113**：FF→FF hold（`INDATA_SYNC_reg_0_ → D1_reg_0_`，CRPR −0.129712 对冲不了 uncertainty 0.150000），0.1ps 量级 ≈ 数值噪声。
+- 卫生问题：rpt 头回显 `-input_pins -sort_by slack` 而磁盘 tcl 没有（两项目同）——服务器执行版与仓库版漂移，不改 path 集合与数值，但回传同步时应统一。
+
+### 3.3 2M23 的 min=7.0~9.0 怎么来的（为什么不可比）
+
+- 探针不同：2M23 isprx 是 `-group RX0_OD_CLK_DIV2 -rise_through dout_lane_L0[*] -through .../I_INDATA_D1_reg*` **双过滤 → 只剩 port→FF 一类**（18 条，无 FF startpoint）。
+- 时钟不同：捕获时钟是片内 DIV2 生成时钟（`create_clock RX0_OD_CLK 5.04` → `create_generated_clock RX0_OD_CLK_DIV2 -edges {2 4 6}`，周期 **10.08ns**，rise 沿在 2.52/12.60/…）；`set_input_delay 0`（无 ±0.3）；**DIV2 上无 uncertainty**（generated 不继承 master 的 ±0.4/0.15）。
+- min=7.237304 的分解（`dout_lane_L0[8] → I_INDATA_D1_reg_8_`）：
+
+```
+7.237304 ≈ 10.080000（launch 12.600000 − capture 2.520000，恰 1 个 DIV2 周期）
+         −  3.354717（capture 网络 4.546443 − launch 网络 1.191726）
+         +  0.360863（数据路径） + 0.146561（hold） + 0.004598（CRPR）
+```
+
+→ 边沿差一项即达 slack 的 **1.39 倍**（10.08 / 7.237304；若以数据到达 14.152589 为分母则占 71%）。它是该约束模型下的真实 slack（不是排序假象），但 1V11 与 2M23 的 min 差 ~6.7ns 里：边沿基准 10.08 vs 3.81（+6.27）、input delay 0 vs −0.3、uncertainty 无 vs 0.15——**全是时钟架构/约束口径差，只有零头是电路差**。1V11 若套 input delay=0、无 uncertainty 模型，其 port→FF hold 同样是 6~7ns 量级。「max−min 差距大/小」不能跨项目当裕度比。
+
+### 3.4 io 行缺失机制（约束决定行存在性）
+
+- 1V11 io tcl（L12-17）：`-from [get_ports SCL_I]` + `-to [get_ports SDA_OE]`。`SCL_I` 只有 `create_clock I2C_CLK 500ns`（read_cons L433，无 input delay）→ 从端口出发只有 clock network，无 data path；`SDA_OE` 无任何约束（grep 零匹配）→ 无约束 endpoint。两段均 "No constrained paths."（各 36 行、736B）→ perl 提不出 slack → **csv 里根本没有 io 行**。
+- 2M23：`I2C_CLK 500ns` + `set_input_delay 1/−1`（CSCL_I/CSDA_I，L813-819）+ `set_output_delay 1/−1`（I2C_SDA_OE，L987/989）→ io 行存在：io_max=**241.741440**（`I2C_BIT_CNT_reg_1_ → I2C_SDA_OE`，required 497.000000 = 500 − 2.0(uncertainty) − 1.0(output delay)，arrival 255.258560）；io_min=**251.998322**（required 1.150000 = 0.15 + 1.0，launch 沿 250 vs capture 0 的半周期错位，与 2.3 同源机制）。注意 2M23 io 报告第一个探针对象不存在（SEL-003/005），其 io 行实际只有输出侧。
+- 顺带：1V11 的 io rpt 是 **10-22 旧代产物混在 10-28 latest 目录**（ls 时间戳 10:58 vs 11:19）——latest 目录混代，需清理重跑。
 
 ---
 
-### 互卡 E：ECO 加长 vs setup
+## 4. INPUT / OUTPUT / MAX_DELAY 三约束如何决定这些输出（配图 Panel ④）
 
-> **一句话**：修 hold 加长路径→太长可能触发 setup。但域内全周期余量大（3.6ns），安全。
-
-| 路径 | Slack | 处置 |
-|------|-------|------|
-| STB_DLY_3 → STB_DLY_4 | -0.160 | hold-fix buffer |
-| STB_DLY_7 → STB_DLY_8 | -0.182 | hold-fix buffer |
-| STB_FAKE_DLY_3 → _4 | -0.159 | hold-fix buffer |
-
-**解决方案**：标准 hold-fix buffer（独立操作，与 skew 互不干扰）。
+| 约束 | 存在时 | 缺失时 | 在本项目的事实 |
+|---|---|---|---|
+| `set_max_delay 14 -to CLKA/CLKB` | clk 行存在，slack = 14 − arrival（8.155258 = 14 − 5.844742 逐格闭环） | "No constrained paths." + perl 哨兵 0/1000 → csv 出现 −99x（09-16 round2 实况） | **副作用**：端口被约束后，经 mode MUX S 脚泄漏到端口的数据路径也变"可报告"——本次污染能被看见的前提 |
+| `set_output_delay`（SDA_OE） | io 行存在且数值巨大（2M23 241.7/252.0，I2C 500ns 所致） | io 报告空、csv 无 io 行（1V11 现状 = 覆盖缺口） | 1V11 若补 ±X，则 io 行数值 = f(500ns 周期, X, uncertainty) |
+| `set_input_delay`（RX 侧） | port→FF 受限、产生 min 行（1V11 ±0.3 → 0.08 贴线）；2M23 =0 → min 7~9 | pin→FF unconstrained、不进 csv，只剩 FF→FF | **换约束 = 换窗口**：min 行贴 0 不是电路差，是 ±0.3 模型定义出来的近贴线检查 |
 
 ---
 
-## 4. PT 报告路径全集（完整层级）
+## 5. 2M23 对照：哪些可比、哪些不可比
 
-### 4.1 入域 Setup 违例（8 条，wc_cbest_125）
-
-```
-Startpoint: u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/PSR_LINE_CNT_reg
-             (rising edge-triggered flip-flop clocked by RX_CLK)
-Endpoint:    u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/STB_FAKE_DLY_reg_0_
-             (rising edge-triggered flip-flop clocked by RX_CLK')
-             launch: RX_CLK@0.000  capture: RX_CLK'@1.905  slack = -0.675 (VIOLATED)
-
-Startpoint: u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/PSR_LINE_CNT_reg
-             (rising edge-triggered flip-flop clocked by RX_CLK)
-Endpoint:    u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/STB_DLY_reg_0_
-             (rising edge-triggered flip-flop clocked by RX_CLK')
-             launch: RX_CLK@0.000  capture: RX_CLK'@1.905  slack = -0.675 (VIOLATED)
-
-Startpoint: u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/CS_SIG_ORG_SMT_CS_reg
-             (rising edge-triggered flip-flop clocked by RX_CLK)
-Endpoint:    u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/CS_SIG_ORG_SMT_CS_neg_reg
-             (rising edge-triggered flip-flop clocked by RX_CLK')
-             slack = -0.588 (VIOLATED)
-
-Startpoint: u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/CS_SIG_ORG_reg
-             (rising edge-triggered flip-flop clocked by RX_CLK)
-Endpoint:    u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/CS_SIG_ORG_neg_reg
-             (rising edge-triggered flip-flop clocked by RX_CLK')
-             slack = -0.488 (VIOLATED)
-
-Startpoint: u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/STB_IO_pre_reg
-             (rising edge-triggered flip-flop clocked by RX_CLK)
-Endpoint:    u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/STB_IO_pre_neg_reg
-             (rising edge-triggered flip-flop clocked by RX_CLK')
-             slack = -0.388 (VIOLATED)
-
-Startpoint: u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/STB_FAKE_ORG_reg
-             (rising edge-triggered flip-flop clocked by RX_CLK)
-Endpoint:    u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/STB_FAKE_ORG_neg_reg
-             (rising edge-triggered flip-flop clocked by RX_CLK')
-             slack = -0.349 (VIOLATED)
-
-Startpoint: u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/STB_P_reg
-             (rising edge-triggered flip-flop clocked by RX_CLK)
-Endpoint:    u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/STB_P_neg_reg
-             (rising edge-triggered flip-flop clocked by RX_CLK')
-             slack = -0.340 (VIOLATED)
-
-Startpoint: u_LOGIC_CENTER/LINK_LOGIC/LC_CHPI_DECODE/SHORT_ENCODING/SHORT_ENCODING_OUTPUT/SHORT_ENCODING_PHASE_DATA_reg_0_
-             (rising edge-triggered flip-flop clocked by RX_CLK)
-Endpoint:    u_LOGIC_CENTER/LC_CLK_RST_GEN/CLKGEN/short_encoding_phase_data_0_half_dly_reg
-             (rising edge-triggered flip-flop clocked by RX_CLK')
-             slack = -0.045 (VIOLATED)
-```
-
-### 4.2 出域 Setup 极薄余量（10 条，锁死 skew 上限）
-
-```
-Startpoint: u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/STB_DLY_reg_15_
-             (rising edge-triggered flip-flop clocked by RX_CLK')
-Endpoint:    u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/HSR_W_cnt_reg_5_
-             (rising edge-triggered flip-flop clocked by RX_CLK)
-             launch: RX_CLK'@1.905  capture: RX_CLK@3.810
-             slack = +0.259 (MET)  ← 最差余量，skew 上限锁死因素！
-
-（其余 9 条均从 STB_DLY_reg_15_ 出发，slack +0.272~+0.479，略）
-
-Startpoint: u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/STB_FAKE_DLY_reg_7_
-             (rising edge-triggered flip-flop clocked by RX_CLK')
-Endpoint:    u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/HSR_FAKE_reg
-             (rising edge-triggered flip-flop clocked by RX_CLK)
-             slack = +0.479 (MET)
-```
-
-### 4.3 Hold 违例（4 条，wc_cworst_125）
-
-```
-Startpoint: u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/STB_DLY_reg_3_
-             (rising edge-triggered flip-flop clocked by RX_CLK')
-Endpoint:    u_LOGIC_CENTER/CENTER1/DTCTL/LENB1_DLY_reg_0_
-             (rising edge-triggered flip-flop clocked by DCLK_DATA_MUX_SHORT)
-             launch: RX_CLK'@5.715  capture: DCLK_DATA_MUX_SHORT@5.715
-             slack = -0.690 (VIOLATED)  ← 全设计最差 hold！
-
-Startpoint: u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/STB_DLY_reg_7_
-             (rising edge-triggered flip-flop clocked by RX_CLK')
-Endpoint:    u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/STB_DLY_reg_8_
-             (rising edge-triggered flip-flop clocked by RX_CLK')
-             slack = -0.182 (VIOLATED)
-
-Startpoint: u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/STB_DLY_reg_3_
-             (rising edge-triggered flip-flop clocked by RX_CLK')
-Endpoint:    u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/STB_DLY_reg_4_
-             (rising edge-triggered flip-flop clocked by RX_CLK')
-             slack = -0.160 (VIOLATED)
-
-Startpoint: u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/STB_FAKE_DLY_reg_3_
-             (rising edge-triggered flip-flop clocked by RX_CLK')
-Endpoint:    u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/STB_FAKE_DLY_reg_4_
-             (rising edge-triggered flip-flop clocked by RX_CLK')
-             slack = -0.159 (VIOLATED)
-```
-
-### 4.4 网表关键 FF 的时钟连接
-
-```
-// 入口 FF（setup 违例的 capture 端）
-AND2DFFRBQX4AL9 STB_DLY_reg_0_ (
-    .CK(ccopt_net__2),     // DCLK_INV → 可多加 skew
-    .D1(STB_EN),
-    .D2(STB_P_neg) );
-
-// 出口 FF（setup 极薄的 launch 端）
-DFFRBQX1AL9 STB_DLY_reg_15_ (
-    .CK(ccopt_net__3),     // DCLK_INV → 只能少加 skew
-    .D(STB_DLY[14]) );
-
-// 不同时钟网！这是分别 skew 的物理基础
-```
-
-## 5. 分析方法论：RTL → 网表 → PT
-
-### 5.1 三级追踪法
-
-| 步骤 | 做什么 | 产出 |
-|------|--------|------|
-| ① RTL | 找 `posedge` 与 `posedge *_INV` 配对，确认信号链 | 源寄存器→影子→延时链→输出 |
-| ② 网表 | 找每个 FF 的 `.CK()` 连接，确认时钟网分布 | 时钟网→FF 映射表 |
-| ③ PT | 提取 setup + hold 违例的 startpoint→endpoint | 违例路径清单 |
-| ④ 交叉 | 匹配 RTL 信号名与 PT 路径名 | 完整因果链 |
-| ⑤ 推演 | 对每个 skew 值推演六个方向的变化 | 互卡矩阵 |
-
-### 5.2 从 PT 报告提取半周期路径
-
-关键：识别 launch 和 capture 钟名互补（`RX_CLK` vs `RX_CLK'`）。
-
-```python
-if base_l == base_c and lc != cc:  # 同名不同相
-    category = 'half_cycle'         # 半周期路径
-```
-
-### 5.3 判定互卡的充要条件
-
-两条路径互卡 ⟺ 存在一个调节手段 D，使得：
-- 路径 1 的 slack(D) 单调递增（D 帮它）
-- 路径 2 的 slack(D) 单调递减（D 伤它）
-
-## 6. 解决策略
-
-### 6.1 分别 skew（利用不同时钟网）
-
-| 时钟网 | 建议 skew | 锁定因素 |
-|--------|----------|----------|
-| ccopt_net__2 | +0.48ns | STB_FAKE_DLY 出口余量 0.479 |
-| ccopt_net__3 | +0.25ns | STB_DLY_15 出口余量 0.259 |
-| ccopt_net__59 | +0.05ns | 仅需修 -0.045 |
-
-**效果**：4/10 条 setup 修复，但 3 条大违例仍在。
-
-### 6.2 RTL 打拍（治本）
-
-```verilog
-// 在正常钟域与影子寄存器之间插一级 posedge DCLK FF
-reg STB_P_pipe;
-always @(posedge DCLK)
-    STB_P_pipe <= STB_P;      // 全周期，无压力
-
-always @(posedge DCLK_INV)
-    STB_P_neg <= STB_P_pipe;  // 半周期，但 reg→reg 直连！
-```
-
-**原理**：半周期约束从"4ns 长路径"变为"0.1ns 直连"——互卡根源消除。
-
-### 6.3 hold-fix buffer（独立修复）
-
-域内 hold 违例不涉及互卡（skew 不影响域内），用标准 hold-fix buffer 即可。
-
-## 7. 互卡矩阵速查
-
-| 互卡 | 方向 | 类型 | 当前状态 | skew 敏感 | 解决 |
-|------|------|------|----------|-----------|------|
-| A | 入域 | setup↔hold | setup 违 + hold 未知 | 反向 | RTL 打拍 |
-| B | 出域 | setup↔hold | setup 薄 + hold 违 | 反向 | 分别 skew |
-| C | 入↔出 | setup↔setup | 入违 + 出薄 | 反向 | 不同网 skew |
-| D | ECO | 缩短→hold | 低风险 | — | 距离大，安全 |
-| E | ECO | 加长→setup | 中风险 | — | 确认余量 |
+- **sd 数据行/margin 行不可比**：2M23 `report_timing_skew_sd.tcl` L29/71/122/161 四处 SLIN/SRIN 段用 `>` 覆盖了前面全部 DBL/DBR 探针段 → 四个数据 rpt 只剩 `SL_DLY*/SL_reg*` startpoint（16 条），csv 数据行（sd_l_1p_a_max=8.538174 等）与 margin 行（[-1:6] 窗，margin_a_max=3.73864）实为 **SLIN 单信号 arrival 冒充 DBL 总线**。1V11 已修（`>`→`>>`，SLIN 段 L102-103 等全追加），数据行才是真 DBL/DBR+SLIN 包络。
+- 2M23 clk 报告干净的真正原因：探针 pin 与 generated-clock 定义 pin 完全一致（`CLKGEN_U0/BUF_DCLK0_DIV/O` 等）+ 端口有 set_max_delay 14（read_cons L594-600；phy txt 里 12−arrival=5.698337 是 08-17 旧轮遗留，当前为 14）。
+- 2M23 侧待修（跨项目协作项）：`>`→`>>`；DBR 补充探针被注释段（L118-120 等）；其 data rpt 头 `UITE-416: 5 invalid start points`（catch-all 前缀匹配；10-28 深夜 grep 实测 8 份 rpt 均为 5，初稿误记 3）。
+- 跨项目只有 clk 行机制同类（同为发散点→端口 arrival，但发散点层次不同），仅供参考。
 
 ---
 
-  </script>
+## 6. 修复清单（按优先级）
 
+| # | 动作 | 位置 | 说明 |
+|---|---|---|---|
+| P1 | 探针 pin 补层次：`u_gate_MUX_DPLC_CLK/O` → `u_gate_MUX_DPLC_CLK/CLKMUX2X2/O` | `common/report_timing_skew_sd.tcl:157/158` | 核心修复；预期重跑后 dplc clk_b 得 ~5.47/~5.10 级真值 |
+| P2 | 同步修注释：L121 `MUX2X2/O`→`CLKMUX2X2/O`；ip_cons L132 同；L47 `set_max_delay 12`→`14`（“12”字样在 L47，L48 为相邻注释行） | tcl + `SYNTHESIS/common/ip_cons/HK1V11_digital_top.tcl` | "正确答案"注释本身也是错的 |
+| P3 | UITE-416 哨兵：rpt 生成后 grep `UITE-416/SEL-` 命中即报警/置空 | 流水线（建议并入 get_sd_busskew.pl 或 run 脚本） | 落实 09-16 教训；现有 0/1000/−99x 只防空报告 |
+| P4 | b 侧数据行按 launch clock 分组（SD_CLK_INV_DPLC_SHORT 单列）或 `-from [get_clocks ...]` 过滤 | tcl L109-113/187-191 + perl | 消除混模包络；本审计已手算过滤值 1.056549 佐证在窗 |
+| P5 | 窗口规格收口：a 侧是否套 [−0.9:+4.1]、窗口是否随 5G/3G 重定 | ymzhu + jjlu | 阻塞 margin_a 定性；见 1.4 |
+| P6 | 补 io 约束：SDA_OE set_output_delay（值待定）、SCL_I set_input_delay | postcts.sdc / ip_cons | 消除 phy csv io 行覆盖缺口 |
+| P7 | latest 目录混代清理（io rpt 10-22）；isprx tcl 服务器/磁盘版本对齐（-input_pins/-sort_by slack） | run 目录管理 | 数值不受影响，卫生问题 |
+| P8 | `start_2nd_a*` 补 `_reg` 后缀（L132/L198） | tcl | 减少无效对象 UITE-416 噪声 |
+| P10 | perl 健壮性包：路径拼接缺分隔符（L30）、`_sd_` 文件名过滤无后缀限定（L22）、`close(INFLE)` 拼写（L80）、merge 无行数/字段校验（L89-153）、**缺文件哨兵盲区**（rpt 未生成时 0 字节 txt 不触发 0/1000/−99x）、L55-60 `/clock.*rise edge/` 死正则（实际格式 rising edge-triggered，clock_start 恒 0 = 数据行绝对到达语义，grep 实测证实） | `get_sd_busskew.pl` / `merge_sd_busskew.pl` | 第二轮 QWEN 对抗审查新挖 8 条；不影响本审计结论（现值均在 16 文件齐全时产出），应随 P1 一并修 |
+| P9 | 跟办真违例：wc_cbest port→FF hold 族 ~50ps（多 bit）；1028 后 r 侧 dplc margin_b_min 余量 0.083 监控 | 签核 | 见 2.2 / 1.3 |
+
+---
+
+## 7. 交叉验证状态与未验证项
+
+- 已验证链：本人直查（rpt 头 UITE-416/首条数据路径、md5、首 slack、RTL 三处、margin 公式数值反推）+ 4 个 GLM 取证 subagent 独立枚举（dplc_clk_b 74 条逐条分类、rx0 边沿全字段、2M23 分解、文档窗口出处），关键数字三方一致（6 位小数）。
+- **QWEN 双路冗余盲复核已执行完成（10-28 晚，修订版 run dwfrun-d61663e8）**：3 任务 × A/B 两路共 6 个 new-provider/Qwen subagent（$disabled 档位绕开网关 thinking→effort 不支持 high 的 400；首版单路即被此挡，根因已定位）。**29 个对账字段 27 项三方向一致（双路一致且与主审计一致）**：sd 全部 14 项（真 DPLC 时钟四值 4.492146/5.470022/3.927408/5.104511、数据包络四值、真值 margin 四项、csv 现值两项）与 rx 全部 8 项（含 wc_cbest 违例 −0.051536）全过；非模型 grep 闸门（UITE-416 ×1、Startpoint 74/74）亦过。
+- 3 项未确认均在 2M23 任务、均已裁决为口径问题而非数据冲突：① DIV2 周期 A=15.12 vs B=10.08——read_cons.log:535 -edges {2 4 6}（边沿 2.52/7.56/12.60）原文定谳 10.08，且双路一致的路径边沿 12.6/2.52 独立佐证，A 路判误读；② 边沿差 A=10.08 vs B=−10.08 纯符号约定（launch−capture vs capture−launch），幅值双路一致；③ 占比 A/B 均算 边沿差/slack=±1.3928，暴露主审计原 71% 措辞分母不严谨（应为数据到达 14.152589；按 slack 为 139%）——已本文 §3.3/图③/ch19/日报四处同步改为精确表述。复核产物：对账表 markdown（workflow artifact「QWEN 双路盲复核对账表」）。
+- 九角重算已于第二轮完成（单路，见 §2.3 / §7.1）；P1 修复后整表重跑仍为建议验收动作。
+### 7.1 第二轮：八路 QWEN 复审（10-28 深夜，run dwfrun-b024ed5a）
+
+八路八视角补全覆盖缺口（九角真值×2 路、1008 代真值、2M23 时钟族、脚本对抗、RTL↔探针、约束覆盖、文档事实核查）：
+
+- **九角真值逐角在窗（9/9 全过）**：见 §2.3 十角总表——「全角在窗」从单点推断升级为逐角实测。
+- **1008 代 6/6 对账一致**；**RTL↔26 探针全对（除已知 L157）PASS**。
+- **15.12 之谜定谳**：上轮 A 路的 15.12 非幻觉——2M23 时钟族中真存在 `RX0_CLK_DIV1P5_1P` 周期恰为 15.120000（另 RX1_OD_CLK=8.55、多个 DIV1P5=7.56）；A 路是抓错了时钟名而非凭空编造。DIV2=10.08 不受影响（双路路径边沿 + SDC 原文三重支持）。
+- **双向纠错（均由本人 grep 仲裁）**：① 2M23 data rpt 的 UITE 警告实际 **5** 条/份（GLM 说 3、QWEN 说 0，均错；§5 已改）；② QWEN 称 r 侧 clk 报告 14 条——grep 实测 **12** 条（l/r 同），否决，原文维持 12。
+- **脚本新挖 8 处隐患（已入 P10）**：含两个哨兵盲区（缺文件不告警、多行 txt 静默错位）与死正则证据（L55-60 永不匹配 → 数据行绝对到达是结构性事实）。
+- **约束全清单入档**：除 dout_lane[19:0] 外 56 个输入名/155 脚无 input delay；**全部 129 个输出名零 set_output_delay**（4 个 SD 时钟口仅靠 max_delay 14 代 check）；max_delay 全表 14×4+8×2+12.7×5；uncertainty 仅 3 根钟（生成钟传播）；另发现 dout_lane 有 `set_multicycle_path -setup 0/-hold 0` 附加段（read_cons L1110-1112，用于 POCV/APR）——与 rx0 单周期关系分析自洽。
+- 本文档 5 处行号/口径修正已落实（tcl 归属、UITE=5、≈262.5、L47、十角表）；复核产物：workflow artifact「QWEN 八路复审结果」。
+
+- 1008 代真值来自 `script/_syn_1008v4/...` 提取包，其 read_cons/report_timing.log 与 1028 代 SDC 差异（DPLC_CLK_LONG 变体已清）不影响 b 侧结论。
+
+## 8. 证据索引（主要）
+
+| 事实 | 位置 |
+|---|---|
+| UITE-416 + 首条污染路径 7.238948/slack 6.761052 | `pt/wc_cworst_125/latest/rpt/skew/report_timing_sd_l_dplc_clk_b.rpt` L14/L16-59 |
+| 真 DPLC 时钟 l 4.492146/5.470022、r 3.927408/5.104511 | 同上 L3186/L1858；`..._r_dplc_clk_b.rpt` L3096/L1664 |
+| DPLC_CLK_SHORT 定义在 CLKMUX2X2/O | `.../log/read_cons.log:480`；set_max_delay 14 L535-541；互斥组 L518/520 |
+| 探针错误 pin 与其余 6 个正确探针 | `common/report_timing_skew_sd.tcl` L157/158 vs L106/122/135/145/168/169 |
+| CLKA 无 DPLC mux | `HDL/HK1V11_digital_top/seperated_code/DTCTL.v` L791-796/823-828；CLKB mux L815/847 |
+| 数据探针=真实驱动寄存器 | DTCTL.v L667-706（DB0/2/4_pre@PIX_CLK、DB1/3/5@SD_CLK_INV）、L716-742（start_*） |
+| margin 公式/解析 | `common/get_sd_busskew.pl` L39/L55-76/L117-133 |
+| 窗口标签与出处 | `common/merge_sd_busskew.pl` L61-77、L269；commit e6df4922 |
+| rx0 max/min 全字段 | `rpt/skew/report_timing_rx0_00_max.rpt` L20-260、`_min.rpt` L20-152；read_cons L419/L1005-1023 |
+| wc_cbest −0.051536 族 | `pt/wc_cbest_125/latest/rpt/skew/report_timing_rx0_00_min.rpt` L152 起 |
+| 2M23 DIV2 与分解 | `HV2M23/.../latest_1p/rpt/skew/report_timing_rx0_00_min.rpt` L20-164；read_cons L471/L535/L821 |
+| io 空报告 | 1V11 `rpt/skew/report_timing_io_{max,min}.rpt`（736B）；2M23 io_max L20-84、read_cons L987/989 |
+| 2M23 截断 bug | `HV2M23/.../common/report_timing_skew_sd.tcl` L29/71/122/161；rpt startpoint 统计 |
+| 旧结论待更正 | `script/_skew_最终核验.md` S1-S3；`docs/HK1V11_skew_explainer_20261019.md` L207-213；网站 ch19 |
+
+
+---
+
+## 9. 交叉引用
+
+- 原理与报表链：<a href="./ch18-skew.html">ch18 · Clock Skew 从原理到实战</a>
+- 10-15 代审计与本章更正段出处：<a href="./ch19-skew-audit.html">ch19 · 10-15 skew 全量审计（章首含 10-28 更正）</a>
+- 工作副本（HK1V11 仓库）：`docs/HK1V11_skew_probe_audit_20261028.md` · 图与生成器 `docs/skew_probe_audit_1028/`
+
+  </script></script>
   <script src="./js/site.js"></script>
   <script src="./fx.js?v=6"></script>
 </body>
 </html>
 <!-- ymzhu 2026-10-27 14:06 -->
+<!-- ymzhu 2026-10-29 14:16 -->
