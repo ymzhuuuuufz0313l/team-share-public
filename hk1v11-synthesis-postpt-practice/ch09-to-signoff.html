@@ -77,7 +77,7 @@
 
       <article class="article loading" id="article"></article>
       <div class="page-nav" id="page-nav"></div>
-      <div class="footer">HK1V11 SYNTHESIS / SIGNOFF PRACTICE · AUTHOR ymzhuuuu · UPDATED 2026-10-20</div>
+      <div class="footer">HK1V11 SYNTHESIS / SIGNOFF PRACTICE · AUTHOR ymzhuuuu · UPDATED 2026-10-30</div>
     </div>
   </div>
   <script type="text/template" id="md">
@@ -144,6 +144,39 @@ KEY: hold ~1742 条/corner、worst −5.078 是既有 P0（每轮 run 逐条相�
 - [ ] unconstrained 清零、SEL=0
 - [ ] IO buf type 核对完成
 
+## 6. 1029V0 全量 signoff 报表（2026-10-30 表图，skew 探针修复后首个 run）
+
+> 五张表**逐项沿用 2M23 signoff 表图体系**（结构/配色/动画照抄 synthesis-integration-flow-guide），唯一改动：**违例红显**（负 slack / 出窗 → 红 `#b91c1c`）。零手工录入：`script/gen_signoff_tables_hk1v11.py` 直读 `summary/latest` csv，六项校验每次生成自动跑。本 run 为 dplc clk_b 探针 P1 修复（见 <a href="./ch19-skew-audit.html">ch19 更正段</a>）后首个 run：污染报告 224KB → 纯净时钟报告 12KB，b 组 margin 全角收窗。
+
+### 6.1 setup / hold 总表
+
+![setup 总表](./images/anim/51_signoff_setup_hk11.svg?v=20261030)
+
+![hold 总表](./images/anim/52_signoff_hold_hk11.svg?v=20261030)
+
+- setup 11 违例格 / 4 域，worst −0.368383（gating @wc_cbest_125）；hold 11 格 / 3 域，worst −0.048648（RX_CLK @lt_typical_m40）。
+- 读法照抄 2M23：绿 0 = 零违例；深色正数 = 有 margin 的最差路径余量；红 = biggest violation < 0（呼吸常驻）。
+
+### 6.2 trans / cap 总表
+
+![trans 总表](./images/anim/53_signoff_trans_hk11.svg?v=20261030)
+
+- 10 格 / 2 域，worst −0.991697（transition @wc_cworst_125）。
+
+### 6.3 PHY bus skew
+
+![phy busskew](./images/anim/54_signoff_physkew_hk11.svg?v=20261030)
+
+- 4 角负全在 `rx0_00_min`（lt×3 + ml，最差 −0.048711）＝ port→FF hold 族（±0.3 input delay 模型所致，定性见 ch19 §2.1-2.2）。
+- `sd_l/r_dplc_clk_b` 两行**首次以真探针产出**（旧 run 为污染值 6.76/7.13 级）。
+
+### 6.4 SD skew margin（P1 生效实证）
+
+![sdskew margin](./images/anim/55_signoff_sdskew_margin_hk11.svg?v=20261030)
+
+- **b 组全角收窗**：margin_b_min 全 10 角 ≥ −0.038（l 侧全正 0.26~0.85）；唯一红格 `sd_r_dplc_margin_b_max @wc_cworst_125 = 4.259056` 出上界 +4.1（超 0.159，新关注项，待与 PR/jjlu 确认上界口径）。
+- `sd_r_dplc_margin_a_min` 2 红格（−1.244/−0.961）＝ P5 悬置的「dplc 窗套 a 侧」口径问题延续，非新违例（CLKA 两模式恒 SD_CLK_INV，窗口适用性待规格收口）。
+
 ## 交叉引用
 
 - 指南站同章：<a href="../synthesis-integration-flow-guide/to-signoff.html" target="_blank">SYN_FLOW_GUIDE · TO SIGNOFF</a>（五个 csv 报告实例 / IO buf type 判读全文）
@@ -154,4 +187,4 @@ KEY: hold ~1742 条/corner、worst −5.078 是既有 P0（每轮 run 逐条相�
   <script src="./fx.js?v=6"></script>
 </body>
 </html>
-<!-- ymzhu 2026-10-27 14:06 -->
+<!-- ymzhu 2026-10-30 17:20 -->
