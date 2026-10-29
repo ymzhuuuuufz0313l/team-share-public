@@ -25,7 +25,39 @@
   <div class="container with-toc">
     <aside class="toc-wrapper"><div class="toc" id="toc"></div></aside>
     <div class="content">
-      <div class="section-title">对比 · 1008 V1→V3 约束修复效果</div>
+      <div class="section-title">最新 · 1029V0 post-PT（10 corner 全量）</div>
+      <div class="chapter-grid" style="margin-bottom: 12px;">
+        <div class="chapter-card card-span card-hero card-center">
+          <div class="num">1029V0 post-PT · skew 探针 P1 修复后首个 run · 10 corner 全量</div>
+          <div class="title" style="font-family: var(--font-mono); font-weight: 600; color: var(--ok);">skew b 组 20/20 在窗</div>
+          <div class="desc" style="margin-top: 10px; font-size: 14px;">dplc clk_b 224KB 污染报告 → 12KB 纯净时钟报告（P1 补 CLKMUX2X2/ 叶层生效）；setup 11 格/4 域 · hold 11 格/3 域 · 全套 signoff 表见 <a href="./ch09-to-signoff.html">ch09 §6</a><span class="badge badge-ok" style="margin-left: 10px;">P1 线上验证</span></div>
+        </div>
+        <div class="chapter-card card-center card-mini">
+          <div class="num">setup（10 角）</div>
+          <div class="title" style="font-family: var(--font-mono); color: var(--warn);">11 格 / 4 域</div>
+          <div class="desc">worst −0.36838（gating @wc_cbest）</div>
+        </div>
+        <div class="chapter-card card-center card-mini">
+          <div class="num">hold（10 角）</div>
+          <div class="title" style="font-family: var(--font-mono); color: var(--warn);">11 格 / 3 域</div>
+          <div class="desc">worst −0.04865（RX_CLK @lt_typ）</div>
+        </div>
+        <div class="chapter-card card-center card-mini">
+          <div class="num">skew margin_b</div>
+          <div class="title" style="font-family: var(--font-mono); color: var(--ok);">全角在窗</div>
+          <div class="desc">l 全正 0.26~0.85 · r 最差 −0.038</div>
+        </div>
+        <div class="chapter-card card-center card-mini">
+          <div class="num">新关注项（P11）</div>
+          <div class="title" style="font-family: var(--font-mono); color: var(--bad);">4.25906</div>
+          <div class="desc">sd_r_dplc_margin_b_max @wc_cworst 出上界 +4.1</div>
+        </div>
+      </div>
+      <div class="chapter-card" style="padding: 14px 18px; margin-bottom: 28px">
+        <div style="font-family: var(--font-mono); font-size: 13px; text-align: center; margin-bottom: 8px;">数据源：PACK_TAR_1029V0 · <code>summary/latest/report_{setup,hold,trans,phy_busskew,sd_busskew}.csv</code> · 全套表图 <a href="./ch09-to-signoff.html">ch09 §6</a> · 探针审计 <a href="./ch21-skew-probe-audit.html">ch21</a></div>
+        <div style="font-size: 12px; color: var(--muted); text-align: center;">1029V0 为新 P&R 代际，绝对值与 1008/1028 不可直接横比；在窗性质与违例域结构可追</div>
+      </div>
+      <div class="section-title">上一代 · 1008 V1→V3 约束修复效果（历史基线）</div>
       <div class="chapter-grid" style="margin-bottom: 12px;">
         <div class="chapter-card card-span card-hero card-center">
           <div class="num">1008 post-PT · V1(10:51) → V3(15:19) · 同网表 · 9 角可比</div>
@@ -160,6 +192,15 @@ dplc skew 行全空的根因：**SDC 引用了 0917V1 RTL 的 cell 名，但当�
 
 `report_timing_skew_sd.tcl`：时钟组 `-max_path 2000 -nworst 1000 -slack_lesser_than 50`（端口已有 max_delay 14，slack ≈ 8.7 < 50 全打印）；每组第一条 `>` 新建、其余 `>>` 追加。`-slack_lesser_than` 阈值按分析目的定，不是抄参数（指南站 §4.5 的迭代纪律全文适用）。
 
+## 5.5 1029V0 实测现状（2026-10-30 最新基线）
+
+> skew 探针 P1 修复（dplc clk_b 补 CLKMUX2X2/ 叶层，见 <a href="./ch21-skew-probe-audit.html">ch21 审计</a>后首个 run，10 corner 全量。全套 signoff 表图（2M23 体系+违例红显）在 <a href="./ch09-to-signoff.html">ch09 §6</a>。
+
+- **setup**：11 违例格 / 4 域，worst −0.36838（gating @wc_cbest_125）；
+- **hold**：11 格 / 3 域，worst −0.04865（RX_CLK @lt_typical_m40）——即 rx0_00_min port→FF hold 族（phy 表 lt×3+ml 共 4 角负，≤50ps）；
+- **skew**：dplc clk_b 报告 224KB 污染 → 12KB 纯净时钟报告；margin_b 20/20 在窗（l 全正 0.26~0.85，r 最差 −0.038）；**新发现 P11**：sd_r_dplc_margin_b_max @wc_cworst = 4.25906 出上界 +4.1（超 0.159，待 PR/规格确认）；margin_a_min 两角红格 = P5 口径悬置延续；
+- **trans**：10 格 / 2 域，worst −0.99170（transition @wc_cworst）。
+
 ## 6. 报告解读与实测现状
 
 - `read_cons.log`：SEL=0 才继续（唯一裁判）
@@ -259,4 +300,4 @@ Balance 的实质：**离源近的树枝多绕几级缓冲、离源远的少绕�
   <script src="./fx.js?v=6"></script>
 </body>
 </html>
-<!-- ymzhu 2026-10-27 14:06 -->
+<!-- ymzhu 2026-10-30 19:40 -->
