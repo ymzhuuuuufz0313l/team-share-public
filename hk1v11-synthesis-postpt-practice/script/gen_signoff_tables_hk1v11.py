@@ -14,6 +14,7 @@ gen_signoff_tables_hk1v11.py — HK1V11 signoff 表图生成器（1029V0 run, re
   ④ 全表数值统一 5 位小数显示
   rev3：A 族字体/字号与 B 族统一；违例格加浅红背景 #f8dede
   rev4：sdskew 窗口写入第一列行标签（不再只靠副标题）
+  rev5：phy 表 rx0_00_max/min 行各自最小值格标浅蓝 #d3e3f6
 红显规则（改后）：setup/hold violN>0、trans<0、sdskew 出窗 -> 深红 #7f1d1d
 
 输出：../images/5{1..5}_signoff_*.svg（静态）+ ../images/anim/ 同名（动画）
@@ -29,6 +30,7 @@ OUT_ANIM = os.path.join(SITE, "images", "anim")
 
 RED = "#7f1d1d"   # 深红（rev2 加深）
 RED_BG = "#f8dede"  # rev3: 违例格浅红背景
+BLUE_BG = "#d3e3f6"  # rev5: PHY 表最紧格浅蓝背景
 
 CORNER_HDR = ["lt_cbest_m40", "lt_cworst_m40", "lt_typical_m40", "ml_cbest_125",
               "tt_cbest_25", "tt_cworst_25", "tt_typical_25", "wc_cbest_125",
@@ -180,9 +182,13 @@ B_CSS = """<style>
 @keyframes breathe { 0%,100% { opacity:1; } 50% { opacity:0.55; } }
 .frameBreath { animation: frameB 2.8s ease-in-out infinite; }
 @keyframes frameB { 0%,100% { stroke-opacity:1; } 50% { stroke-opacity:0.45; } }
+.hlcell { stroke-dasharray: 6,4; animation: hlGlow 3s ease-in-out infinite, hlDash 6s linear infinite; }
+@keyframes hlGlow { 0%,100% { filter: drop-shadow(0 0 0 rgba(115,168,212,0)); } 50% { filter: drop-shadow(0 0 8px rgba(115,168,212,0.8)); } }
+@keyframes hlDash { 0% { stroke-dashoffset: 0; } 100% { stroke-dashoffset: -48; } }
+@media (prefers-reduced-motion:reduce){ *{animation:none!important} .hlcell,.breath{opacity:1!important;stroke-dashoffset:0!important} }
 </style>"""
 
-def build_B(title, subtitle, label_w, rows, mode, red_fn, zero_frame=False):
+def build_B(title, subtitle, label_w, rows, mode, red_fn, zero_frame=False, hl=None):
     """rows: [(label, disp[10], raw[10])]；red_fn(raw_float, label) -> True 红显"""
     n = len(rows)
     W = label_w + 10 * B_COL_W + 2
@@ -215,6 +221,9 @@ def build_B(title, subtitle, label_w, rows, mode, red_fn, zero_frame=False):
                  % (B_PAD_L, ry + 28, B_FS_D, B_DARK, esc(label)))
         for k in range(10):
             fv = raw[k]
+            if hl and (i, k) in hl:
+                p.append('<rect class="hlcell" x="%d" y="%d" width="%d" height="%d" fill="%s" stroke="%s" stroke-width="1.5"/>'
+                         % (col_x[k], ry, B_COL_W, B_ROW_H, BLUE_BG, "#7aa8d4"))
             if red_fn(fv, label):
                 p.append('<rect x="%d" y="%d" width="%d" height="%d" fill="%s"/>'
                          % (col_x[k], ry, B_COL_W, B_ROW_H, RED_BG))
@@ -255,9 +264,14 @@ def gen_all():
     outs.append(("53_signoff_trans_hk11", svg, data))
     data = read_plain(os.path.join(DATA, "report_phy_busskew.csv"))
     rows = [(lb.replace(".rpt", ""), disp, raw) for lb, disp, raw in data]
+    # rev5: max 行最小格 + min 行最小格 -> 浅蓝背景（最紧角标记）
+    hl = set()
+    for i, (lb, disp, raw) in enumerate(rows):
+        if lb.endswith("rx0_00_max") or lb.endswith("rx0_00_min"):
+            hl.add((i, raw.index(min(raw))))
     # rev2: phy 负值不红显（回归 2M23 原样）
     svg = build_B("report_phy_busskew.csv (HK1V11 1029V0)", "PHY bus skew 各组 slack (ns)",
-                  417, rows, "report_files", lambda fv, lb: False)
+                  417, rows, "report_files", lambda fv, lb: False, hl=hl)
     outs.append(("54_signoff_physkew_hk11", svg, data))
     sd = read_sdskew(os.path.join(DATA, "report_sd_busskew.csv"))
     win = {lb: (lo, hi) for lb, disp, raw, lo, hi in sd}

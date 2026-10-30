@@ -21,6 +21,7 @@
 <rect x="0" y="112" width="2339" height="44" fill="#ffffff"/>
 <text class="lab" x="12" y="140" font-size="20" fill="#212529">report_timing_rx0_00_max</text>
 <text class="val breath" style="animation-delay:0.00s" x="595" y="140" font-size="20" fill="#212529" text-anchor="end">0.49273</text>
+<rect class="hlcell" x="609" y="112" width="192" height="44" fill="#d3e3f6" stroke="#7aa8d4" stroke-width="1.5"/>
 <text class="val breath" style="animation-delay:0.15s" x="787" y="140" font-size="20" fill="#212529" text-anchor="end">0.39388</text>
 <text class="val breath" style="animation-delay:0.30s" x="979" y="140" font-size="20" fill="#212529" text-anchor="end">0.42826</text>
 <text class="val breath" style="animation-delay:0.45s" x="1171" y="140" font-size="20" fill="#212529" text-anchor="end">0.87391</text>
@@ -36,6 +37,7 @@
 <text class="lab" x="12" y="184" font-size="20" fill="#212529">report_timing_rx0_00_min</text>
 <text class="val breath" style="animation-delay:0.15s" x="595" y="184" font-size="20" fill="#212529" text-anchor="end">-0.04302</text>
 <text class="val breath" style="animation-delay:0.30s" x="787" y="184" font-size="20" fill="#212529" text-anchor="end">-0.04340</text>
+<rect class="hlcell" x="801" y="156" width="192" height="44" fill="#d3e3f6" stroke="#7aa8d4" stroke-width="1.5"/>
 <text class="val breath" style="animation-delay:0.45s" x="979" y="184" font-size="20" fill="#212529" text-anchor="end">-0.04871</text>
 <text class="val breath" style="animation-delay:0.60s" x="1171" y="184" font-size="20" fill="#212529" text-anchor="end">-0.02263</text>
 <text class="val breath" style="animation-delay:0.75s" x="1363" y="184" font-size="20" fill="#212529" text-anchor="end">0.02037</text>
