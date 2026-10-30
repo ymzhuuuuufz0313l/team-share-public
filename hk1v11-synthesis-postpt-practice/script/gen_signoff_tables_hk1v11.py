@@ -105,9 +105,9 @@ def build_A(metric, data, subtitle):
     col_w = (data_right - data_left) / 10.0
     row_h = (H - A_HEADER_H - A_COLHEAD_H) / n
     css = ("<style><![CDATA["
-           ".head{opacity:0;animation:rowIn 0.4s ease forwards;}"
-           ".row{opacity:0;animation:rowIn 0.4s ease forwards;}"
-           ".chg{animation:breath 2.8s ease-in-out infinite;}"
+           ".head{opacity:0;animation:rowIn 0.3s ease forwards;}"
+           ".row{opacity:0;animation:rowIn 0.3s ease forwards;}"
+           ".chg{animation:breath 1.4s ease-in-out infinite;}"
            "@keyframes rowIn{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:none;}}"
            "@keyframes breath{0%{opacity:1;}50%{opacity:0.55;}100%{opacity:1;}}"
            "]]></style>")
@@ -134,7 +134,7 @@ def build_A(metric, data, subtitle):
     top = A_HEADER_H + A_COLHEAD_H
     for i, (label, disp, raw) in enumerate(data):
         ry = top + i * row_h
-        p.append('<g class="row" style="animation-delay:%.3fs">' % ((i + 1) * 0.025))
+        p.append('<g class="row" style="animation-delay:%.3fs">' % ((i + 1) * 0.012))
         p.append('<rect x="0" y="%s" width="%d" height="%s" fill="%s"/>'
                  % (fmt(ry), A_W, fmt(row_h), "#ffffff" if i % 2 == 0 else A_C_ZEBRA))
         p.append('<text x="%d" y="%s" font-size="%d" fill="%s">%s</text>'
@@ -145,11 +145,11 @@ def build_A(metric, data, subtitle):
             if fv < 0:   # 违例（biggest<0 ⟺ violN>0，disp 已带 (N) 条数）
                 p.append('<rect x="%s" y="%s" width="%s" height="%s" fill="%s"/>'
                          % (fmt(data_left + k * col_w), fmt(ry), fmt(col_w), fmt(row_h), RED_BG))
-                color, cls = RED, ' class="val chg" style="animation-delay:%.2fs"' % ((i + k) * 0.05)
+                color, cls = RED, ' class="val chg" style="animation-delay:%.2fs"' % ((i + k) * 0.025)
             elif fv == 0:
                 color, cls = A_C_ZERO, ' class="val"'
             else:
-                color, cls = A_C_NONZERO, ' class="val chg" style="animation-delay:%.2fs"' % ((i + k) * 0.05)
+                color, cls = A_C_NONZERO, ' class="val chg" style="animation-delay:%.2fs"' % ((i + k) * 0.025)
             p.append('<text%s x="%s" y="%s" font-size="%d" fill="%s" text-anchor="end">%s</text>'
                      % (cls, fmt(x), fmt(ry + row_h * 0.62), A_FS_D, color, esc(v)))
         p.append('</g>')
@@ -174,15 +174,15 @@ B_TITLE_H, B_HEADER_H, B_ROW_H, B_COL_W = 60, 52, 44, 192
 B_FS_T, B_FS_H, B_FS_D = 26, 20, 20
 B_PAD_L, B_PAD_R = 12, 14
 B_CSS = """<style>
-.head { opacity:0; animation: rowIn 0.4s ease forwards; }
-.row  { opacity:0; animation: rowIn 0.4s ease forwards; }
+.head { opacity:0; animation: rowIn 0.3s ease forwards; }
+.row  { opacity:0; animation: rowIn 0.3s ease forwards; }
 @keyframes rowIn { from { opacity:0; transform: translateY(4px); }
                    to   { opacity:1; transform: none; } }
-.breath { animation: breathe 2.8s ease-in-out infinite; }
+.breath { animation: breathe 1.4s ease-in-out infinite; }
 @keyframes breathe { 0%,100% { opacity:1; } 50% { opacity:0.55; } }
-.frameBreath { animation: frameB 2.8s ease-in-out infinite; }
+.frameBreath { animation: frameB 1.4s ease-in-out infinite; }
 @keyframes frameB { 0%,100% { stroke-opacity:1; } 50% { stroke-opacity:0.45; } }
-.hlcell { stroke-dasharray: 6,4; animation: hlGlow 3s ease-in-out infinite, hlDash 6s linear infinite; }
+.hlcell { stroke-dasharray: 6,4; animation: hlGlow 1.5s ease-in-out infinite, hlDash 3s linear infinite; }
 @keyframes hlGlow { 0%,100% { filter: drop-shadow(0 0 0 rgba(115,168,212,0)); } 50% { filter: drop-shadow(0 0 8px rgba(115,168,212,0.8)); } }
 @keyframes hlDash { 0% { stroke-dashoffset: 0; } 100% { stroke-dashoffset: -48; } }
 @media (prefers-reduced-motion:reduce){ *{animation:none!important} .hlcell,.breath{opacity:1!important;stroke-dashoffset:0!important} }
@@ -214,7 +214,7 @@ def build_B(title, subtitle, label_w, rows, mode, red_fn, zero_frame=False, hl=N
     p.append('</g>')
     for i, (label, disp, raw) in enumerate(rows):
         ry = y0 + i * B_ROW_H
-        p.append('<g class="row" style="animation-delay:%.3fs">' % ((i + 1) * 0.025))
+        p.append('<g class="row" style="animation-delay:%.3fs">' % ((i + 1) * 0.012))
         p.append('<rect x="0" y="%d" width="%d" height="%d" fill="%s"/>'
                  % (ry, W, B_ROW_H, "#ffffff" if i % 2 == 0 else B_ZEBRA))
         p.append('<text class="lab" x="%d" y="%d" font-size="%d" fill="%s">%s</text>'
@@ -227,11 +227,11 @@ def build_B(title, subtitle, label_w, rows, mode, red_fn, zero_frame=False, hl=N
             if red_fn(fv, label):
                 p.append('<rect x="%d" y="%d" width="%d" height="%d" fill="%s"/>'
                          % (col_x[k], ry, B_COL_W, B_ROW_H, RED_BG))
-                color, cls = RED, 'class="val breath" style="animation-delay:%.2fs"' % ((i + k) * 0.15)
+                color, cls = RED, 'class="val breath" style="animation-delay:%.2fs"' % ((i + k) * 0.07)
             elif fv == 0:
                 color, cls = B_GREEN, 'class="val"'
             else:
-                color, cls = B_DARK, 'class="val breath" style="animation-delay:%.2fs"' % ((i + k) * 0.15)
+                color, cls = B_DARK, 'class="val breath" style="animation-delay:%.2fs"' % ((i + k) * 0.07)
             p.append('<text %s x="%d" y="%d" font-size="%d" fill="%s" text-anchor="end">%s</text>'
                      % (cls, col_x[k + 1] - B_PAD_R, ry + 28, B_FS_D, color, esc(disp[k])))
         p.append('</g>')
