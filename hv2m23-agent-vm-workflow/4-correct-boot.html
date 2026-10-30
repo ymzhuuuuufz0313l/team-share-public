@@ -176,18 +176,27 @@ headings.forEach(h => observer.observe(h));
 const lightbox = document.getElementById('lightbox');
 const lbImg = document.getElementById('lightbox-img');
 const lbClose = document.getElementById('lightbox-close');
-let scale = 1;
+let scale = 1, baseW = 0, baseH = 0;
 let isDragging = false;
 let startX = 0, startY = 0, translateX = 0, translateY = 0;
-function openLightbox(src) { lbImg.src = src; scale = 1; translateX = 0; translateY = 0; updateTransform(); lightbox.classList.add('active'); document.body.style.overflow = 'hidden'; }
+function openLightbox(src) { lbImg.src = src; scale = 1; translateX = 0; translateY = 0; baseW = 0; baseH = 0; updateTransform(); lightbox.classList.add('active'); document.body.style.overflow = 'hidden'; }
 function closeLightbox() { lightbox.classList.remove('active'); document.body.style.overflow = ''; }
-function updateTransform() { lbImg.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`; }
+/* v4.3 清晰缩放：放大用真实布局尺寸（width/height = base×scale），transform 只做平移。
+   Chromium 按"布局尺寸×DPR"重栅格化 SVG；transform:scale 在高 DPR 屏会走纹理拉伸导致模糊。 */
+function updateTransform() {
+  if (scale === 1) { lbImg.style.width = ''; lbImg.style.height = ''; }
+  else {
+    if (!baseW) { baseW = lbImg.clientWidth || lbImg.naturalWidth; baseH = lbImg.clientHeight || lbImg.naturalHeight; }
+    if (baseW) { lbImg.style.width = baseW * scale + 'px'; lbImg.style.height = baseH * scale + 'px'; }
+  }
+  lbImg.style.transform = `translate(${translateX}px, ${translateY}px)`;
+}
 document.addEventListener('click', (e) => { const img = e.target.closest('img'); if (!img || img.id === 'lightbox-img' || !img.closest('.article')) return; openLightbox(img.src); });
 lbClose.addEventListener('click', closeLightbox);
 lightbox.addEventListener('click', (e) => { if (e.target === lightbox) closeLightbox(); });
 lightbox.addEventListener('wheel', (e) => { e.preventDefault(); const d = e.deltaY > 0 ? -0.12 : 0.12; scale = Math.min(Math.max(0.5, scale + d), 5); updateTransform(); });
 lbImg.addEventListener('mousedown', (e) => { isDragging = true; startX = e.clientX - translateX; startY = e.clientY - translateY; lbImg.classList.add('grabbing'); e.preventDefault(); });
-document.addEventListener('mousemove', (e) => { if (!isDragging) return; translateX = e.clientX - startX; translateY = e.clientY - translateY; updateTransform(); });
+document.addEventListener('mousemove', (e) => { if (!isDragging) return; translateX = e.clientX - startX; translateY = e.clientY - startY; updateTransform(); });
 document.addEventListener('mouseup', () => { isDragging = false; lbImg.classList.remove('grabbing'); });
 document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && lightbox.classList.contains('active')) closeLightbox(); });
 </script>

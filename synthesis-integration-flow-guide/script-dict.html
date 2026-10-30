@@ -869,7 +869,7 @@ chapters.forEach(([slug, label]) => {
 const lightbox = document.getElementById('lightbox');
 const lbImg = document.getElementById('lightbox-img');
 const lbClose = document.getElementById('lightbox-close');
-let scale = 1;
+let scale = 1, baseW = 0, baseH = 0;
 let isDragging = false;
 let startX = 0, startY = 0, translateX = 0, translateY = 0;
 
@@ -878,6 +878,8 @@ function openLightbox(src) {
   scale = 1;
   translateX = 0;
   translateY = 0;
+  baseW = 0;
+  baseH = 0;
   updateTransform();
   lightbox.classList.add('active');
 }
@@ -886,8 +888,15 @@ function closeLightbox() {
   lightbox.classList.remove('active');
 }
 
+/* v4.3 清晰缩放：放大用真实布局尺寸（width/height = base×scale），transform 只做平移。
+   Chromium 按"布局尺寸×DPR"重栅格化 SVG；transform:scale 在高 DPR 屏会走纹理拉伸导致模糊。 */
 function updateTransform() {
-  lbImg.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
+  if (scale === 1) { lbImg.style.width = ''; lbImg.style.height = ''; }
+  else {
+    if (!baseW) { baseW = lbImg.clientWidth || lbImg.naturalWidth; baseH = lbImg.clientHeight || lbImg.naturalHeight; }
+    if (baseW) { lbImg.style.width = baseW * scale + 'px'; lbImg.style.height = baseH * scale + 'px'; }
+  }
+  lbImg.style.transform = `translate(${translateX}px, ${translateY}px)`;
 }
 
 document.addEventListener('click', (e) => {

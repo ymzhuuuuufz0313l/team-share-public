@@ -23,15 +23,28 @@
   var list = [];   /* 当前页可放大图片 src 列表 */
   var idx = 0;
 
-  /* 缩放/平移状态：transform = translate(tx,ty) scale(s)，origin 0 0 */
-  var s = 1, tx = 0, ty = 0;
+  /* 缩放/平移状态（2026-10-29 锐利缩放修）：缩放改走真实布局尺寸（width/height = 基准×s，
+     并临时解除 max-width/height 钳制），transform 只做平移。
+     原因：SVG 在 <img> 内用 transform:scale 缩放，Chromium 会先按布局尺寸光栅化、
+     再拉伸位图纹理 → 放大发糊；改布局尺寸则按新尺寸重新光栅化矢量，任意倍率锐利。 */
+  var s = 1, tx = 0, ty = 0, baseW = 0, baseH = 0;
   function apply() {
-    img.style.transform = 'translate(' + tx + 'px,' + ty + 'px) scale(' + s + ')';
+    if (s === 1) {
+      img.style.width = ''; img.style.height = '';
+      img.style.maxWidth = ''; img.style.maxHeight = '';
+    } else {
+      img.style.maxWidth = 'none'; img.style.maxHeight = 'none';
+      if (baseW) {   /* 图片未加载完（baseW=0）时不设尺寸，防止 0px 消失 */
+        img.style.width = (baseW * s) + 'px';
+        img.style.height = (baseH * s) + 'px';
+      }
+    }
+    img.style.transform = 'translate(' + tx + 'px,' + ty + 'px)';
     var label = (list[idx] && list[idx].alt) ? list[idx].alt + ' · ' : '';
     cap.textContent = label + Math.round(s * 100) + '%' +
       '　滚轮缩放 · 拖动平移 · 双击复位 · ESC 关闭';
   }
-  function reset() { s = 1; tx = 0; ty = 0; apply(); }
+  function reset() { s = 1; tx = 0; ty = 0; baseW = 0; baseH = 0; apply(); }
 
   function collect() {
     list = [];
@@ -62,6 +75,9 @@
     overlay.classList.remove('open');
     img.src = '';
     img.style.transform = '';
+    img.style.width = ''; img.style.height = '';
+    img.style.maxWidth = ''; img.style.maxHeight = '';
+    baseW = 0; baseH = 0;
     document.body.style.overflow = '';
     resetPointerState();
   }
@@ -70,12 +86,16 @@
   function zoomAt(cx, cy, f) {
     var ns = Math.min(12, Math.max(0.5, s * f));
     if (ns === s) return;
+    if (!baseW) { baseW = img.clientWidth || img.naturalWidth; baseH = img.clientHeight || img.naturalHeight; }
     var lx = img.offsetLeft, ly = img.offsetTop;   /* 布局位置，不受 transform 影响 */
     var ix = (cx - lx - tx) / s;
     var iy = (cy - ly - ty) / s;
-    tx = cx - lx - ix * ns;
-    ty = cy - ly - iy * ns;
     s = ns;
+    apply();
+    /* 尺寸变化后 flex 居中导致布局偏移变化：重读偏移再算平移量，保持光标锚点 */
+    lx = img.offsetLeft; ly = img.offsetTop;
+    tx = cx - lx - ix * s;
+    ty = cy - ly - iy * s;
     apply();
   }
 
