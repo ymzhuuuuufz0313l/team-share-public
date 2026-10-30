@@ -7,11 +7,14 @@
 # 源：../images/56_signoff_shift_window_hk11.svg（静态事实源，只读）
 # 出：56_signoff_shift_window_hk11.svg（anim/，动画版）
 # 动画（v4.1 口径）：无 scale，只用 opacity + drop-shadow + stroke-dashoffset
+# v3 2026-10-30：修输出路径（anim/56 → images/anim/56，与签核表 51-55 及 ch09
+#   引用 ./images/anim/56_*.svg 对齐——v2 产出写到了无人引用的 anim/ 下，
+#   导致页面一直读到 v1 旧图，图内「左移全角最小」标签遮挡条形）
 import io, os, hashlib
 
 BASE = os.path.dirname(os.path.abspath(__file__))
 SRC = os.path.join(BASE, "..", "images", "56_signoff_shift_window_hk11.svg")
-OUT = os.path.join(BASE, "56_signoff_shift_window_hk11.svg")
+OUT = os.path.join(BASE, "..", "images", "anim", "56_signoff_shift_window_hk11.svg")
 
 CSS = """<style>
 .head, .panel { opacity:0; animation: rowIn .35s cubic-bezier(.22,.7,.3,1) forwards; }
