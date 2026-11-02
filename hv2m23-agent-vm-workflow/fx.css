@@ -321,4 +321,34 @@ html.fx-on .fx-r.fx-pop.fx-in {
   to { opacity: 1; transform: none; }
 }
 
-/* ymzhu 2026-11-02 16:14 */
+/* ===== 18. 流程组件入场（v2.1，2026-11-02 用户定稿铺全仓；.flow 容器进视口时一次性演出） =====
+   编排：每个 .fbox 标题 <b> 依次过一道白光（background-clip:text，与 hero 扫光同技法，
+   基色 --fx-flow-base 由 fx.js 取自各页 computed color——基色取不到/透明则整组跳过不加
+   fx-flow-on，标题保持原样）；标题光带走完后 .farrow → 逐个点亮（暗 0.25 → 全亮）。
+   全部一次性（forwards），不循环；静态模式移除 fx-on = 全部原样。 */
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  html.fx-on .flow.fx-r.fx-in.fx-flow-on .fbox b {
+    background-image:
+      linear-gradient(105deg,
+        var(--fx-flow-base) 0%, var(--fx-flow-base) 35%,
+        rgba(255, 255, 255, .55) 47%,
+        #ffffff 50%,
+        rgba(255, 255, 255, .55) 53%,
+        var(--fx-flow-base) 65%, var(--fx-flow-base) 100%);
+    background-size: 220% 100%;
+    background-repeat: no-repeat;
+    background-position: 120% 0;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: fxFlowShine 1.5s ease-out forwards;
+  }
+}
+@keyframes fxFlowShine { to { background-position: -20% 0; } }
+html.fx-on .flow.fx-r .farrow { opacity: .25; }
+html.fx-on .flow.fx-r.fx-in .farrow {
+  animation: fxArcLit .45s var(--fx-ease-out) forwards;
+}
+@keyframes fxArcLit { to { opacity: 1; } }
+
+/* ymzhu 2026-11-02 22:35 */

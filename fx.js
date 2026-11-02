@@ -173,7 +173,7 @@
     '#article h2', '#article h3', '#article table', '#article figure',
     'main h2', 'main h3', 'main table', 'main figure',
     '.container h2', '.container h3', '.container table', '.container figure',
-    '.article > p:first-of-type', '.stat', '.hero-hint', '.page-nav a'
+    '.article > p:first-of-type', '.stat', '.flow', '.hero-hint', '.page-nav a'
   ];
   var revealEls = [];
   var revIo = null;
@@ -192,6 +192,23 @@
       if (el.classList.contains('stat')) {
         el.classList.add('fx-pop');
         el.style.animationDelay = (0.08 * statPopIdx++) + 's';
+      }
+      /* v2.1 流程组件：.flow 进视口时 fbox 标题依次过光 + farrow 依次点亮（fx.css §18）。
+         基色逐 b 取 computed color 写 --fx-flow-base；任一取不到/透明 → 整组不加 fx-flow-on（标题原样）。 */
+      if (el.classList.contains('flow')) {
+        var flowOk = true;
+        var fbs = el.querySelectorAll('.fbox b');
+        Array.prototype.forEach.call(fbs, function (b, k) {
+          var c = null;
+          try { c = getComputedStyle(b).color; } catch (e) {}
+          if (!c || /rgba?\(\s*0+, ?0+, ?0+(?:, ?0)?\s*\)|transparent/i.test(c)) { flowOk = false; return; }
+          b.style.setProperty('--fx-flow-base', c);
+          b.style.animationDelay = (k * 0.18) + 's';
+        });
+        Array.prototype.forEach.call(el.querySelectorAll('.farrow'), function (a, k) {
+          a.style.animationDelay = (1.2 + k * 0.3) + 's';
+        });
+        if (flowOk && fbs.length) el.classList.add('fx-flow-on');
       }
       if (el.tagName === 'TABLE') {
         el.classList.add('fx-t');
@@ -432,4 +449,4 @@
   }
 })();
 
-/* ymzhu 2026-11-02 15:56 */
+/* ymzhu 2026-11-02 22:35 */
