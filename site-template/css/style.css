@@ -957,4 +957,23 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
   .mermaid g, .mermaid path { animation: none !important; }
 }
 
-/* ymzhu 2026-10-26 19:00 */
+/* ---------- 侧别徽章 + 状态跟踪总账（2026-11-02 由 team-share skill 迁入，原为 skill 内嵌代码） ----------
+   侧别徽章：标注问题归属侧（RTL / TX / DV），与 .badge 基类组合使用。
+   旧名映射（skill 历史页面在用）：badge-fixed→badge-ok、badge-pending→badge-warn、pcard.pending→pcard.warn。 */
+.badge-rtl { background: var(--bad-bg);  color: var(--bad);  border: 1px solid var(--bad); }
+.badge-tx  { background: var(--info-bg); color: var(--info); border: 1px solid var(--info); }
+.badge-dv  { background: #f3e8ff; color: #6b21a8; border: 1px solid #6b21a8; }
+@media (prefers-color-scheme: dark) {
+  .badge-dv { background: #3b1f52; color: #d8b4fe; border-color: #d8b4fe; }
+}
+/* 状态跟踪总账：时间线只留一句话，证据链按主题折叠在页底；块序严格时间倒序，最新主题加 open。
+   summary 格式：状态emoji + <span class="st-date">MMDD</span> — 标题（🔄进行中 / 🟡待拍板 / ✅完成 / ⚠️风险） */
+.st-details details { border: 1px solid var(--line); border-radius: 8px; margin: 0 0 10px; background: var(--surface); }
+.st-details summary { cursor: pointer; padding: 10px 14px; font-weight: 600; font-size: 14px; color: var(--text); background: var(--chip); border-radius: 8px; list-style: none; }
+.st-details summary::-webkit-details-marker { display: none; }
+.st-details summary::before { content: "▸ "; color: var(--accent); }
+.st-details details[open] summary::before { content: "▾ "; }
+.st-details .st-body { padding: 10px 16px 12px; font-size: 13px; line-height: 1.75; color: var(--text); }
+.st-details .st-date { font-family: var(--font-mono); color: var(--muted); font-weight: 400; font-size: 12px; }
+
+/* ymzhu 2026-11-02 17:00 */

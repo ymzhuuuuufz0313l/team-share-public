@@ -11,7 +11,7 @@
 | `css/style.css` | 组件唯一事实源（token/组件禁改；只许追加站点专属内容类，须最小化） |
 | `js/site.js` | 导航/TOC/表格增强/代码块增强。**唯一内容槽 = 顶部 `NAV` 数组** |
 | `js/lightbox.js` · `js/marked.min.js` | 图片查看器 / markdown 渲染，逐字使用 |
-| `fx.js` · `fx.css` | 动效引擎 v4（零重载切换 + 右下角统一浮动按钮 + 默认动画模式）。与全仓库 9 处副本字节一致，禁改；升级全仓库统一做 |
+| `fx.js` · `fx.css` | 动效引擎 v4（零重载切换 + 顶部导航切换按钮（fx.js 注入，2026-10-28 晚定稿取代右下角方案） + 默认动画模式）。与全仓库 9 处副本字节一致，禁改；升级全仓库统一做 |
 | `index.html` · `page.html` | 页面骨架（head 引用顺序、两行导航、hero、container/with-toc/content、page-nav、footer、脚本顺序全部定死） |
 | `anim/MOTION_KIT.md` | 双版图动效规范模板（kit CSS 与铁律禁改；只改 §1 路径与 §6 分图规格） |
 
@@ -38,3 +38,5 @@
 2. 双版图管线走 MOTION_KIT v4（生成器确定性幂等 + validate 校验全 PASS）；
 3. 验证门：`md5` 校验 fx.js/fx.css 与仓库一致 · `scripts/check_anim_pairs.py` 无孤儿 · 切换零位移 · 稳态可辨 · file:// 与线上均正常；
 4. 根导航登记 → 本地预览问用户"要不要截图验收" → git 提交（信息含改什么/为什么/验证结果）。
+
+<!-- ymzhu 2026-11-02 17:10 -->

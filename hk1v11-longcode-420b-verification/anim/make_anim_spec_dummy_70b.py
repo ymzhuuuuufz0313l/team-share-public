@@ -10,10 +10,10 @@ MOTION_KIT.md §6.7 规格（1200×600）：
   · 3 个 Before→After 行箭头 delay 1.45/1.6/1.75（=行 0.9/1.05/1.2 + 0.55），
     各自的“413b/420b”标签随箭头同拍 fade（不再先于箭头出现）
 - step：4 框循环 delay 0 / -1.5 / -3 / -4.5s（6s 周期）
-- 列车：3 pipeline 箭头各 3 包 + flowtail（2026-10-29 二次降速 0.7→2.4s；
-  2026-10-28 晚动效加密 2→3 包，边间错 phase 0.5s）；3 行箭头各 2 包
-  （1.15→3.9s，保持 0.7:1.15 比例的慢速列车；行间错 phase 0.7s）。
-  箭头均在盒间净空隙内，不穿文字。
+- 列车：已废除（2026-11-02 PAGE_FX §3-2 短箭头规则拍板：< 80px 可见长度的
+  箭头不挂 flowdot/flowtail 列车）。3 条 pipeline 箭头（约 35px）与 3 行
+  Before→After 箭头（60px）一律保留 draw 入场后静止；流向由 ①②③④ 的
+  .step 方框接力点亮表达。kit CSS 仍逐字嵌入（.flowdot 类定义保留、无实例）。
 - 行波：After ENC 盒 D 格（D·70b×N / D·140b）+ K5~K8（Active/Config 各 1）
   共 4 格 cellwave（0.3s 递增，2.8s）
 - 脉冲：Active 行 “D · 70b×N” 盒 .pulse（琥珀，delay -0.7，套在 cellwave 外层）
@@ -71,34 +71,18 @@ KIT_CSS = "\n".join([
     "@media (prefers-reduced-motion:reduce){*{animation:none!important}.row,.head,.fade{opacity:1!important}.flowdot,.flowtail,.sweepband{display:none!important}}",
 ])
 
-# 行箭头（Before→After）几何：源 line x1=630 x2=690，y = 220/340/460
-ROW_ARROW_Y = [220, 340, 460]
+# 行箭头（Before→After）：源 line x1=630 x2=690，y = 220/340/460（锚点核对
+# 见 row_arrow_idx；60px 短箭头不挂列车，无需构造 path）
 # pipeline 箭头几何：x1/x2 对 + y=106
 PIPE_ARROWS = [(314, 344), (604, 634), (894, 924)]
-# 列车相位（负 delay = 相位偏移，同族错相位）。
-# 2026-10-28 晚动效加密：pipeline 列车 2→3 包（仅同族加密不加新族——本图已
-# 5 族（step 计入）超过 ≤4 上限，不再新增族）。
-# 2026-10-29 二次降速：pipeline 0.7→2.4s（包距 0.2333→0.8s，箭头间相位步
-# 0.15→0.5s）；行箭头 1.15→3.9s（包距 0.575→1.95s 半周期，行间步 0.2→0.7s）
-PIPE_PHASE = [("-0.15s", "-0.95s", "-1.75s"),
-              ("-0.65s", "-1.45s", "-2.25s"),
-              ("-1.15s", "-1.95s", "-2.75s")]
-ROW_PHASE = [("-0.35s", "-2.3s"), ("-1.05s", "-3s"), ("-1.75s", "-3.7s")]
 
 # 扫光带（§4 配方）：区域 = 底部注释带 x[52,532] y[532,572]（宽 R=480）
-SWEEP = {"RL": 52, "R": 480, "Y": 532, "H": 40}
-SWEEP["P"] = SWEEP["R"] + 240                       # 720
-SWEEP["X0"] = SWEEP["RL"] - int(0.54 * SWEEP["P"])  # -337：t=0 光带藏于区域左外侧
-
-
-def flowdot(d, delay, dur):
-    return ('<path class="flowdot" d="%s" stroke="#2563eb" pathLength="100" '
-            'style="animation-duration:%s;animation-delay:%s"/>' % (d, dur, delay))
-
-
-def flowtail(d, delay, dur):
-    return ('<path class="flowtail" d="%s" stroke="#2563eb" pathLength="100" '
-            'style="animation-duration:%s;animation-delay:%s"/>' % (d, dur, delay))
+# 文字光带（2026-11-02 由琥珀扫光带改为光带，与首页标题扫光同技法）：一道白光同步滑过
+# 大标题与底部 70-bit 对齐注释两行文字——clipPath 用 <use> 引用原文字（零复制、text 多重集不变），
+# 叠在内容之上；禁红棕/琥珀亮带；运动沿用 kit .sweepband / sweepMove 8s。
+SWEEP = {"RL": 0, "R": 1200, "Y": 20, "H": 545}
+SWEEP["P"] = SWEEP["R"] + 240                       # 1440
+SWEEP["X0"] = SWEEP["RL"] - int(0.60 * SWEEP["P"])  # t=0 光带右缘(0.60P)恰在区域左缘
 
 
 def build():
@@ -190,15 +174,22 @@ def build():
     # 源 defs 收尾 </defs> 行号（扫光渐变/clipPath 插在其前，铁律 3/4）
     dclose = next(i for i in range(2, title_i) if lines[i].strip() == "</defs>")
     sp = SWEEP
+    # 光带文字：标题 + 底部注释（只加 id 属性，文字内容零改动）
+    for k, i in enumerate((title_i, note_i)):
+        assert lines[i].lstrip().startswith("<text")
+        lines[i] = lines[i].replace('<text ', '<text id="shT%d" ' % k, 1)
+        assert ('id="shT%d"' % k) in lines[i]
     sweep_defs = [
         f'<linearGradient id="sweepG-1" gradientUnits="userSpaceOnUse" x1="{sp["X0"]}" y1="0" x2="{sp["X0"] + sp["P"]}" y2="0">',
-        '<stop offset="0" stop-color="#b45309" stop-opacity="0"/>',
-        '<stop offset="0.46" stop-color="#b45309" stop-opacity="0"/>',
-        '<stop offset="0.5" stop-color="#b45309" stop-opacity="0.3"/>',
-        '<stop offset="0.54" stop-color="#b45309" stop-opacity="0"/>',
-        '<stop offset="1" stop-color="#b45309" stop-opacity="0"/>',
+        '<stop offset="0" stop-color="#ffffff" stop-opacity="0"/>',
+        '<stop offset="0.40" stop-color="#ffffff" stop-opacity="0"/>',
+        '<stop offset="0.46" stop-color="#ffffff" stop-opacity=".3"/>',
+        '<stop offset="0.5" stop-color="#ffffff" stop-opacity=".65"/>',
+        '<stop offset="0.54" stop-color="#ffffff" stop-opacity=".3"/>',
+        '<stop offset="0.60" stop-color="#ffffff" stop-opacity="0"/>',
+        '<stop offset="1" stop-color="#ffffff" stop-opacity="0"/>',
         '</linearGradient>',
-        f'<clipPath id="sweepC-1"><rect x="{sp["RL"]}" y="{sp["Y"]}" width="{sp["R"]}" height="{sp["H"]}"/></clipPath>',
+        '<clipPath id="sweepC-1"><use href="#shT0"/><use href="#shT1"/></clipPath>',
     ]
 
     # ---- 组装 ----
@@ -216,8 +207,8 @@ def build():
     o.append("</g>")
 
     # ①②③④：row 入场 0.15/0.3/0.45/0.6 + .step 循环 0/-1.5/-3/-4.5；
-    # ①→②②→③③→④ pipeline 箭头：draw（0.85/1.0/1.15 = 下游步骤+0.55）
-    # + 列车 3 包 + flowtail（2.4s，错 phase），随 fade 同拍显形
+    # ①→②②→③③→④ pipeline 箭头：draw（0.85/1.0/1.15 = 下游步骤+0.55）后静止
+    # （短箭头 ~35px 不挂列车，PAGE_FX §3-2；流向由 .step 接力表达），随 fade 同拍显形
     step_rows = [(s1, 0.15), (s2, 0.3), (s3, 0.45), (s4, 0.6)]
     step_phase = ["0s", "-1.5s", "-3s", "-4.5s"]
     for n, (txt_i, rd) in enumerate(step_rows):
@@ -229,13 +220,8 @@ def build():
         o.append("</g>")
         if n < 3:
             delay = round(0.85 + 0.15 * n, 2)
-            x1, x2 = PIPE_ARROWS[n]
-            d = f"M {x1} 106 L {x2} 106"
             o.append(f'<g class="fade" style="animation-delay:{delay}s">')
             o.append(drawify(pipe_arrow_idx[n], delay))
-            for ph in PIPE_PHASE[n]:            # 3 包（整周期均布，加密）
-                o.append(flowdot(d, ph, "2.4s"))
-            o.append(flowtail(d, PIPE_PHASE[n][0], "2.4s"))
             o.append("</g>")
 
     # 行发射器：行组内嵌 cellwave/pulse；行箭头线与其 413b/420b 标签移出行组
@@ -274,28 +260,24 @@ def build():
     emit_row(act_start, act_end, 1.05, [cells[0], cells[1]], skip={act_arrow, act_413})
     emit_row(cfg_start, cfg_end, 1.2, [cells[2], cells[3]], skip={cfg_arrow, cfg_413})
 
-    # 行箭头：draw 1.45/1.6/1.75（=行 delay+0.55）+ 列车 2 包（3.9s，错 phase）
-    # + 413b/420b 标签同拍 fade（§5：先容器后内容再箭头）
+    # 行箭头：draw 1.45/1.6/1.75（=行 delay+0.55）后静止（60px 短箭头不挂列车，
+    # PAGE_FX §3-2）+ 413b/420b 标签同拍 fade（§5：先容器后内容再箭头）
     for n, (ai, ti) in enumerate([(lsp_arrow, lsp_413), (act_arrow, act_413), (cfg_arrow, cfg_413)]):
         delay = round(1.45 + 0.15 * n, 2)
-        y = ROW_ARROW_Y[n]
-        d = f"M 630 {y} L 690 {y}"
         o.append(f'<g class="fade" style="animation-delay:{delay}s">')
         o.append(drawify(ai, delay))
         o.append(lines[ti])
-        o.append(flowdot(d, ROW_PHASE[n][0], "3.9s"))
-        o.append(flowdot(d, ROW_PHASE[n][1], "3.9s"))
         o.append("</g>")
-
-    # 扫光带：区域内容（注释文字）之下、白底之上；随后注释 head(1.4) 压在其上
-    o.append(f'<g clip-path="url(#sweepC-1)"><rect class="sweepband" x="{sp["X0"]}" '
-             f'y="{sp["Y"]}" width="{sp["P"]}" height="{sp["H"]}" fill="url(#sweepG-1)" '
-             f'style="--sweepP:{sp["P"]}px"/></g>')
 
     # 底部注释 head(1.4)
     o.append('<g class="head" style="animation-delay:1.4s">')
     o.append(lines[note_i])
     o.append("</g>")
+
+    # 文字光带：叠在全部内容之上，只在标题与注释字形内可见；注释入场后显现
+    o.append(f'<g class="fade" style="animation-delay:1.4s"><g clip-path="url(#sweepC-1)">'
+             f'<rect class="sweepband" x="{sp["X0"]}" y="{sp["Y"]}" width="{sp["P"]}" '
+             f'height="{sp["H"]}" fill="url(#sweepG-1)" style="--sweepP:{sp["P"]}px"/></g></g>')
 
     o.append(lines[end])
     text = eol.join(o).replace("\n", eol)
@@ -367,4 +349,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-# ymzhu 2026-10-29 10:18
+# ymzhu 2026-11-02 18:56

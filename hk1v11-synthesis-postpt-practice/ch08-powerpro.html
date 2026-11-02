@@ -13,7 +13,7 @@
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./css/style.css">
   <script src="./js/marked.min.js"></script>
-  <link rel="stylesheet" href="./fx.css?v=3">
+  <link rel="stylesheet" href="./fx.css?v=5">
 </head>
 <body>
   <nav class="navbar">
@@ -272,13 +272,13 @@ WARNING: PowerPro 读取的 RTL 必须是可综合代码，无法综合会 inter
   </div>
 </div>
 
-#### 功耗组成可视化
+#### 4.5.1 功耗组成可视化
 
 ![1V11 vs 1V22 Module Power Comparison](./anim/power_module_compare_1v11_1v22.svg?v=20261101)
 
 ![1V11 vs 1V22 Power Composition Donut](./anim/power_composition_donut_1v11_1v22.svg?v=20261101)
 
-#### 模块级功耗对比（按功能块对齐，按差距降序）
+#### 4.5.2 模块级功耗对比（按功能块对齐，按差距降序）
 
 <style>
 .pwr45 th:nth-child(2), .pwr45 td:nth-child(2) { width: 10%; }
@@ -309,7 +309,7 @@ WARNING: PowerPro 读取的 RTL 必须是可综合代码，无法综合会 inter
 
 </div>
 
-#### 结论
+#### 4.5.3 结论
 
 **1V11 多出 10.5 mW，1V22 独有功能抵扣 4.8 mW，净差 6.7 mW（×1.35）。**
 
@@ -320,13 +320,14 @@ WARNING: PowerPro 读取的 RTL 必须是可综合代码，无法综合会 inter
 
 > RTL 根因与优化建议详见 `script/_1v11_vs_1v22_hdl_crossvalidate.md`（三模型交叉验证权威版）；面板族逐子功能 1V22 对应物排查见 `script/_panel_ctrl_final.md`（t16 交叉验证最终版，K3 t14 × GLM t15）。关键优化着手点：CHPI_SD_CTRL L270/271 有 2 个被注释的 ICG 可直接启用（1V22 已在 LC_CSPIF_L0 实装同款）。
 
-## 交叉引用
+## 5. 交叉引用
 
 - 指南站同章：<a href="../synthesis-integration-flow-guide/powerpro.html" target="_blank">SYN_FLOW_GUIDE · PowerPro 功耗评估</a>（培训课件全记录 / HV2M23 六组实测 / 常见问题 9 条）
 - PTPX 侧：<a href="./ch07-memory-power.html">七、Memory 与功耗</a>
 </script>
+  <script src="./js/lightbox.js"></script>
   <script src="./js/site.js?v=2"></script>
-  <script src="./fx.js?v=6"></script>
+  <script src="./fx.js?v=8"></script>
 </body>
 </html>
-<!-- ymzhu 2026-10-27 17:41 -->
+<!-- ymzhu 2026-11-02 19:20 -->

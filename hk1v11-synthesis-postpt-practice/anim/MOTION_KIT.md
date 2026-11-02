@@ -73,7 +73,7 @@
 | `.flowdot` | **稳态·列车** | 主链路光点（粗 3.5） | 装饰 path（沿线复制），`pathLength="100"` + delay/duration；同链多枚错相位 = 列车 |
 | `.flowtail` | **稳态·列车拖尾** | 与 flowdot 同 d 的宽淡拖尾 | 同 delay 同 duration |
 | `.pulse` `.pulse-t` `.pulse-b` | **稳态·脉冲** | 英雄节点缩放+辉光（琥珀/深青/蓝），每图 1~3 个 | 包 `<g class="pulse" style="animation-delay:-1.4s">` |
-| `.sweepband` | **稳态·语义扫光** | 对比列/关键行/量程区（禁整图扫，每图 ≤2 区） | 见 §4 配方 |
+| `.sweepband` | **稳态·文字光带**（v4.3 起；原"语义扫光"琥珀色带已废除） | 关键文字（标题/标注区/结论文字），每图 ≤2 区 | 见 §4 配方 |
 | `.dashgrow` | **稳态·链路生长** | 关键虚线路径持续生长回卷 | 加 class（可内联 duration 2~3.5s） |
 | `.cellwave` | 稳态·行波 | 重复行/单元格波 | 包 `<g class="cellwave" style="animation-delay:Xs">` |
 | `.march` | 稳态·行进 | 虚线行进（**仅 dash 周期整除 16 的虚线**，否则循环跳变） | 加 class |
@@ -88,13 +88,21 @@
 
 **入场 vs 稳态同类冲突（本站实测新增）**：同一元素不得同时挂入场类与稳态类（两条 `animation:` 声明级联只留后者）——需要两者时用嵌套：外层 `.row/.fade`、内层 `.pulse/.cellwave`。
 
-## 4. 扫光带配方（sweepband 唯一合法实现）
+## 4. 文字光带配方（sweepband 唯一合法实现；v4.3 起取代琥珀扫光带）
 
-1. `<defs>` 加 `<linearGradient id="sweepG-N" gradientUnits="userSpaceOnUse" x1="X0" y1="0" x2="X0+P" y2="0">`，stops：`0 透明`、`0.46 透明`、`0.5 #b45309 透明度 .3`、`0.54 透明`、`1 透明`（P = 区域宽 + 240；N 用图内唯一序号）。
-2. `<defs>` 加 `<clipPath id="sweepC-N">`，内放区域矩形副本。
-3. 在区域内容**之下**、面板底色**之上**插入：
-   `<g clip-path="url(#sweepC-N)"><rect class="sweepband" x="X0" y="Y" width="P" height="H" fill="url(#sweepG-N)" style="--sweepP:{P}px"/></g>`
-4. 效果：琥珀光带每 8s 从左到右扫过区域一次。注意：区域若含**实心底色 rect**（表格行底色），扫光带必须插在该 rect 之后、行文字之前（行组内部），否则被盖住。
+> 2026-11-02 用户定调（同 canonical 420b 站 MOTION_KIT v4.3 §4）："琥珀色扫光带很丑——SVG 里面用光带，而不是扫光。"
+> 光带 = 光只出现在**文字字形内**，白色亮峰滑过、文字被短暂提亮；不再是一整块色带擦过面板。本站 4 张（skew_probe_audit_1028 / dc_area_evolution_table / dc_gen_summary_table / delay_skew_14vs12）已于 2026-11-02 由琥珀扫光带改为文字光带。
+
+1. **给目标文字加 id**：区域内要发光的每个 `<text>` 加 `id="shT{k}"`（只加属性，文字内容零改动 → text 多重集校验不变）。生成器里用普通字符串替换插 id，不要用含 `\1`/`\b` 的正则替换串。
+2. `<defs>` 加 `<linearGradient id="sweepG-N" gradientUnits="userSpaceOnUse" x1="X0" y1="0" x2="X0+P" y2="0">`，stops **全部白色** `#ffffff`：`0 → 0`、`0.40 → 0`、`0.46 → .3`、`0.5 → .65`、`0.54 → .3`、`0.60 → 0`、`1 → 0`（stop-opacity）。P = 区域宽 + 240；**X0 = 区域左 − 0.60P**（t=0 光带右缘恰在区域左缘）。峰值 .65 是上限。
+3. `<defs>` 加 `<clipPath id="sweepC-N">`，内容 = 对目标文字的引用 `<use href="#shT0"/><use href="#shT1"/>…`（**不复制文字**；Edge/Chrome 实测 `<use>` 引用 `<text>` 作裁剪有效）。
+4. 在**全部内容之上**（不是之下）插入，并包 `.fade`（delay = 目标区入场 delay）：
+   `<g class="fade" style="animation-delay:Ds"><g clip-path="url(#sweepC-N)"><rect class="sweepband" x="X0" y="Y" width="P" height="H" fill="url(#sweepG-N)" style="--sweepP:{P}px"/></g></g>`
+5. 效果：白色光带每 8s 从左到右滑过目标文字一次；可见范围由文字字形裁剪决定。一个 clipPath 可同时引用多处文字，光带同步滑过。
+6. **颜色铁律**：亮峰只能白/冷白；**禁止红棕/琥珀色亮带**（琥珀只做基底色，不做光）。**数据密度规则**：数据表图光带只落标题/结论文字，不落数值区。
+7. **验证**：无头截图对 transform 动画取帧不可靠——诊断副本末尾注入
+   `<script>addEventListener("load",function(){document.getAnimations().forEach(function(a){a.pause();a.currentTime=T;});});</script>`
+   定格到指定毫秒再截图（诊断副本不入库）。光带中心 x(t) = X0 + 0.5P + P·t/8000。另可用"同一定格时刻 含光带 vs 删光带组"差分隔离验证（2026-11-02 本站实测法）。
 
 ## 5. 入场编排
 
@@ -164,6 +172,6 @@ DONE — <name1> / <name2> ...
 - v4 canonical（2026-10-28，longcode 站）：稳态升级（pulse 缩放辉光/扫光带/列车加粗+拖尾/dashgrow）；入场箭头 delay +0.35→+0.55；稳态 ≥2 族硬指标；kit CSS 全量替换；校验 validate_kit_v4.py。
 - 旧版（2026-10-27 前，本站 v1-v3 动效）：fadeIn/grow/breathe 词汇表 + 面板 panelIn + 行扫光，已由 v4 全量取代（旧 anim svg 被生成器输出覆盖，无历史文件保留义务）。
 
-<!-- ymzhu 2026-10-28 21:22 -->
 - v4.2（2026-10-29）：用户定调"所有带列车的图，列车速度全部再降"——元素级列车时长下限 2.4s（0.7/0.8s→2.4s、1.4/1.5s→3.2s 档）；列车仍只允许复制既有箭头几何，不扩新图；donut 永不加行进（用户点名）。
 - v4.2 补充（2026-10-29）：数据密集图（行≥20 且列≥6）数据区禁弥漫性动效（用户：行列多加呼吸影响体验；低密度加很好）；列车全站再降速（元素级 ≥2.4s）。
+<!-- ymzhu 2026-11-02 19:20 -->

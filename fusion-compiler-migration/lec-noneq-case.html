@@ -12,7 +12,7 @@
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./assets/style.css">
   <script src="./js/marked.min.js"></script>
-  <link rel="stylesheet" href="./fx.css?v=3">
+  <link rel="stylesheet" href="./fx.css?v=5">
 </head>
 <body>
   <nav class="navbar">
@@ -211,15 +211,15 @@ set_mapping_method -phase
 
 **插入位置**：`read_design` / `set_root_module` 之后、`set_system_mode lec` 之前（本项目放 `rtl_gate.do` 的 `set_mapping_method -nobbox_name_match` 一带）。
 
-### ① `set_mapping_method -phase`
+### 7.1 ① `set_mapping_method -phase`
 
 配点时额外考虑"revised 是 golden 的反相版本"：数据脚反相、set/reset 互换、输出可取 QB。反相一致则标记**相位反相等价**，并把这层反相传播进后续锥比较。默认关闭的原因：配点搜索空间近似翻倍、拖 runtime——只在大批"指纹症状"（Data/Set/Reset 三锥同翻）时全局开。
 
-### ② `add mapping model DFFRB* -invert -revised`
+### 7.2 ② `add mapping model DFFRB* -invert -revised`
 
 登记"revised 侧已知会以反相形态使用的单元族"（`DFFRB*` = 复位 DFF 家族），让 phase map 只对这些单元生效——全局 `-phase` 的精准版，runtime 友好。`-invert` 声明按反相匹配，`-revised` 指明反相发生在 revised 侧。
 
-### ③ `prove <golden_ID> <revised_ID> -invert`
+### 7.3 ③ `prove <golden_ID> <revised_ID> -invert`
 
 单点证明"这两点是否互为反相"。用法次序：**先定性**——`-invert` PASS = 纯反相，配点/建模问题，开 phase map 清全场；**再定量**——重跑 compare 看 NON-EQ 归零。若 `-invert` 也 FAIL = 反相之外还有真分歧，继续挖（回第三刀的方法查语义）。
 
@@ -474,7 +474,7 @@ document.addEventListener('mouseup', () => { isDragging = false; lbImg.classList
 document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && lightbox.classList.contains('active')) closeLightbox(); });
 </script>
 
-  <script src="./fx.js?v=6"></script>
+  <script src="./fx.js?v=8"></script>
 </body>
 </html>
-<!-- ymzhu 2026-10-27 14:04 -->
+<!-- ymzhu 2026-11-02 18:41 -->

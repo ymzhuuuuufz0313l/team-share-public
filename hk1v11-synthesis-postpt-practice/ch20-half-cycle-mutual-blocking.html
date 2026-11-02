@@ -13,7 +13,7 @@
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./css/style.css">
   <script src="./js/marked.min.js"></script>
-  <link rel="stylesheet" href="./fx.css?v=3">
+  <link rel="stylesheet" href="./fx.css?v=5">
 </head>
 <body>
   <nav class="navbar">
@@ -100,7 +100,7 @@ always @(posedge DCLK_INV)
 
 > **一句话总结**：DCLK_INV 域同时被入口 setup 和出口 setup 挤压，任何 skew >0.25ns 都是拆东墙补西墙。治本方案是 RTL 加一级 posedge 打拍。
 
-### 互卡 A：入域 setup ↔ 入域 hold
+### 3.1 互卡 A：入域 setup ↔ 入域 hold
 
 > **一句话**：skew 帮 setup 修违例，但同时消耗 hold 余量——hold 余量是未知盲区。
 
@@ -171,7 +171,7 @@ Endpoint:    u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/STB_P_neg_re
 
 ---
 
-### 互卡 B：出域 setup ↔ 出域 hold
+### 3.2 互卡 B：出域 setup ↔ 出域 hold
 
 > **一句话**：同一个 skew 帮 hold（-0.690 改善）就伤 setup（+0.259 恶化）。
 
@@ -221,7 +221,7 @@ Endpoint:    u_LOGIC_CENTER/CENTER1/DTCTL/LENB1_DLY_reg_0_
 
 ---
 
-### 互卡 C：入域 setup ↔ 出域 setup（最强互卡）
+### 3.3 互卡 C：入域 setup ↔ 出域 setup（最强互卡）
 
 > **一句话**：两边都是 setup 且 skew 需求相反——但入口和出口在不同时钟网，可分别控制。
 
@@ -269,7 +269,7 @@ Endpoint:    u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/HSR_W_cnt_re
 
 ---
 
-### 互卡 D：ECO 缩短 vs hold
+### 3.4 互卡 D：ECO 缩短 vs hold
 
 > **一句话**：修 setup 缩短路径→太短可能触发 hold。但此路径差距大（0.90ns），安全。
 
@@ -284,7 +284,7 @@ Endpoint:    u_LOGIC_CENTER/LINK_LOGIC/LINK_PANEL_CTRL/CHPI_SD_CTRL/HSR_W_cnt_re
 
 ---
 
-### 互卡 E：ECO 加长 vs setup
+### 3.5 互卡 E：ECO 加长 vs setup
 
 > **一句话**：修 hold 加长路径→太长可能触发 setup。但域内全周期余量大（3.6ns），安全。
 
@@ -488,7 +488,7 @@ always @(posedge DCLK_INV)
 
   </script>
   <script src="./js/site.js?v=2"></script>
-  <script src="./fx.js?v=6"></script>
+  <script src="./fx.js?v=8"></script>
 </body>
 </html>
-<!-- ymzhu 2026-10-27 14:06 -->
+<!-- ymzhu 2026-11-02 19:20 -->

@@ -9,10 +9,9 @@ MOTION_KIT.md §6.3 规格（1400x1210 双列 8B/10B vs 420B 对比图）：
 - draw：两列 spine 箭头逐段（左 0.82+0.12e、右 0.97+0.12e；
   delay = max(两端盒 row delay)+0.55）。源图无横向对比箭头 → §6.3 的
   "横向对比箭头"不适用（caveat）。
-- 稳态族（3 族；2026-10-28 晚动效加密：行波提速 + 列车加包；2026-10-29 列车
-  二次降速 0.7→2.4s）：
-  * 列车 train（双列赛跑）：左列 spine 5 边每边 3 包+flowtail（整周期均布），
-    stroke 蓝 #1d4ed8；右列同参数整体 phase +1.2s（半周期），stroke 琥珀 #b45309。
+- 稳态族（3 族；2026-11-02 改版：删除 16px 短箭头上的流点列车，改盒子接力点亮）：
+  * 接力点亮 step：两列方框按流向逐个点亮（左 1.6+k s，右 +0.5s，stepLit 6s 周期）。
+  * （已删除）列车 train：原左列蓝 / 右列琥珀双列赛跑，spine 每段仅 16px，挤成闪烁。
   * 行波 cellwave：两列全部 5+5 个 chip 单元格（源图无更多 bit 格，"扩到全部
     bit 格"已满足）自上而下 0.07s/格（加密 0.1→0.07，落在 0.06~0.08 档），
     右列整体 +1.3s（半周期）。
@@ -199,11 +198,18 @@ def build():
     for e, k in enumerate(range(83, 88)):
         out.append(tag_draw(L[k], RIGHT_DRAW[e]))
 
-    # ---- 数据列车：双列赛跑（左蓝 #1d4ed8 / 右琥珀 #b45309，右列整体 +0.35s）----
-    for e, (y0, y1) in enumerate(SPINE_Y):
-        out.extend(train_edge(360, y0, y1, "#1d4ed8", -FLOW_EDGE_STEP * e, LEFT_DRAW[e]))
-    for e, (y0, y1) in enumerate(SPINE_Y):
-        out.extend(train_edge(1040, y0, y1, "#b45309", RIGHT_PHASE - FLOW_EDGE_STEP * e, RIGHT_DRAW[e]))
+    # ---- 2026-11-02：spine 箭头只有 16px，流点列车挤在上面只剩闪烁（用户定性"很丑"）→ 删除列车；
+    #      改为「盒子接力点亮」：每列方框按流向逐个点亮（kit .step / stepLit 6s，亮 ~1s），
+    #      左列第 k 阶段 delay = 1.6 + k，右列整体 +0.5s（保留"双列对照"语义）。
+    #      规则：短箭头（可见长度 < 80px）不挂 flowdot/flowtail/march/dashgrow（PAGE_FX §3 / blueprint v4）。
+    STEP_STAGE = {14: 0, 17: 1, 29: 2, 33: 3, 36: 4, 40: 5,                  # 左列 6 阶段
+                  45: 0, 48: 1, 60: 2, 64: 2, 68: 3, 71: 4, 75: 5}           # 右列（ref model 与 transaction 同阶段）
+    for li, stage in STEP_STAGE.items():
+        assert L[li].startswith("<rect x="), f"接力点亮锚点应为方框 rect @line{li+1}"
+        delay = 1.6 + stage + (0.5 if li >= 45 else 0.0)
+        hits = [j for j, o in enumerate(out) if o == L[li]]
+        assert len(hits) == 1, f"方框 rect 在输出中应恰好出现 1 次 @line{li+1}: {len(hits)}"
+        out[hits[0]] = f'<g class="step" style="animation-delay:{fmt(delay)}s">{L[li]}</g>'
 
     # ---- 底部对比区：表头组 1.4；13 数据行 1.45 起步进 0.04 ----
     row_group(1.40, 88, 96)
@@ -218,4 +224,4 @@ def build():
 if __name__ == "__main__":
     build()
 
-# ymzhu 2026-10-29 10:18
+# ymzhu 2026-11-02 19:00

@@ -1,6 +1,6 @@
 # ROLLOUT_FX 规范 — 把「动效/静态」引擎推广到 team-share 全部站点（2026-10-27）
 
-> 参考实现（已完成）：`hk1v11-longcode-420b-verification/`（fx.js / fx.css / PAGE_FX.md；引擎已在 commit 6fc9b1e 多站点兼容化）。
+> 参考实现（已完成）：`hk1v11-longcode-420b-verification/`（fx.js / fx.css；引擎已在 commit 6fc9b1e 多站点兼容化）。引擎规范 = 仓库根级 `PAGE_FX.md`（2026-11-02 由 420b 目录迁至根级并升级 v2；v2 预览期仅 420b 一站，验收后按其 §7 推广）。
 > 本任务：其余 7 个站点接入同一引擎。**引擎是通用的，页面只需 2 个 tag**——按钮自动注入、特效自动标记，全部由 fx.js 运行时完成。
 
 ## 0. 引擎能力（已内置，不需要站点侧任何 markup）
@@ -64,4 +64,4 @@
 - 仓库根：`E:\project\team-share-public`；各站目录见 §2
 - 截图必须绝对路径；`--user-data-dir=$(mktemp -d)`；轮询 ≤60s
 
-<!-- ymzhu 2026-10-27 13:55 -->
+<!-- ymzhu 2026-11-02 16:06 -->

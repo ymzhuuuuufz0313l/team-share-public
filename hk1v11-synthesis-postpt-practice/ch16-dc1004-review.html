@@ -13,7 +13,7 @@
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./css/style.css">
   <script src="./js/marked.min.js"></script>
-  <link rel="stylesheet" href="./fx.css?v=3">
+  <link rel="stylesheet" href="./fx.css?v=5">
 </head>
 <body>
   <nav class="navbar">
@@ -117,7 +117,7 @@
 | 面积 / 顺序单元 | 294,907 / 2668 | 314,707（+6.7%）/ 3001（+333，dc.log 口径；网表 FF 口径 2526→2839 +313） |
 | run 代际 | 2026-09-22，ymzhu HDL 树（80 文件） | 2026-10-02 23:17，jjlu HDL 树（81 文件），约束=0930 终版（`ymzhu 2026-09-30 17:25` 签名） |
 
-## 1b. 三代演进图表（终版，2026-10-04 收录）
+## 2. 1b. 三代演进图表（终版，2026-10-04 收录）
 
 [![DC 三代演进面积表：结构列含 FF/comb/ports 与各代定位](./images/anim/dc_area_evolution_table.svg?v=20261101)](./images/anim/dc_area_evolution_table.svg?v=20261101)
 
@@ -127,7 +127,7 @@
 
 *图注（总览表）：三代演进总览——每代一行：时间 / 面积 / 时序（worst slack、违例数）/ 主要变化。*
 
-## 2. 六判据表（三路共识）
+## 3. 2. 六判据表（三路共识）
 
 | # | 判据 | 共论 | 证据要点 |
 |---|---|---|---|
@@ -136,9 +136,9 @@
 | 3 | cpuwr 67 全消 + DPLC 2 | ✅ 组覆盖 65 全 0（40_F 23 / 47_F 13 / 33_F 12 / 56_F 11 / 57_F 6）；DPLC_MODE 原 2 条（−0.38/−0.37→C2282/C2276）在 1003 **已消失**；后继组 DPLC_CLK_LONG 现 worst **+1.01**（en_1st/2nd→ICG）；"+4.12" 系 default 组另一条（R_REG06_F_reg_7_→DPLC_Group，基线 +4.40）——非同路径映射；bit 精确窄 mc（`-from R_REG06_F_reg_2_` / `-to DPLC_CLK_*`）在位 | 三路一致 |
 | 4 | SEL-004 无新增 | ✅ DC 侧 0 条实际告警（1003 仅注释文本 1 次；基线亦 0；历史 23 条属 PT read_cons.log 口径）；**PT 终判已关闭**——包内实有 10 份 read_cons.log：9 corner 各 23 条 SEL-004 = 历史口径无新增家族；wc_cbest_125 = 55（多出 32 条全部为 UTC_FRM_CNT /D1/D2 已知遗留） | 三路一致 |
 | 5 | 总量 / worst / v4.2 新锥 | ✅ 452→11；新 group_path 共 3 条 -weight 3（**RX2DCLK_PIX(+0.01) / PIX2SD_GATE(+1.01) / RX_CLK_DATA**）生效（QoR 出现新组实证）；v4.2 新锥（DATA_ALIGN_PRE_D 352 处 / I_INDATA_D3 120 处）进报告且扛住 | 三路一致 |
-| 6 | 全量扫描 | ⚠️ 有发现（见 §5） | — |
+| 6 | 全量扫描 | ⚠️ 有发现（见 §7） | — |
 
-## 3. 残留 11 条定性（全部 −0.01 量级）
+## 4. 3. 残留 11 条定性（全部 −0.01 量级）
 
 | # | 路径 | 起点 → 终点 | 条数 | Worst Slack | 判读 |
 |---|---|---|---|---|---|
@@ -150,11 +150,11 @@
 
 另：all_violators 中 **14 条端点真值 slack ∈ (−0.005, 0)** 被 2 位小数舍入为 `0.00 (VIOLATED: increase significant digits)`——"绝对零 margin"端点，与贴线组合并为下轮收敛目标。
 
-## 3b. 优化措施效果对照（452 条逐家族归因，实测闭合）
+## 5. 3b. 优化措施效果对照（452 条逐家族归因，实测闭合）
 
-> 对账基线：0922 `_max.rpt` VIOLATED 全量 **452** 条 → 1003 同报告 **11** 条（§3 残留）。逐起点族 × Path Group 归类后逐项对账，**452 = 56 + 204 + 23 + 2 + 26 + 24 + 117，闭合无缺口**（Python 单遍流式全量解析，非抽样）。
+> 对账基线：0922 `_max.rpt` VIOLATED 全量 **452** 条 → 1003 同报告 **11** 条（§4 残留）。逐起点族 × Path Group 归类后逐项对账，**452 = 56 + 204 + 23 + 2 + 26 + 24 + 117，闭合无缺口**（Python 单遍流式全量解析，非抽样）。
 
-### 3b.1 总加法表（452 条的归宿）
+### 5.1 3b.1 总加法表（452 条的归宿）
 
 | 措施 | 归属违例族 | 条数 | 1003 实测归宿 |
 |------|-----------|-----:|---------------|
@@ -170,23 +170,23 @@
 
 > 注：优化清单曾把 R_REG47_F 13 同时计入"宽 mc"与"窄 mc"两项（Σ=465 ≠ 452，多出的 13 即重复项）；UTC 29 经定位为 33/56/57_F 子集视图，本表按 65 一次计。
 
-### 3b.2 group_path 三组实测（-weight 3）
+### 5.2 3b.2 group_path 三组实测（-weight 3）
 
 | 组 | 0922 等价集合 worst | 1003 worst | n | 判读 |
 |---|---|---|---:|---|
-| RX_CLK_DATA（RX→RX） | −1.14（n=1343 子集） | **−0.01**（残留 ICG，§3） | 1512 | 承载全部残留 |
+| RX_CLK_DATA（RX→RX） | −1.14（n=1343 子集） | **−0.01**（残留 ICG，§4） | 1512 | 承载全部残留 |
 | RX2DCLK_PIX | −0.43 | **+0.01** | 62 | 转正 |
 | PIX2SD_GATE | −0.36 | **+1.01** | 30 | 转正 |
 
 三组全部转正；但 group_path 贡献与打拍（v4.2 改变 DECODE/DESCRAMBLE 锥）**不可剥离**，无法从 rpt 单独归因。另：false_path 第 5 条 MONBLOCK pin 引用 **35 → 116**（体长 2594→8951 字符），其余 4 条逐字节相同。
 
-### 3b.3 hold 侧记（30 → 21）
+### 5.3 3b.3 hold 侧记（30 → 21）
 
 直接 grep 两 run QoR `No. of Hold Violations` 全部行：0922 = 2+20+4+4 = **30**，1003 = 20+1 = **21**。消除明细：RX_CLK 20 条**随 group_path 改名迁移至 RX_CLK_DATA 组（未消失，仍 20）**；真消除 10 条 = DPLC_CLK 2 + SD_CLK_INV 系 4+4（受益于打拍锥变短 + BOE 迁移余量）；新增 I2C hold 1 → 净 21。（口径以直接 grep 两 run QoR 行为准。）
 
 > 完整对账报告与可复现脚本（parse_max.py / analyze1~5.py / mc_sig2.py 等）见 `script/dc_1004_review/OPT_EFFECTIVENESS_1004.md`。
 
-## 4. BKDU 口径（判据 2 需 ymzhu 裁决的实质）
+## 6. 4. BKDU 口径（判据 2 需 ymzhu 裁决的实质）
 
 1. **排除侧完好（回归检查点通过）**：1003 SDC 中 `R_REG03_L` 仅 3 对同步器窄 mc（G3→BKDU_SYNC/CSYNC/R_PWR*_COP、LD_F_SYNC、POL1-4_SYNC），**无任何 `-to RX_CLK/PIX_DATA/DCLK_DATA` 的 BKDU mc**；抽样路径块 launch 0.00→capture 3.05 单周期、`slack (MET) +1.18`，确证单拍受检。
 2. **字面检查点失效（非回归）**：原 24 条（R_REG03_L_reg_2_→LONG_ENCODING_OUTPUT/PIX_DATA_reg_0..23）现 **+1.18 全 MET**（DCLK_DATA_MUX_LONG 组）——时钟域重构 + v4.2 综合结果使路径自然收敛，"仍违例可见"不再成立；此前"组内 worst +0.02、另有 +1.18"的**归属写反**——**+0.02 是 RX_CLK 组时钟域重构后新生贴线路径**（R_REG03_L_reg_2_→PIX_DATA_ASYNC_reg_*，扩展集 worst ×11），非原 24 条。
@@ -194,9 +194,9 @@
 
 **建议口径**：判据 2 改记为"排除侧 PASS + 24 条单拍受检全 MET（+1.18）+ RTL 两级同步器保留待办（RX_CLK 组新生 +0.02 贴线）"。
 
-> 精化口径详见 [ch17 §B#5](./ch17-rtl-1006-sync.html)（原 24 条 +1.18 / 新生 +0.02×11 双集合）。
+> 精化口径详见 [ch17 §2#5](./ch17-rtl-1006-sync.html)（原 24 条 +1.18 / 新生 +0.02×11 双集合）。
 
-## 5. 全量扫描新发现
+## 7. 5. 全量扫描新发现
 
 1. **BOE_AUTO_EQ_BCC_CTRL 整模块时钟域迁移 RX_CLK→OSC_CLK**（OSC_CLK 域 FF 68→323，dc.log 口径；boe_bcc 26 条违例 → **+9.93 / +12.37** 大裕量，已验证）——非本会话 RTL 变更，**待 designer 确认意图**。
 2. **1003 编译树 = jjlu HDL 树**（81 文件 vs 基线 ymzhu 树 80），约束读取走 jjlu ip_cons 路径，但内容带 **`ymzhu 2026-09-30 17:25` 0930 终版签名**（G6 group_path RX2DCLK_PIX 在 QoR 生效实证）——结果无代际错误，权威源流程需明确。
@@ -206,13 +206,13 @@
 6. v4.2 新增 FF 区域：BUFFER_I **INDATA_SYNC_D3**（新三级同步器组）、ANCTL 新计数器 IDLE_CNT / PWRC_TIME_CNT / TRIGGER_CNT（+71）、DTCTL en_1st/2nd_even/odd、LONG/SHORT_ENCODING 大规模时钟域重排。
 7. 规模：FF 2526→2839（+313，网表口径）、端口 6105→6772（+667，意图待确认）。
 
-## 6. 待 ymzhu 裁决
+## 8. 6. 待 ymzhu 裁决
 
 1. BOE 时钟域迁移（RX_CLK→OSC_CLK）意图确认。
-2. BKDU 判据口径改为"排除侧 PASS + RTL 两级同步器保留待办"（§4）。
+2. BKDU 判据口径改为"排除侧 PASS + RTL 两级同步器保留待办"（§6）。
 3. 仓库策略：本轮只提交分析产物（0922 存档一份、1004 一份，互不覆盖）；服务器新 RTL（LENB_CTRL.v / DTCTL.v / LC_REG_MAPPING.v）**不同步**，缺口登记遗留待决策。
 
-## 7. 方法论沉淀
+## 9. 7. 方法论沉淀
 
 - **四模型交叉分工**：3×GLM 独立全量分析（同一任务书：6 判据 + 全量扫描）→ 队长逐判据比对 → 分歧仲裁 → 共识呈 ymzhu 确认后收尾分发。
 - **可复用的分析套路**（承接 [ch11](./ch11-violation-atlas.html) 心法）：① 两 run max.rpt 全量路径块逐块解析（Startpoint/Endpoint/Path Group/slack 四元组 + 起点族分类），不抽样；② SDC unwrap 续行后逐条 setdiff，mc 对数变化必须落到"哪 3 对、为什么"；③ dc.log 嵌入的 ip_cons tcl 全文 echo 是**约束代际签名的最可靠证据**（路径会骗人、签名不会）；④ DFF 域计数 diff（per-clock）是发现"整模块时钟域迁移"这类结构性变化的最快手段。
@@ -220,7 +220,7 @@
 
 ---
 
-## 8. 复核修订注
+## 10. 8. 复核修订注
 
 本页数字经多模型独立复核 + 仲裁后按最终裁定书写（明细归档：`script/dc_1004_review/REVIEW_ARBITRATION.md` / `REVIEW_K3_1004.md`）。
 
@@ -228,9 +228,10 @@
 
 *本文档由 agent-teams 团队 g13-dc1004-review 四模型交叉分析共识整理而成（2026-10-04），全部数字为两 run 报告全量解析实测值；上承 [ch11 违例归因实战](./ch11-violation-atlas.html) 与 [ch14 违例分组处置](./ch14-violation-disposition.html)，G13 全档见 ch15《记忆唤醒》。*
   </script>
+  <script src="./js/lightbox.js"></script>
   <script src="./js/site.js?v=2"></script>
-  <script src="./fx.js?v=6"></script>
+  <script src="./fx.js?v=8"></script>
 </body>
 </html>
-<!-- ymzhu 2026-10-27 14:06 -->
+<!-- ymzhu 2026-11-02 19:20 -->
 

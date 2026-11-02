@@ -400,7 +400,7 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
 }
 </style>
   <script src="./search.js" defer></script>
-  <link rel="stylesheet" href="./fx.css?v=3">
+  <link rel="stylesheet" href="./fx.css?v=5">
 </head>
 <body>
   <nav class="navbar">
@@ -903,7 +903,7 @@ NOTE: 上图与上面的分类是**历史版本 dco 状态**（多条 `set_false
 - 起点能整组通配就通配（`R_*`、`DATA*`），终点是寄存器时逐列 L0/L1 两侧，避免误伤同组真实路径；
 - 每条 false path 都对应一次「报告定位 + 波形确认」，追加在文件末尾，不删旧条目。
 
-#### 当前生效的 false path（08/18 收敛后）
+#### 8.2.1 当前生效的 false path（08/18 收敛后）
 
 dco 里历史追加的条目很多，但**当前语法生效的仅 1 条**：
 
@@ -914,7 +914,7 @@ dco 里历史追加的条目很多，但**当前语法生效的仅 1 条**：
 - 范围克制：`-through` + `-to` 双向限定只放这 4 条，其余路径照查；
 - 寄存器说明：`R_REG_0`（地址 0x00）bit[7] = SHL——选择 B 组 DBLON 门控信号取自 lane0 还是 lane1（`DBLON_B = SHL ? DBLON_L1 : DBLON_L0`，DTCTL_COMB.v:153）；bit[6:4] = CHSEL。
 
-#### live PT 验证工作流（约束生效确认）
+#### 8.2.2 live PT 验证工作流（约束生效确认）
 
 约束写好后、正式重跑之前，先在 live PT 里快速验证——**session 不退出，随改随报**：
 
@@ -1550,8 +1550,8 @@ const observer = new IntersectionObserver((entries) => {
 }, { rootMargin: '-80px 0px -60% 0px', threshold: 0 });
 headings.forEach(h => observer.observe(h));
 </script>
-  <script src="./fx.js?v=6"></script>
+  <script src="./fx.js?v=8"></script>
 </body>
 </html>
 
-<!-- ymzhu 2026-10-27 14:01 -->
+<!-- ymzhu 2026-11-02 19:09 -->

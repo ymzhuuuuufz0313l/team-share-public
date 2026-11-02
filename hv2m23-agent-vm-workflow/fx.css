@@ -1,8 +1,15 @@
-/* fx.css — PAGE FX v1（2026-10-27 ymzhu）
-   站点页面级特效样式：滚动进度条 / 滚动显现 / 蓝图底纹 / 导航阴影 / 返回顶部 /
-   hero 网格漂移与光晕 / 标题字级升起 / 表格行级联 / 章节标题画线 / hover 抬升
-   纪律：所有"隐藏基态"只在 html.fx-on 下生效（无 JS → 无 fx-on → 页面完整可见）；
-   静态模式由文件末尾 kill 块双通道（page-static 类 + prefers-reduced-motion）全量关闭。 */
+/* fx.css — PAGE FX v2（2026-11-02 ymzhu）
+   站点页面级特效样式：滚动进度条 / 滚动显现 / 蓝图底纹+噪点 / 导航阴影 / 返回顶部 /
+   hero 网格漂移与光晕 / 标题扫光（fx-shine）/ 标题字级升起（与扫光互斥）/ 表格行级联 /
+   章节标题画线 / hover 抬升 / chip 微弹（fx-pop）/ 缓动令牌
+   v2 新增（2026-11-02，参考 dshtui.com 技法）：①hero 标题扫光（background-clip:text，
+     双层背景=扫光带+纯色基底，只动 background-position——铁律5 唯一白名单例外，
+     见根级 PAGE_FX.md §铁律）②body 噪点纹理（feTurbulence data-uri，浅色黑粒 4% /
+     暗色白粒 3.5%）③--fx-ease-out / --fx-ease-spring 缓动令牌（spring 带 cubic-bezier
+     兜底）④chip 微弹入场。扫光禁用红棕色系亮带（2026-11-02 ymzhu 定稿）。
+   纪律：所有"隐藏基态/视觉改写"只在 html.fx-on 下生效（无 JS → 无 fx-on → 页面原样）；
+   静态模式 = 移除 html.fx-on（基态全灭，v4 起不再依赖 kill 块）；
+   扫光整体包在 @supports(background-clip:text) 内：老浏览器自动退回纯色标题。 */
 
 /* ===== 1. 滚动进度条（fx.js 创建；transform 驱动，无布局位移） ===== */
 #fx-progress {
@@ -29,12 +36,23 @@ html.fx-on .fx-r.fx-in {
   transform: none;
 }
 
-/* ===== 3. 正文蓝图底纹（静态纹理，不动画；叠加在原背景色之上） ===== */
+/* ===== 3. 正文蓝图底纹 + 噪点纹理（静态纹理，不动画；叠加在原背景色之上） =====
+   v2：第三层 = feTurbulence 分形噪点（180px 平铺，4% 黑粒）——消除大面积纯色的
+   "塑料感"，给蓝图纸面加纸张颗粒；暗色模式换白粒 3.5%（黑粒在深底上不可见）。 */
 html.fx-on body {
   background-image:
     linear-gradient(rgba(28, 37, 52, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(28, 37, 52, 0.03) 1px, transparent 1px);
-  background-size: 32px 32px;
+    linear-gradient(90deg, rgba(28, 37, 52, 0.03) 1px, transparent 1px),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.04 0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 32px 32px, 32px 32px, 180px 180px;
+}
+@media (prefers-color-scheme: dark) {
+  html.fx-on body {
+    background-image:
+      linear-gradient(rgba(28, 37, 52, 0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(28, 37, 52, 0.03) 1px, transparent 1px),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 1 0 0 0 0 1 0 0 0 0 1 0 0 0 0.035 0'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
 }
 
 /* ===== 4. 导航滚动阴影（scroll > 10px 切换） ===== */
@@ -208,3 +226,99 @@ button#motionToggle.float-motion:hover { background: #fff; }
   button#motionToggle.navbar-abs { right: 8px; }
   button#motionToggle.float-motion { top: 10px; right: 10px; padding: 3px 8px; font-size: 11px; }
 }
+
+/* ===== 15. 缓动令牌（v2；值取自 dshtui.com 实测） =====
+   --fx-ease-out：通用"快出慢收"；--fx-ease-spring：轻微过冲回弹。
+   linear() 需 Chrome 113+/Safari 17.2+，先给 cubic-bezier 过冲近似兜底，@supports 再升级。 */
+:root {
+  --fx-ease-out: cubic-bezier(.16, 1, .3, 1);
+  --fx-ease-spring: cubic-bezier(.34, 1.56, .64, 1);
+}
+@supports (transition-timing-function: linear(0, 1)) {
+  :root { --fx-ease-spring: linear(0, .324 8.1%, .794 19.9%, 1.028 30.1%, 1.008 43.1%, 1); }
+}
+
+/* ===== 16. hero 标题扫光（v2；fx.js 给 .hero h1 挂 fx-shine，与 fx-w 拆字互斥） =====
+   技法：双层背景 = 上层扫光带（两端透明）+ 下层纯色基底，整体 background-clip:text；
+   只动上层 background-position，基底层恒定 → 任何时刻文字都完整着色，扫光带只在字形内可见。
+   配色（2026-11-02 定稿，禁红棕系亮带）：主文案 奶白基底 #f7f3e8 + 白峰；
+   .thin 琥珀基底 #f0a137 + 白峰（饱和底色上白峰对比最强，即 dshtui 同款质感）。
+   基底色走 --fx-shine-base / --fx-shine-thin-base，页面可覆盖。
+   几何：h1 是块元素（宽≈容器 1122px，字只占 ~400px），亮带按元素宽度百分比计 → 必须
+   width:fit-content 收窄到文字宽，否则亮带比整行字还宽、变成整体发亮。hero 左对齐，收窄后
+   文字位置不变（零位移）；居中 hero 的站点推广时需补 margin-inline:auto（见 PAGE_FX §7）。
+   行程（图宽 220%）：120% = 亮带恰在画外左侧，-20% = 恰在画外右侧（左→右扫）；
+   亮带可见窗口 ≈ 扫程的 91%，linear 匀速滑过（dshtui 同为 linear）。
+   节奏（两拍，相位锁定）：同周期 5s——主标题 1.2s 起、扫程 1.5s（可见 ≈1.52–2.88s）；
+   .thin 2.6s 起、扫程 0.85s（≈主标题像素速度，可见 ≈2.89–3.66s）；随后静息 ≈2.9s。
+   两条可见窗口按构造不重叠 → 任何时刻字上最多一条光带，与布局无关。
+   （.thin 自带不透明基底层，主标题光带经过"验证体系"时被盖住，不会叠出第二条。） */
+@supports ((-webkit-background-clip: text) or (background-clip: text)) {
+  html.fx-on h1.fx-shine {
+    width: fit-content;
+    max-width: 100%;
+  }
+  html.fx-on h1.fx-shine,
+  html.fx-on h1.fx-shine .thin {
+    background-image:
+      linear-gradient(105deg,
+        transparent 0%, transparent 38%,
+        rgba(255, 255, 255, .5) 46%,
+        #ffffff 50%,
+        rgba(255, 255, 255, .5) 54%,
+        transparent 62%, transparent 100%),
+      linear-gradient(180deg, var(--fx-shine-base, #f7f3e8), var(--fx-shine-base, #f7f3e8));
+    background-size: 220% 100%, 100% 100%;
+    background-repeat: no-repeat;
+    background-position: 120% 0, 0 0;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: fxShine 5s linear 1.2s infinite;
+  }
+  html.fx-on h1.fx-shine .thin {
+    background-image:
+      linear-gradient(105deg,
+        transparent 0%, transparent 38%,
+        rgba(255, 255, 255, .55) 46%,
+        #ffffff 50%,
+        rgba(255, 255, 255, .55) 54%,
+        transparent 62%, transparent 100%),
+      linear-gradient(180deg, var(--fx-shine-thin-base, #f0a137), var(--fx-shine-thin-base, #f0a137));
+    animation: fxShineThin 5s linear 2.6s infinite;
+  }
+  /* v2 通用化：.thin 标题色取不到/透明 → fx.js 加 fx-shine-flat，该 span 不参与光带（保持页面原样） */
+  html.fx-on h1.fx-shine .thin.fx-shine-flat {
+    background: none;
+    -webkit-background-clip: border-box;
+    background-clip: border-box;
+    color: inherit;
+    animation: none;
+  }
+}
+@keyframes fxShine {
+  0%, 5% { background-position: 120% 0, 0 0; }
+  35%, 100% { background-position: -20% 0, 0 0; }
+}
+@keyframes fxShineThin {
+  0%, 5% { background-position: 120% 0, 0 0; }
+  22%, 100% { background-position: -20% 0, 0 0; }
+}
+
+/* ===== 17. chip 微弹（v2；fx.js 给 hero meta chips 与 .stat 卡片挂 fx-pop，复用 fx-r/fx-in 机制） =====
+   入场 = 上浮 + 0.94→1 缩放，spring 缓动轻微过冲；animation 只用 backwards 填充：
+   播完即回落到 .fx-r.fx-in 的自然态（opacity 1 / transform none），不锁 transform → hover 抬升照常。
+   .stat 同时有 hover 抬升合并规则（§13，特异性 0,3,0），此处用 .fx-pop.stat 0,4,0 覆盖。 */
+html.fx-on .fx-r.fx-pop,
+html.fx-on .fx-r.fx-pop.stat {
+  transition: opacity .55s ease, transform .3s cubic-bezier(.22, .7, .3, 1), box-shadow .25s ease;
+}
+html.fx-on .fx-r.fx-pop.fx-in {
+  animation: fxPopIn .6s var(--fx-ease-spring) backwards;
+}
+@keyframes fxPopIn {
+  from { opacity: 0; transform: translateY(12px) scale(.94); }
+  to { opacity: 1; transform: none; }
+}
+
+/* ymzhu 2026-11-02 16:14 */

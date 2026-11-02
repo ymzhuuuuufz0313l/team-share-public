@@ -32,18 +32,19 @@
 </style>
 <rect width="1240" height="848" fill="#ffffff"/>
 <defs>
-<linearGradient id="sweepG-1" gradientUnits="userSpaceOnUse" x1="208" y1="0" x2="1024" y2="0">
-<stop offset="0" stop-color="#b45309" stop-opacity="0"/>
-<stop offset="0.46" stop-color="#b45309" stop-opacity="0"/>
-<stop offset="0.5" stop-color="#b45309" stop-opacity="0.3"/>
-<stop offset="0.54" stop-color="#b45309" stop-opacity="0"/>
-<stop offset="1" stop-color="#b45309" stop-opacity="0"/>
+<linearGradient id="sweepG-1" gradientUnits="userSpaceOnUse" x1="-888" y1="0" x2="592" y2="0">
+<stop offset="0" stop-color="#ffffff" stop-opacity="0"/>
+<stop offset="0.40" stop-color="#ffffff" stop-opacity="0"/>
+<stop offset="0.46" stop-color="#ffffff" stop-opacity=".3"/>
+<stop offset="0.5" stop-color="#ffffff" stop-opacity=".65"/>
+<stop offset="0.54" stop-color="#ffffff" stop-opacity=".3"/>
+<stop offset="0.60" stop-color="#ffffff" stop-opacity="0"/>
+<stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
 </linearGradient>
-<clipPath id="sweepC-1"><rect x="648" y="166" width="576" height="590"/></clipPath>
+<clipPath id="sweepC-1"><use href="#shT0"/><use href="#shT1"/></clipPath>
 </defs>
-<g clip-path="url(#sweepC-1)"><rect class="sweepband" x="208" y="166" width="816" height="590" fill="url(#sweepG-1)" style="--sweepP:816px"/></g>
 <g class="head" style="animation-delay:0s">
-<text x="620" y="36" text-anchor="middle" font-size="22" font-weight="800" fill="#1e293b">LC_CPUWR 0721v1 配置拍重组对照（流内字节顺序不变，仅分组 2B/拍 → 3B/拍）</text>
+<text id="shT0" x="620" y="36" text-anchor="middle" font-size="22" font-weight="800" fill="#1e293b">LC_CPUWR 0721v1 配置拍重组对照（流内字节顺序不变，仅分组 2B/拍 → 3B/拍）</text>
 <text x="620" y="60" text-anchor="middle" font-size="13" fill="#64748b">FCONFIG 60B：30 拍 → 20 拍（END 5'd30 → 5'd20） ｜ LCONFIG 6B：3 拍 → 2 拍（END 3'd4 → 3'd3） ｜ 寄存器地址映射与 XOR 总量均不变</text>
 </g>
 <g class="head" style="animation-delay:0.15s">
@@ -188,7 +189,7 @@
 <g class="row" style="animation-delay:1.75s">
 <g class="pulse-t" style="animation-delay:-2.1s">
 <rect x="48" y="768" width="560" height="66" rx="10" fill="#ecfdf5" stroke="#16a34a" stroke-width="1.5"/>
-<text x="64" y="790" font-size="13" font-weight="700" fill="#166534">XOR 总量不变（结合律）</text>
+<text id="shT1" x="64" y="790" font-size="13" font-weight="700" fill="#166534">XOR 总量不变（结合律）</text>
 <text x="64" y="808" font-size="12" fill="#166534">0x00^01^02^03^04^05^06^08^09^0A^1D^1E^1F，frame_end=0x27</text>
 <text x="64" y="826" font-size="12" fill="#166534">分组变化不改值 → checker / DV 期望与回归行为不变</text>
 </g>
@@ -201,4 +202,5 @@
 <text x="656" y="826" font-size="12" fill="#c2410c">全芯片 FCONFIG 流仿真待上游升版后联调（END：5'd20 / 3'd3）</text>
 </g>
 </g>
+<g class="fade" style="animation-delay:1.75s"><g clip-path="url(#sweepC-1)"><rect class="sweepband" x="-888" y="0" width="1480" height="848" fill="url(#sweepG-1)" style="--sweepP:1480px"/></g></g>
 </svg>

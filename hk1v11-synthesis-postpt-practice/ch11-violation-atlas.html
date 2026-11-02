@@ -13,7 +13,7 @@
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./css/style.css">
   <script src="./js/marked.min.js"></script>
-  <link rel="stylesheet" href="./fx.css?v=3">
+  <link rel="stylesheet" href="./fx.css?v=5">
 </head>
 <body>
   <nav class="navbar">
@@ -762,7 +762,7 @@ R_REG06_F_reg_2_/Q
 | **5** | DTCTL SD/DPLC 门控 hold（-4.19 结构性） | 10 | 时钟生成结构问题，考虑 gating cell 换 ICG 或在门控前对 n751/n759 加同步；APR 后用真实时钟树复核 | 高（RTL 改动） |
 | **6** | INDATA_SYNC hold 20 条 | 20 | 核对 `set_input_delay -min -0.3` 与板上 RX_CLK skew 预算，必要时调 min 值或加 pad delay | 低（约束调整） |
 
-### 处置建议补充说明
+### 9.1 处置建议补充说明
 
 **优先级 1（DPLC_MODE）的 Tcl 修复**：
 
@@ -876,37 +876,6 @@ WCLK1 139 条但 worst -0.11（DC 优化裕量大概率够）；CHPI_SD_CTRL 12 
 
 ---
 
-## 附录 A：本次分析涉及的文件与报告
-
-| 文件 | 用途 |
-|------|------|
-| `HK1V11_digital_top_max.rpt` | DC setup 违例报告（约 228116 行） |
-| `HK1V11_digital_top.rpt` | DC hold 违例报告（min_delay 段） |
-| `HK1V11_digital_top.sum.rpt` | QoR 汇总表 |
-| `dc.log`（`rep_dir_0922_1456/`） | DC 执行日志（约束标记串验证） |
-| `read_cons.log` | PT 读取 SDC 日志（代际验证） |
-| `ip_cons/`（git `79ef0030` → `61eb5605`） | 约束文件 diff |
-| `.gv` netlist | hold 违例 endpoint 反查 |
-
-## 附录 B：关键 commit 与目录
-
-```text
-79ef0030  收窄前（旧版约束）
-61eb5605  收窄后（0922 新版约束）
-rep_dir_0922_1456/  新 DC 跑输出目录
-```
-
-## 附录 C：三分类判定速查表
-
-| 你要问的问题 | 看什么 | 判定 |
-|-------------|--------|------|
-| 这条路径旧版有没有被豁免？ | 旧约束中该 startpoint 是否在 mc/max_delay 的 from/to 集合内 | 有 → 继续问下一行；无 → genuine 或 never_constrained |
-| 新版有没有排除？ | 新约束中该 startpoint 是否被 remove_from_collection / 约束被注释 | 有 → narrowing_exposed；无 → 回到上一行 |
-| 旧版 pattern 实际匹配到这个对象吗？ | `get_cells -hier -filter {name =~ <pattern>}` 实际计数 | 匹配 → genuine；不匹配 → never_constrained |
-| hold 违例跟收窄有关吗？ | multicycle 主要影响 setup，hold 通常不受影响 | 通常无关，单独确认 |
-
----
-
 ## 12. 时钟豁免体系的列表配对方法论（1008 hold 假违例沉淀）
 
 > 1008 hold 曾因一对时钟对漏配豁免产生 845 条假违例（补一行 `ip_cons L301` 即消）；本节沉淀**为什么这类缺口会漏、如何系统性不再漏**（§12.4 审计清单）。
@@ -963,9 +932,41 @@ HK1V11 的时钟豁免不是一条条 `set_clock_groups` 裸写的，而是三�
 ---
 
 *数据源：0922 约束收窄分析 + 1008 hold 修复实际 run；方法论部分可迁移至同类排障与时钟豁免列表维护场景。*
+
+---
+
+## 13. 附录 A：本次分析涉及的文件与报告
+
+| 文件 | 用途 |
+|------|------|
+| `HK1V11_digital_top_max.rpt` | DC setup 违例报告（约 228116 行） |
+| `HK1V11_digital_top.rpt` | DC hold 违例报告（min_delay 段） |
+| `HK1V11_digital_top.sum.rpt` | QoR 汇总表 |
+| `dc.log`（`rep_dir_0922_1456/`） | DC 执行日志（约束标记串验证） |
+| `read_cons.log` | PT 读取 SDC 日志（代际验证） |
+| `ip_cons/`（git `79ef0030` → `61eb5605`） | 约束文件 diff |
+| `.gv` netlist | hold 违例 endpoint 反查 |
+
+## 14. 附录 B：关键 commit 与目录
+
+```text
+79ef0030  收窄前（旧版约束）
+61eb5605  收窄后（0922 新版约束）
+rep_dir_0922_1456/  新 DC 跑输出目录
+```
+
+## 15. 附录 C：三分类判定速查表
+
+| 你要问的问题 | 看什么 | 判定 |
+|-------------|--------|------|
+| 这条路径旧版有没有被豁免？ | 旧约束中该 startpoint 是否在 mc/max_delay 的 from/to 集合内 | 有 → 继续问下一行；无 → genuine 或 never_constrained |
+| 新版有没有排除？ | 新约束中该 startpoint 是否被 remove_from_collection / 约束被注释 | 有 → narrowing_exposed；无 → 回到上一行 |
+| 旧版 pattern 实际匹配到这个对象吗？ | `get_cells -hier -filter {name =~ <pattern>}` 实际计数 | 匹配 → genuine；不匹配 → never_constrained |
+| hold 违例跟收窄有关吗？ | multicycle 主要影响 setup，hold 通常不受影响 | 通常无关，单独确认 |
+
   </script>
   <script src="./js/site.js?v=2"></script>
-  <script src="./fx.js?v=6"></script>
+  <script src="./fx.js?v=8"></script>
 </body>
 </html>
-<!-- ymzhu 2026-10-27 14:06 -->
+<!-- ymzhu 2026-11-02 19:20 -->

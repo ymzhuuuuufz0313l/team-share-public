@@ -63,28 +63,40 @@ KIT_CSS = "\n".join([
     "@media (prefers-reduced-motion:reduce){*{animation:none!important}.row,.head,.fade{opacity:1!important}.flowdot,.flowtail,.sweepband{display:none!important}}",
 ])
 
-SWEEP = dict(x0=0, y=396, w=3928, h=93, n=1)
+# SWEEP = 文字光带（MOTION_KIT v4.3 §4，2026-11-02 由琥珀扫光带改）：目标 = 三代
+# "主要变化" 结论列（x=3904 anchor=end，y256/350/442）；标题为白字（光带不可见）不选；
+# 原 r3 数据行琥珀色带已废（v4.2 数据密度规则：光带不落数值区）；入场随 r3 行 0.85s。
+SWEEP = dict(x0=0, y=200, w=3928, h=280, n=1, delay=0.85, ntext=3)
+SHINE_ANCHORS = (
+    '<text x="3904" y="256"',   # 约束收窄前：部分路径未被真实检查……
+    '<text x="3904" y="350"',   # 完成约束收窄：暴露真实信息……
+    '<text x="3904" y="442"',   # 关键路径优化 + 约束审核后重新添加……
+)
 
 
 def sweep_defs(s):
+    """§4 配方：白色渐变（亮峰 .65）+ clipPath 引用目标文字 <use>；X0=区域左−0.60P。"""
     p = s["w"] + 240
-    return (
-        f'<linearGradient id="sweepG-{s["n"]}" gradientUnits="userSpaceOnUse" x1="{s["x0"]}" y1="0" x2="{s["x0"] + p}" y2="0">'
-        '<stop offset="0" stop-color="#b45309" stop-opacity="0"/>'
-        '<stop offset="0.46" stop-color="#b45309" stop-opacity="0"/>'
-        '<stop offset="0.5" stop-color="#b45309" stop-opacity="0.3"/>'
-        '<stop offset="0.54" stop-color="#b45309" stop-opacity="0"/>'
-        '<stop offset="1" stop-color="#b45309" stop-opacity="0"/>'
-        '</linearGradient>\n'
-        f'<clipPath id="sweepC-{s["n"]}"><rect x="{s["x0"]}" y="{s["y"]}" width="{s["w"]}" height="{s["h"]}"/></clipPath>'
-    )
+    x0 = s["x0"] - 0.60 * p
+    stops = ('<stop offset="0" stop-color="#ffffff" stop-opacity="0"/>'
+             '<stop offset="0.40" stop-color="#ffffff" stop-opacity="0"/>'
+             '<stop offset="0.46" stop-color="#ffffff" stop-opacity=".3"/>'
+             '<stop offset="0.5" stop-color="#ffffff" stop-opacity=".65"/>'
+             '<stop offset="0.54" stop-color="#ffffff" stop-opacity=".3"/>'
+             '<stop offset="0.60" stop-color="#ffffff" stop-opacity="0"/>'
+             '<stop offset="1" stop-color="#ffffff" stop-opacity="0"/>')
+    uses = "".join(f'<use href="#shT{k}"/>' for k in range(s["ntext"]))
+    return (f'<linearGradient id="sweepG-{s["n"]}" gradientUnits="userSpaceOnUse" x1="{x0:g}" y1="0" x2="{x0 + p:g}" y2="0">'
+            f'{stops}</linearGradient>\n<clipPath id="sweepC-{s["n"]}">{uses}</clipPath>')
 
 
 def sweep_group(s):
     p = s["w"] + 240
-    return (f'<g clip-path="url(#sweepC-{s["n"]})">'
-            f'<rect class="sweepband" x="{s["x0"]}" y="{s["y"]}" width="{p}" height="{s["h"]}" '
-            f'fill="url(#sweepG-{s["n"]})" style="--sweepP:{p}px"/></g>')
+    x0 = s["x0"] - 0.60 * p
+    return (f'<g class="fade" style="animation-delay:{s["delay"]}s">'
+            f'<g clip-path="url(#sweepC-{s["n"]})">'
+            f'<rect class="sweepband" x="{x0:g}" y="{s["y"]}" width="{p:g}" height="{s["h"]}" '
+            f'fill="url(#sweepG-{s["n"]})" style="--sweepP:{p:g}px"/></g></g>')
 
 
 def build():
@@ -134,6 +146,13 @@ def build():
     pl3_g = find(lambda s: '<g class="pl3">' in s)
     assert r_g[2][0] < pl2_g < r_g[2][1], "pl2 应在 r2 内"
     assert r_g[3][0] < pl3_g < r_g[3][1], "pl3 应在 r3 内"
+
+    # 文字光带：三代"主要变化"结论行加 id（只加属性，文字内容零改动）
+    for k, anchor in enumerate(SHINE_ANCHORS):
+        hits = [i for i in range(0, end) if anchor in lines[i]]
+        assert len(hits) == 1, f"shine anchor 应恰 1 处: {anchor} -> {hits}"
+        i = hits[0]
+        lines[i] = lines[i].replace("<text ", f'<text id="shT{k}" ', 1)
 
     # ---- 组装 ----
     o = []
@@ -187,9 +206,7 @@ def build():
                 o.append(s)
                 o.append("</g>")
             else:
-                o.append(s)
-                if 'class="br"' in s:
-                    o.append(sweep_group(SWEEP))             # 当代行扫光带
+                o.append(s)                                   # 行底色/br 原样（琥珀带已废）
             if is_cell:
                 cells += 1
         assert cells == 5, f"r{n} 单元格应 5，实得 {cells}"
@@ -199,11 +216,18 @@ def build():
     o.append('<g class="fade" style="animation-delay:0.05s">')
     o.extend(lines[grid_g:grid_g_close + 1])
     o.append("</g>")
-    o.extend(lines[grid_g_close + 1:])
+    tail = lines[grid_g_close + 1:]
+    iend = len(tail) - 1 - next(i for i, l in enumerate(reversed(tail)) if l.strip() == "</svg>")
+    o.extend(tail[:iend])
+    o.append(sweep_group(SWEEP))                              # 文字光带：全部内容之上
+    o.extend(tail[iend:])
 
     text = eol.join(o)
     if tail_nl:
         text += eol
+    # 输出尾签名：去掉继承自静态源的旧签名，盖本生成器时间戳（幂等）
+    text = re.sub(r"<!-- ymzhu \d{4}-\d{2}-\d{2} \d{2}:\d{2} -->\s*$", "", text)
+    text = text.rstrip(eol) + eol + "<!-- ymzhu 2026-11-02 19:15 -->" + eol
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(text, encoding="utf-8", newline="")
 
@@ -281,4 +305,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-# ymzhu 2026-10-28 21:14
+# ymzhu 2026-11-02 19:20

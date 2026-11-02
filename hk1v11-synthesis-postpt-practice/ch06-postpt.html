@@ -13,7 +13,7 @@
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./css/style.css">
   <script src="./js/marked.min.js"></script>
-  <link rel="stylesheet" href="./fx.css?v=3">
+  <link rel="stylesheet" href="./fx.css?v=5">
 </head>
 <body>
   <nav class="navbar">
@@ -192,7 +192,7 @@ dplc skew 行全空的根因：**SDC 引用了 0917V1 RTL 的 cell 名，但当�
 
 `report_timing_skew_sd.tcl`：时钟组 `-max_path 2000 -nworst 1000 -slack_lesser_than 50`（端口已有 max_delay 14，slack ≈ 8.7 < 50 全打印）；每组第一条 `>` 新建、其余 `>>` 追加。`-slack_lesser_than` 阈值按分析目的定，不是抄参数（指南站 §4.5 的迭代纪律全文适用）。
 
-## 5.5 1029V0 实测现状（2026-10-30 最新基线）
+### 5.5 5.5 1029V0 实测现状（2026-10-30 最新基线）
 
 > skew 探针 P1 修复（dplc clk_b 补 CLKMUX2X2/ 叶层，见 <a href="./ch21-skew-probe-audit.html">ch21 审计</a>后首个 run，10 corner 全量。全套 signoff 表图（2M23 体系+违例红显）在 <a href="./ch09-to-signoff.html">ch09 §6</a>。
 
@@ -289,7 +289,7 @@ Balance 的实质：**离源近的树枝多绕几级缓冲、离源远的少绕�
 
 **"传快分慢"**：多速率共存的正确时钟架构 = 树直接跑最快速率、慢域本地 ÷N 分频——全设计共享一棵按最快速率 balance 的树，各域边沿天然对齐、零 CDC 器件需求；不要用本地倍频器（其抖动 STA 建不了模）。
 
-## 交叉引用
+## 10. 交叉引用
 
 - 指南站同章：<a href="../synthesis-integration-flow-guide/pt-intro.html" target="_blank">SYN_FLOW_GUIDE · POSTPT</a>（uncertainty 纪律 / notimingcheck / SDF 全流程 / coverage 判读 / live PT 工作流）
 - 本章排障案例：<a href="./ch10-warstories.html">十、排障实录</a> 案例 1 / 2 / 3 / 5 / 8 / 9 / 13 / 14
@@ -297,7 +297,7 @@ Balance 的实质：**离源近的树枝多绕几级缓冲、离源远的少绕�
 </script>
   <script src="./js/mermaid.min.js"></script>
   <script src="./js/site.js?v=2"></script>
-  <script src="./fx.js?v=6"></script>
+  <script src="./fx.js?v=8"></script>
 </body>
 </html>
-<!-- ymzhu 2026-10-30 19:40 -->
+<!-- ymzhu 2026-11-02 19:20 -->

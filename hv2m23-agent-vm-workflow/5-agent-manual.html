@@ -12,7 +12,7 @@
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./assets/style.css">
   <script src="./js/marked.min.js"></script>
-  <link rel="stylesheet" href="./fx.css?v=3">
+  <link rel="stylesheet" href="./fx.css?v=5">
 </head>
 <body>
   <nav class="navbar">
@@ -61,7 +61,7 @@ Agent 在宿主机（Windows）上，虚拟机是它的"手"。**10-20 起标准
 
 ## 2. 常用命令块（原文可直接复用）
 
-### 启动一次仿真
+### 2.1 启动一次仿真
 
 ```bash
 ssh root@192.168.206.128 "su - ICer -c '
@@ -75,13 +75,13 @@ ssh root@192.168.206.128 "su - ICer -c '
        SEED=1 DEFINE_TOP=TOP >> run.log 2>&1'"
 ```
 
-### 截取虚拟机屏幕（Tools 运行时）
+### 2.2 截取虚拟机屏幕（Tools 运行时）
 
 ```bash
 vmrun -T ws -gu root -gp 2022 captureScreen IC_EDA.vmx screen.png
 ```
 
-### 读状态（不进图形，判断启动/冻结）
+### 2.3 读状态（不进图形，判断启动/冻结）
 
 ```bash
 vmrun -T ws list                                  # 电源状态
@@ -89,7 +89,7 @@ ssh root@vm "uptime; free -m | head -2"           # 负载与内存
 vmrun -T ws checkToolsState IC_EDA.vmx            # Tools 状态
 ```
 
-### 大文件传输（宿主 → 虚拟机）
+### 2.4 大文件传输（宿主 → 虚拟机）
 
 ```bash
 # 11.7k 个小文件：先合成单流，走 HGFS 零网络栈
@@ -240,7 +240,7 @@ document.addEventListener('mouseup', () => { isDragging = false; lbImg.classList
 document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && lightbox.classList.contains('active')) closeLightbox(); });
 </script>
 
-  <script src="./fx.js?v=6"></script>
+  <script src="./fx.js?v=8"></script>
 </body>
 </html>
-<!-- ymzhu 2026-10-27 14:00 -->
+<!-- ymzhu 2026-11-02 18:41 -->

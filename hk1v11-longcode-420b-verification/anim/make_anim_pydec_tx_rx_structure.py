@@ -62,20 +62,30 @@ KIT_CSS = """<style>
 @media (prefers-reduced-motion:reduce){*{animation:none!important}.row,.head,.fade{opacity:1!important}.flowdot,.flowtail,.sweepband{display:none!important}}
 </style>"""
 
-# ---- 扫光带几何（§4 配方）：离线比对 band rect x=40 y=480 w=1120 h=130 ----
+# ---- 文字光带几何（2026-11-02 由琥珀扫光带改为光带，与首页标题扫光同技法）----
+# 区域 = 离线比对 band rect x=40 y=480 w=1120 h=130；光带只在区域内文字字形中可见
+# （clipPath 用 <use> 引用原文字 → 文字零复制、text 多重集不变），叠在内容之上；
+# 白色亮峰 .65（禁红棕/琥珀亮带；峰值过高会把浅底上的深色字"洗白"不可读）；
+# 运动沿用 kit .sweepband / sweepMove 8s（kit CSS 不改）。
+# 验证注意：无头截图对合成层 transform 动画取帧不可靠，须用 document.getAnimations() 定格到指定时刻截图。
 SW_L, SW_Y, SW_W, SW_H = 40, 480, 1120, 130
 SW_P = SW_W + 240                                   # P = 区域宽 + 240 = 1360
-SW_X0 = SW_L - 0.54 * SW_P                          # -694.4：t=0 光带右缘恰在区域左缘
+SW_X0 = SW_L - 0.60 * SW_P                          # t=0 光带右缘(0.60P)恰在区域左缘
+SHINE_TEXT_IDX = (59, 61, 62, 64, 65, 66, 68, 69, 80, 82)   # 离线比对区内全部 <text>（0 基行号）
 SW_DEFS = f"""    <linearGradient id="sweepG-1" gradientUnits="userSpaceOnUse" x1="{SW_X0:g}" y1="0" x2="{SW_X0 + SW_P:g}" y2="0">
-      <stop offset="0" stop-color="rgba(180,83,9,0)"/>
-      <stop offset="0.46" stop-color="rgba(180,83,9,0)"/>
-      <stop offset="0.5" stop-color="rgba(180,83,9,.3)"/>
-      <stop offset="0.54" stop-color="rgba(180,83,9,0)"/>
-      <stop offset="1" stop-color="rgba(180,83,9,0)"/>
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0"/>
+      <stop offset="0.40" stop-color="#ffffff" stop-opacity="0"/>
+      <stop offset="0.46" stop-color="#ffffff" stop-opacity=".3"/>
+      <stop offset="0.5" stop-color="#ffffff" stop-opacity=".65"/>
+      <stop offset="0.54" stop-color="#ffffff" stop-opacity=".3"/>
+      <stop offset="0.60" stop-color="#ffffff" stop-opacity="0"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
     </linearGradient>
-    <clipPath id="sweepC-1"><rect x="{SW_L}" y="{SW_Y}" width="{SW_W}" height="{SW_H}"/></clipPath>"""
-SW_BAND = (f'<g clip-path="url(#sweepC-1)"><rect class="sweepband" x="{SW_X0:g}" y="{SW_Y}" '
-           f'width="{SW_P:g}" height="{SW_H}" fill="url(#sweepG-1)" style="--sweepP:{SW_P:g}px"/></g>')
+    <clipPath id="sweepC-1">""" + "".join(
+    f'<use href="#shT{k}"/>' for k in range(len(SHINE_TEXT_IDX))) + "</clipPath>"
+SW_BAND = (f'<g class="fade" style="animation-delay:1.4s"><g clip-path="url(#sweepC-1)">'
+           f'<rect class="sweepband" x="{SW_X0:g}" y="{SW_Y}" width="{SW_P:g}" height="{SW_H}" '
+           f'fill="url(#sweepG-1)" style="--sweepP:{SW_P:g}px"/></g></g>')
 
 
 def fmt(v):
@@ -149,7 +159,7 @@ def build():
     i_tap_rect = idx("<rect x=\"784\" y=\"134\"")
     i_tap_text = next(i for i, l in enumerate(lines) if ">TAP<" in l)
     assert i_tap_rect + 1 == i_tap_text and i_rx < i_tap_rect < i_rtl
-    i_vd_rect = idx("<rect x=\"470\" y=\"520\"")
+    i_vd_rect = idx("<rect x=\"441\" y=\"520\"")
     i_vd_text = next(i for i in range(i_off, len(lines)) if "long_pydec_report_lane0.md" in lines[i])
     assert i_vd_rect + 1 == i_vd_text and i_off < i_vd_rect < i_leg
     i_dout = next(i for i in range(i_rx, len(lines)) if "descramble_7b → dout_24b" in lines[i])
@@ -173,13 +183,22 @@ def build():
         # 离线 band 连接（band=.85 → 1.4）
         (77, '<path d="M 214 424', "grow", 1.40),       # 紫 dump → 离线 rawbyte（虚线生长）
         (78, '<path d="M 1003 364', "march", 1.40),     # 绿 lane0 ↓ 虚线
-        (79, '<line x1="364" y1="552"', "grow", 1.40),  # 紫 rawbyte→report 期望值（虚线生长）
-        (80, '<text x="417" y="544"', "fade", 1.40),    # 期望值 标签
-        (81, '<line x1="846" y1="552"', "draw", 1.40),  # lane0→report 实际值（实线）
-        (82, '<text x="838" y="544"', "fade", 1.40),    # 实际值 标签
+        (79, '<line x1="344" y1="552"', "grow", 1.40),  # 紫 rawbyte→report 期望值（虚线生长）
+        (80, '<text x="392.5" y="544"', "fade", 1.40),  # 期望值 标签
+        (81, '<line x1="878" y1="552"', "draw", 1.40),  # lane0→report 实际值（实线）
+        (82, '<text x="829.5" y="544"', "fade", 1.40),  # 实际值 标签
     ]
     for i, pref, _t, _d in EDGES:
         assert lines[i].lstrip().startswith(pref), f"edge anchor mismatch @line {i+1}: {lines[i]}"
+
+    # ---- 光带：给离线比对区全部文字加 id（只加属性，文字内容零改动）----
+    for k, i in enumerate(SHINE_TEXT_IDX):
+        assert lines[i].lstrip().startswith("<text") and SW_Y <= float(
+            re.search(r' y="([\d.]+)"', lines[i]).group(1)) <= SW_Y + SW_H, f"光带文字锚点 @line {i+1}"
+        lines[i] = re.sub(r'^(\s*<text\b[^>]*?)>', rf'\1 id="shT{k}">', lines[i], count=1)
+    in_region = [i for i, l in enumerate(lines) if l.lstrip().startswith("<text")
+                 and SW_Y <= float(re.search(r' y="([\d.]+)"', l).group(1)) <= SW_Y + SW_H]
+    assert in_region == list(SHINE_TEXT_IDX), f"离线比对区文字与 SHINE_TEXT_IDX 不符: {in_region}"
 
     # ---- 列车边几何 ----
     green_edges = [line_to_d(lines[i]) for i in (74, 75, 76)]   # tap→脚本链 3 边
@@ -235,9 +254,8 @@ def build():
               add_attrs(lines[i_rtl], 'class="dashgrow" style="animation-duration:3s;'
                                        'animation-delay:-1s"'),
               "</g>"]})
-    group((i_off, EDGES[0][0]), "row", 0.85,                        # 离线 band（面板底色之上、
-          nested=[(i_vd_rect, i_vd_rect + 4, "pulse-t", -0.7)],     # 内容之下插扫光带）
-          insert_after=(i_off, SW_BAND.split("\n")))
+    group((i_off, EDGES[0][0]), "row", 0.85,                        # 离线 band
+          nested=[(i_vd_rect, i_vd_rect + 4, "pulse-t", -0.7)])
 
     # 箭头/连接器区（保持原文档顺序）
     for i, _pref, kind, delay in EDGES:
@@ -262,6 +280,9 @@ def build():
             out.append(ln)
             out.append("</g>")
 
+    # 文字光带：叠在全部内容之上（只在离线比对区文字字形内可见），band 入场后显现
+    out.append(SW_BAND)
+
     # 数据列车：绿脚本链 3 边（2 包+拖尾 2.4s，-0.34s/边 ≈ 周期 1/7，随降速等比）；
     # 蓝 K 码 2 边（2 包，无拖尾）（2026-10-29 二次降速 0.7→2.4）
     for k, d in enumerate(green_edges):
@@ -279,4 +300,4 @@ def build():
 if __name__ == "__main__":
     build()
 
-# ymzhu 2026-10-29 10:18
+# ymzhu 2026-11-02 18:40

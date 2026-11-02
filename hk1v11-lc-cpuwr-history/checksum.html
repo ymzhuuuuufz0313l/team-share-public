@@ -109,6 +109,17 @@
     .toc a.toc-h1 { font-weight: 700; color: var(--accent); margin-bottom: 8px; cursor: default; }
     .toc a.toc-h2 { position: relative; padding-left: 24px; } /* all h2 reserve the arrow slot so entries align */
     .toc a.toc-h3 { padding-left: 38px; font-size: 13px; }
+    .toc a.toc-parent { position: relative; }
+    .toc .toc-arrow {
+      position: absolute; left: 6px; top: 50%;
+      transform: translateY(-50%) rotate(90deg);
+      font-size: 11px; color: var(--muted);
+      cursor: pointer; user-select: none; padding: 2px 4px;
+      transition: transform .15s, color .15s;
+    }
+    .toc a.collapsed .toc-arrow { transform: translateY(-50%) rotate(0deg); }
+    .toc .toc-arrow:hover { color: var(--accent); }
+    .toc-h3-group.collapsed { display: none; } /* 折叠整组 h3 缩进项（箭头在父 a.toc-parent 内） */
     h2, h3 { scroll-margin-top: 72px; }
     .content { flex: 1; min-width: 0; }
     .article {
@@ -222,7 +233,7 @@
     }
     .lightbox .close:hover { background: rgba(255,255,255,0.15); color: #fff; }
   </style>
-  <link rel="stylesheet" href="./fx.css?v=3">
+  <link rel="stylesheet" href="./fx.css?v=5">
 </head>
 <body>
   <nav class="navbar">
@@ -535,25 +546,63 @@ const article = document.getElementById('article');
       a.className = 'toc-h1';
       toc.appendChild(a);
     }
-    const headings = article.querySelectorAll('h2, h3');
+    /* TOC 折叠（对齐 site-template/js/site.js）：带 h3 子标题的 h2 挂 ▸ 箭头，点箭头只折叠/展开不跳转；
+       h3 成组缩进跟随；折叠时高亮落回父级 h2；默认全展开。标题 id 保持 toc-N 以不改既有锚点。 */
+    const headings = Array.from(article.querySelectorAll('h2, h3'));
+    headings.forEach((h, i) => { h.id = 'toc-' + i; });
+    const tocLinks = [];
+    const h3ToH2 = {};   /* h3 id -> 父 h2 id（折叠组激活时高亮回父级） */
     headings.forEach((h, i) => {
-      const id = 'toc-' + i;
-      h.id = id;
+      if (h.tagName !== 'H2') return;
+      const children = [];
+      let j = i + 1;
+      while (j < headings.length && headings[j].tagName === 'H3') { children.push(headings[j]); j++; }
       const a = document.createElement('a');
-      a.href = '#' + id;
+      a.href = '#' + h.id;
       a.textContent = h.textContent;
-      a.className = h.tagName.toLowerCase() === 'h3' ? 'toc-h3' : 'toc-h2';
+      a.className = 'toc-h2' + (children.length > 0 ? ' toc-parent' : '');
       toc.appendChild(a);
+      tocLinks.push(a);
+      if (children.length === 0) return;
+      const group = document.createElement('div');
+      group.className = 'toc-h3-group';
+      group.setAttribute('data-parent', h.id);
+      children.forEach(c => {
+        h3ToH2[c.id] = h.id;
+        const link = document.createElement('a');
+        link.href = '#' + c.id;
+        link.textContent = c.textContent;
+        link.className = 'toc-h3';
+        group.appendChild(link);
+        tocLinks.push(link);
+      });
+      toc.appendChild(group);
+      const arrow = document.createElement('span');
+      arrow.className = 'toc-arrow';
+      arrow.textContent = '▸';
+      a.insertBefore(arrow, a.firstChild);
+      arrow.addEventListener('click', (e) => {
+        e.preventDefault(); /* 箭头 = 折叠/展开，不跳转 */
+        const nowCollapsed = a.classList.toggle('collapsed');
+        group.classList.toggle('collapsed', nowCollapsed);
+        if (nowCollapsed) { /* 折叠时高亮移回父 h2 */
+          const activeInGroup = group.querySelector('a.active');
+          if (activeInGroup) { activeInGroup.classList.remove('active'); a.classList.add('active'); }
+        }
+      });
     });
-    const tocLinks = Array.from(toc.querySelectorAll('a'));
     function updateTocActive() {
       let current = '';
       headings.forEach(h => { if (h.getBoundingClientRect().top < 100) current = h.id; });
       tocLinks.forEach(a => a.classList.remove('active'));
-      if (current) {
-        const active = tocLinks.find(a => a.getAttribute('href') === '#' + current);
-        if (active) active.classList.add('active');
+      if (!current) return;
+      const parentId = h3ToH2[current];
+      if (parentId) { /* 所在 h3 组已折叠 → 高亮落父级 h2 */
+        const group = toc.querySelector('.toc-h3-group[data-parent="' + parentId + '"]');
+        if (group && group.classList.contains('collapsed')) current = parentId;
       }
+      const active = tocLinks.find(a => a.getAttribute('href') === '#' + current);
+      if (active) active.classList.add('active');
     }
     window.addEventListener('scroll', updateTocActive);
     updateTocActive();
@@ -593,8 +642,8 @@ const article = document.getElementById('article');
     window.addEventListener('mouseup', () => { isDragging = false; lightboxImg.classList.remove('grabbing'); });
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeLightbox(); });
   </script>
-  <script src="./fx.js?v=6"></script>
+  <script src="./fx.js?v=8"></script>
 </body>
 </html>
 
-<!-- ymzhu 2026-10-28 13:36 -->
+<!-- ymzhu 2026-11-02 18:50 -->

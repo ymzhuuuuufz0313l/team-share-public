@@ -436,7 +436,23 @@
       color: var(--accent);
       font-weight: 600;
     }
-    .toc a.toc-h3 { padding-left: 20px; font-size: 13px; }
+    .toc a.toc-h2 { position: relative; padding-left: 24px; } /* 所有 h2 预留箭头槽位 */
+    .toc a.toc-h3 { padding-left: 38px; font-size: 13px; }
+    .toc .toc-arrow {
+      position: absolute;
+      left: 6px;
+      top: 50%;
+      transform: translateY(-50%) rotate(90deg);
+      font-size: 11px;
+      color: var(--muted);
+      cursor: pointer;
+      user-select: none;
+      padding: 2px 4px;
+      transition: transform .15s, color .15s;
+    }
+    .toc a.collapsed .toc-arrow { transform: translateY(-50%) rotate(0deg); }
+    .toc .toc-arrow:hover { color: var(--accent); }
+    .toc-h3-group.collapsed { display: none; }
     h2, h3 { scroll-margin-top: 72px; }
     .content { flex: 1; min-width: 0; }
     @media (max-width: 1024px) {
@@ -454,7 +470,7 @@
   .badge-tx      { background: var(--info-bg); color: var(--info); border: 1px solid var(--info); }
   .badge-dv      { background: var(--purp-bg); color: var(--purp); border: 1px solid var(--purp); }
 </style>
-  <link rel="stylesheet" href="./fx.css?v=3">
+  <link rel="stylesheet" href="./fx.css?v=5">
 </head>
 <body>
 
@@ -472,7 +488,6 @@
       <a href="./encoding.html">编码</a>
       <a class="active" href="./issues.html">问题</a>
       <a href="./debug-log.html">排障</a>
-      <a href="./next.html">后续</a>
     </div>
   </div>
 </nav>
@@ -586,25 +601,63 @@ const lightbox = document.getElementById('lightbox');
       toc.appendChild(a);
     }
 
-    // In-page headings
+    // In-page headings: h2 entry + its h3 group (arrow fold, default expanded)
     const headings = article.querySelectorAll('h2, h3');
+    headings.forEach((h, i) => { h.id = 'toc-' + i; });
+    const h3ToH2 = {};
     headings.forEach((h, i) => {
-      const id = 'toc-' + i;
-      h.id = id;
+      if (h.tagName !== 'H2') return;
+      const children = [];
+      let j = i + 1;
+      while (j < headings.length && headings[j].tagName === 'H3') { children.push(headings[j]); j++; }
       const a = document.createElement('a');
-      a.href = '#' + id;
+      a.href = '#' + h.id;
       a.textContent = h.textContent;
-      a.className = h.tagName.toLowerCase() === 'h3' ? 'toc-h3' : 'toc-h2';
+      a.className = 'toc-h2' + (children.length > 0 ? ' toc-parent' : '');
       toc.appendChild(a);
+      if (children.length === 0) return;
+      const group = document.createElement('div');
+      group.className = 'toc-h3-group';
+      group.setAttribute('data-parent', h.id);
+      children.forEach(c => {
+        h3ToH2[c.id] = h.id;
+        const link = document.createElement('a');
+        link.href = '#' + c.id;
+        link.textContent = c.textContent;
+        link.className = 'toc-h3';
+        group.appendChild(link);
+      });
+      toc.appendChild(group);
+      const arrow = document.createElement('span');
+      arrow.className = 'toc-arrow';
+      arrow.textContent = '▸';
+      a.insertBefore(arrow, a.firstChild);
+      arrow.addEventListener('click', (e) => {
+        e.preventDefault(); // arrow = fold/unfold only, no jump
+        const collapsed = a.classList.toggle('collapsed');
+        group.classList.toggle('collapsed', collapsed);
+        if (collapsed) { // folded group: highlight falls back to parent h2
+          const activeInGroup = group.querySelector('a.active');
+          if (activeInGroup) {
+            activeInGroup.classList.remove('active');
+            a.classList.add('active');
+          }
+        }
+      });
     });
 
-    // Scroll spy
+    // Scroll spy (heading inside a folded group lights the parent h2)
     const tocLinks = Array.from(toc.querySelectorAll('a'));
     function updateTocActive() {
       let current = '';
       headings.forEach(h => {
         if (h.getBoundingClientRect().top < 100) current = h.id;
       });
+      const parentId = h3ToH2[current];
+      if (parentId) {
+        const group = toc.querySelector('.toc-h3-group[data-parent="' + parentId + '"]');
+        if (group && group.classList.contains('collapsed')) current = parentId;
+      }
       tocLinks.forEach(a => a.classList.remove('active'));
       if (current) {
         const active = tocLinks.find(a => a.getAttribute('href') === '#' + current);
@@ -614,7 +667,7 @@ const lightbox = document.getElementById('lightbox');
     window.addEventListener('scroll', updateTocActive);
     updateTocActive();
   </script>
-  <script src="./fx.js?v=6"></script>
+  <script src="./fx.js?v=8"></script>
 </body>
 </html>
-<!-- ymzhu 2026-10-27 15:42 -->
+<!-- ymzhu 2026-11-02 18:50 -->

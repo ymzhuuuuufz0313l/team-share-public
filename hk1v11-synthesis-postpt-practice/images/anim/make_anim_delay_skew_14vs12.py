@@ -21,8 +21,10 @@ delay_skew_14vs12（1440×950，三面板 STA skew 讲解图，静态版=images/
     仅改 duration，delay 相位不动；dashgrow 3s 已 ≥2.4s 不动）
   · 脉冲 ×3（错相位）：① slack 绿线组 .pulse-t(-0.7s)；② 12/14 阈值线对 .pulse-b(-2.1s)；
     ③ "STATUS: NOT YET CONFIRMED OK" .pulse(-1.4s)
-  · 扫光 sweepband ×1（§4 配方，琥珀）：② 场景表三行区（x60..680 / y660..788，P=860）
-    ——逐场景扫描语义；置于面板底色之上、行文字之下
+  · 扫光 sweepband ×1（v4.3 文字光带，§4 配方）：② 结论两行（y820/840"结论：当前设计
+    …12 与 14 全 MET / 12 报警提前 2 ns"）白色光带 8s——clipPath <use> 引用原文字
+    （零复制）、白亮峰 .65、叠在全部内容之上、随结论组 .fade 1.55s 入场；
+    原② 场景表区琥珀色带已废（v4.2 数据密度规则：光带不落数值表格区）
   · 生长 dashgrow ×6（v4.1 二轮加密）：6 条 12/14 阈值虚线（①②③ 各一对）并入
     .dashgrow——duration 3.0s、文档序相位 0/-0.4/-0.8/-1.2/-1.6/-2.0s 递进，
     虚线沿轴生长回卷表达"阈值推进"；列车维持不动
@@ -83,28 +85,34 @@ KIT_CSS = "\n".join([
     "@media (prefers-reduced-motion:reduce){*{animation:none!important}.row,.head,.fade{opacity:1!important}.flowdot,.flowtail,.sweepband{display:none!important}}",
 ])
 
-SWEEP = dict(x0=60, y=660, w=620, h=128, n=1)
+# SWEEP = 文字光带（MOTION_KIT v4.3 §4，2026-11-02 由琥珀扫光带改）：目标 = ② 结论两行
+# （y820 / y840）；区域 x[60,680] y[800,870]，入场随结论组 .fade 1.55s。
+SWEEP = dict(x0=60, y=800, w=620, h=70, n=1, delay=1.55, ntext=2)
 
 
 def sweep_defs(s):
+    """§4 配方：白色渐变（亮峰 .65）+ clipPath 引用目标文字 <use>；X0=区域左−0.60P。"""
     p = s["w"] + 240
-    return (
-        f'<linearGradient id="sweepG-{s["n"]}" gradientUnits="userSpaceOnUse" x1="{s["x0"]}" y1="0" x2="{s["x0"] + p}" y2="0">'
-        '<stop offset="0" stop-color="#b45309" stop-opacity="0"/>'
-        '<stop offset="0.46" stop-color="#b45309" stop-opacity="0"/>'
-        '<stop offset="0.5" stop-color="#b45309" stop-opacity="0.3"/>'
-        '<stop offset="0.54" stop-color="#b45309" stop-opacity="0"/>'
-        '<stop offset="1" stop-color="#b45309" stop-opacity="0"/>'
-        '</linearGradient>\n'
-        f'<clipPath id="sweepC-{s["n"]}"><rect x="{s["x0"]}" y="{s["y"]}" width="{s["w"]}" height="{s["h"]}"/></clipPath>'
-    )
+    x0 = s["x0"] - 0.60 * p
+    stops = ('<stop offset="0" stop-color="#ffffff" stop-opacity="0"/>'
+             '<stop offset="0.40" stop-color="#ffffff" stop-opacity="0"/>'
+             '<stop offset="0.46" stop-color="#ffffff" stop-opacity=".3"/>'
+             '<stop offset="0.5" stop-color="#ffffff" stop-opacity=".65"/>'
+             '<stop offset="0.54" stop-color="#ffffff" stop-opacity=".3"/>'
+             '<stop offset="0.60" stop-color="#ffffff" stop-opacity="0"/>'
+             '<stop offset="1" stop-color="#ffffff" stop-opacity="0"/>')
+    uses = "".join(f'<use href="#shT{k}"/>' for k in range(s["ntext"]))
+    return (f'<linearGradient id="sweepG-{s["n"]}" gradientUnits="userSpaceOnUse" x1="{x0:g}" y1="0" x2="{x0 + p:g}" y2="0">'
+            f'{stops}</linearGradient>\n<clipPath id="sweepC-{s["n"]}">{uses}</clipPath>')
 
 
 def sweep_group(s):
     p = s["w"] + 240
-    return (f'<g clip-path="url(#sweepC-{s["n"]})">'
-            f'<rect class="sweepband" x="{s["x0"]}" y="{s["y"]}" width="{p}" height="{s["h"]}" '
-            f'fill="url(#sweepG-{s["n"]})" style="--sweepP:{p}px"/></g>')
+    x0 = s["x0"] - 0.60 * p
+    return (f'<g class="fade" style="animation-delay:{s["delay"]}s">'
+            f'<g clip-path="url(#sweepC-{s["n"]})">'
+            f'<rect class="sweepband" x="{x0:g}" y="{s["y"]}" width="{p:g}" height="{s["h"]}" '
+            f'fill="url(#sweepG-{s["n"]})" style="--sweepP:{p:g}px"/></g></g>')
 
 
 def flow(d, color, delays, tail_delay):
@@ -228,6 +236,11 @@ def build():
     con_a = find(lambda s: "结论：当前设计" in s, p2, p2c)
     con_z = con_a + 1
     assert "12 报警提前 2 ns" in lines[con_z]
+
+    # 文字光带：② 结论两行加 id（只加属性，文字内容零改动 → text 多重集不变）
+    for k, i in enumerate((con_a, con_z)):
+        assert re.match(r"\s*<text x=\"60\" y=\"\d+\"", lines[i]), f"shine 行格式漂移: {lines[i][:60]}"
+        lines[i] = lines[i].replace("<text ", f'<text id="shT{k}" ', 1)
 
     # 面板③ 内容锚点
     t3 = find(lambda s: "③ 为什么 14" in s, p3, p3c)
@@ -358,7 +371,6 @@ def build():
          "</g></g>")
     wrap(mka, mkz, '<g class="fade" style="animation-delay:1.05s">', "</g>")
     wrap(div_a, div_z, '<g class="fade" style="animation-delay:0.95s">', "</g>")
-    ins_before(q_r1, [sweep_group(SWEEP)])                  # 场景表扫光（行文字之下）
     lines[q_r1] = lines[q_r1].replace('<g class="r1">',
                                       '<g class="r1 row" style="animation-delay:1.1s">', 1)
     lines[q_r2] = lines[q_r2].replace('<g class="r2">',
@@ -388,6 +400,9 @@ def build():
     lines[footer] = add_cls(lines[footer], "fade", "animation-delay:1.75s")
     wrap(plate_a, plate_z, '<g class="head" style="animation-delay:1.8s">', "</g>")
 
+    # 文字光带：全部内容之上（</svg> 前），只在② 结论两行字形内可见
+    ins_before(end, [sweep_group(SWEEP)])
+
     # ---- 发射（before 顺序：先加的在外层） ----
     o = []
     for i in range(len(lines)):
@@ -399,6 +414,9 @@ def build():
     text = eol.join(o)
     if tail_nl:
         text += eol
+    # 输出尾签名：去掉继承自静态源的旧签名，盖本生成器时间戳（幂等）
+    text = re.sub(r"<!-- ymzhu \d{4}-\d{2}-\d{2} \d{2}:\d{2} -->\s*$", "", text)
+    text = text.rstrip(eol) + eol + "<!-- ymzhu 2026-11-02 19:15 -->" + eol
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(text, encoding="utf-8", newline="")
 
@@ -479,4 +497,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-# ymzhu 2026-10-28 21:16
+# ymzhu 2026-11-02 19:20

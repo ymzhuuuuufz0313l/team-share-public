@@ -20,7 +20,7 @@
     .anchor-nav span { font-size: 0.85rem; padding: 0.2rem 0.6rem; border-radius: 3px; background: #eef2f7; color: #333; font-weight: 600; }
   </style>
   <script src="./js/marked.min.js"></script>
-  <link rel="stylesheet" href="./fx.css?v=3">
+  <link rel="stylesheet" href="./fx.css?v=5">
 </head>
 <body>
   <nav class="navbar">
@@ -44,7 +44,7 @@
 >
 > **方法**：四路版本对比（t12-t15）→ 合并仲裁 → K3 终审（R1-R5）→ 四路符合性速核（t18-t21）→ 队长三项仲裁。数字全部来自 rpt/dc.log/SDC 实测。
 
-<div class="anchor-nav"><span>§A 模块表</span><span>§B 约束表</span><span>§C 总结论</span><span>U 清单（页尾折叠）</span></div>
+<div class="anchor-nav"><span>§1 模块表</span><span>§2 约束表</span><span>§3 总结论</span><span>§4 U1-U14 清单（页尾折叠）</span></div>
 
 ---
 
@@ -56,9 +56,9 @@
   <div class="stat"><div class="lbl">四路实证</div><div class="num">4×0</div><div class="lbl">0922 负对照</div></div>
 </div>
 <p style="text-align:center; font-size:14px; color:var(--ok); font-weight:600; margin:16px 0 8px;">✅ 四路一致 → 整树替换（commit <code>7dad5525</code>，38 文件）<span style="font-family:var(--font-mono); font-size:11px; font-weight:600; color:var(--accent); border:1px solid var(--accent); border-radius:20px; padding:1px 8px; margin-left:6px;">1006</span></p>
-<p style="text-align:center; font-size:12px; color:var(--muted); margin:0 0 32px;">数据出处：§C 总结论·符合性终判</p>
+<p style="text-align:center; font-size:12px; color:var(--muted); margin:0 0 32px;">数据出处：§3 总结论·符合性终判</p>
 
-## A. RTL 逐模块修改表（36 项：34 同名 diff + 2 新增文件）
+## 1. A. RTL 逐模块修改表（36 项：34 同名 diff + 2 新增文件）
 
 | # | 模块（文件） | 修改内容 | 修改方 | 预期行为 | 实际结果（1003 rpt 实测） |
 |---|---|---|---|---|---|
@@ -95,7 +95,7 @@
 | 31 | **seperated_code\LOGIC_CENTER.v** | +94/−4：顶层整合/监测口前移（EOL_DET_I 入、ACS_O/DRA_CS 出、六新时钟穿层） | 服务器演进 | 结构整合 | 1003 编译通过、无新违例族 |
 | 32 | **TOP\LOGIC_CENTER.v**（新增文件） | 实为 seperated 版**逐字节冗余副本**（U9，MD5 哈希一致）；filelist 仅引用 seperated 版，不入编译 | 服务器（冗余） | 无 | 建议服务器删除；本地已随整树替换带入（7dad5525） |
 
-## B. 约束逐项修改表（0922 → 1003）
+## 2. B. 约束逐项修改表（0922 → 1003）
 
 | # | 约束改动 | 0922 状态 | 1003 状态 | 结果 |
 |---|---|---|---|---|
@@ -109,23 +109,23 @@
 | 8 | **五项计数全等**（cpuwr 383/DPLC 5 时钟/weight3×3/MONBLOCK 116/其余） | 与 1003 一致 | 与 0922 一致 | 约束代际无漂移（L518 标签差异外全同）；窄对净账：删 4 对窄 mc + 增 1 对 DPLC = 净 −3（16→13） |
 | 9 | **SMT_CS FLAG 组 mc 修订**（FLAG_1H_H2L→CS_SYNC mc 对保留，3→4 cell） | 3 cell | 4 cell（0928 纪律修订） | 组覆盖不变 |
 
-## C. 总结论
+## 3. C. 总结论
 
-### 452→11 八项加法闭合
+### 3.1 452→11 八项加法闭合
 
-**面积**：Total cell area 294907→314707（+6.7%，+19800 um²）（.rpt L203/L445）；452 = 15（LAT）+41（D1）+29（UTC）+367（其余）直接枚举闭合，1003 终态 **11 条新 −0.01 ICG（非旧残留）**。逐措施八项明细表见 <a href="./ch16-dc1004-review.html">ch16 §3b</a>（全站唯一出处；本页 §A/§B 保留 BKDU/LENB 两项专述）。
+**面积**：Total cell area 294907→314707（+6.7%，+19800 um²）（.rpt L203/L445）；452 = 15（LAT）+41（D1）+29（UTC）+367（其余）直接枚举闭合，1003 终态 **11 条新 −0.01 ICG（非旧残留）**。逐措施八项明细表见 <a href="./ch16-dc1004-review.html">ch16 §5</a>（全站唯一出处；本页 §1/§2 保留 BKDU/LENB 两项专述）。
 
-### 符合性终判
+### 3.2 符合性终判
 
 **✅ 四路一致：1006V0 包 RTL 就是 1003 DC run 实际使用的版本。** 81/81 编译清单 + 541 基名零孤儿 + 97.1% 覆盖率 + 0922 负对照 4 项 ×0。
 
-### 整树替换
+### 3.3 整树替换
 
 commit `7dad5525`（38 文件），本地≡1003 编译版，452→11 时序结论直接继承。
 
 ---
 
-## U1-U14 遗留清单
+## 4. U1-U14 遗留清单
 
 <details>
 <summary>📋 U1-U14 遗留项（点击展开）</summary>
@@ -151,7 +151,7 @@ commit `7dad5525`（38 文件），本地≡1003 编译版，452→11 时序结�
 <!-- ymzhu 2026-10-21 11:44 -->
   </script>
   <script src="./js/site.js?v=2"></script>
-  <script src="./fx.js?v=6"></script>
+  <script src="./fx.js?v=8"></script>
 </body>
 </html>
-<!-- ymzhu 2026-10-27 14:06 -->
+<!-- ymzhu 2026-11-02 19:20 -->

@@ -6,7 +6,8 @@
 # - 稳态（3 族）：
 #   · flowdot ×2（速度分层）：Panel② 真时钟链 y=726 墨色主干（2.6s）+ 泄漏支路红（2.4s，错相位）
 #   · pulse ×2（错相位）：n_clksrc 真时钟源琥珀辉光 / n_leak 泄漏寄存器盒琥珀辉光（-1.4s）
-#   · sweepband ×1：Panel① 窗口区（y150~300）琥珀扫光 8s
+#   · sweepband ×1（v4.3 文字光带）：Panel① 真/假 margin_min 两条结论行白色光带 8s
+#     （§4 配方：clipPath <use> 引用原文字，白亮峰 .65，琥珀色带已废除）
 # - 铁律：源 SVG 只读；text 多重集/开标签/几何颜色零改动；纯 CSS 无 script；
 #   KIT_CSS 与 practice 站 make_anim_power_compare_hk11.py §2 逐字一致；reduced-motion 双保险。
 import io, os, sys
@@ -47,27 +48,39 @@ KIT_CSS = "\n".join([
     "@media (prefers-reduced-motion:reduce){*{animation:none!important}.row,.head,.fade{opacity:1!important}.flowdot,.flowtail,.sweepband{display:none!important}}",
 ])
 
-SWEEP = dict(x0=130, y=150, w=1200, h=150, n=1)
+# SWEEP = 文字光带（MOTION_KIT v4.3 §4，2026-11-02 由琥珀扫光带改）：光只在目标文字字形内
+# 可见（clipPath 用 <use> 引用原文字，零复制），白色亮峰 .65，叠在全部内容之上；
+# 目标 = Panel① 两条关键结论行（真/假 margin_min）。琥珀色带已废除。
+SWEEP = dict(x0=130, y=150, w=1200, h=150, n=1, delay=0.0, ntext=2)
+SHINE_ANCHORS = (
+    '<text x="547.4" y="272"',   # 真 margin_min = −0.743596（窗内，余 0.156）
+    '<text x="912.6" y="296"',   # 假 margin_min = −2.512522（csv 现值，出窗 ❌）
+)
 FLOW_MAIN = '<path class="flowdot" d="M 66 726 H 1200" pathLength="100" stroke="#1c2534"/>'
 FLOW_LEAK = '<path class="flowdot" style="animation-duration:2.4s;animation-delay:-.6s" d="M 700 772 L 662 748" pathLength="100" stroke="#b91c1c"/>'
 
 def sweep_defs(s):
+    """§4 配方：白色渐变（亮峰 .65）+ clipPath 引用目标文字 <use>；X0=区域左−0.60P。"""
     p = s["w"] + 240
-    return (
-        '<linearGradient id="sweepG-%d" gradientUnits="userSpaceOnUse" x1="%d" y1="0" x2="%d" y2="0">'
-        '<stop offset="0" stop-color="#b45309" stop-opacity="0"/>'
-        '<stop offset="0.46" stop-color="#b45309" stop-opacity="0"/>'
-        '<stop offset="0.5" stop-color="#b45309" stop-opacity="0.3"/>'
-        '<stop offset="0.54" stop-color="#b45309" stop-opacity="0"/>'
-        '<stop offset="1" stop-color="#b45309" stop-opacity="0"/></linearGradient>\n'
-        '<clipPath id="sweepC-%d"><rect x="%d" y="%d" width="%d" height="%d"/></clipPath>'
-    ) % (s["n"], s["x0"], s["x0"] + p, s["n"], s["x0"], s["y"], s["w"], s["h"])
+    x0 = s["x0"] - 0.60 * p
+    stops = ('<stop offset="0" stop-color="#ffffff" stop-opacity="0"/>'
+             '<stop offset="0.40" stop-color="#ffffff" stop-opacity="0"/>'
+             '<stop offset="0.46" stop-color="#ffffff" stop-opacity=".3"/>'
+             '<stop offset="0.5" stop-color="#ffffff" stop-opacity=".65"/>'
+             '<stop offset="0.54" stop-color="#ffffff" stop-opacity=".3"/>'
+             '<stop offset="0.60" stop-color="#ffffff" stop-opacity="0"/>'
+             '<stop offset="1" stop-color="#ffffff" stop-opacity="0"/>')
+    uses = "".join('<use href="#shT%d"/>' % k for k in range(s["ntext"]))
+    return ('<linearGradient id="sweepG-%d" gradientUnits="userSpaceOnUse" x1="%g" y1="0" x2="%g" y2="0">'
+            '%s</linearGradient>\n<clipPath id="sweepC-%d">%s</clipPath>'
+    ) % (s["n"], x0, x0 + p, stops, s["n"], uses)
 
 def sweep_group(s):
     p = s["w"] + 240
-    return ('<g clip-path="url(#sweepC-%d)">'
-            '<rect class="sweepband" x="%d" y="%d" width="%d" height="%d" fill="url(#sweepG-%d)" style="--sweepP:%dpx"/></g>'
-    ) % (s["n"], s["x0"], s["y"], p, s["h"], s["n"], p)
+    x0 = s["x0"] - 0.60 * p
+    return ('<g class="fade" style="animation-delay:%gs"><g clip-path="url(#sweepC-%d)">'
+            '<rect class="sweepband" x="%g" y="%d" width="%g" height="%d" fill="url(#sweepG-%d)" style="--sweepP:%gpx"/></g></g>'
+    ) % (s["delay"], s["n"], x0, s["y"], p, s["h"], s["n"], p)
 
 def build():
     s = io.open(SRC, encoding="utf-8", newline="").read()
@@ -90,6 +103,11 @@ def build():
         assert old in s, "anchor missing: " + old[:48]
         s = s.replace(old, new)
 
+    # 1b) 文字光带：目标文字加 id（只加属性，文字内容零改动 → text 多重集不变）
+    for k, anchor in enumerate(SHINE_ANCHORS):
+        assert s.count(anchor) == 1, "shine anchor missing/dup: " + anchor
+        s = s.replace(anchor, '<text id="shT%d" %s' % (k, anchor[len("<text "):]), 1)
+
     # 2) kit CSS 注入到源字体 <style> 之后（独立 style 块）
     anchor = "</style>"
     assert anchor in s
@@ -97,7 +115,7 @@ def build():
 
     # 3) 扫光 defs + 流点 + 扫光带 + 签名（插入 </svg> 前）
     inject = (sweep_defs(SWEEP) + "\n" + FLOW_MAIN + "\n" + FLOW_LEAK + "\n" + sweep_group(SWEEP)
-              + "\n<!-- ymzhu 2026-10-28 18:35 -->\n")
+              + "\n<!-- ymzhu 2026-11-02 19:15 -->\n")
     s = s.replace("</svg>", inject + "</svg>")
 
     # 4) 自检：text 多重集不变
@@ -111,4 +129,4 @@ def build():
 
 if __name__ == "__main__":
     build()
-# ymzhu 2026-10-28 18:35
+# ymzhu 2026-11-02 19:20

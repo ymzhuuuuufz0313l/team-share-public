@@ -62,8 +62,8 @@
       <rect width="2" height="28" fill="#0e7490"/>
     </pattern>
     <clipPath id="clipD1"><rect x="0" y="488" width="2743" height="130"/></clipPath>
-<linearGradient id="sweepG-1" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="2983" y2="0"><stop offset="0" stop-color="#b45309" stop-opacity="0"/><stop offset="0.46" stop-color="#b45309" stop-opacity="0"/><stop offset="0.5" stop-color="#b45309" stop-opacity="0.3"/><stop offset="0.54" stop-color="#b45309" stop-opacity="0"/><stop offset="1" stop-color="#b45309" stop-opacity="0"/></linearGradient>
-<clipPath id="sweepC-1"><rect x="0" y="488" width="2743" height="130"/></clipPath>
+<linearGradient id="sweepG-1" gradientUnits="userSpaceOnUse" x1="-1700" y1="0" x2="1200" y2="0"><stop offset="0" stop-color="#ffffff" stop-opacity="0"/><stop offset="0.40" stop-color="#ffffff" stop-opacity="0"/><stop offset="0.46" stop-color="#ffffff" stop-opacity=".3"/><stop offset="0.5" stop-color="#ffffff" stop-opacity=".65"/><stop offset="0.54" stop-color="#ffffff" stop-opacity=".3"/><stop offset="0.60" stop-color="#ffffff" stop-opacity="0"/><stop offset="1" stop-color="#ffffff" stop-opacity="0"/></linearGradient>
+<clipPath id="sweepC-1"><use href="#shT0"/><use href="#shT1"/></clipPath>
   </defs>
   <rect x="0" y="0" width="2743" height="1009" fill="#fffdf7"/>
 <g class="hdr head" style="animation-delay:0s">
@@ -120,7 +120,6 @@
     <rect class="rg3" x="0" y="488" width="2743" height="130" fill="#0e7490" opacity="0"/>
     <g clip-path="url(#clipD1)"><g class="diag"><rect x="-40" y="450" width="2830" height="180" fill="url(#diagF)" opacity="0.05"/></g></g>
     <rect class="br" x="0" y="488" width="6" height="130" fill="#0e7490"/>
-<g clip-path="url(#sweepC-1)"><rect class="sweepband" x="0" y="488" width="2983" height="130" fill="url(#sweepG-1)" style="--sweepP:2983px"/></g>
 <g class="cellwave" style="animation-duration:3.6s;animation-delay:-2.4s">
     <text x="24" y="553" dy="0.35em" font-size="42" font-weight="bold" fill="#1c2534" class="mono cB">2026-10-02</text>
 </g>
@@ -153,14 +152,15 @@
 </g>
   <rect class="tl" x="0" y="234" width="2742" height="6" fill="#0e7490" opacity="0"/>
   <g class="fn fade" style="animation-delay:1.1s" fill="#5b6675" font-size="32">
-    <text x="40" y="660" dy="0.35em" class="cjk">面积扩大原因（0922→10-02，+6.7% / +19800um2）：</text>
+    <text id="shT0" x="40" y="660" dy="0.35em" class="cjk">面积扩大原因（0922→10-02，+6.7% / +19800um2）：</text>
     <text x="40" y="708" dy="0.35em" class="cjk">① 新增打拍寄存器（+80bit FF）+ 模块时钟域迁移 + 新模块</text>
     <text x="40" y="756" dy="0.35em" class="cjk">② 约束语法 group_path -weight 3（时序优化权重×3，DC 优先为加权路径加强驱动/插拍换时序）</text>
     <text x="40" y="804" dy="0.35em" class="cjk">③ 门从小变大（upsizing）实例：加权域 RX→DCLK 的 RX 输入同步 FF 由 X1 换成 X4/X16 驱动（X16 档 2→46 处；同一路径 0922 max.rpt L90912 全 X1 vs 100</text>
     <text x="40" y="852" dy="0.35em" class="cjk">3 L52800 已 X4），门数不变、单门面积增大即涨面积</text>
-    <text x="40" y="900" dy="0.35em" class="cjk">经与聂老师确认：此类先于 APR 的时序优化方式是被推荐的做法</text>
+    <text id="shT1" x="40" y="900" dy="0.35em" class="cjk">经与聂老师确认：此类先于 APR 的时序优化方式是被推荐的做法</text>
     <text x="40" y="948" dy="0.35em" class="cjk">数据来源：面积=.rpt L186/L203/L445；FF=L6305/L6471/L7461；comb=L19857/L20467/L20066；ports=L171/L188/L430</text>
   </g>
   <rect x="1.5" y="1.5" width="2740" height="1006" fill="none" stroke="#ddd6c8" stroke-width="3"/>
+<g class="fade" style="animation-delay:1.1s"><g clip-path="url(#sweepC-1)"><rect class="sweepband" x="-1700" y="640" width="2900" height="330" fill="url(#sweepG-1)" style="--sweepP:2900px"/></g></g>
 </svg>
-<!-- ymzhu 2026-10-26 17:08 -->
+<!-- ymzhu 2026-11-02 19:15 -->

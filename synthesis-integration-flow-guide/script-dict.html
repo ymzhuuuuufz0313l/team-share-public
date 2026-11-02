@@ -375,7 +375,7 @@ hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
 }
 </style>
   <script src="./search.js" defer></script>
-  <link rel="stylesheet" href="./fx.css?v=3">
+  <link rel="stylesheet" href="./fx.css?v=5">
 </head>
 <body>
   <nav class="navbar">
@@ -652,7 +652,7 @@ source ../../common/pt_setup.tcl -echo
 ### 4.6 skew 报告四件套
 
 <a id="skew_sd"></a>
-#### report_timing_skew_sd.tcl（172 行）—— SD data/clock skew（L/R × A/B）
+#### 4.6.1 report_timing_skew_sd.tcl（172 行）—— SD data/clock skew（L/R × A/B）
 
 完整路径 `SYNTHESIS/top/sta/post/common/report_timing_skew_sd.tcl`；脚本内容截图与 `-max_path` 取舍经验见 <a href="./pt-intro.html" target="_blank">POSTPT</a> skew 章节。
 
@@ -661,19 +661,19 @@ source ../../common/pt_setup.tcl -echo
 - **bug**：SL/SR 报告用 `>` 重定向到与 DBL/DBR 同名文件会覆盖；第 100 行层次分隔符误用 `.`；**2P 版报告脚本包中缺失，但 perl 抓取层期待 `sd_*_2p_*` 文件**。
 
 <a id="skew_isprx"></a>
-#### report_timing_skew_isprx.tcl（17 行）
+#### 4.6.2 report_timing_skew_isprx.tcl（17 行）
 
 L0 / L1 两组 `-group RX0_OD_CLK_DIV2 -rise_through dout_lane_L0[*] ... -slack_lesser_than 20 -max_paths 100` + `report_clock_timing` latency → `skew/report_timing_rx{0,1}_00_${delay_type}.rpt`。
 
 - **找路径端点名字的入口**：clk 和 data 从 RX 出来、到 APR 里 DFF 的名字，就写在这个脚本的 `-group`（clk 组）与 `-rise_through`（data 起点）定义里；修 skew 需要确认端点对象时，先来这个脚本查。
 
 <a id="skew_io"></a>
-#### report_timing_skew_io.tcl（19 行）
+#### 4.6.3 report_timing_skew_io.tcl（19 行）
 
 I2C 路径 → `skew/report_timing_io_${delay_type}.rpt`。
 
 <a id="skew_1p5"></a>
-#### report_timing_1P5.tcl（17 行）
+#### 4.6.4 report_timing_1P5.tcl（17 行）
 
 1.5 分频跨域检查（`RX0_CLK_DIV1P5` ↔ `_1P` 等，双向 max + min）→ 写到当前目录 `report_timing_1P5.rpt`。
 
@@ -1050,8 +1050,8 @@ const observer = new IntersectionObserver((entries) => {
 }, { rootMargin: '-80px 0px -60% 0px', threshold: 0 });
 headings.forEach(h => observer.observe(h));
 </script>
-  <script src="./fx.js?v=6"></script>
+  <script src="./fx.js?v=8"></script>
 </body>
 </html>
 
-<!-- ymzhu 2026-10-27 14:01 -->
+<!-- ymzhu 2026-11-02 18:41 -->

@@ -1,7 +1,14 @@
-/* fx.js — PAGE FX v1 特效引擎（2026-10-28 ymzhu，v4 零重载切换架构）
+/* fx.js — PAGE FX v2 特效引擎（2026-11-02 ymzhu；v4 零重载切换架构不变）
+   v2 新增（2026-11-02，预览版，仅 hk1v11-longcode-420b-verification 一站，待用户验收后再同步全仓库副本）：
+     ① hero 标题扫光：init 给 .hero h1 挂 fx-shine（CSS 双层背景 + background-clip:text）；
+        扫光与"标题字级升起"互斥——clip-to-text 的父级背景无法稳定穿透拆出的 inline-block
+        子 span（transform 中的字形会脱离裁剪），故挂 fx-shine 的 h1 不再拆字（splitHero 直接返回）；
+     ② chip 微弹：hero meta chips 与 .stat 卡片加 fx-pop（spring 上浮缩放入场，stagger 错拍）；
+     ③ 噪点纹理 / 缓动令牌：纯 CSS 侧（fx.css §3/§15），JS 无改动。
    接管原内联 IIFE 的全部职责（模式解析 / #motionToggle / img src 交换 / 滚动重播）
    + 页面级特效：滚动进度条 / 滚动显现 / 蓝图底纹 / 导航阴影 / 返回顶部 /
-     hero 网格漂移与光晕 / 标题字级升起（逐字 assert）/ 数字滚动 / 表格行级联 / 章节标题画线。
+     hero 网格漂移与光晕 / 标题扫光（v2）/ 标题字级升起（逐字 assert；无扫光时）/ 数字滚动 /
+     表格行级联 / 章节标题画线 / chip 微弹（v2）。
    v4 = blueprint-ui-style skill「动画/静态双版 SVG 站点架构 v4」§2 运行时切换契约（治切换错位/闪跳）：
      ① 布局锁定：SVG img 加载完成即写 aspect-ratio + width:100%/height:auto，此后任何
         src 变化盒子尺寸恒定 → 切换零位移；② 预载后交换：先 new Image() 预载目标版，
@@ -173,6 +180,7 @@
 
   function markReveals() {
     var els = [];
+    var statPopIdx = 0;
     REVEAL_SEL.forEach(function (sel) {
       Array.prototype.forEach.call(document.querySelectorAll(sel), function (el) {
         if (els.indexOf(el) === -1) els.push(el);
@@ -180,6 +188,11 @@
     });
     els.forEach(function (el) {
       el.classList.add('fx-r');
+      /* v2 chip 微弹：.stat 卡片挂 fx-pop，0.08s 错拍（animation-delay；transition 不延迟） */
+      if (el.classList.contains('stat')) {
+        el.classList.add('fx-pop');
+        el.style.animationDelay = (0.08 * statPopIdx++) + 's';
+      }
       if (el.tagName === 'TABLE') {
         el.classList.add('fx-t');
         /* 行级联：表头行 delay 0，正文行 0.03s × i，上限 0.9s */
@@ -196,11 +209,14 @@
         if (!c || c === 'none' || c === 'normal') el.classList.add('fx-hdr');
       }
     });
-    /* hero meta 行 chips 与 hero badge：fx-r + 0.1s 递增 delay（不存在则自然跳过） */
+    /* hero meta 行 chips 与 hero badge：fx-r + fx-pop（v2 微弹）+ 0.1s 递增 delay（不存在则自然跳过）
+       transitionDelay 管 opacity 过渡，animationDelay 管 fxPopIn（backwards 填充覆盖等待窗口） */
     var chips = document.querySelectorAll('.hero .meta > *, .hero .badge');
     Array.prototype.forEach.call(chips, function (chip, i) {
       chip.classList.add('fx-r');
+      chip.classList.add('fx-pop');
       chip.style.transitionDelay = (0.1 * (i + 1)) + 's';
+      chip.style.animationDelay = (0.1 * (i + 1)) + 's';
       els.push(chip);
     });
     return els;
@@ -232,6 +248,8 @@
 
   function splitHero() {
     if (!heroH1 || heroHTML === null) return;
+    /* v2：挂了扫光的标题不拆字（与 clip-to-text 互斥，见文件头 ①） */
+    if (heroH1.classList.contains('fx-shine')) return;
     heroH1.innerHTML = heroHTML; /* 每次从原文重建，支持重复重播 */
     var nodes = Array.prototype.slice.call(heroH1.childNodes);
     heroH1.textContent = '';
@@ -339,6 +357,31 @@
     if (heroH1) {
       heroHTML = heroH1.innerHTML;
       heroText = heroH1.textContent;
+      /* v2 通用化（推广前置，PAGE_FX §7）：扫光基底色取自页面实际标题色（computed color）；
+         透明（站点用渐变字/背景裁剪字）→ 该站跳过扫光，回退拆字升起；
+         居中标题 → 补 margin-inline:auto，配合 width:fit-content 不产生位移。
+         420b 预览时为硬编码 #f7f3e8/#f0a137，推广后由运行时取色，任何配色的站点都安全。 */
+      heroH1.classList.add('fx-shine');
+      try {
+        var hc = getComputedStyle(heroH1).color;
+        if (!hc || /rgba?\(\s*0+, ?0+, ?0+(, ?0)?\s*\)|transparent/i.test(hc)) {
+          heroH1.classList.remove('fx-shine');        /* 透明标题色：回退拆字 */
+        } else {
+          heroH1.style.setProperty('--fx-shine-base', hc);
+          if (getComputedStyle(heroH1).textAlign === 'center') heroH1.style.marginInline = 'auto';
+          var thin = heroH1.querySelector('.thin');
+          if (thin) {
+            var tc = getComputedStyle(thin).color;
+            if (tc && !/rgba?\(\s*0+, ?0+, ?0+(, ?0)?\s*\)|transparent/i.test(tc)) {
+              thin.style.setProperty('--fx-shine-thin-base', tc);
+            } else {
+              thin.classList.add('fx-shine-flat');    /* .thin 透明 → 不参与光带，保持原样 */
+            }
+          }
+        }
+      } catch (e) { /* 取色失败（怪异样式表）→ 保守回退拆字 */
+        heroH1.classList.remove('fx-shine');
+      }
     }
     statEls = Array.prototype.slice.call(document.querySelectorAll('.stat .v'));
     statHTML = statEls.map(function (v) { return v.innerHTML; });
@@ -389,4 +432,4 @@
   }
 })();
 
-/* ymzhu 2026-10-28 15:42 */
+/* ymzhu 2026-11-02 15:56 */

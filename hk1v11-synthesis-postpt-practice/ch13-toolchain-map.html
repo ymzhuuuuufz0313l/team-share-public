@@ -13,7 +13,7 @@
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./css/style.css">
   <script src="./js/marked.min.js"></script>
-  <link rel="stylesheet" href="./fx.css?v=3">
+  <link rel="stylesheet" href="./fx.css?v=5">
 </head>
 <body>
   <nav class="navbar">
@@ -1363,7 +1363,7 @@ ip/syn_<IP_NAME>/
 
 12. **"本地不可见"不代表"不存在"**：APR 网表、SPEF、FSDB、`postcts.sdc` 都在服务器上（`/project/HK1V11/` 或 `/XXW_PRJ01/`），本地只有脚本和报告。如果本地看不到某个文件，去服务器上看。
 
-### 小白终极自检 3 问
+### 14.1 小白终极自检 3 问
 
 1. 你刚改了 `ip_cons` 里的一个 `set_false_path`，列出最少需要重跑的阶段顺序。
 2. POSTPT 的 `design.set` 里 `PR_PATH` 指向哪个路径？如果 APR 重跑了，这个路径会变吗？
@@ -1371,7 +1371,7 @@ ip/syn_<IP_NAME>/
 
 ---
 
-## 附录 A：本地不可见清单（诚实声明）
+## 15. 附录 A： 附录 A：本地不可见清单（诚实声明）
 
 以下路径在本地工作区**不存在**（在服务器上），本文档只引用了脚本中引用的路径名：
 
@@ -1387,7 +1387,7 @@ ip/syn_<IP_NAME>/
 
 > 更正记录（2026-09-24 复审）：`nlint/rep_dir/` 与 `lec/rep_dir/` **本地其实存在**（`nlint.log`/`nlint.rpt`、`lec.log`/`non_eq.rpt` 等产物齐全），早前版本误列入本表，已移除。
 
-## 附录 B：工具版本（从脚本中读到）
+## 16. 附录 B： 附录 B：工具版本（从脚本中读到）
 
 | 工具 | 版本 | 来源 |
 |------|------|------|
@@ -1398,7 +1398,7 @@ ip/syn_<IP_NAME>/
 | SpyGlass | `spyglass2016` | `run_spy`: `source /eda/env/spyglass2016.cshrc` |
 | Genus | `genus1723` | `run_genus`: `source /eda/env/genus1723.cshrc`（当前 `SYN_TOOL=dc`，未启用） |
 
-## 附录 C：流程 Readme（来自 `Readme` 文件）
+## 17. 附录 C： 附录 C：流程 Readme（来自 `Readme` 文件）
 
 `SYNTHESIS/ip/syn_HK1V11_digital_top/Readme` 原文（24 行）：
 
@@ -1430,7 +1430,7 @@ SYNTHESIS FLOW  ver.2.1
 <!-- ymzhu 2026-10-21 11:44 -->
   </script>
   <script src="./js/site.js?v=2"></script>
-  <script src="./fx.js?v=6"></script>
+  <script src="./fx.js?v=8"></script>
 </body>
 </html>
-<!-- ymzhu 2026-10-27 14:06 -->
+<!-- ymzhu 2026-11-02 19:20 -->

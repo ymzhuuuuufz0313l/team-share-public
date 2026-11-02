@@ -30,6 +30,10 @@
   function currentPage() {
     return location.pathname.split('/').pop() || 'index.html';
   }
+  /* 2026-11-02：NAV 条目可能写 './index.html'，与 currentPage() 的 'index.html' 比不上 → 归一化 */
+  function normPage(p) {
+    return String(p || '').replace(/^\.\//, '');
+  }
 
   /* ---------- navbar（两行：一行=平铺章节+搜索，二行=下拉组+GitHub）
      下拉交互：hover 展开（CSS）+ 点 ▾ 钉开/关（JS，触屏可用），点外部 / Esc 关闭 */
@@ -56,7 +60,7 @@
         var a = document.createElement('a');
         a.href = item[0] === 'index.html' ? './' : './' + item[0];
         a.textContent = item[1];
-        if (cur === item[0]) a.classList.add('active');
+        if (cur === normPage(item[0])) a.classList.add('active');
         rowMain.appendChild(a);
         return;
       }
@@ -211,23 +215,10 @@
       pre.appendChild(btn);
     });
 
-    /* 动画 SVG 滚动重播：长页面里 SVG 多为下方图，一次性入场动画在加载时就播完、用户滚到时看不到
-       → 首进视口前 240px 重播（src 加 query 强制 <img> 内 SVG 重新渲染，标准技巧）；
-       配合 lazy-load 延迟加载；加载时已在视口内的不重播（入场动画正在自然播放）（2026-10-26 ymzhu） */
-    art.querySelectorAll('img[src$=".svg"]').forEach(function (img) {
-      var r = img.getBoundingClientRect();
-      if (r.top < window.innerHeight && r.bottom > 0) return;
-      img.loading = 'lazy';
-      var io = new IntersectionObserver(function (entries) {
-        entries.forEach(function (e) {
-          if (!e.isIntersecting) return;
-          io.unobserve(img);
-          var base = (img.getAttribute('src') || '').split('?')[0];
-          img.src = base + '?v=' + Date.now();
-        });
-      }, { rootMargin: '240px 0px' });
-      io.observe(img);
-    });
+    /* 动画 SVG 滚动重播：2026-11-02 移除本站的 ?v=Date.now() 重播实现（blueprint v4 §2.4 禁止：
+       时间戳 query 会绕过缓存造成重复下载，且与 fx.js 的重播职责重复）。
+       现一律由 fx.js v4.1 处理：同 src 重赋值重启 SVG 内 CSS 动画（零网络、节点不变、
+       外部监听器存活）；首屏内图不重播。此块保留注释作为不回归说明。 */
 
     /* mermaid 流程图：marked 把 ```mermaid 渲成 pre>code.language-mermaid
        → 转成 pre.mermaid 交给 mermaid 渲染（站点色板主题）；
@@ -443,7 +434,7 @@
   var pageNav = document.getElementById('page-nav');
   if (pageNav) {
     var cur = currentPage();
-    var i = FLAT_NAV.findIndex(function (p) { return p[0] === cur; });
+    var i = FLAT_NAV.findIndex(function (p) { return normPage(p[0]) === cur; });
     if (i >= 0) {
       var html = '';
       if (i > 0) {

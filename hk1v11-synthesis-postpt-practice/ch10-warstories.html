@@ -13,7 +13,7 @@
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./css/style.css">
   <script src="./js/marked.min.js"></script>
-  <link rel="stylesheet" href="./fx.css?v=3">
+  <link rel="stylesheet" href="./fx.css?v=5">
 </head>
 <body>
   <nav class="navbar">
@@ -102,7 +102,7 @@
 
 > 全站唯一有实质内容的一章。收录 0915~0922 一周里 POSTPT 签核、skew 汇总与约束收窄的二十一段真实排障，每段按「现象 → 定位思路 → 证据链 → 处理 → 结论/遗留」展开。**结论先行：一周的主线只有一条——约束的生效链是 `ip_cons → pre-PT write_sdc → APR → postcts.sdc → POSTPT`；而 "read_cons.log / read_tcl.log 的 SEL-004/005 计数 + report_exceptions 的 applied 标志（o/p/po）" 是这条链上唯一可靠的回归指标。**
 
-## 收敛仪表盘
+## 0. 收敛仪表盘
 
 | 轮次 | 动作 | 结果 |
 |---|---|---|
@@ -113,13 +113,13 @@
 | round5 | K1_FIND → CPUWR 族 mc（G1~G8 之外的新家族） | K1 家族违例 96 → 3（同一约束下） |
 | round6 | G9 TRAINING_RESULT / G11 SMT_CS 的 mc + G10 DPLC 静态配置位 max_delay 2× | 已入 pending bundle，待评审 + POSTPT 验证（案例 7/8） |
 
-## 案例 1：约束链认知坑——"改了 ip_cons 怎么没生效"
+## 1. 案例 1：约束链认知坑——"改了 ip_cons 怎么没生效"
 
-### 现象
+### 1.1 现象
 
 在 `ip_cons/HK1V11_digital_top.tcl` 里加了 `set_multicycle_path`，重跑 POSTPT（wc_cbest_125），报告数值**纹丝不动**。
 
-### 定位思路
+### 1.2 定位思路
 
 不要猜"工具没吃"，去看**它到底读了什么**。POSTPT 的约束加载在 `top/sta/post/common/pt_setup.tcl:284-290`，只有三行 source：
 
@@ -131,7 +131,7 @@ source ${SDC_PATH}/${SDC_NAME}_postcts.sdc    -verbose -echo >> ${log_dir}/read_
 
 `pt.log:1260-1266` 里能看到这三行的实际执行。**`ip_cons` 只在 pre-PT 被读**——post 流程从不 source 它。
 
-### 证据链
+### 1.3 证据链
 
 - 约束生效链：`ip_cons` → ① pre-PT `write_sdc` → `sdc_pr` → ② APR（吃 sdc_pr 做 CTS）→ `postcts.sdc` → ③ POSTPT
 - 只改 ip_cons 直接重跑 POSTPT = 跳过 ①②，postcts.sdc 还是旧的
@@ -144,19 +144,19 @@ grep -c "R_REG03_L_reg_2_" .../HK1V11_digital_top_postcts.sdc
 grep "R_REG03_L_reg_2_" wc_cbest_125/latest/log/read_cons.log
 ```
 
-### 处理与结论
+### 1.4 处理与结论
 
 - 快速验证：把 mc 直接 append 到服务器 postcts.sdc 末尾（例外追加即生效）
 - 固化：走正流程 ip_cons → PREPT → DATABASE → POSTPT（我们最终采用）
 - **结论：POSTPT 的设计约束只有一个入口 postcts.sdc；ip_cons 是它的"祖先"，不是它本身**
 
-## 案例 2：-0.588 配置跨域 mc 缺口（三轮打地鼠）
+## 2. 案例 2：-0.588 配置跨域 mc 缺口（三轮打地鼠）
 
-### 现象
+### 2.1 现象
 
 PT wc_cbest_125 setup：`R_REG03_L_reg_2_`（WCLK1_A_CHPI_DCLK_SHORT）→ `PIX_CLK_EN_reg`（RX_CLK）slack **-0.588**；而 APR 工程师给的 Tempus 截图（ssg_1p62_125_**cworst**）同路径 **+0.300 MET**。"APR 不报错，PT 报错"。
 
-### 定位思路（三步：先对齐，再拆解，再找缺口）
+### 2.2 定位思路（三步：先对齐，再拆解，再找缺口）
 
 **第一步：同 corner 对齐，排除工具分歧。**
 PT 在 wc_cworst_125（与截图同 corner）同路径 = **+0.0798 MET**，与 APR +0.300 同量级（残差 0.22 属工具/寄生/derate 正常范围）→ 工具间没有矛盾，矛盾的是 corner 覆盖。
@@ -175,7 +175,7 @@ launch 边沿 5.715 / capture 边沿 7.620 → 有效窗口只有 **1.905ns**（
 **第三步：找约束缺口。**
 对照 `ip_cons`：`R_REG*_F_reg*` → RX_CLK 有 mc 2/1（L211-212）、`R_REG*_L_*` → DCLK_DATA_MUX_* 有 mc（L223-226），**唯独 `R_REG*_L_*` → RX_CLK 没有**。违例起点恰是 R_REG03_L（0x43 行配置寄存器，R_BKDU 背光禁用位）——准静态配置写被按 1.905ns 单周期检查。
 
-### 证据链（关键数字）
+### 2.3 证据链（关键数字）
 
 | 项 | wc_cbest_125 | wc_cworst_125 |
 |---|---|---|
@@ -187,7 +187,7 @@ launch 边沿 5.715 / capture 边沿 7.620 → 有效窗口只有 **1.905ns**（
 
 （wc_typical -0.204 居中；uncertainty 两边同为 0.4）
 
-### 处理（三轮收敛）
+### 2.4 处理（三轮收敛）
 
 - **round1**：G1（R_BKDU→PIX_CLK_EN + PIX_DATA×24，25 条）+ G3（→REG_MAPPING 拷贝，17 条）= 42 条逐条 mc；POSTPT（0915 18:57）42 条违例全消、ignored_exceptions 为零
 - **round2**：G2/G4/G5/G6/G7/G8 共 30 对补齐 → G2/G4~G7 全清；**POL 组浮出 3 条新起点路径**（打地鼠）
@@ -203,21 +203,21 @@ H4INV = R_REG00_L[4]  R_POL2 = R_REG03_L[6]
 
 - **round4**：族通配合并 + dc_shell/pt_shell 双分支（见案例 4）
 
-### 结论与遗留
+### 2.5 结论与遗留
 
 - 根因是**约束缺口**，不是工具分歧、也不是节点失配（read_cons.log 零 SEL，`u_gate_*/CG_CELL/Q`、`u_gate_*/CLKMUX2X2/O` 在 post-route 网表全部命中）
 - 打地鼠教训：top-N 报告收集会漏掉被压住的次差路径；按**扇入矩阵补全集**才能一次收口
 - 不可 mc 的残留：`DATA_POINT_LAT_reg_9_ → BK_ST_reg`（RX_CLK 同域，GBA -0.144 / PBA -0.069）、`SMT_CS/FLAG_1H_H2L_reg → CS_SYNC_reg_0/1_`（动态标志跨域，待 design 确认 FLAG 是否 sticky）
 
-## 案例 3：skew -900（空报告 × 哨兵值）
+## 3. 案例 3：skew -900（空报告 × 哨兵值）
 
 > **说明**：这是当天下午的早期诊断。当天夜间的最终定案——perl 哨兵修复、三份"非法起点回退"报表、以及"改完还是 -900"的投放路径原因——见 **案例 9**；本案例给出的探针三原则仍然有效。
 
-### 现象
+### 3.1 现象
 
 skew 汇总 Excel/CSV 出现 **-993 ~ -998** 的 margin 值（wc_cbest 例：**-993.55687**），明显不是真实时序。
 
-### 定位思路（顺着数据流往回找）
+### 3.2 定位思路（顺着数据流往回找）
 
 ```text
 report_timing_skew_sd.tcl
@@ -230,7 +230,7 @@ report_timing_skew_sd.tcl
 
 逐级回查发现：**`sd_l_1p_clk_a.rpt` 全部 10 个 corner 都是 151 字节空壳**，内容只有 SEL-003/005 报错——时钟探针没匹配到任何对象。
 
-### 证据链
+### 3.3 证据链
 
 1. 探针层级错：`report_timing_skew_sd.tcl:15` 写 `u_LOGIC_CENTER/CENTER1/DTCTL/u_gate_INV_SD_CLK_INV/O*`；该反相器真实位置是 `u_LOGIC_CENTER/LC_CLK_RST_GEN/CLKGEN/u_gate_INV_SD_CLK_INV`（CLKGEN.v:186）
 2. perl 哨兵：`get_sd_busskew.pl:33-34` 初始化 `$max=0; $min=1000;`——空报告没有任何 `data arrival time` 行，值永不更新
@@ -238,7 +238,7 @@ report_timing_skew_sd.tcl
 4. **次生错误**：`margin_min = 数据min − clk_max = 数据min − 0`，数值"看着正常"（4.44/5.09…）其实同样是垃圾——真实时钟延迟是 CLKGEN 到 pad 的时钟树延迟（几 ns 量级，需用修好的探针实测），不是 0
 5. clk_b 另有一病：`DTCTL/DPLC_CLK*`、`DTCTL/SD_CLK_INV*` 用模块输入端口 pin 做探针，把**无关起点**的路径混进包络。实测 clk_b 的 10 个起点里有 `SP_I (input port)`、`APR_CDM_17/A`、`LC_CPUWR/R_REG05_F_reg_5/6/7`、`R_REG06_F_reg_2/7`、`SHORT_ENCODING_OUTPUT/data_cnt_reg_2_`、`CLKGEN/short_encoding_phase_data_0_half_dly_reg`（clk_b min≈2.3 vs max≈11 的大裂口即由此造成）
 
-### 处理
+### 3.4 处理
 
 时钟探针三原则：**① 从 CLKGEN buffer/mux 输出脚（时钟分叉点）起量；② 数据从 DTCTL 真实数据寄存器起量；③ 不拿寄存器当时钟探针。**
 
@@ -247,23 +247,23 @@ report_timing_skew_sd.tcl
 - 全部时钟报告加 `-slack_lesser_than 50`；~~补齐 perl 期望的 dplc 8 份报告（暂行值，DPLC_CLK 生成时钟未定义）~~ → 该"暂行填充"在**案例 9** 中被判定为**伪造数字**并已删除（dplc 行留空，等真实 DPLC 模式 run）
 - `report_timing_skew_io.tcl` 同病同修：`PAD_INBUF/U3/O`、`SDA_LO` 在 1V11 不存在 → 改 `SCL_I` / `SDA_OE`
 
-### 结论与遗留
+### 3.5 结论与遗留
 
 - -900 = **探针失配 → 空报告 → 哨兵值进差值**，与真实时序无关
 - 防呆建议：解析 perl 对空报告（未匹配到任何 data arrival）显式输出 NA 或报错，**禁止哨兵静默进 margin**
 - 遗留：DPLC_CLK 生成时钟未定义（ip_cons FIXME DRD 段），dplc 数值待重生成；1V11 合格窗（1p [-2.5:+2.5] / dplc [-1:4]）与流程指南（[-1:+6]）不一致，待后端确认
 
-## 案例 4：逐条 mc 的 DC 陷阱与 round4 双分支
+## 4. 案例 4：逐条 mc 的 DC 陷阱与 round4 双分支
 
-### 现象（潜在）
+### 4.1 现象（潜在）
 
 逐条 mc（`-from [get_cells .../R_REG03_L_reg_2_] -to [get_pins .../PIX_DATA_reg_18_/D*]`）写在 `if {$synopsys_program_name != "pt_shell"}` **之外**——dc_shell 也会读它。
 
-### 根因
+### 4.2 根因
 
 DC elaborate 阶段没有综合后的位拆分名（`R_REG03_L_reg_2_`），也没有 `/D*` 引脚 → `get_cells`/`get_pins` 失配 → 约束静默丢失（或报错中断）。pre-PT `read_tcl.log` 已实证同类失配（SEL-005 ×2，见案例 5）。
 
-### 处理（round4）
+### 4.3 处理（round4）
 
 双分支：
 
@@ -278,13 +278,13 @@ if {$synopsys_program_name == "pt_shell"} {
 
 同时按族通配把 100+ 行合并为约 30 行（叉乘多覆盖为空匹配，无害）。G2 当时在两分支均注释 ON HOLD（09/16 17:08 改为"先启用 + 头部标注待确认"，见案例 6）。
 
-### 结论
+### 4.4 结论
 
 共享约束文件里，**任何按综合后命名写的约束都必须待在 pt_shell 分支**；DC 分支只写 RTL 名/族通配。跨工具共享文件的分支纪律，值得写进流程规范。
 
-## 案例 5：改名残留与旧项目探针
+## 5. 案例 5：改名残留与旧项目探针
 
-### 现象
+### 5.1 现象
 
 pre-PT `read_tcl.log` 出现 **18 条 SEL-004/005**。逐条清点，三类：
 
@@ -294,12 +294,12 @@ pre-PT `read_tcl.log` 出现 **18 条 SEL-004/005**。逐条清点，三类：
 
 另外 `report_timing_skew_io.tcl` 的 `PAD_INBUF/U3/O`、`SDA_LO` 是上一代芯片对象，1V11 里不存在 → io 报告 229 字节空壳。
 
-### 处理与教训
+### 5.2 处理与教训
 
 - 教训：**模块/时钟改名后，所有引用点（clock list、pin 通配、报告脚本、skew 探针）都要过一遍 SEL 计数**——把 read_tcl.log / read_cons.log 的 SEL-004/005 总数当回归指标，非零即回归
 - L422-428 的层级笔误由人工评审抓住（"层级和同组不一致"）——逐行对账仍是最后的安全网
 
-## 案例 6：G2 从 ON HOLD 到"先启用待确认"
+## 6. 案例 6：G2 从 ON HOLD 到"先启用待确认"
 
 `R_BKDU (R_REG03_L_reg_2_) → BK_ST_reg`：RTL 上 `BIT_ALIGN_ST = BIT_ALIGN_PT | (R_BKDU & K2_FIND)`（LONG_ENCODING_ALIGN.v:429），R_BKDU 与已采纳的 G1/G3 是同一位。最初因 **dummy 行发送时 K2 与 BKDU 寄存器之间的时序间隙未确认** 而整组注释 ON HOLD。
 
@@ -307,20 +307,20 @@ pre-PT `read_tcl.log` 出现 **18 条 SEL-004/005**。逐条清点，三类：
 
 这条的启示：**"先启用 + 显式标注待确认"是一种可接受的中间态**，但必须把待确认状态写进约束文件的头部注释里，让评审人一眼看到，而不是默默收敛。
 
-## 案例 7：网表 A/B 审判——同一份约束，两版网表选哪版
+## 7. 案例 7：网表 A/B 审判——同一份约束，两版网表选哪版
 
-### 现象
+### 7.1 现象
 
 后端连续交付两版网表，都跑了完整 POSTPT：A 版（gating setup 违例 15 条，19373 cells / 25411 nets）与 B 版（gating 30 条，19250 / 25276）。两版 `ip_cons` 逐字节相同（diff=0，含 round4+round5+NORMAL 修复）——**这是难得的纯净 A/B：唯一变量就是网表本身**。
 
-### 判据（先登记再看数据，防止事后凑结论）
+### 7.2 判据（先登记再看数据，防止事后凑结论）
 
 1. 签核 corner 加权：wc_cworst（setup 主签核）> wc_typical > wc_cbest（min-RC，SI 放大区）
 2. 违例率 = 违例数 ÷ 该类检查总数（两版 ICG 数不同，绝对条数不可直接比）
 3. 真违例净值（剔除两版共有的 -5.x 系统性家族）
 4. 约束兼容性（SEL、mc 落地、ignored）
 
-### 数据对照
+### 7.3 数据对照
 
 | 判据 | A (gating15) | B (gating30) | 胜 |
 |---|---|---|---|
@@ -331,7 +331,7 @@ pre-PT `read_tcl.log` 出现 **18 条 SEL-004/005**。逐条清点，三类：
 | DPLC 面板数据通路 | 108 违例（仅 cbest） | 0 | B |
 | 约束兼容性 | SEL=0 / mc=55 / round5 落地 / ignored=0 | 完全相同 | 平 |
 
-### 判定：选 A（六条理由）
+### 7.4 判定：选 A（六条理由）
 
 1. 签核 corner 决定胜负：wc_cworst A 双优（条数与裕量）
 2. B 的 hold 是硬伤且约束救不了（CONFIG_DATA ×10、兄弟时钟 skew 类，只能 APR 返工）；A 的对应项本来就小
@@ -340,7 +340,7 @@ pre-PT `read_tcl.log` 出现 **18 条 SEL-004/005**。逐条清点，三类：
 5. B 的 K1 家族优势已被 round5 中和（96→3，同一约束下）
 6. 约束兼容性完全相同 → 差异纯粹是网表质量
 
-### 翻转条件（诚实记录）
+### 7.5 翻转条件（诚实记录）
 
 - cbest 被列为 setup 签核 gate 且 DPLC 必须立刻干净、APR 短期修不了 A 的 108 条
 - designer 确认 B 的 CONFIG_DATA hold 可用约束合理豁免 → B 硬伤消失
@@ -348,13 +348,13 @@ pre-PT `read_tcl.log` 出现 **18 条 SEL-004/005**。逐条清点，三类：
 
 **给 APR 的两个破局问题**：① A 的 DPLC 108 条（cbest only）能否一个 ECO 轮次修掉？② B 的 CONFIG_DATA hold（41 条 -0.5）什么根因？——**谁的问题便宜修，就选谁**。
 
-## 案例 8：DPLC_GROUP 与 max_delay 优先级陷阱
+## 8. 案例 8：DPLC_GROUP 与 max_delay 优先级陷阱
 
-### 现象
+### 8.1 现象
 
 A 版 wc_cbest 冒出 108 条 setup 违例，全部收敛到两个起点寄存器：`R_REG06_F_reg_7_`（= DPLC_GROUP，DPLC 协议时序模式选择位）×87 和 `R_REG00_F_reg_6_`（= AVE_RGBW[1]，平均权重配置）×2，终点是 DTCTL 的 DPLC 数据生成/输出寄存器。其余 9 个 corner 全 0。
 
-### 机制（为什么只在 cbest 崩）
+### 8.2 机制（为什么只在 cbest 崩）
 
 数据路径（LC_CPUWR → DPLC_GROUP 组合扇出 → DTCTL）约 **9.9ns**，而约束是 `set_max_delay 6.35`（1× DPLC 周期）：
 
@@ -366,11 +366,11 @@ cbest ：延迟 ~3.0 → required ~9.35 < 9.9  → 崩（108 条）
 
 **这条 max_delay 是靠 capture 时钟延迟垫着才能过的**——min-RC corner 延迟一缩，全线崩盘。corner 结构性脆弱，不是路径本身慢。
 
-### 为什么 multicycle 救不了
+### 8.3 为什么 multicycle 救不了
 
 PT 例外优先级：`set_false_path > set_max_delay > set_multicycle_path`。**实锤**：约束文件里本来就有 `R_REG*_F_reg* → DCLK_DATA_MUX_*` 的 mc2，这 89 条（报告 top 内）照样违例——mc 在 max_delay 面前直接被忽略。
 
-### 解法：更具体的 set_max_delay（不是新发明，是沿用先例）
+### 8.4 解法：更具体的 set_max_delay（不是新发明，是沿用先例）
 
 同一文件里密码寄存器早有先例：`set_max_delay [expr $DPLC_CLKP*2] -from R_REG48_F_reg*`。照此办理：
 
@@ -382,21 +382,21 @@ set_max_delay [expr $DPLC_CLKP*2] -from .../R_REG06_F_reg_7_/CK -thr .../U_DPLC_
 
 同类例外里 point-to-point（-from -to）优先于 general（-to），所以只有这两个配置寄存器扇出的路径被放宽到 12.7ns（required = 12.7+延迟 ≥ 15.7 > 9.9，全 corner 收敛），**其余 DPLC 动态路径仍按 6.35 严格检查**。
 
-### 强限定条款（来自用户的明确要求）
+### 8.5 强限定条款（来自用户的明确要求）
 
 "-from 精确到 `R_REG06_F_reg_7_` / `R_REG00_F_reg_6_` 两个寄存器、零族通配"——宽松只属于这两个静态配置位；`R_REG06_F[2]`（DPLC_MODE）当前零违例，明确不放，防止顺手扩大化。
 
-### 结论
+### 8.6 结论
 
 **"只准 multicycle"的规则碰到 max_delay 罩着的路径时会失效**——此时正确做法不是 break rule 去加 false_path，而是用"更具体的宽松 set_max_delay"让路径保持被检查、只是窗口变宽。这是约束工具箱里第三件工具，值得记住。
 
-## 案例 9：skew -900 定案——"改完还是 -900"的两个额外真相
+## 9. 案例 9：skew -900 定案——"改完还是 -900"的两个额外真相
 
-### 现象
+### 9.1 现象
 
 按案例 3 修好探针、把文件拷到别处后，报表里 **-993.56 依旧**。用户判断"路径找错了或脚本有问题"——**判断对了一半**。
 
-### 定案证据（本地真实报表目录，msys perl 5.40）
+### 9.2 定案证据（本地真实报表目录，msys perl 5.40）
 
 | 步骤 | 内容 | 结果 |
 |---|---|---|
@@ -404,7 +404,7 @@ set_max_delay [expr $DPLC_CLKP*2] -from .../R_REG06_F_reg_7_/CK -thr .../U_DPLC_
 | ② 修复 | 新 perl（去掉哨兵）跑同一批报表 | 该字段留**空白**，stderr 点名 `report_timing_sd_l_1p_clk_a.rpt has no 'data arrival time' line` |
 | ③ 回归 | 其余字段逐字节比对 | **完全相同**（修哨兵无副作用） |
 
-### 真相一：坏的不止一个文件，另外三个"假得合理"
+### 9.3 真相一：坏的不止一个文件，另外三个"假得合理"
 
 同一 run 的 4 份时钟报表：
 
@@ -417,30 +417,30 @@ set_max_delay [expr $DPLC_CLKP*2] -from .../R_REG06_F_reg_7_/CK -thr .../U_DPLC_
 
 教训：**"有些行看起来正常"比"全部离谱"更危险**。哨兵值至少一眼可疑；非法起点回退出的假数字能一路混进签核表。
 
-### 真相二：服务器上根本没跑新脚本
+### 9.4 真相二：服务器上根本没跑新脚本
 
 最新 `PACK_TAR_0916V5`（16:12）里 `SYNTHESIS/top/sta/post/common/report_timing_skew_sd.tcl` 仍是 **4747 字节的 56 行旧版**（第 15 行还是 DTCTL 层级）。调用链是 `pt_setup.tcl:328/333 source ../../common/report_timing_skew_sd.tcl`（相对 `top/sta/post/pt/<corner>/` 解析）——**文件必须落在 `top/sta/post/common/`，并且要重跑 `run_pt`（`run_summary` 只是重新解析已有 corner 报表，不重跑就不会变）**。
 
-### 处理（本次落地）
+### 9.5 处理（本次落地）
 
 1. **探针**：clk_a → `CLKGEN/u_gate_INV_SD_CLK_INV/CLKINVX4/O`；clk_b → 双源包络（`SD_CLK_INV` + `u_gate_MUX_SD_CLK/CLKMUX2X2/O`）。两点即 SDC 里 `create_generated_clock` 的源 pin（`ip_cons:54-55,60-68`；`read_cons.log:476-486`），pt_shell 按**时钟源**处理——与 HV2M23 做法一致。
 2. **perl 去哨兵**：`$max=0; $min=1000;` → `undef` + `defined()` 保护；新增 `margin()`：任一操作数未测到就输出**空白**；每文件统计 `data_lines`，为 0 时 stderr WARNING 点名文件。
 3. **删掉伪造的 dplc 行**：早前为"填满 perl 期望的文件集"把 1p 的数据探针复制给 dplc——那是**编数字**。改为留空（原流程行为），等真实 DPLC 模式 run（2M23 用 `latest_1p`/`latest_2p` 两套 run 目录）。
 
-### 验证清单（拷服务器后逐条过）
+### 9.6 验证清单（拷服务器后逐条过）
 
 1. 4 份 `*_clk_*.rpt`：>1 KB、`grep -c "data arrival time"` > 0；
 2. `Startpoint:` 必须是 **CLKGEN 的时钟源 pin**（`clock source 'SD_CLK_INV_*'`），**不应再有** `invalid start point (UITE-416)`；
 3. 日志无 `WARNING(get_sd_busskew.pl)`；
 4. `report_sd_busskew.csv` 不再出现 < -100 的 margin，左 CLKA margin 为**带符号个位数**（0 ~ ±3 ns 量级）。
 
-### 结论
+### 9.7 结论
 
 - -900 的完整因果链：**探针层级错 → 1 份空报表 + 3 份非法起点回退 → perl 0/1000 哨兵 → 假 margin 进签核表**。
 - 修完还见 -900 的原因**不在脚本逻辑，而在投放位置 + 是否重跑 corner**：改副本无效，只跑 `run_summary` 无效。
 - 遗留：DPLC 模式 CLKB 的独立 `DPLC_CLK`（`CLKGEN.v:182,190`，`u_gate_MUX_DPLC_CLK/O`）在 SDC 里**还没有** `create_generated_clock`，要测它得先在 ip_cons 补定义；合格窗规格（1V11 `[-2.5:+2.5]`/`[-1:4]` vs 指南 `[-1:+6]`）仍待后端确认。
 
-### 证据文件
+### 9.8 证据文件
 
 | 文件 | 内容 |
 |---|---|
@@ -448,46 +448,46 @@ set_max_delay [expr $DPLC_CLKP*2] -from .../R_REG06_F_reg_7_/CK -thr .../U_DPLC_
 | `修改记录/evidence_skew_fix_20260916/` | 本地复现证据：`old.out`（精确复现 -993.55687）、`new.out`（该字段转空白）、`new.err`（WARNING 点名空报告文件） |
 | 代码入库 `3a2de19`（HK1V11） | `report_timing_skew_sd.tcl` / `_io.tcl` / `get_sd_busskew.pl` 修复 + 报告与 PDF |
 
-## 案例 10：MPW 规格与"pulse 是不是时钟周期的一半"
+## 10. 案例 10：MPW 规格与"pulse 是不是时钟周期的一半"
 
 > ⚠️ **本案例"处理"段的 case_analysis 与 SHORT 留模板方案已被案例 12 推翻**（终版：无 case、SHORT 族同值 2/0.73、clk_period 零修改）；以下仅保留仍然有效的概念，处理细节见 git 历史（commit `c15fe91`）。
 
-### 现象
+### 10.1 现象
 
 SD 输出口补上 `set_min_pulse_width` 检查（批次 1）后，wc_cbest 一次冒出 **8 条违例**（worst CLKA_L **-0.365**）。规格链：MPW SPEC = **2ns**；3G(DPLC) 时 6.37/2=3.175 → 余量 1.175；5G 若按同余量反推检查值只剩 **0.73**。
 
-### 有效概念（三问）
+### 10.2 有效概念（三问）
 
 - **pulse = 半周期只对 50% 占空比成立**：LONG 链（÷2，50%）低相 = T/2；SHORT 链（`edges {1 3 4}` 非对称）低相 = **T/3**——两条链低相恰好同值（1.905），数字没露馅但概念是错的。
 - **5G 通道口上的活时钟 pulse 是 3.81/5.715 不是 1.905**（RTL `CLKGEN.v:179/185` ÷2 链 + SDC master 链双证）；1.905 是 normal 模式下片上已死的 lane 侧时钟脉冲。
 - **规格是绝对值（2ns 面板采样需求），余量是结果**：5G 余量 1.81/3.715 比 3G 的 1.175 更宽，不存在"必须保住 1.175"的问题。
 - **MPW 分时钟族设阈值**：幻影时钟给等余量阈值（0.73 = 1.905−1.175），检查保持开启，真实恶化仍会报警。
 
-## 案例 11：DPLC_CASE 与 3G/5G 速率开关——为什么 1V11 只有一套约束
+## 11. 案例 11：DPLC_CASE 与 3G/5G 速率开关——为什么 1V11 只有一套约束
 
 > ⚠️ **本案例的 DPLC_CASE/SP_CASE 双开关与按编码分 case 方案已被案例 12 全部推翻**（终版：无任何 case/开关/if-else）；以下仅保留结构性事实，方案细节见 git 历史（`5f78f6f`/`130f773`）。
 
-### 仍然有效的结构性事实
+### 11.1 仍然有效的结构性事实
 
 - **MPW 值只跟速率轴、不跟编码轴**：正常腿 LONG/SHORT 都 >2、数据腿低相恰好同值 1.905（T/2 与 T/3 来历不同数字相同）。
 - **`SP_I` 是物理引脚静态声明**（板上绑死，2M23 `DPSEL_I` 对应物），不是按 run 翻的开关。
 - **2M23 双网表/RX0+RX1 双周期是双 lane 结构使然**（10.08/17.1 独立时钟域并存）；1V11 单 RX_CLK + 双速率共存（RX_CLKP 3.81 / DPLC_CLKP 6.35），结构不同，不能照抄双 case。
 
-## 案例 12：最终定稿——不用 case，per-clock MPW 就够了
+## 12. 案例 12：最终定稿——不用 case，per-clock MPW 就够了
 
 > 演进链：v1 port 级统一 MPW=1.9（8 条幻影违例）→ v2 per-clock 2/0.73 + case_analysis 双开关/if-else（过度工程，案例 10/11，已删）→ **v3 终版：无 case，纯 per-clock MPW 2/0.73** ✅。原"终版补遗"节与本节合并（0917 深夜定稿）。
 
-### 现象
+### 12.1 现象
 
 案例 10/11 讨论了 case_analysis、速率开关、if/else MPW——最终用户全部推翻：**一个都不需要**。clk_period.tcl 的老设计本来就是正确的。
 
-### 为什么不需要 case（三句话）
+### 12.2 为什么不需要 case（三句话）
 
 1. clk_period 老设计 = **两档速率共存**：RX_CLKP 3.81 管大部分路径（5G），DPLC_CLKP 6.35 管 DPLC 路径（3G）——同一个 run 里各查各的，不需要拆成两次跑。
 2. MPW 按**时钟对象**设值（非端口）：正常腿 2 / 数据腿 0.73——每族带自己的阈值，不活跃的族无 arrival 无检查自动空转。不需要 case 杀时钟。
 3. 2M23 要 DPSEL_I case 是因为 RX0/RX1 是**两条物理 lane**（10.08/17.1 独立时钟域）；1V11 单 RX_CLK + 双速率共存，结构不同。
 
-### 最终约束（ip_cons：4 行 set_max_delay + 14 行 MPW，合计 18 行活动约束；定稿 commit `a3049b7`）
+### 12.3 最终约束（ip_cons：4 行 set_max_delay + 14 行 MPW，合计 18 行活动约束；定稿 commit `a3049b7`）
 
 ```tcl
 set_max_delay 14 -to CLKA_L
@@ -500,7 +500,7 @@ set_min_pulse_width -low -high 0.73 [get_clocks DCLK_DATA_LONG]   # +DCLK_DATA_M
 
 无 false_path、无 if/else、无开关变量、clk_period 零修改。
 
-### 被推翻的方案（防回流）
+### 12.4 被推翻的方案（防回流）
 
 | 方案 | 否决理由 |
 |---|---|
@@ -510,21 +510,21 @@ set_min_pulse_width -low -high 0.73 [get_clocks DCLK_DATA_LONG]   # +DCLK_DATA_M
 | 端口预算 12 / 12.7 | 终值 14（=2M23 原值，覆盖配置路径 12.4） |
 | G12（总线 12.7） | 被 14 覆盖，SUPERSEDED |
 
-### 2M23 参照
+### 12.5 2M23 参照
 
 - `HV2M23_digital_top.tcl:657-660`：`set_max_delay 14 -to CLKA/CLKB × L/R`——**我们照抄了**
 - L591-609：数据口 `set_output_delay -min 2.6/2.2`（将来批次 4）
 - L647-650：时钟口 `set_output_delay 0.5`（同上）
 - 2M23 的 DPSEL_I case：RX0/RX1 两条物理 lane 选数据通路——1V11 没这个结构
 
-### 结论
+### 12.6 结论
 
 - 约束不是越多越精密越好——**老设计已经正确时，最好的改动是不改**
 - "跑两个 case"的方案精准但复杂度加倍，用户否决正确
 - pulse = 半周期只对 50% 占空比成立（LONG 链 T/2、SHORT 链 T/3，低相恰好同值 1.905）
 - MPW 按时钟对象设值即可同时覆盖活跃/不活跃族，无需 case 机制
 
-### 证据文件
+### 12.7 证据文件
 
 | 文件 | 内容 |
 |---|---|
@@ -532,15 +532,15 @@ set_min_pulse_width -low -high 0.73 [get_clocks DCLK_DATA_LONG]   # +DCLK_DATA_M
 | clk_period.tcl | 零修改（原始五行：MARGIN/OSC/I2C/RX_CLKP 3.81/DPLC_CLKP 6.35） |
 | HV2M23_digital_top.tcl:657-660 | `set_max_delay 14` 照抄样板 |
 
-## 案例 13：俊杰口径全面 review——中间路径 setup/hold 卡、输出口 MPW 卡
+## 13. 案例 13：俊杰口径全面 review——中间路径 setup/hold 卡、输出口 MPW 卡
 
 > **俊杰原则**（最高指导）：*"中间的路径都是 setup/hold 去卡；只有输出的这几个 CLKA_L/CLKB_L/CLKA_R/CLKB_R 相关的用 MPW 去卡，卡的方法就是 generate 出来，然后对 generate 出来的分别取不同的 MPW"*
 
 这是对最终定稿版（无 case、clk_period 原始、14 行无条件约束）的一次全面交叉检查——**三个方面全部干净，不需要改任何东西**。
 
-### 三方面 review 结果
+### 13.1 三方面 review 结果
 
-#### 方面 1：MPW 14 行有没有过度？
+#### 13.1.1 方面 1：MPW 14 行有没有过度？
 
 | 时钟对象族 | 是否到达输出口 | 证据 |
 |---|---|---|
@@ -551,7 +551,7 @@ set_min_pulse_width -low -high 0.73 [get_clocks DCLK_DATA_LONG]   # +DCLK_DATA_M
 
 **结论：14 行没有过度。**
 
-#### 方面 2：其他约束需要联动修改吗？
+#### 13.1.2 方面 2：其他约束需要联动修改吗？
 
 | 交互对 | 冲突？ | 证据 |
 |---|---|---|
@@ -563,7 +563,7 @@ set_min_pulse_width -low -high 0.73 [get_clocks DCLK_DATA_LONG]   # +DCLK_DATA_M
 
 **结论：零冲突，不需要联动修改。**
 
-#### 方面 3：skew 脚本需要调整吗？
+#### 13.1.3 方面 3：skew 脚本需要调整吗？
 
 | 检查项 | 结论 |
 |---|---|
@@ -574,7 +574,7 @@ set_min_pulse_width -low -high 0.73 [get_clocks DCLK_DATA_LONG]   # +DCLK_DATA_M
 
 **结论：skew 脚本不需要调整。**
 
-### 分层设计的精髓
+### 13.2 分层设计的精髓
 
 俊杰口径的核心是**分层**：
 
@@ -595,13 +595,13 @@ set_min_pulse_width -low -high 0.73 [get_clocks DCLK_DATA_LONG]   # +DCLK_DATA_M
 
 ---
 
-## 案例 14：RX_CLK 50 条逐族判定——true path 与设计评审项
+## 14. 案例 14：RX_CLK 50 条逐族判定——true path 与设计评审项
 
-### 现象
+### 14.1 现象
 
 0918V0 run（终版约束体系验证通过：MPW 0 违例、skew slack 8.729=14−5.271、setup 129）后，wc_cbest_125 仍剩 **RX_CLK 组 50 条 setup 违例**。问题：这些都是真路径吗？有没有可以约束掉的？
 
-### 逐族判定（按 worst 15 分析，全带 RTL file:line 证据）
+### 14.2 逐族判定（按 worst 15 分析，全带 RTL file:line 证据）
 
 | 族 | 条数 | worst | 性质 | 处理方式 |
 |---|---|---|---|---|
@@ -611,7 +611,7 @@ set_min_pulse_width -low -high 0.73 [get_clocks DCLK_DATA_LONG]   # +DCLK_DATA_M
 | **A3** DESCRAMBLE | 2 | -0.049 | 同域轻微 | 随 APR |
 | **A0** BUFFER_I | 1 | -0.083 | 同域轻微 | 随 APR |
 
-### 深度链路追踪：worst path (-0.496)
+### 14.3 深度链路追踪：worst path (-0.496)
 
 DATA_POINT_LAT_reg_13_ → lag_det_reg（同域 RX_CLK，无中间寄存器，单周期）：
 
@@ -622,7 +622,7 @@ DATA_POINT_LAT_reg_13_ → lag_det_reg（同域 RX_CLK，无中间寄存器，�
 
 **功能语义**：flag_det 是 **auto-EQ 训练判定标志**（准静态：set 一次就保持）。K4_FIND→flag_det 的复位**很可能不需要下一拍生效**——可修法与 0917V1 SHORT_ENCODING_ALIGN 完全相同（RTL 打一拍或 mc2）。~~待俊杰确认。~~ **后续（0929-30）：G13 两分支 RTL 打一拍已落地并服务器实证，本项不再阻塞。**
 
-### 结论
+### 14.4 结论
 
 1. **50 条全部是 true path**（物理上同域、无中间寄存器、有数据流），**没有一条可以当前约束修掉**。
 2. 但 **A1 worst（flag_det/cnt_flag）和 B 族（半周期）可能通过设计修改消除**——A1 是准静态标志可打拍，B 是 negedge 采样可改 posedge。
@@ -630,17 +630,17 @@ DATA_POINT_LAT_reg_13_ → lag_det_reg（同域 RX_CLK，无中间寄存器，�
 
 > **【规律修正 2026-09-20，见案例 16】** 本案例归纳的"直接例化库 cell 无层级层"结论**有误**：真规律是 **AL9 后缀=叶子 cell（无层）/ 无后缀（CLKINVX4 等包装模块）=层级保留**。V3 报表实证两者并存。修正采用双形式防呆写法，且——用户当时的写法本来是对的。
 
-## 案例 15：同名 -add 生成时钟 → MPW 幻影违例（负脉宽）
+## 15. 案例 15：同名 -add 生成时钟 → MPW 幻影违例（负脉宽）
 
 > ⚠️ **归因修正（2026-09-20，见案例 17）**：本案例"同名 -add 双 master 波形合并"的归因**不成立**——0920V1 改名为 DPLC_CLK_SHORT 后，MPW 数字（6.334/5.727/-0.607）与改名前一模一样，单一 master 依然负脉宽。**真根因是时钟 mux 无 case 的多分支传播**（MUX_DPLC_CLK 两条腿 + DTCTL 的 DPLC_MODE_TRUE 选择），rise/fall 沿从不同分支到达、延迟差 2.66ns → 脉宽检查交错配对出负脉冲。改名只解决了 write_sdc 同名只留一条的问题，负脉宽伪影需要 case_analysis 或等效机制根治。
 
-### 现象（0920V1 run）
+### 15.1 现象（0920V1 run）
 
 - MPW 从 **0 违例 → 40 条**，全部 `Related clock: DPLC_CLK`，Check: `clock_tree_pulse_width`
 - 典型路径 CLKB_L 端口：rise 沿到达 **6.334ns**、fall 沿到达 **5.727ns** → actual pulse width **-0.607ns（负值，物理不可能）**，required 0.73，slack -1.337
 - 伴生两个症状：hold **+4 条**（DPLC_CLK 发起的 gating hold 检查，data_cnt_pre_reg）；LONG 腿 DPLC_CLK 生成时钟本轮没物化
 
-### 根因（SDC 建模错误）
+### 15.2 根因（SDC 建模错误）
 
 mux 输出 pin（`u_gate_MUX_DPLC_CLK/MUX2X2/O`）上两条生成时钟用了**同一个名字 `DPLC_CLK`**——两个不同周期的 master（LONG 腿 `DCLK_DATA_LONG` 3.81ns + SHORT 腿 `DPLC_CLK_SHORT_DIV` 5.715ns）以 `-add` 同名定义：
 
@@ -649,27 +649,27 @@ mux 输出 pin（`u_gate_MUX_DPLC_CLK/MUX2X2/O`）上两条生成时钟用了**�
 
 **为什么没早发现**：既有惯例本来就是正确答案——SD_CLK 引脚上的 4 个变体用的就是 4 个**不同名字**（SD_CLK_SHORT/LONG/DPLC_SHORT/DPLC_LONG）。违反惯例时**没有任何报错**，只有两个间接症状（同名只物化一条 + 负脉宽）。
 
-### 修复（commit 2734ee3）
+### 15.3 修复（commit 2734ee3）
 
 两条腿改为不同名字：`DPLC_CLK_LONG`（master DCLK_DATA_LONG）/ `DPLC_CLK_SHORT`（master DPLC_CLK_SHORT_DIV）；MPW 列表同步两行；rx 时钟组通配 `DPLC_CLK*` 天然覆盖。修复验证中（用户重跑 0920V2）。
 
-### 本轮对照：其余全部达标
+### 15.4 本轮对照：其余全部达标
 
 setup **51/-0.632**（上一轮 2 条跨域 gating 假违例已消失，见案例 14 后续）、RX_CLK 35/-0.444、lt/ml/tt 全 0、**dplc skew 80 格首次全有数**、SEL=0。
 
-## 案例 16：V3 过渡态——新网表切换 + 约束完善同轮发生，1053 条假违例的定位与一次收口
+## 16. 案例 16：V3 过渡态——新网表切换 + 约束完善同轮发生，1053 条假违例的定位与一次收口
 
-### 背景
+### 16.1 背景
 
 V3 = 用户从 DC 找到的**第一个有效新网表**（新 RTL 重综合：K4_FIND 打拍已进网表、CLKGEN 改名 CLKMUX2X2 / 新增 u_gate_INV_DPLC_CLK_LONG、I2C_ST 重构改用 I2C_CLK_INV 时钟）。**网表本身是好的，是新基线**——数字爆炸全部是 SDC 侧缺口被新网表暴露。
 
-### 现象（0920V3 run，wc_cbest）
+### 16.2 现象（0920V3 run，wc_cbest）
 
 - setup **51 → 1053 条 / -6.865**（WCLK1_A_DCLK_LONG 组 320 条 I2C 假族 + gating 79）
 - hold 1917 / -5.078（**+171 与 setup 假族同源**）
 - MPW 37（负脉宽伪影）；DPLC 时钟 4 条定义只物化 1 条
 
-### 三个根因与修复（commit 88ac9c5 + 63809e2）
+### 16.3 三个根因与修复（commit 88ac9c5 + 63809e2）
 
 | # | 根因 | 修复 |
 |---|---|---|
@@ -677,7 +677,7 @@ V3 = 用户从 DC 找到的**第一个有效新网表**（新 RTL 重综合：K4
 | 2 | **DPLC pin 半改**：手改 ip_cons 只改了 1/3 处（MUX2X2→CLKMUX2X2），时钟定义链断 | DPLC 链 5 条时钟全定义（1P5_SHORT / SHORT_DIV / LONG_LEG / LONG / SHORT）+ 双形式防呆 pin |
 | 3 | **配置位假 gating 暴露**：79 条 gating 大部分是配置位（DPLC_GROUP 等）准静态使能被按每周期检查 | CPUWR 毯子（2M23 L666 同款）`set_multicycle_path 2/1 -through u_.../LC_CPUWR/R_*`，G14 标 SUPERSEDED |
 
-### 案例 14 教训修正（重要）
+### 16.4 案例 14 教训修正（重要）
 
 之前归纳的"直接例化库 cell 无层级层"是**错的**。V3 报表实证的真规律：
 
@@ -687,20 +687,20 @@ V3 = 用户从 DC 找到的**第一个有效新网表**（新 RTL 重综合：K4
 - **流程教训**：用户写的 `/CLKINVX4/O` 本来是对的，AI 拿错误归纳的"规律"去推翻——**必须先查网表报表证据再动手改别人的正确修改**
 - 终极方案：双形式防呆 proc（先试 /O 再试 /CLKINVX4/O），网表打平差异免疫
 
-### G14 → 毯子的架构升级
+### 16.5 G14 → 毯子的架构升级
 
 2M23 用一条毯子 `-through LC_CPUWR_*/R_*` mc 2/1 盖全部配置位（L666-667），其 L727-732 有被注释的逐 pin 历史——他们也走过打地鼠再改毯子。1V11 采纳同款。审计结论：LC_CPUWR 41 个 reg 全是配置/写接口/帧率慢信号（checksum/match 计数器每帧级，无 ns 级动态）；LC_REG_MAPPING 纯映射 + 3 个配置采样寄存器（R_PWRCP/R_PWRCN_COP、BKDU_SYNC 在动态选通 BIT_ALIGN_PT 下采样配置——**选通路径不从配置寄存器出发、不被毯子覆盖、保持全查**）。
 
-### V5 预期（修复已入库，等 run 验证）
+### 16.6 V5 预期（修复已入库，等 run 验证）
 
 setup **~40-50 真路径** · gating **~6** · hold **~1746 基线** · MPW **0** · dplc skew **全行**。
 
-### 汇报口径（预期管理）
+### 16.7 汇报口径（预期管理）
 
 V3 数字是切换过渡态一次性暴露——邮件重点给 V5 预期轨迹和已确认成果（MPW 清零、K4_FIND 结构消失、DPLC 首次可测、毯子），不渲染"问题扩大"。
 
 **补充教训**（合并自第二份重复写入）：网表切换轮的爆炸要先假设**既有约束缺口被暴露**，逐族定位归因，不要先怀疑网表；过渡态 ≠ 回归（换网表+补约束同轮发生时，逐族分辨"新暴露的旧缺口"与"真新问题"，本例 100% 是前者）。
-## 心法清单
+## 17. 心法清单
 
 1. **先同 corner 对齐，再谈工具差异**（案例 2 第一步省掉半天弯路）
 2. **SEL-004/005 计数是约束链的回归指标**（案例 1/5）
@@ -732,9 +732,9 @@ V3 数字是切换过渡态一次性暴露——邮件重点给 V5 预期轨迹�
 29. **跨网表传递的约束 `-to` 用时钟对象不用寄存器**（-from 落 /CK 稳定，-to 落数据脚 D/D1/D2 随 DC 映射变化）；约束"不生效"先查三件套（SEL-004 / report_exceptions.rpt / capture 边沿第几拍）；冲突判定看 write_sdc 落地对象集合是否相交（`*` 跨 `/`，`R_REG*_F_reg*` 匹配不到 `_L_`）；max_delay 的 `-to 层级/*` 与 `/*/D*` 是两种检查，固定值对深时钟树结构性必爆——改完约束 diff 落地产物再跑（案例 21）
 
 
-## 案例 17：0920V6——修复全部生效，假违例清零；MPW 37 条伪影为唯一残留
+## 18. 案例 17：0920V6——修复全部生效，假违例清零；MPW 37 条伪影为唯一残留
 
-### 四维对账（vs V3 过渡态，全部达标）
+### 18.1 四维对账（vs V3 过渡态，全部达标）
 
 | 维度 | V3（过渡态） | V6 | 判定 |
 |---|---|---|---|
@@ -746,24 +746,24 @@ V3 数字是切换过渡态一次性暴露——邮件重点给 V5 预期轨迹�
 | 毯子物化 | — | **44 条 mc**（`-through LC_CPUWR/R_*`） | ✅ |
 | I2C_CLK_INV 入组 | — | ✅ | ✅ |
 
-### 唯一残留：MPW 37 条负脉宽伪影（DPLC_CLK_1P5_SHORT）
+### 18.2 唯一残留：MPW 37 条负脉宽伪影（DPLC_CLK_1P5_SHORT）
 
 - 现象：CLKB_L 等端口 `clock_tree_pulse_width`，actual pulse **-0.607 / -0.584**（负值，物理不可能）
 - **真根因（最终版）**：时钟链上的 mux 无 case 时 PT 沿多分支同时传播（MUX_DPLC_CLK 双腿 + DTCTL `DPLC_MODE_TRUE` 选择），rise/fall 沿从不同分支到达、延迟差 2.66ns → 脉宽检查交错配对出负脉冲。**物理上每个真实模式只有唯一路径，不存在脉冲坍缩**
 - 案例 15 的"同名 -add"归因被推翻：改名为 DPLC_CLK_SHORT 后数字**一模一样**（6.334/5.727/-0.607），单一 master 也一样负脉宽——**改名只解决 write_sdc 同名只留一条，负脉宽需 case_analysis 或等效机制根治**（用户当前选不折腾，接受伪影/待模拟确认窗口）
 - 伴生待查：DPLC 时钟物化 1/5——dplc_pin proc 运行但两种形式（`/O` / `/CLKINVX4/O`）都未匹配（SEL-005），新网表反相器 pin 真实形式待从数据库/netlist 取证
 
-### 教训
+### 18.3 教训
 
 - **修复后数字一字不差 = 归因错误**：改名后 MPW 数字逐位相同（6.334016/5.727087/-0.606930），说明问题不在改名处——这是识别"错归因"最干脆的信号
 - **伪影的根治与收敛要分开**：案例 15 的同名问题（write_sdc 不确定性）确实修了也属实；案例 17 的负脉宽是另一个叠加问题，不能混为一谈
 
-### 汇报口径
+### 18.4 汇报口径
 
 V3/V6 为切换过渡态：修复全部入库、V6 已验证清零；MPW 37 条为伪影（物理不可能），待模拟确认窗口或后续 case 化处理。
 
 
-## 未闭环清单
+## 19. 未闭环清单
 
 | 项 | 状态 |
 |---|---|
@@ -786,13 +786,13 @@ V3/V6 为切换过渡态：修复全部入库、V6 已验证清零；MPW 37 条�
 | DPLC_CASE=1（3G）签核 run：`clk_period.tcl` 速率开关已备（RX_CLKP 6.35/3.81），待 jjlu 确认出货模式后跑 | ⏳ |
 | G10 `2×DPLC_CLKP=12.7` 表达式在 5G/3G 速率切换下的语义复核 | ⏳ 复核项 |
 
-## 案例 21：约束明明写了却"不生效"——三个真凶都在落地环节，不在语法（0921 POSTPT）
+## 20. 案例 21：约束明明写了却"不生效"——三个真凶都在落地环节，不在语法（0921 POSTPT）
 
-### 背景
+### 20.1 背景
 
 UTC_FRM_CNT 计数器路径（发射寄存器 `LC_CPUWR/R_REG00_L_reg_0_`，时钟 `WCLK1_A_CHPI_DCLK_SHORT` 5.715ns；捕获 `UTC_FRM_CNT_reg_4_`，时钟 RX_CLK 3.81ns）违例 **−0.369**，但约束文件里明明有对应 multicycle——约束"写了"和约束"生效"之间，隔着整条落地链。
 
-### 真凶一（主案例）：`-to` 写寄存器 pattern，write_sdc 落成 DC 网表的数据脚名，APR 网表没有 → 异常被静默丢弃
+### 20.2 真凶一（主案例）：`-to` 写寄存器 pattern，write_sdc 落成 DC 网表的数据脚名，APR 网表没有 → 异常被静默丢弃
 
 - ip_cons 里写 `-to .../SHORT_ENCODING_ERROR_CTRL/*UTC_FRM_CNT_*`，PREPT 的 write_sdc 把它展开成 `[get_pins {.../UTC_FRM_CNT_reg_5_/D1 .../D2}]` 共 16 个脚。
 - 为什么是 D1/D2：**DC 网表里该寄存器是复合单元** `AND2DFFRBQX1AL9 (.D1() .D2())`；**APR 网表里是普通** `DFFRBQX1AL9 ... /D`。
@@ -800,22 +800,22 @@ UTC_FRM_CNT 计数器路径（发射寄存器 `LC_CPUWR/R_REG00_L_reg_0_`，时�
 - 同类受害者：G9 约束 `bcc_rx_reply_prdata_reg_0..4,9` 的 `/D1,/D2` 同样被丢（同一份 log 里 **56 条 SEL-004**）。
 - 修复：**`-to` 一律用时钟对象**（如 `-to RX_CLK`），clock 对象落地为 `[get_clocks {RX_CLK}]`，与网表版本无关。证据：`-from R_REG*_F_reg* -to RX_CLK` 落地后在 report_exceptions.rpt 里表现为 `... } * RX_CLK cycles=2(start)`，正常生效。
 
-### 真凶二：怀疑"两条 multicycle 一个 -start 一个 -end 冲突"——先用落地对象证伪
+### 20.3 真凶二：怀疑"两条 multicycle 一个 -start 一个 -end 冲突"——先用落地对象证伪
 
 - 用户怀疑 `-from R_REG*_F_reg* -to RX_CLK`（mc2 -start）与 UTC 专用 mc（-end）冲突。
 - 实测（read_cons.log 落地结果）：前者 -from 是 **346 个 pin 全部为 `_F_` 区域**，`R_REG00_L` 出现 **0 次**；后者 -from 恰是 **8 个 `R_REG00_L_reg_*/CK`**。两个集合完全不相交，不可能有路径同时匹配 → **不是冲突**。
 
-### 真凶三：if/else 合并时丢了 `/D*` 端点限定，max_delay 抓进内部节点 → 伪违例 −3.8
+### 20.4 真凶三：if/else 合并时丢了 `/D*` 端点限定，max_delay 抓进内部节点 → 伪违例 −3.8
 
 - DPLC 数据发生器约束原为 pt_shell 分支 `set_max_delay $DPLC_CLKP -to .../U_DPLC_DATA_GEN/*/D*`（6.35ns，只查寄存器 D 脚）；合并/回退时 `/D*` 丢失，变成 `-to .../U_DPLC_DATA_GEN/*`，层级内部中间节点（如 `data_copy`，报告显示 "internal path endpoint"）也成了检查点。
 - 这种内部端点 required 是裸 6.35，arrival 却含 6.819ns 发射时钟树 → **结构性必爆 −3.815**，而正式 run 的 worst 其实只有 −0.4 左右。
 - 修复：恢复 `/*/D*` 与 `data_out_tmp*/D*`。
 
-### 收尾状态
+### 20.5 收尾状态
 
 约束文件收敛为：一个 `R_REG*` 组（F+L 区域）× 4 个 `-to`（RX_CLK / OSC_CLK / DCLK_DATA_* / SD_CLK_INV_*）共 8 行 mc，全文件所有 multicycle 统一 `2 -start -setup` + `1 -start -hold`，无数值冲突。旧的 "R_REG* 爆炸"（289~1000+ 条违例）是**无 `-to` 的裸 blanket** 所致，与带明确 `-to` 的组约束不是一回事。
 
-### 心法 29
+### 20.6 心法 29
 
 **`-from <寄存器>` 落成 /CK 脚（稳定），`-to <寄存器>` 落成数据脚（D / D1/D2，随 DC 映射单元变化）——跨网表传递的约束，-to 要用时钟，不要用寄存器。**
 
@@ -825,7 +825,7 @@ UTC_FRM_CNT 计数器路径（发射寄存器 `LC_CPUWR/R_REG00_L_reg_0_`，时�
 2. 判断约束冲突不要看源码猜，**看 write_sdc 落地后的对象集合是否相交**；Synopsys 通配符 `*` 会跨 `/`，`R_REG*_F_reg*` 字面含 `_F_reg`，永远匹配不到 `_L_` 寄存器。
 3. `set_max_delay` 的 arrival 含发射时钟树延迟，固定值对深时钟树的结构性必爆；**`-to <层级>/*` 和 `-to <层级>/*/D*` 是两种完全不同的检查**。每次改完约束，**diff 一遍 write_sdc 的落地产物再跑**。
 
-## 案例 18：setup.rpt 双重计数——把 report 汇总行当分组加总
+## 21. 案例 18：setup.rpt 双重计数——把 report 汇总行当分组加总
 
 **症状**：0920V6 评估时我把 setup 总数算成 99 条，实际应为 49 条。
 
@@ -840,7 +840,7 @@ UTC_FRM_CNT 计数器路径（发射寄存器 `LC_CPUWR/R_REG00_L_reg_0_`，时�
 
 **教训（心法 25）**：读总数读 setup.rpt 行，不是分组加总——分组行之间有重叠（一条路径可能同时属于 RX_CLK 和 gating 组）。连续三轮犯同一个错误，用户抓出来的。
 
-## 案例 19：V7 全域爆炸——块替换删掉一行 create，sourcing 中断、全部约束失效
+## 22. 案例 19：V7 全域爆炸——块替换删掉一行 create，sourcing 中断、全部约束失效
 
 **症状**（0920V7 run，"完全用不了"）：全域跨域爆炸，各 corner ~1000 条/corner，比 V3（1053）范围更广——这次连时钟组都没了。数字快照（wc_cbest）：setup 1000 条 / -9.84、WCLK1_A_DCLK_LONG 480 条 / -9.71、WCLK1_A_DCLK_SHORT 480 条 / -9.66、I2C_CLK 480 条 / -4.05、I2C_CLK_INV 480 条、WCLK1_A_I2C 480 条、async 488 条 / -7.0、gating 71-75——全部是 sourcing 中断后"无约束裸奔"的数字，不代表真实时序。
 
@@ -853,26 +853,26 @@ UTC_FRM_CNT 计数器路径（发射寄存器 `LC_CPUWR/R_REG00_L_reg_0_`，时�
 
 **心法 26**：块替换后必须 diff 验证——行数对照 + 关键行存在性检查（本次 38→25 的 13 条差异里混着 1 条不该删的 create，只确认了"替换成功"没查内容完整性）。心法 27：**sourcing 中断 = 约束静默失效的最暴力形式**——一行 create 报错可能中断整个约束文件加载，后面几百行约束全部不存在；症状（全域跨域爆炸）与根因（一行缺失）距离极远，排查第一步永远是"约束到底加载到了第几行"（read_tcl.log 里最后的行号/内容）。判别特征：爆炸范围覆盖本来互不相干的多个域（I2C + WCLK1_A + async 同时爆）→ 先怀疑 sourcing 中断，再怀疑单点约束错误。
 
-## 案例 20：毯子 -through → -from——gating 检查覆盖差异 + 用户一次纠正省掉三轮 run
+## 23. 案例 20：毯子 -through → -from——gating 检查覆盖差异 + 用户一次纠正省掉三轮 run
 
-### 背景
+### 23.1 背景
 
 0921V1 run：DPLC 时钟**4/4 全部物化**（通配符 pin 生效），hold 零回归——但 setup 从 49 涨到 57、gating 从 15 涨到 17，worst 从 -0.632 恶化到 **-1.099**。
 
-### 新增 2 条 gating 违例分析
+### 23.2 新增 2 条 gating 违例分析
 
 | 起点寄存器 | worst | 性质 |
 |---|---|---|
 | R_REG05_F_reg_6_ | **-1.099** | 配置位（_F 族）——**毯子应该盖住它！** |
 | R_REG06_F_reg_2_ | -1.072 | 配置位（= R_DPLC_MODE，_F 族）——同上 |
 
-### 根因：-through 对 gating 检查不生效
+### 23.3 根因：-through 对 gating 检查不生效
 
 CPUWR 毯子用的是 `-through u_.../LC_CPUWR/R_*`——但 clock-gating 检查的**终点是门控单元（SNPS_CG_CELL 等），不是普通寄存器 D pin**。`-through` 模式匹配需要经过指定 pin 的**数据路径**，而 gating 检查的路径形态（enable 数据 vs 时钟沿）不走 LC_CPUWR 的输出引脚路径——因此 -through 覆盖不到。
 
 **用户指出**：改成 `-from`（从寄存器 cell 出发）就覆盖了——`-from` 对**所有终点类型**生效（数据 D pin、gating 使能、mux select）。
 
-### 修复（commit 890360d，单次完成）
+### 23.4 修复（commit 890360d，单次完成）
 
 | 变更 | 内容 |
 |---|---|
@@ -880,7 +880,7 @@ CPUWR 毯子用的是 `-through u_.../LC_CPUWR/R_*`——但 clock-gating 检查
 | G14b 删除 | 被 -from 毯子取代（分 bit 补丁不需要了） |
 | R_REG00_L mc 2→3 | UTC_FRM_CNT 路径 -0.542ns 跨时钟展开伪影（WCLK1_A_CHPI_DCLK_SHORT 5.715 vs RX_CLK 3.81，最小公共窗口 11.43），mc3 再扩 5.715ns 应清零 |
 
-### 网表版本核对
+### 23.5 网表版本核对
 
 | 侧 | 网表 | 关键发现 |
 |---|---|---|
@@ -889,12 +889,12 @@ CPUWR 毯子用的是 `-through u_.../LC_CPUWR/R_*`——但 clock-gating 检查
 
 **两套名字的解法**：通配符 pin（`u_gate_INV_DPLC_CLK*/*/O`）同时匹配。
 
-### 心法 28
+### 23.6 心法 28
 
 **`-through` 对 gating 检查可能不生效；准静态寄存器用 `-from` 更保险**——gating 终点是门控单元不是 D pin，-through 匹配的是数据路径经过的 pin；-from 从寄存器出发对全部终点类型生效。用户一次纠正省掉了三轮"分 bit 补丁→跑→再补"的循环。
 </script>
   <script src="./js/site.js?v=2"></script>
-  <script src="./fx.js?v=6"></script>
+  <script src="./fx.js?v=8"></script>
 </body>
 </html>
-<!-- ymzhu 2026-10-27 14:06 -->
+<!-- ymzhu 2026-11-02 19:20 -->

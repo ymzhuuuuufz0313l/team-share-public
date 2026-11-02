@@ -11,7 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet">
   <title>整体架构 · HK1V11 420b 长编码验证体系</title>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-  <link rel="stylesheet" href="./fx.css?v=3">
+  <link rel="stylesheet" href="./fx.css?v=5">
   <style>
 :root {
       --bg: #f4f1ea;
@@ -437,7 +437,23 @@
       color: var(--accent);
       font-weight: 600;
     }
-    .toc a.toc-h3 { padding-left: 20px; font-size: 13px; }
+    .toc a.toc-h2 { position: relative; padding-left: 24px; } /* 所有 h2 预留箭头槽位 */
+    .toc a.toc-h3 { padding-left: 38px; font-size: 13px; }
+    .toc .toc-arrow {
+      position: absolute;
+      left: 6px;
+      top: 50%;
+      transform: translateY(-50%) rotate(90deg);
+      font-size: 11px;
+      color: var(--muted);
+      cursor: pointer;
+      user-select: none;
+      padding: 2px 4px;
+      transition: transform .15s, color .15s;
+    }
+    .toc a.collapsed .toc-arrow { transform: translateY(-50%) rotate(0deg); }
+    .toc .toc-arrow:hover { color: var(--accent); }
+    .toc-h3-group.collapsed { display: none; }
     h2, h3 { scroll-margin-top: 72px; }
     .content { flex: 1; min-width: 0; }
     @media (max-width: 1024px) {
@@ -480,7 +496,6 @@
       <a href="./encoding.html">编码</a>
       <a href="./issues.html">问题</a>
       <a href="./debug-log.html">排障</a>
-      <a href="./next.html">后续</a>
     </div>
   </div>
 </nav>
@@ -520,7 +535,7 @@
 
 接收端验证**不再依赖 DUT 解码结果**：用 `bind` 在 K 码对齐点抓线上 20-bit 数据，Python 直接离线解码，与发送端原始字节逐区域比对。
 
-![收发结构框图：脚本离线验证](./anim/pydec_tx_rx_structure.svg?v=20261101)
+![收发结构框图：脚本离线验证](./anim/pydec_tx_rx_structure.svg?v=20261102)
 
 <div class="flow">
   <div class="fbox"><b>① 抓取</b><br/>在 <code>CHPI_KCODE_ALIGN_LONG_L0</code> 的 <code>DATA_ALIGN_PRE</code>（K 码检测同款对齐数据）tap，<code>long_rtl_tap_debug.sv</code> 以 bind 注入，零 RTL 修改<br/><code>→ long_rtl_dap_lane0.md</code></div>
@@ -586,7 +601,7 @@
 - **解码**：`decode_dap.py` 区域分类 `LSP=K2→K3`、`LINE=K1→K2`、`CTRL_F=K4→K2`，IDLE 跳过；内容只看期望长度，多余尾部标 pad；roundtrip 500 块 × scren=0/1 全对
 - **比对**：`long_pydec_report_lane0.md` 精简报告（kind 汇总 + verdict + DIFF 置顶）
 
-#### 新增脚本（0721~0722，定位 DUT 解码问题）
+#### 3.5.1 新增脚本（0721~0722，定位 DUT 解码问题）
 
 | 脚本 | 输入 | 输出 | 用途 |
 |------|------|------|------|
@@ -674,25 +689,63 @@ const lightbox = document.getElementById('lightbox');
       toc.appendChild(a);
     }
 
-    // In-page headings
+    // In-page headings: h2 entry + its h3 group (arrow fold, default expanded)
     const headings = article.querySelectorAll('h2, h3');
+    headings.forEach((h, i) => { h.id = 'toc-' + i; });
+    const h3ToH2 = {};
     headings.forEach((h, i) => {
-      const id = 'toc-' + i;
-      h.id = id;
+      if (h.tagName !== 'H2') return;
+      const children = [];
+      let j = i + 1;
+      while (j < headings.length && headings[j].tagName === 'H3') { children.push(headings[j]); j++; }
       const a = document.createElement('a');
-      a.href = '#' + id;
+      a.href = '#' + h.id;
       a.textContent = h.textContent;
-      a.className = h.tagName.toLowerCase() === 'h3' ? 'toc-h3' : 'toc-h2';
+      a.className = 'toc-h2' + (children.length > 0 ? ' toc-parent' : '');
       toc.appendChild(a);
+      if (children.length === 0) return;
+      const group = document.createElement('div');
+      group.className = 'toc-h3-group';
+      group.setAttribute('data-parent', h.id);
+      children.forEach(c => {
+        h3ToH2[c.id] = h.id;
+        const link = document.createElement('a');
+        link.href = '#' + c.id;
+        link.textContent = c.textContent;
+        link.className = 'toc-h3';
+        group.appendChild(link);
+      });
+      toc.appendChild(group);
+      const arrow = document.createElement('span');
+      arrow.className = 'toc-arrow';
+      arrow.textContent = '▸';
+      a.insertBefore(arrow, a.firstChild);
+      arrow.addEventListener('click', (e) => {
+        e.preventDefault(); // arrow = fold/unfold only, no jump
+        const collapsed = a.classList.toggle('collapsed');
+        group.classList.toggle('collapsed', collapsed);
+        if (collapsed) { // folded group: highlight falls back to parent h2
+          const activeInGroup = group.querySelector('a.active');
+          if (activeInGroup) {
+            activeInGroup.classList.remove('active');
+            a.classList.add('active');
+          }
+        }
+      });
     });
 
-    // Scroll spy
+    // Scroll spy (heading inside a folded group lights the parent h2)
     const tocLinks = Array.from(toc.querySelectorAll('a'));
     function updateTocActive() {
       let current = '';
       headings.forEach(h => {
         if (h.getBoundingClientRect().top < 100) current = h.id;
       });
+      const parentId = h3ToH2[current];
+      if (parentId) {
+        const group = toc.querySelector('.toc-h3-group[data-parent="' + parentId + '"]');
+        if (group && group.classList.contains('collapsed')) current = parentId;
+      }
       tocLinks.forEach(a => a.classList.remove('active'));
       if (current) {
         const active = tocLinks.find(a => a.getAttribute('href') === '#' + current);
@@ -702,8 +755,8 @@ const lightbox = document.getElementById('lightbox');
     window.addEventListener('scroll', updateTocActive);
     updateTocActive();
   </script>
-  <script src="./fx.js?v=6"></script>
+  <script src="./fx.js?v=8"></script>
 </body>
 </html>
 
-<!-- ymzhu 2026-10-27 16:21 -->
+<!-- ymzhu 2026-11-02 21:20 -->

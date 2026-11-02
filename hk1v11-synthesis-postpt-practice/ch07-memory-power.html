@@ -13,7 +13,7 @@
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./css/style.css">
   <script src="./js/marked.min.js"></script>
-  <link rel="stylesheet" href="./fx.css?v=3">
+  <link rel="stylesheet" href="./fx.css?v=5">
 </head>
 <body>
   <nav class="navbar">
@@ -73,13 +73,13 @@ memory compiler 生成 / lib-DB 整理 / mem_wrap 生成的完整步骤（word/b
 - 实测数据产生后，按指南站的呈现规格回填本章：六组模式 Total 功耗表（数据源 `rep_dir_*/hier_pwr_detail.csv` total 块）+ 功耗构成占比（寄存器 internal / 时钟网络 / 组合逻辑 / leakage）+ 造图脚本。
 - 功耗横向对比（PowerPro RTL/Gate + PTPX，跨项目）的方法论与表格模板见指南站 memory-power §2.4 与 powerpro §3~§4。
 
-## 交叉引用
+## 4. 交叉引用
 
 - 指南站同章：<a href="../synthesis-integration-flow-guide/memory-power.html" target="_blank">SYN_FLOW_GUIDE · Memory 与功耗仿真</a>（memory compiler 全流程 / PTPX 实例与六组实测）
 - 功耗评估工具对比：<a href="./ch08-powerpro.html">八、PowerPro 功耗评估</a>
 </script>
   <script src="./js/site.js?v=2"></script>
-  <script src="./fx.js?v=6"></script>
+  <script src="./fx.js?v=8"></script>
 </body>
 </html>
-<!-- ymzhu 2026-10-27 14:06 -->
+<!-- ymzhu 2026-11-02 19:20 -->

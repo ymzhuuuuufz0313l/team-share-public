@@ -13,7 +13,7 @@
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="./css/style.css">
   <script src="./js/marked.min.js"></script>
-  <link rel="stylesheet" href="./fx.css?v=3">
+  <link rel="stylesheet" href="./fx.css?v=5">
 </head>
 <body>
   <nav class="navbar">
@@ -102,13 +102,13 @@ KEY: 1V11 的设计是<strong>两档速率共存</strong>——RX_CLKP 3.81 管�
 
 与指南站规则一致：filelist 必须与 HDL 侧 `.f` 完全一致、支持嵌套、空文件也要占位。1V11 补充一条实证教训——**filelist/网表/RTL 版本错位的表现形式是"约束静默失效"而不是报错**（SDC 引用领先网表的 cell 名时 create_generated_clock 直接消失，见 <a href="./ch06-postpt.html">六、POSTPT</a> §7），所以每次换网表先核对时间戳与版本再开跑。
 
-## 交叉引用
+## 6. 交叉引用
 
 - 指南站同章：<a href="../synthesis-integration-flow-guide/environment.html" target="_blank">SYN_FLOW_GUIDE · 环境与配置</a>（gensyn / design.set 全字段 / VT 库换库史 / filelist 八条建议）
 - 下一环：<a href="./ch02-rtl-check.html">二、RTL 检查</a>
 </script>
   <script src="./js/site.js?v=2"></script>
-  <script src="./fx.js?v=6"></script>
+  <script src="./fx.js?v=8"></script>
 </body>
 </html>
-<!-- ymzhu 2026-10-27 14:06 -->
+<!-- ymzhu 2026-11-02 19:20 -->

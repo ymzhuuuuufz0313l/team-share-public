@@ -109,6 +109,17 @@
     .toc a.toc-h1 { font-weight: 700; color: var(--accent); margin-bottom: 8px; cursor: default; }
     .toc a.toc-h2 { position: relative; padding-left: 24px; } /* all h2 reserve the arrow slot so entries align */
     .toc a.toc-h3 { padding-left: 38px; font-size: 13px; }
+    .toc a.toc-parent { position: relative; }
+    .toc .toc-arrow {
+      position: absolute; left: 6px; top: 50%;
+      transform: translateY(-50%) rotate(90deg);
+      font-size: 11px; color: var(--muted);
+      cursor: pointer; user-select: none; padding: 2px 4px;
+      transition: transform .15s, color .15s;
+    }
+    .toc a.collapsed .toc-arrow { transform: translateY(-50%) rotate(0deg); }
+    .toc .toc-arrow:hover { color: var(--accent); }
+    .toc-h3-group.collapsed { display: none; } /* 折叠整组 h3 缩进项（箭头在父 a.toc-parent 内） */
     h2, h3 { scroll-margin-top: 72px; }
     .content { flex: 1; min-width: 0; }
     .article {
@@ -258,7 +269,7 @@
     }
 
   </style>
-  <link rel="stylesheet" href="./fx.css?v=3">
+  <link rel="stylesheet" href="./fx.css?v=5">
 </head>
 <body>
   <nav class="navbar">
@@ -386,6 +397,7 @@ const chapters = [
     });
 
     // Left-side diagram navigation: show one section at a time, plus an "all" option
+    // 本页正文无 h3、左侧为分节切换按钮，h2/h3 折叠 JS 不适用；折叠样式（.toc-arrow 等）与全站共享，便于日后改回标准 TOC。
     function buildDiagramSections() {
       const article = document.getElementById('article');
       const h2s = Array.from(article.querySelectorAll('h2'));
@@ -517,8 +529,8 @@ const chapters = [
     window.addEventListener('mouseup', () => { isDragging = false; lightboxImg.classList.remove('grabbing'); });
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeLightbox(); });
   </script>
-  <script src="./fx.js?v=6"></script>
+  <script src="./fx.js?v=8"></script>
 </body>
 </html>
 
-<!-- ymzhu 2026-10-27 17:58 -->
+<!-- ymzhu 2026-11-02 18:50 -->

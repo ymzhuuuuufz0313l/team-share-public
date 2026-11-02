@@ -21,12 +21,16 @@ v4 规格（1240×848，0721v1 配置拍重组对照）：
     CHPI_CONFIG_L0 未升 24bit 的过渡依赖证据行，与橙框同叙事）pulse-b
     （蓝，-1.4s，嵌在该行 cellwave 之外）。本图源无虚线元素，故不引入
     dashgrow（宁缺勿造）。
-  · 语义扫光 sweepband×1：右栏（0721 新分组侧）区域 x[648,1224]
-    y[176,762]，§4 配方（P=816，光带 t=0 藏于区域左外侧，8s 循环）；
-    位于拍盒内容之下、白底之上（canonical 分层，缝隙间可见）。
-- 铁律：源 SVG 只读；<text> 多重集 / svg 开标签 / 几何颜色零改动；
-  纯 CSS 无 script 无 SMIL；kit CSS §2 逐字嵌入；背景 rect 保留；
-  扫光渐变/clipPath 为 v4 新增 defs 项；reduced-motion 用 kit 原文；
+  · 文字光带 sweepband×1（v4.3，2026-11-02 由琥珀扫光带改制；MOTION_KIT §4 /
+    PAGE_FX §3-1）：一道白色光带（峰值 stop-opacity .65）每 8s 从左到右滑过
+    **图标题**（shT0）与**绿框结论首行「XOR 总量不变（结合律）」**（shT1）——
+    clipPath 用 <use href="#shTk"/> 引用原文字作裁剪（零复制、text 多重集不变），
+    光只在字形内可见；叠在全部内容之上并包 .fade（delay 1.75s = 绿框入场），
+    避免结论行入场前光带凭空出现。区域取整图宽 x[0,1240] → P=1480、X0=-888；
+    光带中心 x(t)=X0+0.5P+P·t/8。已删旧琥珀整块色带（禁红棕/琥珀亮带）。
+- 铁律：源 SVG 只读；<text> 多重集 / svg 开标签 / 几何颜色零改动（光带目标文字
+  仅加 id 属性）；纯 CSS 无 script 无 SMIL；kit CSS §2 逐字嵌入；背景 rect 保留；
+  光带渐变/clipPath 为 v4 新增 defs 项；reduced-motion 用 kit 原文；
   确定性幂等（只依赖源 SVG）。
 """
 import sys
@@ -120,32 +124,33 @@ def build():
     orange_i = next(i for i in range(green_i + 1, end) if ">过渡依赖<" in lines[i])
     assert lines[orange_i - 1].strip().startswith("<rect"), "橙框 rect 异常"
 
-    # ---- 扫光带（§4 配方）：右栏 0721 新分组侧 ----
-    # 从右栏拍盒行内解析 rect 坐标定区域边界（含盒上标签/下参与式文字）
-    ys = []
-    for i in right_boxes:
-        for m in re.finditer(r'<rect x="(\d+)" y="(\d+)" width="(\d+)" height="(\d+)"', lines[i]):
-            ys.append(int(m.group(2)))
-        for m in re.finditer(r'<text x="[\d.]+" y="(\d+)"', lines[i]):
-            ys.append(int(m.group(1)) - 14)  # 文字基线 → 近似盒顶
-    sp = {"RL": 648, "R": 576}
-    sp["Y"] = min(ys) - 4
-    sp["H"] = max(ys) + 18 - sp["Y"]
-    sp["P"] = sp["R"] + 240                        # 816
-    sp["X0"] = sp["RL"] - int(0.54 * sp["P"])      # t=0 光带藏于区域左外侧
+    # ---- 文字光带（MOTION_KIT §4 / PAGE_FX §3-1；v4.3 取代琥珀扫光带） ----
+    # 目标文字：图标题（title_i）+ 绿框结论首行「XOR 总量不变（结合律）」（green_i）。
+    # 只加 id 属性、文字内容零改动（text 多重集校验不变）；用普通字符串替换，不用含 \1/\b 的正则替换串。
+    for k, i in enumerate((title_i, green_i)):
+        assert lines[i].lstrip().startswith("<text "), f"line{i+1} 应为 <text>"
+        lines[i] = lines[i].replace("<text ", '<text id="shT%d" ' % k, 1)
+        assert ('id="shT%d"' % k) in lines[i]
+    # 区域 = 整图宽 x[0,1240]（光带从图左滑到图右，可见范围由字形裁剪决定），纵向覆盖两处文字
+    sp = {"RL": 0, "R": 1240, "Y": 0, "H": 848}
+    sp["P"] = sp["R"] + 240                        # 1480
+    sp["X0"] = sp["RL"] - int(0.60 * sp["P"])      # -888：t=0 光带右缘（0.60P）恰在区域左缘
     sweep_defs = [
         f'<linearGradient id="sweepG-1" gradientUnits="userSpaceOnUse" x1="{sp["X0"]}" y1="0" x2="{sp["X0"] + sp["P"]}" y2="0">',
-        '<stop offset="0" stop-color="#b45309" stop-opacity="0"/>',
-        '<stop offset="0.46" stop-color="#b45309" stop-opacity="0"/>',
-        '<stop offset="0.5" stop-color="#b45309" stop-opacity="0.3"/>',
-        '<stop offset="0.54" stop-color="#b45309" stop-opacity="0"/>',
-        '<stop offset="1" stop-color="#b45309" stop-opacity="0"/>',
+        '<stop offset="0" stop-color="#ffffff" stop-opacity="0"/>',
+        '<stop offset="0.40" stop-color="#ffffff" stop-opacity="0"/>',
+        '<stop offset="0.46" stop-color="#ffffff" stop-opacity=".3"/>',
+        '<stop offset="0.5" stop-color="#ffffff" stop-opacity=".65"/>',
+        '<stop offset="0.54" stop-color="#ffffff" stop-opacity=".3"/>',
+        '<stop offset="0.60" stop-color="#ffffff" stop-opacity="0"/>',
+        '<stop offset="1" stop-color="#ffffff" stop-opacity="0"/>',
         '</linearGradient>',
-        f'<clipPath id="sweepC-1"><rect x="{sp["RL"]}" y="{sp["Y"]}" width="{sp["R"]}" height="{sp["H"]}"/></clipPath>',
+        '<clipPath id="sweepC-1"><use href="#shT0"/><use href="#shT1"/></clipPath>',
     ]
-    sweep_g = (f'<g clip-path="url(#sweepC-1)"><rect class="sweepband" x="{sp["X0"]}" '
-               f'y="{sp["Y"]}" width="{sp["P"]}" height="{sp["H"]}" fill="url(#sweepG-1)" '
-               f'style="--sweepP:{sp["P"]}px"/></g>')
+    # 叠在全部内容之上；.fade delay = 绿框 row 入场 delay（1.75s）
+    sweep_g = (f'<g class="fade" style="animation-delay:1.75s"><g clip-path="url(#sweepC-1)">'
+               f'<rect class="sweepband" x="{sp["X0"]}" y="{sp["Y"]}" width="{sp["P"]}" '
+               f'height="{sp["H"]}" fill="url(#sweepG-1)" style="--sweepP:{sp["P"]}px"/></g></g>')
 
     # ---- 组装 ----
     o = []
@@ -153,9 +158,8 @@ def build():
     o.append("<style>\n" + KIT_CSS + "\n</style>")  # kit CSS（§2 逐字）
     o.append(lines[1])                              # 白底 rect
     o.append("<defs>")
-    o.extend(sweep_defs)                            # v4 新增：扫光渐变 + clipPath
+    o.extend(sweep_defs)                            # v4 新增：光带渐变 + clipPath（<use> 引用目标文字）
     o.append("</defs>")
-    o.append(sweep_g)                               # 白底之上、内容之下
 
     def head(span, delay):
         o.append(f'<g class="head" style="animation-delay:{delay}s">')
@@ -202,6 +206,7 @@ def build():
     o.append("</g>")
     o.append("</g>")
 
+    o.append(sweep_g)                               # 文字光带：全部内容之上，仅标题/结论行字形内可见
     o.append(lines[end])  # </svg>
     text = eol.join(o)
     if tail_nl:
@@ -250,6 +255,14 @@ def check():
     rm = re.search(r"prefers-reduced-motion.*?flowdot,.flowtail,.sweepband\{display:none!important\}", data, re.S)
     res["rmfix"] = "OK" if (rm and re.search(r"prefers-reduced-motion.*?opacity:1!important", data, re.S)) else "NG"
     res["no_glow"] = "OK" if not re.search(r'class="[^"]*glow-[bgo]', data) else "NG"
+    # v4.3 文字光带：渐变 stop 全白、峰值 ≤.65、无琥珀亮带；clipPath 以 <use> 引用 shT0/shT1 原文字（零复制）
+    stops = re.findall(r'<stop offset="[\d.]+" stop-color="(#[0-9a-fA-F]{6})" stop-opacity="([\d.]+)"', data)
+    res["sweep_white"] = "OK" if stops and all(c.lower() == "#ffffff" for c, _ in stops) else "NG"
+    res["sweep_peak<=.65"] = "OK" if stops and max(float(op) for _, op in stops) <= 0.65 else "NG"
+    res["no_amber_band"] = "OK" if 'stop-color="#b45309"' not in data else "NG"
+    res["text_clip"] = "OK" if ('<clipPath id="sweepC-1"><use href="#shT0"/><use href="#shT1"/></clipPath>' in data
+                                and data.count('id="shT0"') == 1 and data.count('id="shT1"') == 1) else "NG"
+    res["sweep_on_top"] = "OK" if data.rstrip().endswith('</g></g>\n</svg>') or data.rstrip().endswith('</g></g>\r\n</svg>') else "NG"
     fam = {"train": len(re.findall(r'class="[^"]*(flowdot|flowtail)', data)),
            "pulse": len(re.findall(r'class="[^"]*pulse(-[tb])?', data)),
            "sweep": len(re.findall(r'class="[^"]*sweepband', data)),
@@ -275,4 +288,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-# ymzhu 2026-10-28 19:20
+# ymzhu 2026-11-02 19:02
