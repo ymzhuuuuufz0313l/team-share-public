@@ -351,22 +351,42 @@ html.fx-on .flow.fx-r.fx-in .farrow {
 }
 @keyframes fxArcLit { to { opacity: 1; } }
 
-/* ===== 19. 章节交替玻璃洗（v2.2，2026-11-03 用户定稿铺全仓；参考 dshtui 隔节 bg-2-glass） =====
-   fx.js 按正文 h2 切 section，第 1/3/5…节挂 fx-sec-wash：半透明琥珀水洗 + box-shadow 外溢 18px
-   （视觉上像加了内边距的色带，实际零布局位移）；底层网格经半透明洗透出 = "格子+浅渐变"观感，
-   夹着的素节保持纸色 = 章节呼吸节奏。仅 fx-on 下着色（静态/无 JS 原样）；色彩用引擎自带
-   琥珀系（浅色 rgba(180,83,9,.05) / 暗色 rgba(240,161,55,.07)），不依赖站点令牌。 */
-html.fx-on section.fx-sec { display: block; }
-html.fx-on .fx-sec-wash {
-  background: rgba(180, 83, 9, 0.05);
-  border-radius: 14px;
-  box-shadow: 0 0 0 18px rgba(180, 83, 9, 0.05);
+/* ===== 19. 章节交替玻璃洗（v2.2，2026-11-03 用户定稿；v2.2.1 当晚重做——首版"琥珀色块"被否） =====
+   首版错误：琥珀色相 tint + 圆角 + shadow 外溢 = 贴卡片感（用户："对比太大、很暴力"）。
+   正确做法（对齐 dshtui 本质）：**改背景层本身，不是给内容上色**——
+   ① 全幅：伪元素横向铺满视口（left/right: 50%-50vw，零布局位移），无圆角无外溢，无卡片轮廓；
+   ② 中性同族色：墨色系微调亮度（浅色 .02→.04 / 暗色 .03→.05 的纵向渐变），不偏色相；
+   ③ 格子透出：洗区内叠略强的 32px 网格线（与 body 网格同源对齐），素节几乎无网格 = 交替可感；
+   ④ 呼吸感：上下边缘 48px 羽化（mask 渐变），节间过渡无硬缝。
+   isolation:isolate 让伪元素垫在本节内容之下、父级面板底色之上；overflow-x:clip 防 50vw 溢出
+   （clip 不建滚动容器，sticky TOC 不受影响）。仅 fx-on 下生效；静态/无 JS 原样。 */
+html.fx-on section.fx-sec { position: relative; isolation: isolate; }
+html.fx-on .fx-sec-wash::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  left: calc(50% - 50vw);
+  right: calc(50% - 50vw);
+  top: 0;
+  bottom: 0;
+  background:
+    linear-gradient(180deg, rgba(28, 37, 52, .02), rgba(28, 37, 52, .04) 50%, rgba(28, 37, 52, .02)),
+    linear-gradient(rgba(28, 37, 52, .05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(28, 37, 52, .05) 1px, transparent 1px);
+  background-size: 100% 100%, 32px 32px, 32px 32px;
+  -webkit-mask-image: linear-gradient(180deg, transparent, #000 48px, #000 calc(100% - 48px), transparent);
+  mask-image: linear-gradient(180deg, transparent, #000 48px, #000 calc(100% - 48px), transparent);
+  pointer-events: none;
 }
 @media (prefers-color-scheme: dark) {
-  html.fx-on .fx-sec-wash {
-    background: rgba(240, 161, 55, 0.07);
-    box-shadow: 0 0 0 18px rgba(240, 161, 55, 0.07);
+  html.fx-on .fx-sec-wash::before {
+    background:
+      linear-gradient(180deg, rgba(233, 229, 217, .03), rgba(233, 229, 217, .05) 50%, rgba(233, 229, 217, .03)),
+      linear-gradient(rgba(233, 229, 217, .05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(233, 229, 217, .05) 1px, transparent 1px);
+    background-size: 100% 100%, 32px 32px, 32px 32px;
   }
 }
+html.fx-on { overflow-x: clip; }
 
-/* ymzhu 2026-11-03 11:30 */
+/* ymzhu 2026-11-03 12:10 */
