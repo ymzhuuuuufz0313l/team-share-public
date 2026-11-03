@@ -368,8 +368,40 @@
     }
   }
 
+  /* ===================== 9. 章节交替玻璃洗（v2.2，2026-11-03 用户定稿；参考 dshtui 隔节 bg-2-glass） =====================
+     按 h2 把正文切成 <section class="fx-sec">，第 1/3/5…节挂 fx-sec-wash（fx.css §19 半透明
+     琥珀水洗 + shadow 外溢）。包裹 = 节点移动而非重建：锚点 id、事件监听、内联 delay 全保留；
+     块级包裹不改变文档流 → 零布局位移；无 fx-on 时无任何样式 = 静态/无 JS 完全原样。
+     必须在 markReveals 之前执行（包裹后 '#article h2' 等后代选择器仍命中，仅
+     '.article > p:first-of-type' 的直接子选择器不再命中正文段——引导段在首个 h2 之前不包裹，仍命中）。 */
+  var secified = false;
+  function sectionify() {
+    if (secified) return;
+    secified = true;
+    var h2 = document.querySelector('#article h2, main h2, .container h2, .article h2');
+    if (!h2) return;
+    var host = h2.parentElement;
+    if (!host || host === document.body || host.tagName === 'ASIDE') return;
+    var kids = Array.prototype.slice.call(host.children);
+    if (kids.length && kids[0].classList && kids[0].classList.contains('fx-sec')) return; /* 防重复包裹 */
+    var frag = document.createDocumentFragment();
+    var cur = null, idx = -1;
+    kids.forEach(function (el) {
+      if (el.tagName === 'H2') {
+        idx++;
+        cur = document.createElement('section');
+        cur.className = 'fx-sec' + (idx % 2 === 0 ? ' fx-sec-wash' : '');
+        frag.appendChild(cur);                     /* 空段占位，随后装入本节内容 */
+      }
+      if (cur) { cur.appendChild(el); }            /* 移动节点（保留 id/监听/内联样式） */
+      else { frag.appendChild(el); }               /* 首个 h2 之前的引导区不包裹 */
+    });
+    host.appendChild(frag);
+  }
+
   /* ===================== 8. 初始化（body 末尾；marked.parse 已同步完成） ===================== */
   function init() {
+    sectionify();                                   /* v2.2：先切节（早于一切标记/观察） */
     heroH1 = document.querySelector('.hero h1');
     if (heroH1) {
       heroHTML = heroH1.innerHTML;
@@ -449,4 +481,4 @@
   }
 })();
 
-/* ymzhu 2026-11-02 22:35 */
+/* ymzhu 2026-11-03 11:30 */

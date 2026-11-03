@@ -351,4 +351,22 @@ html.fx-on .flow.fx-r.fx-in .farrow {
 }
 @keyframes fxArcLit { to { opacity: 1; } }
 
-/* ymzhu 2026-11-02 22:35 */
+/* ===== 19. 章节交替玻璃洗（v2.2，2026-11-03 用户定稿铺全仓；参考 dshtui 隔节 bg-2-glass） =====
+   fx.js 按正文 h2 切 section，第 1/3/5…节挂 fx-sec-wash：半透明琥珀水洗 + box-shadow 外溢 18px
+   （视觉上像加了内边距的色带，实际零布局位移）；底层网格经半透明洗透出 = "格子+浅渐变"观感，
+   夹着的素节保持纸色 = 章节呼吸节奏。仅 fx-on 下着色（静态/无 JS 原样）；色彩用引擎自带
+   琥珀系（浅色 rgba(180,83,9,.05) / 暗色 rgba(240,161,55,.07)），不依赖站点令牌。 */
+html.fx-on section.fx-sec { display: block; }
+html.fx-on .fx-sec-wash {
+  background: rgba(180, 83, 9, 0.05);
+  border-radius: 14px;
+  box-shadow: 0 0 0 18px rgba(180, 83, 9, 0.05);
+}
+@media (prefers-color-scheme: dark) {
+  html.fx-on .fx-sec-wash {
+    background: rgba(240, 161, 55, 0.07);
+    box-shadow: 0 0 0 18px rgba(240, 161, 55, 0.07);
+  }
+}
+
+/* ymzhu 2026-11-03 11:30 */
