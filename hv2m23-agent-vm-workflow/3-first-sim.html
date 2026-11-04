@@ -88,12 +88,12 @@ t_8b1lane 的仿真时间与服务器首跑**逐位一致**——环境迁移没
 
 真实屏幕截图（Agent 用 `vmrun captureScreen` 实拍虚拟机屏幕）：Verdi 已加载 simv.daidir 层次 + chip_tb_top_000.fsdb 波形，右侧终端是 sim.log 尾部与 UVM 结果。
 
-![Verdi 波形与仿真日志实拍](img/verdi_wave.png)
+![Verdi 波形与仿真日志实拍](images/verdi_wave.png)
 
 
 ## 4. 产物目录结构与 UVM 结果
 
-![UVM 总结与 /sim_dd 产物目录](img/uvm_summary.png)
+![UVM 总结与 /sim_dd 产物目录](images/uvm_summary.png)
 
 ```text
 /sim_dd/ICer/HV2M23/TOP_TCON_C/t_8b1lane/
@@ -126,7 +126,7 @@ verdi -dbdir simv.daidir -sswr t_8b1lane_waves.rc
 
 恢复后的 nWave（信号分组与 marker 位置按作者原会话还原）：
 
-![nWave 波形会话恢复](img/verdi_nwave_restore.png)
+![nWave 波形会话恢复](images/verdi_nwave_restore.png)
 
 </script>
 
@@ -236,4 +236,4 @@ document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && lightbox
   <script src="./fx.js?v=11"></script>
 </body>
 </html>
-<!-- ymzhu 2026-10-27 14:00 -->
+<!-- ymzhu 2026-11-04 15:52 -->

@@ -589,16 +589,16 @@ SEL-004=0、/D1/D2=0（10 角核验）；run 晚于三笔约束 push，ip_cons �
 
 **S2 数字盘点（全实测 csv，图 = V3 run `report_setup.csv` / `report_hold.csv` 快照表格）**：
 
-![V3 setup 快照（10 corner csv）](./sta1008v3_report_setup_k3.png)
+![V3 setup 快照（10 corner csv）](./images/archive/20261009/sta1008v3_report_setup_k3.png)
 
 - setup：**119 → 87**（wc_cworst 7→5、worst −0.144→**−0.0909**；wc_cbest 67→49、−1.10→−0.692；wc_typical 41→33；ml/tt 6 角全 0）；
 - hold（9 可比角）：**7563 → 242**（−7321），全角 worst −2.32 → **−0.2667**：
 
-![V3 hold 快照（10 corner csv）](./sta1008v3_report_hold_k3.png)
+![V3 hold 快照（10 corner csv）](./images/archive/20261009/sta1008v3_report_hold_k3.png)
 
 **SD 总线 skew（1P+DPLC 合并表，判读窗 normal(1p) ±3.5 / dplc −0.9~+4.1）**：
 
-![V3 SD bus-skew 合并表](./sta1008v3_report_sd_busskew_k3.png)
+![V3 SD bus-skew 合并表](./images/archive/20261009/sta1008v3_report_sd_busskew_k3.png)
 
 **剩余真违例**（setup Σ87 / hold Σ244）：
 - setup 87 全在 RX_CLK + gating：wc_cbest startpoint 构成与旧 run 完全一致（LC_CPUWR R_REG03_L 28 = C 簇、方案已决策不实施存档见 §5.4、SCREN_SYNC_K3 23、K2_FIND 16、o_raw_data 11、K1_FIND 7）+ gating 1/9/1（B/E 族）；
@@ -681,4 +681,4 @@ iverilog（`HDL_define.v` 同编）→ `rtl-code-review` 对抗评审（门禁 c
   <script src="./fx.js?v=11"></script>
 </body>
 </html>
-<!-- ymzhu 2026-11-02 19:20 -->
+<!-- ymzhu 2026-11-04 16:06 -->

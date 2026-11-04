@@ -704,7 +704,7 @@
 
 ## 5. 最终结论与证据
 
-![0717 长编码 python 解码数据正确](./0717_longcode_pydec_ok.jpg)
+![0717 长编码 python 解码数据正确](./images/0717_longcode_pydec_ok.jpg)
 
 > ACT 行离线解码：`11 05 16 00 00`（CTRL_L，FSYNC=1）+ `00 01 02 03...` 像素渐变，与发送端原始字节完全一致。
 > 线上数据正确 ⇒ 发送端（sequence/编码/driver/链路/对齐）排除；后续聚焦 RTL 解码链 **tag_value 块边界时序问题（第 3.10 节）**。
@@ -823,4 +823,4 @@ const lightbox = document.getElementById('lightbox');
   <script src="./fx.js?v=11"></script>
 </body>
 </html>
-<!-- ymzhu 2026-11-02 18:50 -->
+<!-- ymzhu 2026-11-04 15:52 -->

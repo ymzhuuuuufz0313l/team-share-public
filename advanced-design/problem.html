@@ -115,7 +115,7 @@ false path 指向的是 <code>CLKGEN_U1 / U_DCLK1_OD_DIV1P5</code>（lane1）—
 下面这张图是 **1P 模式（wc_typical_125）下，真实 `report_timing_setup.rpt` 中
 SAMP_CNT 路径的逐段还原**——把时钟树、数据路径、slack 计算完整串起来：
 
-![1P 报告路径逐段还原](./image/rpt_1p_sampcnt.png)
+![1P 报告路径逐段还原](./images/rpt_1p_sampcnt.png)
 
 **按报告顺序逐段看（对应上图的①）**：
 
@@ -135,7 +135,7 @@ SAMP_CNT 路径的逐段还原**——把时钟树、数据路径、slack 计算
 **这张图回答了一个关键问题**：如果只是"白检查"，在更差 corner 下它会怎样？
 我们把同一路径放到 **2P 模式** 下看——此时 lane1 真实工作，路径被正常检查：
 
-![2P 报告同一族路径真实检查](./image/rpt_2p_sampcnt.png)
+![2P 报告同一族路径真实检查](./images/rpt_2p_sampcnt.png)
 
 **2P 路径与 1P 的差异（对应上图②）**：
 
@@ -340,4 +340,4 @@ document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && lightbox
 </body>
 </html>
 
-<!-- ymzhu 2026-10-27 14:06 -->
+<!-- ymzhu 2026-11-04 15:52 -->

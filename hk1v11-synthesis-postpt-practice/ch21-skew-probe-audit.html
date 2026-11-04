@@ -60,8 +60,8 @@
 > 审计对象：`report_sd_busskew.csv` / `report_phy_busskew.csv`（1028 run，`SYNTHESIS/top/sta/post/pt/summary/latest/`）及其全链路脚本（`common/report_timing_skew_sd|isprx|io.tcl` + `get_*.pl` + `merge_*.pl`）。
 > 两个焦点问题：① `sd_l/r_dplc_margin_a/b` 出窗；② `report_timing_rx0_00_max/min` 两行差距小（对比 2M23 的 min≈7~9）。
 > 方法：本人直查 + 4 个取证 subagent 并行 + 交叉验证；RTL 逐行核对；1008 代对照。
-> 配图：下方四面板图解（动画版；静态版 `./skew_probe_audit_1028.svg`，生成器 `anim/make_anim_skew_probe_audit_1028.py`）。
-![skew 探针审计四面板图解（①窗口机制 ②污染链 ③rx0 语义 ④三约束）](./anim/skew_probe_audit_1028.svg?v=20261029)
+> 配图：下方四面板图解（动画版；静态版 `./images/skew_probe_audit_1028.svg`，生成器 `images/anim/make_anim_skew_probe_audit_1028.py`）。
+![skew 探针审计四面板图解（①窗口机制 ②污染链 ③rx0 语义 ④三约束）](./images/anim/skew_probe_audit_1028.svg?v=20261029)
 
 
 ---
@@ -298,4 +298,4 @@ tcl L157/158: -from [get_pins .../u_gate_MUX_DPLC_CLK/O]     ← 少写 CLKMUX2X
   <script src="./fx.js?v=11"></script>
 </body>
 </html>
-<!-- ymzhu 2026-11-02 19:20 -->
+<!-- ymzhu 2026-11-04 16:06 -->

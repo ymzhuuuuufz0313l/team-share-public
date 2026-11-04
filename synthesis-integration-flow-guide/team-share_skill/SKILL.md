@@ -100,7 +100,7 @@ Each article gets its own directory so multiple shared articles can coexist.
 
    当需要展示报告结果（CSV 汇总表、rpt/log/tcl 片段、配置/统计表）且没有现成截图、或截图模糊/带敏感信息时，优先「读真实数据 → PIL 绘制 → PNG」，而不是截屏或手打数据。
 
-   参考实现：`synthesis-integration-flow-guide/script/_gen_be_review_images.py`（BE Review PPT 全套结果图，含代码片段图与表格图两类渲染器）。
+   参考实现：`synthesis-integration-flow-guide/image/tools/_gen_be_review_images.py`（BE Review PPT 全套结果图，含代码片段图与表格图两类渲染器；2026-11-04 自 `script/` 迁入 `image/tools/`）。
 
    1. **数据源必须真实**：直接读报告文件（csv / tsv / rpt / log / tcl），图中内容只做真实数据的选取与排版，不手打数字。数据更新后重跑脚本即可再生成。
    2. **2x 超采样**：所有尺寸、字号 ×2 绘制，PPT 或网页里缩放后仍清晰。
@@ -500,3 +500,5 @@ if (current) {
 4. 默认状态为全部展开。
 5. h3 条目（如 `1.1`）的文字起始位置必须明显缩进在 h2 条目（如 `1.`）文字之后，不能对齐或反超。
 6. TOC 中 h2 条目必须带编号（`1.` `2.` `3.`…），h3 条目必须带子编号（`1.1` `1.2` `2.1`…）；编号来自正文标题本身（见 Important Rules 的标题编号规则）。
+
+<!-- ymzhu 2026-11-04 15:54 -->
