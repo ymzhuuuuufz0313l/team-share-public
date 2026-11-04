@@ -732,6 +732,17 @@
 - 验收（代码级）：iverilog 受控对照双文件错误集逐行一致；0x33 默认 0X08→0X00 与 RTL 一致无动作；TESTO_SEL 重排/reg_define/TEST_MODE/leak 均三件套外无动作
 - Excel NO53；chip_sel0/1 地址表四行 + 站点六图（静态+动画脉冲移 0x33）+ regmap §34/§32 勘误 + 五页同步
 
+### 5.33 1104 服务器同步（2026-11-04，`PACK_TAR_1104V1`，未单独升版本号，用户 11-04 确认全采）
+
+服务器包 `PACK_TAR_1104V1`（HDL，1104 代际：DC 11-03 01:20 / SDC 11-03 10:53 / PT 11-04 09:47，三方对齐一致，代际无串味）接收覆盖到本地 `seperated_code/`，较本地 1029v1-clean 有 **5 处设计取向差异**，用户 2026-11-04 确认全部有意、全采不回退，**未单独升版本号**（LC_CPUWR 头 1029v1 / LC_REG_MAPPING 头 1027v1）。详见[1104 服务器同步 · 寄存器变更](./sync-1104.html)。
+
+- **集成前移**：`LINK_CONFIG_CTRL` 补连 4 个挂账输出 `R_KHEAD_20B_SEL` / `R_TP_SEL` / `R_BACSCR_EOL` / `R_SCS_PKT_HALF`（本地 1029v1 挂账未连；khead 架构仍=移入 LC_CPUWR 0x33[6:2]）
+- **CS_SET_1H**：`~R_BKDU` → `~BKDU_SYNC`（同步版）
+- **R_TP_F_AHEAD（0x2E[3]）停用**：回 Reserved、LC_CPUWR 端口+assign 注释、LINK_CONFIG_CTRL 驱常量 0
+- **R_DPLC_MODE**：新增 `` `ifdef LONG_VU440_FPGA `` 强 `1'b0`（长编码 FPGA 构建）
+- **LC_REG_MAPPING 头注释**：仍 `1027v1`（1027v1 的 R_KHEAD_20B_SEL 已注释停用，功能已等同 1029v1，未升头）
+- 采用：t3 寄存器三件套 + t11 非寄存器 26 文件（逐字节 md5 核验与包一致）；changelist **NO=12** 登记草稿（待用户登记）；双轨 CHANGES（根级 + 目录级）已同步
+
 
   </script>
   <script>
@@ -745,7 +756,8 @@ const chapters = [
       ['regmap', '寄存器'],
       ['register-research', '交叉验证'],
       ['verification', '验证'],
-      ['status', '后续']
+      ['status', '后续'],
+      ['sync-1104', '1104同步']
     ];
     const currentPath = location.pathname.split('/').pop() || 'index.html';
     const linksContainer = document.getElementById('navbar-links');
@@ -869,5 +881,4 @@ const article = document.getElementById('article');
   <script src="./fx.js?v=11"></script>
 </body>
 </html>
-
-<!-- ymzhu 2026-11-02 18:50 -->
+<!-- ymzhu 2026-11-04 12:08 -->

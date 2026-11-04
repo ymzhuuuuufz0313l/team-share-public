@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>校验和机制演进 · LC_CPUWR 修改记录</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <style>
+:root {
+      --bg: #f4f1ea;
+      --surface: #fffdf7;
+      --text: #1c2534;
+      --muted: #667180;
+      --accent: #b45309;
+      --accent-soft: #f7e8d4;
+      --line: #ddd6c8;
+      --shadow: 0 12px 32px rgba(28,37,52,0.10);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0e1420;
+        --surface: #161f31;
+        --text: #e9e5d9;
+        --muted: #9aa4b5;
+        --accent: #f0a137;
+        --accent-soft: #3a2f1a;
+        --line: #2b3852;
+        --shadow: 0 12px 32px rgba(0,0,0,0.45);
+      }
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      font-size: 16px;
+      line-height: 1.75;
+    }
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--surface);
+      border-bottom: 1px solid var(--line);
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    }
+    .navbar-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .navbar-brand {
+      font-weight: 700;
+      color: var(--accent);
+      white-space: nowrap;
+      font-size: 15px;
+    }
+    .navbar-links {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      overflow-x: auto;
+      flex: 1;
+      scrollbar-width: none;
+    }
+    .navbar-links::-webkit-scrollbar { display: none; }
+    .navbar-links a {
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 14px;
+      color: var(--text);
+      white-space: nowrap;
+      transition: background 0.15s;
+    }
+    .navbar-links a:hover { background: var(--bg); text-decoration: none; }
+    .navbar-links a.active { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+    @media (max-width: 640px) {
+      .navbar-inner { padding: 10px 16px; gap: 10px; }
+      .navbar-brand { font-size: 14px; }
+      .navbar-links a { font-size: 13px; padding: 5px 8px; }
+    }
+    .container { max-width: 1200px; margin: 0 auto; padding: 48px 24px; }
+    .container.with-toc { display: flex; gap: 32px; align-items: stretch; }
+    .toc-wrapper { width: 260px; flex-shrink: 0; align-self: stretch; }
+    .toc {
+      position: sticky;
+      top: 64px;
+      max-height: calc(100vh - 88px);
+      overflow-y: auto;
+      padding: 16px;
+      background: var(--surface);
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      font-size: 14px;
+      box-shadow: var(--shadow);
+    }
+    .toc a { display: block; padding: 6px 8px; border-radius: 6px; color: var(--muted); margin: 2px 0; transition: background 0.15s, color 0.15s; }
+    .toc a:hover { background: var(--bg); color: var(--accent); text-decoration: none; }
+    .toc a.active { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+    .toc a.toc-h1 { font-weight: 700; color: var(--accent); margin-bottom: 8px; cursor: default; }
+    .toc a.toc-h2 { position: relative; padding-left: 24px; } /* all h2 reserve the arrow slot so entries align */
+    .toc a.toc-h3 { padding-left: 38px; font-size: 13px; }
+    .toc a.toc-parent { position: relative; }
+    .toc .toc-arrow {
+      position: absolute; left: 6px; top: 50%;
+      transform: translateY(-50%) rotate(90deg);
+      font-size: 11px; color: var(--muted);
+      cursor: pointer; user-select: none; padding: 2px 4px;
+      transition: transform .15s, color .15s;
+    }
+    .toc a.collapsed .toc-arrow { transform: translateY(-50%) rotate(0deg); }
+    .toc .toc-arrow:hover { color: var(--accent); }
+    .toc-h3-group.collapsed { display: none; } /* 折叠整组 h3 缩进项（箭头在父 a.toc-parent 内） */
+    h2, h3 { scroll-margin-top: 72px; }
+    .content { flex: 1; min-width: 0; }
+    .article {
+      background: var(--surface);
+      border-radius: 20px;
+      padding: 56px 64px;
+      box-shadow: var(--shadow);
+    }
+    @media (max-width: 640px) {
+      .container { padding: 24px 16px; }
+      .article { padding: 32px 24px; border-radius: 16px; }
+      .toc-wrapper { display: none; }
+      .container.with-toc { display: block; }
+    }
+    h1 { font-size: 36px; margin: 0 0 20px; color: var(--accent); font-weight: 700; letter-spacing: -0.5px; }
+    h2 { font-size: 26px; margin: 48px 0 18px; padding-bottom: 10px; border-bottom: 1px solid var(--line); color: var(--text); font-weight: 600; }
+    h3 { font-size: 20px; margin: 32px 0 14px; color: var(--text); font-weight: 600; }
+    p { margin: 14px 0; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    img { max-width: 100%; border-radius: 10px; border: 1px solid var(--line); cursor: zoom-in; display: block; margin: 28px auto; }
+    table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 14.5px; }
+    th, td { border: 1px solid var(--line); padding: 10px 14px; text-align: left; }
+    th { background: var(--accent-soft); font-weight: 600; }
+    tr:nth-child(even) { background: rgba(0,0,0,0.02); }
+    code { background: var(--bg); padding: 3px 7px; border-radius: 5px; font-family: "IBM Plex Mono", "SFMono-Regular", Consolas, monospace; font-size: 14px; color: var(--accent); }
+    pre { background: var(--bg); padding: 18px; border-radius: 10px; overflow-x: auto; border: 1px solid var(--line); }
+    pre code { padding: 0; background: transparent; color: var(--text); }
+    blockquote { border-left: 4px solid var(--accent); margin: 20px 0; padding: 14px 20px; background: var(--accent-soft); border-radius: 0 10px 10px 0; }
+    ul, ol { padding-left: 28px; }
+    li { margin: 8px 0; }
+    hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
+    .footer { text-align: center; color: var(--muted); margin-top: 48px; font-size: 13px; }
+    .page-nav { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 48px; }
+    .page-nav a { display: block; padding: 16px 20px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; color: var(--text); transition: border-color 0.2s, box-shadow 0.2s; }
+    .page-nav a:hover { border-color: var(--accent); box-shadow: var(--shadow); text-decoration: none; }
+    .page-nav a.next { text-align: right; margin-left: auto; }
+    .page-nav .label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+    .page-nav .title { font-weight: 600; color: var(--accent); }
+    @media (max-width: 640px) { .page-nav { grid-template-columns: 1fr; } .page-nav a.next { text-align: left; margin-left: 0; } }
+    .hero { text-align: center; margin-bottom: 40px; }
+    .hero h1 { margin-bottom: 12px; }
+    .hero .author { color: var(--muted); font-size: 14px; margin-bottom: 16px; }
+    .hero .lead { font-size: 17px; max-width: 720px; margin: 0 auto; }
+    .section-title { font-size: 14px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin: 40px 0 16px; }
+    .chapter-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+    .chapter-card { display: block; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 20px; color: var(--text); transition: border-color 0.2s, transform 0.15s, box-shadow 0.2s; }
+    .chapter-card:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: var(--shadow); text-decoration: none; }
+    .chapter-card .num { display: inline-block; width: 28px; height: 28px; line-height: 28px; border-radius: 50%; background: var(--accent-soft); color: var(--accent); font-size: 13px; font-weight: 700; text-align: center; margin-bottom: 10px; }
+    .chapter-card .title { font-weight: 600; font-size: 15px; margin-bottom: 6px; }
+    .chapter-card .desc { font-size: 13px; color: var(--muted); line-height: 1.5; }
+
+    /* Image lightbox */
+    .lightbox {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.92);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.25s ease, visibility 0.25s ease;
+      cursor: grab;
+    }
+    .lightbox.active {
+      opacity: 1;
+      visibility: visible;
+    }
+    .lightbox img {
+      max-width: none;
+      max-height: none;
+      border: none;
+      border-radius: 4px;
+      cursor: grab;
+      transform-origin: center center;
+      transition: none;
+      margin: 0;
+    }
+    .lightbox img.grabbing { cursor: grabbing; }
+    .lightbox .hint {
+      position: absolute;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: rgba(255,255,255,0.7);
+      font-size: 13px;
+      pointer-events: none;
+      user-select: none;
+      background: rgba(0,0,0,0.4);
+      padding: 6px 14px;
+      border-radius: 20px;
+    }
+    .lightbox .close {
+      position: absolute;
+      top: 20px;
+      right: 24px;
+      color: rgba(255,255,255,0.8);
+      font-size: 32px;
+      line-height: 1;
+      cursor: pointer;
+      user-select: none;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: background 0.2s;
+    }
+    .lightbox .close:hover { background: rgba(255,255,255,0.15); color: #fff; }
+  </style>
+  <link rel="stylesheet" href="./fx.css?v=9">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a class="navbar-brand" href="./">LC_CPUWR</a>
+      <div class="navbar-links" id="navbar-links"></div>
+    </div>
+  </nav>
+
+  <div class="container with-toc">
+    <aside class="toc-wrapper" id="toc-wrapper"><nav class="toc" id="toc"></nav></aside>
+    <div class="content">
+      <article class="article" id="article"></article>
+      <div class="page-nav">
+      <a href="./timeline.html"><span class="label">上一篇</span><span class="title">核心变更时间线</span></a>
+      <a class="next" href="./regmap.html"><span class="label">下一篇</span><span class="title">寄存器映射与命名规范化</span></a>
+      </div>
+      <div class="footer">Shared from team knowledge base</div>
+    </div>
+  </div>
+
+  <script type="text/template" id="md">
+# 四、校验和机制演进
+
+## 1. 三帧一致更新机制
+
+LC_CPUWR 的寄存器更新核心机制：**写入一个寄存器需要连续 3 次 CHPI 帧 blank 期间数据一致，才会真正更新**。
+
+![Seg1 checksum 实现逻辑全景（动画版：主干流光点=数据流向；★5'h04 卡呼吸=1027v1-B 修复点；绿色提交门呼吸）](./images/anim/checksum_logic_flow.svg?v=20261101)
+
+> **实现逻辑全景图**（2026-10-27 新增，随 1027v1-B 交付）：四层阅读——① 帧数据流（3B/beat，`xdata_a` 按拍选择参与字节，★卡即 1027v1-B 修复的 `5'h04: C^D`）→ ② 累加与锁存（`xsum_a` 运行 XOR / `prev_xsum_a` 帧尾锁存）→ ③ 帧尾比较 + 1023v1 合法性防护（`match_eff_a`）→ ④ 提交门控（`update_en_a`）与 mismatch 计数（连续 5 次 unlock）。静态原版在 `images/checksum_logic_flow.svg`。
+
+### 1.1 机制来源
+
+该机制最早来自 2026-04-30 的变更：增加寄存器判断功能，只有寄存器信息稳定且多帧得到相同信息时才更新进寄存器表。
+
+### 1.2 死锁场景
+
+0612 基线重构后发现一个 checksum 死锁场景：
+- TX 端数据经过 scramble 加扰发送
+- RX 端 `descramble_en` 本身也是一个受 checksum 保护的寄存器
+- 如果初始 mismatch 导致 descramble 无法正确使能，RX 解出的数据会是乱数
+- 乱数下 checksum 永远不匹配，寄存器永远无法更新
+- 从而形成死锁
+
+这一场景直接推动了 NG Unlock 机制的诞生。
+
+> **现状更新（2026-09-18）**：上述死锁前提已消除——发送端（TX）已不再对这部分寄存器配置数据进行 scramble 加扰，"初始 mismatch → descramble 无法使能 → 乱数 → checksum 永不匹配"的链条从源头断开，不会再产生当时的问题。RX 端 `descramble_en`（`SCREN`，0x00[4]）在 RTL 中保持原有 checksum 保护口径**不变**（无需改动）；NG Unlock 机制作为防偶发误报的兜底保护继续保留。本节作为历史背景存档。
+
+### 1.3 时序冲突与 0520 最终方案
+
+发现三帧一致更新机制与某些关键信号存在时序冲突：
+
+| 冲突点 | 说明 |
+|--------|------|
+| PORSD / POL | 需要在第一帧结束就置位 1 或 0，但 checksum 要求 3 帧一致 |
+| ch_sel | 环境发送指令时按新值选择 channel，但寄存器仍为旧默认值，导致后级模块处理错误 |
+
+**0520 最终方案**：
+
+- **LSP 阶段结束至 K1 发起前**：此阶段不做 checksum，寄存器直写
+- **K1 后做一个 latch**：latch=1 后保持 checksum 功能
+- 即 **LSP 结束后第一次发送指令改为直写**，确保关键信号（如 PORSD/POL/ch_sel）在第一帧即可生效，避免三帧延迟导致的时序错误
+
+这样既能保证初始配置的关键信号及时生效，又能在正常帧期间维持 checksum 保护机制。
+
+## 2. REG07 与 checksum update
+
+### 2.1 0511 新增 REG07 checksum update 功能
+
+- 新增 `REG07` 寄存器控制 checksum update 行为
+- 后续演变为 `CTRLF_CHECKSUM[3:0]`
+- 该功能影响 20+ 个 checksum case
+
+### 2.2 0519 CTRLF_CHECKSUM 定义
+
+- `REG07[3:0]` 命名为 `CTRLF_CHECKSUM[3:0]`
+- 默认值 `0x05`（使能校验和）
+
+### 2.3 0520 最终方案
+
+- `REG07` 默认值为 `0`（使能 checksum 检测）
+- 写入 `0x05` 时关闭 checksum 检测（直写模式）
+- **LSP 阶段结束至 K1 发起前**：此阶段不做 checksum，寄存器直写
+- **K1 后**：做一个 latch，latch=1 后保持 checksum 功能
+
+## 3. Seg2 checksum 删除与时钟域统一
+
+### 3.1 0615 时钟域统一
+
+早期 Seg2 checksum 使用独立的 `WCK1_A_TEST` 时钟，导致跨时钟域同步问题：
+
+| 变更项 | 原实现 | 新实现 |
+|--------|--------|--------|
+| Seg2 时钟 | `WCK1_A_TEST` | 统一为 `WCK1_A` |
+| 端口 | `input WCK1_A_TEST` | 已删除 |
+| always 敏感列表 | `@(posedge WCK1_A_TEST ...)` | 全部改为 `@(posedge WCK1_A ...)` |
+| CDC 问题 | `chksum_mode` 跨 `WCK1_A → WCK1_A_TEST` | 单一时钟域，无需同步器 |
+
+涉及替换约 85 处。
+
+### 3.2 0615 Seg2 checksum 删除
+
+- 彻底移除 `CHKSUM_T_EN` 宏
+- 删除 Seg2 shadow 寄存器及 XOR checksum 校验逻辑
+- `0x20~0x38` 全部 25 个测试寄存器改为 `WCK1_A` 时钟域直写
+- 移除跨 `WCK1_A` / `WCK1_A_TEST` 的 CDC 相关逻辑
+
+代码量从约 3280 行精简到约 2060 行。
+
+## 4. Seg1 扩展与 frame end 变更
+
+### 4.1 0616 Seg1 地址扩展
+
+- `R_REG09_F` / `R_REG10_F` / `R_REG29_F` / `R_REG30_F` 加入 Seg1 寄存器并参与 checksum
+- Seg1 shadow 寄存器从 9 个扩展到 13 个
+
+### 4.2 0703 frame end 改为 0x27
+
+- 地址 `39(0x27)` 加入 Segment1 checksum，作为新的 frame end
+- 地址 `31(0x1F)` 改为普通 shadow 寄存器，不再作为 frame end
+- `0x27` 字段映射为 `ACS_EN(bit7)` / `Level_Skip_frame(bit1)` / `Skip_frame_count(bit0)`
+
+## 5. NG Unlock 机制
+
+为防止偶发误报导致寄存器长期被锁，引入 NG Unlock 机制。
+
+### 5.1 方案演进
+
+| 版本 | 方案 | 说明 |
+|------|------|------|
+| 0614 PlanA | 组合逻辑 | 连续 6 帧 mismatch 后解锁 |
+| 0614 PlanB | 寄存器锁存 | 时序更稳定，但会 sticky |
+| 0615 PlanB 修正 | 阈值 off-by-one 修复 | `<3'd6` 修正为 `<3'd5`，即 5 次连续 mismatch 后下一帧直写 |
+| 0616 最终 | 连续 5 帧 mismatch | `unmatch_cnt_a` 计数器 + `unlock_latch_a` 锁存器 |
+| 0618 | one-shot | 仅在连续 mismatch 条件满足时产生单周期脉冲，解锁后需重新计数 |
+
+### 5.2 Caveat：首帧即累加
+
+`unmatch_cnt_a` 在首帧 `match=0` 时也会 +1，因此 case 设计不应硬编码帧号，而应动态监测 `unlock_latch_a`。
+
+> **1023v1 更新**：首帧的"比较"与"计数"本身都是非法的（`prev_xsum_a` 复位为 0，首帧若全零会幻影 match；首帧 mismatch 又会提前污染 unlock 计数）。1023v1 已加 `prev_valid_a` + `frm_seen_start_a` 双标志防护，非法帧尾不比较、不计数（保持），详见 §9。
+>
+> **1027v1 注记（两部分）**：①LC_REG_MAPPING 侧新增 `khead_20b_sel` @0x1D[7:3] 仅为字段输出，checksum 机制零改动（0x1D 为既有 Seg1 参与地址）；②**LC_CPUWR 侧修复 Seg1 checksum 0x0A XOR 覆盖丢失**（0721v1 重排回归，详见 §10）——0x0A 同为既有参与地址，修复后 RTL 参与集才与本页各表真正一致。
+
+### 5.3 one-shot unlock 验证陷阱
+
+one-shot unlock 实现后 checker 曾出现解锁帧内期望值误判（checker 在 unlock 帧已把 `expected[]` 切到下一帧 cfg，而 RTL 解锁帧内 shadow 保持当前帧）——详见[验证同步](./verification.html) §2.1「0618 one-shot unlock 误判修复」。
+
+## 6. SCR_EN 与 SSFC 门控
+
+### 6.1 0512 SCR_EN 复位逻辑
+
+- `SCR_EN` 在 I2C model 下，即使 K3 检测到也不会 reset
+- 新增该功能以满足 I2C 模式下的 scramble 控制需求
+
+### 6.2 0622 SSFC 信号
+
+- 新增 `SSFC` 输入端口
+- `R_SCREN` 由 `R_REG00_F[4]` 直接输出改为 `R_REG00_F[4] & SSFC`
+- scramble enable 仅在 `SSFC==1` 时有效
+
+## 7. 0721v1 三字节拍重组与 XOR 不变性
+
+0721v1 将 `FCONFIG_DATA` / `LCONFIG_DATA` 扩为 24bit，每个 ADD 步进携带 3 字节。checksum 逻辑随之从"整拍 `C^D` 折叠"重构为"**按字节有效性折叠**"。
+
+### 7.1 为什么要按字节有效性折叠
+
+3 字节/拍后，`0x1E`/`0x1F`（Segment1 末尾）与 `0x20`（测试区开头）落在**同一拍**（`5'h0B`），跨 checksum 区边界；`0x07`（控制寄存器）与 `0x06`/`0x08` 也同拍（`5'h03`）。整拍一刀切会把不该参与的字节卷入 XOR，因此必须按拍查表：
+
+| 拍 | 字节 | 参与 XOR | 说明 |
+|---|---|---|---|
+| `5'h01` / `5'h02` | 0x00~0x05 | `C^D^F` | 全部在 Seg1 |
+| `5'h03` | 0x06✓ / 0x07✗ / 0x08✓ | `C^F` | 0x07 控制寄存器排除 |
+| `5'h04` | 0x09✓ / 0x0A✓ / 0x0B✗ | `C^D` | 0x0B gap |
+| `5'h0A` | 0x1D✓ | `F` | 0x1B/0x1C gap |
+| `5'h0B` | 0x1E✓ / 0x1F✓ / 0x20✗ | `C^D` | 0x20 不在 Seg1 |
+| `5'h0E` | 0x27✓（frame_end） | `C` | 0x28/0x29 不在 Seg1 |
+
+### 7.2 XOR 总量不变（关键性质）
+
+重新分组只是 XOR 的重新加括号（结合律），总量与旧版完全一致：
+
+```
+0x00^0x01^0x02^0x03^0x04^0x05^0x06^0x08^0x09^0x0A^0x1D^0x1E^0x1F   (除 0x07)
+frame_end = 0x27
+```
+
+因此 **checker 期望、DV 环境、回归行为全部不变**——这是本次协议级变更中刻意保持的不变量。
+
+> ⚠️ **2026-10-27 勘误（LC_CPUWR 1027v1，详见 §10）**：上表为 0721v1 的**设计意图**且本节表格一直正确，但 RTL `xdata_a` 表达式漏写了 `5'h04` 分支（落默认 `DATA_C`），**0x0A 实际从未进入 XOR**——"总量不变"性质直到 1027v1 修复才真正成立。教训：结构重排类变更必须做逐拍×逐槽枚举核对（本站表格 ↔ RTL 表达式的比对正是最小拦截检查）。
+
+### 7.3 frame_end 位置迁移
+
+- 旧（2B/拍）：0x27 在 `5'h14` 拍 D 位置，`xdata = DATA_D`
+- 新（3B/拍）：0x27 在 `5'h0E` 拍 C 位置，`xdata = DATA_C`
+- `frame_start_a` 仍在 `ADDR00_F`（`5'h01` 拍 C 位置），首拍直存语义不变
+
+## 8. 0807 / 0810 后 checksum 范围不变
+
+**0807v1 新架构**（`LINK_CONFIG_CTRL` 承载寄存器通路）与 **0810v1 寄存器表同步**均**不改变 checksum 机制**：
+
+- 参与 XOR 累加的地址为 `0x00~0x06、0x08、0x09、0x0A、0x1D、0x1E、0x1F`（除 `0x07` 控制寄存器；0616v2 起纳入 `0x09/0x0A/0x1D/0x1E`），frame_end 仍为 `0x27`
+- 0810v1 新增/变更的寄存器（FSEL@reg146、EOL@reg56、BCC@reg147/160/161、reg50/51/53 字段修正）都不在 checksum 参与范围（`0x00~0x1F` 之外）
+- Seg2（`0x20~0x38`）仍为直写、不做 checksum
+- checker 期望、DV 环境、回归行为不因此改变
+
+## 9. 1023v1 match 首帧/幻影防护（prev_valid + frm_seen_start）
+
+1023v1 修复了 match 比较链上长期存在的**幻影比较**问题：`prev_xsum_a` 复位为 0，而 match 判据是 `(xsum_a ^ xdata_a) == prev_xsum_a`——只要帧 XOR 结果"撞上"一个不来自真实完整帧的 prev 值，就会非法 match 提交。
+
+### 9.1 问题全案例（t1 七案分析）
+
+| # | 场景 | 判定 | 1023v1 防护 |
+|---|------|------|-------------|
+| ① | 复位后首帧 vs 幻影 prev=0（全零帧必中；1 真帧+1 幻影帧也提交） | 非法 | `prev_valid_a=0` |
+| ② | 真实帧 XOR 恰为 0x00（与幻影值不可区分） | 本身合法 | 靠**有效性标志**而非值区分：prev_valid=1 时值为 0 也是真帧，照常比较/提交 |
+| ③ | 模式退出再进入（I_TEST 脉冲 / 0x07 写 5 再改回 / K1 掉再升） | 无残留（!chksum_mode 时五状态全清零）→ 再进入首帧=新幻影、帧中途再进入=残帧 | `prev_valid` 随 !chksum_mode 清零，自动归入 ①/⑦ |
+| ④ | unlock 之后 | **合法无需改**：prev 持有真实帧值，自恢复闭环成立 | 不加多余门控 |
+| ⑤ | 首帧幻影 mismatch 污染 `unmatch_cnt_a`（NG Unlock 提前 1 帧） | 非法 | `cmp_valid` 门控计数：非法帧尾**既不计数也不清零**（保持） |
+| ⑥ | K1 上升与帧首拍同拍（1023v1 打拍后新版错过首字节 → 截断帧，且不会帧尾自愈） | 非法（对拍 TB 实证） | `frm_seen_start_a=0` |
+| ⑦ | 无 ADDR00 起始的残帧 frame_end（主机半帧/中途再进入） | 非法，连锁污染最大 | `frm_seen_start_a=0` |
+
+防护不是逐场景打补丁，而是封住两个根因：`prev_valid_a` 封"比较基准不来自真实完整帧"，`frm_seen_start_a` 封"没见过帧头的帧尾"。任何新场景只要落到这两类结构之一即天然被防住。
+
+### 9.2 实现（四消费点门控）
+
+```
+prev_valid_a     : frame_end && frm_seen_start_a 时置位；复位 / !chksum_mode 清零
+frm_seen_start_a : frame_start（ADDR00_F）拍置位；frame_end / !chksum_mode / 复位清零
+cmp_valid_a  = prev_valid_a & frm_seen_start_a
+match_eff_a  = match_a & cmp_valid_a
+
+update_en_a     = chksum_mode ? (match_cnt_a & match_eff_a) : 1'b0
+unmatch_cnt_a   : cmp_valid_a && mismatch 才 +1；非法帧尾保持（不清零、不计数）
+unlock_one_shot_a: (unmatch_cnt_a == 3'd4) && cmp_valid_a && !match_a
+```
+
+有意不防的边界（契约不变）：防护粒度是"帧完整性 = 见过 ADDR00 头"，**不校验帧长/中间节拍齐全性**——两帧一致但中间缺行的短帧照样 match 提交（checksum 职责是"两帧一致性"而非"协议完备性"，旧逻辑同样如此）。
+
+### 9.3 时序契约验证
+
+用户口径"两帧算好、第三帧 ADDR39 当拍一次性写入全部 checksum 参与计算的寄存器"精确保留：guard 寄存器在 frame_end 沿（NBA）清零，而组合 `update_en_a` 用的是**沿前旧值**——F3 帧尾提交拍逐拍不变（同沿非阻塞语义；guard TB S3 场景断言）。
+
+**证据**：t1 七案分析 + guard TB 10 场景（全 PASS）+ 最小对拍 TB（1022v1 vs 1023v1，C1/C2/C3 全 0）+ 对抗评审 PASS（critical=0/high=0）；详见[验证同步](./verification.html) §9。
+
+## 10. 1027v1 Seg1 checksum 0x0A XOR 覆盖修复（0721v1 重排回归）
+
+DV `t_8b1lane_checksum_boundary_chip1` F30（chip_sel=1）暴露：改 0x0A PWRC_P 00→01 且预期不提交的帧，实际 active 读到 0x10——shadow 经 `update_en_a` 误提交。
+
+### 10.1 根因
+
+`xdata_a` 三元链**没有 `5'h04` 分支**，该拍落默认 `DATA_C`：beat 5'h04（C=0x09、D=0x0A、F=0x0B gap）只 XOR 了 0x09，**0x0A 自 0721v1 起从未进入运行 XOR**——而 §7.1 表格与 RTL 头注释一直正确写着 `5'h04: C^D`。git 实证（`git log -L`）：表达式仅 0721v1（1b574b63）写过一次、此后零改动；0721 之前的 0716 代码在旧 2B 布局下覆盖 0x0A——**重排引入回归**，所有 ≥0721 服务器代际同源。
+
+### 10.2 双向破坏机理
+
+| 场景 | RTL 行为（bug 下） | 后果 |
+|------|-------------------|------|
+| 仅改 0x0A + 陈旧/错校验 | XOR 无增量 → `(xsum_a^xdata_a)==prev_xsum_a` 假成立 | **假匹配误提交**（F30 实测；unmatch_cnt 被误清零） |
+| 改 0x0A + 正确校验 | RTL 侧增量 0x10 不可见 | **假 mismatch**：提交被阻 + unmatch_cnt 污染，5 连可误触发 unlock |
+
+1023v1 的 match 防护（§9）管不住：它防幻影/残帧（帧完整性），不防数据覆盖洞（完整合法帧的字节缺失）。
+
+### 10.3 修复与验证（代码级，无仿真）
+
+修复一行：`(FREG_CHPI == 5'h04) ? (DATA_C ^ DATA_D)`。验证三件套全 PASS：
+
+- **四轴交叉验证**（`script/xcheck_1027v1_xdata_a.py`）：解码线性律 14/14 ✓ / 头注释↔表达式逐拍一致 ✓ / 参与集 = 0716v1_work 等价集 `{0x00-0x06,0x08,0x09,0x0A,0x1D,0x1E,0x1F}`+0x27 ✓ / 增量恰为 {0x0A} 且每个使能拍显式分支 ✓
+- **同类错误六轴排查**（`script/xcheck_1027v1_similar.py`）：13/13 影子写入槽位=解码槽位 ✓ / 0x07 直写 R_REG07_F（设计如此）✓ / 参与拍↔使能拍一一对应 ✓ / 0x07 正确排除 XOR ✓ / 读回齐全 ✓ / LC_REG_MAPPING 回拼无槽选择面 ✓ —— **无其他同类错误**
+- **iverilog 受控对照**：vs 1023v1 基线错误集逐行一致（20×CLKINVX4AL9 均既有）
+
+### 10.4 成因复盘与教训
+
+0721v1 属结构重排，当时用"XOR 结合律总量不变"的**集合级推理**验收，未做**逐拍×逐槽枚举核对**；三元链默认分支静默吞掉漏写项；三关纪律与 G13"静态推演不得单独作为 pass 依据"条款（0929）彼时未建立；DV pwrc 家族 case 与 env 同 commit 交付但未跑到暴露窗口。**最小拦截检查 = 注释/文档表 ↔ RTL 表达式的逐拍比对**（B 轴），已沉淀为可复跑脚本；DV 侧待办：boundary_chip1 复跑（F30 应转 mismatch）、pwrc_p1/p2/p3 期望复核、补"改 0x0A+正确校验"合法提交路径。
+
+  </script>
+  <script>
+    document.getElementById('article').innerHTML = marked.parse(document.getElementById('md').textContent.trim());
+const chapters = [
+      ['index', '首页'],
+      ['intro', '引言'],
+      ['diagrams', '图解'],
+      ['timeline', '时间线'],
+      ['checksum', '校验和'],
+      ['regmap', '寄存器'],
+      ['register-research', '交叉验证'],
+      ['verification', '验证'],
+      ['status', '后续']
+    ];
+    const currentPath = location.pathname.split('/').pop() || 'index.html';
+    const linksContainer = document.getElementById('navbar-links');
+    chapters.forEach(([slug, label]) => {
+      const href = slug === 'index' ? './' : `./${slug}.html`;
+      const filename = slug === 'index' ? 'index.html' : `${slug}.html`;
+      const a = document.createElement('a');
+      a.href = href;
+      a.textContent = label;
+      if (currentPath === filename || currentPath.endsWith('/' + filename) || (currentPath === '' && slug === 'index')) {
+        a.classList.add('active');
+      }
+      linksContainer.appendChild(a);
+    });
+const article = document.getElementById('article');
+    const toc = document.getElementById('toc');
+    const h1 = article.querySelector('h1');
+    if (h1) {
+      const a = document.createElement('a');
+      a.href = '#';
+      a.textContent = h1.textContent;
+      a.className = 'toc-h1';
+      toc.appendChild(a);
+    }
+    /* TOC 折叠（对齐 site-template/js/site.js）：带 h3 子标题的 h2 挂 ▸ 箭头，点箭头只折叠/展开不跳转；
+       h3 成组缩进跟随；折叠时高亮落回父级 h2；默认全展开。标题 id 保持 toc-N 以不改既有锚点。 */
+    const headings = Array.from(article.querySelectorAll('h2, h3'));
+    headings.forEach((h, i) => { h.id = 'toc-' + i; });
+    const tocLinks = [];
+    const h3ToH2 = {};   /* h3 id -> 父 h2 id（折叠组激活时高亮回父级） */
+    headings.forEach((h, i) => {
+      if (h.tagName !== 'H2') return;
+      const children = [];
+      let j = i + 1;
+      while (j < headings.length && headings[j].tagName === 'H3') { children.push(headings[j]); j++; }
+      const a = document.createElement('a');
+      a.href = '#' + h.id;
+      a.textContent = h.textContent;
+      a.className = 'toc-h2' + (children.length > 0 ? ' toc-parent' : '');
+      toc.appendChild(a);
+      tocLinks.push(a);
+      if (children.length === 0) return;
+      const group = document.createElement('div');
+      group.className = 'toc-h3-group';
+      group.setAttribute('data-parent', h.id);
+      children.forEach(c => {
+        h3ToH2[c.id] = h.id;
+        const link = document.createElement('a');
+        link.href = '#' + c.id;
+        link.textContent = c.textContent;
+        link.className = 'toc-h3';
+        group.appendChild(link);
+        tocLinks.push(link);
+      });
+      toc.appendChild(group);
+      const arrow = document.createElement('span');
+      arrow.className = 'toc-arrow';
+      arrow.textContent = '▸';
+      a.insertBefore(arrow, a.firstChild);
+      arrow.addEventListener('click', (e) => {
+        e.preventDefault(); /* 箭头 = 折叠/展开，不跳转 */
+        const nowCollapsed = a.classList.toggle('collapsed');
+        group.classList.toggle('collapsed', nowCollapsed);
+        if (nowCollapsed) { /* 折叠时高亮移回父 h2 */
+          const activeInGroup = group.querySelector('a.active');
+          if (activeInGroup) { activeInGroup.classList.remove('active'); a.classList.add('active'); }
+        }
+      });
+    });
+    function updateTocActive() {
+      let current = '';
+      headings.forEach(h => { if (h.getBoundingClientRect().top < 100) current = h.id; });
+      tocLinks.forEach(a => a.classList.remove('active'));
+      if (!current) return;
+      const parentId = h3ToH2[current];
+      if (parentId) { /* 所在 h3 组已折叠 → 高亮落父级 h2 */
+        const group = toc.querySelector('.toc-h3-group[data-parent="' + parentId + '"]');
+        if (group && group.classList.contains('collapsed')) current = parentId;
+      }
+      const active = tocLinks.find(a => a.getAttribute('href') === '#' + current);
+      if (active) active.classList.add('active');
+    }
+    window.addEventListener('scroll', updateTocActive);
+    updateTocActive();
+  </script>
+
+  <div class="lightbox" id="lightbox">
+    <span class="close" id="lightbox-close">&times;</span>
+    <img id="lightbox-img" src="" alt="">
+    <div class="hint">滚轮缩放 · 拖拽移动 · 点击空白处或右上角关闭</div>
+  </div>
+
+  <script>
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightbox-img');
+    const lightboxClose = document.getElementById('lightbox-close');
+    let scale = 1, translateX = 0, translateY = 0, baseW = 0, baseH = 0;
+    let isDragging = false, startX = 0, startY = 0, initialTranslateX = 0, initialTranslateY = 0;
+    /* v4.3 清晰缩放：放大用真实布局尺寸（width/height = base×scale），transform 只做平移。
+       Chromium 按"布局尺寸×DPR"重栅格化 SVG；transform:scale 在高 DPR 屏会走纹理拉伸导致模糊。 */
+    function updateTransform() {
+      if (scale === 1) { lightboxImg.style.width = ''; lightboxImg.style.height = ''; }
+      else {
+        if (!baseW) { baseW = lightboxImg.clientWidth || lightboxImg.naturalWidth; baseH = lightboxImg.clientHeight || lightboxImg.naturalHeight; }
+        if (baseW) { lightboxImg.style.width = baseW * scale + 'px'; lightboxImg.style.height = baseH * scale + 'px'; }
+      }
+      lightboxImg.style.transform = `translate(${translateX}px, ${translateY}px)`;
+    }
+    function resetTransform() { scale = 1; translateX = 0; translateY = 0; baseW = 0; baseH = 0; updateTransform(); }
+    function openLightbox(src) { lightboxImg.src = src; resetTransform(); lightbox.classList.add('active'); document.body.style.overflow = 'hidden'; }
+    function closeLightbox() { lightbox.classList.remove('active'); document.body.style.overflow = ''; setTimeout(() => { lightboxImg.src = ''; }, 250); }
+    document.querySelectorAll('.article img').forEach(img => img.addEventListener('click', () => openLightbox(img.src)));
+    lightboxClose.addEventListener('click', (e) => { e.stopPropagation(); closeLightbox(); });
+    lightbox.addEventListener('click', (e) => { if (e.target === lightbox) closeLightbox(); });
+    lightbox.addEventListener('wheel', (e) => { e.preventDefault(); scale = Math.min(Math.max(0.5, scale + (e.deltaY > 0 ? -0.15 : 0.15)), 5); updateTransform(); }, { passive: false });
+    lightboxImg.addEventListener('mousedown', (e) => { e.preventDefault(); isDragging = true; lightboxImg.classList.add('grabbing'); startX = e.clientX; startY = e.clientY; initialTranslateX = translateX; initialTranslateY = translateY; });
+    window.addEventListener('mousemove', (e) => { if (!isDragging) return; translateX = initialTranslateX + (e.clientX - startX); translateY = initialTranslateY + (e.clientY - startY); updateTransform(); });
+    window.addEventListener('mouseup', () => { isDragging = false; lightboxImg.classList.remove('grabbing'); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeLightbox(); });
+  </script>
+  <script src="./fx.js?v=11"></script>
+</body>
+</html>
+
+<!-- ymzhu 2026-11-02 18:50 -->

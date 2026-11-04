@@ -371,10 +371,10 @@
     <div class="hero-inner">
       <div class="kicker">HK1V11 · TCON · CPU 写寄存器接口</div>
       <h1>LC_CPUWR<br>代码修改<span class="thin">全记录</span></h1>
-      <p class="lead">一个寄存器接口模块六个月的演进档案：从 0612 基线重构，到 1022v1 服务器版采纳，再到 1023v1 K1 打拍 / match 首帧幻影防护 / SCS_PKT_HALF 新寄存器，直至 1027v1 khead_20b_sel 与 checksum 0x0A 覆盖修复、1028v1 回拼标志时序修复。</p>
+      <p class="lead">一个寄存器接口模块七个月的演进档案：从 0612 基线重构，到 1022v1 服务器版采纳、1023v1 K1 打拍 / match 首帧幻影防护 / SCS_PKT_HALF，1027v1 khead_20b_sel 与 checksum 0x0A 修复、1028v1 回拼时序修复、1029v1 三字段落地，直至 1104 服务器同步（5 处差异全采、未单独升版本号）。</p>
       <div class="meta">
         <span>AUTHOR <b>ymzhuuuu</b></span>
-        <span>SPAN <b>2026-04 → 2026-10</b></span>
+        <span>SPAN <b>2026-04 → 2026-11</b></span>
         <span>ARCHIVE <b>LC_CPUWR_history</b></span>
       </div>
       <div class="hero-hint">
@@ -384,7 +384,7 @@
       <div class="reg">
         CURRENT
         <span class="ver">1029v1</span>
-        REV 2026-10-29
+        REV 2026-10-29 · 1104 同步
       </div>
     </div>
   </header>
@@ -393,26 +393,24 @@
     <div class="latest">
       <div class="badge">
         <span class="tag">LATEST</span>
-        <span class="num">1029v1</span>
+        <span class="num">1104 同步</span>
       </div>
       <div class="body">
-        <div class="t">1029v1 · khead 移址 + TP_SEL + BACSCR_EOL 三字段落地（10-29，LC_CPUWR + LC_REG_MAPPING 双升版）</div>
+        <div class="t">1104 服务器同步 · 寄存器 5 处差异全采（11-04 · <code>PACK_TAR_1104V1</code> · 未单独升版本号，本地基线 1029v1）</div>
         <ul>
-          <li>依 HK1V11_Register_20261028.xlsm：<code>khead_20b_sel</code> 移址 <code>0x33[6:2]</code>（输出改 LC_CPUWR + LSI 门控，REG_MAPPING 端口回退）</li>
-          <li>新增 <code>TP_SEL[1:0]</code> @0x34[7:6]（位置经用户确认）与 <code>BACSCR_EOL</code> @0x38[7]，均 LSI 门控输出</li>
-          <li>三字段存储全既有仅加输出；iverilog 双对照一致；三输出上层挂账</li>
-          <li>前置：1028v1 回拼 WR 时序修复 / 1027v1-B checksum 0x0A 修复（详见时间线）</li>
-          <li>DV 序列（cs=1→正常帧→复位→K1+K4 立即）：首帧拍内 <code>(WR=1, R_REG=cs0 复位值)</code> → 回拼 mux 选中 cs=0 复位值，<strong>cs=1 默认回拼失效</strong>（mismatch 帧下无限延长）</li>
-          <li>修复：WR 门控<strong>完全镜像寄存器控制逻辑</strong>（直写路径拍内 / checksum 帧提交沿 / 复位同清），不变式 = WR 与 R_REG 同沿成对变更；同类排查无其他；iverilog 受控对照一致</li>
-          <li>前置：1027v1-B checksum 0x0A 覆盖修复 / 1027v1-A khead_20b_sel（详见时间线）</li>
+          <li>服务器包接收覆盖：集成前移（<code>LINK_CONFIG_CTRL</code> 补连 R_KHEAD_20B_SEL / R_TP_SEL / R_BACSCR_EOL / R_SCS_PKT_HALF 四挂账输出）+ CS_SET_1H 改 <code>~BKDU_SYNC</code> + R_TP_F_AHEAD(0x2E[3]) 停用 + R_DPLC_MODE 长编码强 0 + LC_REG_MAPPING 头仍 1027v1</li>
+          <li>用户 11-04 确认 5 处差异全部有意、<strong>全采不回退</strong>；<strong>未单独升版本号</strong>（LC_CPUWR 头 1029v1 / LC_REG_MAPPING 头 1027v1）</li>
+          <li>changelist Register Change <strong>NO=12</strong> 登记草稿（待用户登记）；双轨 CHANGES（根级 + 目录级）已同步</li>
+          <li>代际三方对齐：DC 11-03 01:20 / SDC 11-03 10:53 / PT 11-04 09:47，一致无串味</li>
+          <li>寄存器变更图（动画+静态双版）+ 五处差异明细 → 详见新章节「1104 服务器同步 · 寄存器变更」</li>
         </ul>
       </div>
-      <a class="more" href="./timeline.html">全部版本演进 →</a>
+      <a class="more" href="./sync-1104.html">1104 服务器同步 · 寄存器变更 →</a>
     </div>
 
     <div class="stats">
-      <div class="stat"><div class="v">8</div><div class="k">章节页面</div></div>
-      <div class="stat"><div class="v">44</div><div class="k">归档版本（0612 → 1029v1）</div></div>
+      <div class="stat"><div class="v">9</div><div class="k">章节页面</div></div>
+      <div class="stat"><div class="v">44</div><div class="k">归档版本（0612 → 1029v1，+1104 同步）</div></div>
       <div class="stat"><div class="v">3</div><div class="k">道验收关（iverilog / review / trace）</div></div>
       <div class="stat"><div class="v">06-15</div><div class="k">归档体系建立</div></div>
     </div>
@@ -426,7 +424,8 @@
       <a class="chapter-card" href="./regmap.html"><div class="num">05</div><div class="title">寄存器映射与命名规范化</div><div class="desc">位段迁移、chip_sel 默认值、十进制命名、1022v1 rbc 回退、1023v1 SCS_PKT_HALF、1027v1 khead_20b_sel</div></a>
       <a class="chapter-card" href="./register-research.html"><div class="num">06</div><div class="title">寄存器规格交叉验证</div><div class="desc">RTL / Excel / 地址映射三方核对、属性总表</div></a>
       <a class="chapter-card" href="./verification.html"><div class="num">07</div><div class="title">验证同步与 Checker 统一</div><div class="desc">checker 迁移、case 同步、仿真计划</div></a>
-      <a class="chapter-card" href="./status.html"><div class="num">08</div><div class="title">当前状态与后续</div><div class="desc">1027v1 状态、khead_20b_sel / SCS_PKT_HALF 上层连线挂账、BCC 待接入、DV 待同步</div></a>
+      <a class="chapter-card" href="./status.html"><div class="num">08</div><div class="title">当前状态与后续</div><div class="desc">1029v1 状态、khead_20b_sel / SCS_PKT_HALF 上层连线挂账、BCC 待接入、DV 待同步</div></a>
+      <a class="chapter-card" href="./sync-1104.html"><div class="num">09</div><div class="title">1104 服务器同步 · 寄存器变更<span class="star">最新</span></div><div class="desc">PACK_TAR_1104V1 接收覆盖：集成前移 / CS_SET_1H 同步 / R_TP_F_AHEAD 停用 / R_DPLC_MODE 长编码强 0 / 头未升（5 处差异全采，changelist NO=12）</div></a>
     </div>
 
     <div class="footer">SHARED FROM TEAM KNOWLEDGE BASE</div>
@@ -442,7 +441,8 @@
       ['regmap', '寄存器'],
       ['register-research', '交叉验证'],
       ['verification', '验证'],
-      ['status', '后续']
+      ['status', '后续'],
+      ['sync-1104', '1104同步']
     ];
     const currentPath = location.pathname.split('/').pop() || 'index.html';
     const linksContainer = document.getElementById('navbar-links');
@@ -462,4 +462,4 @@
 </body>
 </html>
 
-<!-- ymzhu 2026-10-29 11:52 -->
+<!-- ymzhu 2026-11-04 12:08 -->

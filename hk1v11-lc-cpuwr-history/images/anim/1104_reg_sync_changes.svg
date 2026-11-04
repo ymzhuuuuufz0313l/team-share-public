@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="720" viewBox="0 0 1100 720" style="background:#ffffff">
+<rect width="1100" height="720" fill="#ffffff"/>
+<text x="550.0" y="42" text-anchor="middle" class="title" font-size="22" font-weight="bold" fill="#1e293b">1104 服务器同步 · 寄存器变更</text>
+<text x="550.0" y="70" text-anchor="middle" font-size="13" fill="#64748b">2026-11-04 · PACK_TAR_1104V1 · 未单独升版本号（本地基线 1029v1）</text>
+<rect class="head" x="40" y="100" width="1020" height="34" fill="#f1f5f9"/>
+<text x="92.0" y="122" text-anchor="middle" font-size="14" font-weight="700" fill="#1e293b">#</text>
+<text x="346.0" y="122" text-anchor="middle" font-size="14" font-weight="700" fill="#1e293b">变更点</text>
+<text x="616.0" y="122" text-anchor="middle" font-size="14" font-weight="700" fill="#1e293b">类型</text>
+<text x="778.0" y="122" text-anchor="middle" font-size="14" font-weight="700" fill="#1e293b">影响模块</text>
+<text x="972.0" y="122" text-anchor="middle" font-size="14" font-weight="700" fill="#1e293b">状态</text>
+<rect class="row" style="animation-delay:0.15s" x="40" y="134" width="1020" height="88" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+<text x="66.0" y="183.0" text-anchor="middle" font-size="15" font-weight="700" fill="#64748b">1</text>
+<text x="106" y="168.0" font-size="13.5" fill="#1e293b">集成前移：4 挂账输出连线（R_KHEAD_20B_SEL / R_TP_SEL /</text>
+<text x="106" y="190.0" font-size="13.5" fill="#1e293b">R_BACSCR_EOL / R_SCS_PKT_HALF）</text>
+<rect x="588.0" y="166.0" width="56" height="24" rx="12" fill="#fef3c7" stroke="#f59e0b" stroke-width="1"/>
+<text x="616.0" y="182.0" text-anchor="middle" font-size="12" font-weight="700" fill="#f59e0b">集成</text>
+<text x="778.0" y="183.0" text-anchor="middle" font-size="12.5" fill="#1e293b" font-family="Consolas, Monaco, monospace">LINK_CONFIG_CTRL</text>
+<text x="972.0" y="183.0" text-anchor="middle" font-size="13" font-weight="700" fill="#22c55e">✅ 已连</text>
+<rect class="row" style="animation-delay:0.27s" x="40" y="222" width="1020" height="88" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+<text x="66.0" y="271.0" text-anchor="middle" font-size="15" font-weight="700" fill="#64748b">2</text>
+<text x="106" y="271.0" font-size="13.5" fill="#1e293b">CS_SET_1H：~R_BKDU → ~BKDU_SYNC（同步版）</text>
+<rect x="588.0" y="254.0" width="56" height="24" rx="12" fill="#e0e7ff" stroke="#6366f1" stroke-width="1"/>
+<text x="616.0" y="270.0" text-anchor="middle" font-size="12" font-weight="700" fill="#6366f1">功能</text>
+<text x="778.0" y="271.0" text-anchor="middle" font-size="12.5" fill="#1e293b" font-family="Consolas, Monaco, monospace">LC_CPUWR</text>
+<text x="972.0" y="271.0" text-anchor="middle" font-size="13" font-weight="700" fill="#22c55e">✅ 同步版</text>
+<rect class="row" style="animation-delay:0.39s" x="40" y="310" width="1020" height="88" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+<text x="66.0" y="359.0" text-anchor="middle" font-size="15" font-weight="700" fill="#64748b">3</text>
+<text x="106" y="344.0" font-size="13.5" fill="#1e293b">R_TP_F_AHEAD (0x2E[3]) 停用：回 Reserved、</text>
+<text x="106" y="366.0" font-size="13.5" fill="#1e293b">LC_CPUWR 端口注释、LINK 驱常量 0</text>
+<rect x="588.0" y="342.0" width="56" height="24" rx="12" fill="#e0e7ff" stroke="#6366f1" stroke-width="1"/>
+<text x="616.0" y="358.0" text-anchor="middle" font-size="12" font-weight="700" fill="#6366f1">功能</text>
+<text x="778.0" y="359.0" text-anchor="middle" font-size="12.5" fill="#1e293b" font-family="Consolas, Monaco, monospace">LC_CPUWR + LINK</text>
+<text x="972.0" y="359.0" text-anchor="middle" font-size="13" font-weight="700" fill="#22c55e">✅ 停用</text>
+<rect class="row" style="animation-delay:0.51s" x="40" y="398" width="1020" height="88" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+<text x="66.0" y="447.0" text-anchor="middle" font-size="15" font-weight="700" fill="#64748b">4</text>
+<text x="106" y="447.0" font-size="13.5" fill="#1e293b">R_DPLC_MODE：`ifdef LONG_VU440_FPGA 强 1′b0（长编码构建）</text>
+<rect x="588.0" y="430.0" width="56" height="24" rx="12" fill="#ccfbf1" stroke="#0d9488" stroke-width="1"/>
+<text x="616.0" y="446.0" text-anchor="middle" font-size="12" font-weight="700" fill="#0d9488">构建</text>
+<text x="778.0" y="447.0" text-anchor="middle" font-size="12.5" fill="#1e293b" font-family="Consolas, Monaco, monospace">LC_CPUWR</text>
+<text x="972.0" y="447.0" text-anchor="middle" font-size="13" font-weight="700" fill="#22c55e">✅ 长编码强0</text>
+<rect class="row" style="animation-delay:0.63s" x="40" y="486" width="1020" height="88" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+<text x="66.0" y="535.0" text-anchor="middle" font-size="15" font-weight="700" fill="#64748b">5</text>
+<text x="106" y="535.0" font-size="13.5" fill="#1e293b">LC_REG_MAPPING 头仍 1027v1（功能已等同 1029v1，未升头）</text>
+<rect x="588.0" y="518.0" width="56" height="24" rx="12" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1"/>
+<text x="616.0" y="534.0" text-anchor="middle" font-size="12" font-weight="700" fill="#94a3b8">版本</text>
+<text x="778.0" y="535.0" text-anchor="middle" font-size="12.5" fill="#1e293b" font-family="Consolas, Monaco, monospace">LC_REG_MAPPING</text>
+<text x="972.0" y="535.0" text-anchor="middle" font-size="13" font-weight="700" fill="#f59e0b">⏸ 未升头</text>
+<text x="550.0" y="600" text-anchor="middle" font-size="12.5" fill="#64748b">用户 11-04 确认 5 处差异全部有意 · 全采不回退 · changelist Register Change NO=12 登记草稿（待用户登记）</text>
+<style>
+.title, .head { opacity:0; animation: fadeIn .4s ease forwards; }
+.row { opacity:0; animation: rowIn .35s cubic-bezier(.22,.7,.3,1) forwards; }
+@keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+@keyframes rowIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:none; } }
+@media (prefers-reduced-motion:reduce) { *{animation:none!important} .title,.head,.row{opacity:1!important} }
+</style>
+</svg>
