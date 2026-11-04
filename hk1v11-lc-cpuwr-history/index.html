@@ -371,7 +371,7 @@
     <div class="hero-inner">
       <div class="kicker">HK1V11 · TCON · CPU 写寄存器接口</div>
       <h1>LC_CPUWR<br>代码修改<span class="thin">全记录</span></h1>
-      <p class="lead">一个寄存器接口模块七个月的演进档案：从 0612 基线重构，到 1022v1 服务器版采纳、1023v1 K1 打拍 / match 首帧幻影防护 / SCS_PKT_HALF，1027v1 khead_20b_sel 与 checksum 0x0A 修复、1028v1 回拼时序修复、1029v1 三字段落地，1104 服务器同步（5 处差异全采、未升号），直至 1104v1 三件套升版（四项移址 + 0x08 默认 0x30 + 旧位回 Reserved，LINK_CONFIG_CTRL 首次加版本头）。</p>
+      <p class="lead">一个寄存器接口模块七个月的演进档案：从 0612 基线重构，到 1022v1 服务器版采纳、1023v1 K1 打拍 / match 首帧幻影防护 / SCS_PKT_HALF，1027v1 khead_20b_sel 与 checksum 0x0A 修复、1028v1 回拼时序修复、1029v1 三字段落地，1104 服务器同步（5 处差异全采、未升号），直至 1104v1 三件套升版（四项移址 + 0x08 默认 0x30 + 旧位回 Reserved + 输出口归属修正，LINK_CONFIG_CTRL 首次加版本头；GLM-5.3 全量审查放行）。</p>
       <div class="meta">
         <span>AUTHOR <b>ymzhuuuu</b></span>
         <span>SPAN <b>2026-04 → 2026-11</b></span>
@@ -400,7 +400,7 @@
         <ul>
           <li>四项移址：khead_20b_sel 5bit@0x33[6:2]→3bit@0x1D[7:5]（极性反转 3'b101=40bit）+ TP_SEL[1:0] 0x34[7:6]→0x08[5:4]（默认 00→11）+ BACSCR_EOL 0x38[7]→0x1D[4] + VPS_EN[1] F0x03[7]→L0x43[7]（LC_REG_MAPPING 新输出）</li>
           <li>0x08 字节默认 0x00→0x30（shadow 三处复位同步）；旧位 0x33[6:2]/0x34[7:6]/0x38[7]/0x03[7] 回 Reserved（存储保留、摘输出）</li>
-          <li>三件套升版 <strong>1104v1</strong>（LC_CPUWR / LC_REG_MAPPING / LINK_CONFIG_CTRL 首次加头）；验收三关全过（iverilog / 对抗评审 critical=0 high=1 / 信号链路）</li>
+          <li>三件套升版 <strong>1104v1</strong>（LC_CPUWR / LC_REG_MAPPING / LINK_CONFIG_CTRL 首次加头）；验收三关全过（初评 critical=0 high=1；<strong>b49e5741 输出口归属修正后复评 0/0/0/0</strong>——TP_SEL/khead/BACSCR_EOL 三输出口 → LC_REG_MAPPING ≤31 规则）；GLM-5.3 全量审查 critical=0 放行</li>
           <li>挂账（写域外）：R_KHEAD_20B_SEL 上层消费链改宽 [2:0] + 判别 !=3'b101（消费侧 owner）；DV reg_model/env 同步待办（DV_TCON_C）</li>
           <li>迭代变更图（动画+静态双版）+ 移址明细 + 挂账 → 详见「1104 服务器同步 · 寄存器变更」§6</li>
         </ul>
@@ -462,4 +462,4 @@
 </body>
 </html>
 
-<!-- ymzhu 2026-11-04 12:45 -->
+<!-- ymzhu 2026-11-04 16:18 -->

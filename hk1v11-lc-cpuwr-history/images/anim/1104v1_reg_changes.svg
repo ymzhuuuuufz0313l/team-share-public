@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="732" viewBox="0 0 1100 732" style="background:#ffffff">
-<rect width="1100" height="732" fill="#ffffff"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="820" viewBox="0 0 1100 820" style="background:#ffffff">
+<rect width="1100" height="820" fill="#ffffff"/>
 <text x="550.0" y="42" text-anchor="middle" class="title" font-size="22" font-weight="bold" fill="#1e293b">1104v1 迭代变更 · 寄存器三件套升版</text>
-<text x="550.0" y="70" text-anchor="middle" font-size="13" fill="#64748b">2026-11-04 · 基线 1104 服务器态 · LC_CPUWR / LC_REG_MAPPING / LINK_CONFIG_CTRL → 1104v1</text>
+<text x="550.0" y="70" text-anchor="middle" font-size="13" fill="#64748b">2026-11-04 · 基线 1104 服务器态 · LC_CPUWR / LC_REG_MAPPING / LINK_CONFIG_CTRL → 1104v1（含归属修正）</text>
 <rect class="head" x="40" y="100" width="1020" height="34" fill="#f1f5f9"/>
 <text x="92.0" y="122" text-anchor="middle" font-size="14" font-weight="700" fill="#1e293b">#</text>
 <text x="346.0" y="122" text-anchor="middle" font-size="14" font-weight="700" fill="#1e293b">变更点（旧 → 新）</text>
@@ -57,7 +57,15 @@
 <text x="616.0" y="622.0" text-anchor="middle" font-size="12" font-weight="700" fill="#94a3b8">版本</text>
 <text x="778.0" y="623.0" text-anchor="middle" font-size="12.5" fill="#1e293b" font-family="Consolas, Monaco, monospace">LC_CPUWR</text>
 <text x="972.0" y="623.0" text-anchor="middle" font-size="13" font-weight="700" fill="#22c55e">✅ 存储保留</text>
-<text x="550.0" y="692" text-anchor="middle" font-size="12.5" fill="#64748b">三关全过（iverilog / 对抗评审 critical=0 high=1 / 信号链路）· 极性反转 3'b101=40bit 其余 20bit · khead 上层消费链改宽挂账</text>
+<rect class="row" style="animation-delay:0.87s" x="40" y="662" width="1020" height="88" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+<text x="66.0" y="711.0" text-anchor="middle" font-size="15" font-weight="700" fill="#64748b">7</text>
+<text x="106" y="696.0" font-size="13.5" fill="#1e293b">输出口归属修正（b49e5741）</text>
+<text x="106" y="718.0" font-size="13.5" fill="#1e293b">TP_SEL / khead / BACSCR_EOL 输出口 → LC_REG_MAPPING（≤31）</text>
+<rect x="588.0" y="694.0" width="56" height="24" rx="12" fill="#dbeafe" stroke="#1d4ed8" stroke-width="1"/>
+<text x="616.0" y="710.0" text-anchor="middle" font-size="12" font-weight="700" fill="#1d4ed8">归属</text>
+<text x="778.0" y="711.0" text-anchor="middle" font-size="12.5" fill="#1e293b" font-family="Consolas, Monaco, monospace">LC_REG_MAPPING</text>
+<text x="972.0" y="711.0" text-anchor="middle" font-size="13" font-weight="700" fill="#22c55e">✅ 复评 0/0/0/0</text>
+<text x="550.0" y="780" text-anchor="middle" font-size="12.5" fill="#64748b">三关全过（初评 critical=0 high=1 → 归属修正 b49e5741 后复评 0/0/0/0）· 极性反转 3'b101=40bit 其余 20bit · khead 上层消费链改宽挂账（GLM 审查 H1）</text>
 <style>
 .title, .head { opacity:0; animation: fadeIn .4s ease forwards; }
 .row { opacity:0; animation: rowIn .35s cubic-bezier(.22,.7,.3,1) forwards; }

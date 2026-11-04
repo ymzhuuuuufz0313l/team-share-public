@@ -758,6 +758,15 @@
 - **挂账（写域外）**：R_KHEAD_20B_SEL 上层消费链改宽 [2:0] + 判别 !=3'b101（LINK_LOGIC / LC_CHPI_DECODE / SHORT·LONG_ENCODING_ALIGN / LONG·SHORT_ENCODING / long_encoding，消费侧 owner）；DV reg_model/env 同步待办（DV_TCON_C：0x08 默认 / 0x1D 字段 / Reserved / L 0x43[7]）
 - changelist Register Change 登记草稿（STATUS=Done，待用户登记 xlsx）；双轨 CHANGES（根级 + 目录级）已同步
 
+### 5.35 1104v1 输出口归属修正（2026-11-04 14:45，b49e5741，非升版 fix，三关复评 0/0/0/0；GLM-5.3 全量审查放行）
+
+- **规则**（用户 11-04 确认）：输出口归属由地址决定——**≤31（0x00-0x1F）→ LC_REG_MAPPING**；0x20-0x3F（>31 F/扩展区）→ LC_CPUWR；L 图（0x40+）→ LC_REG_MAPPING
+- **修正**：`R_TP_SEL@0x08(8)` / `R_KHEAD_20B_SEL@0x1D(29)` / `R_BACSCR_EOL@0x1D(29)` 三输出端口 **LC_CPUWR → LC_REG_MAPPING**（存储 R_REG08_F/R_REG29_F 仍 LC_CPUWR 字节输出口，LINK_CONFIG_CTRL 三接线改到 LC_REG_MAPPING 实例，上层消费链零变化）；`VPS_EN_1@L0x43` 在 LC_REG_MAPPING 本就正确未动
+- **checksum 面**：只动解码位置，覆盖对象零变化（t2 审计定案 + t3 GLM 独立复核同意，引擎零改动 diff 实证）
+- **三关复跑（修正后）**：iverilog 三命令 + LINK_CONFIG_CTRL 顶层 elaboration 全 exit 0 零告警 / rtl-code-review（ruthless）**critical=0/high=0/medium=0/low=0** / rtl-signal-trace 三信号 source→sink 全连通、无新增 CDC
+- **GLM-5.3 全量审查（t3，`script/_reg_review_glm_1104.md`）**：critical=0 **放行**（七项范围全过）；khead 上层适配挂账量化（H1：适配前 [2:0] 零扩展致 5'b10101 不可达 → 20-bit 模式整体不可用、默认落 40-bit）；挂账计数修正 7→6 文件（L1）；DV i2c_model 旧宏 + rd_data[4] 单 bit（L2）与 xlsm checksum 覆盖措辞旧口径（L3）入挂账
+- 登记同步：back3 NO54 comment 追加归属修正；chip_sel0/1 地址表 1104v1 块补归属标注；站点 sync-1104 §6.2/§6.4/§6.5 + 1104v1 变更图换版 r1（旧版 r0 快照 `images/archive/20261104/`）+ 生成脚本归位 `images/tools/`（图版生命周期与归档标准落地）
+
 
   </script>
   <script>
@@ -896,4 +905,4 @@ const article = document.getElementById('article');
   <script src="./fx.js?v=11"></script>
 </body>
 </html>
-<!-- ymzhu 2026-11-04 13:05 -->
+<!-- ymzhu 2026-11-04 16:16 -->

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="732" viewBox="0 0 1100 732" style="background:#ffffff">
+<rect width="1100" height="732" fill="#ffffff"/>
+<text x="550.0" y="42" text-anchor="middle" class="title" font-size="22" font-weight="bold" fill="#1e293b">1104v1 迭代变更 · 寄存器三件套升版</text>
+<text x="550.0" y="70" text-anchor="middle" font-size="13" fill="#64748b">2026-11-04 · 基线 1104 服务器态 · LC_CPUWR / LC_REG_MAPPING / LINK_CONFIG_CTRL → 1104v1</text>
+<rect class="head" x="40" y="100" width="1020" height="34" fill="#f1f5f9"/>
+<text x="92.0" y="122" text-anchor="middle" font-size="14" font-weight="700" fill="#1e293b">#</text>
+<text x="346.0" y="122" text-anchor="middle" font-size="14" font-weight="700" fill="#1e293b">变更点（旧 → 新）</text>
+<text x="616.0" y="122" text-anchor="middle" font-size="14" font-weight="700" fill="#1e293b">类型</text>
+<text x="778.0" y="122" text-anchor="middle" font-size="14" font-weight="700" fill="#1e293b">影响模块</text>
+<text x="972.0" y="122" text-anchor="middle" font-size="14" font-weight="700" fill="#1e293b">状态</text>
+<rect class="row" style="animation-delay:0.15s" x="40" y="134" width="1020" height="88" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+<text x="66.0" y="183.0" text-anchor="middle" font-size="15" font-weight="700" fill="#64748b">1</text>
+<text x="106" y="168.0" font-size="13.5" fill="#1e293b">khead_20b_sel 移址+改宽+极性反转</text>
+<text x="106" y="190.0" font-size="13.5" fill="#1e293b">0x33[6:2] 5bit → 0x1D[7:5] 3bit</text>
+<rect x="588.0" y="166.0" width="56" height="24" rx="12" fill="#e0e7ff" stroke="#6366f1" stroke-width="1"/>
+<text x="616.0" y="182.0" text-anchor="middle" font-size="12" font-weight="700" fill="#6366f1">移址</text>
+<text x="778.0" y="183.0" text-anchor="middle" font-size="12.5" fill="#1e293b" font-family="Consolas, Monaco, monospace">LC_CPUWR</text>
+<text x="972.0" y="183.0" text-anchor="middle" font-size="13" font-weight="700" fill="#22c55e">✅ 3'b101=40bit</text>
+<rect class="row" style="animation-delay:0.27s" x="40" y="222" width="1020" height="88" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+<text x="66.0" y="271.0" text-anchor="middle" font-size="15" font-weight="700" fill="#64748b">2</text>
+<text x="106" y="256.0" font-size="13.5" fill="#1e293b">TP_SEL[1:0] 移址+改默认</text>
+<text x="106" y="278.0" font-size="13.5" fill="#1e293b">0x34[7:6] 默认 00 → 0x08[5:4] 默认 11</text>
+<rect x="588.0" y="254.0" width="56" height="24" rx="12" fill="#e0e7ff" stroke="#6366f1" stroke-width="1"/>
+<text x="616.0" y="270.0" text-anchor="middle" font-size="12" font-weight="700" fill="#6366f1">移址</text>
+<text x="778.0" y="271.0" text-anchor="middle" font-size="12.5" fill="#1e293b" font-family="Consolas, Monaco, monospace">LC_CPUWR</text>
+<text x="972.0" y="271.0" text-anchor="middle" font-size="13" font-weight="700" fill="#22c55e">✅ 0x08 默认 0x30</text>
+<rect class="row" style="animation-delay:0.39s" x="40" y="310" width="1020" height="88" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+<text x="66.0" y="359.0" text-anchor="middle" font-size="15" font-weight="700" fill="#64748b">3</text>
+<text x="106" y="344.0" font-size="13.5" fill="#1e293b">BACSCR_EOL 移址</text>
+<text x="106" y="366.0" font-size="13.5" fill="#1e293b">0x38[7] → 0x1D[4]（默认 0 不变）</text>
+<rect x="588.0" y="342.0" width="56" height="24" rx="12" fill="#e0e7ff" stroke="#6366f1" stroke-width="1"/>
+<text x="616.0" y="358.0" text-anchor="middle" font-size="12" font-weight="700" fill="#6366f1">移址</text>
+<text x="778.0" y="359.0" text-anchor="middle" font-size="12.5" fill="#1e293b" font-family="Consolas, Monaco, monospace">LC_CPUWR</text>
+<text x="972.0" y="359.0" text-anchor="middle" font-size="13" font-weight="700" fill="#22c55e">✅ 默认 0</text>
+<rect class="row" style="animation-delay:0.51s" x="40" y="398" width="1020" height="88" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+<text x="66.0" y="447.0" text-anchor="middle" font-size="15" font-weight="700" fill="#64748b">4</text>
+<text x="106" y="432.0" font-size="13.5" fill="#1e293b">VPS_EN[1] 移址 F→L</text>
+<text x="106" y="454.0" font-size="13.5" fill="#1e293b">F 0x03[7] → L 0x43[7]（新输出 VPS_EN_1）</text>
+<rect x="588.0" y="430.0" width="56" height="24" rx="12" fill="#e0e7ff" stroke="#6366f1" stroke-width="1"/>
+<text x="616.0" y="446.0" text-anchor="middle" font-size="12" font-weight="700" fill="#6366f1">移址</text>
+<text x="778.0" y="447.0" text-anchor="middle" font-size="12.5" fill="#1e293b" font-family="Consolas, Monaco, monospace">LC_REG_MAPPING</text>
+<text x="972.0" y="447.0" text-anchor="middle" font-size="13" font-weight="700" fill="#22c55e">✅ VPS_EN_1</text>
+<rect class="row" style="animation-delay:0.63s" x="40" y="486" width="1020" height="88" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+<text x="66.0" y="535.0" text-anchor="middle" font-size="15" font-weight="700" fill="#64748b">5</text>
+<text x="106" y="520.0" font-size="13.5" fill="#1e293b">0x08 字节默认 0x00 → 0x30</text>
+<text x="106" y="542.0" font-size="13.5" fill="#1e293b">（TP_SEL 字段移入，shadow 三处复位同步）</text>
+<rect x="588.0" y="518.0" width="56" height="24" rx="12" fill="#ccfbf1" stroke="#0d9488" stroke-width="1"/>
+<text x="616.0" y="534.0" text-anchor="middle" font-size="12" font-weight="700" fill="#0d9488">默认</text>
+<text x="778.0" y="535.0" text-anchor="middle" font-size="12.5" fill="#1e293b" font-family="Consolas, Monaco, monospace">LC_CPUWR</text>
+<text x="972.0" y="535.0" text-anchor="middle" font-size="13" font-weight="700" fill="#22c55e">✅ 已同步</text>
+<rect class="row" style="animation-delay:0.75s" x="40" y="574" width="1020" height="88" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+<text x="66.0" y="623.0" text-anchor="middle" font-size="15" font-weight="700" fill="#64748b">6</text>
+<text x="106" y="608.0" font-size="13.5" fill="#1e293b">旧位回 Reserved</text>
+<text x="106" y="630.0" font-size="13.5" fill="#1e293b">0x33[6:2] / 0x34[7:6] / 0x38[7] / 0x03[7]</text>
+<rect x="588.0" y="606.0" width="56" height="24" rx="12" fill="#f1f5f9" stroke="#94a3b8" stroke-width="1"/>
+<text x="616.0" y="622.0" text-anchor="middle" font-size="12" font-weight="700" fill="#94a3b8">版本</text>
+<text x="778.0" y="623.0" text-anchor="middle" font-size="12.5" fill="#1e293b" font-family="Consolas, Monaco, monospace">LC_CPUWR</text>
+<text x="972.0" y="623.0" text-anchor="middle" font-size="13" font-weight="700" fill="#22c55e">✅ 存储保留</text>
+<text x="550.0" y="692" text-anchor="middle" font-size="12.5" fill="#64748b">三关全过（iverilog / 对抗评审 critical=0 high=1 / 信号链路）· 极性反转 3'b101=40bit 其余 20bit · khead 上层消费链改宽挂账</text>
+<style>
+.title, .head { opacity:0; animation: fadeIn .4s ease forwards; }
+.row { opacity:0; animation: rowIn .35s cubic-bezier(.22,.7,.3,1) forwards; }
+@keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+@keyframes rowIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:none; } }
+@media (prefers-reduced-motion:reduce) { *{animation:none!important} .title,.head,.row{opacity:1!important} }
+</style>
+</svg>

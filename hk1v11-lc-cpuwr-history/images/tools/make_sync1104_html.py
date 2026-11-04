@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 # make_sync1104_html.py — 由 timeline.html 模板生成 sync-1104.html（新章节，仅替换 #md / title / page-nav）
+# ⚠ 历史脚手架（2026-11-04 12:06 一次性生成 §1-5）：现行 sync-1104.html 已手工扩展 §6（1104v1 迭代），
+#   重跑本脚本会用 §1-5 旧内容整页覆盖、丢失 §6 —— 仅留档复现首次建页，勿在现行站点重跑。
 import io, os, re
 
 BASE = os.path.dirname(os.path.abspath(__file__))
-SRC = os.path.join(BASE, "..", "timeline.html")
-DST = os.path.join(BASE, "..", "sync-1104.html")
+SRC = os.path.join(BASE, "..", "..", "timeline.html")
+DST = os.path.join(BASE, "..", "..", "sync-1104.html")
 
 html = io.open(SRC, encoding="utf-8").read()
 
@@ -73,4 +75,4 @@ else:
 
 io.open(DST, "w", encoding="utf-8", newline="\n").write(html)
 print("written %s  %dB" % (DST, len(html)))
-# ymzhu 2026-11-04 12:05
+# ymzhu 2026-11-04 16:10
