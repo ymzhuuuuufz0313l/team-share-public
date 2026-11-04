@@ -1,9 +1,9 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="2519" height="1300" viewBox="0 0 2519 1300" font-family="Consolas, 'Cascadia Mono', 'Courier New', monospace">
+<svg xmlns="http://www.w3.org/2000/svg" width="2519" height="2002" viewBox="0 0 2519 2002" font-family="Consolas, 'Cascadia Mono', 'Courier New', monospace">
 
-<rect x="0" y="0" width="2519" height="1300" fill="#ffffff"/>
+<rect x="0" y="0" width="2519" height="2002" fill="#ffffff"/>
 <g class="head">
 <rect x="0" y="0" width="2519" height="58" fill="#157a6a"/>
-<text x="25" y="37.12" font-size="30" font-weight="bold" fill="#ffffff">report_setup.csv (HK1V11 1029V0)</text>
+<text x="25" y="37.12" font-size="30" font-weight="bold" fill="#ffffff">report_setup.csv (HK1V11 1104V0)</text>
 <text x="2494" y="37.12" font-size="26" fill="#ffffff" text-anchor="end">setup/max 路径违例总表（红=违例，括号内为条数）</text>
 <rect x="0" y="58" width="2519" height="54" fill="#2e8b6a"/>
 <text x="35" y="91.48" font-size="20" fill="#ffffff">metric</text>
@@ -20,51 +20,49 @@
 </g>
 <g class="row" style="animation-delay:0.012s">
 <rect x="0" y="112" width="2519" height="54" fill="#ffffff"/>
-<text x="35" y="145.48" font-size="20" fill="#2d2d2d">DCLK_CONFIG_MUX_SHORT</text>
-<text class="val chg" style="animation-delay:0.00s" x="728.6" y="145.48" font-size="20" fill="#2d2d2d" text-anchor="end">1.23349</text>
-<text class="val chg" style="animation-delay:0.03s" x="923.2" y="145.48" font-size="20" fill="#2d2d2d" text-anchor="end">1.25452</text>
-<text class="val chg" style="animation-delay:0.05s" x="1117.8" y="145.48" font-size="20" fill="#2d2d2d" text-anchor="end">1.19521</text>
-<text class="val chg" style="animation-delay:0.08s" x="1312.4" y="145.48" font-size="20" fill="#2d2d2d" text-anchor="end">1.00295</text>
-<text class="val chg" style="animation-delay:0.10s" x="1507" y="145.48" font-size="20" fill="#2d2d2d" text-anchor="end">0.96139</text>
-<text class="val chg" style="animation-delay:0.12s" x="1701.6" y="145.48" font-size="20" fill="#2d2d2d" text-anchor="end">0.95481</text>
-<text class="val chg" style="animation-delay:0.15s" x="1896.2" y="145.48" font-size="20" fill="#2d2d2d" text-anchor="end">1.00852</text>
-<text class="val chg" style="animation-delay:0.18s" x="2090.8" y="145.48" font-size="20" fill="#2d2d2d" text-anchor="end">0.04440</text>
-<text class="val chg" style="animation-delay:0.20s" x="2285.4" y="145.48" font-size="20" fill="#2d2d2d" text-anchor="end">0.00080</text>
-<text class="val chg" style="animation-delay:0.23s" x="2480" y="145.48" font-size="20" fill="#2d2d2d" text-anchor="end">0.01369</text>
+<text x="35" y="145.48" font-size="20" fill="#2d2d2d">DCLK_CONFIG_LONG</text>
+<text class="val" x="728.6" y="145.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="923.2" y="145.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="1117.8" y="145.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="1312.4" y="145.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="1507" y="145.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="1701.6" y="145.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="1896.2" y="145.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="2090.8" y="145.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="2285.4" y="145.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="2480" y="145.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
 </g>
 <g class="row" style="animation-delay:0.024s">
 <rect x="0" y="166" width="2519" height="54" fill="#f4f6f4"/>
-<text x="35" y="199.48" font-size="20" fill="#2d2d2d">DCLK_CONFIG_SHORT</text>
-<text class="val" x="728.6" y="199.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
-<text class="val" x="923.2" y="199.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
-<text class="val" x="1117.8" y="199.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
-<text class="val" x="1312.4" y="199.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
-<text class="val" x="1507" y="199.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
-<text class="val" x="1701.6" y="199.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
-<text class="val" x="1896.2" y="199.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
-<text class="val" x="2090.8" y="199.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
-<text class="val" x="2285.4" y="199.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
-<text class="val" x="2480" y="199.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text x="35" y="199.48" font-size="20" fill="#2d2d2d">DCLK_CONFIG_MUX_LONG</text>
+<text class="val chg" style="animation-delay:0.03s" x="728.6" y="199.48" font-size="20" fill="#2d2d2d" text-anchor="end">2.96075</text>
+<text class="val chg" style="animation-delay:0.05s" x="923.2" y="199.48" font-size="20" fill="#2d2d2d" text-anchor="end">3.03039</text>
+<text class="val chg" style="animation-delay:0.08s" x="1117.8" y="199.48" font-size="20" fill="#2d2d2d" text-anchor="end">3.01022</text>
+<text class="val chg" style="animation-delay:0.10s" x="1312.4" y="199.48" font-size="20" fill="#2d2d2d" text-anchor="end">2.65442</text>
+<text class="val chg" style="animation-delay:0.12s" x="1507" y="199.48" font-size="20" fill="#2d2d2d" text-anchor="end">2.61088</text>
+<text class="val chg" style="animation-delay:0.15s" x="1701.6" y="199.48" font-size="20" fill="#2d2d2d" text-anchor="end">2.66253</text>
+<text class="val chg" style="animation-delay:0.18s" x="1896.2" y="199.48" font-size="20" fill="#2d2d2d" text-anchor="end">2.65370</text>
+<text class="val chg" style="animation-delay:0.20s" x="2090.8" y="199.48" font-size="20" fill="#2d2d2d" text-anchor="end">1.52625</text>
+<text class="val chg" style="animation-delay:0.23s" x="2285.4" y="199.48" font-size="20" fill="#2d2d2d" text-anchor="end">1.55690</text>
+<text class="val chg" style="animation-delay:0.25s" x="2480" y="199.48" font-size="20" fill="#2d2d2d" text-anchor="end">1.55848</text>
 </g>
 <g class="row" style="animation-delay:0.036s">
 <rect x="0" y="220" width="2519" height="54" fill="#ffffff"/>
-<text x="35" y="253.48" font-size="20" fill="#2d2d2d">DCLK_DATA_MUX_SHORT</text>
-<text class="val chg" style="animation-delay:0.05s" x="728.6" y="253.48" font-size="20" fill="#2d2d2d" text-anchor="end">1.01684</text>
-<text class="val chg" style="animation-delay:0.08s" x="923.2" y="253.48" font-size="20" fill="#2d2d2d" text-anchor="end">1.18333</text>
-<text class="val chg" style="animation-delay:0.10s" x="1117.8" y="253.48" font-size="20" fill="#2d2d2d" text-anchor="end">1.06634</text>
-<text class="val chg" style="animation-delay:0.12s" x="1312.4" y="253.48" font-size="20" fill="#2d2d2d" text-anchor="end">0.68863</text>
-<text class="val chg" style="animation-delay:0.15s" x="1507" y="253.48" font-size="20" fill="#2d2d2d" text-anchor="end">0.68665</text>
-<text class="val chg" style="animation-delay:0.18s" x="1701.6" y="253.48" font-size="20" fill="#2d2d2d" text-anchor="end">0.86904</text>
-<text class="val chg" style="animation-delay:0.20s" x="1896.2" y="253.48" font-size="20" fill="#2d2d2d" text-anchor="end">0.80709</text>
-<rect x="1910.2" y="220" width="194.6" height="54" fill="#f8dede"/>
-<text class="val chg" style="animation-delay:0.23s" x="2090.8" y="253.48" font-size="20" fill="#7f1d1d" text-anchor="end">-0.18487(5)</text>
-<text class="val chg" style="animation-delay:0.25s" x="2285.4" y="253.48" font-size="20" fill="#2d2d2d" text-anchor="end">0.02593</text>
-<rect x="2299.4" y="220" width="194.6" height="54" fill="#f8dede"/>
-<text class="val chg" style="animation-delay:0.28s" x="2480" y="253.48" font-size="20" fill="#7f1d1d" text-anchor="end">-0.02966(2)</text>
+<text x="35" y="253.48" font-size="20" fill="#2d2d2d">DCLK_CONFIG_MUX_SHORT</text>
+<text class="val chg" style="animation-delay:0.05s" x="728.6" y="253.48" font-size="20" fill="#2d2d2d" text-anchor="end">1.10690</text>
+<text class="val chg" style="animation-delay:0.08s" x="923.2" y="253.48" font-size="20" fill="#2d2d2d" text-anchor="end">1.28823</text>
+<text class="val chg" style="animation-delay:0.10s" x="1117.8" y="253.48" font-size="20" fill="#2d2d2d" text-anchor="end">1.13613</text>
+<text class="val chg" style="animation-delay:0.12s" x="1312.4" y="253.48" font-size="20" fill="#2d2d2d" text-anchor="end">0.79782</text>
+<text class="val chg" style="animation-delay:0.15s" x="1507" y="253.48" font-size="20" fill="#2d2d2d" text-anchor="end">0.83867</text>
+<text class="val chg" style="animation-delay:0.18s" x="1701.6" y="253.48" font-size="20" fill="#2d2d2d" text-anchor="end">1.05180</text>
+<text class="val chg" style="animation-delay:0.20s" x="1896.2" y="253.48" font-size="20" fill="#2d2d2d" text-anchor="end">0.95839</text>
+<text class="val chg" style="animation-delay:0.23s" x="2090.8" y="253.48" font-size="20" fill="#2d2d2d" text-anchor="end">0.07847</text>
+<text class="val chg" style="animation-delay:0.25s" x="2285.4" y="253.48" font-size="20" fill="#2d2d2d" text-anchor="end">0.24297</text>
+<text class="val chg" style="animation-delay:0.28s" x="2480" y="253.48" font-size="20" fill="#2d2d2d" text-anchor="end">0.22978</text>
 </g>
 <g class="row" style="animation-delay:0.048s">
 <rect x="0" y="274" width="2519" height="54" fill="#f4f6f4"/>
-<text x="35" y="307.48" font-size="20" fill="#2d2d2d">DCLK_DATA_SHORT</text>
+<text x="35" y="307.48" font-size="20" fill="#2d2d2d">DCLK_CONFIG_SHORT</text>
 <text class="val" x="728.6" y="307.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
 <text class="val" x="923.2" y="307.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
 <text class="val" x="1117.8" y="307.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
@@ -78,7 +76,7 @@
 </g>
 <g class="row" style="animation-delay:0.060s">
 <rect x="0" y="328" width="2519" height="54" fill="#ffffff"/>
-<text x="35" y="361.48" font-size="20" fill="#2d2d2d">DPLC_CLK_1P5_SHORT</text>
+<text x="35" y="361.48" font-size="20" fill="#2d2d2d">DCLK_DATA_LONG</text>
 <text class="val" x="728.6" y="361.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
 <text class="val" x="923.2" y="361.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
 <text class="val" x="1117.8" y="361.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
@@ -92,63 +90,65 @@
 </g>
 <g class="row" style="animation-delay:0.072s">
 <rect x="0" y="382" width="2519" height="54" fill="#f4f6f4"/>
-<text x="35" y="415.48" font-size="20" fill="#2d2d2d">DPLC_CLK_SHORT_DIV</text>
-<text class="val" x="728.6" y="415.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
-<text class="val" x="923.2" y="415.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
-<text class="val" x="1117.8" y="415.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
-<text class="val" x="1312.4" y="415.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
-<text class="val" x="1507" y="415.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
-<text class="val" x="1701.6" y="415.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
-<text class="val" x="1896.2" y="415.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
-<text class="val" x="2090.8" y="415.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
-<text class="val" x="2285.4" y="415.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
-<text class="val" x="2480" y="415.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text x="35" y="415.48" font-size="20" fill="#2d2d2d">DCLK_DATA_MUX_LONG</text>
+<text class="val chg" style="animation-delay:0.12s" x="728.6" y="415.48" font-size="20" fill="#2d2d2d" text-anchor="end">1.47179</text>
+<text class="val chg" style="animation-delay:0.15s" x="923.2" y="415.48" font-size="20" fill="#2d2d2d" text-anchor="end">1.60714</text>
+<text class="val chg" style="animation-delay:0.18s" x="1117.8" y="415.48" font-size="20" fill="#2d2d2d" text-anchor="end">1.47998</text>
+<text class="val chg" style="animation-delay:0.20s" x="1312.4" y="415.48" font-size="20" fill="#2d2d2d" text-anchor="end">1.30808</text>
+<text class="val chg" style="animation-delay:0.23s" x="1507" y="415.48" font-size="20" fill="#2d2d2d" text-anchor="end">1.35856</text>
+<text class="val chg" style="animation-delay:0.25s" x="1701.6" y="415.48" font-size="20" fill="#2d2d2d" text-anchor="end">1.49256</text>
+<text class="val chg" style="animation-delay:0.28s" x="1896.2" y="415.48" font-size="20" fill="#2d2d2d" text-anchor="end">1.43758</text>
+<text class="val chg" style="animation-delay:0.30s" x="2090.8" y="415.48" font-size="20" fill="#2d2d2d" text-anchor="end">0.08775</text>
+<text class="val chg" style="animation-delay:0.33s" x="2285.4" y="415.48" font-size="20" fill="#2d2d2d" text-anchor="end">0.32219</text>
+<text class="val chg" style="animation-delay:0.35s" x="2480" y="415.48" font-size="20" fill="#2d2d2d" text-anchor="end">0.19676</text>
 </g>
 <g class="row" style="animation-delay:0.084s">
 <rect x="0" y="436" width="2519" height="54" fill="#ffffff"/>
-<text x="35" y="469.48" font-size="20" fill="#2d2d2d">DPLC_CLK_SHORT</text>
-<text class="val" x="728.6" y="469.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
-<text class="val" x="923.2" y="469.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
-<text class="val" x="1117.8" y="469.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
-<text class="val" x="1312.4" y="469.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
-<text class="val" x="1507" y="469.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
-<text class="val" x="1701.6" y="469.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
-<text class="val" x="1896.2" y="469.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
-<text class="val" x="2090.8" y="469.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
-<text class="val" x="2285.4" y="469.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
-<text class="val" x="2480" y="469.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text x="35" y="469.48" font-size="20" fill="#2d2d2d">DCLK_DATA_MUX_SHORT</text>
+<text class="val chg" style="animation-delay:0.15s" x="728.6" y="469.48" font-size="20" fill="#2d2d2d" text-anchor="end">0.80538</text>
+<text class="val chg" style="animation-delay:0.18s" x="923.2" y="469.48" font-size="20" fill="#2d2d2d" text-anchor="end">1.17061</text>
+<text class="val chg" style="animation-delay:0.20s" x="1117.8" y="469.48" font-size="20" fill="#2d2d2d" text-anchor="end">0.95774</text>
+<text class="val chg" style="animation-delay:0.23s" x="1312.4" y="469.48" font-size="20" fill="#2d2d2d" text-anchor="end">0.35514</text>
+<text class="val chg" style="animation-delay:0.25s" x="1507" y="469.48" font-size="20" fill="#2d2d2d" text-anchor="end">0.46644</text>
+<text class="val chg" style="animation-delay:0.28s" x="1701.6" y="469.48" font-size="20" fill="#2d2d2d" text-anchor="end">0.88451</text>
+<text class="val chg" style="animation-delay:0.30s" x="1896.2" y="469.48" font-size="20" fill="#2d2d2d" text-anchor="end">0.71068</text>
+<rect x="1910.2" y="436" width="194.6" height="54" fill="#f8dede"/>
+<text class="val chg" style="animation-delay:0.33s" x="2090.8" y="469.48" font-size="20" fill="#7f1d1d" text-anchor="end">-0.43089(7)</text>
+<text class="val chg" style="animation-delay:0.35s" x="2285.4" y="469.48" font-size="20" fill="#2d2d2d" text-anchor="end">0.05761</text>
+<rect x="2299.4" y="436" width="194.6" height="54" fill="#f8dede"/>
+<text class="val chg" style="animation-delay:0.38s" x="2480" y="469.48" font-size="20" fill="#7f1d1d" text-anchor="end">-0.12772(7)</text>
 </g>
 <g class="row" style="animation-delay:0.096s">
 <rect x="0" y="490" width="2519" height="54" fill="#f4f6f4"/>
-<text x="35" y="523.48" font-size="20" fill="#2d2d2d">I2C_CLK_INV</text>
-<text class="val chg" style="animation-delay:0.18s" x="728.6" y="523.48" font-size="20" fill="#2d2d2d" text-anchor="end">249.21658</text>
-<text class="val chg" style="animation-delay:0.20s" x="923.2" y="523.48" font-size="20" fill="#2d2d2d" text-anchor="end">249.19228</text>
-<text class="val chg" style="animation-delay:0.23s" x="1117.8" y="523.48" font-size="20" fill="#2d2d2d" text-anchor="end">249.18785</text>
-<text class="val chg" style="animation-delay:0.25s" x="1312.4" y="523.48" font-size="20" fill="#2d2d2d" text-anchor="end">248.90892</text>
-<text class="val chg" style="animation-delay:0.28s" x="1507" y="523.48" font-size="20" fill="#2d2d2d" text-anchor="end">248.82692</text>
-<text class="val chg" style="animation-delay:0.30s" x="1701.6" y="523.48" font-size="20" fill="#2d2d2d" text-anchor="end">248.79616</text>
-<text class="val chg" style="animation-delay:0.33s" x="1896.2" y="523.48" font-size="20" fill="#2d2d2d" text-anchor="end">248.80644</text>
-<text class="val chg" style="animation-delay:0.35s" x="2090.8" y="523.48" font-size="20" fill="#2d2d2d" text-anchor="end">247.65739</text>
-<text class="val chg" style="animation-delay:0.38s" x="2285.4" y="523.48" font-size="20" fill="#2d2d2d" text-anchor="end">247.61041</text>
-<text class="val chg" style="animation-delay:0.40s" x="2480" y="523.48" font-size="20" fill="#2d2d2d" text-anchor="end">247.63208</text>
+<text x="35" y="523.48" font-size="20" fill="#2d2d2d">DCLK_DATA_SHORT</text>
+<text class="val" x="728.6" y="523.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="923.2" y="523.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="1117.8" y="523.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="1312.4" y="523.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="1507" y="523.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="1701.6" y="523.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="1896.2" y="523.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="2090.8" y="523.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="2285.4" y="523.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="2480" y="523.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
 </g>
 <g class="row" style="animation-delay:0.108s">
 <rect x="0" y="544" width="2519" height="54" fill="#ffffff"/>
-<text x="35" y="577.48" font-size="20" fill="#2d2d2d">I2C_CLK</text>
-<text class="val chg" style="animation-delay:0.20s" x="728.6" y="577.48" font-size="20" fill="#2d2d2d" text-anchor="end">247.40221</text>
-<text class="val chg" style="animation-delay:0.23s" x="923.2" y="577.48" font-size="20" fill="#2d2d2d" text-anchor="end">247.37935</text>
-<text class="val chg" style="animation-delay:0.25s" x="1117.8" y="577.48" font-size="20" fill="#2d2d2d" text-anchor="end">247.38736</text>
-<text class="val chg" style="animation-delay:0.28s" x="1312.4" y="577.48" font-size="20" fill="#2d2d2d" text-anchor="end">247.25262</text>
-<text class="val chg" style="animation-delay:0.30s" x="1507" y="577.48" font-size="20" fill="#2d2d2d" text-anchor="end">247.13860</text>
-<text class="val chg" style="animation-delay:0.33s" x="1701.6" y="577.48" font-size="20" fill="#2d2d2d" text-anchor="end">247.09430</text>
-<text class="val chg" style="animation-delay:0.35s" x="1896.2" y="577.48" font-size="20" fill="#2d2d2d" text-anchor="end">247.12587</text>
-<text class="val chg" style="animation-delay:0.38s" x="2090.8" y="577.48" font-size="20" fill="#2d2d2d" text-anchor="end">246.33331</text>
-<text class="val chg" style="animation-delay:0.40s" x="2285.4" y="577.48" font-size="20" fill="#2d2d2d" text-anchor="end">246.23564</text>
-<text class="val chg" style="animation-delay:0.43s" x="2480" y="577.48" font-size="20" fill="#2d2d2d" text-anchor="end">246.30174</text>
+<text x="35" y="577.48" font-size="20" fill="#2d2d2d">DPLC_CLK_1P5_SHORT</text>
+<text class="val" x="728.6" y="577.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="923.2" y="577.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="1117.8" y="577.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="1312.4" y="577.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="1507" y="577.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="1701.6" y="577.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="1896.2" y="577.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="2090.8" y="577.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="2285.4" y="577.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="2480" y="577.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
 </g>
 <g class="row" style="animation-delay:0.120s">
 <rect x="0" y="598" width="2519" height="54" fill="#f4f6f4"/>
-<text x="35" y="631.48" font-size="20" fill="#2d2d2d">NORMAL_CLK_SHORT</text>
+<text x="35" y="631.48" font-size="20" fill="#2d2d2d">DPLC_CLK_LONG_LEG</text>
 <text class="val" x="728.6" y="631.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
 <text class="val" x="923.2" y="631.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
 <text class="val" x="1117.8" y="631.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
@@ -162,38 +162,35 @@
 </g>
 <g class="row" style="animation-delay:0.132s">
 <rect x="0" y="652" width="2519" height="54" fill="#ffffff"/>
-<text x="35" y="685.48" font-size="20" fill="#2d2d2d">OSC_CLK</text>
-<text class="val chg" style="animation-delay:0.25s" x="728.6" y="685.48" font-size="20" fill="#2d2d2d" text-anchor="end">16.85548</text>
-<text class="val chg" style="animation-delay:0.28s" x="923.2" y="685.48" font-size="20" fill="#2d2d2d" text-anchor="end">16.85398</text>
-<text class="val chg" style="animation-delay:0.30s" x="1117.8" y="685.48" font-size="20" fill="#2d2d2d" text-anchor="end">16.85346</text>
-<text class="val chg" style="animation-delay:0.33s" x="1312.4" y="685.48" font-size="20" fill="#2d2d2d" text-anchor="end">16.20441</text>
-<text class="val chg" style="animation-delay:0.35s" x="1507" y="685.48" font-size="20" fill="#2d2d2d" text-anchor="end">15.84154</text>
-<text class="val chg" style="animation-delay:0.38s" x="1701.6" y="685.48" font-size="20" fill="#2d2d2d" text-anchor="end">15.82845</text>
-<text class="val chg" style="animation-delay:0.40s" x="1896.2" y="685.48" font-size="20" fill="#2d2d2d" text-anchor="end">15.84673</text>
-<text class="val chg" style="animation-delay:0.43s" x="2090.8" y="685.48" font-size="20" fill="#2d2d2d" text-anchor="end">13.06508</text>
-<text class="val chg" style="animation-delay:0.45s" x="2285.4" y="685.48" font-size="20" fill="#2d2d2d" text-anchor="end">13.01395</text>
-<text class="val chg" style="animation-delay:0.48s" x="2480" y="685.48" font-size="20" fill="#2d2d2d" text-anchor="end">13.05459</text>
+<text x="35" y="685.48" font-size="20" fill="#2d2d2d">DPLC_CLK_LONG</text>
+<text class="val" x="728.6" y="685.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="923.2" y="685.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="1117.8" y="685.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="1312.4" y="685.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="1507" y="685.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="1701.6" y="685.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="1896.2" y="685.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="2090.8" y="685.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="2285.4" y="685.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="2480" y="685.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
 </g>
 <g class="row" style="animation-delay:0.144s">
 <rect x="0" y="706" width="2519" height="54" fill="#f4f6f4"/>
-<text x="35" y="739.48" font-size="20" fill="#2d2d2d">RX_CLK</text>
-<text class="val chg" style="animation-delay:0.28s" x="728.6" y="739.48" font-size="20" fill="#2d2d2d" text-anchor="end">0.49376</text>
-<text class="val chg" style="animation-delay:0.30s" x="923.2" y="739.48" font-size="20" fill="#2d2d2d" text-anchor="end">0.39460</text>
-<text class="val chg" style="animation-delay:0.33s" x="1117.8" y="739.48" font-size="20" fill="#2d2d2d" text-anchor="end">0.42840</text>
-<text class="val chg" style="animation-delay:0.35s" x="1312.4" y="739.48" font-size="20" fill="#2d2d2d" text-anchor="end">0.62699</text>
-<text class="val chg" style="animation-delay:0.38s" x="1507" y="739.48" font-size="20" fill="#2d2d2d" text-anchor="end">0.55427</text>
-<text class="val chg" style="animation-delay:0.40s" x="1701.6" y="739.48" font-size="20" fill="#2d2d2d" text-anchor="end">0.57750</text>
-<text class="val chg" style="animation-delay:0.43s" x="1896.2" y="739.48" font-size="20" fill="#2d2d2d" text-anchor="end">0.57282</text>
-<rect x="1910.2" y="706" width="194.6" height="54" fill="#f8dede"/>
-<text class="val chg" style="animation-delay:0.45s" x="2090.8" y="739.48" font-size="20" fill="#7f1d1d" text-anchor="end">-0.25007(34)</text>
-<rect x="2104.8" y="706" width="194.6" height="54" fill="#f8dede"/>
-<text class="val chg" style="animation-delay:0.48s" x="2285.4" y="739.48" font-size="20" fill="#7f1d1d" text-anchor="end">-0.22807(34)</text>
-<rect x="2299.4" y="706" width="194.6" height="54" fill="#f8dede"/>
-<text class="val chg" style="animation-delay:0.50s" x="2480" y="739.48" font-size="20" fill="#7f1d1d" text-anchor="end">-0.22382(34)</text>
+<text x="35" y="739.48" font-size="20" fill="#2d2d2d">DPLC_CLK_SHORT_DIV</text>
+<text class="val" x="728.6" y="739.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="923.2" y="739.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="1117.8" y="739.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="1312.4" y="739.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="1507" y="739.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="1701.6" y="739.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="1896.2" y="739.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="2090.8" y="739.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="2285.4" y="739.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="2480" y="739.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
 </g>
 <g class="row" style="animation-delay:0.156s">
 <rect x="0" y="760" width="2519" height="54" fill="#ffffff"/>
-<text x="35" y="793.48" font-size="20" fill="#2d2d2d">SD_CLK_DPLC_SHORT</text>
+<text x="35" y="793.48" font-size="20" fill="#2d2d2d">DPLC_CLK_SHORT</text>
 <text class="val" x="728.6" y="793.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
 <text class="val" x="923.2" y="793.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
 <text class="val" x="1117.8" y="793.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
@@ -207,35 +204,35 @@
 </g>
 <g class="row" style="animation-delay:0.168s">
 <rect x="0" y="814" width="2519" height="54" fill="#f4f6f4"/>
-<text x="35" y="847.48" font-size="20" fill="#2d2d2d">SD_CLK_INV_DPLC_SHORT</text>
-<text class="val chg" style="animation-delay:0.33s" x="728.6" y="847.48" font-size="20" fill="#2d2d2d" text-anchor="end">3.29962</text>
-<text class="val chg" style="animation-delay:0.35s" x="923.2" y="847.48" font-size="20" fill="#2d2d2d" text-anchor="end">3.32191</text>
-<text class="val chg" style="animation-delay:0.38s" x="1117.8" y="847.48" font-size="20" fill="#2d2d2d" text-anchor="end">3.29285</text>
-<text class="val chg" style="animation-delay:0.40s" x="1312.4" y="847.48" font-size="20" fill="#2d2d2d" text-anchor="end">3.11261</text>
-<text class="val chg" style="animation-delay:0.43s" x="1507" y="847.48" font-size="20" fill="#2d2d2d" text-anchor="end">3.12385</text>
-<text class="val chg" style="animation-delay:0.45s" x="1701.6" y="847.48" font-size="20" fill="#2d2d2d" text-anchor="end">3.14888</text>
-<text class="val chg" style="animation-delay:0.48s" x="1896.2" y="847.48" font-size="20" fill="#2d2d2d" text-anchor="end">3.14710</text>
-<text class="val chg" style="animation-delay:0.50s" x="2090.8" y="847.48" font-size="20" fill="#2d2d2d" text-anchor="end">2.56940</text>
-<text class="val chg" style="animation-delay:0.53s" x="2285.4" y="847.48" font-size="20" fill="#2d2d2d" text-anchor="end">2.55504</text>
-<text class="val chg" style="animation-delay:0.55s" x="2480" y="847.48" font-size="20" fill="#2d2d2d" text-anchor="end">2.56621</text>
+<text x="35" y="847.48" font-size="20" fill="#2d2d2d">I2C_CLK_INV</text>
+<text class="val chg" style="animation-delay:0.33s" x="728.6" y="847.48" font-size="20" fill="#2d2d2d" text-anchor="end">249.12776</text>
+<text class="val chg" style="animation-delay:0.35s" x="923.2" y="847.48" font-size="20" fill="#2d2d2d" text-anchor="end">249.08978</text>
+<text class="val chg" style="animation-delay:0.38s" x="1117.8" y="847.48" font-size="20" fill="#2d2d2d" text-anchor="end">249.10338</text>
+<text class="val chg" style="animation-delay:0.40s" x="1312.4" y="847.48" font-size="20" fill="#2d2d2d" text-anchor="end">248.81525</text>
+<text class="val chg" style="animation-delay:0.43s" x="1507" y="847.48" font-size="20" fill="#2d2d2d" text-anchor="end">248.71472</text>
+<text class="val chg" style="animation-delay:0.45s" x="1701.6" y="847.48" font-size="20" fill="#2d2d2d" text-anchor="end">248.65660</text>
+<text class="val chg" style="animation-delay:0.48s" x="1896.2" y="847.48" font-size="20" fill="#2d2d2d" text-anchor="end">248.69260</text>
+<text class="val chg" style="animation-delay:0.50s" x="2090.8" y="847.48" font-size="20" fill="#2d2d2d" text-anchor="end">247.48354</text>
+<text class="val chg" style="animation-delay:0.53s" x="2285.4" y="847.48" font-size="20" fill="#2d2d2d" text-anchor="end">247.37299</text>
+<text class="val chg" style="animation-delay:0.55s" x="2480" y="847.48" font-size="20" fill="#2d2d2d" text-anchor="end">247.43646</text>
 </g>
 <g class="row" style="animation-delay:0.180s">
 <rect x="0" y="868" width="2519" height="54" fill="#ffffff"/>
-<text x="35" y="901.48" font-size="20" fill="#2d2d2d">SD_CLK_INV_SHORT</text>
-<text class="val chg" style="animation-delay:0.35s" x="728.6" y="901.48" font-size="20" fill="#2d2d2d" text-anchor="end">5.23705</text>
-<text class="val chg" style="animation-delay:0.38s" x="923.2" y="901.48" font-size="20" fill="#2d2d2d" text-anchor="end">5.22860</text>
-<text class="val chg" style="animation-delay:0.40s" x="1117.8" y="901.48" font-size="20" fill="#2d2d2d" text-anchor="end">5.20846</text>
-<text class="val chg" style="animation-delay:0.43s" x="1312.4" y="901.48" font-size="20" fill="#2d2d2d" text-anchor="end">5.05890</text>
-<text class="val chg" style="animation-delay:0.45s" x="1507" y="901.48" font-size="20" fill="#2d2d2d" text-anchor="end">5.04850</text>
-<text class="val chg" style="animation-delay:0.48s" x="1701.6" y="901.48" font-size="20" fill="#2d2d2d" text-anchor="end">5.07113</text>
-<text class="val chg" style="animation-delay:0.50s" x="1896.2" y="901.48" font-size="20" fill="#2d2d2d" text-anchor="end">5.06676</text>
-<text class="val chg" style="animation-delay:0.53s" x="2090.8" y="901.48" font-size="20" fill="#2d2d2d" text-anchor="end">4.57460</text>
-<text class="val chg" style="animation-delay:0.55s" x="2285.4" y="901.48" font-size="20" fill="#2d2d2d" text-anchor="end">4.56430</text>
-<text class="val chg" style="animation-delay:0.58s" x="2480" y="901.48" font-size="20" fill="#2d2d2d" text-anchor="end">4.57426</text>
+<text x="35" y="901.48" font-size="20" fill="#2d2d2d">I2C_CLK</text>
+<text class="val chg" style="animation-delay:0.35s" x="728.6" y="901.48" font-size="20" fill="#2d2d2d" text-anchor="end">247.46860</text>
+<text class="val chg" style="animation-delay:0.38s" x="923.2" y="901.48" font-size="20" fill="#2d2d2d" text-anchor="end">247.46199</text>
+<text class="val chg" style="animation-delay:0.40s" x="1117.8" y="901.48" font-size="20" fill="#2d2d2d" text-anchor="end">247.44649</text>
+<text class="val chg" style="animation-delay:0.43s" x="1312.4" y="901.48" font-size="20" fill="#2d2d2d" text-anchor="end">247.32636</text>
+<text class="val chg" style="animation-delay:0.45s" x="1507" y="901.48" font-size="20" fill="#2d2d2d" text-anchor="end">247.22203</text>
+<text class="val chg" style="animation-delay:0.48s" x="1701.6" y="901.48" font-size="20" fill="#2d2d2d" text-anchor="end">247.21541</text>
+<text class="val chg" style="animation-delay:0.50s" x="1896.2" y="901.48" font-size="20" fill="#2d2d2d" text-anchor="end">247.21481</text>
+<text class="val chg" style="animation-delay:0.53s" x="2090.8" y="901.48" font-size="20" fill="#2d2d2d" text-anchor="end">246.53252</text>
+<text class="val chg" style="animation-delay:0.55s" x="2285.4" y="901.48" font-size="20" fill="#2d2d2d" text-anchor="end">246.52119</text>
+<text class="val chg" style="animation-delay:0.58s" x="2480" y="901.48" font-size="20" fill="#2d2d2d" text-anchor="end">246.52261</text>
 </g>
 <g class="row" style="animation-delay:0.192s">
 <rect x="0" y="922" width="2519" height="54" fill="#f4f6f4"/>
-<text x="35" y="955.48" font-size="20" fill="#2d2d2d">SD_CLK_SHORT</text>
+<text x="35" y="955.48" font-size="20" fill="#2d2d2d">NORMAL_CLK_LONG</text>
 <text class="val" x="728.6" y="955.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
 <text class="val" x="923.2" y="955.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
 <text class="val" x="1117.8" y="955.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
@@ -249,49 +246,53 @@
 </g>
 <g class="row" style="animation-delay:0.204s">
 <rect x="0" y="976" width="2519" height="54" fill="#ffffff"/>
-<text x="35" y="1009.48" font-size="20" fill="#2d2d2d">WCLK1_A_CHPI_DCLK_SHORT</text>
-<text class="val chg" style="animation-delay:0.40s" x="728.6" y="1009.48" font-size="20" fill="#2d2d2d" text-anchor="end">4.19365</text>
-<text class="val chg" style="animation-delay:0.43s" x="923.2" y="1009.48" font-size="20" fill="#2d2d2d" text-anchor="end">4.66667</text>
-<text class="val chg" style="animation-delay:0.45s" x="1117.8" y="1009.48" font-size="20" fill="#2d2d2d" text-anchor="end">4.51908</text>
-<text class="val chg" style="animation-delay:0.48s" x="1312.4" y="1009.48" font-size="20" fill="#2d2d2d" text-anchor="end">3.68574</text>
-<text class="val chg" style="animation-delay:0.50s" x="1507" y="1009.48" font-size="20" fill="#2d2d2d" text-anchor="end">3.75082</text>
-<text class="val chg" style="animation-delay:0.53s" x="1701.6" y="1009.48" font-size="20" fill="#2d2d2d" text-anchor="end">4.21959</text>
-<text class="val chg" style="animation-delay:0.55s" x="1896.2" y="1009.48" font-size="20" fill="#2d2d2d" text-anchor="end">4.11743</text>
-<text class="val chg" style="animation-delay:0.58s" x="2090.8" y="1009.48" font-size="20" fill="#2d2d2d" text-anchor="end">2.38890</text>
-<text class="val chg" style="animation-delay:0.60s" x="2285.4" y="1009.48" font-size="20" fill="#2d2d2d" text-anchor="end">3.01492</text>
-<text class="val chg" style="animation-delay:0.62s" x="2480" y="1009.48" font-size="20" fill="#2d2d2d" text-anchor="end">2.80469</text>
+<text x="35" y="1009.48" font-size="20" fill="#2d2d2d">NORMAL_CLK_SHORT</text>
+<text class="val" x="728.6" y="1009.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="923.2" y="1009.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="1117.8" y="1009.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="1312.4" y="1009.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="1507" y="1009.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="1701.6" y="1009.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="1896.2" y="1009.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="2090.8" y="1009.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="2285.4" y="1009.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="2480" y="1009.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
 </g>
 <g class="row" style="animation-delay:0.216s">
 <rect x="0" y="1030" width="2519" height="54" fill="#f4f6f4"/>
-<text x="35" y="1063.48" font-size="20" fill="#2d2d2d">WCLK1_A_DCLK_SHORT</text>
-<text class="val chg" style="animation-delay:0.43s" x="728.6" y="1063.48" font-size="20" fill="#2d2d2d" text-anchor="end">1.07296</text>
-<text class="val chg" style="animation-delay:0.45s" x="923.2" y="1063.48" font-size="20" fill="#2d2d2d" text-anchor="end">1.24095</text>
-<text class="val chg" style="animation-delay:0.48s" x="1117.8" y="1063.48" font-size="20" fill="#2d2d2d" text-anchor="end">1.11469</text>
-<text class="val chg" style="animation-delay:0.50s" x="1312.4" y="1063.48" font-size="20" fill="#2d2d2d" text-anchor="end">0.78099</text>
-<text class="val chg" style="animation-delay:0.53s" x="1507" y="1063.48" font-size="20" fill="#2d2d2d" text-anchor="end">0.83686</text>
-<text class="val chg" style="animation-delay:0.55s" x="1701.6" y="1063.48" font-size="20" fill="#2d2d2d" text-anchor="end">1.00063</text>
-<text class="val chg" style="animation-delay:0.58s" x="1896.2" y="1063.48" font-size="20" fill="#2d2d2d" text-anchor="end">0.93403</text>
-<text class="val chg" style="animation-delay:0.60s" x="2090.8" y="1063.48" font-size="20" fill="#2d2d2d" text-anchor="end">0.09266</text>
-<text class="val chg" style="animation-delay:0.62s" x="2285.4" y="1063.48" font-size="20" fill="#2d2d2d" text-anchor="end">0.30668</text>
-<text class="val chg" style="animation-delay:0.65s" x="2480" y="1063.48" font-size="20" fill="#2d2d2d" text-anchor="end">0.19839</text>
+<text x="35" y="1063.48" font-size="20" fill="#2d2d2d">OSC_CLK</text>
+<text class="val chg" style="animation-delay:0.43s" x="728.6" y="1063.48" font-size="20" fill="#2d2d2d" text-anchor="end">16.93748</text>
+<text class="val chg" style="animation-delay:0.45s" x="923.2" y="1063.48" font-size="20" fill="#2d2d2d" text-anchor="end">16.93336</text>
+<text class="val chg" style="animation-delay:0.48s" x="1117.8" y="1063.48" font-size="20" fill="#2d2d2d" text-anchor="end">16.92744</text>
+<text class="val chg" style="animation-delay:0.50s" x="1312.4" y="1063.48" font-size="20" fill="#2d2d2d" text-anchor="end">16.29976</text>
+<text class="val chg" style="animation-delay:0.53s" x="1507" y="1063.48" font-size="20" fill="#2d2d2d" text-anchor="end">15.97524</text>
+<text class="val chg" style="animation-delay:0.55s" x="1701.6" y="1063.48" font-size="20" fill="#2d2d2d" text-anchor="end">15.95837</text>
+<text class="val chg" style="animation-delay:0.58s" x="1896.2" y="1063.48" font-size="20" fill="#2d2d2d" text-anchor="end">15.98257</text>
+<text class="val chg" style="animation-delay:0.60s" x="2090.8" y="1063.48" font-size="20" fill="#2d2d2d" text-anchor="end">13.16017</text>
+<text class="val chg" style="animation-delay:0.62s" x="2285.4" y="1063.48" font-size="20" fill="#2d2d2d" text-anchor="end">13.09616</text>
+<text class="val chg" style="animation-delay:0.65s" x="2480" y="1063.48" font-size="20" fill="#2d2d2d" text-anchor="end">13.14756</text>
 </g>
 <g class="row" style="animation-delay:0.228s">
 <rect x="0" y="1084" width="2519" height="54" fill="#ffffff"/>
-<text x="35" y="1117.48" font-size="20" fill="#2d2d2d">WCLK1_A_I2C</text>
-<text class="val chg" style="animation-delay:0.45s" x="728.6" y="1117.48" font-size="20" fill="#2d2d2d" text-anchor="end">246.83984</text>
-<text class="val chg" style="animation-delay:0.48s" x="923.2" y="1117.48" font-size="20" fill="#2d2d2d" text-anchor="end">246.75378</text>
-<text class="val chg" style="animation-delay:0.50s" x="1117.8" y="1117.48" font-size="20" fill="#2d2d2d" text-anchor="end">246.77983</text>
-<text class="val chg" style="animation-delay:0.53s" x="1312.4" y="1117.48" font-size="20" fill="#2d2d2d" text-anchor="end">245.73079</text>
-<text class="val chg" style="animation-delay:0.55s" x="1507" y="1117.48" font-size="20" fill="#2d2d2d" text-anchor="end">245.30722</text>
-<text class="val chg" style="animation-delay:0.58s" x="1701.6" y="1117.48" font-size="20" fill="#2d2d2d" text-anchor="end">245.16904</text>
-<text class="val chg" style="animation-delay:0.60s" x="1896.2" y="1117.48" font-size="20" fill="#2d2d2d" text-anchor="end">245.25018</text>
-<text class="val chg" style="animation-delay:0.62s" x="2090.8" y="1117.48" font-size="20" fill="#2d2d2d" text-anchor="end">240.98485</text>
-<text class="val chg" style="animation-delay:0.65s" x="2285.4" y="1117.48" font-size="20" fill="#2d2d2d" text-anchor="end">240.72438</text>
-<text class="val chg" style="animation-delay:0.68s" x="2480" y="1117.48" font-size="20" fill="#2d2d2d" text-anchor="end">240.87019</text>
+<text x="35" y="1117.48" font-size="20" fill="#2d2d2d">RX_CLK</text>
+<text class="val chg" style="animation-delay:0.45s" x="728.6" y="1117.48" font-size="20" fill="#2d2d2d" text-anchor="end">0.08430</text>
+<rect x="742.6" y="1084" width="194.6" height="54" fill="#f8dede"/>
+<text class="val chg" style="animation-delay:0.48s" x="923.2" y="1117.48" font-size="20" fill="#7f1d1d" text-anchor="end">-0.05514(16)</text>
+<text class="val chg" style="animation-delay:0.50s" x="1117.8" y="1117.48" font-size="20" fill="#2d2d2d" text-anchor="end">0.00559</text>
+<text class="val chg" style="animation-delay:0.53s" x="1312.4" y="1117.48" font-size="20" fill="#2d2d2d" text-anchor="end">0.25460</text>
+<text class="val chg" style="animation-delay:0.55s" x="1507" y="1117.48" font-size="20" fill="#2d2d2d" text-anchor="end">0.35647</text>
+<text class="val chg" style="animation-delay:0.58s" x="1701.6" y="1117.48" font-size="20" fill="#2d2d2d" text-anchor="end">0.19521</text>
+<text class="val chg" style="animation-delay:0.60s" x="1896.2" y="1117.48" font-size="20" fill="#2d2d2d" text-anchor="end">0.25995</text>
+<rect x="1910.2" y="1084" width="194.6" height="54" fill="#f8dede"/>
+<text class="val chg" style="animation-delay:0.62s" x="2090.8" y="1117.48" font-size="20" fill="#7f1d1d" text-anchor="end">-0.41575(48)</text>
+<rect x="2104.8" y="1084" width="194.6" height="54" fill="#f8dede"/>
+<text class="val chg" style="animation-delay:0.65s" x="2285.4" y="1117.48" font-size="20" fill="#7f1d1d" text-anchor="end">-0.37739(45)</text>
+<rect x="2299.4" y="1084" width="194.6" height="54" fill="#f8dede"/>
+<text class="val chg" style="animation-delay:0.68s" x="2480" y="1117.48" font-size="20" fill="#7f1d1d" text-anchor="end">-0.36876(46)</text>
 </g>
 <g class="row" style="animation-delay:0.240s">
 <rect x="0" y="1138" width="2519" height="54" fill="#f4f6f4"/>
-<text x="35" y="1171.48" font-size="20" fill="#2d2d2d">async</text>
+<text x="35" y="1171.48" font-size="20" fill="#2d2d2d">SD_CLK_DPLC_LONG</text>
 <text class="val" x="728.6" y="1171.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
 <text class="val" x="923.2" y="1171.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
 <text class="val" x="1117.8" y="1171.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
@@ -305,49 +306,232 @@
 </g>
 <g class="row" style="animation-delay:0.252s">
 <rect x="0" y="1192" width="2519" height="54" fill="#ffffff"/>
-<text x="35" y="1225.48" font-size="20" fill="#2d2d2d">gating</text>
+<text x="35" y="1225.48" font-size="20" fill="#2d2d2d">SD_CLK_DPLC_SHORT</text>
 <text class="val" x="728.6" y="1225.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
 <text class="val" x="923.2" y="1225.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
 <text class="val" x="1117.8" y="1225.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
-<text class="val chg" style="animation-delay:0.58s" x="1312.4" y="1225.48" font-size="20" fill="#2d2d2d" text-anchor="end">0.44210</text>
-<text class="val chg" style="animation-delay:0.60s" x="1507" y="1225.48" font-size="20" fill="#2d2d2d" text-anchor="end">0.41892</text>
+<text class="val" x="1312.4" y="1225.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="1507" y="1225.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
 <text class="val" x="1701.6" y="1225.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
 <text class="val" x="1896.2" y="1225.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
-<rect x="1910.2" y="1192" width="194.6" height="54" fill="#f8dede"/>
-<text class="val chg" style="animation-delay:0.68s" x="2090.8" y="1225.48" font-size="20" fill="#7f1d1d" text-anchor="end">-0.36838(3)</text>
-<rect x="2104.8" y="1192" width="194.6" height="54" fill="#f8dede"/>
-<text class="val chg" style="animation-delay:0.70s" x="2285.4" y="1225.48" font-size="20" fill="#7f1d1d" text-anchor="end">-0.28839(5)</text>
-<rect x="2299.4" y="1192" width="194.6" height="54" fill="#f8dede"/>
-<text class="val chg" style="animation-delay:0.73s" x="2480" y="1225.48" font-size="20" fill="#7f1d1d" text-anchor="end">-0.27477(4)</text>
+<text class="val" x="2090.8" y="1225.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="2285.4" y="1225.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="2480" y="1225.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
 </g>
 <g class="row" style="animation-delay:0.264s">
 <rect x="0" y="1246" width="2519" height="54" fill="#f4f6f4"/>
-<text x="35" y="1279.48" font-size="20" fill="#2d2d2d">setup.rpt</text>
-<text class="val chg" style="animation-delay:0.53s" x="728.6" y="1279.48" font-size="20" fill="#2d2d2d" text-anchor="end">0.49376</text>
-<text class="val chg" style="animation-delay:0.55s" x="923.2" y="1279.48" font-size="20" fill="#2d2d2d" text-anchor="end">0.39460</text>
-<text class="val chg" style="animation-delay:0.58s" x="1117.8" y="1279.48" font-size="20" fill="#2d2d2d" text-anchor="end">0.42840</text>
-<text class="val chg" style="animation-delay:0.60s" x="1312.4" y="1279.48" font-size="20" fill="#2d2d2d" text-anchor="end">0.44210</text>
-<text class="val chg" style="animation-delay:0.62s" x="1507" y="1279.48" font-size="20" fill="#2d2d2d" text-anchor="end">0.41892</text>
-<text class="val" x="1701.6" y="1279.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
-<text class="val" x="1896.2" y="1279.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
-<rect x="1910.2" y="1246" width="194.6" height="54" fill="#f8dede"/>
-<text class="val chg" style="animation-delay:0.70s" x="2090.8" y="1279.48" font-size="20" fill="#7f1d1d" text-anchor="end">-0.36838(40)</text>
-<rect x="2104.8" y="1246" width="194.6" height="54" fill="#f8dede"/>
-<text class="val chg" style="animation-delay:0.73s" x="2285.4" y="1279.48" font-size="20" fill="#7f1d1d" text-anchor="end">-0.28839(38)</text>
-<rect x="2299.4" y="1246" width="194.6" height="54" fill="#f8dede"/>
-<text class="val chg" style="animation-delay:0.75s" x="2480" y="1279.48" font-size="20" fill="#7f1d1d" text-anchor="end">-0.27477(38)</text>
+<text x="35" y="1279.48" font-size="20" fill="#2d2d2d">SD_CLK_INV_DPLC_LONG</text>
+<text class="val chg" style="animation-delay:0.53s" x="728.6" y="1279.48" font-size="20" fill="#2d2d2d" text-anchor="end">1.57223</text>
+<text class="val chg" style="animation-delay:0.55s" x="923.2" y="1279.48" font-size="20" fill="#2d2d2d" text-anchor="end">1.53716</text>
+<text class="val chg" style="animation-delay:0.58s" x="1117.8" y="1279.48" font-size="20" fill="#2d2d2d" text-anchor="end">1.53842</text>
+<text class="val chg" style="animation-delay:0.60s" x="1312.4" y="1279.48" font-size="20" fill="#2d2d2d" text-anchor="end">1.44515</text>
+<text class="val chg" style="animation-delay:0.62s" x="1507" y="1279.48" font-size="20" fill="#2d2d2d" text-anchor="end">1.42442</text>
+<text class="val chg" style="animation-delay:0.65s" x="1701.6" y="1279.48" font-size="20" fill="#2d2d2d" text-anchor="end">1.38329</text>
+<text class="val chg" style="animation-delay:0.68s" x="1896.2" y="1279.48" font-size="20" fill="#2d2d2d" text-anchor="end">1.40388</text>
+<text class="val chg" style="animation-delay:0.70s" x="2090.8" y="1279.48" font-size="20" fill="#2d2d2d" text-anchor="end">0.94501</text>
+<text class="val chg" style="animation-delay:0.73s" x="2285.4" y="1279.48" font-size="20" fill="#2d2d2d" text-anchor="end">0.88633</text>
+<text class="val chg" style="animation-delay:0.75s" x="2480" y="1279.48" font-size="20" fill="#2d2d2d" text-anchor="end">0.91337</text>
 </g>
-<line x1="548" y1="58" x2="548" y2="1299" stroke="#d7dbd7" stroke-width="1"/>
-<line x1="742.6" y1="58" x2="742.6" y2="1299" stroke="#d7dbd7" stroke-width="1"/>
-<line x1="937.2" y1="58" x2="937.2" y2="1299" stroke="#d7dbd7" stroke-width="1"/>
-<line x1="1131.8" y1="58" x2="1131.8" y2="1299" stroke="#d7dbd7" stroke-width="1"/>
-<line x1="1326.4" y1="58" x2="1326.4" y2="1299" stroke="#d7dbd7" stroke-width="1"/>
-<line x1="1521" y1="58" x2="1521" y2="1299" stroke="#d7dbd7" stroke-width="1"/>
-<line x1="1715.6" y1="58" x2="1715.6" y2="1299" stroke="#d7dbd7" stroke-width="1"/>
-<line x1="1910.2" y1="58" x2="1910.2" y2="1299" stroke="#d7dbd7" stroke-width="1"/>
-<line x1="2104.8" y1="58" x2="2104.8" y2="1299" stroke="#d7dbd7" stroke-width="1"/>
-<line x1="2299.4" y1="58" x2="2299.4" y2="1299" stroke="#d7dbd7" stroke-width="1"/>
-<line x1="2494" y1="58" x2="2494" y2="1299" stroke="#d7dbd7" stroke-width="1"/>
+<g class="row" style="animation-delay:0.276s">
+<rect x="0" y="1300" width="2519" height="54" fill="#ffffff"/>
+<text x="35" y="1333.48" font-size="20" fill="#2d2d2d">SD_CLK_INV_DPLC_SHORT</text>
+<text class="val chg" style="animation-delay:0.55s" x="728.6" y="1333.48" font-size="20" fill="#2d2d2d" text-anchor="end">3.44300</text>
+<text class="val chg" style="animation-delay:0.58s" x="923.2" y="1333.48" font-size="20" fill="#2d2d2d" text-anchor="end">3.40374</text>
+<text class="val chg" style="animation-delay:0.60s" x="1117.8" y="1333.48" font-size="20" fill="#2d2d2d" text-anchor="end">3.40721</text>
+<text class="val chg" style="animation-delay:0.62s" x="1312.4" y="1333.48" font-size="20" fill="#2d2d2d" text-anchor="end">3.32089</text>
+<text class="val chg" style="animation-delay:0.65s" x="1507" y="1333.48" font-size="20" fill="#2d2d2d" text-anchor="end">3.30069</text>
+<text class="val chg" style="animation-delay:0.68s" x="1701.6" y="1333.48" font-size="20" fill="#2d2d2d" text-anchor="end">3.24995</text>
+<text class="val chg" style="animation-delay:0.70s" x="1896.2" y="1333.48" font-size="20" fill="#2d2d2d" text-anchor="end">3.27660</text>
+<text class="val chg" style="animation-delay:0.73s" x="2090.8" y="1333.48" font-size="20" fill="#2d2d2d" text-anchor="end">2.81747</text>
+<text class="val chg" style="animation-delay:0.75s" x="2285.4" y="1333.48" font-size="20" fill="#2d2d2d" text-anchor="end">2.74135</text>
+<text class="val chg" style="animation-delay:0.78s" x="2480" y="1333.48" font-size="20" fill="#2d2d2d" text-anchor="end">2.78183</text>
+</g>
+<g class="row" style="animation-delay:0.288s">
+<rect x="0" y="1354" width="2519" height="54" fill="#f4f6f4"/>
+<text x="35" y="1387.48" font-size="20" fill="#2d2d2d">SD_CLK_INV_LONG</text>
+<text class="val chg" style="animation-delay:0.58s" x="728.6" y="1387.48" font-size="20" fill="#2d2d2d" text-anchor="end">3.38407</text>
+<text class="val chg" style="animation-delay:0.60s" x="923.2" y="1387.48" font-size="20" fill="#2d2d2d" text-anchor="end">3.36823</text>
+<text class="val chg" style="animation-delay:0.62s" x="1117.8" y="1387.48" font-size="20" fill="#2d2d2d" text-anchor="end">3.35201</text>
+<text class="val chg" style="animation-delay:0.65s" x="1312.4" y="1387.48" font-size="20" fill="#2d2d2d" text-anchor="end">3.24516</text>
+<text class="val chg" style="animation-delay:0.68s" x="1507" y="1387.48" font-size="20" fill="#2d2d2d" text-anchor="end">3.23388</text>
+<text class="val chg" style="animation-delay:0.70s" x="1701.6" y="1387.48" font-size="20" fill="#2d2d2d" text-anchor="end">3.21176</text>
+<text class="val chg" style="animation-delay:0.73s" x="1896.2" y="1387.48" font-size="20" fill="#2d2d2d" text-anchor="end">3.22751</text>
+<text class="val chg" style="animation-delay:0.75s" x="2090.8" y="1387.48" font-size="20" fill="#2d2d2d" text-anchor="end">2.76044</text>
+<text class="val chg" style="animation-delay:0.78s" x="2285.4" y="1387.48" font-size="20" fill="#2d2d2d" text-anchor="end">2.71252</text>
+<text class="val chg" style="animation-delay:0.80s" x="2480" y="1387.48" font-size="20" fill="#2d2d2d" text-anchor="end">2.74184</text>
+</g>
+<g class="row" style="animation-delay:0.300s">
+<rect x="0" y="1408" width="2519" height="54" fill="#ffffff"/>
+<text x="35" y="1441.48" font-size="20" fill="#2d2d2d">SD_CLK_INV_SHORT</text>
+<text class="val chg" style="animation-delay:0.60s" x="728.6" y="1441.48" font-size="20" fill="#2d2d2d" text-anchor="end">5.32382</text>
+<text class="val chg" style="animation-delay:0.62s" x="923.2" y="1441.48" font-size="20" fill="#2d2d2d" text-anchor="end">5.30694</text>
+<text class="val chg" style="animation-delay:0.65s" x="1117.8" y="1441.48" font-size="20" fill="#2d2d2d" text-anchor="end">5.29033</text>
+<text class="val chg" style="animation-delay:0.68s" x="1312.4" y="1441.48" font-size="20" fill="#2d2d2d" text-anchor="end">5.18942</text>
+<text class="val chg" style="animation-delay:0.70s" x="1507" y="1441.48" font-size="20" fill="#2d2d2d" text-anchor="end">5.16892</text>
+<text class="val chg" style="animation-delay:0.73s" x="1701.6" y="1441.48" font-size="20" fill="#2d2d2d" text-anchor="end">5.15648</text>
+<text class="val chg" style="animation-delay:0.75s" x="1896.2" y="1441.48" font-size="20" fill="#2d2d2d" text-anchor="end">5.16524</text>
+<text class="val chg" style="animation-delay:0.78s" x="2090.8" y="1441.48" font-size="20" fill="#2d2d2d" text-anchor="end">4.71723</text>
+<text class="val chg" style="animation-delay:0.80s" x="2285.4" y="1441.48" font-size="20" fill="#2d2d2d" text-anchor="end">4.67122</text>
+<text class="val chg" style="animation-delay:0.83s" x="2480" y="1441.48" font-size="20" fill="#2d2d2d" text-anchor="end">4.69594</text>
+</g>
+<g class="row" style="animation-delay:0.312s">
+<rect x="0" y="1462" width="2519" height="54" fill="#f4f6f4"/>
+<text x="35" y="1495.48" font-size="20" fill="#2d2d2d">SD_CLK_LONG</text>
+<text class="val" x="728.6" y="1495.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="923.2" y="1495.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="1117.8" y="1495.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="1312.4" y="1495.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="1507" y="1495.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="1701.6" y="1495.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="1896.2" y="1495.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="2090.8" y="1495.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="2285.4" y="1495.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="2480" y="1495.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+</g>
+<g class="row" style="animation-delay:0.324s">
+<rect x="0" y="1516" width="2519" height="54" fill="#ffffff"/>
+<text x="35" y="1549.48" font-size="20" fill="#2d2d2d">SD_CLK_SHORT</text>
+<text class="val" x="728.6" y="1549.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="923.2" y="1549.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="1117.8" y="1549.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="1312.4" y="1549.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="1507" y="1549.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="1701.6" y="1549.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="1896.2" y="1549.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="2090.8" y="1549.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="2285.4" y="1549.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="2480" y="1549.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+</g>
+<g class="row" style="animation-delay:0.336s">
+<rect x="0" y="1570" width="2519" height="54" fill="#f4f6f4"/>
+<text x="35" y="1603.48" font-size="20" fill="#2d2d2d">WCLK1_A_CHPI_DCLK_LONG</text>
+<text class="val chg" style="animation-delay:0.68s" x="728.6" y="1603.48" font-size="20" fill="#2d2d2d" text-anchor="end">2.50948</text>
+<text class="val chg" style="animation-delay:0.70s" x="923.2" y="1603.48" font-size="20" fill="#2d2d2d" text-anchor="end">2.93679</text>
+<text class="val chg" style="animation-delay:0.73s" x="1117.8" y="1603.48" font-size="20" fill="#2d2d2d" text-anchor="end">2.79305</text>
+<text class="val chg" style="animation-delay:0.75s" x="1312.4" y="1603.48" font-size="20" fill="#2d2d2d" text-anchor="end">2.11963</text>
+<text class="val chg" style="animation-delay:0.78s" x="1507" y="1603.48" font-size="20" fill="#2d2d2d" text-anchor="end">2.16644</text>
+<text class="val chg" style="animation-delay:0.80s" x="1701.6" y="1603.48" font-size="20" fill="#2d2d2d" text-anchor="end">2.56452</text>
+<text class="val chg" style="animation-delay:0.83s" x="1896.2" y="1603.48" font-size="20" fill="#2d2d2d" text-anchor="end">2.47791</text>
+<text class="val chg" style="animation-delay:0.85s" x="2090.8" y="1603.48" font-size="20" fill="#2d2d2d" text-anchor="end">1.19709</text>
+<text class="val chg" style="animation-delay:0.88s" x="2285.4" y="1603.48" font-size="20" fill="#2d2d2d" text-anchor="end">1.57831</text>
+<text class="val chg" style="animation-delay:0.90s" x="2480" y="1603.48" font-size="20" fill="#2d2d2d" text-anchor="end">1.53088</text>
+</g>
+<g class="row" style="animation-delay:0.348s">
+<rect x="0" y="1624" width="2519" height="54" fill="#ffffff"/>
+<text x="35" y="1657.48" font-size="20" fill="#2d2d2d">WCLK1_A_CHPI_DCLK_SHORT</text>
+<text class="val chg" style="animation-delay:0.70s" x="728.6" y="1657.48" font-size="20" fill="#2d2d2d" text-anchor="end">4.48993</text>
+<text class="val chg" style="animation-delay:0.73s" x="923.2" y="1657.48" font-size="20" fill="#2d2d2d" text-anchor="end">4.88557</text>
+<text class="val chg" style="animation-delay:0.75s" x="1117.8" y="1657.48" font-size="20" fill="#2d2d2d" text-anchor="end">4.75327</text>
+<text class="val chg" style="animation-delay:0.78s" x="1312.4" y="1657.48" font-size="20" fill="#2d2d2d" text-anchor="end">4.12739</text>
+<text class="val chg" style="animation-delay:0.80s" x="1507" y="1657.48" font-size="20" fill="#2d2d2d" text-anchor="end">4.16453</text>
+<text class="val chg" style="animation-delay:0.83s" x="1701.6" y="1657.48" font-size="20" fill="#2d2d2d" text-anchor="end">4.52917</text>
+<text class="val chg" style="animation-delay:0.85s" x="1896.2" y="1657.48" font-size="20" fill="#2d2d2d" text-anchor="end">4.45265</text>
+<text class="val chg" style="animation-delay:0.88s" x="2090.8" y="1657.48" font-size="20" fill="#2d2d2d" text-anchor="end">3.22792</text>
+<text class="val chg" style="animation-delay:0.90s" x="2285.4" y="1657.48" font-size="20" fill="#2d2d2d" text-anchor="end">3.56947</text>
+<text class="val chg" style="animation-delay:0.93s" x="2480" y="1657.48" font-size="20" fill="#2d2d2d" text-anchor="end">3.52443</text>
+</g>
+<g class="row" style="animation-delay:0.360s">
+<rect x="0" y="1678" width="2519" height="54" fill="#f4f6f4"/>
+<text x="35" y="1711.48" font-size="20" fill="#2d2d2d">WCLK1_A_DCLK_LONG</text>
+<text class="val chg" style="animation-delay:0.73s" x="728.6" y="1711.48" font-size="20" fill="#2d2d2d" text-anchor="end">2.36479</text>
+<text class="val chg" style="animation-delay:0.75s" x="923.2" y="1711.48" font-size="20" fill="#2d2d2d" text-anchor="end">2.53593</text>
+<text class="val chg" style="animation-delay:0.78s" x="1117.8" y="1711.48" font-size="20" fill="#2d2d2d" text-anchor="end">2.48316</text>
+<text class="val chg" style="animation-delay:0.80s" x="1312.4" y="1711.48" font-size="20" fill="#2d2d2d" text-anchor="end">1.96236</text>
+<text class="val chg" style="animation-delay:0.83s" x="1507" y="1711.48" font-size="20" fill="#2d2d2d" text-anchor="end">1.87086</text>
+<text class="val chg" style="animation-delay:0.85s" x="1701.6" y="1711.48" font-size="20" fill="#2d2d2d" text-anchor="end">1.98751</text>
+<text class="val chg" style="animation-delay:0.88s" x="1896.2" y="1711.48" font-size="20" fill="#2d2d2d" text-anchor="end">1.97725</text>
+<text class="val chg" style="animation-delay:0.90s" x="2090.8" y="1711.48" font-size="20" fill="#2d2d2d" text-anchor="end">0.41844</text>
+<text class="val chg" style="animation-delay:0.93s" x="2285.4" y="1711.48" font-size="20" fill="#2d2d2d" text-anchor="end">0.49133</text>
+<text class="val chg" style="animation-delay:0.95s" x="2480" y="1711.48" font-size="20" fill="#2d2d2d" text-anchor="end">0.50902</text>
+</g>
+<g class="row" style="animation-delay:0.372s">
+<rect x="0" y="1732" width="2519" height="54" fill="#ffffff"/>
+<text x="35" y="1765.48" font-size="20" fill="#2d2d2d">WCLK1_A_DCLK_SHORT</text>
+<text class="val chg" style="animation-delay:0.75s" x="728.6" y="1765.48" font-size="20" fill="#2d2d2d" text-anchor="end">1.15412</text>
+<text class="val chg" style="animation-delay:0.78s" x="923.2" y="1765.48" font-size="20" fill="#2d2d2d" text-anchor="end">1.36101</text>
+<text class="val chg" style="animation-delay:0.80s" x="1117.8" y="1765.48" font-size="20" fill="#2d2d2d" text-anchor="end">1.19941</text>
+<text class="val chg" style="animation-delay:0.83s" x="1312.4" y="1765.48" font-size="20" fill="#2d2d2d" text-anchor="end">0.86496</text>
+<text class="val chg" style="animation-delay:0.85s" x="1507" y="1765.48" font-size="20" fill="#2d2d2d" text-anchor="end">0.94978</text>
+<text class="val chg" style="animation-delay:0.88s" x="1701.6" y="1765.48" font-size="20" fill="#2d2d2d" text-anchor="end">1.19199</text>
+<text class="val chg" style="animation-delay:0.90s" x="1896.2" y="1765.48" font-size="20" fill="#2d2d2d" text-anchor="end">1.08712</text>
+<text class="val chg" style="animation-delay:0.93s" x="2090.8" y="1765.48" font-size="20" fill="#2d2d2d" text-anchor="end">0.34187</text>
+<text class="val chg" style="animation-delay:0.95s" x="2285.4" y="1765.48" font-size="20" fill="#2d2d2d" text-anchor="end">0.65855</text>
+<text class="val chg" style="animation-delay:0.98s" x="2480" y="1765.48" font-size="20" fill="#2d2d2d" text-anchor="end">0.52019</text>
+</g>
+<g class="row" style="animation-delay:0.384s">
+<rect x="0" y="1786" width="2519" height="54" fill="#f4f6f4"/>
+<text x="35" y="1819.48" font-size="20" fill="#2d2d2d">WCLK1_A_I2C</text>
+<text class="val chg" style="animation-delay:0.78s" x="728.6" y="1819.48" font-size="20" fill="#2d2d2d" text-anchor="end">245.94998</text>
+<text class="val chg" style="animation-delay:0.80s" x="923.2" y="1819.48" font-size="20" fill="#2d2d2d" text-anchor="end">245.97391</text>
+<text class="val chg" style="animation-delay:0.83s" x="1117.8" y="1819.48" font-size="20" fill="#2d2d2d" text-anchor="end">245.96863</text>
+<text class="val chg" style="animation-delay:0.85s" x="1312.4" y="1819.48" font-size="20" fill="#2d2d2d" text-anchor="end">244.18852</text>
+<text class="val chg" style="animation-delay:0.88s" x="1507" y="1819.48" font-size="20" fill="#2d2d2d" text-anchor="end">243.88844</text>
+<text class="val chg" style="animation-delay:0.90s" x="1701.6" y="1819.48" font-size="20" fill="#2d2d2d" text-anchor="end">243.88025</text>
+<text class="val chg" style="animation-delay:0.93s" x="1896.2" y="1819.48" font-size="20" fill="#2d2d2d" text-anchor="end">243.89679</text>
+<text class="val chg" style="animation-delay:0.95s" x="2090.8" y="1819.48" font-size="20" fill="#2d2d2d" text-anchor="end">237.78130</text>
+<text class="val chg" style="animation-delay:0.98s" x="2285.4" y="1819.48" font-size="20" fill="#2d2d2d" text-anchor="end">237.72270</text>
+<text class="val chg" style="animation-delay:1.00s" x="2480" y="1819.48" font-size="20" fill="#2d2d2d" text-anchor="end">237.76900</text>
+</g>
+<g class="row" style="animation-delay:0.396s">
+<rect x="0" y="1840" width="2519" height="54" fill="#ffffff"/>
+<text x="35" y="1873.48" font-size="20" fill="#2d2d2d">async</text>
+<text class="val" x="728.6" y="1873.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="923.2" y="1873.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="1117.8" y="1873.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="1312.4" y="1873.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="1507" y="1873.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="1701.6" y="1873.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="1896.2" y="1873.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="2090.8" y="1873.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="2285.4" y="1873.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="2480" y="1873.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+</g>
+<g class="row" style="animation-delay:0.408s">
+<rect x="0" y="1894" width="2519" height="54" fill="#f4f6f4"/>
+<text x="35" y="1927.48" font-size="20" fill="#2d2d2d">gating</text>
+<text class="val" x="728.6" y="1927.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="923.2" y="1927.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="1117.8" y="1927.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val chg" style="animation-delay:0.90s" x="1312.4" y="1927.48" font-size="20" fill="#2d2d2d" text-anchor="end">0.47720</text>
+<text class="val chg" style="animation-delay:0.93s" x="1507" y="1927.48" font-size="20" fill="#2d2d2d" text-anchor="end">0.41937</text>
+<text class="val" x="1701.6" y="1927.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<text class="val" x="1896.2" y="1927.48" font-size="20" fill="#1a7a3c" text-anchor="end">0.00000</text>
+<rect x="1910.2" y="1894" width="194.6" height="54" fill="#f8dede"/>
+<text class="val chg" style="animation-delay:1.00s" x="2090.8" y="1927.48" font-size="20" fill="#7f1d1d" text-anchor="end">-0.36780(13)</text>
+<rect x="2104.8" y="1894" width="194.6" height="54" fill="#f8dede"/>
+<text class="val chg" style="animation-delay:1.03s" x="2285.4" y="1927.48" font-size="20" fill="#7f1d1d" text-anchor="end">-0.37522(9)</text>
+<rect x="2299.4" y="1894" width="194.6" height="54" fill="#f8dede"/>
+<text class="val chg" style="animation-delay:1.05s" x="2480" y="1927.48" font-size="20" fill="#7f1d1d" text-anchor="end">-0.30246(11)</text>
+</g>
+<g class="row" style="animation-delay:0.420s">
+<rect x="0" y="1948" width="2519" height="54" fill="#ffffff"/>
+<text x="35" y="1981.48" font-size="20" fill="#2d2d2d">setup.rpt</text>
+<text class="val chg" style="animation-delay:0.85s" x="728.6" y="1981.48" font-size="20" fill="#2d2d2d" text-anchor="end">0.08430</text>
+<rect x="742.6" y="1948" width="194.6" height="54" fill="#f8dede"/>
+<text class="val chg" style="animation-delay:0.88s" x="923.2" y="1981.48" font-size="20" fill="#7f1d1d" text-anchor="end">-0.05514(15)</text>
+<text class="val chg" style="animation-delay:0.90s" x="1117.8" y="1981.48" font-size="20" fill="#2d2d2d" text-anchor="end">0.00559</text>
+<text class="val chg" style="animation-delay:0.93s" x="1312.4" y="1981.48" font-size="20" fill="#2d2d2d" text-anchor="end">0.25200</text>
+<text class="val chg" style="animation-delay:0.95s" x="1507" y="1981.48" font-size="20" fill="#2d2d2d" text-anchor="end">0.35647</text>
+<text class="val chg" style="animation-delay:0.98s" x="1701.6" y="1981.48" font-size="20" fill="#2d2d2d" text-anchor="end">0.19521</text>
+<text class="val chg" style="animation-delay:1.00s" x="1896.2" y="1981.48" font-size="20" fill="#2d2d2d" text-anchor="end">0.25995</text>
+<rect x="1910.2" y="1948" width="194.6" height="54" fill="#f8dede"/>
+<text class="val chg" style="animation-delay:1.03s" x="2090.8" y="1981.48" font-size="20" fill="#7f1d1d" text-anchor="end">-0.43089(66)</text>
+<rect x="2104.8" y="1948" width="194.6" height="54" fill="#f8dede"/>
+<text class="val chg" style="animation-delay:1.05s" x="2285.4" y="1981.48" font-size="20" fill="#7f1d1d" text-anchor="end">-0.37739(53)</text>
+<rect x="2299.4" y="1948" width="194.6" height="54" fill="#f8dede"/>
+<text class="val chg" style="animation-delay:1.07s" x="2480" y="1981.48" font-size="20" fill="#7f1d1d" text-anchor="end">-0.36876(62)</text>
+</g>
+<line x1="548" y1="58" x2="548" y2="2001" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="742.6" y1="58" x2="742.6" y2="2001" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="937.2" y1="58" x2="937.2" y2="2001" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1131.8" y1="58" x2="1131.8" y2="2001" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1326.4" y1="58" x2="1326.4" y2="2001" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1521" y1="58" x2="1521" y2="2001" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1715.6" y1="58" x2="1715.6" y2="2001" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1910.2" y1="58" x2="1910.2" y2="2001" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="2104.8" y1="58" x2="2104.8" y2="2001" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="2299.4" y1="58" x2="2299.4" y2="2001" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="2494" y1="58" x2="2494" y2="2001" stroke="#d7dbd7" stroke-width="1"/>
 <line x1="1" y1="166" x2="2518" y2="166" stroke="#d7dbd7" stroke-width="1"/>
 <line x1="1" y1="220" x2="2518" y2="220" stroke="#d7dbd7" stroke-width="1"/>
 <line x1="1" y1="274" x2="2518" y2="274" stroke="#d7dbd7" stroke-width="1"/>
@@ -369,5 +553,18 @@
 <line x1="1" y1="1138" x2="2518" y2="1138" stroke="#d7dbd7" stroke-width="1"/>
 <line x1="1" y1="1192" x2="2518" y2="1192" stroke="#d7dbd7" stroke-width="1"/>
 <line x1="1" y1="1246" x2="2518" y2="1246" stroke="#d7dbd7" stroke-width="1"/>
-<rect x="1" y="1" width="2517" height="1298" fill="none" stroke="#c0c6c6" stroke-width="2"/>
+<line x1="1" y1="1300" x2="2518" y2="1300" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1" y1="1354" x2="2518" y2="1354" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1" y1="1408" x2="2518" y2="1408" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1" y1="1462" x2="2518" y2="1462" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1" y1="1516" x2="2518" y2="1516" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1" y1="1570" x2="2518" y2="1570" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1" y1="1624" x2="2518" y2="1624" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1" y1="1678" x2="2518" y2="1678" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1" y1="1732" x2="2518" y2="1732" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1" y1="1786" x2="2518" y2="1786" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1" y1="1840" x2="2518" y2="1840" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1" y1="1894" x2="2518" y2="1894" stroke="#d7dbd7" stroke-width="1"/>
+<line x1="1" y1="1948" x2="2518" y2="1948" stroke="#d7dbd7" stroke-width="1"/>
+<rect x="1" y="1" width="2517" height="2000" fill="none" stroke="#c0c6c6" stroke-width="2"/>
 </svg>

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
-gen_signoff_tables_hk1v11.py — HK1V11 signoff 表图生成器（1029V0 run, rev2 2026-10-30）
+gen_signoff_tables_hk1v11.py — HK1V11 signoff 表图生成器（1104V0 run 2026-11-04；前代 1029V0 rev2 2026-10-30）
 
 抄袭来源（结构/配色/动画逐项照抄）：
   A 族（setup/hold）← gen_postpt_tables_anim.py（#157a6a/#2e8b6a/#1a7a3c/#2d2d2d, FS 30/26/19/19）
@@ -118,7 +118,7 @@ def build_A(metric, data, subtitle):
     ty = A_HEADER_H * 0.64
     p.append('<g class="head">')
     p.append('<rect x="0" y="0" width="%d" height="%d" fill="%s"/>' % (A_W, A_HEADER_H, A_C_BAND))
-    p.append('<text x="%d" y="%s" font-size="%d" font-weight="bold" fill="%s">report_%s.csv (HK1V11 1029V0)</text>'
+    p.append('<text x="%d" y="%s" font-size="%d" font-weight="bold" fill="%s">report_%s.csv (HK1V11 1104V0)</text>'
              % (A_M, fmt(ty), A_FS_T, A_C_WHITE, metric))
     p.append('<text x="%d" y="%s" font-size="%d" fill="%s" text-anchor="end">%s</text>'
              % (data_right, fmt(ty), A_FS_S, A_C_WHITE, esc(subtitle)))
@@ -258,7 +258,7 @@ def gen_all():
                      build_A(mid, data, sub), data))
     data = read_pairs(os.path.join(DATA, "report_trans.csv"))
     rows = [("%s (biggest violation)" % lb, disp, raw) for lb, disp, raw in data]
-    svg = build_B("report_trans.csv (HK1V11 1029V0)", "max_trans/cap 约束违例总表",
+    svg = build_B("report_trans.csv (HK1V11 1104V0)", "max_trans/cap 约束违例总表",
                   430, rows, "metric", lambda fv, lb: fv < 0,
                   zero_frame=all(fv >= 0 for _, _, raws in data for fv in raws))
     outs.append(("53_signoff_trans_hk11", svg, data))
@@ -270,7 +270,7 @@ def gen_all():
         if lb.endswith("rx0_00_max") or lb.endswith("rx0_00_min"):
             hl.add((i, raw.index(min(raw))))
     # rev2: phy 负值不红显（回归 2M23 原样）
-    svg = build_B("report_phy_busskew.csv (HK1V11 1029V0)", "PHY bus skew 各组 slack (ns)",
+    svg = build_B("report_phy_busskew.csv (HK1V11 1104V0)", "PHY bus skew 各组 slack (ns)",
                   417, rows, "report_files", lambda fv, lb: False, hl=hl)
     outs.append(("54_signoff_physkew_hk11", svg, data))
     sd = read_sdskew(os.path.join(DATA, "report_sd_busskew.csv"))
@@ -285,7 +285,7 @@ def gen_all():
         base = lbl.split(" [")[0]
         lo, hi = win.get(base, (-1e9, 1e9))
         return not (lo <= fv <= hi)
-    svg = build_B("report_sd_busskew.csv (HK1V11 1029V0)",
+    svg = build_B("report_sd_busskew.csv (HK1V11 1104V0)",
                   "SD skew margin, 规格 1p [−3.5,+3.5] / dplc [−0.9,+4.1] ns（出窗红显）",
                   430, rows, "report_files", red_by_label)
     outs.append(("55_signoff_sdskew_margin_hk11", svg, sd))
@@ -318,4 +318,4 @@ if __name__ == "__main__":
         open(ap, "w", encoding="utf-8", newline="\n").write(svg)
         m2 = hashlib.md5(open(ap, encoding="utf-8").read().encode()).hexdigest()
         print("%s  anim=%dB  %s  idem=%s" % (name, len(svg), validate(svg, data, ap), "+" if m1 == m2 else "-"))
-# ymzhu 2026-10-30 19:05
+# ymzhu 2026-11-04 10:54

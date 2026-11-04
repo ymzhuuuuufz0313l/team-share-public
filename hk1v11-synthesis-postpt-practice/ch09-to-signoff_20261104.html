@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>九、TO SIGNOFF · HK1V11 综合/签核流程实践</title>
+  <meta name="description" content="最终签核前的最后一道确认：APR 把全部内容修改完成后，再跑一次 postPT + run_summary，确认时序全部 ready，才进入 signoff。1V11 当前处于约…">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./css/style.css">
+  <script src="./js/marked.min.js"></script>
+  <link rel="stylesheet" href="./fx.css?v=9">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a class="navbar-brand" href="./">HK1V11_FLOW_PRACTICE</a>
+      <div class="navbar-links" id="navbar-links"></div>
+    </div>
+  </nav>
+  <div class="container with-toc">
+    <aside class="toc-wrapper"><div class="toc" id="toc"></div></aside>
+    <div class="content">
+      <!-- 最新 · 1029V0 签核状态 -->
+      <div class="section-title">最新 · 1029V0 post-PT 签核状态（10 corner · skew 探针 P1 修复后首个 run）</div>
+      <div class="chapter-grid" style="margin-bottom: 12px;">
+        <div class="chapter-card card-span card-hero card-center">
+          <div class="num">1029V0 · PACK_TAR_1029V0 · 数据源 <code>summary/latest/report_*.csv</code> · 表图见本章 §6</div>
+          <div class="title" style="font-family: var(--font-mono); font-weight: 600; color: var(--ok);">skew b 组 20/20 在窗</div>
+          <div class="desc" style="margin-top: 8px;">dplc clk_b 224KB 污染报告 → 12KB 纯净时钟报告（探针补 CLKMUX2X2/ 叶层生效，审计见 <a href="./ch21-skew-probe-audit.html">ch21</a>）· setup 11 格/4 域 · hold 11 格/3 域 · trans 10 格/2 域</div>
+        </div>
+        <div class="chapter-card card-center card-mini">
+          <div class="num">setup（10 角）</div>
+          <div class="title" style="font-family: var(--font-mono); color: var(--warn);">11 格 / 4 域</div>
+          <div class="desc">worst −0.36838（gating @wc_cbest）</div>
+        </div>
+        <div class="chapter-card card-center card-mini">
+          <div class="num">hold（10 角）</div>
+          <div class="title" style="font-family: var(--font-mono); color: var(--warn);">11 格 / 3 域</div>
+          <div class="desc">worst −0.04865（RX_CLK @lt_typ）</div>
+        </div>
+        <div class="chapter-card card-center card-mini">
+          <div class="num">skew margin_b</div>
+          <div class="title" style="font-family: var(--font-mono); color: var(--ok);">全角在窗</div>
+          <div class="desc">l 全正 0.26~0.85 · r 最差 −0.038</div>
+        </div>
+        <div class="chapter-card card-center card-mini">
+          <div class="num">新关注（P11）</div>
+          <div class="title" style="font-family: var(--font-mono); color: var(--bad);">4.25906</div>
+          <div class="desc">sd_r_dplc_margin_b_max @wc_cworst 出上界 +4.1</div>
+        </div>
+        <div class="chapter-card card-center card-mini">
+          <div class="num">演进</div>
+          <div class="title" style="font-family: var(--font-mono); color: var(--muted);">0918V2 → 1008V3 → 1029V0</div>
+          <div class="desc">绝对值跨代际不可横比（新 P&R）· 在窗性质与违例域结构可追</div>
+        </div>
+      </div>
+
+      <!-- 历史 · 0918V2 基线（三代并置：最新在顶，历史在下） -->
+      <div class="section-title">对比 · 0918V2 历史基线（早期 post-PT 签核状态）</div>
+      <div class="chapter-grid" style="margin-bottom: 12px;">
+        <div class="chapter-card card-span card-hero card-center">
+          <div class="num">0918V2 · 3 corner 基线（此后 0922→1008 多轮演进，详见 §3 表与下方 1008V3 卡）</div>
+          <div class="title" style="font-family: var(--font-mono); font-weight: 600; color: var(--accent);">setup 29 / 129 / 39 <span style="color:var(--muted);font-size:20px;">·</span> hold 1752 / 1742 / 1750</div>
+          <div class="desc" style="margin-top: 8px;">wc_cworst / wc_cbest / wc_typical · worst setup −0.632（cbest）· worst hold −5.141（cworst）</div>
+        </div>
+        <div class="chapter-card card-center card-mini">
+          <div class="num">setup · 3 corner</div>
+          <div class="title" style="font-family: var(--font-mono);">29 / 129 / 39</div>
+          <div class="desc">−0.255 / −0.632 / −0.403</div>
+        </div>
+        <div class="chapter-card card-center card-mini">
+          <div class="num">hold · 3 corner</div>
+          <div class="title" style="font-family: var(--font-mono);">1752 / 1742 / 1750</div>
+          <div class="desc">−5.141 / −5.078 / −5.123</div>
+        </div>
+        <div class="chapter-card card-center card-mini">
+          <div class="num">演进</div>
+          <div class="title" style="font-family: var(--font-mono); color: var(--ok);">→ 1008V3</div>
+          <div class="desc">约束多轮迭代收敛（见下方最新卡）</div>
+        </div>
+      </div>
+
+      <!-- 对比 · 1008V3 签核状态 -->
+      <div class="section-title">对比 · 1008V3 post-PT 签核状态（10 corner）</div>
+      <div class="chapter-grid" style="margin-bottom: 12px;">
+        <div class="chapter-card card-span card-hero card-center">
+          <div class="num">1008V3 三笔约束生效（G15/K1/I2C async）· 数据源 <code>script/_syn_1008v3_评估报告.md</code></div>
+          <div class="title" style="font-family: var(--font-mono); font-weight: 600; color: var(--accent);">setup 119 <span style="color:var(--muted);font-size:20px;">→</span> 87 <span style="color:var(--muted);font-size:20px;">/</span> hold 7563 <span style="color:var(--muted);font-size:20px;">→</span> 242</div>
+          <div class="desc" style="margin-top: 8px;">hold worst −2.32 <b style="color:var(--ok);">→ −0.2667</b>（wc_cworst RX_CLK）· A/D 簇 mc 清零（FLAG_1H 20 路 + K1 15 路全 MET）</div>
+        </div>
+        <div class="chapter-card card-center card-mini">
+          <div class="num">setup（新 run）</div>
+          <div class="title" style="font-family: var(--font-mono);">87 条</div>
+          <div class="desc">cworst 5/−0.091 · cbest 49/−0.692 · typical 33/−0.199</div>
+        </div>
+        <div class="chapter-card card-center card-mini">
+          <div class="num">hold（9 可比角）</div>
+          <div class="title" style="font-family: var(--font-mono);">242 条</div>
+          <div class="desc">旧 7563 → −7321 · worst −0.2667（wc_cworst）</div>
+        </div>
+        <div class="chapter-card card-center card-mini">
+          <div class="num">SEL-004</div>
+          <div class="title" style="font-family: var(--font-mono); color: var(--ok);">0 条</div>
+          <div class="desc">10 corner read_cons.log 均 0 · 无新增</div>
+        </div>
+      </div>
+
+      <article class="article loading" id="article"></article>
+      <div class="page-nav" id="page-nav"></div>
+      <div class="footer">HK1V11 SYNTHESIS / SIGNOFF PRACTICE · AUTHOR ymzhuuuu · UPDATED 2026-10-30</div>
+    </div>
+  </div>
+  <script type="text/template" id="md">
+
+# 九、TO SIGNOFF
+
+&gt; 最终签核前的最后一道确认：APR 把全部内容修改完成后，**再跑一次 postPT + run_summary**，确认时序全部 ready，才进入 signoff。1V11 当前处于"约束迭代收敛期"，本章先落判读框架与当前实测基线。
+
+## 1. 最终确认流程
+
+```mermaid
+flowchart LR
+  A["APR 修改全部完成<br/>(修调 / ECO)"] --> B["重跑 postPT<br/>10 个 corner"]
+  B --> C["run_summary"]
+  C --> D["逐个看 merge csv"]
+  D --> E{"全部 ready?"}
+  E -->|"是"| F["✅ TO SIGNOFF<br/>进入最终签核"]
+  E -->|"否"| G["回到约束迭代闭环<br/>或继续修调"]
+```
+
+与指南站的差异：2M23 按模式拆 `latest_1p` / `latest_2p` 两套报告；**1V11 无 case、单套 latest**（两档速率共存于同一次 run，见 <a href="./ch06-postpt.html">六、POSTPT</a> §4.1）。
+
+## 2. merge csv 各看什么（1V11 的 summary/latest/）
+
+| 文件 | 看什么 | ready 标准 |
+|------|--------|-----------|
+| `report_setup.csv` | 每 clock 组 × 每 corner violation number / biggest violation | 全 0，或仅剩已逐条定性并给出处置结论的项 |
+| `report_hold.csv` | hold（min）路径 | 同上 |
+| `report_sd_busskew.csv` | SD skew margin | margin 落在规格窗（⚠️ 1V11 合格窗待模拟确认，警惕哨兵值） |
+| `report_phy_busskew.csv` | PHY bus skew | 各组在规格内 |
+| `HK1V11_digital_top_cons.rpt` / `unconstrained_endpoints.rpt` | 违例分组 / 未约束终点 | unconstrained 清零 |
+
+残留违例必须**逐条能说清来历**：已豁免的要能对上 ip_cons 里的 mc / max_delay 条目，说不清的不能放行。
+
+## 3. 1V11 当前基线与违例分级判读
+
+0918V2 run（历史基线，0922 后已多轮演进，最新状态见 <a href="./ch14-violation-disposition.html">ch14 §5</a>）：
+
+| 指标 | wc_cworst_125 | wc_cbest_125 | wc_typical_125 |
+|---|---|---|---|
+| setup | 29 / −0.255 | **129 / −0.632** | 39 / −0.403 |
+| hold | 1752 / −5.141 | 1742 / −5.078 | 1750 / −5.123 |
+
+违例分级判读（三类，处置不同）：
+
+1. **真时序违例**：同域单周期数据路径 → 交 APR 修线或设计打拍。实例：RX_CLK 组 50 条逐族判定（ch10 案例 14）——A1 族 24 条（已由 G13 打一拍解决）、B 族 16 条 negedge 半周期（设计评审可改 posedge）、A2 族 6 条（G13 侧已解决）、A3/A0 轻微随 APR。
+2. **准静态配置跨域**：`R_REG*_L_*` / `R_REG*_F_reg*` 配置写 → mc / 更具体的 max_delay 已收敛（G 系列 + G10，ch10 案例 2/8）。
+3. **报告假值**：哨兵值 / 探针失配 / 非法起点回退（ch10 案例 3/9）→ **修脚本，不是修时序**。
+
+KEY: hold ~1742 条/corner、worst −5.078 是既有 P0（每轮 run 逐条相同 = 零回归基线），独立专项跟进，交付说明中必须注明——不能混进本轮约束工作的结论里。
+
+## 4. IO buf type 确认
+
+5 个 csv 全部 ready 之后，还要确认 **IO 末级 buffer type** 是否符合预期——APR 修调 / ECO 后末级 buf 可能被换型，时序过不代表 buf 用对。
+
+1V11 脚本（`SYNTHESIS/top/sta/post/common/`）：`report_input_last_buf.tcl` / `report_output_last_buf.tcl`。判读方法（含 `NO_LOAD_CELL` / `NO_DRIVER_CELL` 例外端口的成因分析）见 <a href="../synthesis-integration-flow-guide/to-signoff.html" target="_blank">指南站同章 §3</a>——2M23 的实例教训（`set_case_analysis` 固化导致扇出被吸收）在 1V11 无 case 的设计下预期不出现，但判读方法相同。
+
+## 5. 交付前的最后清单
+
+- [ ] 10 corner 全跑、run_summary 总表无新冒违例
+- [ ] setup：仅剩已定性项（真路径交 APR/设计、mc 豁免对得上 ip_cons 条目）
+- [ ] hold：与基线逐条相同（P0 已注明）
+- [ ] skew：margin 全部有数且在确认后的规格窗内（dplc 行已出数）
+- [ ] unconstrained 清零、SEL=0
+- [ ] IO buf type 核对完成
+
+## 6. 1029V0 全量 signoff 报表（2026-10-30 表图，skew 探针修复后首个 run）
+
+> 五张表**逐项沿用 2M23 signoff 表图体系**（结构/配色/动画照抄 synthesis-integration-flow-guide），唯一改动：**违例红显**（负 slack / 出窗 → 红 `#b91c1c`）。零手工录入：`script/gen_signoff_tables_hk1v11.py` 直读 `summary/latest` csv，六项校验每次生成自动跑。本 run 为 dplc clk_b 探针 P1 修复（见 <a href="./ch19-skew-audit.html">ch19 更正段</a>）后首个 run：污染报告 224KB → 纯净时钟报告 12KB，b 组 margin 全角收窗。
+
+### 6.1 setup / hold 总表
+
+![setup 总表](./images/anim/51_signoff_setup_hk11.svg?v=20261030r3)
+
+![hold 总表](./images/anim/52_signoff_hold_hk11.svg?v=20261030r3)
+
+- setup 11 违例格 / 4 域，worst −0.368383（gating @wc_cbest_125）；hold 11 格 / 3 域，worst −0.048648（RX_CLK @lt_typical_m40）。
+- 读法照抄 2M23：绿 0 = 零违例；深色正数 = 有 margin 的最差路径余量；深红 = 违例（**浅红底格**），括号内为该角该域违例条数（呼吸常驻）；全表统一 5 位小数；sdskew 表窗口同步写在每行行首。
+
+### 6.2 trans / cap 总表
+
+![trans 总表](./images/anim/53_signoff_trans_hk11.svg?v=20261030r3)
+
+- 10 格 / 2 域，worst −0.991697（transition @wc_cworst_125）。
+
+### 6.3 PHY bus skew
+
+![phy busskew](./images/anim/54_signoff_physkew_hk11.svg?v=20261030r3)
+
+- 4 角负全在 `rx0_00_min`（lt×3 + ml，最差 −0.04871）＝ port→FF hold 族（±0.3 input delay 模型所致，定性见 ch19 §2.1-2.2）；按 2M23 原样负值不红显（深色+呼吸）。
+- 浅蓝底格（辉光呼吸+虚线生长）= `rx0_00_max` 行与 `rx0_00_min` 行各自的最小值格（全角最紧 corner）。
+- `sd_l/r_dplc_clk_b` 两行**首次以真探针产出**（旧 run 为污染值 6.76/7.13 级）。
+
+> **时钟偏移容限换算（2M23 同款口径，从 1029V0 现有报告还原，未改任何脚本/约束）**
+>
+> 1V11 的采样窗预算已写进约束：`set_input_delay 0.3/-0.3`（±0.3 = 外部数据眼窗）+ RX_CLK `uncertainty setup 0.4 / hold 0.15`——PT 出的 slack 是**扣除预算后的净余量**，要得到 2M23 风格的"时钟可左移/右移 X ns"裸口径，把扣掉的预算**加回去**：
+>
+> - **左移容限（setup 方向）= port→FF setup slack + 0.3 + 0.4**
+> - **右移容限（hold 方向）= port→FF hold slack + 0.3 + 0.15**　（把 min input delay −0.3 与 hold uncertainty 0.15 还原）
+>
+> port→FF setup 路径**就在现有 rx0_00_max.rpt 里**（单过滤探针两类路径并存，FF→FF 只抢了头名；报告内 `dout_lane[x] (input port` 块即为 port→FF，本节取其每角最差值）；port→FF hold 即 phy 表 `rx0_00_min` 行。
+>
+> | 角 | port→FF setup | 左移容限 (+0.7) | port→FF hold | 右移容限 (+0.45) |
+> |---|---|---|---|---|
+> | wc_cworst_125 | +2.186397 | **2.88640** | +0.173885 | 0.62389 |
+> | wc_cbest_125 | +2.266765 | 2.96676 | +0.121634 | 0.57163 |
+> | wc_typical_125 | +2.202724 | 2.90272 | +0.173640 | 0.62364 |
+> | lt_cworst_m40 | +0.393883 | **1.09388** ←全角最小 | −0.043398 | 0.40660 |
+> | lt_cbest_m40 | +0.492729 | 1.19273 | −0.043017 | 0.40698 |
+> | lt_typical_m40 | +0.428258 | 1.12826 | −0.048711 | **0.40129** ←全角最小 |
+> | ml_cbest_125 | +0.873913 | 1.57391 | −0.022635 | 0.42736 |
+> | tt_cworst_25 | +0.906289 | 1.60629 | +0.019428 | 0.46943 |
+> | tt_cbest_25 | +1.001012 | 1.70101 | +0.020369 | 0.47037 |
+> | tt_typical_25 | +0.938056 | 1.63806 | +0.019600 | 0.46960 |
+>
+> **结论（1029V0，裸口径）**：采样时钟相对数据**最多左移 1.094 ns**（lt_cworst，setup 侧先碰界）、**最多右移 0.401 ns**（lt_typical，hold 侧先碰界）。降频（250MHz→等效更低速档）setup 余量变大的方向与 2M23 观察一致；hold 侧右移余量小不是结构变化，而是 ±0.3 模型 + 0.15 uncertainty 占掉 ~0.45 ns 预算后的净结果。
+>
+> 注：① 表内 phy csv 的 max 行（0.39~2.11）是 **FF→FF setup**（INDATA_SYNC→D1，借 3.81ns 周期），不是引脚采样窗，不能用于本换算——这就是"max/min 只差 ~0.2"的由来（两类不同检查各自贴边，两行之差无窗口含义）；② 2M23 的 2.375 修正项是其 `set_input_delay 0` 裸口径下的人工精装修，1V11 预算已在约束内，**不可再叠加同类修正**。
+
+![时钟偏移容限](./images/anim/56_signoff_shift_window_hk11.svg?v=20261030r3)
+
+上图：① 全景轴——0 为名义采样沿，数据有效窗居中，蓝箭头到红线即左/右可偏移量；② 逐角双条——蓝=左移（setup 侧）、青=右移（hold 侧），红虚线为全角最小（左 1.094 / 右 0.401）。
+
+### 6.4 SD skew margin（P1 生效实证）
+
+![sdskew margin](./images/anim/55_signoff_sdskew_margin_hk11.svg?v=20261030r3)
+
+- **b 组全角收窗**：margin_b_min 全 10 角 ≥ −0.038（l 侧全正 0.26~0.85）；唯一红格 `sd_r_dplc_margin_b_max @wc_cworst_125 = 4.25906` 出上界 +4.1（超 0.159，新关注项，待与 PR/jjlu 确认上界口径）。
+- `sd_r_dplc_margin_a_min` 2 红格（−1.244/−0.961）＝ P5 悬置的「dplc 窗套 a 侧」口径问题延续，非新违例（CLKA 两模式恒 SD_CLK_INV，窗口适用性待规格收口）。
+
+## 7. 交叉引用
+
+- 指南站同章：<a href="../synthesis-integration-flow-guide/to-signoff.html" target="_blank">SYN_FLOW_GUIDE · TO SIGNOFF</a>（五个 csv 报告实例 / IO buf type 判读全文）
+- 违例定性方法：<a href="./ch06-postpt.html">六、POSTPT</a>；逐族判定实例：<a href="./ch10-warstories.html">十、排障实录</a> 案例 14
+</script>
+  <script src="./js/mermaid.min.js"></script>
+  <script src="./js/lightbox.js"></script>
+  <script src="./js/site.js?v=2"></script>
+  <script src="./fx.js?v=11"></script>
+</body>
+</html>
+<!-- ymzhu 2026-11-02 19:20 -->
