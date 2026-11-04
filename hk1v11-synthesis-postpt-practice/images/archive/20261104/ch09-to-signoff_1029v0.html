@@ -11,14 +11,14 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./css/style.css">
-  <script src="./js/marked.min.js"></script>
-  <link rel="stylesheet" href="./fx.css?v=9">
+  <link rel="stylesheet" href="../../css/style.css">
+  <script src="../../js/marked.min.js"></script>
+  <link rel="stylesheet" href="../../fx.css?v=9">
 </head>
 <body>
   <nav class="navbar">
     <div class="navbar-inner">
-      <a class="navbar-brand" href="./">HK1V11_FLOW_PRACTICE</a>
+      <a class="navbar-brand" href="../../">HK1V11_FLOW_PRACTICE</a>
       <div class="navbar-links" id="navbar-links"></div>
     </div>
   </nav>
@@ -31,7 +31,7 @@
         <div class="chapter-card card-span card-hero card-center">
           <div class="num">1029V0 · PACK_TAR_1029V0 · 数据源 <code>summary/latest/report_*.csv</code> · 表图见本章 §6</div>
           <div class="title" style="font-family: var(--font-mono); font-weight: 600; color: var(--ok);">skew b 组 20/20 在窗</div>
-          <div class="desc" style="margin-top: 8px;">dplc clk_b 224KB 污染报告 → 12KB 纯净时钟报告（探针补 CLKMUX2X2/ 叶层生效，审计见 <a href="./ch21-skew-probe-audit.html">ch21</a>）· setup 11 格/4 域 · hold 11 格/3 域 · trans 10 格/2 域</div>
+          <div class="desc" style="margin-top: 8px;">dplc clk_b 224KB 污染报告 → 12KB 纯净时钟报告（探针补 CLKMUX2X2/ 叶层生效，审计见 <a href="../../ch21-skew-probe-audit.html">ch21</a>）· setup 11 格/4 域 · hold 11 格/3 域 · trans 10 格/2 域</div>
         </div>
         <div class="chapter-card card-center card-mini">
           <div class="num">setup（10 角）</div>
@@ -133,7 +133,7 @@ flowchart LR
   E -->|"否"| G["回到约束迭代闭环<br/>或继续修调"]
 ```
 
-与指南站的差异：2M23 按模式拆 `latest_1p` / `latest_2p` 两套报告；**1V11 无 case、单套 latest**（两档速率共存于同一次 run，见 <a href="./ch06-postpt.html">六、POSTPT</a> §4.1）。
+与指南站的差异：2M23 按模式拆 `latest_1p` / `latest_2p` 两套报告；**1V11 无 case、单套 latest**（两档速率共存于同一次 run，见 <a href="../../ch06-postpt.html">六、POSTPT</a> §4.1）。
 
 ## 2. merge csv 各看什么（1V11 的 summary/latest/）
 
@@ -149,7 +149,7 @@ flowchart LR
 
 ## 3. 1V11 当前基线与违例分级判读
 
-0918V2 run（历史基线，0922 后已多轮演进，最新状态见 <a href="./ch14-violation-disposition.html">ch14 §5</a>）：
+0918V2 run（历史基线，0922 后已多轮演进，最新状态见 <a href="../../ch14-violation-disposition.html">ch14 §5</a>）：
 
 | 指标 | wc_cworst_125 | wc_cbest_125 | wc_typical_125 |
 |---|---|---|---|
@@ -168,7 +168,7 @@ KEY: hold ~1742 条/corner、worst −5.078 是既有 P0（每轮 run 逐条相�
 
 5 个 csv 全部 ready 之后，还要确认 **IO 末级 buffer type** 是否符合预期——APR 修调 / ECO 后末级 buf 可能被换型，时序过不代表 buf 用对。
 
-1V11 脚本（`SYNTHESIS/top/sta/post/common/`）：`report_input_last_buf.tcl` / `report_output_last_buf.tcl`。判读方法（含 `NO_LOAD_CELL` / `NO_DRIVER_CELL` 例外端口的成因分析）见 <a href="../synthesis-integration-flow-guide/to-signoff.html" target="_blank">指南站同章 §3</a>——2M23 的实例教训（`set_case_analysis` 固化导致扇出被吸收）在 1V11 无 case 的设计下预期不出现，但判读方法相同。
+1V11 脚本（`SYNTHESIS/top/sta/post/common/`）：`report_input_last_buf.tcl` / `report_output_last_buf.tcl`。判读方法（含 `NO_LOAD_CELL` / `NO_DRIVER_CELL` 例外端口的成因分析）见 <a href="../../../synthesis-integration-flow-guide/to-signoff.html" target="_blank">指南站同章 §3</a>——2M23 的实例教训（`set_case_analysis` 固化导致扇出被吸收）在 1V11 无 case 的设计下预期不出现，但判读方法相同。
 
 ## 5. 交付前的最后清单
 
@@ -181,26 +181,26 @@ KEY: hold ~1742 条/corner、worst −5.078 是既有 P0（每轮 run 逐条相�
 
 ## 6. 1029V0 全量 signoff 报表（2026-10-30 表图，skew 探针修复后首个 run）
 
-> 五张表**逐项沿用 2M23 signoff 表图体系**（结构/配色/动画照抄 synthesis-integration-flow-guide），唯一改动：**违例红显**（负 slack / 出窗 → 红 `#b91c1c`）。零手工录入：`script/gen_signoff_tables_hk1v11.py` 直读 `summary/latest` csv，六项校验每次生成自动跑。本 run 为 dplc clk_b 探针 P1 修复（见 <a href="./ch19-skew-audit.html">ch19 更正段</a>）后首个 run：污染报告 224KB → 纯净时钟报告 12KB，b 组 margin 全角收窗。
+> 五张表**逐项沿用 2M23 signoff 表图体系**（结构/配色/动画照抄 synthesis-integration-flow-guide），唯一改动：**违例红显**（负 slack / 出窗 → 红 `#b91c1c`）。零手工录入：`script/gen_signoff_tables_hk1v11.py` 直读 `summary/latest` csv，六项校验每次生成自动跑。本 run 为 dplc clk_b 探针 P1 修复（见 <a href="../../ch19-skew-audit.html">ch19 更正段</a>）后首个 run：污染报告 224KB → 纯净时钟报告 12KB，b 组 margin 全角收窗。
 
 ### 6.1 setup / hold 总表
 
-![setup 总表](./images/anim/51_signoff_setup_hk11.svg?v=20261030r3)
+![setup 总表](./anim/51_signoff_setup_hk11_1029v0.svg)
 
-![hold 总表](./images/anim/52_signoff_hold_hk11.svg?v=20261030r3)
+![hold 总表](./anim/52_signoff_hold_hk11_1029v0.svg)
 
 - setup 11 违例格 / 4 域，worst −0.368383（gating @wc_cbest_125）；hold 11 格 / 3 域，worst −0.048648（RX_CLK @lt_typical_m40）。
 - 读法照抄 2M23：绿 0 = 零违例；深色正数 = 有 margin 的最差路径余量；深红 = 违例（**浅红底格**），括号内为该角该域违例条数（呼吸常驻）；全表统一 5 位小数；sdskew 表窗口同步写在每行行首。
 
 ### 6.2 trans / cap 总表
 
-![trans 总表](./images/anim/53_signoff_trans_hk11.svg?v=20261030r3)
+![trans 总表](./anim/53_signoff_trans_hk11_1029v0.svg)
 
 - 10 格 / 2 域，worst −0.991697（transition @wc_cworst_125）。
 
 ### 6.3 PHY bus skew
 
-![phy busskew](./images/anim/54_signoff_physkew_hk11.svg?v=20261030r3)
+![phy busskew](./anim/54_signoff_physkew_hk11_1029v0.svg)
 
 - 4 角负全在 `rx0_00_min`（lt×3 + ml，最差 −0.04871）＝ port→FF hold 族（±0.3 input delay 模型所致，定性见 ch19 §2.1-2.2）；按 2M23 原样负值不红显（深色+呼吸）。
 - 浅蓝底格（辉光呼吸+虚线生长）= `rx0_00_max` 行与 `rx0_00_min` 行各自的最小值格（全角最紧 corner）。
@@ -232,26 +232,26 @@ KEY: hold ~1742 条/corner、worst −5.078 是既有 P0（每轮 run 逐条相�
 >
 > 注：① 表内 phy csv 的 max 行（0.39~2.11）是 **FF→FF setup**（INDATA_SYNC→D1，借 3.81ns 周期），不是引脚采样窗，不能用于本换算——这就是"max/min 只差 ~0.2"的由来（两类不同检查各自贴边，两行之差无窗口含义）；② 2M23 的 2.375 修正项是其 `set_input_delay 0` 裸口径下的人工精装修，1V11 预算已在约束内，**不可再叠加同类修正**。
 
-![时钟偏移容限](./images/anim/56_signoff_shift_window_hk11.svg?v=20261030r3)
+![时钟偏移容限](./anim/56_signoff_shift_window_hk11_1029v0.svg)
 
 上图：① 全景轴——0 为名义采样沿，数据有效窗居中，蓝箭头到红线即左/右可偏移量；② 逐角双条——蓝=左移（setup 侧）、青=右移（hold 侧），红虚线为全角最小（左 1.094 / 右 0.401）。
 
 ### 6.4 SD skew margin（P1 生效实证）
 
-![sdskew margin](./images/anim/55_signoff_sdskew_margin_hk11.svg?v=20261030r3)
+![sdskew margin](./anim/55_signoff_sdskew_margin_hk11_1029v0.svg)
 
 - **b 组全角收窗**：margin_b_min 全 10 角 ≥ −0.038（l 侧全正 0.26~0.85）；唯一红格 `sd_r_dplc_margin_b_max @wc_cworst_125 = 4.25906` 出上界 +4.1（超 0.159，新关注项，待与 PR/jjlu 确认上界口径）。
 - `sd_r_dplc_margin_a_min` 2 红格（−1.244/−0.961）＝ P5 悬置的「dplc 窗套 a 侧」口径问题延续，非新违例（CLKA 两模式恒 SD_CLK_INV，窗口适用性待规格收口）。
 
 ## 7. 交叉引用
 
-- 指南站同章：<a href="../synthesis-integration-flow-guide/to-signoff.html" target="_blank">SYN_FLOW_GUIDE · TO SIGNOFF</a>（五个 csv 报告实例 / IO buf type 判读全文）
-- 违例定性方法：<a href="./ch06-postpt.html">六、POSTPT</a>；逐族判定实例：<a href="./ch10-warstories.html">十、排障实录</a> 案例 14
+- 指南站同章：<a href="../../../synthesis-integration-flow-guide/to-signoff.html" target="_blank">SYN_FLOW_GUIDE · TO SIGNOFF</a>（五个 csv 报告实例 / IO buf type 判读全文）
+- 违例定性方法：<a href="../../ch06-postpt.html">六、POSTPT</a>；逐族判定实例：<a href="../../ch10-warstories.html">十、排障实录</a> 案例 14
 </script>
-  <script src="./js/mermaid.min.js"></script>
-  <script src="./js/lightbox.js"></script>
-  <script src="./js/site.js?v=2"></script>
-  <script src="./fx.js?v=11"></script>
+  <script src="../../js/mermaid.min.js"></script>
+  <script src="../../js/lightbox.js"></script>
+  <script src="../../js/site.js?v=2"></script>
+  <script src="../../fx.js?v=11"></script>
 </body>
 </html>
-<!-- ymzhu 2026-11-02 19:20 -->
+<!-- ymzhu 2026-11-04 14:22 -->
