@@ -295,6 +295,44 @@
 
 本寄存器同步与 POSTPT 站 [TO SIGNOFF 1104V0](../hk1v11-synthesis-postpt-practice/ch09-to-signoff.html) 同源（同一 1104 代际服务器包）：SYNTHESIS 侧（PT STA 10 corner 全收敛 + ip_cons 614 行）见 POSTPT 站 ch09；HDL 侧（寄存器三件套 + 非寄存器 26 文件）即本章。
 
+## 6. 1104v1 迭代（三件套升版）
+
+> **1104 服务器同步之上的本地功能迭代**（reg-iter / t14，GLM-5.3 执行）：基线 = 1104 服务器态（commit 88d369c1，1029v1 血统 + 服务器 11-02 TP_F_AHEAD 停用），规格源 `HK1V11_Register_20261103.xlsm`（history 行 2026-11-03，与用户所列变更逐条核对一致）。**三件套全部升版 1104v1**（LC_CPUWR / LC_REG_MAPPING / **LINK_CONFIG_CTRL 首次加版本头**），验收三关全过。
+
+### 6.1 1104v1 迭代变更图
+
+![1104v1 迭代变更 · 寄存器三件套升版](./images/anim/1104v1_reg_changes.svg?v=20261104r1)
+
+> 四项移址 + 0x08 默认 0x00→0x30 + 旧位回 Reserved。类型 / 状态见图中色标（移址=靛 / 默认=青 / 版本=灰；✅ 绿=已采）。
+
+### 6.2 四项移址明细
+
+| # | 字段 | 旧（1104 服务器态） | 新（1104v1） |
+|---|------|---------------------|--------------|
+| 1 | **khead_20b_sel** | `R_KHEAD_20B_SEL[4:0] = LSI_PRTECT?R_REG51_F[6:2]:5'b00000`（0x33[6:2]，5bit，5'b10101=20bit） | `R_KHEAD_20B_SEL[2:0] = R_REG29_F[7:5]`（**0x1D[7:5]**，3bit，**3'b101=40bit、其余=20bit、默认 3'b000=20bit**，无 LSI 门控） |
+| 2 | **TP_SEL[1:0]** | `R_TP_SEL[1:0] = LSI_PRTECT?R_REG52_F[7:6]:2'b00`（0x34[7:6]，默认 00） | `R_TP_SEL[1:0] = R_REG08_F[5:4]`（**0x08[5:4]**，默认 **2'b11**，无 LSI 门控） |
+| 3 | **BACSCR_EOL** | `R_BACSCR_EOL = LSI_PRTECT?R_REG56_F[7]:1'b0`（0x38[7]） | `R_BACSCR_EOL = R_REG29_F[4]`（**0x1D[4]**，默认 0 不变，无 LSI 门控） |
+| 4 | **VPS_EN[1]** | LC_CPUWR `VPS_EN_1 = R_REG03_F[7]`（F 0x03[7]） | LC_CPUWR 端口/assign **删除**；LC_REG_MAPPING **新增输出** `VPS_EN_1 = R_REG03_L[7]`（**L 0x43[7]**） |
+
+**编码语义（新）**：TP_SEL 00=TP&PORSD / 01=TP / 10=K3 / **11=setting（默认）**；khead_20b_sel **3'b101=40bit、其余=20bit（默认）**；VPS_EN[1]：BKDU&VPS_EN[1]=1 → Sout short to vcom & DRA_OP OFF。
+
+**0x08 字节默认 0x00 → 0x30**（TP_SEL 字段移入 [5:4]，R_REG08_F 与 shadow_08_F 三处复位同步改）。**旧位回 Reserved**：0x33[6:2] / 0x34[7:6] / 0x38[7] / 0x03[7]（存储保留、可写可读回，仅摘输出+注释，遵循 0827v1 0x33 先例）。
+
+### 6.3 挂账（dangling account，写域外）
+
+| 挂账项 | 责任侧 | 说明 |
+|--------|--------|------|
+| **R_KHEAD_20B_SEL 上层适配** | 消费侧 owner / 下轮迭代 | LINK_LOGIC.v / LC_CHPI_DECODE.v / SHORT/LONG_ENCODING_ALIGN.v / LONG/SHORT_ENCODING.v / long_encoding/LONG_ENCODING_ALIGN.v：改宽 [2:0] + 判别 `!=3'b101`（新 20bit 默认） |
+| **DV 侧同步** | DV_TCON_C/（写域外） | reg_model / env_cfg：0x08 默认（0x00→0x30、TP_SEL 字段）、0x1D 字段（BACSCR_EOL/khead[2:0]）、0x03[7]/0x33[6:2]/0x34[7:6]/0x38[7] Reserved、L 0x43[7] VPS_EN[1] 待同步 |
+| **xlsm 表内残留** | 表格维护者 | Reg_1V11 页 0X03 BIT7 仍标 VPS_EN[1]、0X43 BIT7 标 "-"，与描述页矛盾（已按描述页实施，建议反馈） |
+
+### 6.4 版本结论
+
+- **版本号**：LC_CPUWR = 1104v1 / LC_REG_MAPPING = 1104v1 / **LINK_CONFIG_CTRL = 1104v1（首次加版本头）**
+- **验收三关**：iverilog 语法 ✅ / rtl-code-review 对抗评审 ✅（critical=0, high=1, medium=2，门禁 critical==0 && high<=1）/ rtl-signal-trace 信号链路 ✅
+- **changelist**：Register Change 登记草稿（`LC_CPUWR_history/markdownfile/1104v1/LC_CPUWR_1104v1_changelist.md`，STATUS=Done，待用户登记 xlsx）
+- **双轨 CHANGES**：根级 + 目录级已同步（1104v1 迭代条目）；逐 bit 一致性对照见 `script/_reg_20261103_consistency.md`
+
 </script>
   <script>
     document.getElementById('article').innerHTML = marked.parse(document.getElementById('md').textContent.trim());
@@ -431,5 +469,5 @@ const article = document.getElementById('article');
   </script>
   <script src="./fx.js?v=11"></script>
 </body>
-<!-- ymzhu 2026-11-04 12:05 -->
+<!-- ymzhu 2026-11-04 12:45 -->
 </html>
