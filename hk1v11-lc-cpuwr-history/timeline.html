@@ -741,7 +741,8 @@
 - **R_TP_F_AHEAD（0x2E[3]）停用**：回 Reserved、LC_CPUWR 端口+assign 注释、LINK_CONFIG_CTRL 驱常量 0
 - **R_DPLC_MODE**：新增 `` `ifdef LONG_VU440_FPGA `` 强 `1'b0`（长编码 FPGA 构建）
 - **LC_REG_MAPPING 头注释**：仍 `1027v1`（1027v1 的 R_KHEAD_20B_SEL 已注释停用，功能已等同 1029v1，未升头）
-- 采用：t3 寄存器三件套 + t11 非寄存器 26 文件（逐字节 md5 核验与包一致）；changelist **NO=12** 登记草稿（待用户登记）；双轨 CHANGES（根级 + 目录级）已同步
+- 采用：t3 寄存器三件套 + t11 非寄存器 26 文件（逐字节 md5 核验与包一致）；changelist **NO54** 登记草稿（待用户登记）；双轨 CHANGES（根级 + 目录级）已同步
+- **勘误**：本同步 commit `f883565` 信息中「NO=12」系笔误，正确为 **NO54**（back3 表末行 NO53 顺延）
 
 ### 5.34 1104v1 迭代（2026-11-04，三件套升版，LINK_CONFIG_CTRL 首次加版本头，验收三关全过）
 
@@ -895,4 +896,4 @@ const article = document.getElementById('article');
   <script src="./fx.js?v=11"></script>
 </body>
 </html>
-<!-- ymzhu 2026-11-04 12:45 -->
+<!-- ymzhu 2026-11-04 13:05 -->
