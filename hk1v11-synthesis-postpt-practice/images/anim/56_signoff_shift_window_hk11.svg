@@ -7,9 +7,9 @@
 <rect class="panel" x="40" y="90" width="1360" height="430" rx="2" fill="#fffdf7" stroke="#c9bfa8" stroke-width="1.5"/>
 <text x="60" y="118" font-size="16.5" font-weight="bold">① 容限窗全景 — 采样时钟相位可在 [数据窗 − 左限, 数据窗 + 右限] 内偏移</text>
 <line x1="478.4" y1="150" x2="478.4" y2="322" stroke="#b91c1c" stroke-width="2.5" stroke-dasharray="5,3" class="boundPulse"/>
-<text x="478.4" y="358" font-size="11" fill="#b91c1c" class="mono" text-anchor="middle">−1.09388（setup 碰界）</text>
+<text x="478.4" y="358" font-size="11" fill="#b91c1c" class="mono" text-anchor="middle">-0.64424（setup 碰界）</text>
 <line x1="870.8" y1="150" x2="870.8" y2="322" stroke="#b91c1c" stroke-width="2.5" stroke-dasharray="5,3" class="boundPulse"/>
-<text x="870.8" y="358" font-size="11" fill="#b91c1c" class="mono" text-anchor="middle">+0.40129（hold 碰界）</text>
+<text x="870.8" y="358" font-size="11" fill="#b91c1c" class="mono" text-anchor="middle">+0.40224（hold 碰界）</text>
 <line x1="120" y1="310" x2="1320" y2="310" stroke="#1c2534" stroke-width="2"/>
 <line x1="157.5" y1="310" x2="157.5" y2="318" stroke="#5b6675" stroke-width="1"/>
 <text x="157.5" y="336" font-size="12" text-anchor="middle" class="mono" fill="#5b6675">-1.5</text>
@@ -30,17 +30,17 @@
 <text x="720.0" y="275" font-size="12.5" fill="#fffdf7" text-anchor="middle">数据有效窗</text>
 <line x1="720.0" y1="190" x2="478.4" y2="190" stroke="#1d4ed8" stroke-width="3" class="arrowDash" marker-end="url(#mB)"/>
 <text x="513.8" y="174" font-size="13.5" fill="#1d4ed8" text-anchor="middle" font-weight="bold">← 左移容限 0.64424 ns</text>
-<text x="513.8" y="214" font-size="11.5" class="mono" fill="#1d4ed8" text-anchor="middle">= port→FF setup −0.055763 +0.3+0.4</text>
-<text x="513.8" y="234" font-size="11" fill="#5b6675" text-anchor="middle">lt_cworst_m40（setup 先碰界）</text>
+<text x="513.8" y="214" font-size="11.5" class="mono" fill="#1d4ed8" text-anchor="middle">= port→FF setup -0.05576 +0.3+0.4</text>
+<text x="513.8" y="234" font-size="11" fill="#5b6675" text-anchor="middle">lt_cworst（setup 先碰界）</text>
 <line x1="720.0" y1="190" x2="870.8" y2="190" stroke="#1d4ed8" stroke-width="3" class="arrowDash" marker-end="url(#mB)"/>
 <text x="1030.0" y="174" font-size="13.5" fill="#1d4ed8" text-anchor="middle" font-weight="bold">右移容限 0.40224 ns →</text>
-<text x="1030.0" y="214" font-size="11.5" class="mono" fill="#1d4ed8" text-anchor="middle">= port→FF hold −0.047762 +0.3+0.15</text>
-<text x="1030.0" y="234" font-size="11" fill="#5b6675" text-anchor="middle">lt_typical_m40（hold 先碰界）</text>
+<text x="1030.0" y="214" font-size="11.5" class="mono" fill="#1d4ed8" text-anchor="middle">= port→FF hold -0.04776 +0.3+0.15</text>
+<text x="1030.0" y="234" font-size="11" fill="#5b6675" text-anchor="middle">lt_typical（hold 先碰界）</text>
 <rect x="60" y="372" width="1320" height="120" rx="2" fill="#f4f1ea" stroke="#c9bfa8" stroke-width="1.2" class="formulaGlow"/>
 <text x="80" y="398" font-size="13.5" font-weight="bold" fill="#b45309">换算公式（把 set_input_delay 与 uncertainty 的预算还原成 2M23 裸口径）</text>
 <text x="80" y="424" font-size="13" class="mono">左移容限 = port→FF setup slack + 0.3（max input delay） + 0.4（setup uncertainty）</text>
 <text x="80" y="448" font-size="13" class="mono">右移容限 = port→FF hold slack + 0.3（min input delay −0.3 还原） + 0.15（hold uncertainty）</text>
-<text x="80" y="472" font-size="11.5" fill="#5b6675">注：port→FF setup 取自 rx0_00_max.rpt 内 dout_lane 块（本代 input port 即头名）；port→FF hold 即 phy 表 rx0_00_min 行</text>
+<text x="80" y="472" font-size="11.5" fill="#5b6675">注：1104V0 代际 port→FF setup = phy csv rx0_00_max 行、port→FF hold = rx0_00_min 行（input port 即头名）；数值全部由 csv 直算，无手录。</text>
 <rect class="panel" style="animation-delay:.15s" x="40" y="540" width="1360" height="330" rx="2" fill="#fffdf7" stroke="#c9bfa8" stroke-width="1.5"/>
 <text x="60" y="568" font-size="16.5" font-weight="bold">② 逐角容限（10 corner）</text>
 <rect x="500" y="558" width="16" height="12" fill="#1d4ed8" opacity="0.9"/>
@@ -48,7 +48,7 @@
 <rect x="660" y="558" width="16" height="12" fill="#0e7490" opacity="0.9"/>
 <text x="681" y="568" font-size="12">右移 / hold 侧</text>
 <line x1="820" y1="564" x2="848" y2="564" stroke="#b91c1c" stroke-width="2" stroke-dasharray="6,4"/>
-<text x="856" y="568" font-size="12" fill="#b91c1c">全角最小：左 0.644 / 右 0.402</text>
+<text x="856" y="568" font-size="12" fill="#b91c1c">全角最小：左 0.64424 / 右 0.40224</text>
 <line x1="70" y1="759.0" x2="1345" y2="759.0" stroke="#b91c1c" stroke-width="2" stroke-dasharray="6,4" opacity="0.55"/>
 <line x1="70" y1="790.2" x2="1345" y2="790.2" stroke="#b91c1c" stroke-width="2" stroke-dasharray="6,4" opacity="0.55"/>
 <rect x="80" y="664.2" width="30" height="177.8" fill="#1d4ed8" opacity="0.9"/>

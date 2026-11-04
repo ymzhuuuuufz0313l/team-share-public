@@ -242,7 +242,7 @@ KEY: hold ~1742 条/corner、worst −5.078 是既有 P0（每轮 run 逐条相�
 >
 > 注：① 本代 phy csv 的 max 行（−0.056~+0.876）即 **port→FF setup**（dout_lane input port 为头名），可直接用于本换算——与 1029V0 不同（1029V0 max 行是 FF→FF 抢头名，需另取 input port 块）；② 2M23 的 2.375 修正项是其 `set_input_delay 0` 裸口径下的人工精装修，1V11 预算已在约束内，**不可再叠加同类修正**。
 
-![时钟偏移容限](./images/anim/56_signoff_shift_window_hk11.svg?v=20261104r1)
+![时钟偏移容限](./images/anim/56_signoff_shift_window_hk11.svg?v=20261104r2)
 
 上图：① 全景轴——0 为名义采样沿，数据有效窗居中，蓝箭头到红线即左/右可偏移量；② 逐角双条——蓝=左移（setup 侧）、青=右移（hold 侧），红虚线为全角最小（左 0.644 / 右 0.402）。
 
@@ -264,4 +264,4 @@ KEY: hold ~1742 条/corner、worst −5.078 是既有 P0（每轮 run 逐条相�
   <script src="./fx.js?v=11"></script>
 </body>
 </html>
-<!-- ymzhu 2026-11-04 11:05 -->
+<!-- ymzhu 2026-11-04 12:30 -->
