@@ -371,8 +371,9 @@ def build_scene():
     S.extend(ARROW(512, 566, 688, 566, C["gray"], "ar-gray", draw_delay=1.85))
 
     # —— 底部证据带 ——
+    # 1106 重叠修复：面板 76→84——原末行注记基线 y=756 恰压面板底框(y=756)，墨迹压框 1173px
     S.append(G([
-        R(40, 680, 1120, 76, fill=C["container"], stroke=C["line"], rx=8),
+        R(40, 680, 1120, 84, fill=C["container"], stroke=C["line"], rx=8),
         T(56, 700, "证据与联动", 10.5, C["dark"], 600, "start"),
         T(56, 720, "git diff f54f8d67..44e48592 -- isptx_sequence.sv：CTRL_F 1'b0（不加扰）/ K3_CODE / VFP hunk",
           10, C["muted"], None, "start"),
@@ -440,4 +441,4 @@ def main():
 
 if __name__ == "__main__":
     sys.exit(main())
-# ymzhu 2026-11-05 11:30
+# ymzhu 2026-11-05 15:39

@@ -76,7 +76,7 @@
 <line x1="824" y1="160" x2="870" y2="160" stroke="#059669" stroke-width="2" marker-end="url(#ar-green)"/>
 <line x1="1003" y1="192" x2="1003" y2="212" stroke="#059669" stroke-width="2" marker-end="url(#ar-green)"/>
 <line x1="1003" y1="276" x2="1003" y2="300" stroke="#059669" stroke-width="2" marker-end="url(#ar-green)"/>
-<path d="M 214 424 L 214 520" stroke="#7c3aed" stroke-width="1.5" fill="none" stroke-dasharray="5,3" marker-end="url(#ar-purple)"/>
+<path d="M 214 424 L 214 462 L 48 462 L 48 552 L 84 552" stroke="#7c3aed" stroke-width="1.5" fill="none" stroke-dasharray="5,3" marker-end="url(#ar-purple)"/>
 <path d="M 1003 364 L 1003 440 L 1003 520" stroke="#059669" stroke-width="1.5" fill="none" stroke-dasharray="6,3" marker-end="url(#ar-green)"/>
 <line x1="344" y1="552" x2="441" y2="552" stroke="#7c3aed" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#ar-purple)"/>
 <text x="392.5" y="544" font-size="9" fill="#7c3aed" text-anchor="middle">期望值</text>

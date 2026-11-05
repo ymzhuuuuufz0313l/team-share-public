@@ -335,7 +335,7 @@
   <path d="M 512 566 H 688" stroke="#0f766e" class="flowtail" pathLength="100" style="animation-duration:2.6s;animation-delay:-0.87s"/>
   <g class="fade" style="animation-delay:2.1s">
   <g >
-    <rect x="40" y="680" width="1120" height="76" rx="8" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.5"/>
+    <rect x="40" y="680" width="1120" height="84" rx="8" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.5"/>
     <text x="56" y="700" font-size="10.5" fill="#1e293b" text-anchor="start" font-weight="600">证据与联动</text>
     <text x="56" y="720" font-size="10" fill="#64748b" text-anchor="start">git diff f54f8d67..44e48592 -- isptx_sequence.sv：CTRL_F 1'b0（不加扰）/ K3_CODE / VFP hunk</text>
     <text x="56" y="738" font-size="10" fill="#64748b" text-anchor="start">SCREN=1 前置已落地：t_H3840_V16_FPS120_SCREN1_420b_for_chengli_test（1022 入库 · BYTE0_BIT3_0=0100）</text>

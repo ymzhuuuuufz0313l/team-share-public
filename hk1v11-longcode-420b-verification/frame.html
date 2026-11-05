@@ -516,7 +516,7 @@
 
 ![420b 帧数据流](./images/anim/spec_frame_flow.svg?v=20261105)
 
-![帧结构：基线 vs 现状对比](./images/anim/delta_frame_structure.svg?v=20261105)
+![帧结构：基线 vs 现状对比](./images/anim/delta_frame_structure.svg?v=20261106)
 
 > **帧结构演进 before → after**：① Config Line 由 0717v1 的「VACT 后单独成行」改为 0924 的「第一条 VFP 行承载」（帧内不再额外加行，帧时长不变）；② Config 行尾由 K2 改为 **K3(SCREN=1)|K2**——SCREN=1 时以 K3 结束，接收端锁存 SCREN 并将共享加扰 key 复位 0XFFFF；③ CTRL_F 由「随域加扰」改为**恒不加扰、不推进 SCR_KEY**。Active 统一 K2 结束、LSP/IDLE 不加扰等基线语义未变。
 

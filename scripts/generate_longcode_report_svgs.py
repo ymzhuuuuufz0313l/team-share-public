@@ -90,7 +90,8 @@ def path(d, color="blue", sw=1.5, dash=None):
 # 图 1：验证环境整体架构（2026-11 现状 · HEAD a7130ba7）
 # ---------------------------------------------------------------------------
 def gen_architecture():
-    L = head(1200, 1150)
+    # 1106 重叠修复：viewBox 1150→1158（Row6 版本基线容器 58→66，两行正文下移拉开与容器标题的基线距）
+    L = head(1200, 1158)
     A = L.append
     A(text(600, 40, "HK1V11 420b 长编码验证环境 · 整体架构（2026-11 现状）", 22, C["dark"], "600"))
     A(text(600, 64, "HEAD a7130ba7（1028 后）· 192 个维度 case · 0924/1022 体系扩展（BCC / BOE / MULTI_CHIP / 故障注入）· `CHPI_MODE_420B` 宏隔离",
@@ -178,23 +179,27 @@ def gen_architecture():
              ("420b→413b · decode_ignore 已修 6-bit {0,63}", "header_mismatch [12:7] 修复 · tag_value 待波形"), tsize=11, ssize=9)
     L += box(800, 456, 336, 54, "descramble_7b.v",
              ("G16(X) 解扰 · K3 上升沿复位（延 4 拍生效）", "scramble_en=0 旁路"), tsize=11, ssize=9)
-    L += box(800, 526, 336, 42, "dout_24b + 2-bit valid", ("→ 后级像素通路",),
+    # 1106 重叠修复：dout 526→556 / RTL TX 580→606 下移；灰框注记改右对齐 x=960，
+    # 让出 x=968 竖箭头走廊并避开 dout 标题（原两行基线距 6px 墨迹互叠 30% 字高）
+    L += box(800, 556, 336, 42, "dout_24b + 2-bit valid", ("→ 后级像素通路",),
              tsize=11, ssize=9)
-    L += box(800, 580, 336, 62, "RTL 编码 TX 通路（0807 后新增）",
+    L += box(800, 606, 336, 62, "RTL 编码 TX 通路（0807 后新增）",
              ("LONG_ENCODING_ALIGN（K1~K4 对齐 · BK_ST）", "ERROR_CTRL · OUTPUT → 芯片自身 420b 发送"),
              fill="#eff6ff", stroke="#93c5fd", tfill="#1e40af", sfill="#1e40af", tsize=10, ssize=8.5)
     A(rect(792, 310, 352, 222, "none", "#9ca3af", 8, 1.2, "6,3"))
-    A(text(968, 548, "灰框内：RTL 解码链 —— 离线验证不依赖", 9.5, "#6b7280"))
+    A(text(960, 548, "灰框内：RTL 解码链 —— 离线验证不依赖", 9.5, "#6b7280", None, "end"))
 
     # ---- Row4 体系扩展 ----
-    L += container(40, 694, 1120, 132, "体系扩展（0924 ~ 1022）")
-    L += box(64, 726, 350, 84, "MULTI_CHIP / multi4（1010）",
+    # 1106 重叠修复：容器 132→122（底边 826→816）+ 三盒 726→724 上移，
+    # 为绿色走廊注记（y≈828）腾出与容器底框的间距（原墨迹压框 4px）
+    L += container(40, 694, 1120, 122, "体系扩展（0924 ~ 1022）")
+    L += box(64, 724, 350, 84, "MULTI_CHIP / multi4（1010）",
              ("env.sv config_db 相对路径 · lane_delay_reverse", "fork 隔离 · CH_SEL→subpix_cnt 966/960/726/720/864", "DPLC_GROUP=1 时 subpix_cnt +3→+6"),
              tsize=11, ssize=9)
-    L += box(430, 726, 350, 84, "BCC 训练体系（1022）",
+    L += box(430, 724, 350, 84, "BCC 训练体系（1022）",
              ("bcc_monitor · bcc_sequence · bcc_scoreboard", "covergroup 交叉覆盖 · 70us 响应超时", "ID_ASSIGN / EQ_ID / TRAINING_RESULT 追踪"),
              tsize=11, ssize=9)
-    L += box(796, 726, 344, 84, "checker_420b.sv（未变 · display-only）",
+    L += box(796, 724, 344, 84, "checker_420b.sv（未变 · display-only）",
              ("77 行：scramble_en 硬编码 1'b1", "每 block LFSR 复位 0XFFFF", "—— 正式比对启用前的改造点"),
              fill="#fffbeb", stroke="#fde68a", tfill="#92400e", sfill="#92400e", tsize=10.5, ssize=9)
 
@@ -214,14 +219,18 @@ def gen_architecture():
     A(rect(566, 960, 380, 48, "#ecfdf5", C["green"], 8, 2))
     A(text(756, 980, "long_pydec_report_lane0.md", 10.5, "#047857", "600"))
     A(text(756, 998, "逐区域比对 verdict：LSP / CTRL_F / LINE 全对 ✅", 9.5, "#047857"))
-    A(text(360, 988, "日志族（0807+ · lane*.md）：diag_debug / kcode_seq / rawbyte / pkt20（↔ RTL long_rtl_rx 1:1 diff）/ kcode_drv",
+    # 1106 重叠修复：日志族长标签原 (360,988) 侵入右侧 verdict 面板 206px 且被 diff 箭头 y=984 穿过，
+    # 移为容器底部脚注行（56,1024），语义不变（仍属 Row5 离线验证区）
+    A(text(56, 1024, "日志族（0807+ · lane*.md）：diag_debug / kcode_seq / rawbyte / pkt20（↔ RTL long_rtl_rx 1:1 diff）/ kcode_drv",
            9.5, C["muted"], None, "start"))
 
     # ---- Row6 版本基线 ----
-    L += container(40, 1050, 1120, 58, "版本基线 · DV_TCON_C 主干 + 服务器包波次")
-    A(text(56, 1074, "0721v1 CONFIG_DATA 24bit · 0807v1 ref model 三修入库 · 0825 相位感知 CTRL_L · 0924 维度矩阵 190 case + CTRL_F 恒不加扰 + VFP 承载",
+    # 1106 重叠修复：容器 58→66，两行正文 1074/1092→1092/1108——
+    # 原容器标题(y=1072,fs13)与正文(y=1074,fs10)基线距仅 2px，互叠 80% 字高
+    L += container(40, 1050, 1120, 66, "版本基线 · DV_TCON_C 主干 + 服务器包波次")
+    A(text(56, 1092, "0721v1 CONFIG_DATA 24bit · 0807v1 ref model 三修入库 · 0825 相位感知 CTRL_L · 0924 维度矩阵 190 case + CTRL_F 恒不加扰 + VFP 承载",
            10, "#475569", None, "start"))
-    A(text(56, 1092, "1010 MULTI_CHIP/CH_SEL · 1022 BCC + BOE +2 case · 1028 overlay → HEAD a7130ba7（2026-11）",
+    A(text(56, 1108, "1010 MULTI_CHIP/CH_SEL · 1022 BCC + BOE +2 case · 1028 overlay → HEAD a7130ba7（2026-11）",
            10, "#475569", None, "start"))
 
     # ---- arrows（最后画，压在线条层上方）----
@@ -232,15 +241,19 @@ def gen_architecture():
     A(arrow(534, 320, 546, 320, "blue"))
     A(arrow(375, 556, 375, 572, "blue"))
     A(arrow(364, 628, 404, 628, "blue"))
-    A(path("M 712 628 L 756 628 L 756 269 L 800 269", "blue", 2))
-    A(f'<text transform="rotate(-90 748 460)" x="748" y="460" font-size="10" fill="{C["blue"]}" text-anchor="middle">20-bit 包流 / 40-bit K 码 · 串行链路</text>')
-    for y1, y2 in [(300, 316), (370, 386), (440, 456), (510, 526), (568, 580)]:
+    # 1106 重叠修复：竖排标签 748→750、竖段 756→760——原标签墨迹骑 TX 面板右边框(x=740)414px
+    A(path("M 712 628 L 760 628 L 760 269 L 800 269", "blue", 2))
+    A(f'<text transform="rotate(-90 750 460)" x="750" y="460" font-size="10" fill="{C["blue"]}" text-anchor="middle">20-bit 包流 / 40-bit K 码 · 串行链路</text>')
+    for y1, y2 in [(300, 316), (370, 386), (440, 456), (510, 556), (598, 606)]:
         A(arrow(968, y1, 968, y2, "blue"))
-    # tap 绿色路径：KCODE_ALIGN → 右侧外廊 → 底部走廊 → tap 模块
-    A(path("M 1136 269 L 1178 269 L 1178 834 L 179 834 L 179 880", "green", 2, "6,3"))
+    # tap 绿色路径：KCODE_ALIGN → 右侧外廊 → 底部走廊 → 左缘侧入 tap 模块
+    # 1106 重叠修复：末端 x=179 竖落穿 Row5 容器标题，改为 x=50 左缘走廊侧入（标题起于 x=56）
+    A(path("M 1136 269 L 1178 269 L 1178 834 L 50 834 L 50 910 L 62 910", "green", 2, "6,3"))
     A(text(700, 828, "tap DATA_ALIGN_PRE（每拍 20-bit 对齐数据）", 10, C["green"]))
-    # 发送端 raw byte（期望值）紫色路径，跨越绿色走廊处加跳线弧
-    A(path("M 204 678 L 204 828 A 5.5 5.5 0 0 1 204 840 L 204 960", "purple", 1.5, "5,3"))
+    # 发送端 raw byte（期望值）紫色路径：Driver 底 → 左外廊(x=22) → rawbyte 盒顶
+    # 1106 重叠修复：原 x=204 直落脊柱穿 8 处左侧事件文字（MULTI_CHIP 盒 4 行 / tap 盒 2 行 / Row5 标题带），
+    # 改走 x=22 左外廊（绿色走廊在 x=50，互不相交，跳线弧随之取消）
+    A(path("M 204 678 L 204 690 L 22 690 L 22 946 L 204 946 L 204 959", "purple", 1.5, "5,3"))
     # 离线链路内部箭头
     A(arrow(294, 910, 330, 910, "green"))
     A(arrow(526, 910, 562, 910, "green"))
@@ -250,7 +263,8 @@ def gen_architecture():
     A(text(455, 976, "逐区域 diff", 9.5, C["purple"]))
 
     # ---- legend ----
-    ly = 1140
+    # 1106：随 Row6 容器下移 8px（viewBox 1158）
+    ly = 1148
     A(f'<line x1="60" y1="{ly-4}" x2="92" y2="{ly-4}" stroke="{C["blue"]}" stroke-width="2" marker-end="url(#ar-blue)"/>')
     A(text(98, ly, "主数据流", 11, C["muted"], None, "start"))
     A(f'<line x1="180" y1="{ly-4}" x2="212" y2="{ly-4}" stroke="{C["purple"]}" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#ar-purple)"/>')
@@ -338,7 +352,9 @@ def gen_pydec():
     A(arrow(824, 160, 870, 160, "green", 2))
     A(arrow(1003, 192, 1003, 212, "green", 2))
     A(arrow(1003, 276, 1003, 300, "green", 2))
-    A(path("M 214 424 L 214 520", "purple", 1.5, "5,3"))
+    # 1106 重叠修复：原 x=214 直落穿比对区容器标题（56..323 @490..505），
+    # 改经左缘 x=48 走廊侧入 rawbyte 盒（标题起于 x=56，留 8px）
+    A(path("M 214 424 L 214 462 L 48 462 L 48 552 L 84 552", "purple", 1.5, "5,3"))
     A(path("M 1003 364 L 1003 440 L 1003 520", "green", 1.5, "6,3"))
     A(arrow(344, 552, 441, 552, "purple", 1.5, "5,3"))
     A(text(392.5, 544, "期望值", 9, C["purple"]))
@@ -576,7 +592,8 @@ def gen_spec_bitorder():
         for r in range(8):
             bit = 7 - r
             L += seg(110 + ci * 68, 104 + r * 34, 64, 30, f"{cn}[{bit}]", f0, st0, t0, 10)
-    A(text(316, 250, "…", 14, C["muted"]))
+    # 1106 重叠修复：省略号 316→330——原墨迹(309..323)压第三列 cell 右边框(x=310)13px
+    A(text(330, 250, "…", 14, C["muted"]))
     A(text(100, 122, "Bit7", 10, C["muted"], None, "end"))
     A(text(100, 360, "Bit0", 10, C["muted"], None, "end"))
     A(f'<text transform="rotate(-90 52 244)" x="52" y="244" font-size="10.5" fill="{C["muted"]}" text-anchor="middle">Packet Data</text>')
@@ -621,22 +638,26 @@ def gen_spec_scramble():
     L += seg(214, 106, 416, 40, "Enc Data", D_FILL, D_STROKE, D_TXT, 11)
     L += seg(634, 106, 56, 40, "Dmy", DM_FILL, DM_STROKE, DM_TXT)
     L += seg(694, 106, 56, 40, "K2", K_FILL, K_STROKE, K_TXT)
+    # 1106 重叠修复：IDLE 黄格起点 724→754——原 724 与 K2 盒(694..750)重叠 26px，
+    # K2/K5 标签互相越界压邻框（后续省略号/末格随动 +30）
     for i, kn in enumerate(["K5", "K6", "K7", "K8"]):
-        L += seg(724 + i * 44, 106, 40, 40, kn, I_FILL, I_STROKE, I_TXT)
-    A(text(910, 132, "…", 13, C["muted"]))
-    L += seg(936, 106, 40, 40, "K5", I_FILL, I_STROKE, I_TXT)
-    # 时间轴条（仅覆盖加扰域 CTR_L ~ Dmy）
-    A(text(120, 150, "加扰区间（CTR_L ~ Dmy）· SCR_KEY update", 9.5, "#16a34a", None, "start"))
-    A(rect(120, 158, 540, 10, "#16a34a", "#16a34a", 5, 1))
-    A(rect(120, 180, 540, 10, "#ea580c", "#ea580c", 5, 1))
-    A(rect(214, 202, 356, 10, "#2563eb", "#2563eb", 5, 1))
-    A(text(730, 166, "K 码 / IDLE 期间：不加扰 · key 不推进", 9.5, "#9ca3af", None, "start"))
+        L += seg(754 + i * 44, 106, 40, 40, kn, I_FILL, I_STROKE, I_TXT)
+    A(text(940, 132, "…", 13, C["muted"]))
+    L += seg(966, 106, 40, 40, "K5", I_FILL, I_STROKE, I_TXT)
+    # 时间轴条（仅覆盖加扰域 CTR_L ~ Dmy）——1106 整组 +10 下移：
+    # 原注记行(y=150,ink 141..152)与 cell 行底(y=146)交叠 108px；顺承曲线起点同步下移避注记
+    A(text(120, 159, "加扰区间（CTR_L ~ Dmy）· SCR_KEY update", 9.5, "#16a34a", None, "start"))
+    A(rect(120, 168, 540, 10, "#16a34a", "#16a34a", 5, 1))
+    A(rect(120, 190, 540, 10, "#ea580c", "#ea580c", 5, 1))
+    A(rect(214, 212, 356, 10, "#2563eb", "#2563eb", 5, 1))
+    A(text(730, 176, "K 码 / IDLE 期间：不加扰 · key 不推进", 9.5, "#9ca3af", None, "start"))
     for i, (c0, n0) in enumerate([("#16a34a", "SCR_KEY update"), ("#ea580c", "SCR_XOR"),
                                   ("#2563eb", "413/420 ENC"), ("#9ca3af", "key 不推进")]):
-        A(rect(1010, 158 + i * 22, 14, 10, c0, c0, 3, 1))
-        A(text(1030, 167 + i * 22, n0, 10, C["muted"], None, "start"))
+        A(rect(1010, 168 + i * 22, 14, 10, c0, c0, 3, 1))
+        A(text(1030, 177 + i * 22, n0, 10, C["muted"], None, "start"))
     # ---- 行间顺承（Active/VBK 之间 LFSR 连续）----
-    A(path("M 700 150 C 770 200 760 236 700 252 L 220 252 L 220 266", "green", 2, "6,3"))
+    # 1106：起点 150→226（时间轴条下移后原起点悬空，且曲线 y≈165 段距右侧注记墨迹过近）
+    A(path("M 700 226 C 770 232 760 244 700 252 L 220 252 L 220 266", "green", 2, "6,3"))
     A(text(430, 244, "n 行截止状态 → n+1 行起始状态（LFSR 连续 · 不复位）", 10, "#16a34a"))
     A(text(50, 292, "n+1 行", 10.5, C["muted"], None, "end"))
     L += seg(60, 266, 56, 40, "K1", K_FILL, K_STROKE, K_TXT)
@@ -948,4 +969,4 @@ if __name__ == "__main__":
         with open(p, "w", encoding="utf-8") as f:
             f.write(gen())
         print("written:", p)
-# ymzhu 2026-11-05 11:35
+# ymzhu 2026-11-05 15:39

@@ -109,13 +109,14 @@ def build():
     act_label = idx(lines, ">Active 行<")
     bar_label = idx(lines, "加扰区间（CTR_L ~ Dmy）")
     assert bar_label > act_label
-    bar_g = idx(lines, '<rect x="120" y="158"', 'fill="#16a34a"')
-    bar_o = idx(lines, '<rect x="120" y="180"', 'fill="#ea580c"')
-    bar_b = idx(lines, '<rect x="214" y="202"', 'fill="#2563eb"')
+    # 1106 重叠修复：时间轴条组 +10 下移（原注记行压 cell 行底 108px），列车 y 随条心 +10
+    bar_g = idx(lines, '<rect x="120" y="168"', 'fill="#16a34a"')
+    bar_o = idx(lines, '<rect x="120" y="190"', 'fill="#ea580c"')
+    bar_b = idx(lines, '<rect x="214" y="212"', 'fill="#2563eb"')
     note = idx(lines, "K 码 / IDLE 期间")
-    leg1 = idx(lines, '<rect x="1010" y="158"')
+    leg1 = idx(lines, '<rect x="1010" y="168"')
     leg4 = idx(lines, "key 不推进</text>", lo=leg1)
-    loop = idx(lines, "<path", "M 700 150")
+    loop = idx(lines, "<path", "M 700 226")
     loop_label = loop + 1
     assert "LFSR 连续" in lines[loop_label]
     nplus_label = idx(lines, ">n+1 行<")
@@ -174,20 +175,20 @@ def build():
     o.append('<g class="row" style="animation-delay:0.85s">')
     o.append(lines[bar_label])
     o.append(tag_draw(lines[bar_g], 0.85))
-    o.append('<path class="flowdot" d="M 120 163 L 660 163" stroke="#ffffff" '
+    o.append('<path class="flowdot" d="M 120 173 L 660 173" stroke="#ffffff" '
              'pathLength="100" style="animation-duration:4.2s;animation-delay:-0.75s"/>')
-    o.append('<path class="flowdot" d="M 120 163 L 660 163" stroke="#ffffff" '
+    o.append('<path class="flowdot" d="M 120 173 L 660 173" stroke="#ffffff" '
              'pathLength="100" style="animation-duration:4.2s;animation-delay:-2.85s"/>')
     o.append(tag_draw(lines[bar_o], 0.95))
     o.append(lines[note])
     o.append(tag_draw(lines[bar_b], 1.05))
-    o.append('<path class="flowdot" d="M 214 207 L 570 207" stroke="#ffffff" '
+    o.append('<path class="flowdot" d="M 214 217 L 570 217" stroke="#ffffff" '
              'pathLength="100" style="animation-duration:4.2s;animation-delay:-2.85s"/>')
-    o.append('<path class="flowdot" d="M 214 207 L 570 207" stroke="#ffffff" '
+    o.append('<path class="flowdot" d="M 214 217 L 570 217" stroke="#ffffff" '
              'pathLength="100" style="animation-duration:4.2s;animation-delay:-1.05s"/>')
-    o.append('<path class="flowtail" d="M 214 207 L 570 207" stroke="#1d4ed8" '
+    o.append('<path class="flowtail" d="M 214 217 L 570 217" stroke="#1d4ed8" '
              'pathLength="100" style="animation-duration:4.2s;animation-delay:-2.85s"/>')
-    o.append('<path class="flowtail" d="M 214 207 L 570 207" stroke="#1d4ed8" '
+    o.append('<path class="flowtail" d="M 214 217 L 570 217" stroke="#1d4ed8" '
              'pathLength="100" style="animation-duration:4.2s;animation-delay:-1.05s"/>')
     o.append("</g>")
 
@@ -320,4 +321,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-# ymzhu 2026-11-05 11:25
+# ymzhu 2026-11-05 15:39

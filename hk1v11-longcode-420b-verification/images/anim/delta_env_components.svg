@@ -229,6 +229,7 @@
   </g>
   <g class="fade" style="animation-delay:1.7s">
   <g >
+    <rect x="457" y="651" width="96" height="17" rx="4" fill="#ffffff" stroke="#ffffff" stroke-width="0"/>
     <text x="505" y="664" font-size="8.5" fill="#64748b" text-anchor="middle">波次 = 差异审计 §1 表</text>
   </g>
   </g>

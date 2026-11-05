@@ -115,11 +115,11 @@ def build():
     tap_badge = idx(lines, '<rect x="1072" y="244"')
     tap_txt = tap_badge + 1
     assert ">TAP<" in lines[tap_txt]
-    checker_box = idx(lines, '<rect x="796" y="726"')
+    checker_box = idx(lines, '<rect x="796" y="724"')   # 1106：Row4 三盒 726→724
     checker_end = idx(lines, "正式比对启用前的改造点")
     report_box = idx(lines, '<rect x="566" y="960"')
     report_end = idx(lines, "全对 ✅")
-    leg1 = idx(lines, '<line x1="60" y1="1136"')
+    leg1 = idx(lines, '<line x1="60" y1="1144"')      # 1106：图例 1140→1148
     a_test_tx = idx(lines, '<line x1="375" y1="188"')
     a_test_rx = idx(lines, '<line x1="955" y1="188"')
     a_txin1 = idx(lines, '<line x1="336" y1="330"')
@@ -129,7 +129,7 @@ def build():
     a_link = idx(lines, "<path", "M 712 628")
     a_link_label = a_link + 1
     assert "串行链路" in lines[a_link_label]
-    a_rxin = [idx(lines, f'<line x1="968" y1="{y}"') for y in (300, 370, 440, 510, 568)]
+    a_rxin = [idx(lines, f'<line x1="968" y1="{y}"') for y in (300, 370, 440, 510, 598)]  # 1106：末两段随 dout/RTL TX 下移
     a_tap = idx(lines, "<path", "M 1136 269")
     a_tap_label = a_tap + 1
     assert "tap DATA_ALIGN_PRE" in lines[a_tap_label]
@@ -220,9 +220,9 @@ def build():
     o.append(tag_draw(lines[a_link], 1.15))
     o.append(lines[a_link_label])
     for dl in (-0.6, -2.7):
-        o.append('<path class="flowdot" d="M 712 628 L 756 628 L 756 269 L 800 269" '
+        o.append('<path class="flowdot" d="M 712 628 L 760 628 L 760 269 L 800 269" '
                  f'stroke="#2563eb" pathLength="100" style="animation-duration:4.2s;animation-delay:{dl}s"/>')
-        o.append('<path class="flowtail" d="M 712 628 L 756 628 L 756 269 L 800 269" '
+        o.append('<path class="flowtail" d="M 712 628 L 760 628 L 760 269 L 800 269" '
                  f'stroke="#2563eb" pathLength="100" style="animation-duration:4.2s;animation-delay:{dl}s"/>')
     o.append("</g>")
     # RX 内部 5 段 draw 1.15
@@ -235,7 +235,7 @@ def build():
     o.append(lines[a_tap])
     o.append(lines[a_tap_label])
     for dl in (-1.7, -3.8):
-        o.append('<path class="flowdot" d="M 1136 269 L 1178 269 L 1178 834 L 179 834 L 179 880" '
+        o.append('<path class="flowdot" d="M 1136 269 L 1178 269 L 1178 834 L 50 834 L 50 910 L 62 910" '
                  f'stroke="#059669" pathLength="100" style="animation-duration:4.2s;animation-delay:{dl}s"/>')
     o.append("</g>")
     # 紫色期望值走廊（虚线）：dashgrow 稳态生长（3.2s/-1.6s）
@@ -329,4 +329,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-# ymzhu 2026-11-05 11:30
+# ymzhu 2026-11-05 15:39

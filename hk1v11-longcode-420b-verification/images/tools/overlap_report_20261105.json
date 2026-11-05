@@ -1,0 +1,4526 @@
+{
+ "generated": "2026-11-05T16:01:43",
+ "chrome": "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+ "results": [
+  {
+   "file": "8b10b_vs_420b_architecture.svg",
+   "viewBox": [
+    0,
+    0,
+    1400,
+    1210
+   ],
+   "textCount": 92,
+   "shapeCount": 85,
+   "findings": [],
+   "audit": {
+    "outOfViewbox": [],
+    "emptyText": 0,
+    "fonts": [
+     {
+      "family": "Helvetica Neue",
+      "available": true
+     }
+    ]
+   },
+   "label": "8b10b_vs_420b_architecture.svg",
+   "stem": "8b10b_vs_420b_architecture.svg"
+  },
+  {
+   "file": "delta_case_matrix.svg",
+   "viewBox": [
+    0,
+    0,
+    1200,
+    840
+   ],
+   "textCount": 98,
+   "shapeCount": 66,
+   "findings": [],
+   "audit": {
+    "outOfViewbox": [],
+    "emptyText": 0,
+    "fonts": [
+     {
+      "family": "Helvetica Neue",
+      "available": true
+     }
+    ]
+   },
+   "label": "delta_case_matrix.svg",
+   "stem": "delta_case_matrix.svg"
+  },
+  {
+   "file": "delta_env_components.svg",
+   "viewBox": [
+    0,
+    0,
+    1200,
+    960
+   ],
+   "textCount": 96,
+   "shapeCount": 40,
+   "findings": [
+    {
+     "kind": "text-stroke",
+     "a": {
+      "di": 77,
+      "text": "0721v1 · 1b574b63",
+      "box": {
+       "x": 463.3,
+       "y": 160,
+       "w": 83.5,
+       "h": 11
+      }
+     },
+     "shape": {
+      "di": 74,
+      "tag": "line",
+      "stroke": "rgb(203, 213, 225)",
+      "sw": 1.2
+     },
+     "hits": 11,
+     "spanPx": 9,
+     "maxPen": 5.4,
+     "occludedFrac": 1,
+     "hitFrom": {
+      "x": 505,
+      "y": 161
+     },
+     "hitTo": {
+      "x": 505,
+      "y": 169.9
+     },
+     "dupCount": 1,
+     "_sev": "LOW"
+    },
+    {
+     "kind": "text-stroke",
+     "a": {
+      "di": 78,
+      "text": "CONFIG_DATA 16→24bit",
+      "box": {
+       "x": 456.3,
+       "y": 176,
+       "w": 97.5,
+       "h": 10
+      }
+     },
+     "shape": {
+      "di": 74,
+      "tag": "line",
+      "stroke": "rgb(203, 213, 225)",
+      "sw": 1.2
+     },
+     "hits": 10,
+     "spanPx": 8.1,
+     "maxPen": 4.7,
+     "occludedFrac": 1,
+     "hitFrom": {
+      "x": 505,
+      "y": 177.1
+     },
+     "hitTo": {
+      "x": 505,
+      "y": 185.2
+     },
+     "dupCount": 1,
+     "_sev": "LOW"
+    },
+    {
+     "kind": "text-stroke",
+     "a": {
+      "di": 79,
+      "text": "420b 编码链不受影响",
+      "box": {
+       "x": 464.6,
+       "y": 188,
+       "w": 80.8,
+       "h": 10
+      }
+     },
+     "shape": {
+      "di": 74,
+      "tag": "line",
+      "stroke": "rgb(203, 213, 225)",
+      "sw": 1.2
+     },
+     "hits": 10,
+     "spanPx": 8.1,
+     "maxPen": 4.8,
+     "occludedFrac": 1,
+     "hitFrom": {
+      "x": 505,
+      "y": 188.8
+     },
+     "hitTo": {
+      "x": 505,
+      "y": 196.8
+     },
+     "dupCount": 1,
+     "_sev": "LOW"
+    },
+    {
+     "kind": "text-stroke",
+     "a": {
+      "di": 82,
+      "text": "0807v1 · 179486aa",
+      "box": {
+       "x": 463.8,
+       "y": 222,
+       "w": 82.4,
+       "h": 11
+      }
+     },
+     "shape": {
+      "di": 74,
+      "tag": "line",
+      "stroke": "rgb(203, 213, 225)",
+      "sw": 1.2
+     },
+     "hits": 11,
+     "spanPx": 9,
+     "maxPen": 5.3,
+     "occludedFrac": 1,
+     "hitFrom": {
+      "x": 505,
+      "y": 222.8
+     },
+     "hitTo": {
+      "x": 505,
+      "y": 231.8
+     },
+     "dupCount": 1,
+     "_sev": "LOW"
+    },
+    {
+     "kind": "text-stroke",
+     "a": {
+      "di": 83,
+      "text": "全量替换 · ref model 三修入库",
+      "box": {
+       "x": 448.3,
+       "y": 238,
+       "w": 113.4,
+       "h": 10
+      }
+     },
+     "shape": {
+      "di": 74,
+      "tag": "line",
+      "stroke": "rgb(203, 213, 225)",
+      "sw": 1.2
+     },
+     "hits": 10,
+     "spanPx": 8.1,
+     "maxPen": 4.6,
+     "occludedFrac": 1,
+     "hitFrom": {
+      "x": 505,
+      "y": 239
+     },
+     "hitTo": {
+      "x": 505,
+      "y": 247
+     },
+     "dupCount": 1,
+     "_sev": "LOW"
+    },
+    {
+     "kind": "text-stroke",
+     "a": {
+      "di": 84,
+      "text": "debug 日志族 · auto_script 起步",
+      "box": {
+       "x": 445,
+       "y": 250,
+       "w": 120,
+       "h": 10
+      }
+     },
+     "shape": {
+      "di": 74,
+      "tag": "line",
+      "stroke": "rgb(203, 213, 225)",
+      "sw": 1.2
+     },
+     "hits": 11,
+     "spanPx": 9,
+     "maxPen": 4.9,
+     "occludedFrac": 1,
+     "hitFrom": {
+      "x": 505,
+      "y": 250.6
+     },
+     "hitTo": {
+      "x": 505,
+      "y": 259.6
+     },
+     "dupCount": 1,
+     "_sev": "LOW"
+    },
+    {
+     "kind": "text-stroke",
+     "a": {
+      "di": 87,
+      "text": "0825 · f54f8d67",
+      "box": {
+       "x": 470.9,
+       "y": 284,
+       "w": 68.1,
+       "h": 11
+      }
+     },
+     "shape": {
+      "di": 74,
+      "tag": "line",
+      "stroke": "rgb(203, 213, 225)",
+      "sw": 1.2
+     },
+     "hits": 12,
+     "spanPx": 9.9,
+     "maxPen": 5.2,
+     "occludedFrac": 1,
+     "hitFrom": {
+      "x": 505,
+      "y": 284.7
+     },
+     "hitTo": {
+      "x": 505,
+      "y": 294.6
+     },
+     "dupCount": 1,
+     "_sev": "LOW"
+    },
+    {
+     "kind": "text-stroke",
+     "a": {
+      "di": 88,
+      "text": "相位感知 CTRL_L（VBP/VACT/VFP）",
+      "box": {
+       "x": 432.3,
+       "y": 300,
+       "w": 145.3,
+       "h": 10
+      }
+     },
+     "shape": {
+      "di": 74,
+      "tag": "line",
+      "stroke": "rgb(203, 213, 225)",
+      "sw": 1.2
+     },
+     "hits": 10,
+     "spanPx": 8.1,
+     "maxPen": 4.7,
+     "occludedFrac": 1,
+     "hitFrom": {
+      "x": 505,
+      "y": 300.8
+     },
+     "hitTo": {
+      "x": 505,
+      "y": 308.9
+     },
+     "dupCount": 1,
+     "_sev": "LOW"
+    },
+    {
+     "kind": "text-stroke",
+     "a": {
+      "di": 89,
+      "text": "UTC 槽位 0-3 → 10-13",
+      "box": {
+       "x": 461.8,
+       "y": 312,
+       "w": 86.5,
+       "h": 10
+      }
+     },
+     "shape": {
+      "di": 74,
+      "tag": "line",
+      "stroke": "rgb(203, 213, 225)",
+      "sw": 1.2
+     },
+     "hits": 11,
+     "spanPx": 9,
+     "maxPen": 5,
+     "occludedFrac": 1,
+     "hitFrom": {
+      "x": 505,
+      "y": 312.5
+     },
+     "hitTo": {
+      "x": 505,
+      "y": 321.5
+     },
+     "dupCount": 1,
+     "_sev": "LOW"
+    },
+    {
+     "kind": "text-stroke",
+     "a": {
+      "di": 92,
+      "text": "0924 · 44e48592",
+      "box": {
+       "x": 469.1,
+       "y": 346,
+       "w": 71.8,
+       "h": 11
+      }
+     },
+     "shape": {
+      "di": 74,
+      "tag": "line",
+      "stroke": "rgb(203, 213, 225)",
+      "sw": 1.2
+     },
+     "hits": 12,
+     "spanPx": 9.9,
+     "maxPen": 5.1,
+     "occludedFrac": 1,
+     "hitFrom": {
+      "x": 505,
+      "y": 346.6
+     },
+     "hitTo": {
+      "x": 505,
+      "y": 356.4
+     },
+     "dupCount": 1,
+     "_sev": "LOW"
+    },
+    {
+     "kind": "text-stroke",
+     "a": {
+      "di": 93,
+      "text": "CTRL_F 不加扰 · VFP[0] 承载 · 训练包",
+      "box": {
+       "x": 432,
+       "y": 362,
+       "w": 145.9,
+       "h": 10
+      }
+     },
+     "shape": {
+      "di": 74,
+      "tag": "line",
+      "stroke": "rgb(203, 213, 225)",
+      "sw": 1.2
+     },
+     "hits": 10,
+     "spanPx": 8.1,
+     "maxPen": 4.8,
+     "occludedFrac": 1,
+     "hitFrom": {
+      "x": 505,
+      "y": 362.7
+     },
+     "hitTo": {
+      "x": 505,
+      "y": 370.8
+     },
+     "dupCount": 1,
+     "_sev": "LOW"
+    },
+    {
+     "kind": "text-stroke",
+     "a": {
+      "di": 94,
+      "text": "EOL / 恢复 · case 1→190",
+      "box": {
+       "x": 457,
+       "y": 374,
+       "w": 96.1,
+       "h": 10
+      }
+     },
+     "shape": {
+      "di": 74,
+      "tag": "line",
+      "stroke": "rgb(203, 213, 225)",
+      "sw": 1.2
+     },
+     "hits": 11,
+     "spanPx": 9,
+     "maxPen": 4.9,
+     "occludedFrac": 1,
+     "hitFrom": {
+      "x": 505,
+      "y": 374.4
+     },
+     "hitTo": {
+      "x": 505,
+      "y": 383.3
+     },
+     "dupCount": 1,
+     "_sev": "LOW"
+    },
+    {
+     "kind": "text-stroke",
+     "a": {
+      "di": 97,
+      "text": "1010 · 6f94d19f",
+      "box": {
+       "x": 470.9,
+       "y": 408,
+       "w": 68.1,
+       "h": 11
+      }
+     },
+     "shape": {
+      "di": 74,
+      "tag": "line",
+      "stroke": "rgb(203, 213, 225)",
+      "sw": 1.2
+     },
+     "hits": 12,
+     "spanPx": 9.9,
+     "maxPen": 5.2,
+     "occludedFrac": 1,
+     "hitFrom": {
+      "x": 505,
+      "y": 408.4
+     },
+     "hitTo": {
+      "x": 505,
+      "y": 418.3
+     },
+     "dupCount": 1,
+     "_sev": "LOW"
+    },
+    {
+     "kind": "text-stroke",
+     "a": {
+      "di": 98,
+      "text": "MULTI_CHIP fork · CH_SEL subpix 表",
+      "box": {
+       "x": 432.8,
+       "y": 424,
+       "w": 144.4,
+       "h": 10
+      }
+     },
+     "shape": {
+      "di": 74,
+      "tag": "line",
+      "stroke": "rgb(203, 213, 225)",
+      "sw": 1.2
+     },
+     "hits": 11,
+     "spanPx": 9,
+     "maxPen": 4.9,
+     "occludedFrac": 1,
+     "hitFrom": {
+      "x": 505,
+      "y": 424.6
+     },
+     "hitTo": {
+      "x": 505,
+      "y": 433.6
+     },
+     "dupCount": 1,
+     "_sev": "LOW"
+    },
+    {
+     "kind": "text-stroke",
+     "a": {
+      "di": 99,
+      "text": "drive_idle_ct",
+      "box": {
+       "x": 481.1,
+       "y": 436,
+       "w": 47.7,
+       "h": 10
+      }
+     },
+     "shape": {
+      "di": 74,
+      "tag": "line",
+      "stroke": "rgb(203, 213, 225)",
+      "sw": 1.2
+     },
+     "hits": 10,
+     "spanPx": 8.1,
+     "maxPen": 4.7,
+     "occludedFrac": 1,
+     "hitFrom": {
+      "x": 505,
+      "y": 437.1
+     },
+     "hitTo": {
+      "x": 505,
+      "y": 445.2
+     },
+     "dupCount": 1,
+     "_sev": "LOW"
+    },
+    {
+     "kind": "text-stroke",
+     "a": {
+      "di": 102,
+      "text": "1013 / 1014",
+      "box": {
+       "x": 479.9,
+       "y": 470,
+       "w": 50.2,
+       "h": 11
+      }
+     },
+     "shape": {
+      "di": 74,
+      "tag": "line",
+      "stroke": "rgb(203, 213, 225)",
+      "sw": 1.2
+     },
+     "hits": 11,
+     "spanPx": 9,
+     "maxPen": 5.3,
+     "occludedFrac": 1,
+     "hitFrom": {
+      "x": 505,
+      "y": 471.2
+     },
+     "hitTo": {
+      "x": 505,
+      "y": 480.2
+     },
+     "dupCount": 1,
+     "_sev": "LOW"
+    },
+    {
+     "kind": "text-stroke",
+     "a": {
+      "di": 103,
+      "text": "checker POST_SIM 桩",
+      "box": {
+       "x": 462,
+       "y": 486,
+       "w": 86,
+       "h": 10
+      }
+     },
+     "shape": {
+      "di": 74,
+      "tag": "line",
+      "stroke": "rgb(203, 213, 225)",
+      "sw": 1.2
+     },
+     "hits": 11,
+     "spanPx": 9,
+     "maxPen": 4.9,
+     "occludedFrac": 1,
+     "hitFrom": {
+      "x": 505,
+      "y": 486.5
+     },
+     "hitTo": {
+      "x": 505,
+      "y": 495.4
+     },
+     "dupCount": 1,
+     "_sev": "LOW"
+    },
+    {
+     "kind": "text-stroke",
+     "a": {
+      "di": 104,
+      "text": "与 420b 激励无直接关系",
+      "box": {
+       "x": 459.2,
+       "y": 498,
+       "w": 91.6,
+       "h": 10
+      }
+     },
+     "shape": {
+      "di": 74,
+      "tag": "line",
+      "stroke": "rgb(203, 213, 225)",
+      "sw": 1.2
+     },
+     "hits": 10,
+     "spanPx": 8.1,
+     "maxPen": 4.6,
+     "occludedFrac": 1,
+     "hitFrom": {
+      "x": 505,
+      "y": 499
+     },
+     "hitTo": {
+      "x": 505,
+      "y": 507.1
+     },
+     "dupCount": 1,
+     "_sev": "LOW"
+    },
+    {
+     "kind": "text-stroke",
+     "a": {
+      "di": 107,
+      "text": "1022 · 5bf35dcf",
+      "box": {
+       "x": 470.7,
+       "y": 532,
+       "w": 68.7,
+       "h": 11
+      }
+     },
+     "shape": {
+      "di": 74,
+      "tag": "line",
+      "stroke": "rgb(203, 213, 225)",
+      "sw": 1.2
+     },
+     "hits": 11,
+     "spanPx": 9,
+     "maxPen": 5.4,
+     "occludedFrac": 1,
+     "hitFrom": {
+      "x": 505,
+      "y": 533.1
+     },
+     "hitTo": {
+      "x": 505,
+      "y": 542
+     },
+     "dupCount": 1,
+     "_sev": "LOW"
+    },
+    {
+     "kind": "text-stroke",
+     "a": {
+      "di": 108,
+      "text": "BCC 体系 · BOE 回放 · dplc.pl",
+      "box": {
+       "x": 447.8,
+       "y": 548,
+       "w": 114.3,
+       "h": 10
+      }
+     },
+     "shape": {
+      "di": 74,
+      "tag": "line",
+      "stroke": "rgb(203, 213, 225)",
+      "sw": 1.2
+     },
+     "hits": 10,
+     "spanPx": 8.1,
+     "maxPen": 4.8,
+     "occludedFrac": 1,
+     "hitFrom": {
+      "x": 505,
+      "y": 549.2
+     },
+     "hitTo": {
+      "x": 505,
+      "y": 557.3
+     },
+     "dupCount": 1,
+     "_sev": "LOW"
+    },
+    {
+     "kind": "text-stroke",
+     "a": {
+      "di": 109,
+      "text": "case → 192",
+      "box": {
+       "x": 482.3,
+       "y": 560,
+       "w": 45.4,
+       "h": 10
+      }
+     },
+     "shape": {
+      "di": 74,
+      "tag": "line",
+      "stroke": "rgb(203, 213, 225)",
+      "sw": 1.2
+     },
+     "hits": 10,
+     "spanPx": 8.1,
+     "maxPen": 4.6,
+     "occludedFrac": 1,
+     "hitFrom": {
+      "x": 505,
+      "y": 560.9
+     },
+     "hitTo": {
+      "x": 505,
+      "y": 568.9
+     },
+     "dupCount": 1,
+     "_sev": "LOW"
+    },
+    {
+     "kind": "text-stroke",
+     "a": {
+      "di": 112,
+      "text": "1028 · 08befa71",
+      "box": {
+       "x": 469.9,
+       "y": 594,
+       "w": 70.3,
+       "h": 11
+      }
+     },
+     "shape": {
+      "di": 74,
+      "tag": "line",
+      "stroke": "rgb(203, 213, 225)",
+      "sw": 1.2
+     },
+     "hits": 11,
+     "spanPx": 9,
+     "maxPen": 5.4,
+     "occludedFrac": 1,
+     "hitFrom": {
+      "x": 505,
+      "y": 595
+     },
+     "hitTo": {
+      "x": 505,
+      "y": 603.9
+     },
+     "dupCount": 1,
+     "_sev": "LOW"
+    },
+    {
+     "kind": "text-stroke",
+     "a": {
+      "di": 113,
+      "text": "overlay：HDL 21 + DV 51 改 / 24 新",
+      "box": {
+       "x": 437,
+       "y": 610,
+       "w": 136,
+       "h": 10
+      }
+     },
+     "shape": {
+      "di": 74,
+      "tag": "line",
+      "stroke": "rgb(203, 213, 225)",
+      "sw": 1.2
+     },
+     "hits": 10,
+     "spanPx": 8.1,
+     "maxPen": 4.7,
+     "occludedFrac": 1,
+     "hitFrom": {
+      "x": 505,
+      "y": 611.1
+     },
+     "hitTo": {
+      "x": 505,
+      "y": 619.2
+     },
+     "dupCount": 1,
+     "_sev": "LOW"
+    },
+    {
+     "kind": "text-stroke",
+     "a": {
+      "di": 114,
+      "text": "isptx_agent 内无 .sv 变更",
+      "box": {
+       "x": 457.3,
+       "y": 622,
+       "w": 95.4,
+       "h": 10
+      }
+     },
+     "shape": {
+      "di": 74,
+      "tag": "line",
+      "stroke": "rgb(203, 213, 225)",
+      "sw": 1.2
+     },
+     "hits": 10,
+     "spanPx": 8.1,
+     "maxPen": 4.8,
+     "occludedFrac": 1,
+     "hitFrom": {
+      "x": 505,
+      "y": 622.7
+     },
+     "hitTo": {
+      "x": 505,
+      "y": 630.8
+     },
+     "dupCount": 1,
+     "_sev": "LOW"
+    },
+    {
+     "kind": "text-stroke",
+     "a": {
+      "di": 116,
+      "text": "波次 = 差异审计 §1 表",
+      "box": {
+       "x": 463.3,
+       "y": 656,
+       "w": 83.4,
+       "h": 10
+      }
+     },
+     "shape": {
+      "di": 74,
+      "tag": "line",
+      "stroke": "rgb(203, 213, 225)",
+      "sw": 1.2
+     },
+     "hits": 10,
+     "spanPx": 8.1,
+     "maxPen": 4.7,
+     "occludedFrac": 0,
+     "hitFrom": {
+      "x": 505,
+      "y": 656.8
+     },
+     "hitTo": {
+      "x": 505,
+      "y": 664.9
+     },
+     "dupCount": 1,
+     "_sev": "HIGH",
+     "pixel": {
+      "mode": "mask-intersect",
+      "scale": 2,
+      "inkA": 906,
+      "inkB": 64,
+      "collisionPx": 12
+     },
+     "_pixelVerdict": "ink-collision"
+    },
+    {
+     "kind": "text-rect",
+     "mode": "band",
+     "insideFrac": 1,
+     "a": {
+      "di": 152,
+      "text": "基线 = HEAD 逐字节相同（零变更）",
+      "box": {
+       "x": 668,
+       "y": 428,
+       "w": 145.8,
+       "h": 10
+      }
+     },
+     "shape": {
+      "di": 150,
+      "tag": "rect",
+      "box": {
+       "x": 656,
+       "y": 404,
+       "w": 488,
+       "h": 36
+      },
+      "fill": "rgb(241, 245, 249)"
+     },
+     "sides": [
+      "bottom"
+     ],
+     "maxPen": 0.4,
+     "_sev": "LOW"
+    }
+   ],
+   "audit": {
+    "outOfViewbox": [],
+    "emptyText": 0,
+    "fonts": [
+     {
+      "family": "Helvetica Neue",
+      "available": true
+     }
+    ]
+   },
+   "label": "delta_env_components.svg",
+   "stem": "delta_env_components.svg"
+  },
+  {
+   "file": "delta_frame_structure.svg",
+   "viewBox": [
+    0,
+    0,
+    1200,
+    780
+   ],
+   "textCount": 104,
+   "shapeCount": 61,
+   "findings": [
+    {
+     "kind": "text-rect",
+     "mode": "escape",
+     "insideFrac": 0.8,
+     "a": {
+      "di": 211,
+      "text": "不变项：Active 行尾统一 K2 · LSB-first 位序 · LSP …",
+      "box": {
+       "x": 56,
+       "y": 747,
+       "w": 403.2,
+       "h": 11
+      }
+     },
+     "shape": {
+      "di": 207,
+      "tag": "rect",
+      "box": {
+       "x": 40,
+       "y": 680,
+       "w": 1120,
+       "h": 76
+      },
+      "fill": "rgb(248, 250, 252)"
+     },
+     "sides": [
+      "bottom"
+     ],
+     "maxPen": 2,
+     "_sev": "HIGH",
+     "pixel": {
+      "mode": "border-band",
+      "scale": 2,
+      "inkA": 4849,
+      "borderInkPx": 1173
+     },
+     "_pixelVerdict": "ink-on-border"
+    }
+   ],
+   "audit": {
+    "outOfViewbox": [],
+    "emptyText": 0,
+    "fonts": [
+     {
+      "family": "Helvetica Neue",
+      "available": true
+     }
+    ]
+   },
+   "label": "delta_frame_structure.svg",
+   "stem": "delta_frame_structure.svg"
+  },
+  {
+   "file": "longcode_verification_architecture.svg",
+   "viewBox": [
+    0,
+    0,
+    1200,
+    1150
+   ],
+   "textCount": 122,
+   "shapeCount": 70,
+   "findings": [
+    {
+     "kind": "text-text",
+     "a": {
+      "di": 119,
+      "text": "dout_24b + 2-bit valid",
+      "box": {
+       "x": 911.6,
+       "y": 532.5,
+       "w": 112.8,
+       "h": 12
+      }
+     },
+     "b": {
+      "di": 126,
+      "text": "灰框内：RTL 解码链 —— 离线验证不依赖",
+      "box": {
+       "x": 879.3,
+       "y": 539,
+       "w": 177.3,
+       "h": 11
+      }
+     },
+     "overlapW": 108.3,
+     "overlapH": 2,
+     "overlapArea": 222,
+     "rawOverlapArea": 620.3,
+     "inkDepthFrac": 0.3,
+     "inkAreaFrac": 0.2,
+     "charOverlap": 32,
+     "_sev": "BLOCKER",
+     "pixel": {
+      "mode": "mask-intersect",
+      "scale": 2,
+      "inkA": 1775,
+      "inkB": 2443,
+      "collisionPx": 212
+     },
+     "_pixelVerdict": "ink-collision"
+    },
+    {
+     "kind": "text-text",
+     "a": {
+      "di": 166,
+      "text": "long_pydec_report_lane0.md",
+      "box": {
+       "x": 683.1,
+       "y": 970,
+       "w": 145.9,
+       "h": 12
+      }
+     },
+     "b": {
+      "di": 168,
+      "text": "日志族（0807+ · lane*.md）：diag_debug / kcode…",
+      "box": {
+       "x": 360,
+       "y": 979,
+       "w": 481.2,
+       "h": 11
+      }
+     },
+     "overlapW": 140.1,
+     "overlapH": 0,
+     "overlapArea": 0,
+     "rawOverlapArea": 437.7,
+     "inkDepthFrac": 0,
+     "inkAreaFrac": 0,
+     "charOverlap": 0,
+     "_sev": "LOW"
+    },
+    {
+     "kind": "text-text",
+     "a": {
+      "di": 167,
+      "text": "逐区域比对 verdict：LSP / CTRL_F / LINE 全对 ✅",
+      "box": {
+       "x": 648.2,
+       "y": 989,
+       "w": 215.6,
+       "h": 11
+      }
+     },
+     "b": {
+      "di": 168,
+      "text": "日志族（0807+ · lane*.md）：diag_debug / kcode…",
+      "box": {
+       "x": 360,
+       "y": 979,
+       "w": 481.2,
+       "h": 11
+      }
+     },
+     "overlapW": 179,
+     "overlapH": 0,
+     "overlapArea": 0,
+     "rawOverlapArea": 192.9,
+     "inkDepthFrac": 0,
+     "inkAreaFrac": 0,
+     "charOverlap": 0,
+     "_sev": "LOW"
+    },
+    {
+     "kind": "text-text",
+     "a": {
+      "di": 170,
+      "text": "版本基线 · DV_TCON_C 主干 + 服务器包波次",
+      "box": {
+       "x": 56,
+       "y": 1060,
+       "w": 264.7,
+       "h": 15
+      }
+     },
+     "b": {
+      "di": 171,
+      "text": "0721v1 CONFIG_DATA 24bit · 0807v1 ref mo…",
+      "box": {
+       "x": 56,
+       "y": 1065,
+       "w": 634.3,
+       "h": 11
+      }
+     },
+     "overlapW": 246.7,
+     "overlapH": 6.1,
+     "overlapArea": 1505.1,
+     "rawOverlapArea": 2647.2,
+     "inkDepthFrac": 0.8,
+     "inkAreaFrac": 0.6,
+     "charOverlap": 65,
+     "_sev": "BLOCKER",
+     "pixel": {
+      "mode": "mask-intersect",
+      "scale": 2,
+      "inkA": 6744,
+      "inkB": 8306,
+      "collisionPx": 1482
+     },
+     "_pixelVerdict": "ink-collision"
+    },
+    {
+     "kind": "text-stroke",
+     "a": {
+      "di": 128,
+      "text": "体系扩展（0924 ~ 1022）",
+      "box": {
+       "x": 56,
+       "y": 704,
+       "w": 150.7,
+       "h": 15
+      }
+     },
+     "shape": {
+      "di": 189,
+      "tag": "path",
+      "stroke": "rgb(124, 58, 237)",
+      "sw": 1.5
+     },
+     "hits": 21,
+     "spanPx": 14,
+     "maxPen": 2.7,
+     "occludedFrac": 0,
+     "hitFrom": {
+      "x": 204,
+      "y": 704.6
+     },
+     "hitTo": {
+      "x": 204,
+      "y": 718.6
+     },
+     "dupCount": 1,
+     "_sev": "LOW",
+     "pixel": {
+      "mode": "mask-intersect",
+      "scale": 2,
+      "inkA": 3292,
+      "inkB": 184,
+      "collisionPx": 0
+     },
+     "_pixelVerdict": "no-ink-collision"
+    },
+    {
+     "kind": "text-stroke",
+     "a": {
+      "di": 130,
+      "text": "MULTI_CHIP / multi4（1010）",
+      "box": {
+       "x": 162.5,
+       "y": 737.5,
+       "w": 153,
+       "h": 12
+      }
+     },
+     "shape": {
+      "di": 189,
+      "tag": "path",
+      "stroke": "rgb(124, 58, 237)",
+      "sw": 1.5
+     },
+     "hits": 16,
+     "spanPx": 10.5,
+     "maxPen": 5.7,
+     "occludedFrac": 0,
+     "hitFrom": {
+      "x": 204,
+      "y": 738.2
+     },
+     "hitTo": {
+      "x": 204,
+      "y": 748.7
+     },
+     "dupCount": 1,
+     "_sev": "HIGH",
+     "pixel": {
+      "mode": "mask-intersect",
+      "scale": 2,
+      "inkA": 2473,
+      "inkB": 160,
+      "collisionPx": 26
+     },
+     "_pixelVerdict": "ink-collision"
+    },
+    {
+     "kind": "text-stroke",
+     "a": {
+      "di": 131,
+      "text": "env.sv config_db 相对路径 · lane_delay_rever…",
+      "box": {
+       "x": 143,
+       "y": 755.5,
+       "w": 191.9,
+       "h": 10
+      }
+     },
+     "shape": {
+      "di": 189,
+      "tag": "path",
+      "stroke": "rgb(124, 58, 237)",
+      "sw": 1.5
+     },
+     "hits": 13,
+     "spanPx": 8.4,
+     "maxPen": 4.9,
+     "occludedFrac": 0,
+     "hitFrom": {
+      "x": 204,
+      "y": 756.4
+     },
+     "hitTo": {
+      "x": 204,
+      "y": 764.8
+     },
+     "dupCount": 1,
+     "_sev": "HIGH",
+     "pixel": {
+      "mode": "mask-intersect",
+      "scale": 2,
+      "inkA": 2346,
+      "inkB": 144,
+      "collisionPx": 30
+     },
+     "_pixelVerdict": "ink-collision"
+    },
+    {
+     "kind": "text-stroke",
+     "a": {
+      "di": 132,
+      "text": "fork 隔离 · CH_SEL→subpix_cnt 966/960/726/…",
+      "box": {
+       "x": 129.9,
+       "y": 771.5,
+       "w": 218.1,
+       "h": 10
+      }
+     },
+     "shape": {
+      "di": 189,
+      "tag": "path",
+      "stroke": "rgb(124, 58, 237)",
+      "sw": 1.5
+     },
+     "hits": 13,
+     "spanPx": 8.4,
+     "maxPen": 4.8,
+     "occludedFrac": 0,
+     "hitFrom": {
+      "x": 204,
+      "y": 772.5
+     },
+     "hitTo": {
+      "x": 204,
+      "y": 780.9
+     },
+     "dupCount": 1,
+     "_sev": "HIGH",
+     "pixel": {
+      "mode": "mask-intersect",
+      "scale": 2,
+      "inkA": 2787,
+      "inkB": 144,
+      "collisionPx": 21
+     },
+     "_pixelVerdict": "ink-collision"
+    },
+    {
+     "kind": "text-stroke",
+     "a": {
+      "di": 133,
+      "text": "DPLC_GROUP=1 时 subpix_cnt +3→+6",
+      "box": {
+       "x": 158.3,
+       "y": 787.5,
+       "w": 161.3,
+       "h": 10
+      }
+     },
+     "shape": {
+      "di": 189,
+      "tag": "path",
+      "stroke": "rgb(124, 58, 237)",
+      "sw": 1.5
+     },
+     "hits": 14,
+     "spanPx": 9.1,
+     "maxPen": 4.7,
+     "occludedFrac": 0,
+     "hitFrom": {
+      "x": 204,
+      "y": 787.9
+     },
+     "hitTo": {
+      "x": 204,
+      "y": 797
+     },
+     "dupCount": 1,
+     "_sev": "HIGH",
+     "pixel": {
+      "mode": "mask-intersect",
+      "scale": 2,
+      "inkA": 1747,
+      "inkB": 144,
+      "collisionPx": 6
+     },
+     "_pixelVerdict": "ink-collision"
+    },
+    {
+     "kind": "text-stroke",
+     "a": {
+      "di": 145,
+      "text": "接收端离线验证路径 · 不看 RTL 解码器（0717 建立 · 存续）",
+      "box": {
+       "x": 56,
+       "y": 852,
+       "w": 347.9,
+       "h": 15
+      }
+     },
+     "shape": {
+      "di": 187,
+      "tag": "path",
+      "stroke": "rgb(5, 150, 105)",
+      "sw": 2
+     },
+     "hits": 20,
+     "spanPx": 13.3,
+     "maxPen": 7.3,
+     "occludedFrac": 0,
+     "hitFrom": {
+      "x": 179,
+      "y": 852.7
+     },
+     "hitTo": {
+      "x": 179,
+      "y": 866
+     },
+     "dupCount": 1,
+     "_sev": "HIGH",
+     "pixel": {
+      "mode": "mask-intersect",
+      "scale": 2,
+      "inkA": 9563,
+      "inkB": 184,
+      "collisionPx": 16
+     },
+     "_pixelVerdict": "ink-collision"
+    },
+    {
+     "kind": "text-stroke",
+     "a": {
+      "di": 145,
+      "text": "接收端离线验证路径 · 不看 RTL 解码器（0717 建立 · 存续）",
+      "box": {
+       "x": 56,
+       "y": 852,
+       "w": 347.9,
+       "h": 15
+      }
+     },
+     "shape": {
+      "di": 189,
+      "tag": "path",
+      "stroke": "rgb(124, 58, 237)",
+      "sw": 1.5
+     },
+     "hits": 21,
+     "spanPx": 14,
+     "maxPen": 7.4,
+     "occludedFrac": 0,
+     "hitFrom": {
+      "x": 204,
+      "y": 852.4
+     },
+     "hitTo": {
+      "x": 204,
+      "y": 866.4
+     },
+     "dupCount": 1,
+     "_sev": "HIGH",
+     "pixel": {
+      "mode": "mask-intersect",
+      "scale": 2,
+      "inkA": 9563,
+      "inkB": 196,
+      "collisionPx": 53
+     },
+     "_pixelVerdict": "ink-collision"
+    },
+    {
+     "kind": "text-stroke",
+     "a": {
+      "di": 147,
+      "text": "long_rtl_tap_debug.sv",
+      "box": {
+       "x": 123,
+       "y": 887.5,
+       "w": 112,
+       "h": 12
+      }
+     },
+     "shape": {
+      "di": 189,
+      "tag": "path",
+      "stroke": "rgb(124, 58, 237)",
+      "sw": 1.5
+     },
+     "hits": 16,
+     "spanPx": 10.5,
+     "maxPen": 5.8,
+     "occludedFrac": 0,
+     "hitFrom": {
+      "x": 204,
+      "y": 888.1
+     },
+     "hitTo": {
+      "x": 204,
+      "y": 898.6
+     },
+     "dupCount": 1,
+     "_sev": "HIGH",
+     "pixel": {
+      "mode": "mask-intersect",
+      "scale": 2,
+      "inkA": 1711,
+      "inkB": 176,
+      "collisionPx": 22
+     },
+     "_pixelVerdict": "ink-collision"
+    },
+    {
+     "kind": "text-stroke",
+     "a": {
+      "di": 148,
+      "text": "bind 注入 KCODE_ALIGN · 零 RTL 修改",
+      "box": {
+       "x": 98.7,
+       "y": 905.5,
+       "w": 160.5,
+       "h": 10
+      }
+     },
+     "shape": {
+      "di": 189,
+      "tag": "path",
+      "stroke": "rgb(124, 58, 237)",
+      "sw": 1.5
+     },
+     "hits": 13,
+     "spanPx": 8.4,
+     "maxPen": 5,
+     "occludedFrac": 0,
+     "hitFrom": {
+      "x": 204,
+      "y": 906.3
+     },
+     "hitTo": {
+      "x": 204,
+      "y": 914.7
+     },
+     "dupCount": 1,
+     "_sev": "LOW",
+     "pixel": {
+      "mode": "mask-intersect",
+      "scale": 2,
+      "inkA": 1888,
+      "inkB": 172,
+      "collisionPx": 0
+     },
+     "_pixelVerdict": "no-ink-collision"
+    },
+    {
+     "kind": "text-stroke",
+     "a": {
+      "di": 149,
+      "text": "抓 DATA_ALIGN_PRE",
+      "box": {
+       "x": 134.1,
+       "y": 921.5,
+       "w": 89.7,
+       "h": 10
+      }
+     },
+     "shape": {
+      "di": 189,
+      "tag": "path",
+      "stroke": "rgb(124, 58, 237)",
+      "sw": 1.5
+     },
+     "hits": 13,
+     "spanPx": 8.4,
+     "maxPen": 4.9,
+     "occludedFrac": 0,
+     "hitFrom": {
+      "x": 204,
+      "y": 922.4
+     },
+     "hitTo": {
+      "x": 204,
+      "y": 930.8
+     },
+     "dupCount": 1,
+     "_sev": "HIGH",
+     "pixel": {
+      "mode": "mask-intersect",
+      "scale": 2,
+      "inkA": 1103,
+      "inkB": 172,
+      "collisionPx": 4
+     },
+     "_pixelVerdict": "ink-collision"
+    },
+    {
+     "kind": "text-stroke",
+     "a": {
+      "di": 168,
+      "text": "日志族（0807+ · lane*.md）：diag_debug / kcode…",
+      "box": {
+       "x": 360,
+       "y": 979,
+       "w": 481.2,
+       "h": 11
+      }
+     },
+     "shape": {
+      "di": 194,
+      "tag": "line",
+      "stroke": "rgb(124, 58, 237)",
+      "sw": 1.5
+     },
+     "hits": 294,
+     "spanPx": 205.1,
+     "maxPen": 5,
+     "occludedFrac": 0,
+     "hitFrom": {
+      "x": 360.8,
+      "y": 984
+     },
+     "hitTo": {
+      "x": 565.9,
+      "y": 984
+     },
+     "dupCount": 1,
+     "_sev": "HIGH",
+     "pixel": {
+      "mode": "mask-intersect",
+      "scale": 2,
+      "inkA": 5357,
+      "inkB": 1080,
+      "collisionPx": 466
+     },
+     "_pixelVerdict": "ink-collision"
+    },
+    {
+     "kind": "text-rect",
+     "mode": "escape",
+     "insideFrac": 0.1,
+     "a": {
+      "di": 88,
+      "text": "Transaction / Driver",
+      "box": {
+       "x": 56,
+       "y": 582,
+       "w": 121.4,
+       "h": 15
+      }
+     },
+     "shape": {
+      "di": 89,
+      "tag": "rect",
+      "box": {
+       "x": 64,
+       "y": 596,
+       "w": 300,
+       "h": 64
+      },
+      "fill": "rgb(240, 253, 244)"
+     },
+     "sides": [
+      "left",
+      "top"
+     ],
+     "maxPen": 14,
+     "_sev": "LOW",
+     "pixel": {
+      "mode": "border-band",
+      "scale": 2,
+      "inkA": 2222,
+      "borderInkPx": 0
+     },
+     "_pixelVerdict": "no-border-ink"
+    },
+    {
+     "kind": "text-rect",
+     "mode": "band",
+     "insideFrac": 1,
+     "a": {
+      "di": 94,
+      "text": "isptx_driver.sv（420b）",
+      "box": {
+       "x": 498.8,
+       "y": 597.5,
+       "w": 118.5,
+       "h": 12
+      }
+     },
+     "shape": {
+      "di": 93,
+      "tag": "rect",
+      "box": {
+       "x": 404,
+       "y": 596,
+       "w": 308,
+       "h": 64
+      },
+      "fill": "rgb(255, 255, 255)"
+     },
+     "sides": [
+      "top"
+     ],
+     "maxPen": 0.9,
+     "_sev": "LOW"
+    },
+    {
+     "kind": "text-rect",
+     "mode": "escape",
+     "insideFrac": 0.6,
+     "a": {
+      "di": 168,
+      "text": "日志族（0807+ · lane*.md）：diag_debug / kcode…",
+      "box": {
+       "x": 360,
+       "y": 979,
+       "w": 481.2,
+       "h": 11
+      }
+     },
+     "shape": {
+      "di": 165,
+      "tag": "rect",
+      "box": {
+       "x": 566,
+       "y": 960,
+       "w": 380,
+       "h": 48
+      },
+      "fill": "rgb(236, 253, 245)"
+     },
+     "sides": [
+      "left"
+     ],
+     "maxPen": 206,
+     "_sev": "HIGH",
+     "pixel": {
+      "mode": "border-band",
+      "scale": 2,
+      "inkA": 5357,
+      "borderInkPx": 58
+     },
+     "_pixelVerdict": "ink-on-border"
+    },
+    {
+     "kind": "text-rect",
+     "mode": "escape",
+     "insideFrac": 0.1,
+     "a": {
+      "di": 181,
+      "text": "20-bit 包流 / 40-bit K 码 · 串行链路",
+      "box": {
+       "x": 739,
+       "y": 383.9,
+       "w": 11,
+       "h": 152.3
+      }
+     },
+     "shape": {
+      "di": 37,
+      "tag": "rect",
+      "box": {
+       "x": 40,
+       "y": 204,
+       "w": 700,
+       "h": 352
+      },
+      "fill": "rgb(248, 250, 252)"
+     },
+     "sides": [
+      "right"
+     ],
+     "maxPen": 10,
+     "_sev": "HIGH",
+     "pixel": {
+      "mode": "border-band",
+      "scale": 2,
+      "inkA": 1937,
+      "borderInkPx": 414
+     },
+     "_pixelVerdict": "ink-on-border"
+    },
+    {
+     "kind": "text-rect",
+     "mode": "escape",
+     "insideFrac": 0.6,
+     "a": {
+      "di": 188,
+      "text": "tap DATA_ALIGN_PRE（每拍 20-bit 对齐数据）",
+      "box": {
+       "x": 592.9,
+       "y": 819,
+       "w": 214.1,
+       "h": 11
+      }
+     },
+     "shape": {
+      "di": 127,
+      "tag": "rect",
+      "box": {
+       "x": 40,
+       "y": 694,
+       "w": 1120,
+       "h": 132
+      },
+      "fill": "rgb(248, 250, 252)"
+     },
+     "sides": [
+      "bottom"
+     ],
+     "maxPen": 4,
+     "_sev": "HIGH",
+     "pixel": {
+      "mode": "border-band",
+      "scale": 2,
+      "inkA": 2935,
+      "borderInkPx": 1310
+     },
+     "_pixelVerdict": "ink-on-border"
+    }
+   ],
+   "audit": {
+    "outOfViewbox": [],
+    "emptyText": 0,
+    "fonts": [
+     {
+      "family": "Helvetica Neue",
+      "available": true
+     }
+    ]
+   },
+   "label": "longcode_verification_architecture.svg",
+   "stem": "longcode_verification_architecture.svg"
+  },
+  {
+   "file": "pydec_tx_rx_structure.svg",
+   "viewBox": [
+    0,
+    0,
+    1200,
+    680
+   ],
+   "textCount": 50,
+   "shapeCount": 33,
+   "findings": [
+    {
+     "kind": "text-stroke",
+     "a": {
+      "di": 63,
+      "text": "离线比对（脚本完成 · 不依赖 DUT 解码结果）",
+      "box": {
+       "x": 56,
+       "y": 490,
+       "w": 266.5,
+       "h": 15
+      }
+     },
+     "shape": {
+      "di": 81,
+      "tag": "path",
+      "stroke": "rgb(124, 58, 237)",
+      "sw": 1.5
+     },
+     "hits": 21,
+     "spanPx": 14,
+     "maxPen": 7.5,
+     "occludedFrac": 0,
+     "hitFrom": {
+      "x": 214,
+      "y": 490.5
+     },
+     "hitTo": {
+      "x": 214,
+      "y": 504.5
+     },
+     "dupCount": 1,
+     "_sev": "HIGH",
+     "pixel": {
+      "mode": "mask-intersect",
+      "scale": 2,
+      "inkA": 7019,
+      "inkB": 184,
+      "collisionPx": 56
+     },
+     "_pixelVerdict": "ink-collision"
+    },
+    {
+     "kind": "text-rect",
+     "mode": "band",
+     "insideFrac": 1,
+     "a": {
+      "di": 43,
+      "text": "TAP",
+      "box": {
+       "x": 792.3,
+       "y": 138,
+       "w": 17.3,
+       "h": 10
+      }
+     },
+     "shape": {
+      "di": 42,
+      "tag": "rect",
+      "box": {
+       "x": 784,
+       "y": 134,
+       "w": 34,
+       "h": 16
+      },
+      "fill": "rgb(5, 150, 105)"
+     },
+     "sides": [
+      "bottom"
+     ],
+     "maxPen": 0.4,
+     "_sev": "LOW"
+    }
+   ],
+   "audit": {
+    "outOfViewbox": [],
+    "emptyText": 0,
+    "fonts": [
+     {
+      "family": "Helvetica Neue",
+      "available": true
+     }
+    ]
+   },
+   "label": "pydec_tx_rx_structure.svg",
+   "stem": "pydec_tx_rx_structure.svg"
+  },
+  {
+   "file": "spec_bit_order.svg",
+   "viewBox": [
+    0,
+    0,
+    1200,
+    560
+   ],
+   "textCount": 64,
+   "shapeCount": 52,
+   "findings": [
+    {
+     "kind": "text-rect",
+     "mode": "escape",
+     "insideFrac": 0.1,
+     "a": {
+      "di": 63,
+      "text": "…",
+      "box": {
+       "x": 309,
+       "y": 237,
+       "w": 14,
+       "h": 16
+      }
+     },
+     "shape": {
+      "di": 55,
+      "tag": "rect",
+      "box": {
+       "x": 246,
+       "y": 240,
+       "w": 64,
+       "h": 30
+      },
+      "fill": "rgb(219, 234, 254)"
+     },
+     "sides": [
+      "right",
+      "top"
+     ],
+     "maxPen": 13,
+     "_sev": "HIGH",
+     "pixel": {
+      "mode": "border-band",
+      "scale": 2,
+      "inkA": 36,
+      "borderInkPx": 9
+     },
+     "_pixelVerdict": "ink-on-border"
+    }
+   ],
+   "audit": {
+    "outOfViewbox": [],
+    "emptyText": 0,
+    "fonts": [
+     {
+      "family": "Helvetica Neue",
+      "available": true
+     }
+    ]
+   },
+   "label": "spec_bit_order.svg",
+   "stem": "spec_bit_order.svg"
+  },
+  {
+   "file": "spec_blanking_idle.svg",
+   "viewBox": [
+    0,
+    0,
+    1200,
+    660
+   ],
+   "textCount": 75,
+   "shapeCount": 49,
+   "findings": [],
+   "audit": {
+    "outOfViewbox": [],
+    "emptyText": 0,
+    "fonts": [
+     {
+      "family": "Helvetica Neue",
+      "available": true
+     }
+    ]
+   },
+   "label": "spec_blanking_idle.svg",
+   "stem": "spec_blanking_idle.svg"
+  },
+  {
+   "file": "spec_dummy_70b.svg",
+   "viewBox": [
+    0,
+    0,
+    1200,
+    600
+   ],
+   "textCount": 48,
+   "shapeCount": 46,
+   "findings": [],
+   "audit": {
+    "outOfViewbox": [],
+    "emptyText": 0,
+    "fonts": [
+     {
+      "family": "Helvetica Neue",
+      "available": true
+     }
+    ]
+   },
+   "label": "spec_dummy_70b.svg",
+   "stem": "spec_dummy_70b.svg"
+  },
+  {
+   "file": "spec_frame_flow.svg",
+   "viewBox": [
+    0,
+    0,
+    1200,
+    700
+   ],
+   "textCount": 58,
+   "shapeCount": 47,
+   "findings": [],
+   "audit": {
+    "outOfViewbox": [],
+    "emptyText": 0,
+    "fonts": [
+     {
+      "family": "Helvetica Neue",
+      "available": true
+     }
+    ]
+   },
+   "label": "spec_frame_flow.svg",
+   "stem": "spec_frame_flow.svg"
+  },
+  {
+   "file": "spec_lsp_kcode.svg",
+   "viewBox": [
+    0,
+    0,
+    1200,
+    620
+   ],
+   "textCount": 50,
+   "shapeCount": 41,
+   "findings": [],
+   "audit": {
+    "outOfViewbox": [],
+    "emptyText": 0,
+    "fonts": [
+     {
+      "family": "Helvetica Neue",
+      "available": true
+     }
+    ]
+   },
+   "label": "spec_lsp_kcode.svg",
+   "stem": "spec_lsp_kcode.svg"
+  },
+  {
+   "file": "spec_scramble_rolling.svg",
+   "viewBox": [
+    0,
+    0,
+    1200,
+    560
+   ],
+   "textCount": 45,
+   "shapeCount": 35,
+   "findings": [
+    {
+     "kind": "text-rect",
+     "mode": "escape",
+     "insideFrac": 0.3,
+     "a": {
+      "di": 26,
+      "text": "K2",
+      "box": {
+       "x": 715.6,
+       "y": 120.5,
+       "w": 12.8,
+       "h": 11
+      }
+     },
+     "shape": {
+      "di": 27,
+      "tag": "rect",
+      "box": {
+       "x": 724,
+       "y": 106,
+       "w": 40,
+       "h": 40
+      },
+      "fill": "rgb(254, 249, 195)"
+     },
+     "sides": [
+      "left"
+     ],
+     "maxPen": 8.4,
+     "_sev": "HIGH",
+     "pixel": {
+      "mode": "border-band",
+      "scale": 2,
+      "inkA": 237,
+      "borderInkPx": 44
+     },
+     "_pixelVerdict": "ink-on-border"
+    },
+    {
+     "kind": "text-rect",
+     "mode": "band",
+     "insideFrac": 1,
+     "a": {
+      "di": 28,
+      "text": "K5",
+      "box": {
+       "x": 737.6,
+       "y": 120.5,
+       "w": 12.8,
+       "h": 11
+      }
+     },
+     "shape": {
+      "di": 25,
+      "tag": "rect",
+      "box": {
+       "x": 694,
+       "y": 106,
+       "w": 56,
+       "h": 40
+      },
+      "fill": "rgb(220, 252, 231)"
+     },
+     "sides": [
+      "right"
+     ],
+     "maxPen": 2.4,
+     "_sev": "HIGH",
+     "pixel": {
+      "mode": "border-band",
+      "scale": 2,
+      "inkA": 237,
+      "borderInkPx": 35
+     },
+     "_pixelVerdict": "ink-on-border"
+    },
+    {
+     "kind": "text-rect",
+     "mode": "escape",
+     "insideFrac": 0.2,
+     "a": {
+      "di": 38,
+      "text": "加扰区间（CTR_L ~ Dmy）· SCR_KEY update",
+      "box": {
+       "x": 120,
+       "y": 141,
+       "w": 198.8,
+       "h": 11
+      }
+     },
+     "shape": {
+      "di": 19,
+      "tag": "rect",
+      "box": {
+       "x": 120,
+       "y": 106,
+       "w": 90,
+       "h": 40
+      },
+      "fill": "rgb(207, 250, 254)"
+     },
+     "sides": [
+      "right",
+      "bottom"
+     ],
+     "maxPen": 108.8,
+     "_sev": "HIGH",
+     "pixel": {
+      "mode": "border-band",
+      "scale": 2,
+      "inkA": 2466,
+      "borderInkPx": 526
+     },
+     "_pixelVerdict": "ink-on-border"
+    },
+    {
+     "kind": "text-rect",
+     "mode": "escape",
+     "insideFrac": 0.2,
+     "a": {
+      "di": 38,
+      "text": "加扰区间（CTR_L ~ Dmy）· SCR_KEY update",
+      "box": {
+       "x": 120,
+       "y": 141,
+       "w": 198.8,
+       "h": 11
+      }
+     },
+     "shape": {
+      "di": 21,
+      "tag": "rect",
+      "box": {
+       "x": 214,
+       "y": 106,
+       "w": 416,
+       "h": 40
+      },
+      "fill": "rgb(219, 234, 254)"
+     },
+     "sides": [
+      "left",
+      "bottom"
+     ],
+     "maxPen": 94,
+     "_sev": "HIGH",
+     "pixel": {
+      "mode": "border-band",
+      "scale": 2,
+      "inkA": 2466,
+      "borderInkPx": 657
+     },
+     "_pixelVerdict": "ink-on-border"
+    }
+   ],
+   "audit": {
+    "outOfViewbox": [],
+    "emptyText": 0,
+    "fonts": [
+     {
+      "family": "Helvetica Neue",
+      "available": true
+     }
+    ]
+   },
+   "label": "spec_scramble_rolling.svg",
+   "stem": "spec_scramble_rolling.svg"
+  },
+  {
+   "file": "spec_tag_replacement.svg",
+   "viewBox": [
+    0,
+    0,
+    1200,
+    460
+   ],
+   "textCount": 41,
+   "shapeCount": 26,
+   "findings": [],
+   "audit": {
+    "outOfViewbox": [],
+    "emptyText": 0,
+    "fonts": [
+     {
+      "family": "Helvetica Neue",
+      "available": true
+     }
+    ]
+   },
+   "label": "spec_tag_replacement.svg",
+   "stem": "spec_tag_replacement.svg"
+  },
+  {
+   "file": "8b10b_vs_420b_architecture.svg",
+   "viewBox": [
+    0,
+    0,
+    1400,
+    1210
+   ],
+   "textCount": 92,
+   "shapeCount": 85,
+   "findings": [],
+   "audit": {
+    "outOfViewbox": [],
+    "emptyText": 0,
+    "fonts": [
+     {
+      "family": "Helvetica Neue",
+      "available": true
+     }
+    ]
+   },
+   "label": "anim/8b10b_vs_420b_architecture.svg",
+   "stem": "anim__8b10b_vs_420b_architecture.svg"
+  },
+  {
+   "file": "delta_case_matrix.svg",
+   "viewBox": [
+    0,
+    0,
+    1200,
+    840
+   ],
+   "textCount": 98,
+   "shapeCount": 71,
+   "findings": [],
+   "audit": {
+    "outOfViewbox": [],
+    "emptyText": 0,
+    "fonts": [
+     {
+      "family": "Helvetica Neue",
+      "available": true
+     }
+    ]
+   },
+   "label": "anim/delta_case_matrix.svg",
+   "stem": "anim__delta_case_matrix.svg"
+  },
+  {
+   "file": "delta_env_components.svg",
+   "viewBox": [
+    0,
+    0,
+    1200,
+    960
+   ],
+   "textCount": 96,
+   "shapeCount": 45,
+   "findings": [
+    {
+     "kind": "text-stroke",
+     "a": {
+      "di": 96,
+      "text": "0721v1 · 1b574b63",
+      "box": {
+       "x": 463.3,
+       "y": 160,
+       "w": 83.5,
+       "h": 11
+      }
+     },
+     "shape": {
+      "di": 91,
+      "tag": "line",
+      "stroke": "rgb(203, 213, 225)",
+      "sw": 1.2
+     },
+     "hits": 11,
+     "spanPx": 9,
+     "maxPen": 5.4,
+     "occludedFrac": 1,
+     "hitFrom": {
+      "x": 505,
+      "y": 161
+     },
+     "hitTo": {
+      "x": 505,
+      "y": 169.9
+     },
+     "dupCount": 1,
+     "_sev": "LOW"
+    },
+    {
+     "kind": "text-stroke",
+     "a": {
+      "di": 97,
+      "text": "CONFIG_DATA 16→24bit",
+      "box": {
+       "x": 456.3,
+       "y": 176,
+       "w": 97.5,
+       "h": 10
+      }
+     },
+     "shape": {
+      "di": 91,
+      "tag": "line",
+      "stroke": "rgb(203, 213, 225)",
+      "sw": 1.2
+     },
+     "hits": 10,
+     "spanPx": 8.1,
+     "maxPen": 4.7,
+     "occludedFrac": 1,
+     "hitFrom": {
+      "x": 505,
+      "y": 177.1
+     },
+     "hitTo": {
+      "x": 505,
+      "y": 185.2
+     },
+     "dupCount": 1,
+     "_sev": "LOW"
+    },
+    {
+     "kind": "text-stroke",
+     "a": {
+      "di": 98,
+      "text": "420b 编码链不受影响",
+      "box": {
+       "x": 464.6,
+       "y": 188,
+       "w": 80.8,
+       "h": 10
+      }
+     },
+     "shape": {
+      "di": 91,
+      "tag": "line",
+      "stroke": "rgb(203, 213, 225)",
+      "sw": 1.2
+     },
+     "hits": 10,
+     "spanPx": 8.1,
+     "maxPen": 4.8,
+     "occludedFrac": 1,
+     "hitFrom": {
+      "x": 505,
+      "y": 188.8
+     },
+     "hitTo": {
+      "x": 505,
+      "y": 196.8
+     },
+     "dupCount": 1,
+     "_sev": "LOW"
+    },
+    {
+     "kind": "text-stroke",
+     "a": {
+      "di": 103,
+      "text": "0807v1 · 179486aa",
+      "box": {
+       "x": 463.8,
+       "y": 222,
+       "w": 82.4,
+       "h": 11
+      }
+     },
+     "shape": {
+      "di": 91,
+      "tag": "line",
+      "stroke": "rgb(203, 213, 225)",
+      "sw": 1.2
+     },
+     "hits": 11,
+     "spanPx": 9,
+     "maxPen": 5.3,
+     "occludedFrac": 1,
+     "hitFrom": {
+      "x": 505,
+      "y": 222.8
+     },
+     "hitTo": {
+      "x": 505,
+      "y": 231.8
+     },
+     "dupCount": 1,
+     "_sev": "LOW"
+    },
+    {
+     "kind": "text-stroke",
+     "a": {
+      "di": 104,
+      "text": "全量替换 · ref model 三修入库",
+      "box": {
+       "x": 448.3,
+       "y": 238,
+       "w": 113.4,
+       "h": 10
+      }
+     },
+     "shape": {
+      "di": 91,
+      "tag": "line",
+      "stroke": "rgb(203, 213, 225)",
+      "sw": 1.2
+     },
+     "hits": 10,
+     "spanPx": 8.1,
+     "maxPen": 4.6,
+     "occludedFrac": 1,
+     "hitFrom": {
+      "x": 505,
+      "y": 239
+     },
+     "hitTo": {
+      "x": 505,
+      "y": 247
+     },
+     "dupCount": 1,
+     "_sev": "LOW"
+    },
+    {
+     "kind": "text-stroke",
+     "a": {
+      "di": 105,
+      "text": "debug 日志族 · auto_script 起步",
+      "box": {
+       "x": 445,
+       "y": 250,
+       "w": 120,
+       "h": 10
+      }
+     },
+     "shape": {
+      "di": 91,
+      "tag": "line",
+      "stroke": "rgb(203, 213, 225)",
+      "sw": 1.2
+     },
+     "hits": 11,
+     "spanPx": 9,
+     "maxPen": 4.9,
+     "occludedFrac": 1,
+     "hitFrom": {
+      "x": 505,
+      "y": 250.6
+     },
+     "hitTo": {
+      "x": 505,
+      "y": 259.6
+     },
+     "dupCount": 1,
+     "_sev": "LOW"
+    },
+    {
+     "kind": "text-stroke",
+     "a": {
+      "di": 110,
+      "text": "0825 · f54f8d67",
+      "box": {
+       "x": 470.9,
+       "y": 284,
+       "w": 68.1,
+       "h": 11
+      }
+     },
+     "shape": {
+      "di": 91,
+      "tag": "line",
+      "stroke": "rgb(203, 213, 225)",
+      "sw": 1.2
+     },
+     "hits": 12,
+     "spanPx": 9.9,
+     "maxPen": 5.2,
+     "occludedFrac": 1,
+     "hitFrom": {
+      "x": 505,
+      "y": 284.7
+     },
+     "hitTo": {
+      "x": 505,
+      "y": 294.6
+     },
+     "dupCount": 1,
+     "_sev": "LOW"
+    },
+    {
+     "kind": "text-stroke",
+     "a": {
+      "di": 111,
+      "text": "相位感知 CTRL_L（VBP/VACT/VFP）",
+      "box": {
+       "x": 432.3,
+       "y": 300,
+       "w": 145.3,
+       "h": 10
+      }
+     },
+     "shape": {
+      "di": 91,
+      "tag": "line",
+      "stroke": "rgb(203, 213, 225)",
+      "sw": 1.2
+     },
+     "hits": 10,
+     "spanPx": 8.1,
+     "maxPen": 4.7,
+     "occludedFrac": 1,
+     "hitFrom": {
+      "x": 505,
+      "y": 300.8
+     },
+     "hitTo": {
+      "x": 505,
+      "y": 308.9
+     },
+     "dupCount": 1,
+     "_sev": "LOW"
+    },
+    {
+     "kind": "text-stroke",
+     "a": {
+      "di": 112,
+      "text": "UTC 槽位 0-3 → 10-13",
+      "box": {
+       "x": 461.8,
+       "y": 312,
+       "w": 86.5,
+       "h": 10
+      }
+     },
+     "shape": {
+      "di": 91,
+      "tag": "line",
+      "stroke": "rgb(203, 213, 225)",
+      "sw": 1.2
+     },
+     "hits": 11,
+     "spanPx": 9,
+     "maxPen": 5,
+     "occludedFrac": 1,
+     "hitFrom": {
+      "x": 505,
+      "y": 312.5
+     },
+     "hitTo": {
+      "x": 505,
+      "y": 321.5
+     },
+     "dupCount": 1,
+     "_sev": "LOW"
+    },
+    {
+     "kind": "text-stroke",
+     "a": {
+      "di": 117,
+      "text": "0924 · 44e48592",
+      "box": {
+       "x": 469.1,
+       "y": 346,
+       "w": 71.8,
+       "h": 11
+      }
+     },
+     "shape": {
+      "di": 91,
+      "tag": "line",
+      "stroke": "rgb(203, 213, 225)",
+      "sw": 1.2
+     },
+     "hits": 12,
+     "spanPx": 9.9,
+     "maxPen": 5.1,
+     "occludedFrac": 1,
+     "hitFrom": {
+      "x": 505,
+      "y": 346.6
+     },
+     "hitTo": {
+      "x": 505,
+      "y": 356.4
+     },
+     "dupCount": 1,
+     "_sev": "LOW"
+    },
+    {
+     "kind": "text-stroke",
+     "a": {
+      "di": 118,
+      "text": "CTRL_F 不加扰 · VFP[0] 承载 · 训练包",
+      "box": {
+       "x": 432,
+       "y": 362,
+       "w": 145.9,
+       "h": 10
+      }
+     },
+     "shape": {
+      "di": 91,
+      "tag": "line",
+      "stroke": "rgb(203, 213, 225)",
+      "sw": 1.2
+     },
+     "hits": 10,
+     "spanPx": 8.1,
+     "maxPen": 4.8,
+     "occludedFrac": 1,
+     "hitFrom": {
+      "x": 505,
+      "y": 362.7
+     },
+     "hitTo": {
+      "x": 505,
+      "y": 370.8
+     },
+     "dupCount": 1,
+     "_sev": "LOW"
+    },
+    {
+     "kind": "text-stroke",
+     "a": {
+      "di": 119,
+      "text": "EOL / 恢复 · case 1→190",
+      "box": {
+       "x": 457,
+       "y": 374,
+       "w": 96.1,
+       "h": 10
+      }
+     },
+     "shape": {
+      "di": 91,
+      "tag": "line",
+      "stroke": "rgb(203, 213, 225)",
+      "sw": 1.2
+     },
+     "hits": 11,
+     "spanPx": 9,
+     "maxPen": 4.9,
+     "occludedFrac": 1,
+     "hitFrom": {
+      "x": 505,
+      "y": 374.4
+     },
+     "hitTo": {
+      "x": 505,
+      "y": 383.3
+     },
+     "dupCount": 1,
+     "_sev": "LOW"
+    },
+    {
+     "kind": "text-stroke",
+     "a": {
+      "di": 124,
+      "text": "1010 · 6f94d19f",
+      "box": {
+       "x": 470.9,
+       "y": 408,
+       "w": 68.1,
+       "h": 11
+      }
+     },
+     "shape": {
+      "di": 91,
+      "tag": "line",
+      "stroke": "rgb(203, 213, 225)",
+      "sw": 1.2
+     },
+     "hits": 12,
+     "spanPx": 9.9,
+     "maxPen": 5.2,
+     "occludedFrac": 1,
+     "hitFrom": {
+      "x": 505,
+      "y": 408.4
+     },
+     "hitTo": {
+      "x": 505,
+      "y": 418.3
+     },
+     "dupCount": 1,
+     "_sev": "LOW"
+    },
+    {
+     "kind": "text-stroke",
+     "a": {
+      "di": 125,
+      "text": "MULTI_CHIP fork · CH_SEL subpix 表",
+      "box": {
+       "x": 432.8,
+       "y": 424,
+       "w": 144.4,
+       "h": 10
+      }
+     },
+     "shape": {
+      "di": 91,
+      "tag": "line",
+      "stroke": "rgb(203, 213, 225)",
+      "sw": 1.2
+     },
+     "hits": 11,
+     "spanPx": 9,
+     "maxPen": 4.9,
+     "occludedFrac": 1,
+     "hitFrom": {
+      "x": 505,
+      "y": 424.6
+     },
+     "hitTo": {
+      "x": 505,
+      "y": 433.6
+     },
+     "dupCount": 1,
+     "_sev": "LOW"
+    },
+    {
+     "kind": "text-stroke",
+     "a": {
+      "di": 126,
+      "text": "drive_idle_ct",
+      "box": {
+       "x": 481.1,
+       "y": 436,
+       "w": 47.7,
+       "h": 10
+      }
+     },
+     "shape": {
+      "di": 91,
+      "tag": "line",
+      "stroke": "rgb(203, 213, 225)",
+      "sw": 1.2
+     },
+     "hits": 10,
+     "spanPx": 8.1,
+     "maxPen": 4.7,
+     "occludedFrac": 1,
+     "hitFrom": {
+      "x": 505,
+      "y": 437.1
+     },
+     "hitTo": {
+      "x": 505,
+      "y": 445.2
+     },
+     "dupCount": 1,
+     "_sev": "LOW"
+    },
+    {
+     "kind": "text-stroke",
+     "a": {
+      "di": 131,
+      "text": "1013 / 1014",
+      "box": {
+       "x": 479.9,
+       "y": 470,
+       "w": 50.2,
+       "h": 11
+      }
+     },
+     "shape": {
+      "di": 91,
+      "tag": "line",
+      "stroke": "rgb(203, 213, 225)",
+      "sw": 1.2
+     },
+     "hits": 11,
+     "spanPx": 9,
+     "maxPen": 5.3,
+     "occludedFrac": 1,
+     "hitFrom": {
+      "x": 505,
+      "y": 471.2
+     },
+     "hitTo": {
+      "x": 505,
+      "y": 480.2
+     },
+     "dupCount": 1,
+     "_sev": "LOW"
+    },
+    {
+     "kind": "text-stroke",
+     "a": {
+      "di": 132,
+      "text": "checker POST_SIM 桩",
+      "box": {
+       "x": 462,
+       "y": 486,
+       "w": 86,
+       "h": 10
+      }
+     },
+     "shape": {
+      "di": 91,
+      "tag": "line",
+      "stroke": "rgb(203, 213, 225)",
+      "sw": 1.2
+     },
+     "hits": 11,
+     "spanPx": 9,
+     "maxPen": 4.9,
+     "occludedFrac": 1,
+     "hitFrom": {
+      "x": 505,
+      "y": 486.5
+     },
+     "hitTo": {
+      "x": 505,
+      "y": 495.4
+     },
+     "dupCount": 1,
+     "_sev": "LOW"
+    },
+    {
+     "kind": "text-stroke",
+     "a": {
+      "di": 133,
+      "text": "与 420b 激励无直接关系",
+      "box": {
+       "x": 459.2,
+       "y": 498,
+       "w": 91.6,
+       "h": 10
+      }
+     },
+     "shape": {
+      "di": 91,
+      "tag": "line",
+      "stroke": "rgb(203, 213, 225)",
+      "sw": 1.2
+     },
+     "hits": 10,
+     "spanPx": 8.1,
+     "maxPen": 4.6,
+     "occludedFrac": 1,
+     "hitFrom": {
+      "x": 505,
+      "y": 499
+     },
+     "hitTo": {
+      "x": 505,
+      "y": 507.1
+     },
+     "dupCount": 1,
+     "_sev": "LOW"
+    },
+    {
+     "kind": "text-stroke",
+     "a": {
+      "di": 138,
+      "text": "1022 · 5bf35dcf",
+      "box": {
+       "x": 470.7,
+       "y": 532,
+       "w": 68.7,
+       "h": 11
+      }
+     },
+     "shape": {
+      "di": 91,
+      "tag": "line",
+      "stroke": "rgb(203, 213, 225)",
+      "sw": 1.2
+     },
+     "hits": 11,
+     "spanPx": 9,
+     "maxPen": 5.4,
+     "occludedFrac": 1,
+     "hitFrom": {
+      "x": 505,
+      "y": 533.1
+     },
+     "hitTo": {
+      "x": 505,
+      "y": 542
+     },
+     "dupCount": 1,
+     "_sev": "LOW"
+    },
+    {
+     "kind": "text-stroke",
+     "a": {
+      "di": 139,
+      "text": "BCC 体系 · BOE 回放 · dplc.pl",
+      "box": {
+       "x": 447.8,
+       "y": 548,
+       "w": 114.3,
+       "h": 10
+      }
+     },
+     "shape": {
+      "di": 91,
+      "tag": "line",
+      "stroke": "rgb(203, 213, 225)",
+      "sw": 1.2
+     },
+     "hits": 10,
+     "spanPx": 8.1,
+     "maxPen": 4.8,
+     "occludedFrac": 1,
+     "hitFrom": {
+      "x": 505,
+      "y": 549.2
+     },
+     "hitTo": {
+      "x": 505,
+      "y": 557.3
+     },
+     "dupCount": 1,
+     "_sev": "LOW"
+    },
+    {
+     "kind": "text-stroke",
+     "a": {
+      "di": 140,
+      "text": "case → 192",
+      "box": {
+       "x": 482.3,
+       "y": 560,
+       "w": 45.4,
+       "h": 10
+      }
+     },
+     "shape": {
+      "di": 91,
+      "tag": "line",
+      "stroke": "rgb(203, 213, 225)",
+      "sw": 1.2
+     },
+     "hits": 10,
+     "spanPx": 8.1,
+     "maxPen": 4.6,
+     "occludedFrac": 1,
+     "hitFrom": {
+      "x": 505,
+      "y": 560.9
+     },
+     "hitTo": {
+      "x": 505,
+      "y": 568.9
+     },
+     "dupCount": 1,
+     "_sev": "LOW"
+    },
+    {
+     "kind": "text-stroke",
+     "a": {
+      "di": 145,
+      "text": "1028 · 08befa71",
+      "box": {
+       "x": 469.9,
+       "y": 594,
+       "w": 70.3,
+       "h": 11
+      }
+     },
+     "shape": {
+      "di": 91,
+      "tag": "line",
+      "stroke": "rgb(203, 213, 225)",
+      "sw": 1.2
+     },
+     "hits": 11,
+     "spanPx": 9,
+     "maxPen": 5.4,
+     "occludedFrac": 1,
+     "hitFrom": {
+      "x": 505,
+      "y": 595
+     },
+     "hitTo": {
+      "x": 505,
+      "y": 603.9
+     },
+     "dupCount": 1,
+     "_sev": "LOW"
+    },
+    {
+     "kind": "text-stroke",
+     "a": {
+      "di": 146,
+      "text": "overlay：HDL 21 + DV 51 改 / 24 新",
+      "box": {
+       "x": 437,
+       "y": 610,
+       "w": 136,
+       "h": 10
+      }
+     },
+     "shape": {
+      "di": 91,
+      "tag": "line",
+      "stroke": "rgb(203, 213, 225)",
+      "sw": 1.2
+     },
+     "hits": 10,
+     "spanPx": 8.1,
+     "maxPen": 4.7,
+     "occludedFrac": 1,
+     "hitFrom": {
+      "x": 505,
+      "y": 611.1
+     },
+     "hitTo": {
+      "x": 505,
+      "y": 619.2
+     },
+     "dupCount": 1,
+     "_sev": "LOW"
+    },
+    {
+     "kind": "text-stroke",
+     "a": {
+      "di": 147,
+      "text": "isptx_agent 内无 .sv 变更",
+      "box": {
+       "x": 457.3,
+       "y": 622,
+       "w": 95.4,
+       "h": 10
+      }
+     },
+     "shape": {
+      "di": 91,
+      "tag": "line",
+      "stroke": "rgb(203, 213, 225)",
+      "sw": 1.2
+     },
+     "hits": 10,
+     "spanPx": 8.1,
+     "maxPen": 4.8,
+     "occludedFrac": 1,
+     "hitFrom": {
+      "x": 505,
+      "y": 622.7
+     },
+     "hitTo": {
+      "x": 505,
+      "y": 630.8
+     },
+     "dupCount": 1,
+     "_sev": "LOW"
+    },
+    {
+     "kind": "text-stroke",
+     "a": {
+      "di": 150,
+      "text": "波次 = 差异审计 §1 表",
+      "box": {
+       "x": 463.3,
+       "y": 656,
+       "w": 83.4,
+       "h": 10
+      }
+     },
+     "shape": {
+      "di": 91,
+      "tag": "line",
+      "stroke": "rgb(203, 213, 225)",
+      "sw": 1.2
+     },
+     "hits": 10,
+     "spanPx": 8.1,
+     "maxPen": 4.7,
+     "occludedFrac": 0,
+     "hitFrom": {
+      "x": 505,
+      "y": 656.8
+     },
+     "hitTo": {
+      "x": 505,
+      "y": 664.9
+     },
+     "dupCount": 1,
+     "_sev": "HIGH",
+     "pixel": {
+      "mode": "mask-intersect",
+      "scale": 2,
+      "inkA": 849,
+      "inkB": 64,
+      "collisionPx": 9
+     },
+     "_pixelVerdict": "ink-collision"
+    },
+    {
+     "kind": "text-rect",
+     "mode": "band",
+     "insideFrac": 1,
+     "a": {
+      "di": 193,
+      "text": "基线 = HEAD 逐字节相同（零变更）",
+      "box": {
+       "x": 668,
+       "y": 428,
+       "w": 145.8,
+       "h": 10
+      }
+     },
+     "shape": {
+      "di": 191,
+      "tag": "rect",
+      "box": {
+       "x": 656,
+       "y": 404,
+       "w": 488,
+       "h": 36
+      },
+      "fill": "rgb(241, 245, 249)"
+     },
+     "sides": [
+      "bottom"
+     ],
+     "maxPen": 0.4,
+     "_sev": "LOW"
+    }
+   ],
+   "audit": {
+    "outOfViewbox": [],
+    "emptyText": 0,
+    "fonts": [
+     {
+      "family": "Helvetica Neue",
+      "available": true
+     }
+    ]
+   },
+   "label": "anim/delta_env_components.svg",
+   "stem": "anim__delta_env_components.svg"
+  },
+  {
+   "file": "delta_frame_structure.svg",
+   "viewBox": [
+    0,
+    0,
+    1200,
+    780
+   ],
+   "textCount": 104,
+   "shapeCount": 66,
+   "findings": [
+    {
+     "kind": "text-rect",
+     "mode": "escape",
+     "insideFrac": 0.8,
+     "a": {
+      "di": 249,
+      "text": "不变项：Active 行尾统一 K2 · LSB-first 位序 · LSP …",
+      "box": {
+       "x": 56,
+       "y": 747,
+       "w": 403.2,
+       "h": 11
+      }
+     },
+     "shape": {
+      "di": 245,
+      "tag": "rect",
+      "box": {
+       "x": 40,
+       "y": 680,
+       "w": 1120,
+       "h": 76
+      },
+      "fill": "rgb(248, 250, 252)"
+     },
+     "sides": [
+      "bottom"
+     ],
+     "maxPen": 2,
+     "_sev": "HIGH",
+     "pixel": {
+      "mode": "border-band",
+      "scale": 2,
+      "inkA": 4320,
+      "borderInkPx": 1050
+     },
+     "_pixelVerdict": "ink-on-border"
+    }
+   ],
+   "audit": {
+    "outOfViewbox": [],
+    "emptyText": 0,
+    "fonts": [
+     {
+      "family": "Helvetica Neue",
+      "available": true
+     }
+    ]
+   },
+   "label": "anim/delta_frame_structure.svg",
+   "stem": "anim__delta_frame_structure.svg"
+  },
+  {
+   "file": "longcode_verification_architecture.svg",
+   "viewBox": [
+    0,
+    0,
+    1200,
+    1150
+   ],
+   "textCount": 122,
+   "shapeCount": 76,
+   "findings": [
+    {
+     "kind": "text-text",
+     "a": {
+      "di": 126,
+      "text": "dout_24b + 2-bit valid",
+      "box": {
+       "x": 911.6,
+       "y": 532.5,
+       "w": 112.8,
+       "h": 12
+      }
+     },
+     "b": {
+      "di": 133,
+      "text": "灰框内：RTL 解码链 —— 离线验证不依赖",
+      "box": {
+       "x": 879.3,
+       "y": 539,
+       "w": 177.3,
+       "h": 11
+      }
+     },
+     "overlapW": 108.3,
+     "overlapH": 2,
+     "overlapArea": 222,
+     "rawOverlapArea": 620.3,
+     "inkDepthFrac": 0.3,
+     "inkAreaFrac": 0.2,
+     "charOverlap": 32,
+     "_sev": "BLOCKER",
+     "pixel": {
+      "mode": "mask-intersect",
+      "scale": 2,
+      "inkA": 1626,
+      "inkB": 2231,
+      "collisionPx": 186
+     },
+     "_pixelVerdict": "ink-collision"
+    },
+    {
+     "kind": "text-text",
+     "a": {
+      "di": 177,
+      "text": "long_pydec_report_lane0.md",
+      "box": {
+       "x": 683.1,
+       "y": 970,
+       "w": 145.9,
+       "h": 12
+      }
+     },
+     "b": {
+      "di": 179,
+      "text": "日志族（0807+ · lane*.md）：diag_debug / kcode…",
+      "box": {
+       "x": 360,
+       "y": 979,
+       "w": 481.2,
+       "h": 11
+      }
+     },
+     "overlapW": 140.1,
+     "overlapH": 0,
+     "overlapArea": 0,
+     "rawOverlapArea": 437.7,
+     "inkDepthFrac": 0,
+     "inkAreaFrac": 0,
+     "charOverlap": 0,
+     "_sev": "LOW"
+    },
+    {
+     "kind": "text-text",
+     "a": {
+      "di": 178,
+      "text": "逐区域比对 verdict：LSP / CTRL_F / LINE 全对 ✅",
+      "box": {
+       "x": 648.2,
+       "y": 989,
+       "w": 215.6,
+       "h": 11
+      }
+     },
+     "b": {
+      "di": 179,
+      "text": "日志族（0807+ · lane*.md）：diag_debug / kcode…",
+      "box": {
+       "x": 360,
+       "y": 979,
+       "w": 481.2,
+       "h": 11
+      }
+     },
+     "overlapW": 179,
+     "overlapH": 0,
+     "overlapArea": 0,
+     "rawOverlapArea": 192.9,
+     "inkDepthFrac": 0,
+     "inkAreaFrac": 0,
+     "charOverlap": 0,
+     "_sev": "LOW"
+    },
+    {
+     "kind": "text-text",
+     "a": {
+      "di": 182,
+      "text": "版本基线 · DV_TCON_C 主干 + 服务器包波次",
+      "box": {
+       "x": 56,
+       "y": 1060,
+       "w": 264.7,
+       "h": 15
+      }
+     },
+     "b": {
+      "di": 183,
+      "text": "0721v1 CONFIG_DATA 24bit · 0807v1 ref mo…",
+      "box": {
+       "x": 56,
+       "y": 1065,
+       "w": 634.3,
+       "h": 11
+      }
+     },
+     "overlapW": 246.7,
+     "overlapH": 6.1,
+     "overlapArea": 1505.1,
+     "rawOverlapArea": 2647.2,
+     "inkDepthFrac": 0.8,
+     "inkAreaFrac": 0.6,
+     "charOverlap": 65,
+     "_sev": "BLOCKER",
+     "pixel": {
+      "mode": "mask-intersect",
+      "scale": 2,
+      "inkA": 6321,
+      "inkB": 7260,
+      "collisionPx": 1240
+     },
+     "_pixelVerdict": "ink-collision"
+    },
+    {
+     "kind": "text-stroke",
+     "a": {
+      "di": 136,
+      "text": "体系扩展（0924 ~ 1022）",
+      "box": {
+       "x": 56,
+       "y": 704,
+       "w": 150.7,
+       "h": 15
+      }
+     },
+     "shape": {
+      "di": 214,
+      "tag": "path",
+      "stroke": "rgb(124, 58, 237)",
+      "sw": 1.5
+     },
+     "hits": 21,
+     "spanPx": 14,
+     "maxPen": 2.7,
+     "occludedFrac": 0,
+     "hitFrom": {
+      "x": 204,
+      "y": 704.6
+     },
+     "hitTo": {
+      "x": 204,
+      "y": 718.6
+     },
+     "dupCount": 1,
+     "_sev": "LOW",
+     "pixel": {
+      "mode": "mask-intersect",
+      "scale": 2,
+      "inkA": 2998,
+      "inkB": 160,
+      "collisionPx": 0
+     },
+     "_pixelVerdict": "no-ink-collision"
+    },
+    {
+     "kind": "text-stroke",
+     "a": {
+      "di": 138,
+      "text": "MULTI_CHIP / multi4（1010）",
+      "box": {
+       "x": 162.5,
+       "y": 737.5,
+       "w": 153,
+       "h": 12
+      }
+     },
+     "shape": {
+      "di": 214,
+      "tag": "path",
+      "stroke": "rgb(124, 58, 237)",
+      "sw": 1.5
+     },
+     "hits": 16,
+     "spanPx": 10.5,
+     "maxPen": 5.7,
+     "occludedFrac": 0,
+     "hitFrom": {
+      "x": 204,
+      "y": 738.2
+     },
+     "hitTo": {
+      "x": 204,
+      "y": 748.7
+     },
+     "dupCount": 1,
+     "_sev": "HIGH",
+     "pixel": {
+      "mode": "mask-intersect",
+      "scale": 2,
+      "inkA": 2179,
+      "inkB": 156,
+      "collisionPx": 25
+     },
+     "_pixelVerdict": "ink-collision"
+    },
+    {
+     "kind": "text-stroke",
+     "a": {
+      "di": 139,
+      "text": "env.sv config_db 相对路径 · lane_delay_rever…",
+      "box": {
+       "x": 143,
+       "y": 755.5,
+       "w": 191.9,
+       "h": 10
+      }
+     },
+     "shape": {
+      "di": 214,
+      "tag": "path",
+      "stroke": "rgb(124, 58, 237)",
+      "sw": 1.5
+     },
+     "hits": 13,
+     "spanPx": 8.4,
+     "maxPen": 4.9,
+     "occludedFrac": 0,
+     "hitFrom": {
+      "x": 204,
+      "y": 756.4
+     },
+     "hitTo": {
+      "x": 204,
+      "y": 764.8
+     },
+     "dupCount": 1,
+     "_sev": "HIGH",
+     "pixel": {
+      "mode": "mask-intersect",
+      "scale": 2,
+      "inkA": 2064,
+      "inkB": 124,
+      "collisionPx": 9
+     },
+     "_pixelVerdict": "ink-collision"
+    },
+    {
+     "kind": "text-stroke",
+     "a": {
+      "di": 140,
+      "text": "fork 隔离 · CH_SEL→subpix_cnt 966/960/726/…",
+      "box": {
+       "x": 129.9,
+       "y": 771.5,
+       "w": 218.1,
+       "h": 10
+      }
+     },
+     "shape": {
+      "di": 214,
+      "tag": "path",
+      "stroke": "rgb(124, 58, 237)",
+      "sw": 1.5
+     },
+     "hits": 13,
+     "spanPx": 8.4,
+     "maxPen": 4.8,
+     "occludedFrac": 0,
+     "hitFrom": {
+      "x": 204,
+      "y": 772.5
+     },
+     "hitTo": {
+      "x": 204,
+      "y": 780.9
+     },
+     "dupCount": 1,
+     "_sev": "HIGH",
+     "pixel": {
+      "mode": "mask-intersect",
+      "scale": 2,
+      "inkA": 2449,
+      "inkB": 158,
+      "collisionPx": 21
+     },
+     "_pixelVerdict": "ink-collision"
+    },
+    {
+     "kind": "text-stroke",
+     "a": {
+      "di": 141,
+      "text": "DPLC_GROUP=1 时 subpix_cnt +3→+6",
+      "box": {
+       "x": 158.3,
+       "y": 787.5,
+       "w": 161.3,
+       "h": 10
+      }
+     },
+     "shape": {
+      "di": 214,
+      "tag": "path",
+      "stroke": "rgb(124, 58, 237)",
+      "sw": 1.5
+     },
+     "hits": 14,
+     "spanPx": 9.1,
+     "maxPen": 4.7,
+     "occludedFrac": 0,
+     "hitFrom": {
+      "x": 204,
+      "y": 787.9
+     },
+     "hitTo": {
+      "x": 204,
+      "y": 797
+     },
+     "dupCount": 1,
+     "_sev": "HIGH",
+     "pixel": {
+      "mode": "mask-intersect",
+      "scale": 2,
+      "inkA": 1543,
+      "inkB": 140,
+      "collisionPx": 8
+     },
+     "_pixelVerdict": "ink-collision"
+    },
+    {
+     "kind": "text-stroke",
+     "a": {
+      "di": 155,
+      "text": "接收端离线验证路径 · 不看 RTL 解码器（0717 建立 · 存续）",
+      "box": {
+       "x": 56,
+       "y": 852,
+       "w": 347.9,
+       "h": 15
+      }
+     },
+     "shape": {
+      "di": 209,
+      "tag": "path",
+      "stroke": "rgb(5, 150, 105)",
+      "sw": 2
+     },
+     "hits": 20,
+     "spanPx": 13.3,
+     "maxPen": 7.3,
+     "occludedFrac": 0,
+     "hitFrom": {
+      "x": 179,
+      "y": 852.7
+     },
+     "hitTo": {
+      "x": 179,
+      "y": 866
+     },
+     "dupCount": 3,
+     "_sev": "HIGH",
+     "pixel": {
+      "mode": "mask-intersect",
+      "scale": 2,
+      "inkA": 9507,
+      "inkB": 184,
+      "collisionPx": 16
+     },
+     "_pixelVerdict": "ink-collision"
+    },
+    {
+     "kind": "text-stroke",
+     "a": {
+      "di": 155,
+      "text": "接收端离线验证路径 · 不看 RTL 解码器（0717 建立 · 存续）",
+      "box": {
+       "x": 56,
+       "y": 852,
+       "w": 347.9,
+       "h": 15
+      }
+     },
+     "shape": {
+      "di": 214,
+      "tag": "path",
+      "stroke": "rgb(124, 58, 237)",
+      "sw": 1.5
+     },
+     "hits": 21,
+     "spanPx": 14,
+     "maxPen": 7.4,
+     "occludedFrac": 0,
+     "hitFrom": {
+      "x": 204,
+      "y": 852.4
+     },
+     "hitTo": {
+      "x": 204,
+      "y": 866.4
+     },
+     "dupCount": 1,
+     "_sev": "HIGH",
+     "pixel": {
+      "mode": "mask-intersect",
+      "scale": 2,
+      "inkA": 9507,
+      "inkB": 166,
+      "collisionPx": 51
+     },
+     "_pixelVerdict": "ink-collision"
+    },
+    {
+     "kind": "text-stroke",
+     "a": {
+      "di": 157,
+      "text": "long_rtl_tap_debug.sv",
+      "box": {
+       "x": 123,
+       "y": 887.5,
+       "w": 112,
+       "h": 12
+      }
+     },
+     "shape": {
+      "di": 214,
+      "tag": "path",
+      "stroke": "rgb(124, 58, 237)",
+      "sw": 1.5
+     },
+     "hits": 16,
+     "spanPx": 10.5,
+     "maxPen": 5.8,
+     "occludedFrac": 0,
+     "hitFrom": {
+      "x": 204,
+      "y": 888.1
+     },
+     "hitTo": {
+      "x": 204,
+      "y": 898.6
+     },
+     "dupCount": 1,
+     "_sev": "HIGH",
+     "pixel": {
+      "mode": "mask-intersect",
+      "scale": 2,
+      "inkA": 1570,
+      "inkB": 160,
+      "collisionPx": 16
+     },
+     "_pixelVerdict": "ink-collision"
+    },
+    {
+     "kind": "text-stroke",
+     "a": {
+      "di": 158,
+      "text": "bind 注入 KCODE_ALIGN · 零 RTL 修改",
+      "box": {
+       "x": 98.7,
+       "y": 905.5,
+       "w": 160.5,
+       "h": 10
+      }
+     },
+     "shape": {
+      "di": 214,
+      "tag": "path",
+      "stroke": "rgb(124, 58, 237)",
+      "sw": 1.5
+     },
+     "hits": 13,
+     "spanPx": 8.4,
+     "maxPen": 5,
+     "occludedFrac": 0,
+     "hitFrom": {
+      "x": 204,
+      "y": 906.3
+     },
+     "hitTo": {
+      "x": 204,
+      "y": 914.7
+     },
+     "dupCount": 1,
+     "_sev": "LOW",
+     "pixel": {
+      "mode": "mask-intersect",
+      "scale": 2,
+      "inkA": 1722,
+      "inkB": 140,
+      "collisionPx": 0
+     },
+     "_pixelVerdict": "no-ink-collision"
+    },
+    {
+     "kind": "text-stroke",
+     "a": {
+      "di": 159,
+      "text": "抓 DATA_ALIGN_PRE",
+      "box": {
+       "x": 134.1,
+       "y": 921.5,
+       "w": 89.7,
+       "h": 10
+      }
+     },
+     "shape": {
+      "di": 214,
+      "tag": "path",
+      "stroke": "rgb(124, 58, 237)",
+      "sw": 1.5
+     },
+     "hits": 13,
+     "spanPx": 8.4,
+     "maxPen": 4.9,
+     "occludedFrac": 0,
+     "hitFrom": {
+      "x": 204,
+      "y": 922.4
+     },
+     "hitTo": {
+      "x": 204,
+      "y": 930.8
+     },
+     "dupCount": 1,
+     "_sev": "LOW",
+     "pixel": {
+      "mode": "mask-intersect",
+      "scale": 2,
+      "inkA": 1002,
+      "inkB": 168,
+      "collisionPx": 0
+     },
+     "_pixelVerdict": "no-ink-collision"
+    },
+    {
+     "kind": "text-stroke",
+     "a": {
+      "di": 179,
+      "text": "日志族（0807+ · lane*.md）：diag_debug / kcode…",
+      "box": {
+       "x": 360,
+       "y": 979,
+       "w": 481.2,
+       "h": 11
+      }
+     },
+     "shape": {
+      "di": 220,
+      "tag": "line",
+      "stroke": "rgb(124, 58, 237)",
+      "sw": 1.5
+     },
+     "hits": 294,
+     "spanPx": 205.1,
+     "maxPen": 5,
+     "occludedFrac": 0,
+     "hitFrom": {
+      "x": 360.8,
+      "y": 984
+     },
+     "hitTo": {
+      "x": 565.9,
+      "y": 984
+     },
+     "dupCount": 1,
+     "_sev": "HIGH",
+     "pixel": {
+      "mode": "mask-intersect",
+      "scale": 2,
+      "inkA": 4824,
+      "inkB": 1008,
+      "collisionPx": 410
+     },
+     "_pixelVerdict": "ink-collision"
+    },
+    {
+     "kind": "text-rect",
+     "mode": "escape",
+     "insideFrac": 0.1,
+     "a": {
+      "di": 93,
+      "text": "Transaction / Driver",
+      "box": {
+       "x": 56,
+       "y": 582,
+       "w": 121.4,
+       "h": 15
+      }
+     },
+     "shape": {
+      "di": 94,
+      "tag": "rect",
+      "box": {
+       "x": 64,
+       "y": 596,
+       "w": 300,
+       "h": 64
+      },
+      "fill": "rgb(240, 253, 244)"
+     },
+     "sides": [
+      "left",
+      "top"
+     ],
+     "maxPen": 14,
+     "_sev": "LOW",
+     "pixel": {
+      "mode": "border-band",
+      "scale": 2,
+      "inkA": 2018,
+      "borderInkPx": 0
+     },
+     "_pixelVerdict": "no-border-ink"
+    },
+    {
+     "kind": "text-rect",
+     "mode": "band",
+     "insideFrac": 1,
+     "a": {
+      "di": 99,
+      "text": "isptx_driver.sv（420b）",
+      "box": {
+       "x": 498.8,
+       "y": 597.5,
+       "w": 118.5,
+       "h": 12
+      }
+     },
+     "shape": {
+      "di": 98,
+      "tag": "rect",
+      "box": {
+       "x": 404,
+       "y": 596,
+       "w": 308,
+       "h": 64
+      },
+      "fill": "rgb(255, 255, 255)"
+     },
+     "sides": [
+      "top"
+     ],
+     "maxPen": 0.9,
+     "_sev": "LOW"
+    },
+    {
+     "kind": "text-rect",
+     "mode": "escape",
+     "insideFrac": 0.6,
+     "a": {
+      "di": 179,
+      "text": "日志族（0807+ · lane*.md）：diag_debug / kcode…",
+      "box": {
+       "x": 360,
+       "y": 979,
+       "w": 481.2,
+       "h": 11
+      }
+     },
+     "shape": {
+      "di": 176,
+      "tag": "rect",
+      "box": {
+       "x": 566,
+       "y": 960,
+       "w": 380,
+       "h": 48
+      },
+      "fill": "rgb(236, 253, 245)"
+     },
+     "sides": [
+      "left"
+     ],
+     "maxPen": 206,
+     "_sev": "HIGH",
+     "pixel": {
+      "mode": "border-band",
+      "scale": 2,
+      "inkA": 4824,
+      "borderInkPx": 56
+     },
+     "_pixelVerdict": "ink-on-border"
+    },
+    {
+     "kind": "text-rect",
+     "mode": "escape",
+     "insideFrac": 0.1,
+     "a": {
+      "di": 197,
+      "text": "20-bit 包流 / 40-bit K 码 · 串行链路",
+      "box": {
+       "x": 739,
+       "y": 383.9,
+       "w": 11,
+       "h": 152.3
+      }
+     },
+     "shape": {
+      "di": 41,
+      "tag": "rect",
+      "box": {
+       "x": 40,
+       "y": 204,
+       "w": 700,
+       "h": 352
+      },
+      "fill": "rgb(248, 250, 252)"
+     },
+     "sides": [
+      "right"
+     ],
+     "maxPen": 10,
+     "_sev": "HIGH",
+     "pixel": {
+      "mode": "border-band",
+      "scale": 2,
+      "inkA": 1887,
+      "borderInkPx": 354
+     },
+     "_pixelVerdict": "ink-on-border"
+    },
+    {
+     "kind": "text-rect",
+     "mode": "escape",
+     "insideFrac": 0.6,
+     "a": {
+      "di": 210,
+      "text": "tap DATA_ALIGN_PRE（每拍 20-bit 对齐数据）",
+      "box": {
+       "x": 592.9,
+       "y": 819,
+       "w": 214.1,
+       "h": 11
+      }
+     },
+     "shape": {
+      "di": 135,
+      "tag": "rect",
+      "box": {
+       "x": 40,
+       "y": 694,
+       "w": 1120,
+       "h": 132
+      },
+      "fill": "rgb(248, 250, 252)"
+     },
+     "sides": [
+      "bottom"
+     ],
+     "maxPen": 4,
+     "_sev": "HIGH",
+     "pixel": {
+      "mode": "border-band",
+      "scale": 2,
+      "inkA": 2826,
+      "borderInkPx": 1255
+     },
+     "_pixelVerdict": "ink-on-border"
+    }
+   ],
+   "audit": {
+    "outOfViewbox": [],
+    "emptyText": 0,
+    "fonts": [
+     {
+      "family": "Helvetica Neue",
+      "available": true
+     }
+    ]
+   },
+   "label": "anim/longcode_verification_architecture.svg",
+   "stem": "anim__longcode_verification_architecture.svg"
+  },
+  {
+   "file": "pydec_tx_rx_structure.svg",
+   "viewBox": [
+    0,
+    0,
+    1200,
+    680
+   ],
+   "textCount": 50,
+   "shapeCount": 50,
+   "findings": [
+    {
+     "kind": "text-stroke",
+     "a": {
+      "di": 91,
+      "text": "离线比对（脚本完成 · 不依赖 DUT 解码结果）",
+      "box": {
+       "x": 56,
+       "y": 490,
+       "w": 266.5,
+       "h": 15
+      }
+     },
+     "shape": {
+      "di": 118,
+      "tag": "path",
+      "stroke": "rgb(124, 58, 237)",
+      "sw": 1.5
+     },
+     "hits": 21,
+     "spanPx": 14,
+     "maxPen": 7.5,
+     "occludedFrac": 0,
+     "hitFrom": {
+      "x": 214,
+      "y": 490.5
+     },
+     "hitTo": {
+      "x": 214,
+      "y": 504.5
+     },
+     "dupCount": 1,
+     "_sev": "HIGH",
+     "pixel": {
+      "mode": "mask-intersect",
+      "scale": 2,
+      "inkA": 6978,
+      "inkB": 168,
+      "collisionPx": 56
+     },
+     "_pixelVerdict": "ink-collision"
+    },
+    {
+     "kind": "text-rect",
+     "mode": "band",
+     "insideFrac": 1,
+     "a": {
+      "di": 68,
+      "text": "TAP",
+      "box": {
+       "x": 792.3,
+       "y": 138,
+       "w": 17.3,
+       "h": 10
+      }
+     },
+     "shape": {
+      "di": 67,
+      "tag": "rect",
+      "box": {
+       "x": 784,
+       "y": 134,
+       "w": 34,
+       "h": 16
+      },
+      "fill": "rgb(5, 150, 105)"
+     },
+     "sides": [
+      "bottom"
+     ],
+     "maxPen": 0.4,
+     "_sev": "LOW"
+    }
+   ],
+   "audit": {
+    "outOfViewbox": [],
+    "emptyText": 0,
+    "fonts": [
+     {
+      "family": "Helvetica Neue",
+      "available": true
+     }
+    ]
+   },
+   "label": "anim/pydec_tx_rx_structure.svg",
+   "stem": "anim__pydec_tx_rx_structure.svg"
+  },
+  {
+   "file": "spec_bit_order.svg",
+   "viewBox": [
+    0,
+    0,
+    1200,
+    560
+   ],
+   "textCount": 64,
+   "shapeCount": 60,
+   "findings": [
+    {
+     "kind": "text-rect",
+     "mode": "escape",
+     "insideFrac": 0.1,
+     "a": {
+      "di": 92,
+      "text": "…",
+      "box": {
+       "x": 309,
+       "y": 237,
+       "w": 14,
+       "h": 16
+      }
+     },
+     "shape": {
+      "di": 80,
+      "tag": "rect",
+      "box": {
+       "x": 246,
+       "y": 240,
+       "w": 64,
+       "h": 30
+      },
+      "fill": "rgb(219, 234, 254)"
+     },
+     "sides": [
+      "right",
+      "top"
+     ],
+     "maxPen": 13,
+     "_sev": "HIGH",
+     "pixel": {
+      "mode": "border-band",
+      "scale": 2,
+      "inkA": 30,
+      "borderInkPx": 9
+     },
+     "_pixelVerdict": "ink-on-border"
+    }
+   ],
+   "audit": {
+    "outOfViewbox": [],
+    "emptyText": 0,
+    "fonts": [
+     {
+      "family": "Helvetica Neue",
+      "available": true
+     }
+    ]
+   },
+   "label": "anim/spec_bit_order.svg",
+   "stem": "anim__spec_bit_order.svg"
+  },
+  {
+   "file": "spec_blanking_idle.svg",
+   "viewBox": [
+    0,
+    0,
+    1200,
+    660
+   ],
+   "textCount": 75,
+   "shapeCount": 49,
+   "findings": [],
+   "audit": {
+    "outOfViewbox": [],
+    "emptyText": 0,
+    "fonts": [
+     {
+      "family": "Helvetica Neue",
+      "available": true
+     }
+    ]
+   },
+   "label": "anim/spec_blanking_idle.svg",
+   "stem": "anim__spec_blanking_idle.svg"
+  },
+  {
+   "file": "spec_dummy_70b.svg",
+   "viewBox": [
+    0,
+    0,
+    1200,
+    600
+   ],
+   "textCount": 48,
+   "shapeCount": 47,
+   "findings": [],
+   "audit": {
+    "outOfViewbox": [],
+    "emptyText": 0,
+    "fonts": [
+     {
+      "family": "Helvetica Neue",
+      "available": true
+     }
+    ]
+   },
+   "label": "anim/spec_dummy_70b.svg",
+   "stem": "anim__spec_dummy_70b.svg"
+  },
+  {
+   "file": "spec_frame_flow.svg",
+   "viewBox": [
+    0,
+    0,
+    1200,
+    700
+   ],
+   "textCount": 58,
+   "shapeCount": 47,
+   "findings": [],
+   "audit": {
+    "outOfViewbox": [],
+    "emptyText": 0,
+    "fonts": [
+     {
+      "family": "Helvetica Neue",
+      "available": true
+     }
+    ]
+   },
+   "label": "anim/spec_frame_flow.svg",
+   "stem": "anim__spec_frame_flow.svg"
+  },
+  {
+   "file": "spec_lsp_kcode.svg",
+   "viewBox": [
+    0,
+    0,
+    1200,
+    620
+   ],
+   "textCount": 50,
+   "shapeCount": 51,
+   "findings": [],
+   "audit": {
+    "outOfViewbox": [],
+    "emptyText": 0,
+    "fonts": [
+     {
+      "family": "Helvetica Neue",
+      "available": true
+     }
+    ]
+   },
+   "label": "anim/spec_lsp_kcode.svg",
+   "stem": "anim__spec_lsp_kcode.svg"
+  },
+  {
+   "file": "spec_scramble_rolling.svg",
+   "viewBox": [
+    0,
+    0,
+    1200,
+    560
+   ],
+   "textCount": 45,
+   "shapeCount": 43,
+   "findings": [
+    {
+     "kind": "text-rect",
+     "mode": "escape",
+     "insideFrac": 0.3,
+     "a": {
+      "di": 29,
+      "text": "K2",
+      "box": {
+       "x": 715.6,
+       "y": 120.5,
+       "w": 12.8,
+       "h": 11
+      }
+     },
+     "shape": {
+      "di": 31,
+      "tag": "rect",
+      "box": {
+       "x": 724,
+       "y": 106,
+       "w": 40,
+       "h": 40
+      },
+      "fill": "rgb(254, 249, 195)"
+     },
+     "sides": [
+      "left"
+     ],
+     "maxPen": 8.4,
+     "_sev": "HIGH",
+     "pixel": {
+      "mode": "border-band",
+      "scale": 2,
+      "inkA": 218,
+      "borderInkPx": 39
+     },
+     "_pixelVerdict": "ink-on-border"
+    },
+    {
+     "kind": "text-rect",
+     "mode": "band",
+     "insideFrac": 1,
+     "a": {
+      "di": 32,
+      "text": "K5",
+      "box": {
+       "x": 737.6,
+       "y": 120.5,
+       "w": 12.8,
+       "h": 11
+      }
+     },
+     "shape": {
+      "di": 28,
+      "tag": "rect",
+      "box": {
+       "x": 694,
+       "y": 106,
+       "w": 56,
+       "h": 40
+      },
+      "fill": "rgb(220, 252, 231)"
+     },
+     "sides": [
+      "right"
+     ],
+     "maxPen": 2.4,
+     "_sev": "HIGH",
+     "pixel": {
+      "mode": "border-band",
+      "scale": 2,
+      "inkA": 219,
+      "borderInkPx": 33
+     },
+     "_pixelVerdict": "ink-on-border"
+    },
+    {
+     "kind": "text-rect",
+     "mode": "escape",
+     "insideFrac": 0.2,
+     "a": {
+      "di": 47,
+      "text": "加扰区间（CTR_L ~ Dmy）· SCR_KEY update",
+      "box": {
+       "x": 120,
+       "y": 141,
+       "w": 198.8,
+       "h": 11
+      }
+     },
+     "shape": {
+      "di": 22,
+      "tag": "rect",
+      "box": {
+       "x": 120,
+       "y": 106,
+       "w": 90,
+       "h": 40
+      },
+      "fill": "rgb(207, 250, 254)"
+     },
+     "sides": [
+      "right",
+      "bottom"
+     ],
+     "maxPen": 108.8,
+     "_sev": "HIGH",
+     "pixel": {
+      "mode": "border-band",
+      "scale": 2,
+      "inkA": 2295,
+      "borderInkPx": 472
+     },
+     "_pixelVerdict": "ink-on-border"
+    },
+    {
+     "kind": "text-rect",
+     "mode": "escape",
+     "insideFrac": 0.2,
+     "a": {
+      "di": 47,
+      "text": "加扰区间（CTR_L ~ Dmy）· SCR_KEY update",
+      "box": {
+       "x": 120,
+       "y": 141,
+       "w": 198.8,
+       "h": 11
+      }
+     },
+     "shape": {
+      "di": 24,
+      "tag": "rect",
+      "box": {
+       "x": 214,
+       "y": 106,
+       "w": 416,
+       "h": 40
+      },
+      "fill": "rgb(219, 234, 254)"
+     },
+     "sides": [
+      "left",
+      "bottom"
+     ],
+     "maxPen": 94,
+     "_sev": "HIGH",
+     "pixel": {
+      "mode": "border-band",
+      "scale": 2,
+      "inkA": 2295,
+      "borderInkPx": 616
+     },
+     "_pixelVerdict": "ink-on-border"
+    }
+   ],
+   "audit": {
+    "outOfViewbox": [],
+    "emptyText": 0,
+    "fonts": [
+     {
+      "family": "Helvetica Neue",
+      "available": true
+     }
+    ]
+   },
+   "label": "anim/spec_scramble_rolling.svg",
+   "stem": "anim__spec_scramble_rolling.svg"
+  },
+  {
+   "file": "spec_tag_replacement.svg",
+   "viewBox": [
+    0,
+    0,
+    1200,
+    460
+   ],
+   "textCount": 41,
+   "shapeCount": 32,
+   "findings": [],
+   "audit": {
+    "outOfViewbox": [],
+    "emptyText": 0,
+    "fonts": [
+     {
+      "family": "Helvetica Neue",
+      "available": true
+     }
+    ]
+   },
+   "label": "anim/spec_tag_replacement.svg",
+   "stem": "anim__spec_tag_replacement.svg"
+  }
+ ]
+}

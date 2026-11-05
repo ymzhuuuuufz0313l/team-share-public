@@ -529,9 +529,9 @@
 
 > 🎬 本页图均为纯 CSS 动画 SVG（在 `images/anim/` 目录，滚动到视口时重播；顶部导航可一键切换 动画/静态）；静态原版保留在同名路径作 fallback。
 
-![longcode 验证架构](./images/anim/longcode_verification_architecture.svg?v=20261105)
+![longcode 验证架构](./images/anim/longcode_verification_architecture.svg?v=20261106)
 
-![环境组件：基线 vs 现状对比](./images/anim/delta_env_components.svg?v=20261105)
+![环境组件：基线 vs 现状对比](./images/anim/delta_env_components.svg?v=20261106)
 
 > **基线（07-13）→ 现状（a7130ba7）组件对比**：上图（现状架构图）画当前结构，本图补增量演进视角。灰色组件基线后零变更（含 77 行 display-only 的 `checker_420b.sv`）；琥珀色为已演进件（`isptx_sequence` 1456→1865 行、`isptx_driver` +222 行、ref model 0807 三修入库）；青色为新增件（CHPI 训练包、BCC monitor/scoreboard、BOE 回放、MULTI_CHIP/multi4、EOL/unlock 故障注入与 `send_recovery_image`、`auto_script` 生成链 + `cmodel/dplc.pl`）。中列 8 波次时间线（0721v1→1028）与底部 RTL 联动带标注每个增量落入的波次。
 
@@ -541,7 +541,7 @@
 
 > **2026-11-05 复核**：三步链与四个脚本在 HEAD 全部存续；0807 起日志族由 lane0 扩展为 12-lane 全覆盖——sequence 侧 `long_seq_debug / long_rawbyte_seq / long_pkt20_seq / long_kcode_seq / long_kcode_drv / long_drv_debug`、RTL tap 侧 `long_rtl_rx / long_diag_debug`（均按 `_laneN` 落盘）；本节与 3.5 流程以 lane0 为例。
 
-![收发结构框图：脚本离线验证](./images/anim/pydec_tx_rx_structure.svg?v=20261105)
+![收发结构框图：脚本离线验证](./images/anim/pydec_tx_rx_structure.svg?v=20261106)
 
 <div class="flow">
   <div class="fbox"><b>① 抓取</b><br/>在 <code>CHPI_KCODE_ALIGN_LONG_L0</code> 的 <code>DATA_ALIGN_PRE</code>（K 码检测同款对齐数据）tap，<code>long_rtl_tap_debug.sv</code> 以 bind 注入，零 RTL 修改<br/><code>→ long_rtl_dap_lane0.md</code></div>

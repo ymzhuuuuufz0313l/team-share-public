@@ -138,6 +138,7 @@
     <text x="505" y="630" font-size="8.5" fill="#64748b" text-anchor="middle">isptx_agent 内无 .sv 变更</text>
   </g>
   <g >
+    <rect x="457" y="651" width="96" height="17" rx="4" fill="#ffffff" stroke="#ffffff" stroke-width="0"/>
     <text x="505" y="664" font-size="8.5" fill="#64748b" text-anchor="middle">波次 = 差异审计 §1 表</text>
   </g>
   <g >

@@ -290,7 +290,10 @@ def build_scene():
         S.append(E("g", kids=kids, wrap=[("fade", 0.7 + 0.12 * i, None),
                                          ("cellwave", 0.2 + 0.15 * i, 3.8)]))
         wy += 62
-    S.append(G([T(505, wy + 16, "波次 = 差异审计 §1 表", 8.5, C["muted"])],
+    # 1106 重叠修复：注记行补不透明白色标签底（与上方 8 个波次 chip 同款设计），
+    # 遮断中列时间线刻度线 x=505 穿字（原无标签底被判 HIGH，其余 24 处同构均为 LOW）
+    S.append(G([R(505 - 48, wy + 16 - 13, 96, 17, fill="#ffffff", stroke="#ffffff", rx=4, sw=0),
+                T(505, wy + 16, "波次 = 差异审计 §1 表", 8.5, C["muted"])],
                wrap=("fade", 1.7, None)))
 
     # —— 右 panel：现状 ——
@@ -431,4 +434,4 @@ def main():
 
 if __name__ == "__main__":
     sys.exit(main())
-# ymzhu 2026-11-05 11:30
+# ymzhu 2026-11-05 15:39

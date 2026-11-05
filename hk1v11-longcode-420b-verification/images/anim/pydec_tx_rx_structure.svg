@@ -150,7 +150,7 @@
 <line x1="1003" y1="276" x2="1003" y2="300" stroke="#059669" stroke-width="2" marker-end="url(#ar-green)" class="draw" pathLength="100" style="animation-delay:1s"/>
 </g>
 <g class="fade" style="animation-delay:1.4s">
-<path d="M 214 424 L 214 520" stroke="#7c3aed" stroke-width="1.5" fill="none" stroke-dasharray="5,3" marker-end="url(#ar-purple)" class="dashgrow" style="animation-duration:3.2s;animation-delay:-1.6s"/>
+<path d="M 214 424 L 214 462 L 48 462 L 48 552 L 84 552" stroke="#7c3aed" stroke-width="1.5" fill="none" stroke-dasharray="5,3" marker-end="url(#ar-purple)" class="dashgrow" style="animation-duration:3.2s;animation-delay:-1.6s"/>
 </g>
 <g class="fade" style="animation-delay:1.4s">
 <path d="M 1003 364 L 1003 440 L 1003 520" stroke="#059669" stroke-width="1.5" fill="none" stroke-dasharray="6,3" marker-end="url(#ar-green)" class="march" style="animation-delay:-0.5s"/>
