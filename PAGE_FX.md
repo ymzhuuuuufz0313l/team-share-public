@@ -10,6 +10,7 @@
 |---|---|---|---|
 | v1 | 2026-10-27/28 | 已被 v2 取代 | — |
 | v2 | 2026-11-02 | **全仓库已上线**：9 处副本字节一致（仓库根 + `site-template/` + 7 个文章站点；tj 临时目录除外，待删）；页面引用统一 `fx.css?v=5` / `fx.js?v=8`；扫光基底色由 fx.js 运行时取自页面 computed color（透明/渐变字自动回退拆字，居中标题自动补 margin）；全部文章站 `check_article.py` PASS | 各站目录 + 根级 |
+| v2.1.1 | 2026-11-05 | **全仓库已同步**：9 处副本字节一致（md5 c728962045），81 页 bump `fx.css?v=10`（postpt 站 1104 归档快照 1 页除外，归档不动）；修 fx.css §18 `fxFlowShine`（.fbox 标题白光）单层 no-repeat 渐变（220% 宽，position 120%→-20%）始/终态各 ~24% 落图外 + `color:transparent` → 标题残缺不可见（动画中断定格同理，ymzhu 2026-11-05 两页报告）；改双层背景对齐 §4 铁律（上层光带两端透明 + 下层 base 纯色 100% 恒定着色），keyframes 双层 position。fx.js 无改动。新增门禁 `scripts/check_fx_clip.py`（§5 第 6 条，对旧版必报 R1）；7 文章站 check_article PASS（lc-cpuwr 站存量 sync-1104.html S 项 FAIL 与本次无关，见 §8-7） | 各站目录 + 根级 |
 
 ## 0. 架构（共享文件 + 页面 2 个 tag）
 
@@ -100,6 +101,7 @@
 3. fx.css 中所有含新类名的选择器均以 `html.fx-on` 开头（keyframes 除外）。
 4. DOM 检查（Edge `--dump-dom`）：动画模式 `<html>` 含 `fx-on`、hero h1 含 `fx-shine` 且无 `.fx-w`；`?motion=static` 时无 `fx-on`、有 `page-static`。
 5. 渲染截图（Edge headless，绝对路径，独立 `--user-data-dir`，`--virtual-time-budget=30000`；扫光另截 2200（主标题亮带途中）/ 3300（「验证体系」亮带途中）中途帧）：标题任何时刻完整可读、亮带为白色（**不得出现红/红棕扫光**）、静态模式纯色无半透明残留、正文纹理不过重。
+6. `python scripts/check_fx_clip.py fx.css`（2026-11-05 新增，exit 0）：clip:text + color:transparent 的规则必须有恒定着色层 + 动画层数一致——fxFlowShine 始/终态残缺事故的门禁化，对旧版必报 R1。
 
 ## 6. 新文章 / 新站点接入（与 team-share skill Workflow B 同步）
 
@@ -134,5 +136,7 @@
 3. lc-cpuwr `diagrams.html` 的 TOC 为「分节按钮」特殊形态，折叠 CSS 已就位、JS 不适用（已注记）。
 4. postpt ch10 尾部 5 个案例「节号 vs 案例号」错位（原文档物理顺序使然，编号连续优先；对齐需重排内容）。
 5. ✅ `.fbox` 一次性文字光带入场 + `→` 逐个点亮：2026-11-02 用户拍板「对仓库下所有页面修改（tj 除外）」→ 引擎 v2.1 实现（见 §2.2-E），全仓生效。框角小灰点来源仍未复现（不影响任何功能）。
+6. ✅ **fxFlowShine 始/终态残缺（2026-11-05 ymzhu 报告「扫到中间停止文字只能看到一部分」，phases 与 debug-log 两页复现）**：根因 = §18 单层 no-repeat 渐变 + `color:transparent`，position 120%/-20% 时各 ~24% 在图外；已修为双层背景（v2.1.1）并全仓同步 9 副本 + 81 页 bump css?v=10，新增 `scripts/check_fx_clip.py` 门禁（§5 第 6 条）防复发。归因定案：直接原因=实现违反 §4 铁律（执行层）；流程根因=铁律未门禁化（skill 层，已补）；架构债=多副本分发依赖手工同步（已用 md5 校验 + 本脚本部分缓解，长期可考虑 sync 脚本化）。
+7. lc-cpuwr 站 `sync-1104.html` 末行无 ymzhu 签名（1104 服务器同步快照页，存量问题，非 v2.1.1 引入）：该站 check_article 因此 S 项 FAIL，待该站维护时补签名或明确豁免快照页。
 
-<!-- ymzhu 2026-11-03 12:40 -->
+<!-- ymzhu 2026-11-05 15:05 -->

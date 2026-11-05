@@ -11,7 +11,7 @@
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet">
   <title>整体架构 · HK1V11 420b 长编码验证体系</title>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-  <link rel="stylesheet" href="./fx.css?v=9">
+  <link rel="stylesheet" href="./fx.css?v=10">
   <style>
 :root {
       --bg: #f4f1ea;
@@ -539,6 +539,8 @@
 
 接收端验证**不再依赖 DUT 解码结果**：用 `bind` 在 K 码对齐点抓线上 20-bit 数据，Python 直接离线解码，与发送端原始字节逐区域比对。
 
+> **2026-11-05 复核**：三步链与四个脚本在 HEAD 全部存续；0807 起日志族由 lane0 扩展为 12-lane 全覆盖——sequence 侧 `long_seq_debug / long_rawbyte_seq / long_pkt20_seq / long_kcode_seq / long_kcode_drv / long_drv_debug`、RTL tap 侧 `long_rtl_rx / long_diag_debug`（均按 `_laneN` 落盘）；本节与 3.5 流程以 lane0 为例。
+
 ![收发结构框图：脚本离线验证](./images/anim/pydec_tx_rx_structure.svg?v=20261105)
 
 <div class="flow">
@@ -603,7 +605,7 @@
 
 `checker_420b.sv`：收集 20-bit chunk → 组装 420-bit block → `decode_420b_to_413b()` 还原比对；检查编码规则、跨 lane 长度、K-code 窗口。<span class="badge badge-dv">display-only</span> 2026-11 复核：自建库（486f1365）以来零变更，仍 77 行；`check_all()` 硬编码 `scramble_en=1'b1` + 每 block LFSR 复位 0XFFFF，启用正式比对前需按 `env_cfg.SCREN` 与 region 边界改造（见「编码 5.3」）。
 
-### 3.5 离线验证链（0717 新增，0721~0722 扩展）
+### 3.5 离线验证链（0717 新增，0721~0722 扩展，0924 槽位迁移）
 
 - **抓取**：`long_rtl_tap_debug.sv` 以 bind 注入（端口连接、零 RTL 修改）→ `long_rtl_rx / dec / grp / dap_lane0.md`
 - **解码**：`decode_dap.py` 区域分类 `LSP=K2→K3`、`LINE=K1→K2`、`CTRL_F=K4→K2`，IDLE 跳过；内容只看期望长度，多余尾部标 pad；roundtrip 500 块 × scren=0/1 全对
@@ -623,6 +625,8 @@
 - `long_rtl_tag_lane0.md`：替换点自动判定（`[HDR]` 块头、`[R]` 合法替换、`[X]` 异常带坐标）
 - `long_rtl_max_lane0.md`：`dout_21b_max` 全量 dump（每 chunk 的 tag + 7-bit 组值）
 - 以上 tap 通过 `long_rtl_tag_debug.sv` 以 bind 注入 `decoder_7b`，零 RTL 修改；case `test.f` 已包含。
+
+**0924 增补（帧结构演进对注入链的影响）**：UTC 错误注入槽位随 Config Line 并入 VFP 首行而迁移——`utc_frm_num=16/32` 的注入点由行首 `i==0/1/2/3` 改为 `i==10/11/12/13`（行首新增 10 槽内容后补偿，行时长不变）；离线比对需按新槽位对齐。
 
 ### 3.6 关键数据宽度速查
 
@@ -650,6 +654,8 @@
 | RTL 侧编码 TX 通路 | 0807 后新增 | `long_encoding/LONG_ENCODING_ALIGN.v`（559 行，K1~K4 检测/对齐/BK_ST，含 R_BAC、R_KHEAD_20B_SEL）+ `LONG_ENCODING_ERROR_CTRL.v`（263 行）+ `LONG_ENCODING_OUTPUT.v`（477 行）——芯片自身 420b 编码发送通路成型（本站早期图版仅画了解码链） |
 
 ## 5. 0717~0722 关键修改摘要
+
+> 本节为历史摘要（截至 0722）；0721v1→1028 基线后组件级变更见 §4，逐波次详情见「排障」页 §6 变更史。
 
 | 修改项 | 说明 | 侧 |
 |--------|------|----|
@@ -779,4 +785,4 @@ const lightbox = document.getElementById('lightbox');
 </body>
 </html>
 
-<!-- ymzhu 2026-11-05 11:58 -->
+<!-- ymzhu 2026-11-05 14:12 -->

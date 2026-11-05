@@ -328,27 +328,33 @@ html.fx-on .fx-r.fx-pop.fx-in {
    全部一次性（forwards），不循环；静态模式移除 fx-on = 全部原样。 */
 @supports ((-webkit-background-clip: text) or (background-clip: text)) {
   html.fx-on .flow.fx-r.fx-in.fx-flow-on .fbox b {
+    /* v2.1.1 修复（2026-11-05）：原单层 no-repeat 渐变（220% 宽，position 120%→-20%）
+       始/终态各有 ~24% 落在图外 → color:transparent 的标题残缺不可见（动画中断定格同理）。
+       改双层背景对齐 hero fx-shine 铁律：上层扫光带两端透明，下层 base 纯色 100% 恒定着色，
+       任何时刻（含始/终/中断定格）文字完整可见。 */
     background-image:
       linear-gradient(105deg,
-        var(--fx-flow-base) 0%, var(--fx-flow-base) 35%,
+        transparent 0%, transparent 35%,
         rgba(255, 255, 255, .55) 47%,
         #ffffff 50%,
         rgba(255, 255, 255, .55) 53%,
-        var(--fx-flow-base) 65%, var(--fx-flow-base) 100%);
-    background-size: 220% 100%;
+        transparent 65%, transparent 100%),
+      linear-gradient(180deg,
+        var(--fx-flow-base) 0%, var(--fx-flow-base) 100%);
+    background-size: 220% 100%, 100% 100%;
     background-repeat: no-repeat;
-    background-position: 120% 0;
+    background-position: 120% 0, 0 0;
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
     animation: fxFlowShine 1.5s ease-out forwards;
   }
 }
-@keyframes fxFlowShine { to { background-position: -20% 0; } }
+@keyframes fxFlowShine { to { background-position: -20% 0, 0 0; } }
 html.fx-on .flow.fx-r .farrow { opacity: .25; }
 html.fx-on .flow.fx-r.fx-in .farrow {
   animation: fxArcLit .45s var(--fx-ease-out) forwards;
 }
 @keyframes fxArcLit { to { opacity: 1; } }
 
-/* ymzhu 2026-11-02 22:35 */
+/* ymzhu 2026-11-05 14:35 */
