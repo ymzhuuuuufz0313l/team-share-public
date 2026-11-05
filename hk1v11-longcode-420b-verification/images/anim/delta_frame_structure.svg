@@ -1,0 +1,345 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 780" width="1200" height="780">
+  <style>text { font-family: 'Helvetica Neue', Helvetica, Arial, 'PingFang SC', 'Microsoft YaHei', 'Microsoft JhengHei', 'SimHei', sans-serif; }</style>
+  <style>
+    .row{opacity:0;animation:rowIn .55s cubic-bezier(.22,.7,.3,1) forwards}
+    .head{opacity:0;animation:rowIn .55s cubic-bezier(.22,.7,.3,1) forwards}
+    @keyframes rowIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+    .draw{stroke-dasharray:100;animation:drawIn .6s cubic-bezier(.4,0,.2,1) forwards}
+    @keyframes drawIn{from{stroke-dashoffset:100}to{stroke-dashoffset:0}}
+    .fade{opacity:0;animation:fadeIn .6s ease forwards}
+    @keyframes fadeIn{to{opacity:1}}
+    .flowdot{fill:none;stroke-linecap:round;stroke-dasharray:9 91;stroke-width:3.5;animation:flow 2.6s linear infinite}
+    @keyframes flow{to{stroke-dashoffset:-100}}
+    .flowtail{fill:none;stroke-linecap:round;stroke-dasharray:4 96;stroke-width:8;opacity:.25;animation:flow 2.6s linear infinite}
+    .pulse{transform-box:fill-box;transform-origin:center;animation:pulse 2.8s ease-in-out infinite}
+    @keyframes pulse{0%,100%{opacity:1;filter:drop-shadow(0 0 0 rgba(180,83,9,0))}50%{opacity:.8;filter:drop-shadow(0 0 10px rgba(180,83,9,.75))}}
+    .pulse-t{transform-box:fill-box;transform-origin:center;animation:pulseT 2.8s ease-in-out infinite}
+    @keyframes pulseT{0%,100%{opacity:1;filter:drop-shadow(0 0 0 rgba(14,116,144,0))}50%{opacity:.8;filter:drop-shadow(0 0 10px rgba(14,116,144,.75))}}
+    .pulse-b{transform-box:fill-box;transform-origin:center;animation:pulseB 2.8s ease-in-out infinite}
+    @keyframes pulseB{0%,100%{opacity:1;filter:drop-shadow(0 0 0 rgba(29,78,216,0))}50%{opacity:.8;filter:drop-shadow(0 0 10px rgba(29,78,216,.75))}}
+    .sweepband{opacity:.85;animation:sweepMove 8s linear infinite}
+    @keyframes sweepMove{to{transform:translateX(var(--sweepP,160px))}}
+    .dashgrow{stroke-dasharray:7 5;animation:dashgrow 2.6s linear infinite}
+    @keyframes dashgrow{from{stroke-dashoffset:72}to{stroke-dashoffset:0}}
+    .march{animation:march 1.5s linear infinite}
+    @keyframes march{to{stroke-dashoffset:-16}}
+    .cellwave{animation:wave 2.6s ease-in-out infinite}
+    @keyframes wave{0%,100%{opacity:1}50%{opacity:.72}}
+    .breathe{animation:br 3.2s ease-in-out infinite}
+    @keyframes br{0%,100%{opacity:1}50%{opacity:.55}}
+    .step{animation:stepLit 6s ease-in-out infinite}
+    @keyframes stepLit{0%,16%{filter:drop-shadow(0 0 9px rgba(29,78,216,.85))}24%,92%{filter:drop-shadow(0 0 0 rgba(29,78,216,0))}100%{filter:drop-shadow(0 0 9px rgba(29,78,216,.85))}}
+    @media (prefers-reduced-motion:reduce){*{animation:none!important}.row,.head,.fade{opacity:1!important}.flowdot,.flowtail,.sweepband{display:none!important}}
+  </style>
+  <defs>
+    <marker id="ar-blue" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#2563eb"/></marker>
+    <marker id="ar-green" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#059669"/></marker>
+    <marker id="ar-purple" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#7c3aed"/></marker>
+    <marker id="ar-orange" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#ea580c"/></marker>
+    <marker id="ar-gray" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#9ca3af"/></marker>
+  </defs>
+  <rect width="1200" height="780" fill="#ffffff"/>
+  <g class="head" style="animation-delay:0s">
+  <g >
+    <text x="600" y="38" font-size="21" fill="#1e293b" text-anchor="middle" font-weight="600">420b 帧结构演进：Config Line 位置与行尾语义</text>
+    <text x="600" y="62" font-size="11.5" fill="#64748b" text-anchor="middle">基线 66ecf97d（07-13 文章 · 0720v1 实现）→ 现状 a7130ba7（0924 44e48592 起生效 · 1028 包后）· 差异审计 2026-11-05</text>
+  </g>
+  </g>
+  <g class="row" style="animation-delay:0.15s">
+  <g >
+    <rect x="40" y="92" width="460" height="566" rx="10" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.5"/>
+    <text x="270" y="118" font-size="13" fill="#b45309" text-anchor="middle" font-weight="600">基线 · 2026-07-13（0720v1 实现）</text>
+    <line x1="56" y1="130" x2="484" y2="130" stroke="#e2e8f0" stroke-width="1.5"/>
+    <g class="row" style="animation-delay:0.3s">
+    <g >
+      <text x="162" y="167" font-size="10" fill="#1e293b" text-anchor="end" font-weight="600">LSP ×≥5</text>
+      <g class="cellwave" style="animation-delay:0.15s;animation-duration:4.2s">
+      <g >
+        <rect x="172" y="150" width="40" height="26" rx="6" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
+        <text x="192" y="166.5" font-size="9.5" fill="#166534" text-anchor="middle" font-weight="600">K2</text>
+        <rect x="217" y="150" width="126" height="26" rx="6" fill="#ffedd5" stroke="#fdba74" stroke-width="1.5"/>
+        <text x="280" y="166.5" font-size="9.5" fill="#9a3412" text-anchor="middle" font-weight="600">EA→ED ×8</text>
+        <rect x="348" y="150" width="54" height="26" rx="6" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/>
+        <text x="375" y="166.5" font-size="9.5" fill="#475569" text-anchor="middle" font-weight="600">Dmy</text>
+        <rect x="407" y="150" width="40" height="26" rx="6" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
+        <text x="427" y="166.5" font-size="9.5" fill="#166534" text-anchor="middle" font-weight="600">K3</text>
+      </g>
+      </g>
+      <text x="96" y="190" font-size="9.5" fill="#64748b" text-anchor="start">LSP · K 码恒不加扰</text>
+    </g>
+    </g>
+    <g class="row" style="animation-delay:0.42s">
+    <g >
+      <text x="162" y="231" font-size="10" fill="#1e293b" text-anchor="end" font-weight="600">VBP 行 ×vbp</text>
+      <g class="cellwave" style="animation-delay:0.3s;animation-duration:4.2s">
+      <g >
+        <rect x="172" y="214" width="40" height="26" rx="6" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
+        <text x="192" y="230.5" font-size="9.5" fill="#166534" text-anchor="middle" font-weight="600">K1</text>
+        <rect x="217" y="214" width="84" height="26" rx="6" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1.5"/>
+        <text x="259" y="230.5" font-size="9.5" fill="#1e40af" text-anchor="middle" font-weight="600">CTRL_L</text>
+        <rect x="306" y="214" width="70" height="26" rx="6" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1.5"/>
+        <text x="341" y="230.5" font-size="9.5" fill="#1e40af" text-anchor="middle" font-weight="600">VBK</text>
+        <rect x="381" y="214" width="40" height="26" rx="6" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
+        <text x="401" y="230.5" font-size="9.5" fill="#166534" text-anchor="middle" font-weight="600">K2</text>
+        <rect x="426" y="214" width="50" height="26" rx="6" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/>
+        <text x="451" y="230.5" font-size="9.5" fill="#475569" text-anchor="middle" font-weight="600">IDLE</text>
+      </g>
+      </g>
+      <text x="96" y="254" font-size="9.5" fill="#64748b" text-anchor="start">帧 c 消隐首段</text>
+    </g>
+    </g>
+    <g class="row" style="animation-delay:0.54s">
+    <g >
+      <text x="162" y="295" font-size="10" fill="#1e293b" text-anchor="end" font-weight="600">Active 行 ×vact</text>
+      <g class="cellwave" style="animation-delay:0.45s;animation-duration:4.2s">
+      <g >
+        <rect x="172" y="278" width="40" height="26" rx="6" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
+        <text x="192" y="294.5" font-size="9.5" fill="#166534" text-anchor="middle" font-weight="600">K1</text>
+        <rect x="217" y="278" width="84" height="26" rx="6" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1.5"/>
+        <text x="259" y="294.5" font-size="9.5" fill="#1e40af" text-anchor="middle" font-weight="600">CTRL_L</text>
+        <rect x="306" y="278" width="70" height="26" rx="6" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1.5"/>
+        <text x="341" y="294.5" font-size="9.5" fill="#1e40af" text-anchor="middle" font-weight="600">Video</text>
+        <rect x="381" y="278" width="40" height="26" rx="6" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
+        <text x="401" y="294.5" font-size="9.5" fill="#166534" text-anchor="middle" font-weight="600">K2</text>
+        <rect x="426" y="278" width="50" height="26" rx="6" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/>
+        <text x="451" y="294.5" font-size="9.5" fill="#475569" text-anchor="middle" font-weight="600">IDLE</text>
+      </g>
+      </g>
+      <text x="96" y="318" font-size="9.5" fill="#64748b" text-anchor="start">首行 FSYNC=1 · 行尾统一 K2</text>
+    </g>
+    </g>
+    <g class="row" style="animation-delay:0.66s">
+    <g >
+      <text x="162" y="359" font-size="10" fill="#1e293b" text-anchor="end" font-weight="600">Config Line（帧 c+1）</text>
+      <g class="pulse" style="animation-delay:0s">
+      <g class="cellwave" style="animation-delay:0.6s;animation-duration:4.2s">
+      <g >
+        <rect x="172" y="342" width="40" height="26" rx="6" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
+        <text x="192" y="358.5" font-size="9.5" fill="#166534" text-anchor="middle" font-weight="600">K4</text>
+        <rect x="217" y="342" width="84" height="26" rx="6" fill="#fef3c7" stroke="#fcd34d" stroke-width="1.5"/>
+        <text x="259" y="358.5" font-size="9.5" fill="#92400e" text-anchor="middle" font-weight="600">CTRL_F</text>
+        <rect x="306" y="342" width="54" height="26" rx="6" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/>
+        <text x="333" y="358.5" font-size="9.5" fill="#475569" text-anchor="middle" font-weight="600">Dmy</text>
+        <rect x="365" y="342" width="40" height="26" rx="6" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
+        <text x="385" y="358.5" font-size="9.5" fill="#166534" text-anchor="middle" font-weight="600">K2</text>
+        <rect x="410" y="342" width="50" height="26" rx="6" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/>
+        <text x="435" y="358.5" font-size="9.5" fill="#475569" text-anchor="middle" font-weight="600">IDLE</text>
+      </g>
+      </g>
+      </g>
+      <text x="96" y="382" font-size="9.5" fill="#64748b" text-anchor="start">① VACT 后单独成行 · 帧内 +1 行</text>
+      <text x="96" y="394" font-size="9.5" fill="#64748b" text-anchor="start">② 行尾恒 K2（无 SCREN 锁存分支）</text>
+      <text x="96" y="406" font-size="9.5" fill="#64748b" text-anchor="start">③ CTRL_F 随加扰域推进 key（07-13 原文论断）</text>
+    </g>
+    </g>
+    <g class="row" style="animation-delay:0.78s">
+    <g >
+      <text x="162" y="463" font-size="10" fill="#1e293b" text-anchor="end" font-weight="600">VFP 行 ×vfp</text>
+      <g class="cellwave" style="animation-delay:0.75s;animation-duration:4.2s">
+      <g >
+        <rect x="172" y="446" width="40" height="26" rx="6" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
+        <text x="192" y="462.5" font-size="9.5" fill="#166534" text-anchor="middle" font-weight="600">K1</text>
+        <rect x="217" y="446" width="84" height="26" rx="6" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1.5"/>
+        <text x="259" y="462.5" font-size="9.5" fill="#1e40af" text-anchor="middle" font-weight="600">CTRL_L</text>
+        <rect x="306" y="446" width="70" height="26" rx="6" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1.5"/>
+        <text x="341" y="462.5" font-size="9.5" fill="#1e40af" text-anchor="middle" font-weight="600">VBK</text>
+        <rect x="381" y="446" width="40" height="26" rx="6" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
+        <text x="401" y="462.5" font-size="9.5" fill="#166534" text-anchor="middle" font-weight="600">K2</text>
+        <rect x="426" y="446" width="50" height="26" rx="6" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/>
+        <text x="451" y="462.5" font-size="9.5" fill="#475569" text-anchor="middle" font-weight="600">IDLE</text>
+      </g>
+      </g>
+      <text x="96" y="486" font-size="9.5" fill="#64748b" text-anchor="start">消隐尾段（Config Line 之后）</text>
+    </g>
+    </g>
+    <g >
+      <rect x="96" y="512" width="348" height="26" rx="6" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5"/>
+      <text x="270" y="529" font-size="9.5" fill="#1e293b" text-anchor="middle" font-weight="600">帧时长 = vbp + vact + 1（Config 行）+ vfp</text>
+    </g>
+    <g >
+      <text x="96" y="566" font-size="10" fill="#64748b" text-anchor="start">Config Line = 帧配置行：K4 + CTRL_F + Dmy + K2</text>
+      <text x="96" y="584" font-size="10" fill="#64748b" text-anchor="start">CTRL_F payload 随加扰域推进（07-13 原文论断，0924 起不再成立）</text>
+      <text x="96" y="602" font-size="10" fill="#64748b" text-anchor="start">Active 行尾统一 K2 · LSP / IDLE / K 码恒不加扰</text>
+    </g>
+  </g>
+  </g>
+  <g class="row" style="animation-delay:0.45s">
+  <g >
+    <rect x="700" y="92" width="460" height="566" rx="10" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.5"/>
+    <text x="930" y="118" font-size="13" fill="#0f766e" text-anchor="middle" font-weight="600">现状 · 0924 起（a7130ba7 · 1028 包后）</text>
+    <line x1="716" y1="130" x2="1144" y2="130" stroke="#e2e8f0" stroke-width="1.5"/>
+    <g class="row" style="animation-delay:0.6s">
+    <g >
+      <text x="822" y="167" font-size="10" fill="#1e293b" text-anchor="end" font-weight="600">LSP ×≥5</text>
+      <g class="cellwave" style="animation-delay:0.9s;animation-duration:4.2s">
+      <g >
+        <rect x="832" y="150" width="40" height="26" rx="6" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
+        <text x="852" y="166.5" font-size="9.5" fill="#166534" text-anchor="middle" font-weight="600">K2</text>
+        <rect x="877" y="150" width="126" height="26" rx="6" fill="#ffedd5" stroke="#fdba74" stroke-width="1.5"/>
+        <text x="940" y="166.5" font-size="9.5" fill="#9a3412" text-anchor="middle" font-weight="600">EA→ED ×8</text>
+        <rect x="1008" y="150" width="54" height="26" rx="6" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/>
+        <text x="1035" y="166.5" font-size="9.5" fill="#475569" text-anchor="middle" font-weight="600">Dmy</text>
+        <g class="pulse-b" style="animation-delay:0.7s">
+        <g >
+          <rect x="1067" y="150" width="40" height="26" rx="6" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
+          <text x="1087" y="166.5" font-size="9.5" fill="#166534" text-anchor="middle" font-weight="600">K3</text>
+        </g>
+        </g>
+      </g>
+      </g>
+      <text x="756" y="190" font-size="9.5" fill="#64748b" text-anchor="start">LSP · K 码恒不加扰 · 字节序 EA→ED（0720 修正后口径）</text>
+    </g>
+    </g>
+    <g class="row" style="animation-delay:0.72s">
+    <g >
+      <text x="822" y="231" font-size="10" fill="#1e293b" text-anchor="end" font-weight="600">VBP 行 ×vbp（帧 c）</text>
+      <g class="cellwave" style="animation-delay:1.05s;animation-duration:4.2s">
+      <g >
+        <rect x="832" y="214" width="40" height="26" rx="6" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
+        <text x="852" y="230.5" font-size="9.5" fill="#166534" text-anchor="middle" font-weight="600">K1</text>
+        <rect x="877" y="214" width="84" height="26" rx="6" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1.5"/>
+        <text x="919" y="230.5" font-size="9.5" fill="#1e40af" text-anchor="middle" font-weight="600">CTRL_L</text>
+        <rect x="966" y="214" width="70" height="26" rx="6" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1.5"/>
+        <text x="1001" y="230.5" font-size="9.5" fill="#1e40af" text-anchor="middle" font-weight="600">VBK</text>
+        <rect x="1041" y="214" width="40" height="26" rx="6" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
+        <text x="1061" y="230.5" font-size="9.5" fill="#166534" text-anchor="middle" font-weight="600">K2</text>
+        <rect x="1086" y="214" width="50" height="26" rx="6" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/>
+        <text x="1111" y="230.5" font-size="9.5" fill="#475569" text-anchor="middle" font-weight="600">IDLE</text>
+      </g>
+      </g>
+      <text x="756" y="254" font-size="9.5" fill="#64748b" text-anchor="start">get_ctrlL_reg(frame, phase, line_idx) 相位感知</text>
+    </g>
+    </g>
+    <g class="row" style="animation-delay:0.84s">
+    <g >
+      <text x="822" y="295" font-size="10" fill="#1e293b" text-anchor="end" font-weight="600">Active 行 ×vact</text>
+      <g class="cellwave" style="animation-delay:1.2s;animation-duration:4.2s">
+      <g >
+        <rect x="832" y="278" width="40" height="26" rx="6" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
+        <text x="852" y="294.5" font-size="9.5" fill="#166534" text-anchor="middle" font-weight="600">K1</text>
+        <rect x="877" y="278" width="84" height="26" rx="6" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1.5"/>
+        <text x="919" y="294.5" font-size="9.5" fill="#1e40af" text-anchor="middle" font-weight="600">CTRL_L</text>
+        <rect x="966" y="278" width="70" height="26" rx="6" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1.5"/>
+        <text x="1001" y="294.5" font-size="9.5" fill="#1e40af" text-anchor="middle" font-weight="600">Video</text>
+        <rect x="1041" y="278" width="40" height="26" rx="6" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
+        <text x="1061" y="294.5" font-size="9.5" fill="#166534" text-anchor="middle" font-weight="600">K2</text>
+        <rect x="1086" y="278" width="50" height="26" rx="6" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/>
+        <text x="1111" y="294.5" font-size="9.5" fill="#475569" text-anchor="middle" font-weight="600">IDLE</text>
+      </g>
+      </g>
+      <text x="756" y="318" font-size="9.5" fill="#64748b" text-anchor="start">首行 FSYNC=1 · 行尾统一 K2</text>
+    </g>
+    </g>
+    <g class="row" style="animation-delay:0.96s">
+    <g >
+      <text x="822" y="359" font-size="10" fill="#1e293b" text-anchor="end" font-weight="600">VFP[0] = 下一帧配置行</text>
+      <g class="cellwave" style="animation-delay:1.35s;animation-duration:4.2s">
+      <g >
+        <rect x="832" y="342" width="40" height="26" rx="6" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
+        <text x="852" y="358.5" font-size="9.5" fill="#166534" text-anchor="middle" font-weight="600">K4</text>
+        <rect x="877" y="342" width="84" height="26" rx="6" fill="#ccfbf1" stroke="#5eead4" stroke-width="1.5"/>
+        <text x="919" y="358.5" font-size="9.5" fill="#0f766e" text-anchor="middle" font-weight="600">CTRL_F</text>
+        <rect x="966" y="342" width="54" height="26" rx="6" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/>
+        <text x="993" y="358.5" font-size="9.5" fill="#475569" text-anchor="middle" font-weight="600">Dmy</text>
+        <g class="pulse-t" style="animation-delay:-1.4s">
+        <g >
+          <rect x="1025" y="342" width="62" height="26" rx="6" fill="#ccfbf1" stroke="#5eead4" stroke-width="1.5"/>
+          <text x="1056" y="358.5" font-size="9.5" fill="#0f766e" text-anchor="middle" font-weight="600">K3/K2</text>
+        </g>
+        </g>
+        <rect x="1092" y="342" width="50" height="26" rx="6" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/>
+        <text x="1117" y="358.5" font-size="9.5" fill="#475569" text-anchor="middle" font-weight="600">IDLE</text>
+      </g>
+      </g>
+      <text x="756" y="382" font-size="9.5" fill="#64748b" text-anchor="start">① 第一条 VFP 行承载 · 帧内不加行（帧时长不变）</text>
+      <text x="756" y="394" font-size="9.5" fill="#64748b" text-anchor="start">② SCREN=1 → K3（锁 SCREN · key 复位 0XFFFF）· SCREN=0 → K2</text>
+      <text x="756" y="406" font-size="9.5" fill="#64748b" text-anchor="start">③ CTRL_F 恒不加扰 · 不推进 SCR_KEY</text>
+    </g>
+    </g>
+    <g class="row" style="animation-delay:1.08s">
+    <g >
+      <text x="822" y="463" font-size="10" fill="#1e293b" text-anchor="end" font-weight="600">其余 VFP 行（同 VBP）</text>
+      <g class="cellwave" style="animation-delay:1.5s;animation-duration:4.2s">
+      <g >
+        <rect x="832" y="446" width="40" height="26" rx="6" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
+        <text x="852" y="462.5" font-size="9.5" fill="#166534" text-anchor="middle" font-weight="600">K1</text>
+        <rect x="877" y="446" width="84" height="26" rx="6" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1.5"/>
+        <text x="919" y="462.5" font-size="9.5" fill="#1e40af" text-anchor="middle" font-weight="600">CTRL_L</text>
+        <rect x="966" y="446" width="70" height="26" rx="6" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1.5"/>
+        <text x="1001" y="462.5" font-size="9.5" fill="#1e40af" text-anchor="middle" font-weight="600">VBK</text>
+        <rect x="1041" y="446" width="40" height="26" rx="6" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
+        <text x="1061" y="462.5" font-size="9.5" fill="#166534" text-anchor="middle" font-weight="600">K2</text>
+        <rect x="1086" y="446" width="50" height="26" rx="6" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/>
+        <text x="1111" y="462.5" font-size="9.5" fill="#475569" text-anchor="middle" font-weight="600">IDLE</text>
+      </g>
+      </g>
+      <text x="756" y="486" font-size="9.5" fill="#64748b" text-anchor="start">消隐尾段 · 与 VBP 行同构</text>
+    </g>
+    </g>
+    <g >
+      <rect x="756" y="512" width="348" height="26" rx="6" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5"/>
+      <text x="930" y="529" font-size="9.5" fill="#1e293b" text-anchor="middle" font-weight="600">帧时长 = vbp + vact + vfp（Config 并入 VFP[0]，不加行）</text>
+    </g>
+    <g >
+      <text x="756" y="566" font-size="10" fill="#64748b" text-anchor="start">K3：锁存 SCREN + 共享加扰 key 复位 0XFFFF（TX 侧 lfsr_key_420b 同步）</text>
+      <text x="756" y="584" font-size="10" fill="#64748b" text-anchor="start">RTL 解码侧：K3 延 4 拍生效（K3_FIND_rp_d[3]）· dec_data_buf 42→44 bit</text>
+      <text x="756" y="602" font-size="10" fill="#64748b" text-anchor="start">Active 行尾仍统一 K2 · LSP / IDLE / K 码恒不加扰（两版一致）</text>
+    </g>
+  </g>
+  </g>
+  <g class="fade" style="animation-delay:1.4s">
+  <g >
+    <rect x="528" y="118" width="144" height="24" rx="12" fill="#ccfbf1" stroke="#5eead4" stroke-width="1.5"/>
+    <text x="600" y="134" font-size="10.5" fill="#0f766e" text-anchor="middle" font-weight="600">0924 · 44e48592 重定义</text>
+  </g>
+  </g>
+  <g class="fade" style="animation-delay:1.45s">
+  <g >
+    <rect x="516" y="166" width="168" height="104" rx="8" fill="#fffbeb" stroke="#fcd34d" stroke-width="1.5"/>
+    <text x="600" y="184" font-size="10.5" fill="#1e293b" text-anchor="middle" font-weight="600">① Config Line 位置</text>
+    <text x="600" y="204" font-size="9.5" fill="#64748b" text-anchor="middle">VACT 后单独成行（+1 行）</text>
+    <text x="600" y="220" font-size="9.5" fill="#ea580c" text-anchor="middle">→</text>
+    <text x="600" y="236" font-size="9.5" fill="#64748b" text-anchor="middle">第一条 VFP 行承载</text>
+    <text x="600" y="252" font-size="9.5" fill="#64748b" text-anchor="middle">帧内不加行 · 帧时长不变</text>
+  </g>
+  </g>
+  <g class="fade" style="animation-delay:1.6s">
+  <g >
+    <rect x="516" y="296" width="168" height="110" rx="8" fill="#fffbeb" stroke="#fcd34d" stroke-width="1.5"/>
+    <text x="600" y="314" font-size="10.5" fill="#1e293b" text-anchor="middle" font-weight="600">② 配置行行尾</text>
+    <text x="600" y="334" font-size="9.5" fill="#64748b" text-anchor="middle">恒 K2</text>
+    <text x="600" y="350" font-size="9.5" fill="#ea580c" text-anchor="middle">→</text>
+    <text x="600" y="366" font-size="9.5" fill="#64748b" text-anchor="middle">SCREN=1 → K3 · SCREN=0 → K2</text>
+    <text x="600" y="382" font-size="9.5" fill="#64748b" text-anchor="middle">锁 SCREN · key 复位 0XFFFF</text>
+  </g>
+  </g>
+  <g class="fade" style="animation-delay:1.75s">
+  <g >
+    <rect x="516" y="436" width="168" height="96" rx="8" fill="#fffbeb" stroke="#fcd34d" stroke-width="1.5"/>
+    <text x="600" y="454" font-size="10.5" fill="#1e293b" text-anchor="middle" font-weight="600">③ CTRL_F 加扰策略</text>
+    <text x="600" y="474" font-size="9.5" fill="#64748b" text-anchor="middle">随加扰域 · 推进 SCR_KEY</text>
+    <text x="600" y="490" font-size="9.5" fill="#ea580c" text-anchor="middle">→</text>
+    <text x="600" y="506" font-size="9.5" fill="#64748b" text-anchor="middle">恒不加扰 · 不推进 SCR_KEY</text>
+  </g>
+  </g>
+  <g class="fade" style="animation-delay:1.85s">
+  <g >
+    <text x="600" y="552" font-size="10.5" fill="#64748b" text-anchor="middle" font-weight="600">基线 → 现状</text>
+  </g>
+  </g>
+  <path d="M 512 566 H 688" fill="none" stroke="#9ca3af" stroke-width="2" marker-end="url(#ar-gray)" class="draw" pathLength="100" style="animation-delay:1.85s"/>
+  <path d="M 512 566 H 688" stroke="#0f766e" class="flowdot" pathLength="100" style="animation-duration:2.6s;animation-delay:0s"/>
+  <path d="M 512 566 H 688" stroke="#0f766e" class="flowdot" pathLength="100" style="animation-duration:2.6s;animation-delay:-0.87s"/>
+  <path d="M 512 566 H 688" stroke="#0f766e" class="flowdot" pathLength="100" style="animation-duration:2.6s;animation-delay:-1.73s"/>
+  <path d="M 512 566 H 688" stroke="#0f766e" class="flowtail" pathLength="100" style="animation-duration:2.6s;animation-delay:0s"/>
+  <path d="M 512 566 H 688" stroke="#0f766e" class="flowtail" pathLength="100" style="animation-duration:2.6s;animation-delay:-0.87s"/>
+  <g class="fade" style="animation-delay:2.1s">
+  <g >
+    <rect x="40" y="680" width="1120" height="76" rx="8" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.5"/>
+    <text x="56" y="700" font-size="10.5" fill="#1e293b" text-anchor="start" font-weight="600">证据与联动</text>
+    <text x="56" y="720" font-size="10" fill="#64748b" text-anchor="start">git diff f54f8d67..44e48592 -- isptx_sequence.sv：CTRL_F 1'b0（不加扰）/ K3_CODE / VFP hunk</text>
+    <text x="56" y="738" font-size="10" fill="#64748b" text-anchor="start">SCREN=1 前置已落地：t_H3840_V16_FPS120_SCREN1_420b_for_chengli_test（1022 入库 · BYTE0_BIT3_0=0100）</text>
+    <text x="56" y="756" font-size="10" fill="#64748b" text-anchor="start">不变项：Active 行尾统一 K2 · LSB-first 位序 · LSP / IDLE / K 码恒不加扰（差异审计 §4.4）</text>
+  </g>
+  </g>
+</svg>

@@ -1,21 +1,26 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""make_anim_spec_frame_flow.py  (Motion Kit v4 整体重写)
+"""make_anim_spec_frame_flow.py  (Motion Kit v4 · 1105 0924 帧结构重绘版)
 
-MOTION_KIT.md §6.4 规格（1200x700 420b 帧数据流）：
-- 入场编排 §5：标题(0) → Clock(0.15) → LSP(0.35) → Frame c(0.55)
-  → Active 4 行(0.70/0.85/1.00/1.15) → c+1(1.30) → VBK(1.45/1.60) → 括号(1.75)。
-  一次性总长 1.75+0.6=2.35s ≤2.5s。本图无箭头 → 无 draw（校验软项）。
-- 稳态族（2 族，§6.4 明示不加列车/breathe/sweep；2026-10-28 晚动效加密 +2 脉冲）：
-  * 行波 cellwave（主角）：所有"行"（Frame c、Active line1/line2/last、c+1、
-    VBK×2 共 7 行组）整行组包 cellwave，自上而下 0.18s 递增，
-    周期 4.5s（内联 duration）= 帧滚动波。
-  * 脉冲 pulse（2→4）：Clock training 条 pulse-b(-2.1s，与 LSP 的 -1.4s 错 0.7s)；
-    LSP 条 pulse-b(-1.4s)；"Config Line · Frame c+1" 行盒 pulse-t(-0.7s，0717 修复点)；
-    V blanking 两行组 pulse-t(-1.4s，两行同 delay = 同步呼吸的一个两行组，
-    与既有 pulse-t 错 0.7s)。
-- kit <style> 按铁律 §0.5 放在源图第 2 行字体 <style> 的下一行（修 v2 顺序）。
-- 源图为 CRLF 行尾、末行 </svg> 无换行：原样保留。
+新版静态图（generate_longcode_report_svgs.py · gen_spec_frameflow，1200x700）：
+Clock → LSP → 帧 0 配置行 → VBP×2 → Active×3 → VFP 第 0 行（= 下一帧配置行，
+高亮）→ VFP 其余行 → 底部 K3|K2 注记。旧版「Config Line 单独成行 + K2 or K3」
+语义已废弃（旧图归档 archive/20260720/）。
+
+动效规格（沿 MOTION_KIT.md §6.4 骨架，按新版行结构重排）：
+- 入场：标题(0) → Clock(.15) → LSP(.35) → 帧0(.55) → VBP1(.70)/VBP2(.85)/
+  VBP 括号(1.00) → Act1(1.10)/Act2(1.22)/…(1.32)/last(1.42)/括号(1.52) →
+  VFP0 高亮(1.62) → VFP rest(1.75) → 尾括号(1.85) → 注记(1.95)。
+  一次性总长 1.95+0.55=2.50s ≤2.5s。本图无箭头 → 无 draw（校验软项）。
+- 稳态族（2 族）：
+  * 行波 cellwave（主角）：帧0/VBP×2/Active×3/VFP0/VFP rest 共 8 行组整行
+    cellwave，自上而下 0.18s 递增，周期 4.5s（内联 duration）= 帧滚动波。
+  * 脉冲 pulse×5：Clock 条 pulse-b(-2.1s)；LSP 条 pulse-b(-1.4s)；
+    「VFP 第 0 行 = 帧 c+1 配置行」高亮组 pulse-t(-0.7s，0924 修复点)；
+    VFP 其余行组 pulse-t(-1.4s)；底部 K3 注记 pulse-t(-2.1s)。
+- 不加列车/breathe/sweep（行波+脉冲已 2 族、画面已密）。
+- kit <style> 按铁律 §0.5 放在源图第 2 行字体 <style> 的下一行。
+
 铁律：源 SVG 只读；text/几何/颜色零改动；纯 CSS in-SVG；kit CSS §2 逐字；
 保留源 defs + 背景 rect + 字体 style；reduced-motion 块原样；
 确定性幂等；零第三方依赖。
@@ -61,20 +66,24 @@ KIT_CSS = """<style>
 
 CW_DUR = 4.5  # 帧滚动波周期（§6.4 指定，内联 duration）
 
-# 顺序单元：(起, 止) 0 基、入场 delay、cellwave delay（None=不包波）、pulse(类, delay)
+# 单元：((起,止) 0 基, 入场 delay, cellwave delay（None=不包波）, pulse(类,delay)|None, head?)
 UNITS = [
-    ((10, 12), 0.00, None, None),            # 标题 + 副标题（head）
-    ((12, 14), 0.15, None, ("pulse-b", -2.1)),   # Clock training 条（脉冲，加密新增）
-    ((14, 16), 0.35, None, ("pulse-b", -1.4)),   # LSP 条（脉冲）
-    ((16, 27), 0.55, 0.00, None),            # Config Line（Frame c）
-    ((27, 37), 0.70, 0.18, None),            # Video Active line1
-    ((37, 48), 0.85, 0.36, None),            # Video Active line2 + ……
-    ((48, 58), 1.00, 0.54, None),            # Video Active last line
-    ((58, 60), 1.15, None, None),            # Video Active 括号 + 竖排标签
-    ((60, 73), 1.30, 0.72, ("pulse-t", -0.7)),   # Config Line c+1（0717 修复点）
-    ((73, 83), 1.45, 0.90, ("pulse-t", -1.4)),   # V blanking line1（两行组同步脉冲）
-    ((83, 93), 1.60, 1.08, ("pulse-t", -1.4)),   # V blanking line2（同上，同 delay 同步）
-    ((93, 96), 1.75, None, None),            # …… + V blanking 括号 + 竖排标签
+    ((10, 12), 0.00, None, None, True),                 # 标题 + 副标题
+    ((12, 14), 0.15, None, ("pulse-b", -2.1), False),   # Clock training 条
+    ((14, 16), 0.35, None, ("pulse-b", -1.4), False),   # LSP 条
+    ((16, 27), 0.55, 0.00, None, False),                # 帧 0 配置行（K4|CTRL_F|Dmy|K3|K2|IDLE + 标签）
+    ((27, 37), 0.70, 0.18, None, False),                # VBP 行 1
+    ((37, 48), 0.85, 0.36, None, False),                # VBP 行 2 + 标签
+    ((48, 50), 1.00, None, None, False),                # VBP 括号 + 竖排标签
+    ((50, 60), 1.10, 0.54, None, False),                # Active line1
+    ((60, 70), 1.22, 0.72, None, False),                # Active line2
+    ((70, 71), 1.32, None, None, False),                # ……
+    ((71, 81), 1.42, 0.90, None, False),                # Active last line
+    ((81, 85), 1.52, None, None, False),                # Active 括号 + 竖排标签 + 右侧 2 标签
+    ((85, 98), 1.62, 1.08, ("pulse-t", -0.7), False),   # VFP 第 0 行 = 帧 c+1 配置行（0924 高亮）
+    ((98, 109), 1.75, 1.26, ("pulse-t", -1.4), False),  # VFP 其余行（同 VBP）
+    ((109, 112), 1.85, None, None, False),              # …… + VFP 括号 + 竖排标签
+    ((112, 114), 1.95, None, ("pulse-t", -2.1), False), # 底部 2 条注记（K3|K2 teal + 帧 c+1）
 ]
 
 
@@ -93,50 +102,57 @@ def build():
     assert lines[8].strip() == "</defs>", "line9 应为 </defs>"
     assert lines[9].lstrip().startswith('<rect width="1200"'), "line10 应为白底 rect"
     assert lines[-1].strip() == "</svg>", "末行应为 </svg>"
-    assert len(lines) == 97, f"应为 97 行, 实得 {len(lines)}"
-    for i, needle in [(10, "420b 帧数据流"), (13, "Clock training pattern"), (15, "LSP（K2"),
-                      (26, "Config Line（Frame c 配置）"), (47, "……"), (59, ">Video Active<"),
-                      (72, "0717v1：单独成行"), (93, "……"), (95, ">V blanking<")]:
-        assert needle in lines[i], f"line{i+1} 应含 {needle!r}: {lines[i]}"
-    assert (UNITS[0][0][0], UNITS[-1][0][1]) == (10, 96), "单元应覆盖全部内容行"
-    for (a, b), _d, _c, _p in UNITS:
-        assert 10 <= a < b <= 96, f"单元范围越界: {(a, b)}"
+    assert len(lines) == 115, f"应为 115 行, 实得 {len(lines)}"
+    for i, needle in [(10, "420b 帧数据流"), (11, "LSP 训练 → 每帧"), (13, "Clock training pattern"),
+                      (15, "LSP（K2"), (26, "帧 0 配置行"), (47, "VBP 行 × vbp"),
+                      (70, "……"), (83, "Active 行 × vact"),
+                      (85, '<rect x="202" y="496"'), (96, "VFP 第 0 行 = 帧 c+1 配置行"),
+                      (97, "0924：并入首 VFP 行"), (108, "VFP 其余行（同 VBP）"),
+                      (112, "Config 行尾：SCREN=1 → K3"), (113, "帧 c+1：VBP → Active")]:
+        assert needle in lines[i], f"line{i+1} 应含 {needle!r}: {lines[i][:80]}"
+    assert (UNITS[0][0][0], UNITS[-1][0][1]) == (10, 114), "单元应覆盖全部内容行"
+    for (a, b), _d, _c, _p, _h in UNITS:
+        assert 10 <= a < b <= 114, f"单元范围越界: {(a, b)}"
+    # 每个数据行组应为 5 段 rect+text（10 行）
+    for s in (16, 27, 37, 50, 60, 71, 86, 98):
+        assert lines[s].strip().startswith("<rect") and lines[s + 1].strip().startswith("<text"), \
+            f"行组起点 {s} 应为 rect+text 对"
+        assert sum(1 for j in range(s, s + 10) if lines[j].strip().startswith("<rect")) == 5, \
+            f"行组 {s} 应含 5 个 rect"
 
     # ---- 组装 ----
     out = [lines[0], lines[1]] + KIT_CSS.split("\n")   # 铁律 §0.5：kit style 在字体 style 下一行
     out.extend(lines[2:10])                            # 源 <defs> + 白底 rect
 
     counts = {"row": 0, "head": 0, "cellwave": 0, "pulse": 0}
-    for k, ((a, b), delay, cw, pulse) in enumerate(UNITS):
-        if k == 0:
-            cls = "head"
+    for (a, b), delay, cw, pulse, head in UNITS:
+        if head:
             counts["head"] += 1
-            out.append(f'<g class="{cls}">')
+            out.append('<g class="head">')
         else:
-            cls = "row"
             counts["row"] += 1
-            out.append(f'<g class="{cls}" style="animation-delay:{delay:g}s">')
+            out.append('<g class="row" style="animation-delay:%gs">' % delay)
         if cw is not None:
             counts["cellwave"] += 1
-            out.append(f'<g class="cellwave" style="animation-delay:{cw:g}s;'
-                       f'animation-duration:{CW_DUR:g}s">')
+            out.append('<g class="cellwave" style="animation-delay:%gs;'
+                       'animation-duration:%gs">' % (cw, CW_DUR))
         if pulse:
             counts["pulse"] += 1
-            out.append(f'<g class="{pulse[0]}" style="animation-delay:{pulse[1]:g}s">')
+            out.append('<g class="%s" style="animation-delay:%gs">' % (pulse[0], pulse[1]))
         out.extend(lines[a:b])
         if pulse:
             out.append("</g>")
         if cw is not None:
             out.append("</g>")
         out.append("</g>")
-    out.append(lines[96])                              # </svg>
+    out.append(lines[114])                              # </svg>
 
     text = eol.join(out) + (eol if tail_nl else "")
     OUT.write_text(text, encoding="utf-8", newline="")
-    print(f"written: {OUT} ({OUT.stat().st_size} bytes)  effects={counts}")
+    print("written: %s (%d bytes)  effects=%s" % (OUT, OUT.stat().st_size, counts))
 
 
 if __name__ == "__main__":
     build()
 
-# ymzhu 2026-11-04 17:20
+# ymzhu 2026-11-05 11:20

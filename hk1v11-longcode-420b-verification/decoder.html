@@ -518,13 +518,13 @@
   <script type="text/template" id="md">
 # 六、420b 解码
 
-> **当前现状**：RTL 解码链仍在联调（区域边界问题待跟进），实际承担解码验证工作的是 **Python 离线解码器** —— 不看 RTL，直接对线上 20-bit 对齐数据做 413b/420b 解码，已证实 LSP / CTRL_F / CTRL_L / VBK / Video 线上数据全部正确。
+> **当前现状**（2026-11-05 按 HEAD `a7130ba7` 复核）：Python 离线解码器仍是解码验证的 golden 路径（LSP / CTRL_F / CTRL_L / VBK / Video 线上数据全部正确）。RTL 解码链两项历史问题中，**`decode_ignore` 已修**（`decoder_7b.v:353`，6-bit 对 `{0,63}` 比较，0924~1022 间服务器包带入）；**`tag_value` 块边界时序**的加载逻辑与基线相同（`tag_value <= din_20b_aligned_d2[6:1]`），未见延拍修复证据，状态需以最新波形/回归结论为准。
 
 ## 1. 离线解码（当前实际工作路径）
 
 > 🎬 本页图均为纯 CSS 动画 SVG（在 `images/anim/` 目录，滚动到视口时重播；顶部导航可一键切换 动画/静态）；静态原版保留在同名路径作 fallback。
 
-![收发结构框图：脚本离线验证](./images/anim/pydec_tx_rx_structure.svg?v=20261102)
+![收发结构框图：脚本离线验证](./images/anim/pydec_tx_rx_structure.svg?v=20261105)
 
 ### 1.1 工作流程
 
@@ -564,7 +564,7 @@
 
 ⇒ 发送端（sequence / 编码 / driver / 链路 / 对齐）排除；剩余问题在 RTL 解码侧（见第 2 节）。
 
-## 2. RTL 解码链（联调中）
+## 2. RTL 解码链
 
 ### 2.1 链路结构
 
@@ -576,37 +576,40 @@
 │   decoder_7b      │  420b → 413b 解码
 │                   │  提取 tag、还原全 0/全 1、重组数据
 │                   │  输出 7/14/21-bit 有效数据
+│                   │  header_mismatch 位段修复（[15:7]→[12:7]）
 └─────────┬─────────┘
           │
           ▼
 ┌───────────────────┐
 │  descramble_7b    │  7-bit LFSR G16(X) 解扰
-│                   │  K3 上升沿复位
+│                   │  K3 上升沿复位（K3_FIND_rp_d[3] 延 4 拍生效）
 │                   │  scramble_en=0 时旁路
 └─────────┬─────────┘
           │
           ▼
 ┌───────────────────┐
-│ long_decoding_top │  42-bit 缓存
+│ long_decoding_top │  44-bit 缓存（42→44，缓冲加宽）
 │                   │  按 8/16/24-bit 切分打包输出
 └───────────────────┘
 ```
 
+> 基线后 RTL 侧演进（66ecf97d → a7130ba7）：`decode_ignore` 已修（6-bit 对 `{0,63}`，`decoder_7b.v:353`）；`header_mismatch` 第二组切片 `[15:7]` → `[12:7]`；`dec_data_buf` 42→44 bit；K3 复位/使能延 4 拍（`K3_FIND_rp_d[3]`）。解码链结构（decoder_7b → descramble_7b → long_decoding_top）与模块名未变。
+
 ### 2.2 关键信号
 
 - `decode_en`：解码窗口使能；K1/K4 开，K2/K3 关
-- `tag_value`：6-bit 标签，用于全 0/全 1 替换；`decode_ignore`（无编码旁路）应判 `tag ∈ {0,63}`（现有 RTL 以 6-bit 对 7-bit 常量比较，tag=0 标记漏判，待修，见排障 3.9）
+- `tag_value`：6-bit 标签，用于全 0/全 1 替换；`decode_ignore`（无编码旁路）<span class="badge badge-fixed">🔵 已修</span> 现判 `tag ∈ {0,63}`（`decoder_7b.v:353`，基线为 6-bit 对 7-bit 常量比较、tag=0 标记漏判）
 - `dout_21b_valid`：有效位宽 01=7bit / 10=14bit / 11=21bit
 - `scramble_en_k3`：K3 锁存的解扰使能
 - `dout_24b / dout_valid`：最终 24-bit 输出及有效指示
 
-### 2.3 联调现状
+### 2.3 联调现状（2026-11-05 复核）
 
 | 事项 | 状态 |
 |------|------|
 | `din_20b_aligned` 误接 `DATA_POINT_LAT` → 改接 `DATA0_ALIGN_LONG`，LSP 解出原始训练码 | <span class="badge badge-fixed">🔵 已解决</span> |
-| `decode_ignore` 位宽：6-bit `tag_value` 对 7-bit 常量，tag=0 无编码标记漏判 → 无替换块误解码（`0x40→0x00`、`0x50→0x40`）；DV 标记已更正为 tag∈{0,63} | <span class="badge badge-pending">🟡 待修</span> |
-| **`tag_value` 块边界时序错**：当前 420-bit 块尚未处理完 59 个组，`tag_value` 已提前更新为下一个块的 tag，导致块末尾真实替换组（如 `{1,tag=1}`=`7'h41`）用错 tag、漏替换，下游 21-bit 字节重组后表现为 `FC→04`/`FE→0E`/`FF→FF`/`FE FF→7E F0`（原误判为 0x7F 组还原/重组异常） | <span class="badge badge-pending">🟡 待修</span> |
+| `decode_ignore` 位宽：6-bit `tag_value` 对 7-bit 常量，tag=0 无编码标记漏判 → 无替换块误解码（`0x40→0x00`、`0x50→0x40`）；DV 标记已更正为 tag∈{0,63} | <span class="badge badge-fixed">🔵 RTL 已修</span>（`decoder_7b.v:353` 改 6-bit 对 `{0,63}`，0924~1022 间服务器包带入） |
+| **`tag_value` 块边界时序错**：当前 420-bit 块尚未处理完 59 个组，`tag_value` 已提前更新为下一个块的 tag，导致块末尾真实替换组（如 `{1,tag=1}`=`7'h41`）用错 tag、漏替换，下游 21-bit 字节重组后表现为 `FC→04`/`FE→0E`/`FF→FF`/`FE FF→7E F0`（原误判为 0x7F 组还原/重组异常） | <span class="badge badge-pending">🟡 待修</span>（RTL 加载逻辑与基线相同，未见延拍修复证据，需最新波形确认） |
 | 区域边界异常：起始 9 字节残流 / 尾部字节溢出 / 个别位错 | <span class="badge badge-pending">🟡 待跟进</span> |
 | 定位辅助：`long_rtl_tag_lane0.md`（替换判定）、`long_rtl_max_lane0.md`（max dump）、`long_rtl_grp_lane0.md`（7-bit group 流 + decode_en 窗口），pydec 可作对照证据 | 可用 |
 
@@ -725,4 +728,4 @@ const lightbox = document.getElementById('lightbox');
 </body>
 </html>
 
-<!-- ymzhu 2026-11-04 15:52 -->
+<!-- ymzhu 2026-11-05 11:58 -->

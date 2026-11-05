@@ -69,8 +69,9 @@
 <text x="230.0" y="317.5" font-size="9" fill="#64748b" text-anchor="middle">20-bit 包 / 40-bit K 码 · LSB-first</text>
 <text x="230.0" y="333.5" font-size="9" fill="#64748b" text-anchor="middle">→ vif.rxn0 / rxp0</text>
 <rect x="64" y="364" width="332" height="60" rx="8" fill="#faf5ff" stroke="#e9d5ff" stroke-width="1.5"/>
-<text x="230.0" y="389.5" font-size="9.5" fill="#7c3aed" text-anchor="middle" font-weight="600">dump_raw_bytes() → long_rawbyte_seq_lane0.md</text>
-<text x="230.0" y="405.5" font-size="9" fill="#64748b" text-anchor="middle">编码前 raw byte 转储（期望值）</text>
+<text x="230.0" y="381.5" font-size="9.5" fill="#7c3aed" text-anchor="middle" font-weight="600">dump_raw_bytes() → long_rawbyte_seq_lane0.md</text>
+<text x="230.0" y="397.5" font-size="9" fill="#64748b" text-anchor="middle">编码前 raw byte（期望值）· 日志族 0807+：</text>
+<text x="230.0" y="413.5" font-size="9" fill="#64748b" text-anchor="middle">kcode_seq / rawbyte / pkt20 / diag_debug / kcode_drv</text>
 </g>
 <g class="fade" style="animation-delay:1s">
 <path d="M 396 292 L 452 292 L 452 152 L 524 152" stroke="#2563eb" stroke-width="2" fill="none" marker-end="url(#ar-blue)" class="draw" pathLength="100" style="animation-delay:1s"/>
@@ -96,8 +97,8 @@
 <g class="breathe" style="animation-delay:0s">
 <text x="674" y="272" font-size="9" fill="#6b7280" text-anchor="middle">descramble_7b → dout_24b + 2-bit valid</text>
 </g>
-<text x="674" y="296" font-size="9" fill="#9ca3af" text-anchor="middle">排障焦点在 RTL 解码链（3.6 节）</text>
-<text x="674" y="312" font-size="9" fill="#9ca3af" text-anchor="middle">但验证线上数据不依赖它</text>
+<text x="674" y="296" font-size="9" fill="#9ca3af" text-anchor="middle">decode_ignore 已修：6-bit {0,63}（decoder_7b.v:353）</text>
+<text x="674" y="312" font-size="9" fill="#9ca3af" text-anchor="middle">tag_value 块边界：加载逻辑同基线 · 待最新波形</text>
 <rect x="870" y="128" width="266" height="64" rx="8" fill="#f0fdf4" stroke="#bbf7d0" stroke-width="1.5"/>
 <text x="1003.0" y="147.5" font-size="10.5" fill="#1e293b" text-anchor="middle" font-weight="600">long_rtl_tap_debug.sv</text>
 <text x="1003.0" y="163.5" font-size="8.5" fill="#64748b" text-anchor="middle">bind 注入 · 零 RTL 修改</text>

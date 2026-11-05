@@ -107,10 +107,11 @@ def build():
         lines.pop()
     L = lines  # 0 基；文件第 n 行 = L[n-1]
 
-    # ---- 结构断言（确定性前提）----
+    # ---- 结构断言（确定性前提；1105：表格 13→15 行、行高 32→30，末行动态定位）----
     assert L[0].lstrip().startswith("<svg"), "line1 应为 <svg>"
     assert "font-family" in L[1], "line2 应为字体 <style>"
-    assert L[174].strip() == "</svg>", "末行应为 </svg>"
+    SVG_END = len(L) - 1
+    assert L[SVG_END].strip() == "</svg>", "末行应为 </svg>"
     assert ">8B/10B vs 420B 长编码" in L[10], "line11 应为标题"
     assert "0717v1 修正" in L[11], "line12 应为副标题"
     assert L[2].strip() == "<defs>", "line3 应为 <defs>"
@@ -124,16 +125,16 @@ def build():
         assert L[k] == f'<line x1="1040" y1="{y0}" x2="1040" y2="{y1}" stroke="#2563eb" stroke-width="1.5" marker-end="url(#ar-blue)"/>', f"右箭头 line{k+1}"
     assert L[88].startswith('<rect x="40" y="690" width="1320"'), "line89 表容器"
     assert ">关键差异对照<" in L[89], "line90 表标题"
-    row_re = re.compile(r'^<rect x="60" y="(\d+)" width="210" height="32"')
+    row_re = re.compile(r'^<rect x="60" y="(\d+)" width="210" height="30"')
     dstart = []
     i = 96
-    while i < 174 and row_re.match(L[i]):
+    while i < SVG_END and row_re.match(L[i]):
         dstart.append(i)
         assert all(t.strip().startswith("<rect") for t in L[i + 1:i + 3]), "数据行 rect"
         assert all(t.strip().startswith("<text") for t in L[i + 3:i + 6]), "数据行 text"
         i += 6
-    assert len(dstart) == 13, f"应为 13 数据行, 实得 {len(dstart)}"
-    assert dstart[-1] + 6 == 174, "末数据行应紧邻 </svg>"
+    assert len(dstart) == 15, f"应为 15 数据行, 实得 {len(dstart)}"
+    assert dstart[-1] + 6 == SVG_END, "末数据行应紧邻 </svg>"
 
     # ---- 组装 ----
     out = [L[0], L[1]] + KIT_CSS.split("\n")   # <svg> + 字体 style + kit style（下一行）
@@ -211,12 +212,13 @@ def build():
         assert len(hits) == 1, f"方框 rect 在输出中应恰好出现 1 次 @line{li+1}: {len(hits)}"
         out[hits[0]] = f'<g class="step" style="animation-delay:{fmt(delay)}s">{L[li]}</g>'
 
-    # ---- 底部对比区：表头组 1.4；13 数据行 1.45 起步进 0.04 ----
+    # ---- 底部对比区：表头组 1.4；15 数据行 1.45 起步进 0.03（1105：+2 行，0.04→0.03
+    #      保住一次性入场总长 ≤2.5s：末行 1.87+0.55=2.42s） ----
     row_group(1.40, 88, 96)
     for r, s0 in enumerate(dstart):
-        row_group(1.45 + 0.04 * r, s0, s0 + 6)
+        row_group(1.45 + 0.03 * r, s0, s0 + 6)
 
-    out.append(L[174])        # </svg>
+    out.append(L[SVG_END])    # </svg>
     OUT.write_text("\n".join(out) + "\n", encoding="utf-8", newline="\n")
     print(f"written: {OUT} ({OUT.stat().st_size} bytes)")
 
@@ -224,4 +226,4 @@ def build():
 if __name__ == "__main__":
     build()
 
-# ymzhu 2026-11-04 17:20
+# ymzhu 2026-11-05 11:35

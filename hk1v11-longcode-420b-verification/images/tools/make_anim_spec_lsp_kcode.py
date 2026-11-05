@@ -146,6 +146,7 @@ def build():
     arrow_last_label = arrow_last + 1
     assert "后发" in lines[arrow_last_label]
     dir_note = idx(lines, "串行发送方向")
+    k3_note = idx(lines, "K3 语义（0924 后）", lo=dir_note)
     end = len(lines) - 1
 
     # 橙格：rect(x, y=114/210, #ffedd5) + 紧随 text 成对（每行 12 格）
@@ -277,6 +278,11 @@ def build():
     out.append(flowtail("M 178 542 L 178 528", "#2563eb", 2.4, -0.5, w=4))
     out.append(flowtail("M 178 542 L 178 528", "#2563eb", 2.4, -1.3, w=4))
     out.append(lines[dir_note])
+    # K3 语义注记（1105 新增 · 0924 语义）：随末组淡入（1.9s，总长 ≤2.5s 内）
+    counts["fade"] += 1
+    out.append('<g class="fade" style="animation-delay:1.9s">')
+    out.append(lines[k3_note])
+    out.append("</g>")
     out.append("</g>")
 
     out.append(lines[end])
@@ -334,4 +340,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-# ymzhu 2026-11-04 17:20
+# ymzhu 2026-11-05 11:35

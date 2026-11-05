@@ -514,7 +514,7 @@
 
 > 🎬 本页图均为纯 CSS 动画 SVG（在 `images/anim/` 目录，滚动到视口时重播；顶部导航可一键切换 动画/静态）；静态原版保留在同名路径作 fallback。
 
-![8B/10B vs 420B 架构对比](./images/anim/8b10b_vs_420b_architecture.svg?v=20261102)
+![8B/10B vs 420B 架构对比](./images/anim/8b10b_vs_420b_architecture.svg?v=20261105)
 
 ## 2. 参数对照表
 
@@ -526,12 +526,16 @@
 | K-code 宽度 | 10-bit | 40-bit |
 | IDLE | 无独立 IDLE | 10-bit K5~K8 |
 | LFSR | 24-bit G24(X) | 16-bit G16(X) |
-| LFSR 复位点 | 训练/K-code 边界 | K3 上升沿 |
+| LFSR 复位点 | 训练/K-code 边界 | K3 上升沿（`K3_FIND_rp_d[3]` 延 4 拍生效，key 复位 0XFFFF） |
+| CTRL_F 加扰 | 不加扰 | 恒不加扰、不推进 SCR_KEY（0924）；SCREN=1 行尾 K3 锁存 + key 复位 |
 | 发送方向 | LSB-first | LSB-first |
 | 跨 lane 对齐 | 字节对齐 | 70-bit dummy 对齐 |
-| DUT 解码 | 8B/10B decode | `long_decoding_top` / `decoder_7b` / `descramble_7b` |
+| DUT 解码 | 8B/10B decode | `long_decoding_top` / `decoder_7b` / `descramble_7b`（decode_ignore 已修；`dec_data_buf` 44-bit） |
+| DUT 编码 TX 通路 | 8B/10B encode | `LONG_ENCODING_ALIGN` / `LONG_ENCODING_ERROR_CTRL` / `LONG_ENCODING_OUTPUT`（0807 后新增） |
 | 输出 | 8-bit data | 24-bit + 2-bit valid |
 | 线上数据验证 | C model / scoreboard 对比 | bind tap + `decode_dap.py` 离线比对（不看 RTL） |
+
+> 2026-11-05 复核：上表按 HEAD `a7130ba7` 语义更新（K3 延 4 拍、CTRL_F 加扰差异、DUT 编码 TX 通路三行为本版新增）。
 
 ---
   </script>
@@ -648,4 +652,4 @@ const lightbox = document.getElementById('lightbox');
 </body>
 </html>
 
-<!-- ymzhu 2026-11-04 15:52 -->
+<!-- ymzhu 2026-11-05 11:58 -->

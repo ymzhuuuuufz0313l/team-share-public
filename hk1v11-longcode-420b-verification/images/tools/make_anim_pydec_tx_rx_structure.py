@@ -71,8 +71,18 @@ KIT_CSS = """<style>
 SW_L, SW_Y, SW_W, SW_H = 40, 480, 1120, 130
 SW_P = SW_W + 240                                   # P = 区域宽 + 240 = 1360
 SW_X0 = SW_L - 0.60 * SW_P                          # t=0 光带右缘(0.60P)恰在区域左缘
-SHINE_TEXT_IDX = (59, 61, 62, 64, 65, 66, 68, 69, 80, 82)   # 离线比对区内全部 <text>（0 基行号）
-SW_DEFS = f"""    <linearGradient id="sweepG-1" gradientUnits="userSpaceOnUse" x1="{SW_X0:g}" y1="0" x2="{SW_X0 + SW_P:g}" y2="0">
+# SHINE 文字行号不再硬编码（1105：静态图 dump 盒 +1 行后整体位移），
+# build() 内按 SW 区域动态扫描（离线比对区内全部 <text>，0 基）。
+SHINE_TEXT_IDX = ()   # 兼容占位；真实值在 build() 中计算
+SW_DEFS = None   # 1105：在 build() 内按动态 SHINE 文字数生成（sweepG-1 + sweepC-1）
+
+SW_BAND = (f'<g class="fade" style="animation-delay:1.4s"><g clip-path="url(#sweepC-1)">'
+           f'<rect class="sweepband" x="{SW_X0:g}" y="{SW_Y}" width="{SW_P:g}" height="{SW_H}" '
+           f'fill="url(#sweepG-1)" style="--sweepP:{SW_P:g}px"/></g></g>')
+
+
+def make_sw_defs(n_shine):
+    return f"""    <linearGradient id="sweepG-1" gradientUnits="userSpaceOnUse" x1="{SW_X0:g}" y1="0" x2="{SW_X0 + SW_P:g}" y2="0">
       <stop offset="0" stop-color="#ffffff" stop-opacity="0"/>
       <stop offset="0.40" stop-color="#ffffff" stop-opacity="0"/>
       <stop offset="0.46" stop-color="#ffffff" stop-opacity=".3"/>
@@ -82,10 +92,7 @@ SW_DEFS = f"""    <linearGradient id="sweepG-1" gradientUnits="userSpaceOnUse" x
       <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
     </linearGradient>
     <clipPath id="sweepC-1">""" + "".join(
-    f'<use href="#shT{k}"/>' for k in range(len(SHINE_TEXT_IDX))) + "</clipPath>"
-SW_BAND = (f'<g class="fade" style="animation-delay:1.4s"><g clip-path="url(#sweepC-1)">'
-           f'<rect class="sweepband" x="{SW_X0:g}" y="{SW_Y}" width="{SW_P:g}" height="{SW_H}" '
-           f'fill="url(#sweepG-1)" style="--sweepP:{SW_P:g}px"/></g></g>')
+    f'<use href="#shT{k}"/>' for k in range(n_shine)) + "</clipPath>"
 
 
 def fmt(v):
@@ -144,17 +151,16 @@ def build():
                 return i
         raise AssertionError(f"anchor not found: {prefix!r}")
 
-    # ---- 结构锚点（0 基）----
-    i_title = idx("<text x=\"600\" y=\"40\"")            # 10
-    i_tx = idx("<rect x=\"40\" y=\"100\"")               # 12
-    i_ser1 = idx("<path d=\"M 396 292")                  # 29 蓝色串行 1
-    i_ser2 = idx("<path d=\"M 396 304")                  # 30 蓝色串行 2
-    i_rx = idx("<rect x=\"500\" y=\"100\"")              # 32
-    i_rtl = idx("<rect x=\"524\" y=\"214\"")             # 40 RTL 虚线盒
-    i_off = idx("<rect x=\"40\" y=\"480\"")              # 58
-    i_leg = idx("<line x1=\"60\" y1=\"648\"")            # 83
-    assert (i_title, i_tx, i_ser1, i_ser2, i_rx, i_rtl, i_off, i_leg) == \
-           (10, 12, 29, 30, 32, 40, 58, 83), "源图结构与预期不符"
+    # ---- 结构锚点（0 基；1105 起改为前缀定位 + 顺序断言，不再钉死行号）----
+    i_title = idx("<text x=\"600\" y=\"40\"")
+    i_tx = idx("<rect x=\"40\" y=\"100\"")
+    i_ser1 = idx("<path d=\"M 396 292")
+    i_ser2 = idx("<path d=\"M 396 304")
+    i_rx = idx("<rect x=\"500\" y=\"100\"")
+    i_rtl = idx("<rect x=\"524\" y=\"214\"")
+    i_off = idx("<rect x=\"40\" y=\"480\"")
+    i_leg = idx("<line x1=\"60\" y1=\"648\"")
+    assert (i_title < i_tx < i_ser1 < i_ser2 < i_rx < i_rtl < i_off < i_leg), "锚点顺序异常"
 
     i_tap_rect = idx("<rect x=\"784\" y=\"134\"")
     i_tap_text = next(i for i, l in enumerate(lines) if ">TAP<" in l)
@@ -166,42 +172,48 @@ def build():
     assert i_rtl < i_dout < i_rtl + 7                    # breathe 目标文本在 RTL 盒内
     assert lines[i_rtl].find("stroke-dasharray") >= 0, "RTL 盒应为虚线"
 
-    # ---- 箭头/连接器逐条规格（0 基行号, 前缀, 类型, 入场 delay）----
+    # ---- 箭头/连接器逐条规格（前缀唯一锚定 → 动态行号, 类型, 入场 delay）----
     # dashgrow 规格（2026-10-28 加密）：紫期望值链 2 条，duration 2.8/3.2s 相位错开
-    GROW_SPEC = {77: (3.2, -1.6), 79: (2.8, -0.5)}
+    GROW_SPEC = {'<path d="M 214 424': (3.2, -1.6), '<line x1="344" y1="552"': (2.8, -0.5)}
     EDGES = [
         # TX 内部 2 ↓（TX=.20 → delay .75）
-        (70, '<line x1="230" y1="188"', "draw", 0.75),
-        (71, '<line x1="230" y1="264"', "draw", 0.75),
+        ('<line x1="230" y1="188"', "draw", 0.75),
+        ('<line x1="230" y1="264"', "draw", 0.75),
         # 灰色"传统路径"虚线（RX=.45 → 1.0）
-        (72, '<line x1="674" y1="192"', "march", 1.00),
-        (73, '<text x="700" y="206"', "fade", 1.00),
+        ('<line x1="674" y1="192"', "march", 1.00),
+        ('<text x="700" y="206"', "fade", 1.00),
         # RX→脚本 3 箭头（RX=.45 → 1.0）
-        (74, '<line x1="824" y1="160"', "draw", 1.00),
-        (75, '<line x1="1003" y1="192"', "draw", 1.00),
-        (76, '<line x1="1003" y1="276"', "draw", 1.00),
+        ('<line x1="824" y1="160"', "draw", 1.00),
+        ('<line x1="1003" y1="192"', "draw", 1.00),
+        ('<line x1="1003" y1="276"', "draw", 1.00),
         # 离线 band 连接（band=.85 → 1.4）
-        (77, '<path d="M 214 424', "grow", 1.40),       # 紫 dump → 离线 rawbyte（虚线生长）
-        (78, '<path d="M 1003 364', "march", 1.40),     # 绿 lane0 ↓ 虚线
-        (79, '<line x1="344" y1="552"', "grow", 1.40),  # 紫 rawbyte→report 期望值（虚线生长）
-        (80, '<text x="392.5" y="544"', "fade", 1.40),  # 期望值 标签
-        (81, '<line x1="878" y1="552"', "draw", 1.40),  # lane0→report 实际值（实线）
-        (82, '<text x="829.5" y="544"', "fade", 1.40),  # 实际值 标签
+        ('<path d="M 214 424', "grow", 1.40),            # 紫 dump → 离线 rawbyte（虚线生长）
+        ('<path d="M 1003 364', "march", 1.40),          # 绿 lane0 ↓ 虚线
+        ('<line x1="344" y1="552"', "grow", 1.40),       # 紫 rawbyte→report 期望值（虚线生长）
+        ('<text x="392.5" y="544"', "fade", 1.40),       # 期望值 标签
+        ('<line x1="878" y1="552"', "draw", 1.40),       # lane0→report 实际值（实线）
+        ('<text x="829.5" y="544"', "fade", 1.40),       # 实际值 标签
     ]
-    for i, pref, _t, _d in EDGES:
-        assert lines[i].lstrip().startswith(pref), f"edge anchor mismatch @line {i+1}: {lines[i]}"
+    edge_idx = []
+    for pref, _t, _d in EDGES:
+        hits = [i for i in range(len(lines)) if lines[i].lstrip().startswith(pref)]
+        assert len(hits) == 1, f"edge anchor {pref!r} hits={hits}"
+        edge_idx.append(hits[0])
+    assert edge_idx == sorted(edge_idx) and i_off < edge_idx[0], "边锚点应升序且在离线 band 后"
 
     # ---- 光带：给离线比对区全部文字加 id（只加属性，文字内容零改动）----
-    for k, i in enumerate(SHINE_TEXT_IDX):
-        assert lines[i].lstrip().startswith("<text") and SW_Y <= float(
-            re.search(r' y="([\d.]+)"', lines[i]).group(1)) <= SW_Y + SW_H, f"光带文字锚点 @line {i+1}"
-        lines[i] = re.sub(r'^(\s*<text\b[^>]*?)>', rf'\1 id="shT{k}">', lines[i], count=1)
+    # （1105：SHINE 文字按 SW 区域动态扫描，行号不再硬编码）
     in_region = [i for i, l in enumerate(lines) if l.lstrip().startswith("<text")
                  and SW_Y <= float(re.search(r' y="([\d.]+)"', l).group(1)) <= SW_Y + SW_H]
-    assert in_region == list(SHINE_TEXT_IDX), f"离线比对区文字与 SHINE_TEXT_IDX 不符: {in_region}"
+    assert len(in_region) == 10, f"离线比对区文字应 10 处，实际 {len(in_region)}"
+    SHINE = tuple(in_region)
+    for k, i in enumerate(SHINE):
+        assert lines[i].lstrip().startswith("<text")
+        lines[i] = re.sub(r'^(\s*<text\b[^>]*?)>', rf'\1 id="shT{k}">', lines[i], count=1)
+    sw_defs = make_sw_defs(len(SHINE))
 
     # ---- 列车边几何 ----
-    green_edges = [line_to_d(lines[i]) for i in (74, 75, 76)]   # tap→脚本链 3 边
+    green_edges = [line_to_d(lines[edge_idx[k]]) for k in (4, 5, 6)]  # RX→脚本链 3 边
     blue_edges = [get_d(lines[i_ser1]), get_d(lines[i_ser2])]   # CHPI K 码对齐 2 边
 
     # ---- 组装 ----
@@ -211,7 +223,7 @@ def build():
     d_end = next(i for i, l in enumerate(lines) if l.strip() == "</defs>")
     bg_end = next(i for i in range(d_end, d_end + 3) if 'fill="#ffffff"' in lines[i])
     out.extend(lines[2:d_end])
-    out.extend(SW_DEFS.split("\n"))
+    out.extend(sw_defs.split("\n"))
     out.extend(lines[d_end:bg_end + 1])
 
     def group(rng, cls, delay, nested=(), insert_after=None, replace=None):
@@ -254,11 +266,11 @@ def build():
               add_attrs(lines[i_rtl], 'class="dashgrow" style="animation-duration:3s;'
                                        'animation-delay:-1s"'),
               "</g>"]})
-    group((i_off, EDGES[0][0]), "row", 0.85,                        # 离线 band
+    group((i_off, edge_idx[0]), "row", 0.85,                        # 离线 band
           nested=[(i_vd_rect, i_vd_rect + 4, "pulse-t", -0.7)])
 
     # 箭头/连接器区（保持原文档顺序）
-    for i, _pref, kind, delay in EDGES:
+    for i, (_pref, kind, delay) in zip(edge_idx, EDGES):
         ln = lines[i]
         if kind == "draw":
             out.append(f'<g class="fade" style="animation-delay:{fmt(delay)}s">')
@@ -270,7 +282,7 @@ def build():
             out.append(add_attrs(ln, f'class="march" style="animation-delay:{fmt(phase)}s"'))
             out.append("</g>")
         elif kind == "grow":
-            gdur, gdl = GROW_SPEC[i]
+            gdur, gdl = GROW_SPEC[_pref]
             out.append(f'<g class="fade" style="animation-delay:{fmt(delay)}s">')
             out.append(add_attrs(ln, f'class="dashgrow" style="animation-duration:{fmt(gdur)}s;'
                                      f'animation-delay:{fmt(gdl)}s"'))
@@ -300,4 +312,4 @@ def build():
 if __name__ == "__main__":
     build()
 
-# ymzhu 2026-11-04 17:20
+# ymzhu 2026-11-05 11:35

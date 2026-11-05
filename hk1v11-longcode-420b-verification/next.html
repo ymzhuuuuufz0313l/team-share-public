@@ -507,26 +507,37 @@
   <script type="text/template" id="md">
 # 十、后续工作
 
+> 2026-11-05 按 HEAD `a7130ba7`（1028 包后）复核更新：已闭环项打勾并注波次，新增 §4 后续项。
+
 ## 1. 实现对齐
 
 - [x] 修复 reference model 与 driver 的 LSB-first / 从右到左实现（0713 已完成）
 - [x] 将 `t_8b1lane_420b_basic` 同步到 `DV_TCON_C/top/tests/`（0716 已完成并跑通）
-- [x] Config Line 单独成行，Active Line 统一 K2 结束（0717v1 已完成）
-- [x] 修复 ref model `decode_420b_to_413b()` 与 encode 语义不一致：tag 取 `header[6:1]`、线上组先判定替换再全组统一解扰、改自然位序（0720v1 已完成，Python roundtrip 复验通过）
+- [x] Config Line 单独成行，Active Line 统一 K2 结束（0717v1 已完成；0924 演进为第一条 VFP 行承载 + K3|K2 结尾）
+- [x] 修复 ref model `decode_420b_to_413b()` 与 encode 语义不一致：tag 取 `header[6:1]`、线上组先判定替换再全组统一解扰、改自然位序（0720v1 已完成，Python roundtrip 复验通过；随 0807v1 入库 git）
 - [x] 无编码标记更正为 tag∈{0,63}（spec 发送顺序读法），tag 搜索跳过保留值 0/63（0721 已完成，1044 块 roundtrip 全对）
 - [x] 替换点自动判定 debug 与离线工具链：`long_rtl_tag_debug` + `check_rtl_tag.py` / `decode_max.py` / `compare_pkt20.py`（0721~0722 已完成）
-- [ ] 帧结构与 decode 修复后重新仿真，用 `long_kcode_seq/drv` 日志复核 K-code 序列
-- [ ] RTL 侧 `decode_ignore` 修正（tag∈{0,63}）与 **`tag_value` 块边界时序修复**后回归（SCREN=1 验证的前置条件）
+- [x] RTL 侧 `decode_ignore` 修正（tag∈{0,63}）：**已修**（`decoder_7b.v:353` 改 6-bit 对 `{0,63}`，随 0924~1022 间服务器包入树；SCREN=1 验证的前置条件之一已落实，SCREN1 case 亦于 1022 入库）
+- [ ] **`tag_value` 块边界时序修复后回归**（RTL 加载逻辑与基线相同，未见延拍修复证据，需最新波形确认——2026-11-05 复核仍开放）；回归时用 `long_kcode_seq/drv` 日志复核 K-code 序列
 
 ## 2. Case 扩展
 
-- [ ] 按 Phase 1~7 逐步扩展 420b case
-- [ ] 在 420b case 中关闭 C model 相关 checker
+- [x] 按 Phase 1~7 逐步扩展 420b case → **已被 0924 维度矩阵一次性落地取代**（1 → 190；1022 +2 达 192，见「Case」页）
+- [x] C-model 相关 checker 与 420b 主流程打通：0924 起 `send_ppm_420b` 每帧前置 `process_line + exec_c`，golden `outResult/digital/*` 供 digital_top 检查（原「关闭 C model checker」待办已被「接入闭环」取代）
+- [x] BOE 回放 case（`t_H1440_..._boe_test`）与 SCREN1 case（`for_chengli_test`）入库（1022）
 
 ## 3. Spec 与回归
 
-- [ ] 确认 CTRL_F checksum、LSP 时长、UTC 责任模块等 Spec 差异点
+- [ ] 确认 CTRL_F checksum、LSP 时长、UTC 责任模块等 Spec 差异点（K3 使用条件已被 0924 部分回答：SCREN=1 时 CTRL_F 行尾 K3，Active 行仍待确认）
 - [ ] 普通 8B/10B 模式回归，确保未引入副作用
+
+## 4. 后续项（2026-11-05 增补）
+
+- [ ] **checker_420b 正式比对改造**：`check_all()` 的 `scramble_en` 硬编码 `1'b1`、每 block LFSR 重置 0xFFFF → 按 `env_cfg.SCREN` 与 region 边界改造（checker 自建库以来零变更，仍 77 行 display-only）
+- [ ] **BOE 回放扩展**：当前 12 Pat × 2 doc（`sim_data_BOE_opt`），扩展 Pat 覆盖面
+- [ ] **MULTI_CHIP × 420b**：multi4 框架已就位（1010），420b 模式下多芯片 case 组合待开展
+- [ ] **BCC 训练 420b 模式 case**：`chpi_training_packet_sequence` 已支持 420b 双模式，BCC 训练 case 当前均为 8B/10B 模式，420b 侧待补
+- [ ] tag_value 块边界修复后的 SCREN=1 全量回归（含 SCREN1 case）
   </script>
 
   <script>
@@ -640,4 +651,4 @@ const lightbox = document.getElementById('lightbox');
   <script src="./fx.js?v=11"></script>
 </body>
 </html>
-<!-- ymzhu 2026-11-02 18:52 -->
+<!-- ymzhu 2026-11-05 11:58 -->

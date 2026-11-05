@@ -542,11 +542,11 @@
 
 ## 2. 加扰规则
 
-![Scramble key 滚动机制](./images/anim/spec_scramble_rolling.svg?v=20261101)
+![Scramble key 滚动机制](./images/anim/spec_scramble_rolling.svg?v=20261105)
 
 ### 2.1 payload 加扰
 
-payload（CTRL_F / CTRL_L / RGB / VBK）**加扰**。
+payload（**CTRL_L / RGB / VBK**）加扰，随 `env_cfg.SCREN` 门控。**CTRL_F 自 0924 起恒不加扰**（`encode_with_70b_alignment(..., 1'b0, ...)`）且**不推进 SCR_KEY**；SCREN=1 时其行尾 K3 使接收端锁存 SCREN 并复位共享加扰 key（0XFFFF）。
 
 ### 2.2 LSP 不加扰
 
@@ -580,7 +580,7 @@ Header 为 `{tag[5:0], toggle}`，toggle 位于 bit0，**toggle 先发**，随�
 
 ## 4. 跨 lane 70-bit 对齐
 
-![非 413b 整数倍数据处理](./images/anim/spec_dummy_70b.svg?v=20261102)
+![非 413b 整数倍数据处理](./images/anim/spec_dummy_70b.svg?v=20261105)
 
 ### 4.1 对齐原则
 
@@ -595,11 +595,11 @@ Header 为 `{tag[5:0], toggle}`，toggle 位于 bit0，**toggle 先发**，随�
 | Region | 原始数据 | 来源 |
 |--------|----------|------|
 | LSP | 256-bit 训练码 `0xEA/EB/EC/ED ×8`（32B） | ref model 常量 |
-| CTRL_F | 64B 帧配置寄存器（SCREN / PORSD / CH_SEL / TEST_PRTCT…） | `env_cfg.get_ctrlF_reg(frame)` |
-| Active Line | CTRL_L 5B（FSYNC / POL / BKDU…）+ Video 像素 `hact×3` B/行 | `env_cfg.get_ctrlL_reg` + `pixels` |
-| V blanking | CTRL_L 5B + VBK（可配置字节 × subpix_cnt） | `env_cfg.get_ctrlL_reg` + `vbk` |
+| CTRL_F | 64B 帧配置寄存器（SCREN / PORSD / CH_SEL / TEST_PRTCT…） | `env_cfg.get_ctrlF_reg(frame)`（0721v1 RTL 侧 CONFIG_DATA 16→24 bit / 3 寄存器每 beat，不影响 420b 编码链） |
+| Active Line | CTRL_L 5B（FSYNC / POL / BKDU…）+ Video 像素 `hact×3` B/行 | `env_cfg.get_ctrlL_reg`（0825 起相位感知：VBP/VACT/VFP + line_idx；可被 `ctrl_l_line_cfg.txt` 逐行覆盖）+ `pixels` |
+| V blanking | CTRL_L 5B + VBK（可配置字节 × subpix_cnt） | `env_cfg.get_ctrlL_reg` + `vbk`；subpix_cnt 由 CH_SEL 决定（966/960/726/720/864），DPLC_GROUP=1 时 +3→+6（1010） |
 
-### 4.4 dummy 填充与截取（0720v1 当前实现）
+### 4.4 dummy 填充与截取（0720v1 当前实现，0825/1010 增补）
 
 <div class="flow">
   <div class="fbox"><b>① 跨 lane 补零</b><br/><code>pad_bit_stream()</code><br/>补到 <code>max_lane_raw_bits()</code> = (6 + ⌈payload_B ÷ port_num⌉) × 8<br/>bit 级补 0，此时未对齐 413</div>
@@ -610,6 +610,8 @@ Header 为 `{tag[5:0], toggle}`，toggle 位于 bit0，**toggle 先发**，随�
   <div class="farrow">→</div>
   <div class="fbox"><b>④ 20-bit 包发出</b><br/><code>send_420b_encoded_bits()</code><br/>140 是 20 的倍数，leftover = 0</div>
 </div>
+
+> 基线后增补：0825 起 CTRL_F 行 **Dmy 补齐到整行 raw 长度**（`pad_bit_stream(bit_stream, max_lane_raw_bits(hact*3, 6))`）；1010 起 CH_SEL 决定 subpix_cnt（966/960/726/720/864 表）、DPLC_GROUP=1 时 subpix_cnt +3→+6（影响 VBK/像素 raw 长度与对齐结果）。
 
 **截取边缘是 140-bit**（不是 420 / 70 / 20）：
 
@@ -625,7 +627,7 @@ Header 为 `{tag[5:0], toggle}`，toggle 位于 bit0，**toggle 先发**，随�
 | CTRL_F | 512（64B） | 2（补 314） | 840 | **560**（420+140） | 28 |
 | Active Line | 92200 → pad 92208 | 224 | 94080 | **93800** | 4690 |
 
-## 5. 编码实现与联调现状（0720v1）
+## 5. 编码实现与联调现状
 
 ### 5.1 实现位置
 
@@ -637,18 +639,19 @@ Header 为 `{tag[5:0], toggle}`，toggle 位于 bit0，**toggle 先发**，随�
 |------|------|------|
 | TX 三处 encode 硬编码 `scramble_en=1'b1`，case `SCREN=0` 时 DUT 不解扰 → CTRL_F/VBLK/ACT 密文 | 改为 `env_cfg.SCREN`（与 DUT `R_SCREN` 同源），LSP 恒不加扰 | <span class="badge badge-fixed">🔵 已修复</span> |
 | pixel/VBK 压流 MSB-first，与 CTRL_L/CTRL_F/LSP 的 LSB-first 不一致 → ACT 像素逐位反转 | 两处压流循环改 LSB-first | <span class="badge badge-fixed">🔵 已修复</span> |
-| 末行 Active 嵌入 K4+CTRL_F、Active 结束标记不统一 | Config Line 单独成行；所有 Active Line 统一 K2 结束 | <span class="badge badge-fixed">🔵 已修复</span> |
-| ref model `decode_420b_to_413b()` 与 encode 语义不一致（tag 提取差一位；scren=1 先解扰后判定替换；线上组位反转致 keystream 错位） | `tag = header[6:1]`；线上组先判定替换（低 6 位 == tag、bit6 = type）再全组统一解扰；改自然位序。Python 逐行直译 roundtrip 复验通过（scren=0/1，416 块含 244 块替换路径） | <span class="badge badge-fixed">🔵 已修复 07/20</span> |
-| Dmy 处理方式 | 确认内嵌于 413b 零补齐 + 140-bit 截断（64B CTRL_F → 560 encoded bits 含 Dmy） | <span class="badge badge-fixed">🔵 已确认</span> |
+| 末行 Active 嵌入 K4+CTRL_F、Active 结束标记不统一 | Config Line 单独成行（0717 定稿；**0924 起演进为第一条 VFP 行承载**，行尾 K3(SCREN=1)\|K2，帧内不加行，见「帧结构」页）；所有 Active Line 统一 K2 结束 | <span class="badge badge-fixed">🔵 已修复</span> |
+| ref model `decode_420b_to_413b()` 与 encode 语义不一致（tag 提取差一位；scren=1 先解扰后判定替换；线上组位反转致 keystream 错位） | `tag = header[6:1]`；线上组先判定替换（低 6 位 == tag、bit6 = type）再全组统一解扰；改自然位序。Python 逐行直译 roundtrip 复验通过（scren=0/1，416 块含 244 块替换路径）；随 0807v1 服务器包入库 git | <span class="badge badge-fixed">🔵 已修复 07/20</span> |
+| Dmy 处理方式 | 确认内嵌于 413b 零补齐 + 140-bit 截断（64B CTRL_F → 560 encoded bits 含 Dmy）；0825 起 CTRL_F 行 Dmy 补齐到整行 raw 长度 | <span class="badge badge-fixed">🔵 已确认</span> |
 
 ### 5.3 已知偏差
 
-- 无未修复的编码侧偏差。启用 `checker_420b` 正式比对前的剩余待办：`check_all()` 的 `scramble_en` 硬编码 `1'b1`、每 block LFSR 重置 0xFFFF（Python 为 region 级连续推进）需按 `env_cfg.SCREN` 与 region 边界改造。
+- 无未修复的编码侧偏差。启用 `checker_420b` 正式比对前的剩余待办：`check_all()` 的 `scramble_en` 硬编码 `1'b1`、每 block LFSR 重置 0xFFFF（Python 为 region 级连续推进）需按 `env_cfg.SCREN` 与 region 边界改造。**2026-11-05 复核：`checker_420b.sv` 自建库（486f1365）以来零变更，仍 77 行 display-only，该改造点至今未做、论断仍成立。**
 
 ### 5.4 验证证据
 
 - Python encode/decode roundtrip：scren=0/1 各 500 块随机数据全对 ✅
 - 线上数据：pydec 对 `DATA_ALIGN_PRE` 离线解码并与发送端原始字节逐区域比对，LSP / CTRL_F / CTRL_L / VBK / Video 全部一致（详见「排障」页）✅
+- 0924 起 `send_ppm_420b` 每帧前置 `process_line(c)` + `exec_c(c)`，420b 流程与 C-model golden（`outResult/digital/*`，供 digital_top 检查）闭环打通
 
 ---
   </script>
@@ -765,4 +768,4 @@ const lightbox = document.getElementById('lightbox');
 </body>
 </html>
 
-<!-- ymzhu 2026-11-04 15:52 -->
+<!-- ymzhu 2026-11-05 11:58 -->

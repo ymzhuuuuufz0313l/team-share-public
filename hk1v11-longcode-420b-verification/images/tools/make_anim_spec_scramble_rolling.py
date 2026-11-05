@@ -1,28 +1,31 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""make_anim_spec_scramble_rolling.py — v4（Motion Kit v4，整体重写；v2 类名/delay 逻辑不沿用）
+"""make_anim_spec_scramble_rolling.py — v4（1105 · 0924 加扰策略重绘版）
 
-MOTION_KIT.md §6.6 规格（1200×520）：
-- 行序：标题(0) → 编码前(0.2) → 编码后(0.5) → 三横条(0.85/0.95/1.05)
-        → LFSR 回环(1.15) → n+1 行(1.25) → 图例(1.4)。
-        一次性总长 = 1.4+0.55 = 1.95s ≤ 2.5s。
-- draw：↓箭头 delay 1.05（=编码后 0.5+0.55，§5 规则）；
-  三横条 rect .draw + pathLength="100" 依次绘出（随各自 row，0.1s 错开）。
-- 生长（主角）：LFSR 绿色虚线反馈环 .dashgrow（2.6s）—— key 逐轮演化的语义，
-  虚段沿“n 行截止 → n+1 行起始”方向持续生长回卷（取代 v2 的 march）。
-- 列车：绿条 2 包、蓝条 2 包 + 各包 flowtail（2026-10-28 晚动效加密 各 1→2 包；
-  2026-10-29 二次降速 duration 2.2→4.2s：光点在实心条上扫过，左→右错 phase；
-  绿 delay -0.75 / -2.85（半周期 2.1 均布），蓝 -1.05 / -2.85（与绿错相 0.3，
-  共享 -2.85）。用户 2026-10-28 验收：白色拖尾刺眼——flowdot 白色光点
-  保留（含新包：点骑在实心绿/蓝条上，非白底，沿用用户已验收样式保持列车
-  一致性），flowtail stroke 用链色（蓝条链 #1d4ed8；opacity 走 kit 默认 .25），
-  绿条链无 tail 不动。
-- 行波：编码后行 K5~K8 黄格 + 末尾 K5 共 5 格 cellwave（0.3s 递增，2.4s）。
-- 脉冲：“n 行截止状态 → n+1 行起始状态（LFSR 连续）”注释 .pulse-t（delay -0.7）。
-- 铁律：源 SVG 只读；text 多重集 / svg 开标签 / 几何颜色零改动（loop 的
-  stroke-dasharray="6,3" 属性原样保留，渲染由 .dashgrow CSS 覆盖）；纯 CSS 无
-  script；kit CSS §2 逐字嵌入为行 3（行 2 字体 <style> 原样保留）；源 defs +
-  背景 rect 保留；reduced-motion 用 kit 原文；确定性幂等（只依赖源 SVG）。
+新版静态图（generate_longcode_report_svgs.py · gen_spec_scramble，1200×560）：
+① Active/VBK 行（SCREN 门控加扰域 + 三横条）→ 行间顺承（LFSR 连续）→ n+1 行
+→ ② Config 行（第一条 VFP 行 · CTRL_F 恒不加扰 · 灰条 key 不推进 + 蓝短条仅编码）
+→ ③ K3 边界盒（SCREN=1 行尾 · TX/RX 复位 0XFFFF · RX 延 4 拍）。
+旧版「全 payload 加扰（含 CTRL_F）/HBP 行」画法已废弃（归档 archive/20260720/）。
+
+动效规格（沿 MOTION_KIT.md §6.6 骨架，按新版三段结构重排）：
+- 行序：标题(0) → ①段(0.2) → 三横条(0.85) → 图例 head(1.05) → 顺承(1.15)
+  → n+1 行(1.25) → ②段(1.4/1.5) → ②横条(1.65) → ③K3 盒(1.8)。
+  一次性总长 1.8+0.55=2.35s ≤2.5s。
+- draw：三横条（绿/橙/蓝）与②灰条/蓝短条 rect .draw+pathLength 依次绘出。
+- 稳态·生长（主角）：顺承绿色虚线环 .dashgrow（2.6s）—— Active/VBK 行间
+  key 逐轮演化的语义；n 行截止 → n+1 行起始（不复位）。
+- 稳态·列车：绿条（SCR_KEY update，540px）2 包白点 4.2s；蓝条 2 包 + 链色
+  flowtail（#1d4ed8）；②蓝短条（仅编码仍流动）2 包白点；**②灰条（key 不推进）
+  刻意不挂列车** —— 绿条滚动 vs 灰条静止 = 0924 策略的视觉对照。
+- 稳态·行波：①/②两行 K5~K8 黄格（各 5 格）cellwave（0.3s 递增，2.4s）。
+- 稳态·脉冲：顺承注释 .pulse-t(-0.7s)；③K3 边界盒 .pulse(-1.4s 琥珀)。
+- 稳态族：列车/生长/行波/脉冲 = 4 族（≤4 上限内）。
+
+铁律：源 SVG 只读；text 多重集 / svg 开标签 / 几何颜色零改动（loop 的
+stroke-dasharray="6,3" 属性原样保留，渲染由 .dashgrow CSS 覆盖）；纯 CSS 无
+script；kit CSS §2 逐字嵌入为行 3（行 2 字体 <style> 原样保留）；源 defs +
+背景 rect 保留；reduced-motion 用 kit 原文；确定性幂等（只依赖源 SVG）。
 """
 import re
 import sys
@@ -99,36 +102,49 @@ def build():
     assert lines[-1].strip() == "</svg>", "末行应为 </svg>"
 
     # ---- 结构锚点（源行号，0 基；全部 assert 保护） ----
-    title = idx(lines, "滚动机制")
+    title = idx(lines, "滚动与门控（0924 后）")
     subtitle = title + 1
-    assert "scramble" in lines[subtitle].lower()
-    pre_label = idx(lines, ">编码前<")
-    arrow = idx(lines, '<line x1="470" y1="158"')
-    arrow_label = arrow + 1
-    assert "编码后" in lines[arrow_label]
-    post_label = idx(lines, ">编码后<", lo=arrow_label + 1)
-    bar_g = idx(lines, '<rect x="120" y="282"', 'fill="#16a34a"')
-    bar_o = idx(lines, '<rect x="120" y="304"', 'fill="#ea580c"')
-    bar_b = idx(lines, '<rect x="214" y="326"', 'fill="#2563eb"')
-    bar_label = idx(lines, "加扰区间")
-    bar_note = idx(lines, "K 码期间 scramble 停止滚动", lo=bar_label + 1)
-    sw1 = idx(lines, '<rect x="1010" y="282"')
-    loop = idx(lines, "<path", "M 660 292")
+    assert "加扰域" in lines[subtitle]
+    s1_label = idx(lines, "① Active / VBK 行 payload")
+    act_label = idx(lines, ">Active 行<")
+    bar_label = idx(lines, "加扰区间（CTR_L ~ Dmy）")
+    assert bar_label > act_label
+    bar_g = idx(lines, '<rect x="120" y="158"', 'fill="#16a34a"')
+    bar_o = idx(lines, '<rect x="120" y="180"', 'fill="#ea580c"')
+    bar_b = idx(lines, '<rect x="214" y="202"', 'fill="#2563eb"')
+    note = idx(lines, "K 码 / IDLE 期间")
+    leg1 = idx(lines, '<rect x="1010" y="158"')
+    leg4 = idx(lines, "key 不推进</text>", lo=leg1)
+    loop = idx(lines, "<path", "M 700 150")
     loop_label = loop + 1
-    assert "LFSR" in lines[loop_label]
-    next_label = idx(lines, ">n+1 行<")
-    bar_low = idx(lines, '<rect x="120" y="444"')
+    assert "LFSR 连续" in lines[loop_label]
+    nplus_label = idx(lines, ">n+1 行<")
+    bar_low = idx(lines, '<rect x="120" y="318"')
     low_label = bar_low + 1
     assert "继续滚动" in lines[low_label]
+    s2_label = idx(lines, "② Config 行（第一条 VFP 行）")
+    cfg_label = idx(lines, ">Config 行<")
+    bar_gr = idx(lines, '<rect x="120" y="414"', 'fill="#9ca3af"')
+    bar_gr_label = idx(lines, "SCR_KEY 不推进")
+    bar_bs = idx(lines, '<rect x="120" y="436"', 'fill="#2563eb"')
+    bar_bs_label = idx(lines, "413/420 ENC（编码但恒不加扰）")
+    k3box = idx(lines, '<rect x="60" y="470"')
+    k3_end = idx(lines, "K3_FIND_rp_d[3]")
     end = len(lines) - 1
 
-    # 编码后行黄格（K5~K8 + 末尾 K5）：rect(x, y=210, #fef9c3) 与其 text 成对
-    yellow = [(i, i + 1) for i in range(post_label, bar_g)
+    # ①/② 两行黄格（K5~K8 + 末尾 K5）：rect(#fef9c3) 与其 text 成对
+    def yellow_pairs(y):
+        ps = [(i, i + 1) for i in range(act_label, k3box)
               if lines[i].strip().startswith("<rect") and 'fill="#fef9c3"' in lines[i]
-              and 'y="210"' in lines[i]]
-    for r, t in yellow:
-        assert lines[t].strip().startswith("<text"), "黄格 rect 后应紧跟 text"
-    assert len(yellow) == 5, f"黄格应为 5 组，实际 {len(yellow)}"
+              and f'y="{y}"' in lines[i]]
+        for r, t in ps:
+            assert lines[t].strip().startswith("<text"), "黄格 rect 后应紧跟 text"
+        return ps
+
+    yellow_a = yellow_pairs(106)
+    assert len(yellow_a) == 5, f"①行黄格应 5 组，实际 {len(yellow_a)}"
+    yellow_b = yellow_pairs(362)
+    assert len(yellow_b) == 5, f"②行黄格应 5 组，实际 {len(yellow_b)}"
 
     # ---- 组装 ----
     o = [lines[0], lines[1], "<style>\n" + KIT_CSS + "\n</style>"]
@@ -139,60 +155,48 @@ def build():
     o.extend(lines[title:subtitle + 1])
     o.append("</g>")
 
-    # 编码前 row(0.2)：标签 + 全部格子
+    # ①段 row(0.2)：节标题 + 行标签 + 格子；黄格 cellwave（0.3s 递增，2.4s 周期）
     o.append('<g class="row" style="animation-delay:0.2s">')
-    o.extend(lines[pre_label:arrow])
-    o.append("</g>")
-
-    # 编码前→编码后 ↓箭头：draw 1.05（=编码后 0.5+0.55，§5 规则），标签同拍淡入
-    o.append('<g class="fade" style="animation-delay:1.05s">')
-    o.append(tag_draw(lines[arrow], 1.05))
-    o.append(lines[arrow_label])
-    o.append("</g>")
-
-    # 编码后 row(0.5)：标签 + 格子；黄格 cellwave（0.3s 递增，2.4s 周期）
-    o.append('<g class="row" style="animation-delay:0.5s">')
-    o.extend(lines[post_label:yellow[0][0]])
-    for k, (r, t) in enumerate(yellow):
+    o.extend(lines[s1_label:yellow_a[0][0]])
+    for k, (r, t) in enumerate(yellow_a):
         o.append('<g class="cellwave" style="animation-duration:2.4s;animation-delay:%gs">' % (0.3 * k))
         o.extend(lines[r:t + 1])
         o.append("</g>")
-        if k < len(yellow) - 1:
-            nxt = yellow[k + 1][0]
+        if k < len(yellow_a) - 1:
+            nxt = yellow_a[k + 1][0]
             o.extend(lines[t + 1:nxt])
-    o.extend(lines[yellow[-1][1] + 1:bar_g])
+    o.extend(lines[yellow_a[-1][1] + 1:bar_label])
     o.append("</g>")
 
-    # 三横条 row(0.85/0.95/1.05)：rect .draw+pathLength 依次绘出（0.1s 错开）；
-    # 绿条 2 包、蓝条 2 包（新包带链色 flowtail）（4.2s，条间/条内错 phase；
-    # 2026-10-29 二次降速 2.2→4.2，相位随新周期等比重排：绿 -0.75/-2.85，
-    # 蓝 -1.05/-2.85，两条共享 -2.85 相位）
+    # 三横条 row(0.85)：rect .draw+pathLength 依次绘出（0.1s 错开）；
+    # 绿条（SCR_KEY update）2 包白点（4.2s，-0.75/-2.85 均布）；
+    # 蓝条 2 包白点 + 链色 flowtail（#1d4ed8，-1.05/-2.85 与绿错相 0.3，共享 -2.85）
     o.append('<g class="row" style="animation-delay:0.85s">')
     o.append(lines[bar_label])
     o.append(tag_draw(lines[bar_g], 0.85))
-    o.append('<path class="flowdot" d="M 120 287 L 660 287" stroke="#ffffff" '
+    o.append('<path class="flowdot" d="M 120 163 L 660 163" stroke="#ffffff" '
              'pathLength="100" style="animation-duration:4.2s;animation-delay:-0.75s"/>')
-    o.append('<path class="flowdot" d="M 120 287 L 660 287" stroke="#ffffff" '
+    o.append('<path class="flowdot" d="M 120 163 L 660 163" stroke="#ffffff" '
              'pathLength="100" style="animation-duration:4.2s;animation-delay:-2.85s"/>')
-    o.append("</g>")
-    o.append('<g class="row" style="animation-delay:0.95s">')
-    o.append(lines[bar_note])
     o.append(tag_draw(lines[bar_o], 0.95))
-    o.append("</g>")
-    o.append('<g class="row" style="animation-delay:1.05s">')
+    o.append(lines[note])
     o.append(tag_draw(lines[bar_b], 1.05))
-    o.append('<path class="flowdot" d="M 214 331 L 570 331" stroke="#ffffff" '
+    o.append('<path class="flowdot" d="M 214 207 L 570 207" stroke="#ffffff" '
              'pathLength="100" style="animation-duration:4.2s;animation-delay:-2.85s"/>')
-    o.append('<path class="flowdot" d="M 214 331 L 570 331" stroke="#ffffff" '
+    o.append('<path class="flowdot" d="M 214 207 L 570 207" stroke="#ffffff" '
              'pathLength="100" style="animation-duration:4.2s;animation-delay:-1.05s"/>')
-    o.append('<path class="flowtail" d="M 214 331 L 570 331" stroke="#1d4ed8" '
+    o.append('<path class="flowtail" d="M 214 207 L 570 207" stroke="#1d4ed8" '
              'pathLength="100" style="animation-duration:4.2s;animation-delay:-2.85s"/>')
-    o.append('<path class="flowtail" d="M 214 331 L 570 331" stroke="#1d4ed8" '
+    o.append('<path class="flowtail" d="M 214 207 L 570 207" stroke="#1d4ed8" '
              'pathLength="100" style="animation-duration:4.2s;animation-delay:-1.05s"/>')
     o.append("</g>")
 
-    # LFSR 回环 row(1.15)：绿色虚线环 .dashgrow 持续生长（稳态主角）；
-    # 注释 .pulse-t
+    # 图例 head(1.05)
+    o.append('<g class="head" style="animation-delay:1.05s">')
+    o.extend(lines[leg1:leg4 + 1])
+    o.append("</g>")
+
+    # 顺承 row(1.15)：绿色虚线环 .dashgrow 持续生长（稳态主角）；注释 .pulse-t
     o.append('<g class="row" style="animation-delay:1.15s">')
     o.append(tag_class(lines[loop], "dashgrow"))
     o.append('<g class="pulse-t" style="animation-delay:-0.7s">')
@@ -200,16 +204,47 @@ def build():
     o.append("</g>")
     o.append("</g>")
 
-    # n+1 行 row(1.25)：标签 + 格子 + 底部“scramble 继续滚动”绿条 + 注释
+    # n+1 行 row(1.25)：标签 + 格子 + 底部绿条（draw）+ 注释
     o.append('<g class="row" style="animation-delay:1.25s">')
-    o.extend(lines[next_label:bar_low])
-    o.append(lines[bar_low])
+    o.extend(lines[nplus_label:bar_low])
+    o.append(tag_draw(lines[bar_low], 1.25))
     o.append(lines[low_label])
     o.append("</g>")
 
-    # 图例 head(1.4)
-    o.append('<g class="head" style="animation-delay:1.4s">')
-    o.extend(lines[sw1:loop])
+    # ②段 row(1.4/1.5)：节标题(1.4) + Config 行格子(1.5，黄格 cellwave 同规格)
+    o.append('<g class="row" style="animation-delay:1.4s">')
+    o.extend(lines[s2_label:cfg_label + 1])
+    o.append("</g>")
+    o.append('<g class="row" style="animation-delay:1.5s">')
+    o.extend(lines[cfg_label + 1:yellow_b[0][0]])
+    for k, (r, t) in enumerate(yellow_b):
+        o.append('<g class="cellwave" style="animation-duration:2.4s;animation-delay:%gs">' % (0.3 * k))
+        o.extend(lines[r:t + 1])
+        o.append("</g>")
+        if k < len(yellow_b) - 1:
+            nxt = yellow_b[k + 1][0]
+            o.extend(lines[t + 1:nxt])
+    o.extend(lines[yellow_b[-1][1] + 1:bar_gr])
+    o.append("</g>")
+
+    # ②横条 row(1.65)：灰条（key 不推进 —— 刻意无列车：与绿条滚动对照）
+    # draw 绘出 + 标签；蓝短条（仅编码仍流动）draw + 2 包白点（4.2s）
+    o.append('<g class="row" style="animation-delay:1.65s">')
+    o.append(tag_draw(lines[bar_gr], 1.65))
+    o.append(lines[bar_gr_label])
+    o.append(tag_draw(lines[bar_bs], 1.75))
+    o.append(lines[bar_bs_label])
+    o.append('<path class="flowdot" d="M 120 441 L 454 441" stroke="#ffffff" '
+             'pathLength="100" style="animation-duration:4.2s;animation-delay:-0.35s"/>')
+    o.append('<path class="flowdot" d="M 120 441 L 454 441" stroke="#ffffff" '
+             'pathLength="100" style="animation-duration:4.2s;animation-delay:-2.45s"/>')
+    o.append("</g>")
+
+    # ③ K3 边界盒 row(1.8) + pulse（琥珀英雄）
+    o.append('<g class="row" style="animation-delay:1.8s">')
+    o.append('<g class="pulse" style="animation-delay:-1.4s">')
+    o.extend(lines[k3box:k3_end + 1])
+    o.append("</g>")
     o.append("</g>")
 
     o.append(lines[end])
@@ -239,12 +274,31 @@ def check():
     tag = lambda p: re.search(r"<svg[^>]*>", p.read_text(encoding="utf-8")).group(0)
     res["svgtag"] = "OK" if tag(SRC) == tag(OUT) else "NG"
     res["size"] = "OK" if os.path.getsize(OUT) > 1024 else "NG"
-    res["kit_train"] = "OK" if ".flowdot{" in data and "stroke-width:3.5" in data else "NG"
+    res["kit_train"] = "OK" if re.search(r"\.flowdot\{[^}]*stroke-width:3\.5", data) else "NG"
+    res["kit_pulse"] = "OK" if re.search(r"\.pulse(-[tb])?\{[^}]*transform-box:fill-box", data) else "NG"
+    res["kit_sweep"] = "OK" if "var(--sweepP" in data else "NG"
+    rm = re.search(r"prefers-reduced-motion.*?flowdot,.flowtail,.sweepband\{display:none!important\}", data, re.S)
+    res["rmfix"] = "OK" if (rm and re.search(r"prefers-reduced-motion.*?opacity:1!important", data, re.S)) else "NG"
     res["no_glow"] = "OK" if not re.search(r'class="[^"]*glow-[bgo]', data) else "NG"
-    res["rmfix"] = "OK" if ".flowdot,.flowtail,.sweepband{display:none!important}" in data else "NG"
+    fast = [m.group(1) for m in re.finditer(r'flow(?:dot|tail)[^"]*"[^>]*animation-duration:([0-9.]+)s', data)]
+    res["train>=2.4s"] = "OK" if all(float(x) >= 2.4 for x in fast) else f"NG({','.join(fast)})"
+    fam = {
+        "train":   len(re.findall(r'class="[^"]*(flowdot|flowtail)', data)),
+        "pulse":   len(re.findall(r'class="[^"]*pulse(-[tb])?', data)),
+        "sweep":   len(re.findall(r'class="[^"]*sweepband', data)),
+        "grow":    len(re.findall(r'class="[^"]*dashgrow', data)),
+        "wave":    len(re.findall(r'class="[^"]*cellwave', data)),
+        "step":    len(re.findall(r'class="[^"]*step"', data)),
+    }
+    n_fam = sum(1 for v in fam.values() if v > 0)
+    res["steady>=2fam"] = f"OK({n_fam})" if n_fam >= 2 else f"NG({n_fam})"
     for k, v in res.items():
         print(f"  {k}: {v}")
-    return all(v == "OK" for v in res.values())
+    hard = ("xml", "text", "noscript", "nosmil", "keyframes", "svgtag", "size",
+            "kit_train", "kit_pulse", "kit_sweep", "rmfix", "no_glow", "train>=2.4s")
+    ok = all(str(res.get(k, "NG")) == "OK" or str(res.get(k, "NG")).startswith("OK(") for k in hard) \
+        and str(res["steady>=2fam"]).startswith("OK")
+    return ok
 
 
 def main():
@@ -256,10 +310,9 @@ def main():
           f"flowdot={data.count('class=\"flowdot\"')}",
           f"flowtail={data.count('class=\"flowtail\"')}",
           f"cellwave={data.count('class=\"cellwave\"')}",
-          f"pulse-t={data.count('class=\"pulse-t\"')}",
+          f"pulse={data.count('class=\"pulse\"')}",
           f"row={data.count('class=\"row\"')}",
-          f"head={data.count('class=\"head\"')}",
-          f"fade={data.count('class=\"fade\"')}")
+          f"head={data.count('class=\"head\"')}")
     ok = check()
     print("  RESULT:", "PASS" if ok else "FAIL")
     sys.exit(0 if ok else 1)
@@ -267,4 +320,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-# ymzhu 2026-11-04 17:20
+# ymzhu 2026-11-05 11:25

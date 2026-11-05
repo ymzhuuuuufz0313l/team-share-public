@@ -518,12 +518,12 @@
   <script type="text/template" id="md">
 # 八、关键待确认问题
 
-## 1. 待跟进（0717 联调暴露）
+## 1. 待跟进（0717 联调暴露 · 2026-11-05 复核）
 
 | 问题 | 状态 | 侧 |
 |------|------|----|
-| `decode_ignore` 位宽：6-bit `tag_value` 对 7-bit 常量，tag=0 无编码标记漏判 → 无替换块误解码（`0x40→0x00`、`0x50→0x40`）；应改为判 tag∈{0,63}；DV 侧标记已更正 | <span class="badge badge-pending">🟡 待修</span> | <span class="badge badge-rtl">RTL 侧</span> |
-| **`tag_value` 块边界时序错**：当前 420-bit 块尚未处理完 59 个组，`tag_value` 已提前更新为下一个块的 tag，导致块末尾真实替换组（如 `{1,tag=1}`=`7'h41`）用错 tag、漏替换，下游 21-bit 字节重组后表现为 `FC→04`/`FE→0E`/`FF→FF`/`FE FF→7E F0`（原误判为 0x7F 组还原/重组异常） | <span class="badge badge-pending">🟡 待修</span> | <span class="badge badge-rtl">RTL 侧</span> |
+| ~~`decode_ignore` 位宽：6-bit `tag_value` 对 7-bit 常量，tag=0 无编码标记漏判 → 无替换块误解码（`0x40→0x00`、`0x50→0x40`）~~ | <span class="badge badge-fixed">🔵 RTL 已修</span>（`decoder_7b.v:353` 改 6-bit 对 `{0,63}`，0924~1022 间服务器包带入） | <span class="badge badge-rtl">RTL 侧</span> |
+| **`tag_value` 块边界时序错**：当前 420-bit 块尚未处理完 59 个组，`tag_value` 已提前更新为下一个块的 tag，导致块末尾真实替换组（如 `{1,tag=1}`=`7'h41`）用错 tag、漏替换，下游 21-bit 字节重组后表现为 `FC→04`/`FE→0E`/`FF→FF`/`FE FF→7E F0`（原误判为 0x7F 组还原/重组异常）。**2026-11-05 复核：RTL 加载逻辑（`tag_value <= din_20b_aligned_d2[6:1]`）与基线相同，未见延拍修复证据，需以最新波形/回归结论为准** | <span class="badge badge-pending">🟡 待确认</span> | <span class="badge badge-rtl">RTL 侧</span> |
 | RTL 解码区域边界异常（起始残流 / 尾部溢出 / 个别位错，pydec 线上数据正确可作对照证据） | <span class="badge badge-pending">🟡 待跟进</span> | <span class="badge badge-rtl">RTL 侧</span> |
 
 > ✅ 07/20 更新：ref model `decode_420b_to_413b` 与 encode 不一致已修复（0720v1：`tag = header[6:1]`、线上组先判定替换再全组统一解扰、改自然位序；Python roundtrip 复验通过），详见「排障实录 3.7」。
@@ -531,21 +531,23 @@
 > ✅ 07/21 更新：spec 无编码标记确认按发送顺序读 = tag∈{0,63}（toggle 1/0）；DV 侧 encode 头部、tag 搜索跳过保留值、pydec 判定已全部更正，1044 块 roundtrip 全对，详见「排障实录 3.9」。
 >
 > ✅ 07/22 更新：错码根因更新——不是 0x7F 替换组还原/重组路径错，而是 `tag_value` 在块边界处提前更新。波形证据：有效行第五行最后 `7'h41`（`{1,tag=1}`）应替换为 `0x7F`，因 `tag_value` 已切到下一个块 tag 而漏替换，最终字节显示 `0x04`。`check_rtl_tag.py` 报告 0 异常、`compare_pkt20.py`（DAP 源）收发一致，均指向 DUT 替换逻辑时序而非 DV 发送数据。
+>
+> ✅ **2026-11-05 更新**（按 HEAD `a7130ba7` 复核）：`decode_ignore` RTL 侧已修——`decoder_7b.v:353` 由 7-bit 常量比较改为 `(tag_value == 6'b000000) | (tag_value == 6'b111111)`（随 0924~1022 间服务器包入树），翻绿移入 §3。姊妹问题 `tag_value` 块边界时序的 RTL 加载逻辑与基线逐字节相同，保留待确认。
 
 ## 2. Spec 待确认
 
 | 问题 | 优先级 |
 |------|--------|
-| Active Line 结束标记 K3 使用条件（DUT：K4 关解扰、仅 K3 重新使能解扰） | <span class="badge badge-rtl">高</span> |
-| CTRL_F checksum 是否需要计算并发送 | <span class="badge badge-pending">中</span> |
+| Active Line 结束标记 K3 使用条件（DUT：K4 关解扰、仅 K3 重新使能解扰）——**0924 已部分回答**：现行实现 SCREN=1 时 CTRL_F 行尾 K3（锁存 SCREN + key 复位 0XFFFF）、Active 行仍恒 K2；剩余待确认点为 Active 行是否允许 K3 | <span class="badge badge-pending">中（部分已答）</span> |
+| CTRL_F checksum 是否需要计算并发送（0721v1 RTL 侧 CONFIG_DATA 16→24 bit 时已重建 checksum 字节有效性，DV 侧仅 `checker_for_checksum.sv` 跟进 0X35 FSEL 跟踪） | <span class="badge badge-pending">中</span> |
 | LSP 重复次数是否满足 ≥1us | <span class="badge badge-pending">中</span> |
 | IDLE 长度精确换算（htotal-hact） | <span class="badge badge-pending">中</span> |
-| UTC 错误检测责任模块确认 | <span class="badge badge-pending">中</span> |
+| UTC 错误检测责任模块确认（0825 起注入槽位 0/1/2/3 → 10/11/12/13 补偿行首新增 10 槽） | <span class="badge badge-pending">中</span> |
 | 跨 lane raw 长度是否需 70 整数倍 | <span class="badge badge-tx">低</span> |
 | V blanking 行数是否含 setting_line | <span class="badge badge-tx">低</span> |
 | K5~K8 的 lane 间轮换顺序 | <span class="badge badge-tx">低</span> |
 
-## 3. 已解决（0715 ~ 0717）
+## 3. 已解决（0715 ~ 0717 · 2026-11 增补）
 
 | 问题 | 状态 | 说明 |
 |------|------|------|
@@ -555,6 +557,7 @@
 | `din_20b_aligned` 误接 `DATA_POINT_LAT` | <span class="badge badge-fixed">🔵 0717</span> | 改接 `DATA0_ALIGN_LONG`，LSP 解出 |
 | TX/RX 加扰策略不一致 | <span class="badge badge-fixed">🔵 0717</span> | 三处 `scramble_en` 改为 `env_cfg.SCREN` |
 | pixel/VBK 压流位序（逐位反转） | <span class="badge badge-fixed">🔵 0717</span> | 两处循环改 LSB-first |
+| **`decode_ignore` 位宽（RTL 侧）** | <span class="badge badge-fixed">🔵 0924~1022</span> | `decoder_7b.v:353` 改 6-bit 对 `{0,63}`，随服务器包波次入树；SCREN=1 验证的前置条件之一已落实 |
 
 ---
   </script>
@@ -670,4 +673,4 @@ const lightbox = document.getElementById('lightbox');
   <script src="./fx.js?v=11"></script>
 </body>
 </html>
-<!-- ymzhu 2026-11-02 18:50 -->
+<!-- ymzhu 2026-11-05 11:58 -->

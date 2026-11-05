@@ -15,8 +15,8 @@
   序内位置 = 行内单元格序号，确定性）。IDLE 面板 bit 串格 0.4s 递增（3.2s）。
 - 稳态·脉冲（族 2，2026-10-28 晚动效加密 +1）：IDLE pattern 面板标题组
   （"IDLE pattern · 10-bit · 不加扰"标题文本，源图该面板无容器 rect → 标题即
-  标题组）pulse-b（delay -2.1s，与 VBP 首行 -1.4s 错 0.7s）；VBP 首行行盒
-  pulse-b（delay -1.4s）。
+  标题组）pulse-b（delay -2.1s，与 VFP 首行 -1.4s 错 0.7s）；VFP 第 0 行
+  （Config Line · 0924 语义）行盒 pulse-b（delay -1.4s）。
 - 列车：v4 §6.10 要求"每 lane 格间小箭头（8 条）各 1 包"，但源图 lane 间箭头
   是 text 字形"→"而非 path/line，全图无任何可复制的箭头几何（铁律 §0.3 只允许
   复制箭头得到装饰路径）→ 按 §5"宁缺勿穿"护栏放弃，见报告 caveats。
@@ -91,8 +91,8 @@ UNITS = [
     dict(start=cont(">Lane3<"), end=cont(">Lane4<"), end_before=True, row=0.80, lane=True),
     dict(start=cont(">Lane4<"), end=cont("V blanking 行结构"), end_before=True, row=0.95, lane=True),
     dict(start=cont("V blanking 行结构"), end=cont("H-IDLE"), row=0.85),
-    dict(start=cont("Config Line 单独成行"), end=cont('x="918.0"'), row=1.05),
-    dict(start=cont(">VBP 首行<"), end=cont('x="688.0"'), row=1.25, pulse="pulse-b"),
+    dict(start=cont("Config Line（第一条 VFP 行承载）"), end=cont('x="918.0"'), row=1.05),
+    dict(start=cont(">VFP 第 0 行<"), end=cont('x="708.0"'), row=1.25, pulse="pulse-b"),
     dict(start=cont("注：Active Line"), end=cont("注：Active Line"), row=1.45),
 ]
 
@@ -258,4 +258,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-# ymzhu 2026-11-04 17:20
+# ymzhu 2026-11-05 11:35

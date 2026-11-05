@@ -1,5 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 980" width="1200" height="980">
-  <style>text { font-family: 'Helvetica Neue', Helvetica, Arial, 'PingFang SC', 'Microsoft YaHei', 'Microsoft JhengHei', 'SimHei', sans-serif; }</style>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1150" width="1200" height="1150">
+  <style>text { font-family: 'Helvetica Neue', Helvetica, Arial, 'PingFang SC', 'Microsoft YaHei', 'Microsoft JhengHei', 'SimHei', sans-serif; }</style>
 <style>
 .row{opacity:0;animation:rowIn .55s cubic-bezier(.22,.7,.3,1) forwards}
 .head{opacity:0;animation:rowIn .55s cubic-bezier(.22,.7,.3,1) forwards}
@@ -30,304 +30,250 @@
 .step{animation:stepLit 6s ease-in-out infinite}
 @keyframes stepLit{0%,16%{filter:drop-shadow(0 0 9px rgba(29,78,216,.85))}24%,92%{filter:drop-shadow(0 0 0 rgba(29,78,216,0))}100%{filter:drop-shadow(0 0 9px rgba(29,78,216,.85))}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important}.row,.head,.fade{opacity:1!important}.flowdot,.flowtail,.sweepband{display:none!important}}
-</style>
-  <defs>
-    <marker id="ar-blue" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#2563eb"/></marker>
-    <marker id="ar-green" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#059669"/></marker>
-    <marker id="ar-purple" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#7c3aed"/></marker>
-    <marker id="ar-orange" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#ea580c"/></marker>
-    <marker id="ar-gray" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#9ca3af"/></marker>
-  </defs>
-  <rect width="1200" height="980" fill="#ffffff"/>
-<g class="head" style="animation-delay:0s">
-<text x="600" y="40" font-size="22" fill="#1e293b" text-anchor="middle" font-weight="600">HK1V11 420b 长编码验证环境 · 整体架构</text>
-<text x="600" y="64" font-size="12" fill="#64748b" text-anchor="middle">0720v1 现状 · 基于 DV_TCON_C 8B/10B 环境重建 · `CHPI_MODE_420B` 宏隔离 · 新增接收端离线验证路径（不看 RTL 解码器）</text>
-</g>
-<g class="row" style="animation-delay:0.15s">
-<rect x="40" y="88" width="1120" height="86" rx="10" fill="#f8fafc" stroke="#e2e8f0" stroke-width="2"/>
-<text x="56" y="110" font-size="13" fill="#475569" text-anchor="start" font-weight="600">Test / Config Layer</text>
-<rect x="70" y="118" width="250" height="48" rx="8" fill="#fff7ed" stroke="#fed7aa" stroke-width="1.5"/>
-<text x="195.0" y="137.5" font-size="11" fill="#9a3412" text-anchor="middle" font-weight="600">t_H3840_V16_FPS120_420b</text>
-<text x="195.0" y="153.5" font-size="9.5" fill="#9a3412" text-anchor="middle">当前主调 case（bind tap + pydec）</text>
-<rect x="340" y="118" width="200" height="48" rx="8" fill="#fff7ed" stroke="#fed7aa" stroke-width="1.5"/>
-<text x="440.0" y="137.5" font-size="11" fill="#9a3412" text-anchor="middle" font-weight="600">t_8b1lane_420b_basic</text>
-<text x="440.0" y="153.5" font-size="9.5" fill="#9a3412" text-anchor="middle">smoke case</text>
-<rect x="560" y="118" width="200" height="48" rx="8" fill="#fff7ed" stroke="#fed7aa" stroke-width="1.5"/>
-<text x="660.0" y="137.5" font-size="11.5" fill="#9a3412" text-anchor="middle" font-weight="600">user_def.sv</text>
-<text x="660.0" y="153.5" font-size="9.5" fill="#9a3412" text-anchor="middle">`define CHPI_MODE_420B</text>
-<rect x="780" y="118" width="350" height="48" rx="8" fill="#fff7ed" stroke="#fed7aa" stroke-width="1.5"/>
-<text x="955.0" y="137.5" font-size="11.5" fill="#9a3412" text-anchor="middle" font-weight="600">env_cfg</text>
-<text x="955.0" y="153.5" font-size="9.5" fill="#9a3412" text-anchor="middle">SCREN · HACT · VACT · LANE_NUM · get_ctrlL/F_reg</text>
-</g>
-<g class="row" style="animation-delay:0.4s">
-<rect x="40" y="192" width="696" height="292" rx="10" fill="#f8fafc" stroke="#e2e8f0" stroke-width="2"/>
-<text x="56" y="214" font-size="13" fill="#0f766e" text-anchor="start" font-weight="600">发送端 TX · isptx_sequence.sv（420b 分支）</text>
-<rect x="64" y="226" width="280" height="42" rx="8" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
-<text x="204.0" y="242.5" font-size="11" fill="#1e293b" text-anchor="middle" font-weight="600">send_420b_lsp()</text>
-<text x="204.0" y="258.5" font-size="9" fill="#64748b" text-anchor="middle">K2 + 0xEA~ED×8 + Dmy + K3 · 不加扰</text>
-<rect x="64" y="278" width="280" height="42" rx="8" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
-<text x="204.0" y="294.5" font-size="11" fill="#1e293b" text-anchor="middle" font-weight="600">send_420b_active_line()</text>
-<text x="204.0" y="310.5" font-size="9" fill="#64748b" text-anchor="middle">K1 + CTRL_L + Video + K2</text>
-<rect x="64" y="330" width="280" height="42" rx="8" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
-<text x="204.0" y="346.5" font-size="11" fill="#1e293b" text-anchor="middle" font-weight="600">send_420b_ctrl_f_line()</text>
-<text x="204.0" y="362.5" font-size="9" fill="#64748b" text-anchor="middle">K4 + CTRL_F(ENC) + Dmy + K2 · 单独成行</text>
-<rect x="64" y="382" width="280" height="42" rx="8" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
-<text x="204.0" y="398.5" font-size="11" fill="#1e293b" text-anchor="middle" font-weight="600">send_420b_vblank_line()</text>
-<text x="204.0" y="414.5" font-size="9" fill="#64748b" text-anchor="middle">K1 + CTRL_L + VBK + K2</text>
-<rect x="64" y="434" width="280" height="42" rx="8" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
-<text x="204.0" y="450.5" font-size="11" fill="#1e293b" text-anchor="middle" font-weight="600">send_420b_idle_pattern()</text>
-<text x="204.0" y="466.5" font-size="9" fill="#64748b" text-anchor="middle">K5~K8 IDLE · 不加扰</text>
-<rect x="360" y="226" width="180" height="42" rx="8" fill="#f0fdfa" stroke="#99f6e4" stroke-width="1.5"/>
-<text x="450.0" y="242.5" font-size="8.5" fill="#1e293b" text-anchor="middle" font-weight="600">build_bit_stream_from_bytes()</text>
-<text x="450.0" y="258.5" font-size="8.5" fill="#64748b" text-anchor="middle">byte → bit stream</text>
-<rect x="360" y="278" width="180" height="42" rx="8" fill="#f0fdfa" stroke="#99f6e4" stroke-width="1.5"/>
-<text x="450.0" y="294.5" font-size="10.5" fill="#1e293b" text-anchor="middle" font-weight="600">pad_bit_stream()</text>
-<text x="450.0" y="310.5" font-size="8.5" fill="#64748b" text-anchor="middle">跨 lane 70-bit dummy 对齐</text>
-<rect x="360" y="330" width="180" height="42" rx="8" fill="#f0fdfa" stroke="#99f6e4" stroke-width="1.5"/>
-<text x="450.0" y="346.5" font-size="8.5" fill="#1e293b" text-anchor="middle" font-weight="600">encode_with_70b_alignment()</text>
-<text x="450.0" y="362.5" font-size="8.5" fill="#64748b" text-anchor="middle">scramble_en = env_cfg.SCREN</text>
-<rect x="360" y="382" width="180" height="42" rx="8" fill="#f0fdfa" stroke="#99f6e4" stroke-width="1.5"/>
-<text x="450.0" y="398.5" font-size="10.5" fill="#1e293b" text-anchor="middle" font-weight="600">dump_raw_bytes()</text>
-<text x="450.0" y="414.5" font-size="8.5" fill="#64748b" text-anchor="middle">编码前 raw byte 转储 ↓</text>
-<rect x="556" y="226" width="156" height="198" rx="8" fill="#faf5ff" stroke="#e9d5ff" stroke-width="1.5"/>
-<text x="634" y="248" font-size="10.5" fill="#1e293b" text-anchor="middle" font-weight="600">long_encoding</text>
-<text x="634" y="262" font-size="10.5" fill="#1e293b" text-anchor="middle" font-weight="600">ref_model.sv</text>
-<text x="634" y="284" font-size="9" fill="#64748b" text-anchor="middle">encode_413b_to_420b()</text>
-<text x="634" y="300" font-size="9" fill="#64748b" text-anchor="middle">tag 替换 · 全 0/全 1</text>
-<text x="634" y="316" font-size="9" fill="#64748b" text-anchor="middle">G16(X) 16-bit LFSR</text>
-<text x="634" y="332" font-size="9" fill="#64748b" text-anchor="middle">K1~K4 40-bit 常量</text>
-<text x="634" y="348" font-size="9" fill="#64748b" text-anchor="middle">K5~K8 10-bit 常量</text>
-<text x="634" y="364" font-size="9" fill="#64748b" text-anchor="middle">encoded_bits_</text>
-<text x="634" y="380" font-size="9" fill="#64748b" text-anchor="middle">70aligned()</text>
-</g>
-<g class="row" style="animation-delay:0.8s">
-<rect x="40" y="504" width="696" height="106" rx="10" fill="#f8fafc" stroke="#e2e8f0" stroke-width="2"/>
-<text x="56" y="526" font-size="13" fill="#475569" text-anchor="start" font-weight="600">Transaction / Driver</text>
-<rect x="64" y="534" width="300" height="56" rx="8" fill="#f0fdf4" stroke="#bbf7d0" stroke-width="1.5"/>
-<text x="214.0" y="549.5" font-size="11.5" fill="#1e293b" text-anchor="middle" font-weight="600">isptx_transaction.sv</text>
-<text x="214.0" y="565.5" font-size="9.5" fill="#64748b" text-anchor="middle">bit[19:0] one_pkt_20b</text>
-<text x="214.0" y="581.5" font-size="9.5" fill="#64748b" text-anchor="middle">bit[39:0] k1_420b ~ k4_420b</text>
-<rect x="404" y="534" width="308" height="56" rx="8" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
-<text x="558.0" y="549.5" font-size="11.5" fill="#1e293b" text-anchor="middle" font-weight="600">isptx_driver.sv（420b）</text>
-<text x="558.0" y="565.5" font-size="9.5" fill="#64748b" text-anchor="middle">drv_one_pkt_20b() · LSB-first</text>
-<text x="558.0" y="581.5" font-size="9.5" fill="#64748b" text-anchor="middle">drv_kx_key_420b() → vif.rxn0/rxp0</text>
-</g>
-<g class="row" style="animation-delay:0.6s">
-<rect x="776" y="192" width="384" height="418" rx="10" fill="#f8fafc" stroke="#e2e8f0" stroke-width="2"/>
-<text x="792" y="214" font-size="13" fill="#991b1b" text-anchor="start" font-weight="600">接收端 RX · DUT（HDL long_encoding）</text>
-<rect x="800" y="226" width="336" height="62" rx="8" fill="#ffffff" stroke="#059669" stroke-width="2"/>
-<text x="968" y="248" font-size="11" fill="#1e293b" text-anchor="middle" font-weight="600">CHPI_KCODE_ALIGN_LONG_L0</text>
-<text x="968" y="264" font-size="9.5" fill="#64748b" text-anchor="middle">K1~K4 检测 · 20-bit 对齐</text>
-<text x="968" y="280" font-size="9.5" fill="#059669" text-anchor="middle" font-weight="600">DATA_ALIGN_PRE → tap</text>
-<g class="pulse-b" style="animation-delay:-1.4s">
-<rect x="1072" y="232" width="52" height="18" rx="9" fill="#059669" stroke="#059669" stroke-width="1"/>
-<text x="1098" y="245" font-size="10" fill="#ffffff" text-anchor="middle" font-weight="700">TAP</text>
-</g>
-<rect x="800" y="304" width="336" height="54" rx="8" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
-<text x="968.0" y="318.5" font-size="11" fill="#1e293b" text-anchor="middle" font-weight="600">long_decoding_top.v</text>
-<text x="968.0" y="334.5" font-size="9" fill="#64748b" text-anchor="middle">din_20b_aligned ← DATA0_ALIGN_LONG（0717 修复）</text>
-<text x="968.0" y="350.5" font-size="9" fill="#64748b" text-anchor="middle">42-bit buffer · 8/16/24-bit 打包</text>
-<rect x="800" y="374" width="336" height="54" rx="8" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
-<text x="968.0" y="388.5" font-size="11" fill="#1e293b" text-anchor="middle" font-weight="600">decoder_7b.v</text>
-<text x="968.0" y="404.5" font-size="9" fill="#64748b" text-anchor="middle">420b → 413b · tag 还原</text>
-<text x="968.0" y="420.5" font-size="9" fill="#64748b" text-anchor="middle">decode_en 窗口（K1/K4 开 · K2/K3 关）</text>
-<rect x="800" y="444" width="336" height="54" rx="8" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
-<text x="968.0" y="458.5" font-size="11" fill="#1e293b" text-anchor="middle" font-weight="600">descramble_7b.v</text>
-<text x="968.0" y="474.5" font-size="9" fill="#64748b" text-anchor="middle">G16(X) 解扰 · K3 上升沿复位</text>
-<text x="968.0" y="490.5" font-size="9" fill="#64748b" text-anchor="middle">scramble_en=0 旁路</text>
-<rect x="800" y="514" width="336" height="54" rx="8" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
-<text x="968.0" y="536.5" font-size="11" fill="#1e293b" text-anchor="middle" font-weight="600">dout_24b + 2-bit valid</text>
-<text x="968.0" y="552.5" font-size="9" fill="#64748b" text-anchor="middle">→ 后级像素通路</text>
-<rect x="792" y="298" width="352" height="278" rx="8" fill="none" stroke="#9ca3af" stroke-width="1.2" stroke-dasharray="6,3"/>
-<text x="968" y="594" font-size="9.5" fill="#6b7280" text-anchor="middle">灰框内：RTL 解码链 —— 排障焦点，离线验证不依赖</text>
-</g>
-<g class="row" style="animation-delay:1.15s">
-<rect x="40" y="650" width="1120" height="192" rx="10" fill="#f0fdf4" stroke="#bbf7d0" stroke-width="2"/>
-<text x="56" y="672" font-size="13" fill="#059669" text-anchor="start" font-weight="600">接收端离线验证路径 · 不看 RTL 解码器（0717 新增）</text>
-<rect x="64" y="688" width="230" height="60" rx="8" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
-<text x="179.0" y="705.5" font-size="10.5" fill="#1e293b" text-anchor="middle" font-weight="600">long_rtl_tap_debug.sv</text>
-<text x="179.0" y="721.5" font-size="9" fill="#64748b" text-anchor="middle">bind 注入 KCODE_ALIGN · 零 RTL 修改</text>
-<text x="179.0" y="737.5" font-size="9" fill="#64748b" text-anchor="middle">抓 DATA_ALIGN_PRE</text>
-<rect x="330" y="688" width="196" height="60" rx="8" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
-<text x="428.0" y="705.5" font-size="10" fill="#1e293b" text-anchor="middle" font-weight="600">long_rtl_dap_lane0.md</text>
-<text x="428.0" y="721.5" font-size="9" fill="#64748b" text-anchor="middle">每拍 20-bit 对齐数据</text>
-<text x="428.0" y="737.5" font-size="9" fill="#64748b" text-anchor="middle">全量转储</text>
-<rect x="562" y="688" width="246" height="60" rx="8" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
-<text x="685.0" y="705.5" font-size="11" fill="#1e293b" text-anchor="middle" font-weight="600">decode_dap.py</text>
-<text x="685.0" y="721.5" font-size="9" fill="#64748b" text-anchor="middle">离线 413b/420b 解码</text>
-<text x="685.0" y="737.5" font-size="9" fill="#64748b" text-anchor="middle">K 码对定位 · tag 替换 · G16 解扰</text>
-<rect x="844" y="688" width="200" height="60" rx="8" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
-<text x="944.0" y="705.5" font-size="10" fill="#1e293b" text-anchor="middle" font-weight="600">long_pydec_lane0.md</text>
-<text x="944.0" y="721.5" font-size="9" fill="#64748b" text-anchor="middle">离线解码字节流</text>
-<text x="944.0" y="737.5" font-size="9" fill="#64748b" text-anchor="middle">区域：LSP / CTRL_F / LINE</text>
-<rect x="64" y="768" width="280" height="48" rx="8" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
-<text x="204.0" y="787.5" font-size="10" fill="#1e293b" text-anchor="middle" font-weight="600">long_rawbyte_seq_lane0.md</text>
-<text x="204.0" y="803.5" font-size="9" fill="#64748b" text-anchor="middle">发送端编码前 raw byte（期望值）</text>
-<g class="pulse-t" style="animation-delay:-0.7s">
-<rect x="566" y="768" width="380" height="48" rx="8" fill="#ecfdf5" stroke="#059669" stroke-width="2"/>
-<text x="756" y="788" font-size="10.5" fill="#047857" text-anchor="middle" font-weight="600">long_pydec_report_lane0.md</text>
-<text x="756" y="806" font-size="9.5" fill="#047857" text-anchor="middle">逐区域比对 verdict：LSP / CTRL_F / LINE 全对 ✅</text>
-</g>
-</g>
-<g class="row" style="animation-delay:1.5s">
-<rect x="40" y="862" width="1120" height="58" rx="10" fill="#f8fafc" stroke="#e2e8f0" stroke-width="2"/>
-<text x="56" y="884" font-size="13" fill="#475569" text-anchor="start" font-weight="600">版本管理 · longcode_ver/</text>
-<text x="300" y="896" font-size="10.5" fill="#475569" text-anchor="start">current_work 当前工作目录（版本 0720v1） · 文件统一命名 *_20260720_v1 · CHANGELOG.md / README.md / migration_checklist.md 同步维护</text>
-</g>
-<g class="fade" style="animation-delay:0.95s">
-<line x1="375" y1="174" x2="375" y2="192" stroke="#2563eb" stroke-width="1.5" marker-end="url(#ar-blue)" class="draw" pathLength="100" style="animation-delay:0.95s"/>
-</g>
-<g class="fade" style="animation-delay:0.95s">
-<line x1="660" y1="174" x2="660" y2="192" stroke="#2563eb" stroke-width="1.5" marker-end="url(#ar-blue)" class="draw" pathLength="100" style="animation-delay:0.95s"/>
-</g>
-<g class="fade" style="animation-delay:1.15s">
-<line x1="955" y1="174" x2="955" y2="192" stroke="#ea580c" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#ar-orange)" class="march" style="animation-delay:0s"/>
-</g>
-<g class="fade" style="animation-delay:0.95s">
-<line x1="540" y1="320" x2="556" y2="320" stroke="#2563eb" stroke-width="1.5" marker-end="url(#ar-blue)" class="draw" pathLength="100" style="animation-delay:0.95s"/>
-</g>
-<g class="fade" style="animation-delay:1.35s">
-<line x1="375" y1="484" x2="375" y2="504" stroke="#2563eb" stroke-width="1.5" marker-end="url(#ar-blue)" class="draw" pathLength="100" style="animation-delay:1.35s"/>
-</g>
-<g class="fade" style="animation-delay:1.35s">
-<line x1="364" y1="562" x2="404" y2="562" stroke="#2563eb" stroke-width="1.5" marker-end="url(#ar-blue)" class="draw" pathLength="100" style="animation-delay:1.35s"/>
-</g>
-<g class="fade" style="animation-delay:1.35s">
-<path d="M 712 562 L 756 562 L 756 257 L 800 257" stroke="#2563eb" stroke-width="2" fill="none" marker-end="url(#ar-blue)" class="draw" pathLength="100" style="animation-delay:1.35s"/>
-</g>
-<g class="fade" style="animation-delay:1.35s">
-<text transform="rotate(-90 748 420)" x="748" y="420" font-size="10" fill="#2563eb" text-anchor="middle">20-bit 包流 / 40-bit K 码 · 串行链路</text>
-</g>
-<g class="fade" style="animation-delay:1.15s">
-<line x1="968" y1="288" x2="968" y2="304" stroke="#2563eb" stroke-width="1.5" marker-end="url(#ar-blue)" class="draw" pathLength="100" style="animation-delay:1.15s"/>
-</g>
-<g class="fade" style="animation-delay:1.15s">
-<line x1="968" y1="358" x2="968" y2="374" stroke="#2563eb" stroke-width="1.5" marker-end="url(#ar-blue)" class="draw" pathLength="100" style="animation-delay:1.15s"/>
-</g>
-<g class="fade" style="animation-delay:1.15s">
-<line x1="968" y1="428" x2="968" y2="444" stroke="#2563eb" stroke-width="1.5" marker-end="url(#ar-blue)" class="draw" pathLength="100" style="animation-delay:1.15s"/>
-</g>
-<g class="fade" style="animation-delay:1.15s">
-<line x1="968" y1="498" x2="968" y2="514" stroke="#2563eb" stroke-width="1.5" marker-end="url(#ar-blue)" class="draw" pathLength="100" style="animation-delay:1.15s"/>
-</g>
-<g class="fade" style="animation-delay:1.7s">
-<path d="M 1136 257 L 1178 257 L 1178 632 L 179 632 L 179 688" stroke="#059669" stroke-width="2" fill="none" stroke-dasharray="6,3" marker-end="url(#ar-green)" class="march" style="animation-delay:-0.75s"/>
-</g>
-<g class="fade" style="animation-delay:1.7s">
-<text x="700" y="624" font-size="10" fill="#059669" text-anchor="middle">tap DATA_ALIGN_PRE（每拍 20-bit 对齐数据）</text>
-</g>
-<g class="fade" style="animation-delay:1.7s">
-<path d="M 204 610 L 204 768" stroke="#7c3aed" stroke-width="1.5" fill="none" stroke-dasharray="5,3" marker-end="url(#ar-purple)" class="dashgrow" style="animation-delay:-1.3s"/>
-</g>
-<g class="fade" style="animation-delay:1.5s">
-<path d="M 204 626 A 5.5 5.5 0 0 1 204 638" stroke="#7c3aed" stroke-width="1.5" fill="none"/>
-</g>
-<g class="fade" style="animation-delay:1.7s">
-<line x1="294" y1="718" x2="330" y2="718" stroke="#059669" stroke-width="1.5" marker-end="url(#ar-green)" class="draw" pathLength="100" style="animation-delay:1.7s"/>
-</g>
-<g class="fade" style="animation-delay:1.7s">
-<line x1="526" y1="718" x2="562" y2="718" stroke="#059669" stroke-width="1.5" marker-end="url(#ar-green)" class="draw" pathLength="100" style="animation-delay:1.7s"/>
-</g>
-<g class="fade" style="animation-delay:1.7s">
-<line x1="808" y1="718" x2="844" y2="718" stroke="#059669" stroke-width="1.5" marker-end="url(#ar-green)" class="draw" pathLength="100" style="animation-delay:1.7s"/>
-</g>
-<g class="fade" style="animation-delay:1.7s">
-<line x1="944" y1="748" x2="944" y2="768" stroke="#059669" stroke-width="1.5" marker-end="url(#ar-green)" class="draw" pathLength="100" style="animation-delay:1.7s"/>
-</g>
-<g class="fade" style="animation-delay:1.7s">
-<line x1="344" y1="792" x2="566" y2="792" stroke="#7c3aed" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#ar-purple)" class="dashgrow" style="animation-delay:0s"/>
-</g>
-<g class="fade" style="animation-delay:1.7s">
-<text x="455" y="784" font-size="9.5" fill="#7c3aed" text-anchor="middle">逐区域 diff</text>
-</g>
-<g class="fade" style="animation-delay:0.95s">
-<path class="flowtail" d="M 450 268 L 450 278" stroke="#2563eb" pathLength="100" style="animation-duration:2.4s;animation-delay:-0s"/>
-<path class="flowdot" d="M 450 268 L 450 278" stroke="#2563eb" pathLength="100" style="animation-duration:2.4s;animation-delay:-0s"/>
-<path class="flowtail" d="M 450 268 L 450 278" stroke="#2563eb" pathLength="100" style="animation-duration:2.4s;animation-delay:-1.2s"/>
-<path class="flowdot" d="M 450 268 L 450 278" stroke="#2563eb" pathLength="100" style="animation-duration:2.4s;animation-delay:-1.2s"/>
-</g>
-<g class="fade" style="animation-delay:0.95s">
-<path class="flowtail" d="M 450 320 L 450 330" stroke="#2563eb" pathLength="100" style="animation-duration:2.4s;animation-delay:-0.34s"/>
-<path class="flowdot" d="M 450 320 L 450 330" stroke="#2563eb" pathLength="100" style="animation-duration:2.4s;animation-delay:-0.34s"/>
-<path class="flowtail" d="M 450 320 L 450 330" stroke="#2563eb" pathLength="100" style="animation-duration:2.4s;animation-delay:-1.54s"/>
-<path class="flowdot" d="M 450 320 L 450 330" stroke="#2563eb" pathLength="100" style="animation-duration:2.4s;animation-delay:-1.54s"/>
-</g>
-<g class="fade" style="animation-delay:0.95s">
-<path class="flowtail" d="M 540 320 L 556 320" stroke="#2563eb" pathLength="100" style="animation-duration:2.4s;animation-delay:-0.68s"/>
-<path class="flowdot" d="M 540 320 L 556 320" stroke="#2563eb" pathLength="100" style="animation-duration:2.4s;animation-delay:-0.68s"/>
-<path class="flowtail" d="M 540 320 L 556 320" stroke="#2563eb" pathLength="100" style="animation-duration:2.4s;animation-delay:-1.88s"/>
-<path class="flowdot" d="M 540 320 L 556 320" stroke="#2563eb" pathLength="100" style="animation-duration:2.4s;animation-delay:-1.88s"/>
-</g>
-<g class="fade" style="animation-delay:1.35s">
-<path class="flowtail" d="M 712 562 L 756 562 L 756 257 L 800 257" stroke="#2563eb" pathLength="100" style="animation-duration:2.4s;animation-delay:-1.02s"/>
-<path class="flowdot" d="M 712 562 L 756 562 L 756 257 L 800 257" stroke="#2563eb" pathLength="100" style="animation-duration:2.4s;animation-delay:-1.02s"/>
-<path class="flowtail" d="M 712 562 L 756 562 L 756 257 L 800 257" stroke="#2563eb" pathLength="100" style="animation-duration:2.4s;animation-delay:-2.22s"/>
-<path class="flowdot" d="M 712 562 L 756 562 L 756 257 L 800 257" stroke="#2563eb" pathLength="100" style="animation-duration:2.4s;animation-delay:-2.22s"/>
-</g>
-<g class="fade" style="animation-delay:1.15s">
-<path class="flowtail" d="M 968 288 L 968 304" stroke="#2563eb" pathLength="100" style="animation-duration:2.4s;animation-delay:-1.36s"/>
-<path class="flowdot" d="M 968 288 L 968 304" stroke="#2563eb" pathLength="100" style="animation-duration:2.4s;animation-delay:-1.36s"/>
-<path class="flowtail" d="M 968 288 L 968 304" stroke="#2563eb" pathLength="100" style="animation-duration:2.4s;animation-delay:-2.56s"/>
-<path class="flowdot" d="M 968 288 L 968 304" stroke="#2563eb" pathLength="100" style="animation-duration:2.4s;animation-delay:-2.56s"/>
-</g>
-<g class="fade" style="animation-delay:1.15s">
-<path class="flowtail" d="M 968 358 L 968 374" stroke="#2563eb" pathLength="100" style="animation-duration:2.4s;animation-delay:-1.7s"/>
-<path class="flowdot" d="M 968 358 L 968 374" stroke="#2563eb" pathLength="100" style="animation-duration:2.4s;animation-delay:-1.7s"/>
-<path class="flowtail" d="M 968 358 L 968 374" stroke="#2563eb" pathLength="100" style="animation-duration:2.4s;animation-delay:-2.9s"/>
-<path class="flowdot" d="M 968 358 L 968 374" stroke="#2563eb" pathLength="100" style="animation-duration:2.4s;animation-delay:-2.9s"/>
-</g>
-<g class="fade" style="animation-delay:1.15s">
-<path class="flowtail" d="M 968 428 L 968 444" stroke="#2563eb" pathLength="100" style="animation-duration:2.4s;animation-delay:-2.04s"/>
-<path class="flowdot" d="M 968 428 L 968 444" stroke="#2563eb" pathLength="100" style="animation-duration:2.4s;animation-delay:-2.04s"/>
-<path class="flowtail" d="M 968 428 L 968 444" stroke="#2563eb" pathLength="100" style="animation-duration:2.4s;animation-delay:-3.24s"/>
-<path class="flowdot" d="M 968 428 L 968 444" stroke="#2563eb" pathLength="100" style="animation-duration:2.4s;animation-delay:-3.24s"/>
-</g>
-<g class="fade" style="animation-delay:1.15s">
-<path class="flowtail" d="M 968 498 L 968 514" stroke="#2563eb" pathLength="100" style="animation-duration:2.4s;animation-delay:-2.38s"/>
-<path class="flowdot" d="M 968 498 L 968 514" stroke="#2563eb" pathLength="100" style="animation-duration:2.4s;animation-delay:-2.38s"/>
-<path class="flowtail" d="M 968 498 L 968 514" stroke="#2563eb" pathLength="100" style="animation-duration:2.4s;animation-delay:-3.58s"/>
-<path class="flowdot" d="M 968 498 L 968 514" stroke="#2563eb" pathLength="100" style="animation-duration:2.4s;animation-delay:-3.58s"/>
-</g>
-<g class="fade" style="animation-delay:1.7s">
-<path class="flowtail" d="M 294 718 L 330 718" stroke="#059669" pathLength="100" style="animation-duration:3.2s;animation-delay:-0s"/>
-<path class="flowdot" d="M 294 718 L 330 718" stroke="#059669" pathLength="100" style="animation-duration:3.2s;animation-delay:-0s"/>
-<path class="flowtail" d="M 294 718 L 330 718" stroke="#059669" pathLength="100" style="animation-duration:3.2s;animation-delay:-1.06667s"/>
-<path class="flowdot" d="M 294 718 L 330 718" stroke="#059669" pathLength="100" style="animation-duration:3.2s;animation-delay:-1.06667s"/>
-<path class="flowtail" d="M 294 718 L 330 718" stroke="#059669" pathLength="100" style="animation-duration:3.2s;animation-delay:-2.13333s"/>
-<path class="flowdot" d="M 294 718 L 330 718" stroke="#059669" pathLength="100" style="animation-duration:3.2s;animation-delay:-2.13333s"/>
-</g>
-<g class="fade" style="animation-delay:1.7s">
-<path class="flowtail" d="M 526 718 L 562 718" stroke="#059669" pathLength="100" style="animation-duration:3.2s;animation-delay:-0.46s"/>
-<path class="flowdot" d="M 526 718 L 562 718" stroke="#059669" pathLength="100" style="animation-duration:3.2s;animation-delay:-0.46s"/>
-<path class="flowtail" d="M 526 718 L 562 718" stroke="#059669" pathLength="100" style="animation-duration:3.2s;animation-delay:-1.52667s"/>
-<path class="flowdot" d="M 526 718 L 562 718" stroke="#059669" pathLength="100" style="animation-duration:3.2s;animation-delay:-1.52667s"/>
-<path class="flowtail" d="M 526 718 L 562 718" stroke="#059669" pathLength="100" style="animation-duration:3.2s;animation-delay:-2.59333s"/>
-<path class="flowdot" d="M 526 718 L 562 718" stroke="#059669" pathLength="100" style="animation-duration:3.2s;animation-delay:-2.59333s"/>
-</g>
-<g class="fade" style="animation-delay:1.7s">
-<path class="flowtail" d="M 808 718 L 844 718" stroke="#059669" pathLength="100" style="animation-duration:3.2s;animation-delay:-0.92s"/>
-<path class="flowdot" d="M 808 718 L 844 718" stroke="#059669" pathLength="100" style="animation-duration:3.2s;animation-delay:-0.92s"/>
-<path class="flowtail" d="M 808 718 L 844 718" stroke="#059669" pathLength="100" style="animation-duration:3.2s;animation-delay:-1.98667s"/>
-<path class="flowdot" d="M 808 718 L 844 718" stroke="#059669" pathLength="100" style="animation-duration:3.2s;animation-delay:-1.98667s"/>
-<path class="flowtail" d="M 808 718 L 844 718" stroke="#059669" pathLength="100" style="animation-duration:3.2s;animation-delay:-3.05333s"/>
-<path class="flowdot" d="M 808 718 L 844 718" stroke="#059669" pathLength="100" style="animation-duration:3.2s;animation-delay:-3.05333s"/>
-</g>
-<g class="fade" style="animation-delay:1.7s">
-<path class="flowtail" d="M 944 748 L 944 768" stroke="#059669" pathLength="100" style="animation-duration:3.2s;animation-delay:-1.38s"/>
-<path class="flowdot" d="M 944 748 L 944 768" stroke="#059669" pathLength="100" style="animation-duration:3.2s;animation-delay:-1.38s"/>
-<path class="flowtail" d="M 944 748 L 944 768" stroke="#059669" pathLength="100" style="animation-duration:3.2s;animation-delay:-2.44667s"/>
-<path class="flowdot" d="M 944 748 L 944 768" stroke="#059669" pathLength="100" style="animation-duration:3.2s;animation-delay:-2.44667s"/>
-<path class="flowtail" d="M 944 748 L 944 768" stroke="#059669" pathLength="100" style="animation-duration:3.2s;animation-delay:-3.51333s"/>
-<path class="flowdot" d="M 944 748 L 944 768" stroke="#059669" pathLength="100" style="animation-duration:3.2s;animation-delay:-3.51333s"/>
-</g>
-<g class="head" style="animation-delay:1.7s">
-<line x1="60" y1="952" x2="92" y2="952" stroke="#2563eb" stroke-width="2" marker-end="url(#ar-blue)"/>
-<text x="98" y="956" font-size="11" fill="#64748b" text-anchor="start">主数据流</text>
-<line x1="180" y1="952" x2="212" y2="952" stroke="#7c3aed" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#ar-purple)"/>
-<text x="218" y="956" font-size="11" fill="#64748b" text-anchor="start">期望值 / 比对</text>
-<line x1="340" y1="952" x2="372" y2="952" stroke="#059669" stroke-width="2" stroke-dasharray="6,3" marker-end="url(#ar-green)"/>
-<text x="378" y="956" font-size="11" fill="#64748b" text-anchor="start">离线验证路径（不看 RTL 解码器）</text>
-<line x1="640" y1="952" x2="672" y2="952" stroke="#ea580c" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#ar-orange)"/>
-<text x="678" y="956" font-size="11" fill="#64748b" text-anchor="start">配置 / 控制</text>
-</g>
+</style>
+  <defs>
+    <marker id="ar-blue" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#2563eb"/></marker>
+    <marker id="ar-green" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#059669"/></marker>
+    <marker id="ar-purple" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#7c3aed"/></marker>
+    <marker id="ar-orange" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#ea580c"/></marker>
+    <marker id="ar-gray" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#9ca3af"/></marker>
+  </defs>
+  <rect width="1200" height="1150" fill="#ffffff"/>
+<g class="head">
+<text x="600" y="40" font-size="22" fill="#1e293b" text-anchor="middle" font-weight="600">HK1V11 420b 长编码验证环境 · 整体架构（2026-11 现状）</text>
+<text x="600" y="64" font-size="12" fill="#64748b" text-anchor="middle">HEAD a7130ba7（1028 后）· 192 个维度 case · 0924/1022 体系扩展（BCC / BOE / MULTI_CHIP / 故障注入）· `CHPI_MODE_420B` 宏隔离</text>
+</g>
+<g class="row" style="animation-delay:0.15s">
+<rect x="40" y="88" width="1120" height="100" rx="10" fill="#f8fafc" stroke="#e2e8f0" stroke-width="2"/>
+<text x="56" y="110" font-size="13" fill="#475569" text-anchor="start" font-weight="600">Test / Config Layer</text>
+<rect x="64" y="118" width="240" height="64" rx="8" fill="#fff7ed" stroke="#fed7aa" stroke-width="1.5"/>
+<text x="184.0" y="137.5" font-size="10.5" fill="#9a3412" text-anchor="middle" font-weight="600">t_H*_V16_FPS*_PORT_NUM*</text>
+<text x="184.0" y="153.5" font-size="8.5" fill="#9a3412" text-anchor="middle">_[维度]_420b × 192（0924 +189 · 1022 +2）</text>
+<text x="184.0" y="169.5" font-size="8.5" fill="#9a3412" text-anchor="middle">H×6 · FPS60~360 · PORT6/8/12/24 · DPLC/SD_CHOP/POL</text>
+<rect x="316" y="118" width="190" height="64" rx="8" fill="#fff7ed" stroke="#fed7aa" stroke-width="1.5"/>
+<text x="411.0" y="137.5" font-size="11" fill="#9a3412" text-anchor="middle" font-weight="600">user_def.sv</text>
+<text x="411.0" y="153.5" font-size="9.5" fill="#9a3412" text-anchor="middle">`define CHPI_MODE_420B</text>
+<text x="411.0" y="169.5" font-size="9.5" fill="#9a3412" text-anchor="middle">BOE_420B_TEST · PARTNUM/DOCNUM</text>
+<rect x="518" y="118" width="220" height="64" rx="8" fill="#fff7ed" stroke="#fed7aa" stroke-width="1.5"/>
+<text x="628.0" y="137.5" font-size="10.5" fill="#9a3412" text-anchor="middle" font-weight="600">cfg_frame0..8.txt</text>
+<text x="628.0" y="153.5" font-size="9" fill="#9a3412" text-anchor="middle">+ ctrl_l_line_cfg.txt（逐行覆盖）</text>
+<text x="628.0" y="169.5" font-size="9" fill="#9a3412" text-anchor="middle">cfg 字段 4 → 17（SCREN/SDC/…）</text>
+<rect x="750" y="118" width="190" height="64" rx="8" fill="#fff7ed" stroke="#fed7aa" stroke-width="1.5"/>
+<text x="845.0" y="137.5" font-size="10.5" fill="#9a3412" text-anchor="middle" font-weight="600">auto_script/ 生成链</text>
+<text x="845.0" y="153.5" font-size="9" fill="#9a3412" text-anchor="middle">gen_cfg_frame / gen_i2c_reg</text>
+<text x="845.0" y="169.5" font-size="9" fill="#9a3412" text-anchor="middle">run_all.py · chpi_generated/</text>
+<rect x="952" y="118" width="188" height="64" rx="8" fill="#fff7ed" stroke="#fed7aa" stroke-width="1.5"/>
+<text x="1046.0" y="137.5" font-size="10.5" fill="#9a3412" text-anchor="middle" font-weight="600">env_cfg</text>
+<text x="1046.0" y="153.5" font-size="8.5" fill="#9a3412" text-anchor="middle">SCREN · 相位感知 get_ctrlL_reg</text>
+<text x="1046.0" y="169.5" font-size="8.5" fill="#9a3412" text-anchor="middle">eol / unlock / bcc 标志族</text>
+</g>
+<g class="row" style="animation-delay:0.35s">
+<rect x="40" y="204" width="700" height="352" rx="10" fill="#f8fafc" stroke="#e2e8f0" stroke-width="2"/>
+<text x="56" y="226" font-size="13" fill="#0f766e" text-anchor="start" font-weight="600">发送端 TX · isptx_sequence.sv（1865 行 · 420b 分支）</text>
+<rect x="64" y="238" width="268" height="36" rx="8" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+<text x="198.0" y="251.5" font-size="10" fill="#1e293b" text-anchor="middle" font-weight="600">send_420b_lsp()</text>
+<text x="198.0" y="267.5" font-size="8" fill="#64748b" text-anchor="middle">K2 + 0xEA~ED×8 + Dmy + K3 · 不加扰</text>
+<rect x="64" y="280" width="268" height="36" rx="8" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+<text x="198.0" y="293.5" font-size="10" fill="#1e293b" text-anchor="middle" font-weight="600">send_420b_active_line()</text>
+<text x="198.0" y="309.5" font-size="8" fill="#64748b" text-anchor="middle">K1 + CTRL_L + Video + K2（统一 K2 结尾）</text>
+<rect x="64" y="322" width="268" height="36" rx="8" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+<text x="198.0" y="335.5" font-size="10" fill="#1e293b" text-anchor="middle" font-weight="600">send_420b_ctrl_f_line()</text>
+<text x="198.0" y="351.5" font-size="8" fill="#64748b" text-anchor="middle">第一条 VFP 行承载 · K4+CTRL_F+Dmy+K3|K2</text>
+<rect x="64" y="364" width="268" height="36" rx="8" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+<text x="198.0" y="377.5" font-size="10" fill="#1e293b" text-anchor="middle" font-weight="600">send_420b_vblank_line()</text>
+<text x="198.0" y="393.5" font-size="8" fill="#64748b" text-anchor="middle">K1 + CTRL_L + VBK + K2</text>
+<rect x="64" y="406" width="268" height="36" rx="8" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+<text x="198.0" y="419.5" font-size="10" fill="#1e293b" text-anchor="middle" font-weight="600">send_420b_idle_pattern()</text>
+<text x="198.0" y="435.5" font-size="8" fill="#64748b" text-anchor="middle">K5~K8 IDLE · 不加扰</text>
+<rect x="64" y="448" width="268" height="36" rx="8" fill="#fff7ed" stroke="#fdba74" stroke-width="1.5"/>
+<text x="198.0" y="461.5" font-size="9" fill="#9a3412" text-anchor="middle" font-weight="600">eol_missing_test → send_invalid_eol_slots()</text>
+<text x="198.0" y="477.5" font-size="8" fill="#9a3412" text-anchor="middle">K2/K3 4 槽 + K4+CTRL_F 64 槽替换 · 行时长不变</text>
+<rect x="64" y="490" width="268" height="36" rx="8" fill="#fff7ed" stroke="#fdba74" stroke-width="1.5"/>
+<text x="198.0" y="503.5" font-size="9" fill="#9a3412" text-anchor="middle" font-weight="600">unlock_recovery → send_recovery_image()</text>
+<text x="198.0" y="519.5" font-size="8" fill="#9a3412" text-anchor="middle">重训练（500us 超时）→ LOCK 复锁 → 干净图像</text>
+<rect x="344" y="238" width="190" height="40" rx="8" fill="#f0fdfa" stroke="#99f6e4" stroke-width="1.5"/>
+<text x="439.0" y="253.5" font-size="8" fill="#1e293b" text-anchor="middle" font-weight="600">build_bit_stream_from_bytes()</text>
+<text x="439.0" y="269.5" font-size="8" fill="#64748b" text-anchor="middle">byte → bit stream（LSB-first）</text>
+<rect x="344" y="284" width="190" height="40" rx="8" fill="#f0fdfa" stroke="#99f6e4" stroke-width="1.5"/>
+<text x="439.0" y="299.5" font-size="10" fill="#1e293b" text-anchor="middle" font-weight="600">pad_bit_stream()</text>
+<text x="439.0" y="315.5" font-size="8" fill="#64748b" text-anchor="middle">CTRL_F 行补齐整行 raw 长度（0825）</text>
+<rect x="344" y="330" width="190" height="40" rx="8" fill="#f0fdfa" stroke="#99f6e4" stroke-width="1.5"/>
+<text x="439.0" y="345.5" font-size="8" fill="#1e293b" text-anchor="middle" font-weight="600">encode_with_70b_alignment()</text>
+<text x="439.0" y="361.5" font-size="8" fill="#64748b" text-anchor="middle">Active/VBK 随 SCREN · CTRL_F 恒 1'b0</text>
+<rect x="344" y="376" width="190" height="40" rx="8" fill="#f0fdfa" stroke="#99f6e4" stroke-width="1.5"/>
+<text x="439.0" y="391.5" font-size="10" fill="#1e293b" text-anchor="middle" font-weight="600">send_420b_encoded_bits()</text>
+<text x="439.0" y="407.5" font-size="8" fill="#64748b" text-anchor="middle">20-bit 包</text>
+<rect x="546" y="238" width="176" height="74" rx="8" fill="#faf5ff" stroke="#e9d5ff" stroke-width="1.5"/>
+<text x="634" y="258" font-size="9.5" fill="#1e293b" text-anchor="middle" font-weight="600">long_encoding_ref_model.sv</text>
+<text x="634" y="276" font-size="8" fill="#64748b" text-anchor="middle">encode_413b_to_420b() · tag 跳过 0/63</text>
+<text x="634" y="291" font-size="8" fill="#64748b" text-anchor="middle">LSP 字节序 EA→ED（0807 入库）</text>
+<text x="634" y="306" font-size="8" fill="#64748b" text-anchor="middle">G16(X) 16-bit LFSR · K 常量</text>
+<rect x="546" y="320" width="176" height="64" rx="8" fill="#f0fdfa" stroke="#99f6e4" stroke-width="1.5"/>
+<text x="634.0" y="339.5" font-size="8" fill="#1e293b" text-anchor="middle" font-weight="600">chpi_training_packet_sequence</text>
+<text x="634.0" y="355.5" font-size="8" fill="#64748b" text-anchor="middle">（0924 新增）BCC 训练包 · 双模式</text>
+<text x="634.0" y="371.5" font-size="8" fill="#64748b" text-anchor="middle">8B/10B 与 420b · K3+lfsr=0XFFFF</text>
+<rect x="546" y="392" width="176" height="84" rx="8" fill="#f0fdfa" stroke="#99f6e4" stroke-width="1.5"/>
+<text x="634.0" y="405.5" font-size="9.5" fill="#1e293b" text-anchor="middle" font-weight="600">C-model golden 闭环（0924）</text>
+<text x="634.0" y="421.5" font-size="8" fill="#64748b" text-anchor="middle">每帧 process_line(c) + exec_c(c)</text>
+<text x="634.0" y="437.5" font-size="8" fill="#64748b" text-anchor="middle">dplc.pl --ave_rgbw --ave_last</text>
+<text x="634.0" y="453.5" font-size="8" fill="#64748b" text-anchor="middle">--dplc_group → outResult/</text>
+<text x="634.0" y="469.5" font-size="8" fill="#64748b" text-anchor="middle">digital/* 供 digital_top 检查</text>
+</g>
+<g class="row" style="animation-delay:0.55s">
+<rect x="40" y="572" width="700" height="106" rx="10" fill="#f8fafc" stroke="#e2e8f0" stroke-width="2"/>
+<text x="56" y="594" font-size="13" fill="#475569" text-anchor="start" font-weight="600">Transaction / Driver</text>
+<rect x="64" y="596" width="300" height="64" rx="8" fill="#f0fdf4" stroke="#bbf7d0" stroke-width="1.5"/>
+<text x="214.0" y="615.5" font-size="11.5" fill="#1e293b" text-anchor="middle" font-weight="600">isptx_transaction.sv</text>
+<text x="214.0" y="631.5" font-size="9.5" fill="#64748b" text-anchor="middle">bit[19:0] one_pkt_20b</text>
+<text x="214.0" y="647.5" font-size="9.5" fill="#64748b" text-anchor="middle">bit[39:0] k1_420b ~ k4_420b</text>
+<rect x="404" y="596" width="308" height="64" rx="8" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+<text x="558.0" y="607.5" font-size="10.5" fill="#1e293b" text-anchor="middle" font-weight="600">isptx_driver.sv（420b）</text>
+<text x="558.0" y="623.5" font-size="8.5" fill="#64748b" text-anchor="middle">drv_one_pkt_20b() · LSB-first → vif.rxn0/rxp0</text>
+<text x="558.0" y="639.5" font-size="8.5" fill="#64748b" text-anchor="middle">BOE 回放：drive_idle_ct → 回放 sim_data_BOE_opt</text>
+<text x="558.0" y="655.5" font-size="8.5" fill="#64748b" text-anchor="middle">（Pat01..12 × 2doc）· post_bcc LOCK 4us</text>
+</g>
+<g class="row" style="animation-delay:0.6s">
+<rect x="776" y="204" width="384" height="474" rx="10" fill="#f8fafc" stroke="#e2e8f0" stroke-width="2"/>
+<text x="792" y="226" font-size="13" fill="#991b1b" text-anchor="start" font-weight="600">接收端 RX · DUT（HDL long_encoding/）</text>
+<rect x="800" y="238" width="336" height="62" rx="8" fill="#ffffff" stroke="#059669" stroke-width="2"/>
+<text x="968" y="260" font-size="11" fill="#1e293b" text-anchor="middle" font-weight="600">CHPI_KCODE_ALIGN_LONG_L0</text>
+<text x="968" y="276" font-size="9.5" fill="#64748b" text-anchor="middle">K1~K4 检测 · 20-bit 对齐</text>
+<text x="968" y="292" font-size="9.5" fill="#059669" text-anchor="middle" font-weight="600">DATA_ALIGN_PRE → tap</text>
+<g class="pulse-b" style="animation-delay:-1.4s">
+<rect x="1072" y="244" width="52" height="18" rx="9" fill="#059669" stroke="#059669" stroke-width="1"/>
+<text x="1098" y="257" font-size="10" fill="#ffffff" text-anchor="middle" font-weight="700">TAP</text>
+</g>
+<rect x="800" y="316" width="336" height="54" rx="8" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+<text x="968.0" y="330.5" font-size="11" fill="#1e293b" text-anchor="middle" font-weight="600">long_decoding_top.v</text>
+<text x="968.0" y="346.5" font-size="9" fill="#64748b" text-anchor="middle">din_20b_aligned ← DATA0_ALIGN_LONG</text>
+<text x="968.0" y="362.5" font-size="9" fill="#64748b" text-anchor="middle">44-bit 缓冲 · K3 复位延 4 拍 K3_FIND_rp_d[3]</text>
+<rect x="800" y="386" width="336" height="54" rx="8" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+<text x="968.0" y="400.5" font-size="11" fill="#1e293b" text-anchor="middle" font-weight="600">decoder_7b.v</text>
+<text x="968.0" y="416.5" font-size="9" fill="#64748b" text-anchor="middle">420b→413b · decode_ignore 已修 6-bit {0,63}</text>
+<text x="968.0" y="432.5" font-size="9" fill="#64748b" text-anchor="middle">header_mismatch [12:7] 修复 · tag_value 待波形</text>
+<rect x="800" y="456" width="336" height="54" rx="8" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+<text x="968.0" y="470.5" font-size="11" fill="#1e293b" text-anchor="middle" font-weight="600">descramble_7b.v</text>
+<text x="968.0" y="486.5" font-size="9" fill="#64748b" text-anchor="middle">G16(X) 解扰 · K3 上升沿复位（延 4 拍生效）</text>
+<text x="968.0" y="502.5" font-size="9" fill="#64748b" text-anchor="middle">scramble_en=0 旁路</text>
+<rect x="800" y="526" width="336" height="42" rx="8" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+<text x="968.0" y="542.5" font-size="11" fill="#1e293b" text-anchor="middle" font-weight="600">dout_24b + 2-bit valid</text>
+<text x="968.0" y="558.5" font-size="9" fill="#64748b" text-anchor="middle">→ 后级像素通路</text>
+<rect x="800" y="580" width="336" height="62" rx="8" fill="#eff6ff" stroke="#93c5fd" stroke-width="1.5"/>
+<text x="968.0" y="598.5" font-size="10" fill="#1e40af" text-anchor="middle" font-weight="600">RTL 编码 TX 通路（0807 后新增）</text>
+<text x="968.0" y="614.5" font-size="8.5" fill="#1e40af" text-anchor="middle">LONG_ENCODING_ALIGN（K1~K4 对齐 · BK_ST）</text>
+<text x="968.0" y="630.5" font-size="8.5" fill="#1e40af" text-anchor="middle">ERROR_CTRL · OUTPUT → 芯片自身 420b 发送</text>
+<rect x="792" y="310" width="352" height="222" rx="8" fill="none" stroke="#9ca3af" stroke-width="1.2" stroke-dasharray="6,3"/>
+<text x="968" y="548" font-size="9.5" fill="#6b7280" text-anchor="middle">灰框内：RTL 解码链 —— 离线验证不依赖</text>
+</g>
+<g class="row" style="animation-delay:0.8s">
+<rect x="40" y="694" width="1120" height="132" rx="10" fill="#f8fafc" stroke="#e2e8f0" stroke-width="2"/>
+<text x="56" y="716" font-size="13" fill="#475569" text-anchor="start" font-weight="600">体系扩展（0924 ~ 1022）</text>
+<rect x="64" y="726" width="350" height="84" rx="8" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+<text x="239.0" y="747.5" font-size="11" fill="#1e293b" text-anchor="middle" font-weight="600">MULTI_CHIP / multi4（1010）</text>
+<text x="239.0" y="763.5" font-size="9" fill="#64748b" text-anchor="middle">env.sv config_db 相对路径 · lane_delay_reverse</text>
+<text x="239.0" y="779.5" font-size="9" fill="#64748b" text-anchor="middle">fork 隔离 · CH_SEL→subpix_cnt 966/960/726/720/864</text>
+<text x="239.0" y="795.5" font-size="9" fill="#64748b" text-anchor="middle">DPLC_GROUP=1 时 subpix_cnt +3→+6</text>
+<rect x="430" y="726" width="350" height="84" rx="8" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+<text x="605.0" y="747.5" font-size="11" fill="#1e293b" text-anchor="middle" font-weight="600">BCC 训练体系（1022）</text>
+<text x="605.0" y="763.5" font-size="9" fill="#64748b" text-anchor="middle">bcc_monitor · bcc_sequence · bcc_scoreboard</text>
+<text x="605.0" y="779.5" font-size="9" fill="#64748b" text-anchor="middle">covergroup 交叉覆盖 · 70us 响应超时</text>
+<text x="605.0" y="795.5" font-size="9" fill="#64748b" text-anchor="middle">ID_ASSIGN / EQ_ID / TRAINING_RESULT 追踪</text>
+<g class="pulse" style="animation-delay:-2.1s">
+<rect x="796" y="726" width="344" height="84" rx="8" fill="#fffbeb" stroke="#fde68a" stroke-width="1.5"/>
+<text x="968.0" y="747.5" font-size="10.5" fill="#92400e" text-anchor="middle" font-weight="600">checker_420b.sv（未变 · display-only）</text>
+<text x="968.0" y="763.5" font-size="9" fill="#92400e" text-anchor="middle">77 行：scramble_en 硬编码 1'b1</text>
+<text x="968.0" y="779.5" font-size="9" fill="#92400e" text-anchor="middle">每 block LFSR 复位 0XFFFF</text>
+<text x="968.0" y="795.5" font-size="9" fill="#92400e" text-anchor="middle">—— 正式比对启用前的改造点</text>
+</g>
+</g>
+<g class="row" style="animation-delay:1.0s">
+<rect x="40" y="842" width="1120" height="192" rx="10" fill="#f0fdf4" stroke="#bbf7d0" stroke-width="2"/>
+<text x="56" y="864" font-size="13" fill="#059669" text-anchor="start" font-weight="600">接收端离线验证路径 · 不看 RTL 解码器（0717 建立 · 存续）</text>
+<rect x="64" y="880" width="230" height="60" rx="8" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+<text x="179.0" y="897.5" font-size="10.5" fill="#1e293b" text-anchor="middle" font-weight="600">long_rtl_tap_debug.sv</text>
+<text x="179.0" y="913.5" font-size="9" fill="#64748b" text-anchor="middle">bind 注入 KCODE_ALIGN · 零 RTL 修改</text>
+<text x="179.0" y="929.5" font-size="9" fill="#64748b" text-anchor="middle">抓 DATA_ALIGN_PRE</text>
+<rect x="330" y="880" width="196" height="60" rx="8" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+<text x="428.0" y="897.5" font-size="10" fill="#1e293b" text-anchor="middle" font-weight="600">long_rtl_dap_lane0.md</text>
+<text x="428.0" y="913.5" font-size="9" fill="#64748b" text-anchor="middle">每拍 20-bit 对齐数据</text>
+<text x="428.0" y="929.5" font-size="9" fill="#64748b" text-anchor="middle">全量转储</text>
+<rect x="562" y="880" width="246" height="60" rx="8" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+<text x="685.0" y="897.5" font-size="11" fill="#1e293b" text-anchor="middle" font-weight="600">decode_dap.py</text>
+<text x="685.0" y="913.5" font-size="9" fill="#64748b" text-anchor="middle">离线 413b/420b 解码</text>
+<text x="685.0" y="929.5" font-size="9" fill="#64748b" text-anchor="middle">K 码对定位 · tag 替换 · G16 解扰</text>
+<rect x="844" y="880" width="200" height="60" rx="8" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+<text x="944.0" y="897.5" font-size="10" fill="#1e293b" text-anchor="middle" font-weight="600">long_pydec_lane0.md</text>
+<text x="944.0" y="913.5" font-size="9" fill="#64748b" text-anchor="middle">离线解码字节流</text>
+<text x="944.0" y="929.5" font-size="9" fill="#64748b" text-anchor="middle">区域：LSP / CTRL_F / LINE</text>
+<rect x="64" y="960" width="280" height="48" rx="8" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+<text x="204.0" y="979.5" font-size="10" fill="#1e293b" text-anchor="middle" font-weight="600">long_rawbyte_seq_lane0.md</text>
+<text x="204.0" y="995.5" font-size="9" fill="#64748b" text-anchor="middle">发送端编码前 raw byte（期望值）</text>
+<g class="pulse-t" style="animation-delay:-0.7s">
+<rect x="566" y="960" width="380" height="48" rx="8" fill="#ecfdf5" stroke="#059669" stroke-width="2"/>
+<text x="756" y="980" font-size="10.5" fill="#047857" text-anchor="middle" font-weight="600">long_pydec_report_lane0.md</text>
+<text x="756" y="998" font-size="9.5" fill="#047857" text-anchor="middle">逐区域比对 verdict：LSP / CTRL_F / LINE 全对 ✅</text>
+</g>
+<text x="360" y="988" font-size="9.5" fill="#64748b" text-anchor="start">日志族（0807+ · lane*.md）：diag_debug / kcode_seq / rawbyte / pkt20（↔ RTL long_rtl_rx 1:1 diff）/ kcode_drv</text>
+</g>
+<g class="row" style="animation-delay:1.2s">
+<rect x="40" y="1050" width="1120" height="58" rx="10" fill="#f8fafc" stroke="#e2e8f0" stroke-width="2"/>
+<text x="56" y="1072" font-size="13" fill="#475569" text-anchor="start" font-weight="600">版本基线 · DV_TCON_C 主干 + 服务器包波次</text>
+<text x="56" y="1074" font-size="10" fill="#475569" text-anchor="start">0721v1 CONFIG_DATA 24bit · 0807v1 ref model 三修入库 · 0825 相位感知 CTRL_L · 0924 维度矩阵 190 case + CTRL_F 恒不加扰 + VFP 承载</text>
+<text x="56" y="1092" font-size="10" fill="#475569" text-anchor="start">1010 MULTI_CHIP/CH_SEL · 1022 BCC + BOE +2 case · 1028 overlay → HEAD a7130ba7（2026-11）</text>
+</g>
+<g class="fade" style="animation-delay:0.75s">
+<line x1="375" y1="188" x2="375" y2="204" stroke="#2563eb" stroke-width="1.5" marker-end="url(#ar-blue)" class="draw" pathLength="100" style="animation-delay:0.75s"/>
+<line x1="660" y1="188" x2="660" y2="204" stroke="#2563eb" stroke-width="1.5" marker-end="url(#ar-blue)" class="draw" pathLength="100" style="animation-delay:0.75s"/>
+<line x1="955" y1="188" x2="955" y2="204" stroke="#ea580c" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#ar-orange)"/>
+</g>
+<g class="fade" style="animation-delay:0.9s">
+<line x1="336" y1="330" x2="344" y2="330" stroke="#2563eb" stroke-width="1.5" marker-end="url(#ar-blue)" class="draw" pathLength="100" style="animation-delay:0.9s"/>
+<line x1="534" y1="320" x2="546" y2="320" stroke="#2563eb" stroke-width="1.5" marker-end="url(#ar-blue)" class="draw" pathLength="100" style="animation-delay:0.9s"/>
+</g>
+<g class="fade" style="animation-delay:1.1s">
+<line x1="375" y1="556" x2="375" y2="572" stroke="#2563eb" stroke-width="1.5" marker-end="url(#ar-blue)" class="draw" pathLength="100" style="animation-delay:1.1s"/>
+<line x1="364" y1="628" x2="404" y2="628" stroke="#2563eb" stroke-width="1.5" marker-end="url(#ar-blue)" class="draw" pathLength="100" style="animation-delay:1.1s"/>
+</g>
+<g class="fade" style="animation-delay:1.15s">
+<path d="M 712 628 L 756 628 L 756 269 L 800 269" stroke="#2563eb" stroke-width="2" fill="none" marker-end="url(#ar-blue)" class="draw" pathLength="100" style="animation-delay:1.15s"/>
+<text transform="rotate(-90 748 460)" x="748" y="460" font-size="10" fill="#2563eb" text-anchor="middle">20-bit 包流 / 40-bit K 码 · 串行链路</text>
+<path class="flowdot" d="M 712 628 L 756 628 L 756 269 L 800 269" stroke="#2563eb" pathLength="100" style="animation-duration:4.2s;animation-delay:-0.6s"/>
+<path class="flowtail" d="M 712 628 L 756 628 L 756 269 L 800 269" stroke="#2563eb" pathLength="100" style="animation-duration:4.2s;animation-delay:-0.6s"/>
+<path class="flowdot" d="M 712 628 L 756 628 L 756 269 L 800 269" stroke="#2563eb" pathLength="100" style="animation-duration:4.2s;animation-delay:-2.7s"/>
+<path class="flowtail" d="M 712 628 L 756 628 L 756 269 L 800 269" stroke="#2563eb" pathLength="100" style="animation-duration:4.2s;animation-delay:-2.7s"/>
+</g>
+<g class="fade" style="animation-delay:1.15s">
+<line x1="968" y1="300" x2="968" y2="316" stroke="#2563eb" stroke-width="1.5" marker-end="url(#ar-blue)" class="draw" pathLength="100" style="animation-delay:1.15s"/>
+<line x1="968" y1="370" x2="968" y2="386" stroke="#2563eb" stroke-width="1.5" marker-end="url(#ar-blue)" class="draw" pathLength="100" style="animation-delay:1.15s"/>
+<line x1="968" y1="440" x2="968" y2="456" stroke="#2563eb" stroke-width="1.5" marker-end="url(#ar-blue)" class="draw" pathLength="100" style="animation-delay:1.15s"/>
+<line x1="968" y1="510" x2="968" y2="526" stroke="#2563eb" stroke-width="1.5" marker-end="url(#ar-blue)" class="draw" pathLength="100" style="animation-delay:1.15s"/>
+<line x1="968" y1="568" x2="968" y2="580" stroke="#2563eb" stroke-width="1.5" marker-end="url(#ar-blue)" class="draw" pathLength="100" style="animation-delay:1.15s"/>
+</g>
+<g class="fade" style="animation-delay:1.15s">
+<path d="M 1136 269 L 1178 269 L 1178 834 L 179 834 L 179 880" stroke="#059669" stroke-width="2" fill="none" stroke-dasharray="6,3" marker-end="url(#ar-green)"/>
+<text x="700" y="828" font-size="10" fill="#059669" text-anchor="middle">tap DATA_ALIGN_PRE（每拍 20-bit 对齐数据）</text>
+<path class="flowdot" d="M 1136 269 L 1178 269 L 1178 834 L 179 834 L 179 880" stroke="#059669" pathLength="100" style="animation-duration:4.2s;animation-delay:-1.7s"/>
+<path class="flowdot" d="M 1136 269 L 1178 269 L 1178 834 L 179 834 L 179 880" stroke="#059669" pathLength="100" style="animation-duration:4.2s;animation-delay:-3.8s"/>
+</g>
+<g class="fade" style="animation-delay:1.15s">
+<path d="M 204 678 L 204 828 A 5.5 5.5 0 0 1 204 840 L 204 960" stroke="#7c3aed" stroke-width="1.5" fill="none" stroke-dasharray="5,3" marker-end="url(#ar-purple)" class="dashgrow" style="animation-duration:3.2s;animation-delay:-1.6s"/>
+</g>
+<g class="fade" style="animation-delay:1.55s">
+<line x1="294" y1="910" x2="330" y2="910" stroke="#059669" stroke-width="1.5" marker-end="url(#ar-green)" class="draw" pathLength="100" style="animation-delay:1.55s"/>
+<line x1="526" y1="910" x2="562" y2="910" stroke="#059669" stroke-width="1.5" marker-end="url(#ar-green)" class="draw" pathLength="100" style="animation-delay:1.55s"/>
+<line x1="808" y1="910" x2="844" y2="910" stroke="#059669" stroke-width="1.5" marker-end="url(#ar-green)" class="draw" pathLength="100" style="animation-delay:1.55s"/>
+<line x1="944" y1="940" x2="944" y2="960" stroke="#059669" stroke-width="1.5" marker-end="url(#ar-green)" class="draw" pathLength="100" style="animation-delay:1.55s"/>
+<line x1="344" y1="984" x2="566" y2="984" stroke="#7c3aed" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#ar-purple)" class="dashgrow" style="animation-duration:2.8s;animation-delay:-0.5s"/>
+<text x="455" y="976" font-size="9.5" fill="#7c3aed" text-anchor="middle">逐区域 diff</text>
+</g>
+<g class="head" style="animation-delay:1.5s">
+<line x1="60" y1="1136" x2="92" y2="1136" stroke="#2563eb" stroke-width="2" marker-end="url(#ar-blue)"/>
+<text x="98" y="1140" font-size="11" fill="#64748b" text-anchor="start">主数据流</text>
+<line x1="180" y1="1136" x2="212" y2="1136" stroke="#7c3aed" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#ar-purple)"/>
+<text x="218" y="1140" font-size="11" fill="#64748b" text-anchor="start">期望值 / 比对</text>
+<line x1="340" y1="1136" x2="372" y2="1136" stroke="#059669" stroke-width="2" stroke-dasharray="6,3" marker-end="url(#ar-green)"/>
+<text x="378" y="1140" font-size="11" fill="#64748b" text-anchor="start">离线验证路径（不看 RTL 解码器）</text>
+<line x1="640" y1="1136" x2="672" y2="1136" stroke="#ea580c" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#ar-orange)"/>
+<text x="678" y="1140" font-size="11" fill="#64748b" text-anchor="start">配置 / 控制</text>
+</g>
 </svg>

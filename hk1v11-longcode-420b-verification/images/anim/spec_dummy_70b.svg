@@ -151,29 +151,29 @@
 <text x="214" y="432" font-size="10" fill="#9a3412" text-anchor="start" font-weight="600">Before ENC</text>
 <rect x="214" y="444" width="50" height="38" rx="8" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
 <text x="239.0" y="466.5" font-size="9.5" fill="#166534" text-anchor="middle" font-weight="600">K4</text>
-<rect x="268" y="444" width="180" height="38" rx="8" fill="#fce7f3" stroke="#f9a8d4" stroke-width="1.5"/>
-<text x="358.0" y="466.5" font-size="9.5" fill="#9d174d" text-anchor="middle" font-weight="600">C.F（6x Byte）</text>
-<rect x="452" y="444" width="50" height="38" rx="8" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
-<text x="477.0" y="466.5" font-size="9.5" fill="#166534" text-anchor="middle" font-weight="600">K2</text>
-<rect x="506" y="444" width="100" height="38" rx="8" fill="#f3f4f6" stroke="#d1d5db" stroke-width="1.5"/>
-<text x="556.0" y="466.5" font-size="9.5" fill="#6b7280" text-anchor="middle" font-weight="600">HBP</text>
+<rect x="268" y="444" width="170" height="38" rx="8" fill="#fce7f3" stroke="#f9a8d4" stroke-width="1.5"/>
+<text x="353.0" y="466.5" font-size="9.5" fill="#9d174d" text-anchor="middle" font-weight="600">C.F（6x Byte）</text>
+<rect x="442" y="444" width="64" height="38" rx="8" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
+<text x="474.0" y="466.5" font-size="9.5" fill="#166534" text-anchor="middle" font-weight="600">K3|K2</text>
+<rect x="510" y="444" width="86" height="38" rx="8" fill="#f3f4f6" stroke="#d1d5db" stroke-width="1.5"/>
+<text x="553.0" y="466.5" font-size="9.5" fill="#6b7280" text-anchor="middle" font-weight="600">HBP</text>
 <rect x="700" y="410" width="490" height="100" rx="10" fill="#fff7ed" stroke="#fdba74" stroke-width="1.5"/>
 <text x="714" y="432" font-size="10" fill="#9a3412" text-anchor="start" font-weight="600">After ENC</text>
 <rect x="714" y="444" width="44" height="38" rx="8" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
 <text x="736.0" y="466.5" font-size="9.5" fill="#166534" text-anchor="middle" font-weight="600">K4</text>
-<rect x="762" y="444" width="190" height="38" rx="8" fill="#fce7f3" stroke="#f9a8d4" stroke-width="1.5"/>
-<text x="857.0" y="466.5" font-size="9.5" fill="#9d174d" text-anchor="middle" font-weight="600">C.F(ENC) · 420b</text>
+<rect x="762" y="444" width="180" height="38" rx="8" fill="#fce7f3" stroke="#f9a8d4" stroke-width="1.5"/>
+<text x="852.0" y="466.5" font-size="9.5" fill="#9d174d" text-anchor="middle" font-weight="600">C.F(ENC) · 420b</text>
 <g class="cellwave" style="animation-duration:2.8s;animation-delay:0.0s">
-<rect x="956" y="444" width="90" height="38" rx="8" fill="#e5e7eb" stroke="#d1d5db" stroke-width="1.5"/>
-<text x="1001.0" y="466.5" font-size="9.5" fill="#6b7280" text-anchor="middle" font-weight="600">D · 140b</text>
+<rect x="946" y="444" width="90" height="38" rx="8" fill="#e5e7eb" stroke="#d1d5db" stroke-width="1.5"/>
+<text x="991.0" y="466.5" font-size="9.5" fill="#6b7280" text-anchor="middle" font-weight="600">D · 140b</text>
 </g>
-<rect x="1050" y="444" width="44" height="38" rx="8" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
-<text x="1072.0" y="466.5" font-size="9.5" fill="#166534" text-anchor="middle" font-weight="600">K2</text>
+<rect x="1040" y="444" width="64" height="38" rx="8" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
+<text x="1072.0" y="466.5" font-size="9.5" fill="#166534" text-anchor="middle" font-weight="600">K3|K2</text>
 <g class="cellwave" style="animation-duration:2.8s;animation-delay:0.3s">
-<rect x="1098" y="444" width="56" height="38" rx="8" fill="#fef9c3" stroke="#fde047" stroke-width="1.5"/>
-<text x="1126.0" y="466.5" font-size="9.5" fill="#854d0e" text-anchor="middle" font-weight="600">K5~K8</text>
+<rect x="1108" y="444" width="56" height="38" rx="8" fill="#fef9c3" stroke="#fde047" stroke-width="1.5"/>
+<text x="1136.0" y="466.5" font-size="9.5" fill="#854d0e" text-anchor="middle" font-weight="600">K5~K8</text>
 </g>
-<text x="410" y="498" font-size="9" fill="#64748b" text-anchor="middle">Dmy 内嵌于 413b 零补齐</text>
+<text x="410" y="498" font-size="9" fill="#64748b" text-anchor="middle">Dmy 内嵌 413b 零补齐 · 0825：补齐到整行 raw 长度</text>
 </g>
 <g class="fade" style="animation-delay:1.45s">
 <line class="draw" pathLength="100" style="animation-delay:1.45s" x1="630" y1="220" x2="690" y2="220" stroke="#2563eb" stroke-width="2" marker-end="url(#ar-blue)"/>
@@ -188,7 +188,7 @@
 <text x="660" y="498" font-size="8.5" fill="#2563eb" text-anchor="middle">413b/420b</text>
 </g>
 <g class="head" style="animation-delay:1.4s">
-<text id="shT1" x="60" y="552" font-size="11" fill="#64748b" text-anchor="start">多通道对齐示例：720 通道 Dmy = N bit、726 通道 Dmy = N+70 bit → 统一按 N+70 bit 填充</text>
+<text id="shT1" x="60" y="552" font-size="11" fill="#64748b" text-anchor="start">多通道对齐示例：720 通道 Dmy = N bit、726 通道 Dmy = N+70 bit → 统一按 N+70 bit 填充；1010：DPLC_GROUP=1 时 subpix_cnt +3→+6（CH_SEL 表 966/960/726/720/864）</text>
 </g>
 <g class="fade" style="animation-delay:1.4s"><g clip-path="url(#sweepC-1)"><rect class="sweepband" x="-864" y="20" width="1440" height="545" fill="url(#sweepG-1)" style="--sweepP:1440px"/></g></g>
 </svg>

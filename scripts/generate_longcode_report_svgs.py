@@ -1,15 +1,18 @@
 # -*- coding: utf-8 -*-
-"""生成 hk1v11-longcode-420b-verification 报告用的三张结构框图 SVG：
-1. longcode_verification_architecture.svg  —— 验证环境整体架构（0717v1 现状）
+"""生成 hk1v11-longcode-420b-verification 报告用的十张静态 SVG：
+1. longcode_verification_architecture.svg  —— 验证环境整体架构（2026-11 现状 · HEAD a7130ba7，1105 重绘）
 2. pydec_tx_rx_structure.svg               —— 收发结构框图（不看 RTL、脚本离线解码比对）
-3. 8b10b_vs_420b_architecture.svg          —— 8B/10B vs 420B 对比（修正位序等过时内容）
+3. 8b10b_vs_420b_architecture.svg          —— 8B/10B vs 420B 对比（0924~1028 增补 CTRL_F/K3/TX 通路）
+4-10. spec_* 系列                           —— 编码规则细节图
+   spec_frame_flow / spec_scramble_rolling 按 0924 帧结构与加扰策略重绘（1105）；
+   其余按 2026-11-05 差异审计（docs/HK1V11_longcode_420b_delta_audit_20261105.md）微调。
 
 输出目录：hk1v11-longcode-420b-verification/
 """
 import os
 
 OUT = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
-                   "hk1v11-longcode-420b-verification")
+                   "hk1v11-longcode-420b-verification", "images")
 
 FONT = ("'Helvetica Neue', Helvetica, Arial, 'PingFang SC', 'Microsoft YaHei',"
         " 'Microsoft JhengHei', 'SimHei', sans-serif")
@@ -84,132 +87,170 @@ def path(d, color="blue", sw=1.5, dash=None):
 
 
 # ---------------------------------------------------------------------------
-# 图 1：验证环境整体架构（0717v1）
+# 图 1：验证环境整体架构（2026-11 现状 · HEAD a7130ba7）
 # ---------------------------------------------------------------------------
 def gen_architecture():
-    L = head(1200, 980)
+    L = head(1200, 1150)
     A = L.append
-    A(text(600, 40, "HK1V11 420b 长编码验证环境 · 整体架构", 22, C["dark"], "600"))
-    A(text(600, 64, "0717v1 现状 · 基于 DV_TCON_C 8B/10B 环境重建 · `CHPI_MODE_420B` 宏隔离 · 新增接收端离线验证路径（不看 RTL 解码器）",
+    A(text(600, 40, "HK1V11 420b 长编码验证环境 · 整体架构（2026-11 现状）", 22, C["dark"], "600"))
+    A(text(600, 64, "HEAD a7130ba7（1028 后）· 192 个维度 case · 0924/1022 体系扩展（BCC / BOE / MULTI_CHIP / 故障注入）· `CHPI_MODE_420B` 宏隔离",
            12, C["muted"]))
 
     # ---- Row1 Test / Config ----
-    L += container(40, 88, 1120, 86, "Test / Config Layer")
-    L += box(70, 118, 250, 48, "t_H3840_V16_FPS120_420b", ("当前主调 case（bind tap + pydec）",),
+    L += container(40, 88, 1120, 100, "Test / Config Layer")
+    L += box(64, 118, 240, 64, "t_H*_V16_FPS*_PORT_NUM*",
+             ("_[维度]_420b × 192（0924 +189 · 1022 +2）", "H×6 · FPS60~360 · PORT6/8/12/24 · DPLC/SD_CHOP/POL"),
+             fill="#fff7ed", stroke="#fed7aa", tfill="#9a3412", sfill="#9a3412", tsize=10.5, ssize=8.5)
+    L += box(316, 118, 190, 64, "user_def.sv",
+             ("`define CHPI_MODE_420B", "BOE_420B_TEST · PARTNUM/DOCNUM"),
              fill="#fff7ed", stroke="#fed7aa", tfill="#9a3412", sfill="#9a3412", tsize=11)
-    L += box(340, 118, 200, 48, "t_8b1lane_420b_basic", ("smoke case",),
-             fill="#fff7ed", stroke="#fed7aa", tfill="#9a3412", sfill="#9a3412", tsize=11)
-    L += box(560, 118, 200, 48, "user_def.sv", ("`define CHPI_MODE_420B",),
-             fill="#fff7ed", stroke="#fed7aa", tfill="#9a3412", sfill="#9a3412", tsize=11.5)
-    L += box(780, 118, 350, 48, "env_cfg", ("SCREN · HACT · VACT · LANE_NUM · get_ctrlL/F_reg",),
-             fill="#fff7ed", stroke="#fed7aa", tfill="#9a3412", sfill="#9a3412", tsize=11.5)
+    L += box(518, 118, 220, 64, "cfg_frame0..8.txt",
+             ("+ ctrl_l_line_cfg.txt（逐行覆盖）", "cfg 字段 4 → 17（SCREN/SDC/…）"),
+             fill="#fff7ed", stroke="#fed7aa", tfill="#9a3412", sfill="#9a3412", tsize=10.5, ssize=9)
+    L += box(750, 118, 190, 64, "auto_script/ 生成链",
+             ("gen_cfg_frame / gen_i2c_reg", "run_all.py · chpi_generated/"),
+             fill="#fff7ed", stroke="#fed7aa", tfill="#9a3412", sfill="#9a3412", tsize=10.5, ssize=9)
+    L += box(952, 118, 188, 64, "env_cfg",
+             ("SCREN · 相位感知 get_ctrlL_reg", "eol / unlock / bcc 标志族"),
+             fill="#fff7ed", stroke="#fed7aa", tfill="#9a3412", sfill="#9a3412", tsize=10.5, ssize=8.5)
 
     # ---- Row2 TX sequence ----
-    L += container(40, 192, 696, 292, "发送端 TX · isptx_sequence.sv（420b 分支）", C["teal"])
+    L += container(40, 204, 700, 352, "发送端 TX · isptx_sequence.sv（1865 行 · 420b 分支）", C["teal"])
     tasks = [
-        ("send_420b_lsp()", "K2 + 0xEA~ED×8 + Dmy + K3 · 不加扰"),
-        ("send_420b_active_line()", "K1 + CTRL_L + Video + K2"),
-        ("send_420b_ctrl_f_line()", "K4 + CTRL_F(ENC) + Dmy + K2 · 单独成行"),
-        ("send_420b_vblank_line()", "K1 + CTRL_L + VBK + K2"),
-        ("send_420b_idle_pattern()", "K5~K8 IDLE · 不加扰"),
+        ("send_420b_lsp()", "K2 + 0xEA~ED×8 + Dmy + K3 · 不加扰", 0),
+        ("send_420b_active_line()", "K1 + CTRL_L + Video + K2（统一 K2 结尾）", 0),
+        ("send_420b_ctrl_f_line()", "第一条 VFP 行承载 · K4+CTRL_F+Dmy+K3|K2", 0),
+        ("send_420b_vblank_line()", "K1 + CTRL_L + VBK + K2", 0),
+        ("send_420b_idle_pattern()", "K5~K8 IDLE · 不加扰", 0),
+        ("eol_missing_test → send_invalid_eol_slots()", "K2/K3 4 槽 + K4+CTRL_F 64 槽替换 · 行时长不变", 1),
+        ("unlock_recovery → send_recovery_image()", "重训练（500us 超时）→ LOCK 复锁 → 干净图像", 1),
     ]
-    for i, (t1, s1) in enumerate(tasks):
-        L += box(64, 226 + i * 52, 280, 42, t1, (s1,), tsize=11, ssize=9)
+    for i, (t1, s1, fault) in enumerate(tasks):
+        L += box(64, 238 + i * 42, 268, 36, t1, (s1,),
+                 fill="#fff7ed" if fault else "#ffffff",
+                 stroke="#fdba74" if fault else "#d1d5db",
+                 tfill="#9a3412" if fault else C["dark"],
+                 sfill="#9a3412" if fault else C["muted"],
+                 tsize=9 if fault else 10, ssize=8)
     mids = [
-        ("build_bit_stream_from_bytes()", "byte → bit stream"),
-        ("pad_bit_stream()", "跨 lane 70-bit dummy 对齐"),
-        ("encode_with_70b_alignment()", "scramble_en = env_cfg.SCREN"),
-        ("dump_raw_bytes()", "编码前 raw byte 转储 ↓"),
+        ("build_bit_stream_from_bytes()", "byte → bit stream（LSB-first）"),
+        ("pad_bit_stream()", "CTRL_F 行补齐整行 raw 长度（0825）"),
+        ("encode_with_70b_alignment()", "Active/VBK 随 SCREN · CTRL_F 恒 1'b0"),
+        ("send_420b_encoded_bits()", "20-bit 包"),
     ]
     for i, (t1, s1) in enumerate(mids):
-        L += box(360, 226 + i * 52, 180, 42, t1, (s1,), fill="#f0fdfa", stroke="#99f6e4",
-                 tsize=8.5 if len(t1) > 24 else 10.5, ssize=8.5)
-    # ref model
-    A(rect(556, 226, 156, 198, "#faf5ff", "#e9d5ff", 8, 1.5))
-    A(text(634, 248, "long_encoding", 10.5, C["dark"], "600"))
-    A(text(634, 262, "ref_model.sv", 10.5, C["dark"], "600"))
-    for i, s in enumerate(["encode_413b_to_420b()", "tag 替换 · 全 0/全 1", "G16(X) 16-bit LFSR",
-                           "K1~K4 40-bit 常量", "K5~K8 10-bit 常量", "encoded_bits_", "70aligned()"]):
-        A(text(634, 284 + i * 16, s, 9, C["muted"]))
+        L += box(344, 238 + i * 46, 190, 40, t1, (s1,), fill="#f0fdfa", stroke="#99f6e4",
+                 tsize=8 if len(t1) > 26 else 10, ssize=8)
+    # 右列：ref model / 训练包 / C-model 闭环
+    A(rect(546, 238, 176, 74, "#faf5ff", "#e9d5ff", 8, 1.5))
+    A(text(634, 258, "long_encoding_ref_model.sv", 9.5, C["dark"], "600"))
+    for i, s in enumerate(["encode_413b_to_420b() · tag 跳过 0/63", "LSP 字节序 EA→ED（0807 入库）",
+                           "G16(X) 16-bit LFSR · K 常量"]):
+        A(text(634, 276 + i * 15, s, 8, C["muted"]))
+    L += box(546, 320, 176, 64, "chpi_training_packet_sequence",
+             ("（0924 新增）BCC 训练包 · 双模式", "8B/10B 与 420b · K3+lfsr=0XFFFF"),
+             fill="#f0fdfa", stroke="#99f6e4", tsize=8, ssize=8)
+    L += box(546, 392, 176, 84, "C-model golden 闭环（0924）",
+             ("每帧 process_line(c) + exec_c(c)", "dplc.pl --ave_rgbw --ave_last", "--dplc_group → outResult/", "digital/* 供 digital_top 检查"),
+             fill="#f0fdfa", stroke="#99f6e4", tsize=9.5, ssize=8)
 
     # ---- Row3 Transaction / Driver ----
-    L += container(40, 504, 696, 106, "Transaction / Driver")
-    L += box(64, 534, 300, 56, "isptx_transaction.sv",
+    L += container(40, 572, 700, 106, "Transaction / Driver")
+    L += box(64, 596, 300, 64, "isptx_transaction.sv",
              ("bit[19:0] one_pkt_20b", "bit[39:0] k1_420b ~ k4_420b"),
              fill="#f0fdf4", stroke="#bbf7d0", tsize=11.5, ssize=9.5)
-    L += box(404, 534, 308, 56, "isptx_driver.sv（420b）",
-             ("drv_one_pkt_20b() · LSB-first", "drv_kx_key_420b() → vif.rxn0/rxp0"),
-             tsize=11.5, ssize=9.5)
+    L += box(404, 596, 308, 64, "isptx_driver.sv（420b）",
+             ("drv_one_pkt_20b() · LSB-first → vif.rxn0/rxp0", "BOE 回放：drive_idle_ct → 回放 sim_data_BOE_opt", "（Pat01..12 × 2doc）· post_bcc LOCK 4us"),
+             tsize=10.5, ssize=8.5)
 
     # ---- Right DUT ----
-    L += container(776, 192, 384, 418, "接收端 RX · DUT（HDL long_encoding）", "#991b1b")
-    A(rect(800, 226, 336, 62, "#ffffff", C["green"], 8, 2))
-    A(text(968, 248, "CHPI_KCODE_ALIGN_LONG_L0", 11, C["dark"], "600"))
-    A(text(968, 264, "K1~K4 检测 · 20-bit 对齐", 9.5, C["muted"]))
-    A(text(968, 280, "DATA_ALIGN_PRE → tap", 9.5, C["green"], "600"))
-    A(rect(1072, 232, 52, 18, C["green"], C["green"], 9, 1))
-    A(text(1098, 245, "TAP", 10, "#ffffff", "700"))
-    L += box(800, 304, 336, 54, "long_decoding_top.v",
-             ("din_20b_aligned ← DATA0_ALIGN_LONG（0717 修复）", "42-bit buffer · 8/16/24-bit 打包"),
+    L += container(776, 204, 384, 474, "接收端 RX · DUT（HDL long_encoding/）", "#991b1b")
+    A(rect(800, 238, 336, 62, "#ffffff", C["green"], 8, 2))
+    A(text(968, 260, "CHPI_KCODE_ALIGN_LONG_L0", 11, C["dark"], "600"))
+    A(text(968, 276, "K1~K4 检测 · 20-bit 对齐", 9.5, C["muted"]))
+    A(text(968, 292, "DATA_ALIGN_PRE → tap", 9.5, C["green"], "600"))
+    A(rect(1072, 244, 52, 18, C["green"], C["green"], 9, 1))
+    A(text(1098, 257, "TAP", 10, "#ffffff", "700"))
+    L += box(800, 316, 336, 54, "long_decoding_top.v",
+             ("din_20b_aligned ← DATA0_ALIGN_LONG", "44-bit 缓冲 · K3 复位延 4 拍 K3_FIND_rp_d[3]"),
              tsize=11, ssize=9)
-    L += box(800, 374, 336, 54, "decoder_7b.v",
-             ("420b → 413b · tag 还原", "decode_en 窗口（K1/K4 开 · K2/K3 关）"), tsize=11, ssize=9)
-    L += box(800, 444, 336, 54, "descramble_7b.v",
-             ("G16(X) 解扰 · K3 上升沿复位", "scramble_en=0 旁路"), tsize=11, ssize=9)
-    L += box(800, 514, 336, 54, "dout_24b + 2-bit valid", ("→ 后级像素通路",),
+    L += box(800, 386, 336, 54, "decoder_7b.v",
+             ("420b→413b · decode_ignore 已修 6-bit {0,63}", "header_mismatch [12:7] 修复 · tag_value 待波形"), tsize=11, ssize=9)
+    L += box(800, 456, 336, 54, "descramble_7b.v",
+             ("G16(X) 解扰 · K3 上升沿复位（延 4 拍生效）", "scramble_en=0 旁路"), tsize=11, ssize=9)
+    L += box(800, 526, 336, 42, "dout_24b + 2-bit valid", ("→ 后级像素通路",),
              tsize=11, ssize=9)
-    A(rect(792, 298, 352, 278, "none", "#9ca3af", 8, 1.2, "6,3"))
-    A(text(968, 594, "灰框内：RTL 解码链 —— 排障焦点，离线验证不依赖", 9.5, "#6b7280"))
+    L += box(800, 580, 336, 62, "RTL 编码 TX 通路（0807 后新增）",
+             ("LONG_ENCODING_ALIGN（K1~K4 对齐 · BK_ST）", "ERROR_CTRL · OUTPUT → 芯片自身 420b 发送"),
+             fill="#eff6ff", stroke="#93c5fd", tfill="#1e40af", sfill="#1e40af", tsize=10, ssize=8.5)
+    A(rect(792, 310, 352, 222, "none", "#9ca3af", 8, 1.2, "6,3"))
+    A(text(968, 548, "灰框内：RTL 解码链 —— 离线验证不依赖", 9.5, "#6b7280"))
 
-    # ---- Row4 离线验证 ----
-    L += container(40, 650, 1120, 192, "接收端离线验证路径 · 不看 RTL 解码器（0717 新增）",
+    # ---- Row4 体系扩展 ----
+    L += container(40, 694, 1120, 132, "体系扩展（0924 ~ 1022）")
+    L += box(64, 726, 350, 84, "MULTI_CHIP / multi4（1010）",
+             ("env.sv config_db 相对路径 · lane_delay_reverse", "fork 隔离 · CH_SEL→subpix_cnt 966/960/726/720/864", "DPLC_GROUP=1 时 subpix_cnt +3→+6"),
+             tsize=11, ssize=9)
+    L += box(430, 726, 350, 84, "BCC 训练体系（1022）",
+             ("bcc_monitor · bcc_sequence · bcc_scoreboard", "covergroup 交叉覆盖 · 70us 响应超时", "ID_ASSIGN / EQ_ID / TRAINING_RESULT 追踪"),
+             tsize=11, ssize=9)
+    L += box(796, 726, 344, 84, "checker_420b.sv（未变 · display-only）",
+             ("77 行：scramble_en 硬编码 1'b1", "每 block LFSR 复位 0XFFFF", "—— 正式比对启用前的改造点"),
+             fill="#fffbeb", stroke="#fde68a", tfill="#92400e", sfill="#92400e", tsize=10.5, ssize=9)
+
+    # ---- Row5 离线验证 ----
+    L += container(40, 842, 1120, 192, "接收端离线验证路径 · 不看 RTL 解码器（0717 建立 · 存续）",
                    C["green"], "#f0fdf4", "#bbf7d0")
-    L += box(64, 688, 230, 60, "long_rtl_tap_debug.sv",
+    L += box(64, 880, 230, 60, "long_rtl_tap_debug.sv",
              ("bind 注入 KCODE_ALIGN · 零 RTL 修改", "抓 DATA_ALIGN_PRE"), tsize=10.5, ssize=9)
-    L += box(330, 688, 196, 60, "long_rtl_dap_lane0.md",
+    L += box(330, 880, 196, 60, "long_rtl_dap_lane0.md",
              ("每拍 20-bit 对齐数据", "全量转储"), tsize=10, ssize=9)
-    L += box(562, 688, 246, 60, "decode_dap.py",
+    L += box(562, 880, 246, 60, "decode_dap.py",
              ("离线 413b/420b 解码", "K 码对定位 · tag 替换 · G16 解扰"), tsize=11, ssize=9)
-    L += box(844, 688, 200, 60, "long_pydec_lane0.md",
+    L += box(844, 880, 200, 60, "long_pydec_lane0.md",
              ("离线解码字节流", "区域：LSP / CTRL_F / LINE"), tsize=10, ssize=9)
-    L += box(64, 768, 280, 48, "long_rawbyte_seq_lane0.md",
+    L += box(64, 960, 280, 48, "long_rawbyte_seq_lane0.md",
              ("发送端编码前 raw byte（期望值）",), tsize=10, ssize=9)
-    A(rect(566, 768, 380, 48, "#ecfdf5", C["green"], 8, 2))
-    A(text(756, 788, "long_pydec_report_lane0.md", 10.5, "#047857", "600"))
-    A(text(756, 806, "逐区域比对 verdict：LSP / CTRL_F / LINE 全对 ✅", 9.5, "#047857"))
+    A(rect(566, 960, 380, 48, "#ecfdf5", C["green"], 8, 2))
+    A(text(756, 980, "long_pydec_report_lane0.md", 10.5, "#047857", "600"))
+    A(text(756, 998, "逐区域比对 verdict：LSP / CTRL_F / LINE 全对 ✅", 9.5, "#047857"))
+    A(text(360, 988, "日志族（0807+ · lane*.md）：diag_debug / kcode_seq / rawbyte / pkt20（↔ RTL long_rtl_rx 1:1 diff）/ kcode_drv",
+           9.5, C["muted"], None, "start"))
 
-    # ---- Row5 版本管理 ----
-    L += container(40, 862, 1120, 58, "版本管理 · longcode_ver/")
-    A(text(300, 896, "0717v1 当前工作目录 · 文件统一命名 *_20260717_v1 · CHANGELOG.md / README.md / migration_checklist.md 同步维护",
-           10.5, "#475569", None, "start"))
+    # ---- Row6 版本基线 ----
+    L += container(40, 1050, 1120, 58, "版本基线 · DV_TCON_C 主干 + 服务器包波次")
+    A(text(56, 1074, "0721v1 CONFIG_DATA 24bit · 0807v1 ref model 三修入库 · 0825 相位感知 CTRL_L · 0924 维度矩阵 190 case + CTRL_F 恒不加扰 + VFP 承载",
+           10, "#475569", None, "start"))
+    A(text(56, 1092, "1010 MULTI_CHIP/CH_SEL · 1022 BCC + BOE +2 case · 1028 overlay → HEAD a7130ba7（2026-11）",
+           10, "#475569", None, "start"))
 
     # ---- arrows（最后画，压在线条层上方）----
-    A(arrow(375, 174, 375, 192, "blue"))
-    A(arrow(660, 174, 660, 192, "blue"))
-    A(arrow(955, 174, 955, 192, "orange", 1.5, "5,3"))
-    A(arrow(540, 320, 556, 320, "blue"))
-    A(arrow(375, 484, 375, 504, "blue"))
-    A(arrow(364, 562, 404, 562, "blue"))
-    A(path("M 712 562 L 756 562 L 756 257 L 800 257", "blue", 2))
-    A(f'<text transform="rotate(-90 748 420)" x="748" y="420" font-size="10" fill="{C["blue"]}" text-anchor="middle">20-bit 包流 / 40-bit K 码 · 串行链路</text>')
-    for y1, y2 in [(288, 304), (358, 374), (428, 444), (498, 514)]:
+    A(arrow(375, 188, 375, 204, "blue"))
+    A(arrow(660, 188, 660, 204, "blue"))
+    A(arrow(955, 188, 955, 204, "orange", 1.5, "5,3"))
+    A(arrow(336, 330, 344, 330, "blue"))
+    A(arrow(534, 320, 546, 320, "blue"))
+    A(arrow(375, 556, 375, 572, "blue"))
+    A(arrow(364, 628, 404, 628, "blue"))
+    A(path("M 712 628 L 756 628 L 756 269 L 800 269", "blue", 2))
+    A(f'<text transform="rotate(-90 748 460)" x="748" y="460" font-size="10" fill="{C["blue"]}" text-anchor="middle">20-bit 包流 / 40-bit K 码 · 串行链路</text>')
+    for y1, y2 in [(300, 316), (370, 386), (440, 456), (510, 526), (568, 580)]:
         A(arrow(968, y1, 968, y2, "blue"))
     # tap 绿色路径：KCODE_ALIGN → 右侧外廊 → 底部走廊 → tap 模块
-    A(path("M 1136 257 L 1178 257 L 1178 632 L 179 632 L 179 688", "green", 2, "6,3"))
-    A(text(700, 624, "tap DATA_ALIGN_PRE（每拍 20-bit 对齐数据）", 10, C["green"]))
+    A(path("M 1136 269 L 1178 269 L 1178 834 L 179 834 L 179 880", "green", 2, "6,3"))
+    A(text(700, 828, "tap DATA_ALIGN_PRE（每拍 20-bit 对齐数据）", 10, C["green"]))
     # 发送端 raw byte（期望值）紫色路径，跨越绿色走廊处加跳线弧
-    A(path("M 204 610 L 204 768", "purple", 1.5, "5,3"))
-    A(f'<path d="M 204 626 A 5.5 5.5 0 0 1 204 638" stroke="{C["purple"]}" stroke-width="1.5" fill="none"/>')
+    A(path("M 204 678 L 204 828 A 5.5 5.5 0 0 1 204 840 L 204 960", "purple", 1.5, "5,3"))
     # 离线链路内部箭头
-    A(arrow(294, 718, 330, 718, "green"))
-    A(arrow(526, 718, 562, 718, "green"))
-    A(arrow(808, 718, 844, 718, "green"))
-    A(arrow(944, 748, 944, 768, "green"))
-    A(arrow(344, 792, 566, 792, "purple", 1.5, "5,3"))
-    A(text(455, 784, "逐区域 diff", 9.5, C["purple"]))
+    A(arrow(294, 910, 330, 910, "green"))
+    A(arrow(526, 910, 562, 910, "green"))
+    A(arrow(808, 910, 844, 910, "green"))
+    A(arrow(944, 940, 944, 960, "green"))
+    A(arrow(344, 984, 566, 984, "purple", 1.5, "5,3"))
+    A(text(455, 976, "逐区域 diff", 9.5, C["purple"]))
 
     # ---- legend ----
-    ly = 956
+    ly = 1140
     A(f'<line x1="60" y1="{ly-4}" x2="92" y2="{ly-4}" stroke="{C["blue"]}" stroke-width="2" marker-end="url(#ar-blue)"/>')
     A(text(98, ly, "主数据流", 11, C["muted"], None, "start"))
     A(f'<line x1="180" y1="{ly-4}" x2="212" y2="{ly-4}" stroke="{C["purple"]}" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#ar-purple)"/>')
@@ -242,7 +283,8 @@ def gen_pydec():
     L += box(64, 284, 332, 60, "isptx_driver.sv",
              ("20-bit 包 / 40-bit K 码 · LSB-first", "→ vif.rxn0 / rxp0"), tsize=11.5, ssize=9)
     L += box(64, 364, 332, 60, "dump_raw_bytes() → long_rawbyte_seq_lane0.md",
-             ("编码前 raw byte 转储（期望值）",), fill="#faf5ff", stroke="#e9d5ff",
+             ("编码前 raw byte（期望值）· 日志族 0807+：", "kcode_seq / rawbyte / pkt20 / diag_debug / kcode_drv"),
+             fill="#faf5ff", stroke="#e9d5ff",
              tfill=C["purple"], tsize=9.5, ssize=9)
 
     # ---- 串行链路（差分对）----
@@ -263,8 +305,8 @@ def gen_pydec():
     A(text(674, 238, "RTL 解码链（不看 · 不依赖）", 11, "#6b7280", "600"))
     A(text(674, 256, "long_decoding_top · decoder_7b", 9, "#6b7280"))
     A(text(674, 272, "descramble_7b → dout_24b + 2-bit valid", 9, "#6b7280"))
-    A(text(674, 296, "排障焦点在 RTL 解码链（3.6 节）", 9, "#9ca3af"))
-    A(text(674, 312, "但验证线上数据不依赖它", 9, "#9ca3af"))
+    A(text(674, 296, "decode_ignore 已修：6-bit {0,63}（decoder_7b.v:353）", 9, "#9ca3af"))
+    A(text(674, 312, "tag_value 块边界：加载逻辑同基线 · 待最新波形", 9, "#9ca3af"))
     # 脚本链
     L += box(870, 128, 266, 64, "long_rtl_tap_debug.sv",
              ("bind 注入 · 零 RTL 修改", "→ long_rtl_dap_lane0.md（每拍 20-bit）"),
@@ -279,13 +321,13 @@ def gen_pydec():
     # ---- 底部比对区 ----
     L += container(40, 480, 1120, 130, "离线比对（脚本完成 · 不依赖 DUT 解码结果）",
                    C["purple"], "#faf5ff", "#e9d5ff")
-    L += box(64, 520, 300, 64, "long_rawbyte_seq_lane0.md", ("发送端原始字节（期望值）",),
+    L += box(84, 520, 260, 64, "long_rawbyte_seq_lane0.md", ("发送端原始字节（期望值）",),
              tsize=10, ssize=9)
-    A(rect(470, 520, 360, 64, "#ecfdf5", C["green"], 8, 2))
-    A(text(650, 544, "long_pydec_report_lane0.md", 10.5, "#047857", "600"))
-    A(text(650, 562, "逐区域 diff · verdict：LSP / CTRL_F / LINE 全对 ✅", 9.5, "#047857"))
-    A(text(650, 578, "⇒ 线上数据正确 · 发送端排除", 9, "#047857"))
-    L += box(846, 520, 290, 64, "long_pydec_lane0.md", ("线上数据离线解码（实际值）",),
+    A(rect(441, 520, 340, 64, "#ecfdf5", C["green"], 8, 2))
+    A(text(611, 544, "long_pydec_report_lane0.md", 10.5, "#047857", "600"))
+    A(text(611, 562, "逐区域 diff · verdict：LSP / CTRL_F / LINE 全对 ✅", 9.5, "#047857"))
+    A(text(611, 578, "⇒ 线上数据正确 · 发送端排除", 9, "#047857"))
+    L += box(878, 520, 250, 64, "long_pydec_lane0.md", ("线上数据离线解码（实际值）",),
              tsize=10, ssize=9)
 
     # ---- arrows ----
@@ -298,10 +340,10 @@ def gen_pydec():
     A(arrow(1003, 276, 1003, 300, "green", 2))
     A(path("M 214 424 L 214 520", "purple", 1.5, "5,3"))
     A(path("M 1003 364 L 1003 440 L 1003 520", "green", 1.5, "6,3"))
-    A(arrow(364, 552, 470, 552, "purple", 1.5, "5,3"))
-    A(text(417, 544, "期望值", 9, C["purple"]))
-    A(arrow(846, 552, 830, 552, "green", 2))
-    A(text(838, 544, "实际值", 9, C["green"], None, "end"))
+    A(arrow(344, 552, 441, 552, "purple", 1.5, "5,3"))
+    A(text(392.5, 544, "期望值", 9, C["purple"]))
+    A(arrow(878, 552, 781, 552, "green", 2))
+    A(text(829.5, 544, "实际值", 9, C["green"]))
 
     # ---- legend ----
     ly = 652
@@ -325,7 +367,7 @@ def gen_compare():
     L = head(1400, 1210)
     A = L.append
     A(text(700, 42, "8B/10B vs 420B 长编码 · 验证架构对比", 22, C["dark"], "600"))
-    A(text(700, 66, "0717v1 修正：420b 发送方向为 LSB-first（0715 起与 8B/10B 一致）；新增接收端离线验证路径",
+    A(text(700, 66, "0717v1 修正：420b 发送方向 LSB-first（0715 起与 8B/10B 一致）；0924~1028 增补：CTRL_F 恒不加扰 · K3 锁 SCREN · DUT 编码 TX 通路成型",
            12, C["muted"]))
 
     # ---- 左列 8B/10B ----
@@ -357,7 +399,7 @@ def gen_compare():
     # ---- 右列 420B ----
     L += container(720, 88, 640, 566, "420B 长编码模式（`define CHPI_MODE_420B）", "#6b21a8")
     L += box(750, 118, 580, 56, "Test Layer",
-             ("t_H3840_V16_FPS120_420b · t_8b1lane_420b_basic · user_def.sv",), tsize=11.5, ssize=9)
+             ("t_H*_V16_FPS*_PORT_NUM*_[维度]_420b × 192 · user_def.sv",), tsize=11.5, ssize=9)
     A(rect(750, 190, 580, 126, "#ffffff", "#d1d5db", 8, 1.5))
     A(text(764, 212, "isptx_sequence.sv（420b 分支）", 11.5, C["dark"], "600", "start"))
     tasks420 = ["send_420b_lsp()", "send_420b_active_line()", "send_420b_ctrl_f_line()",
@@ -376,7 +418,7 @@ def gen_compare():
              tsize=11.5, ssize=9.5)
     L += box(750, 480, 580, 78, "DUT：420b RX（HDL long_encoding）",
              ("KCODE_ALIGN_LONG → long_decoding_top → decoder_7b → descramble_7b",
-              "输出：24-bit + 2-bit valid"), fill="#fef2f2", stroke="#fecaca",
+              "输出：24-bit + 2-bit valid · K3 复位延 4 拍（K3_FIND_rp_d[3]）"), fill="#fef2f2", stroke="#fecaca",
              tfill="#991b1b", sfill="#991b1b", tsize=11, ssize=9.5)
     L += box(750, 574, 580, 64, "线上数据验证（0717 新增）",
              ("bind tap DATA_ALIGN_PRE → decode_dap.py 离线 413b/420b 解码 → 逐区域 diff（不看 RTL 解码器）",),
@@ -392,9 +434,9 @@ def gen_compare():
         A(arrow(x, 558, x, 574, "blue"))
 
     # ---- 差异对照表 ----
-    L += container(40, 690, 1320, 484, "关键差异对照", C["dark"])
+    L += container(40, 690, 1320, 500, "关键差异对照", C["dark"])
     x0, c1, c2, c3 = 60, 210, 470, 580
-    y0, hh, rh = 726, 36, 32
+    y0, hh, rh = 726, 36, 30
     A(rect(x0, y0, c1, hh, "#e2e8f0", "#cbd5e1", 4, 1))
     A(rect(x0 + c1, y0, c2, hh, "#e2e8f0", "#cbd5e1", 4, 1))
     A(rect(x0 + c1 + c2, y0, c3, hh, "#e2e8f0", "#cbd5e1", 4, 1))
@@ -407,12 +449,14 @@ def gen_compare():
         ("编码", "8B/10B 表 → 10-bit symbol", "413b → 420b tag 替换 + 70-bit 对齐"),
         ("K-code 宽度", "10-bit K1~K4", "40-bit K1~K4"),
         ("IDLE", "无独立 IDLE", "10-bit K5~K8"),
-        ("加扰 LFSR", "24-bit G24(X)", "16-bit G16(X)（7-bit / 步）"),
+        ("加扰 LFSR", "24-bit G24(X)", "16-bit G16(X)（7-bit / 步）· K3 边界复位 0XFFFF"),
+        ("CTRL_F 加扰", "不加扰", "恒不加扰 · 不推 SCR_KEY · SCREN=1 行尾 K3（0924）"),
         ("LSP 训练数据", "训练序列一部分", "直接 413b/420b 编码 · 不加扰"),
         ("发送方向", "LSB-first", "LSB-first（0715 起对齐，曾误为 MSB-first）"),
         ("跨 lane 对齐", "字节对齐", "70-bit dummy 对齐"),
         ("参考模型", "encode_8b10b() 内嵌 sequence", "独立 long_encoding_ref_model.sv"),
         ("DUT 解码", "8B/10B decode", "long_decoding_top / decoder_7b / descramble_7b"),
+        ("DUT 编码 TX 通路", "encode_8b10b() 内嵌 sequence", "LONG_ENCODING_ALIGN / ERROR_CTRL / OUTPUT（0807 后新增）"),
         ("输出", "8-bit data", "24-bit + 2-bit valid"),
         ("线上数据验证", "C model / checker 对比", "bind tap + decode_dap.py 离线比对（不看 RTL）"),
     ]
@@ -422,9 +466,9 @@ def gen_compare():
         A(rect(x0, ry, c1, rh, fill, "#cbd5e1", 2, 1))
         A(rect(x0 + c1, ry, c2, rh, fill, "#cbd5e1", 2, 1))
         A(rect(x0 + c1 + c2, ry, c3, rh, fill, "#cbd5e1", 2, 1))
-        A(text(x0 + 10, ry + 21, a, 11, C["dark"], "600", "start"))
-        A(text(x0 + c1 + 10, ry + 21, b, 11, "#374151", None, "start"))
-        A(text(x0 + c1 + c2 + 10, ry + 21, c3v, 11, "#6b21a8", None, "start"))
+        A(text(x0 + 10, ry + 20, a, 11, C["dark"], "600", "start"))
+        A(text(x0 + c1 + 10, ry + 20, b, 11, "#374151", None, "start"))
+        A(text(x0 + c1 + c2 + 10, ry + 20, c3v, 11, "#6b21a8", None, "start"))
 
     A('</svg>')
     return "\n".join(L)
@@ -561,53 +605,66 @@ def gen_spec_bitorder():
 
 
 # ---------------------------------------------------------------------------
-# D3：Scramble key 滚动机制
+# D3：Scramble key 滚动与门控（0924 后重绘：CTRL_F 恒不加扰 + K3 复位 0XFFFF）
 # ---------------------------------------------------------------------------
 def gen_spec_scramble():
-    L = head(1200, 520)
+    L = head(1200, 560)
     A = L.append
-    A(text(600, 40, "Scramble key 滚动机制", 21, C["dark"], "600"))
-    A(text(600, 64, "K 码不加扰，K 码期间 scramble 停止滚动；第 n+1 行 scramble 起始状态顺承第 n 行截止状态",
+    A(text(600, 40, "Scramble key 滚动与门控（0924 后）", 21, C["dark"], "600"))
+    A(text(600, 64, "加扰域 = Active/VBK 行 payload（CTRL_L + Data · SCREN 门控）；CTRL_F 恒不加扰 · 不推进 SCR_KEY；K 码 / IDLE / LSP 不加扰；K3 边界共享 key 复位 0XFFFF",
            12, C["muted"]))
-    # 编码前
-    A(text(50, 138, "编码前", 10.5, C["muted"], None, "end"))
-    L += seg(60, 112, 56, 40, "K1", K_FILL, K_STROKE, K_TXT)
-    L += seg(120, 112, 90, 40, "CTR_L", CL_FILL, CL_STROKE, CL_TXT)
-    L += seg(214, 112, 416, 40, "RGB Data", D_FILL, D_STROKE, D_TXT, 11)
-    L += seg(634, 112, 56, 40, "K2", K_FILL, K_STROKE, K_TXT)
-    L += seg(694, 112, 300, 40, "HBP", HB_FILL, HB_STROKE, HB_TXT, 11)
-    A(arrow(470, 158, 470, 204, "blue", 2))
-    A(text(480, 186, "编码后", 10, C["blue"], None, "start"))
-    # 编码后
-    A(text(50, 236, "编码后", 10.5, C["muted"], None, "end"))
-    L += seg(60, 210, 56, 40, "K1", K_FILL, K_STROKE, K_TXT)
-    L += seg(120, 210, 90, 40, "CTR_L", CL_FILL, CL_STROKE, CL_TXT)
-    L += seg(214, 210, 356, 40, "Enc Data", D_FILL, D_STROKE, D_TXT, 11)
-    L += seg(574, 210, 86, 40, "Dmy", DM_FILL, DM_STROKE, DM_TXT)
-    L += seg(664, 210, 56, 40, "K2", K_FILL, K_STROKE, K_TXT)
+    # ---- ① Active / VBK 行（SCREN=1）：加扰域 ----
+    A(text(60, 96, "① Active / VBK 行 payload（SCREN 门控）——加扰域", 12.5, C["dark"], "600", "start"))
+    A(text(50, 132, "Active 行", 10.5, C["muted"], None, "end"))
+    L += seg(60, 106, 56, 40, "K1", K_FILL, K_STROKE, K_TXT)
+    L += seg(120, 106, 90, 40, "CTR_L", CL_FILL, CL_STROKE, CL_TXT)
+    L += seg(214, 106, 416, 40, "Enc Data", D_FILL, D_STROKE, D_TXT, 11)
+    L += seg(634, 106, 56, 40, "Dmy", DM_FILL, DM_STROKE, DM_TXT)
+    L += seg(694, 106, 56, 40, "K2", K_FILL, K_STROKE, K_TXT)
     for i, kn in enumerate(["K5", "K6", "K7", "K8"]):
-        L += seg(724 + i * 44, 210, 40, 40, kn, I_FILL, I_STROKE, I_TXT)
-    A(text(910, 236, "…", 13, C["muted"]))
-    L += seg(936, 210, 40, 40, "K5", I_FILL, I_STROKE, I_TXT)
-    # 时间轴条
-    A(rect(120, 282, 540, 10, "#16a34a", "#16a34a", 5, 1))
-    A(rect(120, 304, 540, 10, "#ea580c", "#ea580c", 5, 1))
-    A(rect(214, 326, 356, 10, "#2563eb", "#2563eb", 5, 1))
-    A(text(120, 274, "加扰区间（CTR_L ~ Dmy）", 9.5, "#16a34a", None, "start"))
-    A(text(730, 282, "K 码期间 scramble 停止滚动", 9.5, "#9ca3af", None, "start"))
-    for i, (c0, n0) in enumerate([("#16a34a", "SCR_KEY update"), ("#ea580c", "SCR_XOR"), ("#2563eb", "413/420 ENC")]):
-        A(rect(1010, 282 + i * 22, 14, 10, c0, c0, 3, 1))
-        A(text(1030, 291 + i * 22, n0, 10, C["muted"], None, "start"))
-    # 顺承箭头 + n+1 行
-    A(path("M 660 292 C 700 320 660 360 620 372 L 220 372 L 220 388", "green", 2, "6,3"))
-    A(text(560, 364, "n 行截止状态 → n+1 行起始状态（LFSR 连续）", 10, "#16a34a"))
-    A(text(50, 414, "n+1 行", 10.5, C["muted"], None, "end"))
-    L += seg(60, 390, 56, 40, "K1", K_FILL, K_STROKE, K_TXT)
-    L += seg(120, 390, 90, 40, "CTR_L", CL_FILL, CL_STROKE, CL_TXT)
-    L += seg(214, 390, 300, 40, "Enc Data", D_FILL, D_STROKE, D_TXT, 11)
-    A(text(524, 414, "…", 13, C["muted"]))
-    A(rect(120, 444, 394, 8, "#16a34a", "#16a34a", 4, 1))
-    A(text(524, 452, "scramble 继续滚动", 9.5, "#16a34a", None, "start"))
+        L += seg(724 + i * 44, 106, 40, 40, kn, I_FILL, I_STROKE, I_TXT)
+    A(text(910, 132, "…", 13, C["muted"]))
+    L += seg(936, 106, 40, 40, "K5", I_FILL, I_STROKE, I_TXT)
+    # 时间轴条（仅覆盖加扰域 CTR_L ~ Dmy）
+    A(text(120, 150, "加扰区间（CTR_L ~ Dmy）· SCR_KEY update", 9.5, "#16a34a", None, "start"))
+    A(rect(120, 158, 540, 10, "#16a34a", "#16a34a", 5, 1))
+    A(rect(120, 180, 540, 10, "#ea580c", "#ea580c", 5, 1))
+    A(rect(214, 202, 356, 10, "#2563eb", "#2563eb", 5, 1))
+    A(text(730, 166, "K 码 / IDLE 期间：不加扰 · key 不推进", 9.5, "#9ca3af", None, "start"))
+    for i, (c0, n0) in enumerate([("#16a34a", "SCR_KEY update"), ("#ea580c", "SCR_XOR"),
+                                  ("#2563eb", "413/420 ENC"), ("#9ca3af", "key 不推进")]):
+        A(rect(1010, 158 + i * 22, 14, 10, c0, c0, 3, 1))
+        A(text(1030, 167 + i * 22, n0, 10, C["muted"], None, "start"))
+    # ---- 行间顺承（Active/VBK 之间 LFSR 连续）----
+    A(path("M 700 150 C 770 200 760 236 700 252 L 220 252 L 220 266", "green", 2, "6,3"))
+    A(text(430, 244, "n 行截止状态 → n+1 行起始状态（LFSR 连续 · 不复位）", 10, "#16a34a"))
+    A(text(50, 292, "n+1 行", 10.5, C["muted"], None, "end"))
+    L += seg(60, 266, 56, 40, "K1", K_FILL, K_STROKE, K_TXT)
+    L += seg(120, 266, 90, 40, "CTR_L", CL_FILL, CL_STROKE, CL_TXT)
+    L += seg(214, 266, 300, 40, "Enc Data", D_FILL, D_STROKE, D_TXT, 11)
+    A(text(524, 292, "…", 13, C["muted"]))
+    A(rect(120, 318, 394, 8, "#16a34a", "#16a34a", 4, 1))
+    A(text(524, 326, "scramble 继续滚动", 9.5, "#16a34a", None, "start"))
+    # ---- ② Config 行（第一条 VFP 行）：CTRL_F 恒不加扰 ----
+    A(text(60, 352, "② Config 行（第一条 VFP 行）——0924：CTRL_F 恒不加扰", 12.5, C["dark"], "600", "start"))
+    A(text(50, 388, "Config 行", 10.5, C["muted"], None, "end"))
+    L += seg(60, 362, 56, 40, "K4", K_FILL, K_STROKE, K_TXT)
+    L += seg(120, 362, 150, 40, "CTRL_F", CF_FILL, CF_STROKE, CF_TXT)
+    L += seg(274, 362, 180, 40, "Dmy", DM_FILL, DM_STROKE, DM_TXT)
+    L += seg(458, 362, 110, 40, "K3|K2", K_FILL, K_STROKE, K_TXT, 9.5)
+    for i, kn in enumerate(["K5", "K6", "K7", "K8"]):
+        L += seg(572 + i * 44, 362, 40, 40, kn, I_FILL, I_STROKE, I_TXT)
+    A(text(758, 388, "…", 13, C["muted"]))
+    L += seg(784, 362, 40, 40, "K5", I_FILL, I_STROKE, I_TXT)
+    A(rect(120, 414, 410, 10, "#9ca3af", "#9ca3af", 5, 1))
+    A(text(540, 423, "SCR_KEY 不推进（恒不加扰 · 不推 key）", 9.5, "#6b7280", None, "start"))
+    A(rect(120, 436, 334, 10, "#2563eb", "#2563eb", 5, 1))
+    A(text(462, 445, "413/420 ENC（编码但恒不加扰）", 9.5, "#6b7280", None, "start"))
+    # ---- ③ K3 边界：key 复位 0XFFFF ----
+    A(rect(60, 470, 1080, 66, "#ecfdf5", "#34d399", 8, 2))
+    A(text(76, 492, "③ K3（SCREN=1 时 Config 行尾）", 12, "#047857", "600", "start"))
+    A(text(76, 510, "TX：lfsr_key_420b = 16'hFFFF（行尾同步复位） · RX：锁存 SCREN + 共享加扰 key 复位 0XFFFF", 10, "#047857", None, "start"))
+    A(text(76, 526, "RX 复位 / 使能延 4 拍生效：K3_FIND_rp_d[3]（long_decoding_top.v）· SCREN=0 → 行尾 K2（不复位）", 10, "#047857", None, "start"))
     A('</svg>')
     return "\n".join(L)
 
@@ -638,9 +695,9 @@ def gen_spec_dummy70b():
          [("K1", 44, K_FILL, K_STROKE, K_TXT), ("CL", 44, CL_FILL, CL_STROKE, CL_TXT), ("RGB(ENC) · 420b×N", 170, D_FILL, D_STROKE, D_TXT), ("D · 70b×N", 80, DM_FILL, DM_STROKE, DM_TXT), ("K2", 44, K_FILL, K_STROKE, K_TXT), ("K5~K8", 56, I_FILL, I_STROKE, I_TXT)],
          "像素 / VBK payload 加扰"),
         ("Config Line", CF_FILL, CF_STROKE, CF_TXT,
-         [("K4", 50, K_FILL, K_STROKE, K_TXT), ("C.F（6x Byte）", 180, CF_FILL, CF_STROKE, CF_TXT), ("K2", 50, K_FILL, K_STROKE, K_TXT), ("HBP", 100, HB_FILL, HB_STROKE, HB_TXT)],
-         [("K4", 44, K_FILL, K_STROKE, K_TXT), ("C.F(ENC) · 420b", 190, CF_FILL, CF_STROKE, CF_TXT), ("D · 140b", 90, DM_FILL, DM_STROKE, DM_TXT), ("K2", 44, K_FILL, K_STROKE, K_TXT), ("K5~K8", 56, I_FILL, I_STROKE, I_TXT)],
-         "Dmy 内嵌于 413b 零补齐"),
+         [("K4", 50, K_FILL, K_STROKE, K_TXT), ("C.F（6x Byte）", 170, CF_FILL, CF_STROKE, CF_TXT), ("K3|K2", 64, K_FILL, K_STROKE, K_TXT), ("HBP", 86, HB_FILL, HB_STROKE, HB_TXT)],
+         [("K4", 44, K_FILL, K_STROKE, K_TXT), ("C.F(ENC) · 420b", 180, CF_FILL, CF_STROKE, CF_TXT), ("D · 140b", 90, DM_FILL, DM_STROKE, DM_TXT), ("K3|K2", 64, K_FILL, K_STROKE, K_TXT), ("K5~K8", 56, I_FILL, I_STROKE, I_TXT)],
+         "Dmy 内嵌 413b 零补齐 · 0825：补齐到整行 raw 长度"),
     ]
     for ri, (label, lf, ls, lt, before, after, note) in enumerate(rows):
         y = 170 + ri * 120
@@ -660,20 +717,20 @@ def gen_spec_dummy70b():
         A(arrow(630, y + 50, 690, y + 50, "blue", 2))
         A(text(660, y + 88, "413b/420b", 8.5, C["blue"]))
         A(text(410, y + 88, note, 9, C["muted"]))
-    A(text(60, 552, "多通道对齐示例：720 通道 Dmy = N bit、726 通道 Dmy = N+70 bit → 统一按 N+70 bit 填充",
+    A(text(60, 552, "多通道对齐示例：720 通道 Dmy = N bit、726 通道 Dmy = N+70 bit → 统一按 N+70 bit 填充；1010：DPLC_GROUP=1 时 subpix_cnt +3→+6（CH_SEL 表 966/960/726/720/864）",
            11, C["muted"], None, "start"))
     A('</svg>')
     return "\n".join(L)
 
 
 # ---------------------------------------------------------------------------
-# D5：420b 帧数据流
+# D5：420b 帧数据流（0924 帧结构：Config Line 并入第一条 VFP 行）
 # ---------------------------------------------------------------------------
 def gen_spec_frameflow():
     L = head(1200, 700)
     A = L.append
-    A(text(600, 40, "420b 帧数据流", 21, C["dark"], "600"))
-    A(text(600, 64, "LSP 训练 → Active Lines（Video） → Config Line 单独成行（下一帧配置） → V blanking",
+    A(text(600, 40, "420b 帧数据流（0924 帧结构）", 21, C["dark"], "600"))
+    A(text(600, 64, "LSP 训练 → 每帧：VBP → Active（统一 K2 结尾）→ VFP 第 0 行 = 下一帧配置行（K4+CTRL_F+Dmy+K3|K2）→ 其余 VFP 行同 VBP · 帧内不加行",
            12, C["muted"]))
     X0, W = 210, 800
     cols = [(X0, 90), (X0 + 90, 150), (X0 + 240, 300), (X0 + 540, 120), (X0 + 660, 134)]
@@ -692,41 +749,58 @@ def gen_spec_frameflow():
 
     L += full_row(y, "Clock training pattern", "#f3f4f6", "#d1d5db", "#374151"); y += 46
     L += full_row(y, "LSP（K2 + 0xEA~ED×8 + Dmy + K3）× ≥5 次 · ≥1us", "#ccfbf1", "#5eead4", "#0f766e"); y += 46
+    # 帧 0 配置行（训练后先行配置）
     L += seg_row(y, [("K4", K_FILL, K_STROKE, K_TXT), ("CTRL_F", CF_FILL, CF_STROKE, CF_TXT),
-                     ("Dmy", DM_FILL, DM_STROKE, DM_TXT), ("K2", K_FILL, K_STROKE, K_TXT),
-                     ("H blanking", HB_FILL, HB_STROKE, HB_TXT)])
-    A(text(X0 + W + 10, y + 25, "Config Line（Frame c 配置）", 9.5, C["muted"], None, "start")); y += 46
-    # Video Active 行
+                     ("Dmy", DM_FILL, DM_STROKE, DM_TXT), ("K3|K2", K_FILL, K_STROKE, K_TXT),
+                     ("IDLE", HB_FILL, HB_STROKE, HB_TXT)])
+    A(text(X0 + W + 10, y + 25, "帧 0 配置行", 9.5, C["muted"], None, "start")); y += 46
+    # 帧 c：VBP 行
+    vbp_top = y
+    for i in range(2):
+        L += seg_row(y, [("K1", K_FILL, K_STROKE, K_TXT), ("CTRL_L", CL_FILL, CL_STROKE, CL_TXT),
+                         ("VBK dummy line", D_FILL, D_STROKE, D_TXT), ("K2", K_FILL, K_STROKE, K_TXT),
+                         ("IDLE", HB_FILL, HB_STROKE, HB_TXT)])
+        y += 46
+    A(text(X0 + W + 10, y - 46 + 25, "VBP 行 × vbp", 9.5, C["muted"], None, "start"))
+    A(f'<path d="M {X0-16} {vbp_top+4} q -10 0 -10 10 l 0 {y-vbp_top-30} q 0 10 10 10" stroke="{C["muted"]}" stroke-width="2" fill="none"/>')
+    A(f'<text transform="rotate(-90 {X0-40} {(vbp_top+y)//2})" x="{X0-40}" y="{(vbp_top+y)//2}" font-size="11" fill="{C["muted"]}" text-anchor="middle" font-weight="600">VBP</text>')
+    # 帧 c：Active 行（统一 K2 结尾）
     active_top = y
     for i, ln in enumerate(["Video data-line1 + Dmy", "Video data-line2 + Dmy", "……", "Video data-last line + Dmy"]):
         if ln == "……":
             A(text(X0 + W / 2, y + 26, "……", 13, C["muted"])); y += 34
             continue
         L += seg_row(y, [("K1", K_FILL, K_STROKE, K_TXT), ("CTRL_L", CL_FILL, CL_STROKE, CL_TXT),
-                         (ln, D_FILL, D_STROKE, D_TXT), ("K2 or K3", K_FILL, K_STROKE, K_TXT),
-                         ("H blanking", HB_FILL, HB_STROKE, HB_TXT)])
+                         (ln, D_FILL, D_STROKE, D_TXT), ("K2", K_FILL, K_STROKE, K_TXT),
+                         ("IDLE", HB_FILL, HB_STROKE, HB_TXT)])
         y += 46
-    # Active 括号
     A(f'<path d="M {X0-16} {active_top+4} q -10 0 -10 10 l 0 {(y-active_top-14)//2-8} q 0 8 -8 8 q 8 0 8 8 l 0 {(y-active_top-14)//2-8} q 0 10 10 10" stroke="{C["teal"]}" stroke-width="2" fill="none"/>')
     A(f'<text transform="rotate(-90 {X0-40} {(active_top+y)//2})" x="{X0-40}" y="{(active_top+y)//2}" font-size="11" fill="{C["teal"]}" text-anchor="middle" font-weight="600">Video Active</text>')
-    y += 8
-    # Config Line 单独成行（高亮）
+    A(text(X0 + W + 10, active_top + 25, "Active 行 × vact", 9.5, C["muted"], None, "start"))
+    A(text(X0 + W + 10, active_top + 41, "首行 FSYNC=1 · 统一 K2 结尾", 9.5, C["muted"], None, "start"))
+    # VFP 第 0 行 = 下一帧配置行（高亮）
+    vfp_top = y
     A(rect(X0 - 8, y - 6, W + 16, 52, "#ecfdf5", "#34d399", 8, 2))
     L += seg_row(y, [("K4", K_FILL, K_STROKE, K_TXT), ("CTRL_F", CF_FILL, CF_STROKE, CF_TXT),
-                     ("Dmy", DM_FILL, DM_STROKE, DM_TXT), ("K2", K_FILL, K_STROKE, K_TXT),
-                     ("H blanking", HB_FILL, HB_STROKE, HB_TXT)])
-    A(text(X0 + W + 10, y + 18, "Config Line · Frame c+1 配置", 9.5, "#047857", "600", "start"))
-    A(text(X0 + W + 10, y + 34, "0717v1：单独成行", 9.5, "#047857", None, "start"))
+                     ("Dmy", DM_FILL, DM_STROKE, DM_TXT), ("K3|K2", K_FILL, K_STROKE, K_TXT),
+                     ("IDLE", HB_FILL, HB_STROKE, HB_TXT)])
+    A(text(X0 + W + 10, y + 18, "VFP 第 0 行 = 帧 c+1 配置行", 9.5, "#047857", "600", "start"))
+    A(text(X0 + W + 10, y + 34, "0924：并入首 VFP 行 · 不加行", 9.5, "#047857", None, "start"))
     y += 58
-    vbk_top = y
-    for i in range(2):
-        L += seg_row(y, [("K1", K_FILL, K_STROKE, K_TXT), ("CTRL_L", CL_FILL, CL_STROKE, CL_TXT),
-                         ("VBK dummy line", D_FILL, D_STROKE, D_TXT), ("K2", K_FILL, K_STROKE, K_TXT),
-                         ("H blanking", HB_FILL, HB_STROKE, HB_TXT)])
-        y += 46
-    A(text(X0 + W / 2, y + 24, "……", 13, C["muted"]))
-    A(f'<path d="M {X0-16} {vbk_top+4} q -10 0 -10 10 l 0 {y-vbk_top-30} q 0 10 10 10" stroke="{C["muted"]}" stroke-width="2" fill="none"/>')
-    A(f'<text transform="rotate(-90 {X0-40} {(vbk_top+y)//2})" x="{X0-40}" y="{(vbk_top+y)//2}" font-size="11" fill="{C["muted"]}" text-anchor="middle" font-weight="600">V blanking</text>')
+    # VFP 其余行（同 VBP 行）
+    L += seg_row(y, [("K1", K_FILL, K_STROKE, K_TXT), ("CTRL_L", CL_FILL, CL_STROKE, CL_TXT),
+                     ("VBK dummy line", D_FILL, D_STROKE, D_TXT), ("K2", K_FILL, K_STROKE, K_TXT),
+                     ("IDLE", HB_FILL, HB_STROKE, HB_TXT)])
+    A(text(X0 + W + 10, y + 25, "VFP 其余行（同 VBP）", 9.5, C["muted"], None, "start"))
+    y += 46
+    A(text(X0 + W / 2, y + 10, "……", 13, C["muted"]))
+    A(f'<path d="M {X0-16} {vfp_top+4} q -10 0 -10 10 l 0 {y-vfp_top-16} q 0 10 10 10" stroke="#34d399" stroke-width="2" fill="none"/>')
+    A(f'<text transform="rotate(-90 {X0-40} {(vfp_top+y)//2})" x="{X0-40}" y="{(vfp_top+y)//2}" font-size="11" fill="#047857" text-anchor="middle" font-weight="600">VFP</text>')
+    # 底部注记
+    A(text(600, y + 52, "Config 行尾：SCREN=1 → K3（RX 锁存 SCREN + 共享 key 复位 0XFFFF）；SCREN=0 → K2 · CTRL_F 恒不加扰",
+           10.5, C["teal"], None, "middle"))
+    A(text(600, y + 72, "帧 c+1：VBP → Active → VFP（……）—— 帧时长不变（不再为 Config Line 额外加行）",
+           10.5, C["muted"], None, "middle"))
     A('</svg>')
     return "\n".join(L)
 
@@ -787,12 +861,14 @@ def gen_spec_lsp_kcode():
     A(f'<line x1="178" y1="{ay}" x2="178" y2="{ay-14}" stroke="{C["blue"]}" stroke-width="1.5" marker-end="url(#ar-blue)"/>')
     A(text(178, ay + 18, "后发", 11, C["blue"], "700"))
     A(text(564, ay + 18, "串行发送方向：右 → 左（LSB-first，与 8B/10B 一致）", 10.5, C["blue"]))
+    A(text(600, ay + 44, "K3 语义（0924 后）：SCREN=1 时 CTRL_F 行尾 K3 → RX 锁存 SCREN + 共享 key 复位 0XFFFF（K3_FIND_rp_d[3] 延 4 拍生效）；SCREN=0 → 行尾 K2",
+           10.5, C["teal"], None, "middle"))
     A('</svg>')
     return "\n".join(L)
 
 
 # ---------------------------------------------------------------------------
-# D7：H/V blanking 与 IDLE（K5~K8）+ Config Line 单独成行
+# D7：H/V blanking 与 IDLE（K5~K8）+ Config Line（第一条 VFP 行承载）
 # ---------------------------------------------------------------------------
 def gen_spec_blanking():
     L = head(1200, 660)
@@ -827,8 +903,8 @@ def gen_spec_blanking():
     L += seg(234, 348, 380, 40, "VBK dummy line", D_FILL, D_STROKE, D_TXT, 11)
     L += seg(618, 348, 56, 40, "K2", K_FILL, K_STROKE, K_TXT, 11)
     L += seg(678, 348, 200, 40, "H-IDLE", HB_FILL, HB_STROKE, HB_TXT, 11)
-    # Config Line 单独成行
-    A(text(60, 436, "Config Line 单独成行：K4 + CTRL_F + Dmy + K2（VACT 结束后单独发送一行）", 12, C["dark"], "600", "start"))
+    # Config Line（第一条 VFP 行承载，0924 起）
+    A(text(60, 436, "Config Line（第一条 VFP 行承载）：K4 + CTRL_F + Dmy + K3(SCREN=1)|K2（0924 起 · 帧内不加行）", 12, C["dark"], "600", "start"))
     A(text(52, 482, "末行", 9.5, C["muted"], None, "end"))
     L += seg(60, 456, 56, 38, "K1", K_FILL, K_STROKE, K_TXT, 10)
     L += seg(120, 456, 90, 38, "CTR_L", CL_FILL, CL_STROKE, CL_TXT, 10)
@@ -839,16 +915,16 @@ def gen_spec_blanking():
         L += seg(692 + i * 44, 456, 40, 38, kn, I_FILL, I_STROKE, I_TXT, 10)
     A(text(874, 480, "…", 13, C["muted"]))
     L += seg(898, 456, 40, 38, "K5", I_FILL, I_STROKE, I_TXT, 10)
-    A(text(52, 540, "VBP 首行", 9.5, C["muted"], None, "end"))
+    A(text(52, 540, "VFP 第 0 行", 9.5, C["muted"], None, "end"))
     L += seg(60, 514, 56, 38, "K4", K_FILL, K_STROKE, K_TXT, 10)
     L += seg(120, 514, 180, 38, "CTR_F", CF_FILL, CF_STROKE, CF_TXT, 10)
     L += seg(304, 514, 90, 38, "Dmy", DM_FILL, DM_STROKE, DM_TXT, 10)
-    L += seg(398, 514, 56, 38, "K2", K_FILL, K_STROKE, K_TXT, 10)
+    L += seg(398, 514, 76, 38, "K3|K2", K_FILL, K_STROKE, K_TXT, 9.5)
     for i, kn in enumerate(["K5", "K6", "K7", "K8"]):
-        L += seg(458 + i * 44, 514, 40, 38, kn, I_FILL, I_STROKE, I_TXT, 10)
-    A(text(644, 538, "…", 13, C["muted"]))
-    L += seg(668, 514, 40, 38, "K5", I_FILL, I_STROKE, I_TXT, 10)
-    A(text(60, 600, "注：Active Line（含最后一行）统一以 K2 结束，不再嵌入 K4+CTRL_F；Config Line 于 VACT 结束后单独发送。",
+        L += seg(478 + i * 44, 514, 40, 38, kn, I_FILL, I_STROKE, I_TXT, 10)
+    A(text(664, 538, "…", 13, C["muted"]))
+    L += seg(688, 514, 40, 38, "K5", I_FILL, I_STROKE, I_TXT, 10)
+    A(text(60, 600, "注：Active Line（含最后一行）统一以 K2 结束；Config Line 由第一条 VFP 行承载（0924 起），帧内不额外加行。",
            10.5, C["muted"], None, "start"))
     A('</svg>')
     return "\n".join(L)
@@ -872,3 +948,4 @@ if __name__ == "__main__":
         with open(p, "w", encoding="utf-8") as f:
             f.write(gen())
         print("written:", p)
+# ymzhu 2026-11-05 11:35

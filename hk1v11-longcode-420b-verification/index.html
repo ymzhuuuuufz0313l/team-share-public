@@ -474,12 +474,12 @@
   <div class="hero-inner">
     <div class="kicker">HK1V11 · 420B 长编码 · 验证体系</div>
     <h1>HK1V11 420b<br>长编码<span class="thin">验证体系</span></h1>
-    <p class="lead">基于 DV_TCON_C 现有 8B/10B 结构重建的 420b 长编码验证环境：接收端不看 RTL，脚本离线解码比对，已证实线上数据全部正确。</p>
+    <p class="lead">基于 DV_TCON_C 现有 8B/10B 结构重建的 420b 长编码验证环境：已从单 case 联调演进为 192-case 维度矩阵回归，并扩展 BCC 训练、BOE 回放与 MULTI_CHIP 体系。</p>
     <div class="meta">
       <span>AUTHOR <b>ymzhuuuu</b></span>
-      <span>ENV <b>longcode_ver / current_work</b></span>
+      <span>ENV <b>DV_TCON_C / top / agents</b></span>
       <span>MACRO <b>CHPI_MODE_420B</b></span>
-      <span>SPAN <b>2026-07-15 → 2026-07-22</b></span>
+      <span>SPAN <b>2026-07-15 → 2026-11-05</b></span>
     </div>
     <div class="hero-hint">
       <span>⭐</span>
@@ -487,8 +487,8 @@
     </div>
     <div class="reg">
       CURRENT
-      <span class="ver">0720v1</span>
-      REV 2026-07-22
+      <span class="ver">a7130ba7</span>
+      REV 2026-11-05
     </div>
   </div>
 </header>
@@ -497,88 +497,88 @@
   <div class="latest">
     <div class="badge">
       <span class="tag">LATEST</span>
-      <span class="num">0722</span>
+      <span class="num">1105</span>
     </div>
     <div class="body">
-      <div class="t">0721~0722 · 三条证据链定位 DUT <code>tag_value</code> 块边界时序问题</div>
+      <div class="t">2026-11-05 · 按当前 DV_TCON_C 环境（1028 包后）全量更新</div>
       <ul>
-        <li>新增 <code>check_rtl_tag.py</code>（替换点判定）/ <code>decode_max.py</code>（层级分离）/ <code>compare_pkt20.py</code>（收发对比）三条证据链</li>
-        <li>Python 离线解码证实线上 20-bit 对齐数据 <b>5/5 区域全部正确</b>，问题锁定在 DUT 解码侧</li>
+        <li>版本基线 0720v1/0722 → HEAD <code>a7130ba7</code>：0721v1→1028 七波服务器包变更全量入文（CONFIG_DATA 24-bit、ref model 三修入库、0924 帧结构再演进与 CTRL_F 恒不加扰、192-case 维度矩阵、BCC 训练 + BOE 回放）</li>
+        <li>RTL 联调问题复核：<b>decode_ignore 已修</b>（decoder_7b.v:353，6-bit 对 {0,63}）；<b>tag_value 块边界时序</b>加载逻辑同基线，待最新波形确认</li>
       </ul>
     </div>
     <a class="more" href="./debug-log.html">全部排障演进 →</a>
   </div>
 
   <div class="stats">
-    <div class="stat"><div class="v">0720v1</div><div class="k">当前环境版本</div></div>
-    <div class="stat"><div class="v">53</div><div class="k">规划验证 Case</div></div>
+    <div class="stat"><div class="v">a7130ba7</div><div class="k">当前 HEAD（1028 包后）</div></div>
+    <div class="stat"><div class="v">192</div><div class="k">实际 420b Case（0924 +189 · 1022 +2）</div></div>
     <div class="stat"><div class="v ok">5<em>/</em>5</div><div class="k">线上数据区域全对</div></div>
-    <div class="stat"><div class="v warn">6<em>/</em>10</div><div class="k">联调问题已解决 / 移交</div></div>
+    <div class="stat"><div class="v warn">7<em>/</em>10</div><div class="k">联调问题已解决 / 移交</div></div>
   </div>
 
   <div class="section-title">整体框架</div>
   <p style="font-size:12px;color:#5b6675;margin:2px 0 12px;">🎬 本页图均为纯 CSS 动画 SVG（在 <code>images/anim/</code> 目录，滚动到视口时重播；顶部导航可一键切换 动画/静态）；静态原版保留在同名路径作 fallback。</p>
-  <img class="overview-img" src="./images/anim/longcode_verification_architecture.svg?v=20261101" alt="longcode 验证架构">
-  <img class="overview-img" src="./images/anim/pydec_tx_rx_structure.svg?v=20261102" alt="收发结构框图：不看 RTL 的脚本离线验证">
-  <img class="overview-img" src="./images/anim/8b10b_vs_420b_architecture.svg?v=20261102" alt="8B/10B vs 420B 架构对比">
+  <img class="overview-img" src="./images/anim/longcode_verification_architecture.svg?v=20261105" alt="longcode 验证架构">
+  <img class="overview-img" src="./images/anim/pydec_tx_rx_structure.svg?v=20261105" alt="收发结构框图：不看 RTL 的脚本离线验证">
+  <img class="overview-img" src="./images/anim/8b10b_vs_420b_architecture.svg?v=20261105" alt="8B/10B vs 420B 架构对比">
 
   <div class="section-title">章节索引</div>
   <div class="chapter-grid">
     <a class="chapter-card" href="./architecture.html">
       <div class="num">01</div>
       <div class="title">整体架构</div>
-      <div class="desc">0720v1 环境组件、数据流与脚本离线验证收发框图（含 0721~0722 三条证据链脚本）</div>
+      <div class="desc">2026-11 现状环境组件：训练包 / BCC / BOE 回放 / MULTI_CHIP / 故障注入 / C-model 闭环 + 脚本离线验证链</div>
     </a>
     <a class="chapter-card" href="./comparison.html">
       <div class="num">02</div>
       <div class="title">8B/10B vs 420B 对比</div>
-      <div class="desc">8B/10B 与 420B 模式差异对照</div>
+      <div class="desc">8B/10B 与 420B 模式差异对照（含 K3 延 4 拍、DUT 编码 TX 通路）</div>
     </a>
     <a class="chapter-card" href="./frame.html">
       <div class="num">03</div>
       <div class="title">420b 帧结构</div>
-      <div class="desc">Config / V blanking / Active / IDLE 帧格式</div>
+      <div class="desc">Config（首条 VFP 行承载）/ V blanking / Active / IDLE 帧格式</div>
     </a>
     <a class="chapter-card" href="./phases.html">
       <div class="num">04</div>
       <div class="title">验证执行阶段</div>
-      <div class="desc">Smoke 到 Regression 的 7 个执行阶段</div>
+      <div class="desc">从单 case 联调到 0924 维度矩阵落地与体系扩展的现实版阶段演进</div>
     </a>
     <a class="chapter-card" href="./cases.html">
       <div class="num">05</div>
       <div class="title">Case 命名规则</div>
-      <div class="desc">53 个 case 的命名规范与分布</div>
+      <div class="desc">192 个实际 case 的命名族、维度矩阵与波次归属</div>
     </a>
     <a class="chapter-card" href="./decoder.html">
       <div class="num">06</div>
       <div class="title">420b 解码</div>
-      <div class="desc">Python 离线解码为主 · RTL 解码链联调中 · 替换点判定 / 层级分离 / 收发对比脚本</div>
+      <div class="desc">Python 离线解码 golden · decode_ignore 已修 · tag_value 块边界待最新波形</div>
     </a>
     <a class="chapter-card" href="./encoding.html">
       <div class="num">07</div>
       <div class="title">编码规则要点</div>
-      <div class="desc">413b→420b 编码、加扰、位序与联调现状</div>
+      <div class="desc">413b→420b 编码、加扰（CTRL_F 恒不加扰）、位序与联调现状</div>
     </a>
     <a class="chapter-card" href="./issues.html">
       <div class="num">08</div>
       <div class="title">关键待确认问题</div>
-      <div class="desc">位序、LSP、IDLE、UTC 等待确认项</div>
+      <div class="desc">decode_ignore 已修 · tag_value 待确认 · Spec 差异点</div>
     </a>
     <a class="chapter-card" href="./debug-log.html">
       <div class="num">09</div>
       <div class="title">排障实录</div>
-      <div class="desc">Python 离线解码证实线上数据全部正确；0722 根因定位 tag_value 块边界时序</div>
+      <div class="desc">Python 离线解码证实线上数据全部正确；0722 根因定位 tag_value 块边界时序 + 基线后变更史</div>
     </a>
     <a class="chapter-card" href="./next.html">
       <div class="num">10</div>
       <div class="title">后续工作</div>
-      <div class="desc">待同步到 DV_TCON_C 的后续任务</div>
+      <div class="desc">已闭环项复核 + checker_420b 改造 / BOE Pat 扩展等后续任务</div>
     </a>
   </div>
 
   <div class="section-title">一句话结论</div>
   <div class="panel">
-    线上 420b 数据经 Python 离线解码证实<b>全部正确</b>，问题锁定在 DUT 解码侧 <b>tag_value 块边界时序</b>；验证重心从「数据对不对」转向「RTL 解码链联调」。
+    线上 420b 数据经 Python 离线解码证实<b>全部正确</b>；RTL 侧 <b>decode_ignore 已修</b>，tag_value 块边界时序待最新波形确认。验证重心已转向 <b>192-case 维度矩阵回归 + BCC / BOE / MULTI_CHIP 体系扩展</b>。
   </div>
 
   <div class="footer">SHARED FROM TEAM KNOWLEDGE BASE</div>
@@ -622,4 +622,4 @@ const lightbox = document.getElementById('lightbox');
 </body>
 </html>
 
-<!-- ymzhu 2026-11-04 15:52 -->
+<!-- ymzhu 2026-11-05 11:58 -->

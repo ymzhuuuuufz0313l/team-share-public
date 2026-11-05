@@ -519,42 +519,44 @@
 # 四、验证执行阶段
 
 <div class="flow">
-  <div class="fbox"><b>P1 · Smoke</b><br/>基础发送 · LSB-first · 全0/全1 · scramble on/off</div>
-  <div class="fbox"><b>P2 · 帧结构</b><br/>LSP / CTRL_F / CTRL_L / Active / VBK / IDLE / multiframe</div>
-  <div class="fbox"><b>P3 · 解码 · Unlock</b><br/>解码窗口 · K3 同步 · UTC unlock · link 恢复</div>
-  <div class="fbox"><b>P4 · Error / Corner</b><br/>7b_01 · K-code 错误 · checksum · long frame</div>
-  <div class="fbox"><b>P5 · Multi-lane</b><br/>2/4 lane · 70-bit 对齐 · R_BAC/AEQ 等功能复跑</div>
-  <div class="fbox"><b>P6 · 分辨率扫描</b><br/>4K/1080p/1440p 等 × 刷新率 × port_num</div>
-  <div class="fbox"><b>P7 · 隔离 / 回归</b><br/>420b vs 8B/10B · 8B/10B 回归防退化</div>
+  <div class="fbox"><b>基线期<br/>0715~0722</b><br/>单 case 联调 · 三条证据链<br/>定位 DUT 解码问题</div>
+  <div class="fbox"><b>0924 · 维度矩阵</b><br/>case 1 → 190 一次性落地<br/>CTRL_F 恒不加扰 · Config 并入首 VFP 行</div>
+  <div class="fbox"><b>1010 · 补件</b><br/>MULTI_CHIP fork 隔离<br/>CH_SEL 表 · drive_idle_ct</div>
+  <div class="fbox"><b>1022 · 体系扩展</b><br/>BCC 训练 + BOE 回放 → 192<br/>MULTI_CHIP sd_env · analog PORSD</div>
+  <div class="fbox"><b>1028 →</b><br/>服务器包 overlay<br/>维度回归 + 故障注入持续</div>
 </div>
 
-## 1. Phase 1: Smoke
+> **2026-11-05 改写说明**：07-13 基线页的 P1~P7 / 53-case 分阶段叙事是建站时的规划稿，实际演进并非逐 Phase 爬坡——现实是 **0924 维度矩阵一次性落地 + 故障注入 + BOE 回放 + MULTI_CHIP**（§1~§4）；原 P1~P7 规划保留在 §5 作历史对照。
 
-基础 420b 发送、LSB-first、全 0/全 1、tag bypass、scramble on/off。
+## 1. 基线期：单 case 联调（0715 ~ 0722）
 
-## 2. Phase 2: Frame Structure
+单 case（`t_H3840_V16_FPS120_420b`）打通发送链与离线验证：enum 对齐、帧结构按 spec 修正、加扰策略与压流位序修复、ref model decode 三修；建立 bind tap → `decode_dap.py` → 逐区域比对的三级交叉验证，证实线上数据 5/5 区域全部正确，剩余问题锁定 DUT 解码侧（详见「排障实录」）。
 
-LSP、CTRL_F、CTRL_L、Active、last-active、V blanking、IDLE、multiframe。
+## 2. 0924：维度矩阵一次性落地（1 → 190 case）
 
-## 3. Phase 3: Decode / Descramble / Unlock
+验证重心从「数据对不对」直接切换到「维度回归」：`t_H{HACT}_V16_FPS{FPS}_PORT_NUM*_[维度]_420b` 命名族 +189，覆盖分辨率 ×6 / FPS ×8 / PORT ×4 / DPLC / SD_CHOP / 极性 / CH_SEL / SDC 全维度（详见「Case」页）。同一波次落地四项语义变更：**CTRL_F 恒不加扰（不推进 SCR_KEY）**、**Config Line 并入第一条 VFP 行（SCREN=1 行尾 K3）**、Active/VBK 压流 LSB-first 修复入库、`send_ppm_420b` 每帧接入 `process_line + exec_c` C-model golden 闭环；并新增 `chpi_training_packet_sequence`（BCC 训练包）与 EOL 缺失故障注入（`eol_missing_test`）。
 
-解码窗口、K3 同步、UTC unlock、link 恢复。
+## 3. 1010：MULTI_CHIP 与驱动补件
 
-## 4. Phase 4: Error / Corner
+MULTI_CHIP（multi4）fork 隔离防跨芯片 cancel；CH_SEL → subpix_cnt 表（966/960/726/720/864），DPLC_GROUP=1 时 subpix_cnt +3→+6；driver `drive_idle_ct`（CT 符号完整发完才接 packet）；bwda 停止逻辑与 unlock 恢复策略收尾。
 
-7b_01、K-code 错误、UTC header、long frame、checksum、vbk、chpi_regw 等。
+## 4. 1022：BCC 训练 + BOE 回放（→ 192 case）
 
-## 5. Phase 5: Multi-lane / Alignment
+BCC 训练体系入库（`bcc_monitor / bcc_scoreboard / bcc_sequence`，covergroup + 70us 响应超时 + 三命令追踪）；isptx BOE 回放（`BOE_420B_TEST` 宏，`sim_data_BOE_opt` 12 Pat × 2 doc 逐 10-bit 符号回放）；`drive_post_bcc_training` 严格 LOCK 检查；MULTI_CHIP sd_env 与 analog PORSD 帧检查；case +2（`boe_test`、`SCREN1_for_chengli_test`）达到 192。1028 服务器包 overlay 后 RTL 侧 `decode_ignore` 修复确认入树，激励源主体无进一步语义变化。
 
-2lane/4lane、70-bit 对齐、R_BAC/AEQ/debugpin/packpos/RGB 功能复跑。
+## 5. 基线规划对照（P1~P7，未按此执行）
 
-## 6. Phase 6: Resolution / Refresh / Port Sweep
+> 建站时的七阶段规划稿，保留作历史对照；对应「Case」页 §5 的 53-case 七分类。
 
-4K/1080p/1440p/2.5K/2.8K/3.4K × 多刷新率 × 多 port_num/CH_SEL。
-
-## 7. Phase 7: Isolation / Regression
-
-420b vs 8B/10B 对比，8B/10B 回归防退化。
+| 规划阶段 | 内容 |
+|----------|------|
+| P1 · Smoke | 基础发送 · LSB-first · 全 0/全 1 · scramble on/off |
+| P2 · 帧结构 | LSP / CTRL_F / CTRL_L / Active / VBK / IDLE / multiframe |
+| P3 · 解码 · Unlock | 解码窗口 · K3 同步 · UTC unlock · link 恢复 |
+| P4 · Error / Corner | 7b_01 · K-code 错误 · checksum · long frame |
+| P5 · Multi-lane | 2/4 lane · 70-bit 对齐 · R_BAC/AEQ 等功能复跑 |
+| P6 · 分辨率扫描 | 4K/1080p/1440p 等 × 刷新率 × port_num |
+| P7 · 隔离 / 回归 | 420b vs 8B/10B · 8B/10B 回归防退化 |
 
 ---
   </script>
@@ -670,4 +672,4 @@ const lightbox = document.getElementById('lightbox');
   <script src="./fx.js?v=11"></script>
 </body>
 </html>
-<!-- ymzhu 2026-11-02 18:52 -->
+<!-- ymzhu 2026-11-05 11:58 -->

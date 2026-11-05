@@ -514,20 +514,25 @@
 
 > 🎬 本页图均为纯 CSS 动画 SVG（在 `images/anim/` 目录，滚动到视口时重播；顶部导航可一键切换 动画/静态）；静态原版保留在同名路径作 fallback。
 
-![420b 帧数据流](./images/anim/spec_frame_flow.svg?v=20261101)
+![420b 帧数据流](./images/anim/spec_frame_flow.svg?v=20261105)
+
+![帧结构：基线 vs 现状对比](./images/anim/delta_frame_structure.svg?v=20261105)
+
+> **帧结构演进 before → after**：① Config Line 由 0717v1 的「VACT 后单独成行」改为 0924 的「第一条 VFP 行承载」（帧内不再额外加行，帧时长不变）；② Config 行尾由 K2 改为 **K3(SCREN=1)|K2**——SCREN=1 时以 K3 结束，接收端锁存 SCREN 并将共享加扰 key 复位 0XFFFF；③ CTRL_F 由「随域加扰」改为**恒不加扰、不推进 SCR_KEY**。Active 统一 K2 结束、LSP/IDLE 不加扰等基线语义未变。
 
 ```text
-Frame c:
+Frame c（HEAD a7130ba7 语义，0924 起）:
 ├─ VBP/V blanking Lines (K1 + CTRL_L + VBK + K2 + IDLE) × VBP
-├─ Active Lines (K1 + CTRL_L + Video + K2 + IDLE) × VACT   ← 最后一行也以 K2 结束
-├─ Config Line (K4 + CTRL_F(ENC) + Dmy + K2 + IDLE)        ← 单独成行（下一帧配置）
-└─ VFP/V blanking Lines (K1 + CTRL_L + VBK + K2 + IDLE) × VFP
+├─ Active Lines (K1 + CTRL_L + Video + K2 + IDLE) × VACT   ← 首行 FSYNC=1；最后一行也以 K2 结束
+├─ VFP 第 0 行 = 下一帧配置行 (K4 + CTRL_F(ENC) + Dmy + K3(SCREN=1)|K2 + IDLE)
+└─ 其余 VFP 行 (K1 + CTRL_L + VBK + K2 + IDLE)              ← 帧内不加行，帧时长不变
 ```
 
-> **0717v1 帧结构修改**（按 PDF spec 截图确认）：
-> 1. **Config Line 单独成行**：最后一行 Active Line 不再嵌入 K4+CTRL_F，改为 VACT 结束后单独发送一行 `K4 + CTRL_F(ENC) + Dmy + K2`（位置对齐 8B/10B 的 `send_CTRLF_seq(c+1)`）。
-> 2. **Active Line 结束标记**：所有 Active Line 统一以 K2 结束（spec 允许 K2 或 K3，绝不使用 K4；K3 使用条件待确认）。
-> 3. **Config Line 的 Dmy**：已内嵌于 413b/420b 编码对齐（64B CTRL_F → 560 encoded bits，含 Dmy），结构无需额外处理。
+> **帧结构演进链**：
+> 1. **0717v1**（基线画法，按 PDF spec 截图确认）：Config Line 在 VACT 结束后单独成行（`K4 + CTRL_F(ENC) + Dmy + K2`，位置对齐 8B/10B 的 `send_CTRLF_seq(c+1)`）；所有 Active Line 统一以 K2 结束。
+> 2. **0924（现行语义）**：Config Line 改为**第一条 VFP 行承载**（帧内不再额外加行，帧时长不变）；行尾 K2 → **K3(SCREN=1)|K2**——SCREN=1 时以 K3 结束（接收端锁存 SCREN、共享加扰 key 复位 0XFFFF，TX 侧同步 `lfsr_key_420b = 16'hFFFF`），SCREN=0 时 K2。
+> 3. **Active Line 结束标记**：所有 Active Line 统一以 K2 结束（spec 允许 K2 或 K3；现行实现 Active 恒 K2，首行 FSYNC=1）。
+> 4. **Dmy**：内嵌于 413b/420b 编码对齐（64B CTRL_F → 560 encoded bits，含 Dmy）；0825 起 CTRL_F 行 Dmy 补齐到整行 raw 长度（`pad_bit_stream(bit_stream, max_lane_raw_bits(hact*3, 6))`）。
 
 ## 2. 关键字段
 
@@ -535,29 +540,29 @@ Frame c:
 
 K2 + 0xEA/EB/EC/ED×8 + dummy + K3；训练数据，**不加扰**；至少发送 5 次，连续发送 ≥ 1us。
 
-![LSP 序列与 K 码](./images/anim/spec_lsp_kcode.svg?v=20261101)
+![LSP 序列与 K 码](./images/anim/spec_lsp_kcode.svg?v=20261105)
 
 ### 2.2 CTRL_F
 
-Config Line 配置数据；payload，**加扰**；Dmy 内嵌于编码对齐，行尾以 K2 结束。
+Config Line 配置数据；**恒不加扰、不推进 SCR_KEY**（0924 起，`encode_with_70b_alignment(..., 1'b0, ...)`）；Dmy 内嵌于编码对齐（0825 起补齐到整行 raw 长度）；行尾 SCREN=1 时 **K3**（锁存 SCREN + 共享 key 复位 0XFFFF），SCREN=0 时 K2。
 
 ### 2.3 CTRL_L
 
-Line 控制数据；payload，**加扰**。
+Line 控制数据；payload，随 SCREN 门控加扰（与 Video 同流）。
 
 ### 2.4 Active
 
-RGB 像素数据；payload，**加扰**。
+RGB 像素数据；payload，随 SCREN 门控加扰。
 
 ### 2.5 VBK
 
-V blanking 数据；payload，**加扰**。
+V blanking 数据；payload，随 SCREN 门控加扰。
 
 ### 2.6 IDLE
 
 K5/K6/K7/K8 pattern；**不加扰**；为优化 EMI，不同 lane 采用不同发送顺序。
 
-![H/V blanking 与 IDLE](./images/anim/spec_blanking_idle.svg?v=20261101)
+![H/V blanking 与 IDLE](./images/anim/spec_blanking_idle.svg?v=20261105)
 
 ---
   </script>
@@ -674,4 +679,4 @@ const lightbox = document.getElementById('lightbox');
 </body>
 </html>
 
-<!-- ymzhu 2026-11-04 15:52 -->
+<!-- ymzhu 2026-11-05 11:58 -->

@@ -108,14 +108,14 @@
 
 ## 6. 每张图的规格（只读自己负责的；锚点沿 v2 实测，稳态选型为 v4 新定；【v4.1】标记 = 2026-10-28 晚动效加密增量）
 
-### 6.1 longcode_verification_architecture（1200×980）【A】
-六面板：Test/Config（顶）、TX（中左）、RX（中右）、Transaction/Driver（下左）、接收端离线验证路径（底，绿虚线）、版本管理（底条）。
-- 行序：标题(0) → Test/Config(0.15) → TX(0.4) → RX(0.6) → Transaction(0.8) → 离线 band(1.15) → 版本条(1.5)。
-- draw：Test/Config→TX/RX ↓、TX 内部链箭头、driver→RX、RX 内部 4 ↓、离线链路箭头。delay = max(两端面板 delay)+0.55。
-- **列车（稳态主角）**：蓝链 TX→RX（build_bit_stream→pad→long_encoding→CHPI_KCODE_ALIGN + RX 内部链）每边 2 包 + flowtail，0.7s/边，按边序错 phase；绿链离线（long_rt_tap_debug→…→report）每边 3 包【v4.1，2→3 更明显"列车"】、duration ×2（慢速支路对比）。
-- **脉冲**：TAP 徽章 pulse-b；✅ verdict 盒 pulse-t。
-- dashgrow：紫色虚线"期望值/比对"连接器。
-- cellwave（可选）：TX 面板 K2/K3/K4 chip；不好剥离就跳过。
+### 6.1 longcode_verification_architecture（1200×1150）【A】（1105 重绘：2026-11 现状）
+七行：Test/Config（192 case 维度矩阵，顶）、TX（任务族+故障注入+训练包+C-model 闭环，中左）、Transaction/Driver（BOE 回放，左下）、RX DUT（解码链+RTL 编码 TX 通路，中右）、体系扩展（MULTI_CHIP / BCC / checker_420b 遗留，第四行）、接收端离线验证路径（绿虚线，第五行）、版本基线条（0721→1028 → HEAD a7130ba7，底条）。
+- 行序：标题(0) → Test/Config(0.15) → TX(0.35) → Transaction(0.55) → RX(0.6) → 体系扩展(0.8) → 离线 band(1.0) → 版本条(1.2)；箭头 draw/fade 0.75~1.55（= max(两端面板)+0.55）；图例 head(1.5)。
+- draw：Test→TX/RX（橙虚线只 fade 不 draw）、TX 内部 2、TX→Trans、Trans→Driver、Driver→RX、RX 内部 5 ↓、离线内部 4 段。
+- **列车（稳态主角）**：Driver→RX 串行链路 path（≈290px）蓝 2 包 + 链色 flowtail（4.2s，-0.6/-2.7）；tap 绿色外廊（≈950px）绿 2 包（4.2s，-1.7/-3.8 与蓝错相）。离线链内部箭头仅 36px < 80px → 按 v4.3 短箭头规则不挂列车（0720 版每边 3 包列车行为不回归）。
+- **脉冲**：TAP 徽章 pulse-b(-1.4s)；✅ verdict 盒 pulse-t(-0.7s)；checker_420b 遗留改造盒 pulse(-2.1s 琥珀警示)。
+- dashgrow：紫色"期望值"两段连接器（dump 走廊 3.2s/-1.6s、逐区域 diff 2.8s/-0.5s 相位错开）。
+- cellwave：无（1105 版 TX 面板无 bit chip 可剥离）。
 
 ### 6.2 pydec_tx_rx_structure（1200×680）【A】
 TX 面板（左 3 模块+dump 盒）、RX 面板（右 TAP 盒+虚线 RTL 盒+3 绿脚本盒）、离线比对 band（底）。
@@ -138,12 +138,12 @@ TX 面板（左 3 模块+dump 盒）、RX 面板（右 TAP 盒+虚线 RTL 盒+3 
 - **脉冲**：编码效率/编码率盒、verdict 盒选 2~3 个（pulse / pulse-t 错相位）。
 - 不加 breathe。
 
-### 6.4 spec_frame_flow（1200×700）【A】
-Clock training 条、LSP 条、Config Line(Frame c)、Video Active 4 行、Frame c+1 行、V blanking 2 行、省略号。
-- 行序：标题(0) → Clock(0.15) → LSP(0.35) → Frame c(0.55) → Active 4 行(0.7/0.85/1.0/1.15) → c+1(1.3) → VBK(1.45/1.6) → 括号(1.75)。
-- **行波（主角）**：所有"行"整行组包 cellwave，自上而下 0.18s 递增，周期 4.5s（内联 duration）= 帧滚动波。
-- **脉冲**："Config Line · Frame c+1"行盒 pulse-t（0717 修复点）；LSP 条 pulse-b；【v4.1】Clock training 条 pulse-b(-2.1s，与 LSP 错 0.7s)、V blanking 两行组 pulse-t(-1.4s，两行同 delay 同步，与既有 pulse-t 错 0.7s)。
-- 不加列车/breathe/sweep（行波+脉冲已 2 族、画面已密）。
+### 6.4 spec_frame_flow（1200×700）【A】（1105 重绘：0924 帧结构）
+Clock training 条、LSP 条、帧 0 配置行、VBP 2 行、Video Active 3 行+省略号、VFP 第 0 行（= 帧 c+1 配置行，绿框高亮）、VFP 其余行、省略号、底部 K3/SCREN + 帧 c+1 注记。旧「Config Line 单独成行 + K2 or K3」画法废弃（归档 20260720）。
+- 行序：标题(0) → Clock(0.15) → LSP(0.35) → 帧0(0.55) → VBP(0.7/0.85/括号 1.0) → Active(1.1/1.22/…1.32/last 1.42/括号 1.52) → VFP0(1.62) → VFP 其余(1.75) → 尾括号(1.85) → 注记(1.95)；总长 2.5s。
+- **行波（主角）**：帧0/VBP×2/Active×3/VFP0/VFP rest 共 8 行组整行 cellwave，自上而下 0.18s 递增，周期 4.5s（内联 duration）= 帧滚动波。
+- **脉冲**：Clock 条 pulse-b(-2.1s)；LSP 条 pulse-b(-1.4s)："VFP 第 0 行 = 帧 c+1 配置行"高亮组 pulse-t(-0.7s，0924 修复点)；VFP 其余行组 pulse-t(-1.4s)；底部 K3 注记 pulse-t(-2.1s)。
+- 不加列车/breathe/sweep（行波+脉冲已 2 族、画面已密）；本图无箭头 → 无 draw。
 
 ### 6.5 spec_tag_replacement（1200×460）【B】
 输入 413b 行、↓替换箭头（全0/全1 红格）、输出 420b 行（黄 tag 格）、A→B 发送顺序箭头、图例、①②③④ 步骤框。
@@ -155,14 +155,14 @@ Clock training 条、LSP 条、Config Line(Frame c)、Video Active 4 行、Frame
 - **脉冲**：全0/全1 两个红格 pulse（琥珀，phase 差 1.4s）。
 - march：header 位虚线（若有）。
 
-### 6.6 spec_scramble_rolling（1200×520）【B】
-编码前行、↓箭头、编码后行（K5~K8 黄格）、3 条横条（绿 SCR_KEY/橙 SCR_XOR/蓝 ENC）+ 绿虚线 LFSR 反馈环、n+1 行、图例。
-- 行序：标题(0) → 编码前(0.2) → 编码后(0.5) → 三横条(0.85/0.95/1.05) → n+1(1.25) → 图例(1.4)。
-- draw：↓箭头；三横条 `.draw`+`pathLength="100"` 依次绘出（0.55s，0.1s 错开）。
-- **生长（主角）**：LFSR 绿色虚线反馈环 `.dashgrow`（2.6s）—— key 逐轮演化的语义。
-- **列车**：绿条 2 包、蓝条 2 包+拖尾（【v4.1】各 1→2；左→右错 phase，白点骑实心条上为已验收样式，tail 用链色）。
-- 行波：编码后行 K5~K8 黄格+末尾 K5（0.3s 递增，2.4s）。
-- **脉冲**："n → n+1（LFSR 继承）"注释 pulse-t。
+### 6.6 spec_scramble_rolling（1200×560）【B】（1105 重绘：0924 加扰策略）
+①段：Active 行编码后视图（K1|CTR_L|Enc Data|Dmy|K2|K5~K8…）+ 三横条（绿 SCR_KEY/橙 SCR_XOR/蓝 ENC）+ 图例；行间顺承绿虚线环 + n+1 行；②段：Config 行（K4|CTRL_F|Dmy|K3|K2|IDLE…）+ 灰条（key 不推进）+ 蓝短条（仅编码）；③段：K3 边界盒（复位 0XFFFF / 延 4 拍）。旧「全 payload 加扰（含 CTRL_F）」画法废弃（归档 20260720）。
+- 行序：标题(0) → ①行(0.2) → 三横条(0.85) → 图例 head(1.05) → 顺承(1.15) → n+1(1.25) → ②节标题(1.4)/②行(1.5) → ②横条(1.65) → ③K3 盒(1.8)；总长 2.35s。
+- draw：①三横条与②灰条/蓝短条 `.draw`+`pathLength="100"` 依次绘出。
+- **生长（主角）**：顺承绿色虚线环 `.dashgrow`（2.6s）—— Active/VBK 行间 key 逐轮演化、不复位的语义。
+- **列车**：绿条（SCR_KEY update，540px）2 包白点 4.2s；蓝条 2 包 + 链色 flowtail（#1d4ed8）；②蓝短条 2 包白点；**②灰条刻意无列车 —— 绿条滚动 vs 灰条静止 = CTRL_F 恒不加扰·不推 key 的视觉对照**。
+- 行波：①/②两行 K5~K8 黄格各 5 格（0.3s 递增，2.4s）。
+- **脉冲**：顺承注释 pulse-t(-0.7s)；③K3 边界盒 pulse(-1.4s 琥珀)。
 
 ### 6.7 spec_dummy_70b（1200×600）【B】
 顶部 ①②③④ 步骤框（3 蓝箭头串联）、3 行（LSP/Active/Config：Before ENC 盒 → 箭头 → After ENC 盒）、底部注释。
@@ -185,7 +185,7 @@ Clock training 条、LSP 条、Config Line(Frame c)、Video Active 4 行、Frame
 
 ### 6.9 spec_lsp_kcode（1200×620）【C】
 编码前行（K2+0xEA~0xED 橙格+K3）、括号下划线、编码后行（含 dmy）、dmy 注释、K 码表 4 行、先发/后发箭头+"右→左"注释。
-- 行序：标题(0) → 编码前(0.2) → 括号(0.5) → 编码后(0.65) → dmy 注释(0.8) → K 表(1.0/1.15/1.3/1.45) → 先发/后发(1.7)。
+- 行序：标题(0) → 编码前(0.2) → 括号(0.5) → 编码后(0.65) → dmy 注释(0.8) → K 表(1.0/1.15/1.3/1.45) → 先发/后发(1.7) → K3 语义注记 fade(1.9)【1105 增：SCREN=1 行尾 K3 · key 复位 0XFFFF · RX 延 4 拍】。
 - draw：先发/后发 2 箭头；实线下划线。
 - **行波**：编码前后两行 0xEA~0xED 橙格左右行进（0.1s/格，两行同相）；K 表 4 行按行 phase（0.5s 递增，3.6s）。
 - **列车**：先发/后发箭头各 3 包（【v4.1】2→3，按标注方向走）+flowtail。
@@ -193,11 +193,11 @@ Clock training 条、LSP 条、Config Line(Frame c)、Video Active 4 行、Frame
 - march：虚线括号下划线。
 
 ### 6.10 spec_blanking_idle（1200×660）【C】
-IDLE pattern 面板（K5~K8 4 行）、lane 间轮换面板（Lane1~4）、V blanking 行、Config Line 行、VBP 首行、注释。
-- 行序：标题(0) → IDLE 面板(0.2) → lane 面板(0.5) → V blanking(0.85) → Config(1.05) → VBP(1.25) → 注释(1.45)。
+IDLE pattern 面板（K5~K8 4 行）、lane 间轮换面板（Lane1~4）、V blanking 行、Config Line 行、VFP 第 0 行【1105：随 0924 帧结构由「VBP 首行」正名，单元即 Config Line 行样】、注释。
+- 行序：标题(0) → IDLE 面板(0.2) → lane 面板(0.5) → V blanking(0.85) → Config(1.05) → VFP 第 0 行(1.25) → 注释(1.45)。
 - **行波（轮换演出主角）**：每 lane 的 4 个 K 格按轮换序点亮（Lane1 K5→K6→K7→K8；Lane2 K6→…；Lane3 K7→…；Lane4 K8→…）：每格 `class="cellwave"` + 内联 `animation-duration:2.4s`，delay = 轮换序位置 × 0.6s，4 lane 共用时间线 = 轮换偏移可视化。IDLE 面板 bit 串格 0.4s 递增（3.2s）。
 - ~~列车~~：~~每 lane 格间小箭头各 1 包~~ **2026-11-02 更正：实际生成物中无任何 flowdot/flowtail（CSS 类定义存在但未实例化，图只有行波 + 脉冲两族，稳定多年）；且格间小箭头 < 80px，按 v4.3 短箭头规则本就不应挂列车——维持无列车现状，此行留作不回归说明**。
-- **脉冲**：VBP 首行行盒 pulse-b；【v4.1】IDLE pattern 面板标题组 pulse-b(-2.1s，与 VBP 错 0.7s)。
+- **脉冲**：VFP 第 0 行行盒 pulse-b【1105：原「VBP 首行」】；【v4.1】IDLE pattern 面板标题组 pulse-b(-2.1s，与 VFP 首行错 0.7s)。
 
 ## 7. 生成器要求
 
@@ -223,6 +223,7 @@ DONE — <name1> / <name2> ...
 
 ## 10. Changelog
 
+- **v4.3 图版更新（2026-11-05，t2）**：§6.1 / §6.4 / §6.6 按重绘后实际规格补正——6.1 架构图 1200×980→1150 七行（2026-11 现状；列车改 Driver→RX 串行链路+tap 外廊，离线链 36px 短箭头不回归列车；+checker_420b 琥珀警示脉冲）；6.4 帧流图重绘为 0924 帧结构（VFP 第 0 行承载 Config + K3|K2，8 行组行波，VFP0 高亮 pulse-t）；6.6 加扰图 1200×520→560 三段式（SCREN 门控加扰域 / CTRL_F 恒不加扰灰条静止对照 / K3 复位 0XFFFF 延 4 拍盒）。§6.9 行序补 K3 语义注记 fade(1.9)；§6.10「VBP 首行」随 0924 语义正名为「VFP 第 0 行」。旧版三图归档 images/archive/20260720/。
 - **v4.3（2026-11-02）**：①**琥珀扫光带 → 文字光带**（§4 重写：光只在文字字形内、白色亮峰 .65、叠在内容之上；`<use>` 引用原文字作裁剪，零复制）。**本条覆盖 v4.1 的"禁白色亮色 / 禁新 sweep"**——白色只允许用于文字光带亮峰。②**短箭头规则**（< 80px 不挂列车/行进/生长，改方框接力点亮）。③pydec 离线比对区三盒等距重排（改静态源）。④8b10b 删除 spine 列车改接力点亮；dummy_70b 光带改作用于标题+注释。⑤验证方法：transform 动画须用 `getAnimations()` 定格截图（无头 virtual-time 截图不可靠）。
 - v4.1（2026-10-28 晚）：**动效加密轮**（用户定调："呼吸辉光、慢速列车、行波、虚线生长很棒，再进一步增加"）。持续层族上限 ≤3 → **≤4**（§3/§8 同步）；只用四族（pulse*/cellwave/flowdot+flowtail/dashgrow），禁新几何/禁 scale/禁白色亮色/禁新 sweep；各图增量——longcode 绿链 3 包、pydec 紫期望值链+RTL 盒边 dashgrow（第 4 族）、8b10b 行波 0.07s/格+spine 3 包、frame_flow +Clock pulse-b/VBK 两行组 pulse-t、blanking +IDLE 标题组 pulse-b、tag A→B 3 包、scramble 绿/蓝条各 2 包、dummy_70b pipeline 3 包（存量 5 族只加密不加族）、bit_order 竖直列车 3 包（无虚线跳 dashgrow）、lsp_kcode 先发/后发各 3 包。
 - v4（2026-10-28）：稳态升级（pulse 缩放辉光/扫光带/列车加粗+拖尾/dashgrow），glow-* 废除由 pulse* 取代；入场箭头 delay 规则 +0.35→+0.55 修悬浮箭头；稳态 ≥2 族硬指标；kit CSS 全量替换；校验升级 validate_kit_v4.py。
@@ -231,4 +232,4 @@ DONE — <name1> / <name2> ...
 - v4.2（2026-10-29）：用户定调"所有带列车的图，列车速度全部再降"——元素级列车时长下限 2.4s（0.7/0.8s→2.4s、1.4/1.5s→3.2s 档）；列车仍只允许复制既有箭头几何，不扩新图；donut 永不加行进（用户点名）。
 - v4.2 补充（2026-10-29）：数据密集图（行≥20 且列≥6）数据区禁弥漫性动效（用户：行列多加呼吸影响体验；低密度加很好）；列车全站再降速（元素级 ≥2.4s）。
 
-<!-- ymzhu 2026-11-04 17:20 -->
+<!-- ymzhu 2026-11-05 11:45 -->

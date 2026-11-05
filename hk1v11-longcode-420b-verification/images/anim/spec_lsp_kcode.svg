@@ -217,5 +217,8 @@
 <path d="M 178 542 L 178 528" stroke="#2563eb" class="flowtail" pathLength="100" style="animation-duration:2.4s;animation-delay:-0.5s;stroke-width:4"/>
 <path d="M 178 542 L 178 528" stroke="#2563eb" class="flowtail" pathLength="100" style="animation-duration:2.4s;animation-delay:-1.3s;stroke-width:4"/>
 <text x="564" y="560" font-size="10.5" fill="#2563eb" text-anchor="middle">串行发送方向：右 → 左（LSB-first，与 8B/10B 一致）</text>
+<g class="fade" style="animation-delay:1.9s">
+<text x="600" y="586" font-size="10.5" fill="#0f766e" text-anchor="middle">K3 语义（0924 后）：SCREN=1 时 CTRL_F 行尾 K3 → RX 锁存 SCREN + 共享 key 复位 0XFFFF（K3_FIND_rp_d[3] 延 4 拍生效）；SCREN=0 → 行尾 K2</text>
+</g>
 </g>
 </svg>

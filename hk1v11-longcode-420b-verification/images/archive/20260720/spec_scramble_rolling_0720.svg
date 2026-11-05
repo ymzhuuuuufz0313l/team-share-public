@@ -1,0 +1,71 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 520" width="1200" height="520">
+  <style>text { font-family: 'Helvetica Neue', Helvetica, Arial, 'PingFang SC', 'Microsoft YaHei', 'Microsoft JhengHei', 'SimHei', sans-serif; }</style>
+  <defs>
+    <marker id="ar-blue" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#2563eb"/></marker>
+    <marker id="ar-green" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#059669"/></marker>
+    <marker id="ar-purple" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#7c3aed"/></marker>
+    <marker id="ar-orange" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#ea580c"/></marker>
+    <marker id="ar-gray" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#9ca3af"/></marker>
+  </defs>
+  <rect width="1200" height="520" fill="#ffffff"/>
+<text x="600" y="40" font-size="21" fill="#1e293b" text-anchor="middle" font-weight="600">Scramble key 滚动机制</text>
+<text x="600" y="64" font-size="12" fill="#64748b" text-anchor="middle">K 码不加扰，K 码期间 scramble 停止滚动；第 n+1 行 scramble 起始状态顺承第 n 行截止状态</text>
+<text x="50" y="138" font-size="10.5" fill="#64748b" text-anchor="end">编码前</text>
+<rect x="60" y="112" width="56" height="40" rx="8" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
+<text x="88.0" y="135.5" font-size="10" fill="#166534" text-anchor="middle" font-weight="600">K1</text>
+<rect x="120" y="112" width="90" height="40" rx="8" fill="#cffafe" stroke="#67e8f9" stroke-width="1.5"/>
+<text x="165.0" y="135.5" font-size="10" fill="#155e75" text-anchor="middle" font-weight="600">CTR_L</text>
+<rect x="214" y="112" width="416" height="40" rx="8" fill="#dbeafe" stroke="#93c5fd" stroke-width="1.5"/>
+<text x="422.0" y="135.5" font-size="11" fill="#1e40af" text-anchor="middle" font-weight="600">RGB Data</text>
+<rect x="634" y="112" width="56" height="40" rx="8" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
+<text x="662.0" y="135.5" font-size="10" fill="#166534" text-anchor="middle" font-weight="600">K2</text>
+<rect x="694" y="112" width="300" height="40" rx="8" fill="#f3f4f6" stroke="#d1d5db" stroke-width="1.5"/>
+<text x="844.0" y="135.5" font-size="11" fill="#6b7280" text-anchor="middle" font-weight="600">HBP</text>
+<line x1="470" y1="158" x2="470" y2="204" stroke="#2563eb" stroke-width="2" marker-end="url(#ar-blue)"/>
+<text x="480" y="186" font-size="10" fill="#2563eb" text-anchor="start">编码后</text>
+<text x="50" y="236" font-size="10.5" fill="#64748b" text-anchor="end">编码后</text>
+<rect x="60" y="210" width="56" height="40" rx="8" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
+<text x="88.0" y="233.5" font-size="10" fill="#166534" text-anchor="middle" font-weight="600">K1</text>
+<rect x="120" y="210" width="90" height="40" rx="8" fill="#cffafe" stroke="#67e8f9" stroke-width="1.5"/>
+<text x="165.0" y="233.5" font-size="10" fill="#155e75" text-anchor="middle" font-weight="600">CTR_L</text>
+<rect x="214" y="210" width="356" height="40" rx="8" fill="#dbeafe" stroke="#93c5fd" stroke-width="1.5"/>
+<text x="392.0" y="233.5" font-size="11" fill="#1e40af" text-anchor="middle" font-weight="600">Enc Data</text>
+<rect x="574" y="210" width="86" height="40" rx="8" fill="#e5e7eb" stroke="#d1d5db" stroke-width="1.5"/>
+<text x="617.0" y="233.5" font-size="10" fill="#6b7280" text-anchor="middle" font-weight="600">Dmy</text>
+<rect x="664" y="210" width="56" height="40" rx="8" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
+<text x="692.0" y="233.5" font-size="10" fill="#166534" text-anchor="middle" font-weight="600">K2</text>
+<rect x="724" y="210" width="40" height="40" rx="8" fill="#fef9c3" stroke="#fde047" stroke-width="1.5"/>
+<text x="744.0" y="233.5" font-size="10" fill="#854d0e" text-anchor="middle" font-weight="600">K5</text>
+<rect x="768" y="210" width="40" height="40" rx="8" fill="#fef9c3" stroke="#fde047" stroke-width="1.5"/>
+<text x="788.0" y="233.5" font-size="10" fill="#854d0e" text-anchor="middle" font-weight="600">K6</text>
+<rect x="812" y="210" width="40" height="40" rx="8" fill="#fef9c3" stroke="#fde047" stroke-width="1.5"/>
+<text x="832.0" y="233.5" font-size="10" fill="#854d0e" text-anchor="middle" font-weight="600">K7</text>
+<rect x="856" y="210" width="40" height="40" rx="8" fill="#fef9c3" stroke="#fde047" stroke-width="1.5"/>
+<text x="876.0" y="233.5" font-size="10" fill="#854d0e" text-anchor="middle" font-weight="600">K8</text>
+<text x="910" y="236" font-size="13" fill="#64748b" text-anchor="middle">…</text>
+<rect x="936" y="210" width="40" height="40" rx="8" fill="#fef9c3" stroke="#fde047" stroke-width="1.5"/>
+<text x="956.0" y="233.5" font-size="10" fill="#854d0e" text-anchor="middle" font-weight="600">K5</text>
+<rect x="120" y="282" width="540" height="10" rx="5" fill="#16a34a" stroke="#16a34a" stroke-width="1"/>
+<rect x="120" y="304" width="540" height="10" rx="5" fill="#ea580c" stroke="#ea580c" stroke-width="1"/>
+<rect x="214" y="326" width="356" height="10" rx="5" fill="#2563eb" stroke="#2563eb" stroke-width="1"/>
+<text x="120" y="274" font-size="9.5" fill="#16a34a" text-anchor="start">加扰区间（CTR_L ~ Dmy）</text>
+<text x="730" y="282" font-size="9.5" fill="#9ca3af" text-anchor="start">K 码期间 scramble 停止滚动</text>
+<rect x="1010" y="282" width="14" height="10" rx="3" fill="#16a34a" stroke="#16a34a" stroke-width="1"/>
+<text x="1030" y="291" font-size="10" fill="#64748b" text-anchor="start">SCR_KEY update</text>
+<rect x="1010" y="304" width="14" height="10" rx="3" fill="#ea580c" stroke="#ea580c" stroke-width="1"/>
+<text x="1030" y="313" font-size="10" fill="#64748b" text-anchor="start">SCR_XOR</text>
+<rect x="1010" y="326" width="14" height="10" rx="3" fill="#2563eb" stroke="#2563eb" stroke-width="1"/>
+<text x="1030" y="335" font-size="10" fill="#64748b" text-anchor="start">413/420 ENC</text>
+<path d="M 660 292 C 700 320 660 360 620 372 L 220 372 L 220 388" stroke="#059669" stroke-width="2" fill="none" stroke-dasharray="6,3" marker-end="url(#ar-green)"/>
+<text x="560" y="364" font-size="10" fill="#16a34a" text-anchor="middle">n 行截止状态 → n+1 行起始状态（LFSR 连续）</text>
+<text x="50" y="414" font-size="10.5" fill="#64748b" text-anchor="end">n+1 行</text>
+<rect x="60" y="390" width="56" height="40" rx="8" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
+<text x="88.0" y="413.5" font-size="10" fill="#166534" text-anchor="middle" font-weight="600">K1</text>
+<rect x="120" y="390" width="90" height="40" rx="8" fill="#cffafe" stroke="#67e8f9" stroke-width="1.5"/>
+<text x="165.0" y="413.5" font-size="10" fill="#155e75" text-anchor="middle" font-weight="600">CTR_L</text>
+<rect x="214" y="390" width="300" height="40" rx="8" fill="#dbeafe" stroke="#93c5fd" stroke-width="1.5"/>
+<text x="364.0" y="413.5" font-size="11" fill="#1e40af" text-anchor="middle" font-weight="600">Enc Data</text>
+<text x="524" y="414" font-size="13" fill="#64748b" text-anchor="middle">…</text>
+<rect x="120" y="444" width="394" height="8" rx="4" fill="#16a34a" stroke="#16a34a" stroke-width="1"/>
+<text x="524" y="452" font-size="9.5" fill="#16a34a" text-anchor="start">scramble 继续滚动</text>
+</svg>

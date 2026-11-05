@@ -551,10 +551,12 @@
 
 <div class="statbar">
   <div class="stat"><div class="num">10</div><div class="lbl">定位问题总数</div></div>
-  <div class="stat"><div class="num ok">6</div><div class="lbl">🔵 已解决 / 移交</div></div>
-  <div class="stat"><div class="num warn">4</div><div class="lbl">🟡 待跟进</div></div>
+  <div class="stat"><div class="num ok">7</div><div class="lbl">🔵 已解决 / 移交</div></div>
+  <div class="stat"><div class="num warn">3</div><div class="lbl">🟡 待跟进</div></div>
   <div class="stat"><div class="num ok">5/5</div><div class="lbl">✅ 线上数据区域全对</div></div>
 </div>
+
+> 2026-11-05 复核口径：3.9 的 RTL 侧 `decode_ignore` 已随 0924~1022 服务器包修复入树（`decoder_7b.v:353`），计入已解决；3.10 `tag_value`、3.6 区域边界、3.8 K3 剩余待确认点仍在待跟进。
 
 ## 1. 调试方法论：三级独立交叉验证
 
@@ -574,7 +576,13 @@
   <div class="titem"><span class="tdate">07/15</span>LSP 阶段 K-code 错解 → 定位为 enum 顺序不一致，修复通过 🔵</div>
   <div class="titem"><span class="tdate">07/16</span>帧结构对齐 PDF spec：Config Line 单独成行，Active Line 统一 K2 结束 🔵</div>
   <div class="titem"><span class="tdate">07/17</span>din 误接 / SCREN / 位序 / BK_ST 四项定位；建立三级交叉验证体系，证实线上数据全部正确 ✅</div>
+  <div class="titem"><span class="tdate">08/25</span>send_CTRLL_seq 相位感知（VBP/VACT/VFP + line_idx）；UTC 注入槽位 0~3→10~13 错位补偿；CTRL_F Dmy 补齐到整行 raw 长度</div>
+  <div class="titem"><span class="tdate">09/24</span>case 1→190 维度矩阵落地；CTRL_F 恒不加扰 + K3 语义（SCREN=1 行尾 K3、key 复位 0XFFFF）；Config Line 并入首 VFP 行；训练包 + EOL 故障注入 + 恢复图像</div>
+  <div class="titem"><span class="tdate">10/22</span>BCC 训练体系 + BOE 回放入库，case → 192；服务器包带入 RTL decode_ignore 修复（见 3.9 翻绿）</div>
+  <div class="titem"><span class="tdate">10/28</span>服务器包 overlay（HDL 21 文件 + DV 51 改/24 新），激励源主体无进一步语义变化</div>
 </div>
+
+> 基线（07-13 建站）之后的完整波次表与组件增量见 §6「基线后变更史」与「架构」页 §4。
 
 ## 3. 问题定位记录
 
@@ -644,24 +652,25 @@
 ### 3.8 K3 使用条件
 
 <div class="pcard pending">
-<div class="prow"><span class="k">状态</span><span><span class="badge badge-pending">🟡 待确认</span> <span class="badge">07/17 · Spec</span></span></div>
+<div class="prow"><span class="k">状态</span><span><span class="badge badge-pending">🟡 部分已答</span> <span class="badge">07/17 · Spec · 0924 部分回答</span></span></div>
 <div class="prow"><span class="k">现象</span><span>DUT：K4 关闭解扰（ctrl_f_scramble_en=0），仅 K3 重新使能解扰。</span></div>
-<div class="prow"><span class="k">现状</span><span>当前 Active Line 统一以 K2 结束（spec 允许 K2 或 K3）；K3 的引入条件（及 TX 侧 LFSR 重启策略）待与 spec 确认。</span></div>
+<div class="prow"><span class="k">现状</span><span>当前 Active Line 统一以 K2 结束（spec 允许 K2 或 K3）。**0924 已部分回答**：SCREN=1 时 CTRL_F 行尾以 K3 结束（接收端锁存 SCREN、共享加扰 key 复位 0XFFFF，接收侧 K3_FIND_rp_d[3] 延 4 拍生效）；Active 行是否允许 K3 仍待与 spec 确认。</span></div>
 </div>
 
 ### 3.9 无编码标记位序与 decode_ignore 位宽（"0x40→0x00、0x50→0x40"）
 
 <div class="pcard">
-<div class="prow"><span class="k">状态</span><span><span class="badge badge-fixed">🔵 已解决</span> <span class="badge badge-dv">DV 侧</span> <span class="badge badge-pending">🟡 待修</span> <span class="badge badge-rtl">RTL 侧</span> <span class="badge">07/21</span></span></div>
+<div class="prow"><span class="k">状态</span><span><span class="badge badge-fixed">🔵 已解决</span> <span class="badge badge-dv">DV 侧</span> <span class="badge badge-fixed">🔵 RTL 已修</span> <span class="badge badge-rtl">RTL 侧</span> <span class="badge">07/21 · RTL 0924~1022 入树</span></span></div>
 <div class="prow"><span class="k">现象</span><span>ACT ramp 数据中 <code>0x40</code> 被 DUT 解为 <code>0x00</code>、<code>0x50</code> 被解为 <code>0x40</code>；设计侧一度怀疑 DV 的 tag 选择有误。</span></div>
 <div class="prow"><span class="k">定位</span><span>逐 bit 仿真对照 4 种假设：①正确 encode + 正确 decode → 零误码（线上数据正确）；②正确 encode + DUT 按 <code>decoder_7b.v</code> 字面逻辑 decode → 精确复现两个错码；③64 种强制碰撞 tag → 均无法复现；④出错组定位：无替换块内值为 <code>7'b0100000</code> 的数据组。无替换块按 spec 在头部放无编码标记——按发送顺序读（最左 = 先发 = bit0）：<code>1000000</code> = toggle=1 + tag=<code>6'b000000</code>、<code>0111111</code> = toggle=0 + tag=<code>6'b111111</code>；但 DUT <code>decode_ignore</code> 用 6-bit <code>tag_value</code> 对比 7-bit 常量（<code>7'b1000000</code>=64 永不可达），tag=0 的标记漏判，该块内低 6 位为 <code>100000</code> 的数据组被误替换为全 0。</span></div>
-<div class="prow"><span class="k">解决</span><span>DV 侧（已修）：无替换头部按 toggle 二选一发送（线上严格为 <code>1000000</code>/<code>0111111</code>），tag 搜索跳过保留值 0/63，pydec <code>no_replace ∈ {0,63}</code>；1044 块 roundtrip 全对，修复后 40/50 错码消失。RTL 侧（待修）：<code>decode_ignore</code> 改为 <code>(tag_value == 6'b000000) | (tag_value == 6'b111111)</code>；SCREN=1 验证前必须落实（无替换块约占 40%）。</span></div>
+<div class="prow"><span class="k">解决</span><span>DV 侧（已修）：无替换头部按 toggle 二选一发送（线上严格为 <code>1000000</code>/<code>0111111</code>），tag 搜索跳过保留值 0/63，pydec <code>no_replace ∈ {0,63}</code>；1044 块 roundtrip 全对，修复后 40/50 错码消失。RTL 侧（<b>2026-11-05 复核：已修</b>）：<code>decoder_7b.v:353</code> 已改为 <code>(tag_value == 6'b000000) | (tag_value == 6'b111111)</code>，随 0924~1022 间服务器包入树；SCREN=1 验证的前置条件之一已落实（SCREN1 case 亦于 1022 入库）。</span></div>
 </div>
 
 ### 3.10 FC/FE/FF 错码：真实 0x7F 替换组漏替换（根因更新为 tag_value 块边界时序错）
 
 <div class="pcard pending">
-<div class="prow"><span class="k">状态</span><span><span class="badge badge-pending">🟡 待修</span> <span class="badge badge-rtl">RTL 侧</span> <span class="badge">07/22</span></span></div>
+<div class="prow"><span class="k">状态</span><span><span class="badge badge-pending">🟡 待修</span> <span class="badge badge-rtl">RTL 侧</span> <span class="badge">07/22 · 2026-11-05 复核</span></span></div>
+<div class="prow"><span class="k">2026-11-05 复核</span><span>姊妹问题 decode_ignore 已修（见 3.9）；<b>本项 RTL 加载逻辑与基线相同</b>（<code>tag_value &lt;= din_20b_aligned_d2[6:1]</code>，tag_pack && decode_en 窗口加载），未见延拍修复的直接证据——状态需以最新波形/回归结论为准（本审计只读核对，不跑仿真）。</span></div>
 <div class="prow"><span class="k">现象</span><span>标记修复（3.9）后，ramp 回卷区（每 256 字节 <code>FE FF 00</code> 处）出现 <code>FC→04</code>、<code>FE→0E</code>、<code>FE→7E</code>、<code>FF→F0</code> 错码。</span></div>
 <div class="prow"><span class="k">定位（07/21 初判）</span><span>仿真确认线上数据无误（新 encode + spec decode 全流零误码）；出错字节全部落在真实 <code>{1,tag}</code>（0x7F）替换组上（byte257 ∈ blk4 grp58、byte515/516 ∈ blk9 grp58、byte771/772 ∈ blk14 grp56）。初步怀疑 <code>decoder_7b</code> 21-bit 重组（repack）路径的部分输出零补齐。</span></div>
 <div class="prow"><span class="k">根因更新（07/22）</span><span><strong>不是</strong>还原/重组路径错，而是 <code>tag_value</code> 在 420-bit 块边界处<strong>提前更新到下一个块的 tag</strong>，导致当前块末尾的真实替换组用错 tag、未被替换。波形证据：有效行第五行最后一个 7-bit 组为 <code>7'h41</code>（即 <code>{1, tag=1}</code>），当前块 tag=1，本应替换为 <code>7'h7F</code>；但 <code>tag_value</code> 已切到下一个 420-bit 块的 tag，该组被误判为普通数据保留 <code>7'h41</code>，后续 21-bit 字节重组后表现为 <code>0x04</code>。同理可解释 <code>FE→0E</code>、<code>FF→FF</code>、<code>FE FF→7E F0</code> 等截断错码。</span></div>
@@ -683,7 +692,7 @@
 |------|--------|------|
 | `long_rawbyte_seq_laneN.md` | <span class="badge badge-tx">sequence</span> | 编码前 raw 数据按 byte 转储 + K 码时间标记交织 |
 | `long_pkt20_seq_laneN.md` | <span class="badge badge-tx">sequence</span> | 实际发出的 20-bit 包流（含 K 码拆分、IDLE） |
-| `long_kcode_seq/drv_laneN.md` | <span class="badge badge-tx">seq / drv</span> | 两侧 K 码序列与解析结果 |
+| `long_kcode_seq/drv_laneN.md` | <span class="badge badge-tx">seq / drv</span> | 两侧 K 码序列与解析结果（drv 侧 1022 起表格化 time/K-code/value/parse） |
 | `long_diag_debug_laneN.md` | <span class="badge badge-tx">sequence</span> | 数据长度/K 码时序摘要 |
 | `long_rtl_rx_lane0.md` | <span class="badge badge-rtl">bind LINK_LOGIC</span> | `[K]` / `[BST]` / `[DIN]` / `[DAL]` / `[D20]` / `[PIX]` |
 | `long_rtl_dec_lane0.md` | <span class="badge badge-rtl">bind LINK_LOGIC</span> | 解码+解扰后字节流（`[K]` 分段） |
@@ -694,6 +703,7 @@
 | `long_rtl_max_lane0.md` | <span class="badge badge-dv">bind decoder_7b</span> | `dout_21b_max` 全量 dump（每 chunk 的 tag + 7-bit 组值） |
 | `long_maxdec_lane0.md` / `long_maxdec_report_lane0.md` | <span class="badge badge-dv">decode_max.py</span> | max dump 重组字节 + 与 golden 逐段 diff（层级分离：替换逻辑 vs 重组/解扰） |
 | `long_pkt20_cmp_report_lane0.md` | <span class="badge badge-dv">compare_pkt20.py</span> | 收发 20-bit 包流对比：K 码序列 + 数据段逐字 diff |
+| `sim_data_BOE_opt/Pat01..12/0001|0002/chpi_tx.txt` | <span class="badge badge-tx">BOE 回放数据</span> | 1022 入库：12 Pat × 2 doc 逐 10-bit 符号流，driver `stream_drive_from_file()` 以 `$fscanf("%h")` 回放（PARTNUM/DOCNUM 选图案） |
 
 ### 4.1 离线脚本用法与判定顺序
 
@@ -704,10 +714,28 @@
 
 ## 5. 最终结论与证据
 
-![0717 长编码 python 解码数据正确](./images/0717_longcode_pydec_ok.jpg)
+![0717 长编码 python 解码数据正确](./images/archive/20260717/0717_longcode_pydec_ok.jpg)
 
+> 0717 里程碑证据截图（原 `images/0717_longcode_pydec_ok.jpg`，2026-11-05 随图版更新归档至 `images/archive/20260717/`）。
 > ACT 行离线解码：`11 05 16 00 00`（CTRL_L，FSYNC=1）+ `00 01 02 03...` 像素渐变，与发送端原始字节完全一致。
 > 线上数据正确 ⇒ 发送端（sequence/编码/driver/链路/对齐）排除；后续聚焦 RTL 解码链 **tag_value 块边界时序问题（第 3.10 节）**。
+
+## 6. 基线后变更史（0721v1 → 1028，HEAD `a7130ba7`）
+
+> 07-13 建站基线 `66ecf97d` 之后与 420b 验证体系相关的波次总览（证据 commit 索引见 `docs/HK1V11_longcode_420b_delta_audit_20261105.md` §8）；组件级增量见「架构」页 §4。
+
+| 波次 | commit | 日期 | 对 420b 验证体系的语义级影响 |
+|------|--------|------|------------------------------|
+| 0721v1 | `1b574b63` | 07-21 | RTL CONFIG_DATA 16→24 bit（3 寄存器/beat），checksum 字节有效性重建；DV 侧仅 `checker_for_checksum.sv` 跟进（0X35 FSEL 跟踪）。**420b 编码链不受影响** |
+| 0807v1 | `179486aa` | 08-10 | HDL + DV_TCON_C 全量替换：ref model 三修正式入库（LSP 字节序 / tag∈{0,63} / decode 重写）；RTL 新架构 `LINK_CONFIG_CTRL` 包住 `LC_CPUWR`；`isptx_sequence.sv` +290 行（diag/kcode_seq/rawbyte/pkt20 四个 debug 日志）；auto_script 生成链起步 |
+| 0825 | `f54f8d67` | 08-26 | send_CTRLL_seq 相位感知（VBP/VACT/VFP + line_idx）；bwdb 响应消费改 while 循环优雅退出；UTC 注入槽位 0/1/2/3 → 10/11/12/13；CTRL_F Dmy 补齐到整行 raw 长度 |
+| **0924** | `44e48592` | 09-24 | **最大波**：case 1→190 维度矩阵成型；`chpi_training_packet_sequence` 新增；**CTRL_F 恒不加扰 + SCREN=1 行尾 K3（key 复位 0XFFFF）**；**Config Line 并入第一条 VFP 行**；Active/VBK 压流 LSB-first 修复入库；`send_ppm_420b` 每帧 `process_line + exec_c` C-model golden 接入；EOL 缺失注入 + `send_recovery_image` |
+| 1010 | `6f94d19f` | 10-10 | MULTI_CHIP fork 隔离；CH_SEL→subpix_cnt 表；DPLC_GROUP 时 +3→+6；`drive_idle_ct`；bwda 停止逻辑 |
+| 1013/1014 | `168872fc`/`e011887a` | 10-13/14 | 后仿预做：`checker_for_checksum.sv` 全部 RTL backdoor 读函数 `ifdef POST_SIM` 桩化（与 420b 激励无直接关系） |
+| **1022** | `5bf35dcf` | 10-22 | 服务器 5 包并行覆盖：**BCC 训练体系**（bcc_monitor/scoreboard/sequence）；**isptx BOE 回放**（`BOE_420B_TEST`，12 Pat × 2 doc）；`drive_post_bcc_training`；analog PORSD 帧检查；MULTI_CHIP sd_env；`cmodel/dplc.pl` 入库；case +2 → 192 |
+| 1028 | `08befa71` | 10-28 | 服务器包 overlay（HDL 21 文件 + DV 51 改/24 新）；420b 激励源主体无进一步语义变化。RTL 侧 decode_ignore 修复随服务器包波次入树（见 3.9） |
+
+**未变文件（基线 = HEAD 逐字节相同）**：`checker_420b.sv`、`isptx_transaction.sv`、`isptx_agent.sv`、`isptx_if.sv`、`isptx_sequencer.sv`、`bus_monitor.sv`——其中 `checker_420b.sv` 自建库（486f1365）以来从未改过，77 行 display-only，与「编码 5.3」已知偏差论断一致。
 
 ---
   </script>
@@ -823,4 +851,4 @@ const lightbox = document.getElementById('lightbox');
   <script src="./fx.js?v=11"></script>
 </body>
 </html>
-<!-- ymzhu 2026-11-04 15:52 -->
+<!-- ymzhu 2026-11-05 11:58 -->

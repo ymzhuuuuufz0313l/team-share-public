@@ -1,0 +1,258 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 960" width="1200" height="960">
+  <style>text { font-family: 'Helvetica Neue', Helvetica, Arial, 'PingFang SC', 'Microsoft YaHei', 'Microsoft JhengHei', 'SimHei', sans-serif; }</style>
+  <defs>
+    <marker id="ar-blue" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#2563eb"/></marker>
+    <marker id="ar-green" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#059669"/></marker>
+    <marker id="ar-purple" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#7c3aed"/></marker>
+    <marker id="ar-orange" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#ea580c"/></marker>
+    <marker id="ar-gray" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#9ca3af"/></marker>
+  </defs>
+  <rect width="1200" height="960" fill="#ffffff"/>
+  <g >
+    <text x="600" y="38" font-size="21" fill="#1e293b" text-anchor="middle" font-weight="600">激励源体系组件演进：isptx_agent 及周边（基线 → HEAD）</text>
+    <text x="600" y="62" font-size="11.5" fill="#64748b" text-anchor="middle">66ecf97d（07-13）→ a7130ba7（1028 包后）· 差异审计 2026-11-05 · 右列颜色 = 现状状态</text>
+    <rect x="348" y="74" width="12" height="12" rx="3" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/>
+    <text x="366" y="84" font-size="9.5" fill="#64748b" text-anchor="start">未变（基线 = HEAD 逐字节相同）</text>
+    <rect x="580" y="74" width="12" height="12" rx="3" fill="#fffbeb" stroke="#fcd34d" stroke-width="1.5"/>
+    <text x="598" y="84" font-size="9.5" fill="#64748b" text-anchor="start">已变</text>
+    <rect x="660" y="74" width="12" height="12" rx="3" fill="#f0fdfa" stroke="#5eead4" stroke-width="1.5"/>
+    <text x="678" y="84" font-size="9.5" fill="#64748b" text-anchor="start">新增（0924 / 1022 为主）</text>
+  </g>
+  <g >
+    <rect x="40" y="96" width="330" height="680" rx="10" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.5"/>
+    <text x="205" y="122" font-size="13" fill="#b45309" text-anchor="middle" font-weight="600">基线 · 07-13</text>
+    <line x1="56" y1="134" x2="354" y2="134" stroke="#e2e8f0" stroke-width="1.5"/>
+    <g >
+      <g >
+        <rect x="56" y="150" width="298" height="52" rx="8" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+        <text x="68" y="167" font-size="11" fill="#1e293b" text-anchor="start" font-weight="600">isptx_sequence.sv（1456 行）</text>
+        <text x="68" y="182" font-size="9" fill="#64748b" text-anchor="start">send_ppm_420b 主流程</text>
+        <text x="68" y="195" font-size="9" fill="#64748b" text-anchor="start">CTRL_F / Config Line 为 0717 版语义</text>
+      </g>
+    </g>
+    <g >
+      <g >
+        <rect x="56" y="216" width="298" height="52" rx="8" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+        <text x="68" y="233" font-size="11" fill="#1e293b" text-anchor="start" font-weight="600">isptx_driver.sv</text>
+        <text x="68" y="248" font-size="9" fill="#64748b" text-anchor="start">常规驱动主循环</text>
+      </g>
+    </g>
+    <g >
+      <g >
+        <rect x="56" y="282" width="298" height="52" rx="8" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+        <text x="68" y="299" font-size="11" fill="#1e293b" text-anchor="start" font-weight="600">isptx_transaction · if · agent · sequencer</text>
+        <text x="68" y="314" font-size="9" fill="#64748b" text-anchor="start">另 bus_monitor.sv</text>
+        <text x="68" y="327" font-size="9" fill="#64748b" text-anchor="start">六文件基线 = HEAD 逐字节相同</text>
+      </g>
+    </g>
+    <g >
+      <g >
+        <rect x="56" y="348" width="298" height="52" rx="8" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+        <text x="68" y="365" font-size="11" fill="#1e293b" text-anchor="start" font-weight="600">checker_420b.sv · 77 行</text>
+        <text x="68" y="380" font-size="9" fill="#64748b" text-anchor="start">display-only · check_all() 硬编码</text>
+        <text x="68" y="393" font-size="9" fill="#64748b" text-anchor="start">scramble_en=1 + 每块 LFSR 复位 0XFFFF</text>
+      </g>
+    </g>
+    <g >
+      <g >
+        <rect x="56" y="414" width="298" height="52" rx="8" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+        <text x="68" y="431" font-size="11" fill="#1e293b" text-anchor="start" font-weight="600">long_encoding_ref_model.sv</text>
+        <text x="68" y="446" font-size="9" fill="#64748b" text-anchor="start">编码 / 解码 ref（0807 三修前状态）</text>
+      </g>
+    </g>
+    <g >
+      <g >
+        <rect x="56" y="480" width="298" height="52" rx="8" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+        <text x="68" y="497" font-size="11" fill="#1e293b" text-anchor="start" font-weight="600">checker_for_checksum.sv</text>
+        <text x="68" y="512" font-size="9" fill="#64748b" text-anchor="start">LC_CPUWR 直挂层次</text>
+        <text x="68" y="525" font-size="9" fill="#64748b" text-anchor="start">0X35 FSEL 追踪前 · 无 POST_SIM 桩</text>
+      </g>
+    </g>
+    <g >
+      <g >
+        <rect x="56" y="546" width="298" height="52" rx="8" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+        <text x="68" y="563" font-size="11" fill="#1e293b" text-anchor="start" font-weight="600">env_cfg.sv / env.sv</text>
+        <text x="68" y="578" font-size="9" fill="#64748b" text-anchor="start">基线寄存器域与标志族</text>
+      </g>
+    </g>
+    <g >
+      <g >
+        <rect x="56" y="612" width="298" height="64" rx="8" fill="#ffffff" stroke="#cbd5e1" stroke-width="1.5" stroke-dasharray="6 4"/>
+        <text x="68" y="629" font-size="11" fill="#1e293b" text-anchor="start" font-weight="600">基线不存在（虚线 = 缺位）</text>
+        <text x="68" y="644" font-size="9" fill="#64748b" text-anchor="start">训练包序列 / BCC 体系 / BOE 回放 / MULTI_CHIP</text>
+        <text x="68" y="657" font-size="9" fill="#64748b" text-anchor="start">故障注入与恢复 / auto_script / dplc.pl</text>
+      </g>
+    </g>
+  </g>
+  <g >
+    <text x="505" y="108" font-size="10.5" fill="#64748b" text-anchor="middle" font-weight="600">演进方向</text>
+  </g>
+  <path d="M 386 122 H 624" fill="none" stroke="#9ca3af" stroke-width="2" marker-end="url(#ar-gray)"/>
+  <line x1="505" y1="152" x2="505" y2="690" stroke="#cbd5e1" stroke-width="1.2" stroke-dasharray="4 4"/>
+  <g >
+    <rect x="392" y="152" width="226" height="52" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5"/>
+    <text x="505" y="169" font-size="9.5" fill="#1e293b" text-anchor="middle" font-weight="600">0721v1 · 1b574b63</text>
+    <text x="505" y="184" font-size="8.5" fill="#64748b" text-anchor="middle">CONFIG_DATA 16→24bit</text>
+    <text x="505" y="196" font-size="8.5" fill="#64748b" text-anchor="middle">420b 编码链不受影响</text>
+  </g>
+  <g >
+    <rect x="392" y="214" width="226" height="52" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5"/>
+    <text x="505" y="231" font-size="9.5" fill="#1e293b" text-anchor="middle" font-weight="600">0807v1 · 179486aa</text>
+    <text x="505" y="246" font-size="8.5" fill="#64748b" text-anchor="middle">全量替换 · ref model 三修入库</text>
+    <text x="505" y="258" font-size="8.5" fill="#64748b" text-anchor="middle">debug 日志族 · auto_script 起步</text>
+  </g>
+  <g >
+    <rect x="392" y="276" width="226" height="52" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5"/>
+    <text x="505" y="293" font-size="9.5" fill="#1e293b" text-anchor="middle" font-weight="600">0825 · f54f8d67</text>
+    <text x="505" y="308" font-size="8.5" fill="#64748b" text-anchor="middle">相位感知 CTRL_L（VBP/VACT/VFP）</text>
+    <text x="505" y="320" font-size="8.5" fill="#64748b" text-anchor="middle">UTC 槽位 0-3 → 10-13</text>
+  </g>
+  <g >
+    <rect x="392" y="338" width="226" height="52" rx="8" fill="#ccfbf1" stroke="#5eead4" stroke-width="1.5"/>
+    <text x="505" y="355" font-size="9.5" fill="#1e293b" text-anchor="middle" font-weight="600">0924 · 44e48592</text>
+    <text x="505" y="370" font-size="8.5" fill="#64748b" text-anchor="middle">CTRL_F 不加扰 · VFP[0] 承载 · 训练包</text>
+    <text x="505" y="382" font-size="8.5" fill="#64748b" text-anchor="middle">EOL / 恢复 · case 1→190</text>
+  </g>
+  <g >
+    <rect x="392" y="400" width="226" height="52" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5"/>
+    <text x="505" y="417" font-size="9.5" fill="#1e293b" text-anchor="middle" font-weight="600">1010 · 6f94d19f</text>
+    <text x="505" y="432" font-size="8.5" fill="#64748b" text-anchor="middle">MULTI_CHIP fork · CH_SEL subpix 表</text>
+    <text x="505" y="444" font-size="8.5" fill="#64748b" text-anchor="middle">drive_idle_ct</text>
+  </g>
+  <g >
+    <rect x="392" y="462" width="226" height="52" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5"/>
+    <text x="505" y="479" font-size="9.5" fill="#1e293b" text-anchor="middle" font-weight="600">1013 / 1014</text>
+    <text x="505" y="494" font-size="8.5" fill="#64748b" text-anchor="middle">checker POST_SIM 桩</text>
+    <text x="505" y="506" font-size="8.5" fill="#64748b" text-anchor="middle">与 420b 激励无直接关系</text>
+  </g>
+  <g >
+    <rect x="392" y="524" width="226" height="52" rx="8" fill="#ccfbf1" stroke="#5eead4" stroke-width="1.5"/>
+    <text x="505" y="541" font-size="9.5" fill="#1e293b" text-anchor="middle" font-weight="600">1022 · 5bf35dcf</text>
+    <text x="505" y="556" font-size="8.5" fill="#64748b" text-anchor="middle">BCC 体系 · BOE 回放 · dplc.pl</text>
+    <text x="505" y="568" font-size="8.5" fill="#64748b" text-anchor="middle">case → 192</text>
+  </g>
+  <g >
+    <rect x="392" y="586" width="226" height="52" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1.5"/>
+    <text x="505" y="603" font-size="9.5" fill="#1e293b" text-anchor="middle" font-weight="600">1028 · 08befa71</text>
+    <text x="505" y="618" font-size="8.5" fill="#64748b" text-anchor="middle">overlay：HDL 21 + DV 51 改 / 24 新</text>
+    <text x="505" y="630" font-size="8.5" fill="#64748b" text-anchor="middle">isptx_agent 内无 .sv 变更</text>
+  </g>
+  <g >
+    <text x="505" y="664" font-size="8.5" fill="#64748b" text-anchor="middle">波次 = 差异审计 §1 表</text>
+  </g>
+  <g >
+    <rect x="640" y="96" width="520" height="680" rx="10" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.5"/>
+    <text x="900" y="122" font-size="13" fill="#0f766e" text-anchor="middle" font-weight="600">现状 · 1028 包后（HEAD a7130ba7）</text>
+    <line x1="656" y1="134" x2="1144" y2="134" stroke="#e2e8f0" stroke-width="1.5"/>
+    <g >
+      <g >
+        <rect x="656" y="150" width="488" height="54" rx="8" fill="#fffbeb" stroke="#fcd34d" stroke-width="1.5"/>
+        <text x="668" y="167" font-size="11" fill="#92400e" text-anchor="start" font-weight="600">isptx_sequence.sv：1456 → 1865 行（+409）</text>
+        <text x="668" y="182" font-size="9" fill="#64748b" text-anchor="start">CTRL_F 恒不加扰 · VFP[0] 承载 · 相位感知 CTRL_L（0825）</text>
+        <text x="668" y="195" font-size="9" fill="#64748b" text-anchor="start">EOL 注入 · unlock 优雅停止 · send_recovery_image · MULTI_CHIP fork · exec_c C-model golden</text>
+      </g>
+    </g>
+    <g >
+      <g >
+        <rect x="656" y="208" width="488" height="42" rx="8" fill="#fffbeb" stroke="#fcd34d" stroke-width="1.5"/>
+        <text x="668" y="225" font-size="11" fill="#92400e" text-anchor="start" font-weight="600">isptx_driver.sv（+222 · 1022 为主）</text>
+        <text x="668" y="240" font-size="9" fill="#64748b" text-anchor="start">BOE 回放 stream_drive_from_file · drive_idle_ct · drive_post_bcc_training（LOCK 稳 4us）</text>
+      </g>
+    </g>
+    <g >
+      <g >
+        <rect x="656" y="254" width="488" height="42" rx="8" fill="#fffbeb" stroke="#fcd34d" stroke-width="1.5"/>
+        <text x="668" y="271" font-size="11" fill="#92400e" text-anchor="start" font-weight="600">long_encoding_ref_model.sv（0807 三修）</text>
+        <text x="668" y="286" font-size="9" fill="#64748b" text-anchor="start">LSP 字节序 EA→ED · tag 搜索跳 0/63 · decode_420b_to_413b 重写（先判替换再统一解扰）</text>
+      </g>
+    </g>
+    <g >
+      <g >
+        <rect x="656" y="300" width="488" height="42" rx="8" fill="#fffbeb" stroke="#fcd34d" stroke-width="1.5"/>
+        <text x="668" y="317" font-size="11" fill="#92400e" text-anchor="start" font-weight="600">checker_for_checksum.sv</text>
+        <text x="668" y="332" font-size="9" fill="#64748b" text-anchor="start">0X35 FSEL 跟踪（0721）· LINK_CONFIG_CTRL 层次（0807）· POST_SIM 桩（1013）</text>
+      </g>
+    </g>
+    <g >
+      <g >
+        <rect x="656" y="346" width="488" height="54" rx="8" fill="#fffbeb" stroke="#fcd34d" stroke-width="1.5"/>
+        <text x="668" y="363" font-size="11" fill="#92400e" text-anchor="start" font-weight="600">env_cfg.sv（+267）/ env.sv</text>
+        <text x="668" y="378" font-size="9" fill="#64748b" text-anchor="start">eol / bcc / unlock 标志族 · 新寄存器域 0X02-04 · 24 / 28 / 29 / 33 / 35 / 36 / 38</text>
+        <text x="668" y="391" font-size="9" fill="#64748b" text-anchor="start">MULTI_CHIP 下 config_db 相对路径</text>
+      </g>
+    </g>
+    <g >
+      <g >
+        <rect x="656" y="404" width="488" height="36" rx="8" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/>
+        <text x="668" y="421" font-size="11" fill="#475569" text-anchor="start" font-weight="600">isptx_transaction · if · agent · sequencer · bus_monitor</text>
+        <text x="668" y="436" font-size="9" fill="#64748b" text-anchor="start">基线 = HEAD 逐字节相同（零变更）</text>
+        <text x="1134" y="421" font-size="8.5" fill="#475569" text-anchor="end" font-weight="600">未变</text>
+      </g>
+    </g>
+    <g >
+      <g >
+        <rect x="656" y="444" width="488" height="54" rx="8" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/>
+        <text x="668" y="461" font-size="11" fill="#475569" text-anchor="start" font-weight="600">checker_420b.sv · 77 行（自建库以来未改）</text>
+        <text x="668" y="476" font-size="9" fill="#64748b" text-anchor="start">display-only · check_all() 硬编码 scramble_en=1 · 每块 LFSR 复位 0XFFFF</text>
+        <text x="668" y="489" font-size="9" fill="#64748b" text-anchor="start">正式比对启用前的改造点（站点 5.3 论断至今成立）</text>
+        <text x="1134" y="461" font-size="8.5" fill="#475569" text-anchor="end" font-weight="600">未变</text>
+      </g>
+    </g>
+    <g >
+      <g >
+        <rect x="656" y="502" width="488" height="40" rx="8" fill="#f0fdfa" stroke="#5eead4" stroke-width="1.5"/>
+        <text x="668" y="519" font-size="11" fill="#0f766e" text-anchor="start" font-weight="600">＋ chpi_training_packet_sequence.sv</text>
+        <text x="668" y="534" font-size="9" fill="#64748b" text-anchor="start">8B/10B 与 420b 双模式训练包 · bcc_continuous_ct 门控</text>
+        <text x="1134" y="519" font-size="8.5" fill="#0f766e" text-anchor="end" font-weight="600">新增 · 0924</text>
+      </g>
+    </g>
+    <g >
+      <g >
+        <rect x="656" y="546" width="488" height="40" rx="8" fill="#f0fdfa" stroke="#5eead4" stroke-width="1.5"/>
+        <text x="668" y="563" font-size="11" fill="#0f766e" text-anchor="start" font-weight="600">＋ BCC 训练体系</text>
+        <text x="668" y="578" font-size="9" fill="#64748b" text-anchor="start">bcc_monitor · bcc_scoreboard（covergroup + 70us 超时）· bcc_sequence</text>
+        <text x="1134" y="563" font-size="8.5" fill="#0f766e" text-anchor="end" font-weight="600">新增 · 1022</text>
+      </g>
+    </g>
+    <g >
+      <g >
+        <rect x="656" y="590" width="488" height="40" rx="8" fill="#f0fdfa" stroke="#5eead4" stroke-width="1.5"/>
+        <text x="668" y="607" font-size="11" fill="#0f766e" text-anchor="start" font-weight="600">＋ BOE 回放</text>
+        <text x="668" y="622" font-size="9" fill="#64748b" text-anchor="start">BOE_420B_TEST · sim_data_BOE_opt 12 Pat × 2 doc 逐符号回放</text>
+        <text x="1134" y="607" font-size="8.5" fill="#0f766e" text-anchor="end" font-weight="600">新增 · 1022</text>
+      </g>
+    </g>
+    <g >
+      <g >
+        <rect x="656" y="634" width="488" height="40" rx="8" fill="#f0fdfa" stroke="#5eead4" stroke-width="1.5"/>
+        <text x="668" y="651" font-size="11" fill="#0f766e" text-anchor="start" font-weight="600">＋ MULTI_CHIP / multi4</text>
+        <text x="668" y="666" font-size="9" fill="#64748b" text-anchor="start">PPM chip 切片 + fork 隔离 · CH_SEL subpix_cnt 表 · lane_delay_reverse</text>
+        <text x="1134" y="651" font-size="8.5" fill="#0f766e" text-anchor="end" font-weight="600">新增 · 1010/1022</text>
+      </g>
+    </g>
+    <g >
+      <g >
+        <rect x="656" y="678" width="488" height="40" rx="8" fill="#f0fdfa" stroke="#5eead4" stroke-width="1.5"/>
+        <text x="668" y="695" font-size="11" fill="#0f766e" text-anchor="start" font-weight="600">＋ 故障注入与恢复</text>
+        <text x="668" y="710" font-size="9" fill="#64748b" text-anchor="start">eol_missing_test · send_invalid_eol_slots · unlock_recovery · send_recovery_image</text>
+        <text x="1134" y="695" font-size="8.5" fill="#0f766e" text-anchor="end" font-weight="600">新增 · 0924/1022</text>
+      </g>
+    </g>
+    <g >
+      <g >
+        <rect x="656" y="722" width="488" height="40" rx="8" fill="#f0fdfa" stroke="#5eead4" stroke-width="1.5"/>
+        <text x="668" y="739" font-size="11" fill="#0f766e" text-anchor="start" font-weight="600">＋ auto_script 生成链 + cmodel/dplc.pl</text>
+        <text x="668" y="754" font-size="9" fill="#64748b" text-anchor="start">gen_cfg_frame / run_all 等 · --ave_rgbw / --ave_last / --dplc_group</text>
+        <text x="1134" y="739" font-size="8.5" fill="#0f766e" text-anchor="end" font-weight="600">新增 · 0807/1022</text>
+      </g>
+    </g>
+  </g>
+  <g >
+    <rect x="40" y="796" width="1120" height="134" rx="8" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.5"/>
+    <text x="56" y="820" font-size="10.5" fill="#1e293b" text-anchor="start" font-weight="600">RTL 侧联动事实（差异审计 §2.6 · 只读核对）</text>
+    <text x="56" y="842" font-size="10" fill="#64748b" text-anchor="start">decode_ignore 已修：decoder_7b.v:353 判 6-bit {0,63}（基线 7-bit 常量，tag=0 漏判）—— 站点 3.9 论断过时</text>
+    <text x="56" y="862" font-size="10" fill="#64748b" text-anchor="start">header_mismatch 位段 [15:7] → [12:7] · dec_data_buf 42 → 44 bit · K3 复位/使能延 4 拍（K3_FIND_rp_d[3]）</text>
+    <text x="56" y="882" font-size="10" fill="#64748b" text-anchor="start">新 TX 编码通路：LONG_ENCODING_ALIGN / ERROR_CTRL / OUTPUT（long_encoding/ +1323 行 · 站点原只画解码链）</text>
+    <text x="56" y="902" font-size="10" fill="#64748b" text-anchor="start">tag_value 块边界时序：RTL 加载逻辑同基线 · 未见修复证据 —— 保留待修，需最新波形确认</text>
+  </g>
+</svg>

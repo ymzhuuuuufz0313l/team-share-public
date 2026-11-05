@@ -523,19 +523,23 @@
   <script type="text/template" id="md">
 # 一、整体架构
 
-> 当前环境：`longcode_ver/current_work`（版本 0720v1，2026-07-20）· 基于 `DV_TCON_C` 现有 8B/10B 结构重建 · `CHPI_MODE_420B` 宏隔离
+> 当前环境：`DV_TCON_C/top/agents` 主干 + 0721v1→1028 五波服务器包覆盖（HEAD `a7130ba7`，2026-11-02）· 基于 `DV_TCON_C` 现有 8B/10B 结构重建 · `CHPI_MODE_420B` 宏隔离 · 2026-11-05 按当前环境全量更新
 
 ## 1. 验证环境总览
 
 > 🎬 本页图均为纯 CSS 动画 SVG（在 `images/anim/` 目录，滚动到视口时重播；顶部导航可一键切换 动画/静态）；静态原版保留在同名路径作 fallback。
 
-![longcode 验证架构](./images/anim/longcode_verification_architecture.svg?v=20261101)
+![longcode 验证架构](./images/anim/longcode_verification_architecture.svg?v=20261105)
+
+![环境组件：基线 vs 现状对比](./images/anim/delta_env_components.svg?v=20261105)
+
+> **基线（07-13）→ 现状（a7130ba7）组件对比**：上图（现状架构图）画当前结构，本图补增量演进视角。灰色组件基线后零变更（含 77 行 display-only 的 `checker_420b.sv`）；琥珀色为已演进件（`isptx_sequence` 1456→1865 行、`isptx_driver` +222 行、ref model 0807 三修入库）；青色为新增件（CHPI 训练包、BCC monitor/scoreboard、BOE 回放、MULTI_CHIP/multi4、EOL/unlock 故障注入与 `send_recovery_image`、`auto_script` 生成链 + `cmodel/dplc.pl`）。中列 8 波次时间线（0721v1→1028）与底部 RTL 联动带标注每个增量落入的波次。
 
 ## 2. 收发结构框图：不看 RTL 的脚本离线验证（0717 新增）
 
 接收端验证**不再依赖 DUT 解码结果**：用 `bind` 在 K 码对齐点抓线上 20-bit 数据，Python 直接离线解码，与发送端原始字节逐区域比对。
 
-![收发结构框图：脚本离线验证](./images/anim/pydec_tx_rx_structure.svg?v=20261102)
+![收发结构框图：脚本离线验证](./images/anim/pydec_tx_rx_structure.svg?v=20261105)
 
 <div class="flow">
   <div class="fbox"><b>① 抓取</b><br/>在 <code>CHPI_KCODE_ALIGN_LONG_L0</code> 的 <code>DATA_ALIGN_PRE</code>（K 码检测同款对齐数据）tap，<code>long_rtl_tap_debug.sv</code> 以 bind 注入，零 RTL 修改<br/><code>→ long_rtl_dap_lane0.md</code></div>
@@ -545,11 +549,11 @@
   <div class="fbox"><b>③ 比对</b><br/>与发送端编码前原始字节 <code>long_rawbyte_seq_lane0.md</code> 逐区域 diff<br/><code>→ long_pydec_report_lane0.md</code></div>
 </div>
 
-## 3. 环境核心组件（0717v1）
+## 3. 环境核心组件
 
 ### 3.1 Sequence：帧构建与编码调度
 
-`isptx_sequence.sv` 是发送端核心：按 spec 帧结构组帧，调用 ref model 完成编码，经 transaction 交给 driver。
+`isptx_sequence.sv` 是发送端核心：按 spec 帧结构组帧，调用 ref model 完成编码，经 transaction 交给 driver。0717 基线 1456 行 → HEAD 1865 行（0825 相位感知 CTRL_L / 0924 帧结构再演进与故障注入 / 1010 MULTI_CHIP / 1022 BCC 恢复策略）。
 
 <div class="flow">
   <div class="fbox"><b>① 原始字节</b><br/><code>reg_q / pixels / vbk / lsp_raw</code><br/>同步转储 <code>long_rawbyte_seq_laneN.md</code>（离线比对期望值）</div>
@@ -566,14 +570,17 @@
 | 任务 | 发送内容 | 备注 |
 |------|----------|------|
 | `send_420b_lsp()` | `K2 + 0xEA~ED×8 + Dmy + K3` × ≥5 次 | 256-bit raw → 280-bit；不加扰 |
-| `send_420b_active_line()` | `K1 + CTRL_L + Video + K2` | 含最后一行，统一 K2 结束 |
-| `send_420b_ctrl_f_line()` | `K4 + CTRL_F(ENC) + Dmy + K2` | 0717v1：VACT 后单独成行 |
+| `send_420b_active_line()` | `K1 + CTRL_L + Video + K2` | 含最后一行，统一 K2 结束（首行 FSYNC=1） |
+| `send_420b_ctrl_f_line()` | `K4 + CTRL_F(ENC) + Dmy + K3(SCREN=1)\|K2` | 0924：第一条 VFP 行承载下一帧配置（帧内不加行）；0717v1 曾为 VACT 后单独成行 |
 | `send_420b_vblank_line()` | `K1 + CTRL_L + VBK + K2` | |
 | `send_420b_idle_pattern()` | `K5~K8` IDLE | 不加扰 |
 | `send_420b_encoded_region()` | K-code + 编码数据 + K-code + IDLE 统一封装 | |
-| `send_ppm_420b()` | 帧循环：VBP → VACT → Config → VFP | 与 8B/10B `send_ppm()` 位置一致 |
+| `send_420b_training_packet()` | LSP → K4+CTRL_F → K1+CTRL_L+line1(不加扰)+K3 → line2(加扰)+K2 | 0924 新增 `chpi_training_packet_sequence`（BCC 训练，双模式） |
+| `send_recovery_image()` | 重训练（500us 超时）→ LOCK 复锁 → 开 checker → 干净图像一帧 | 0924 新增（unlock 故障恢复） |
+| `send_invalid_eol_slots()` | K2/K3 4 槽 + 行尾 K4+CTRL_F 64 槽替换为普通加扰数据 | 0924 新增（`eol_missing_test`，行时长不变） |
+| `send_ppm_420b()` | 帧循环：VBP → VACT → VFP（第 0 行 = 下一帧 Config） | 每帧前置 `process_line(c)` + `exec_c(c)` 接入 C-model golden（0924） |
 
-`CTRL_L / CTRL_F` 经 `env_cfg.get_ctrlL_reg / get_ctrlF_reg` 获取，并自动置 FSYNC / BKDU 标志位。
+`CTRL_L / CTRL_F` 经 `env_cfg.get_ctrlL_reg / get_ctrlF_reg` 获取，并自动置 FSYNC / BKDU 标志位。0825 起 `get_ctrlL_reg` 改**相位感知**（VBP/VACT/VFP + line_idx）；case 目录新增 `ctrl_l_line_cfg.txt` 逐行覆盖（实测 188/192 目录具备，缺失 4：基线原版 `t_H3840_V16_FPS120_420b`、SCREN1×2、`SD_CHOP_F3_SD_CHOP5`），FSYNC/BKDU 由协议管理不可覆盖。
 
 ### 3.2 Reference Model：编码 / 加扰 / 常量
 
@@ -585,6 +592,7 @@
 - `encoded_bits_70aligned()`：跨 lane 编码长度计算
 - 常量：K1~K4 40-bit / K5~K8 10-bit / SOT
 - <span class="badge badge-fixed">🔵 已修复 07/20</span> `decode_420b_to_413b()` 与 encode 语义已对齐（`tag = header[6:1]`、线上组先判定替换再全组统一解扰、自然位序），见「排障 3.7」
+- 0720/0721 三处语义修正（LSP 字节序 `ED EC EB EA → EA EB EC ED`、无编码标记 tag∈{0,63}、`decode_420b_to_413b()` 重写）随 0807v1 服务器包正式入库 git；HEAD 语义与「排障 3.7/3.9」结论一致
 
 ### 3.3 Transaction / Driver：20-bit 包通路
 
@@ -593,7 +601,7 @@
 
 ### 3.4 Checker
 
-`checker_420b.sv`：收集 20-bit chunk → 组装 420-bit block → `decode_420b_to_413b()` 还原比对；检查编码规则、跨 lane 长度、K-code 窗口。<span class="badge badge-dv">display-only</span>
+`checker_420b.sv`：收集 20-bit chunk → 组装 420-bit block → `decode_420b_to_413b()` 还原比对；检查编码规则、跨 lane 长度、K-code 窗口。<span class="badge badge-dv">display-only</span> 2026-11 复核：自建库（486f1365）以来零变更，仍 77 行；`check_all()` 硬编码 `scramble_en=1'b1` + 每 block LFSR 复位 0XFFFF，启用正式比对前需按 `env_cfg.SCREN` 与 region 边界改造（见「编码 5.3」）。
 
 ### 3.5 离线验证链（0717 新增，0721~0722 扩展）
 
@@ -627,13 +635,25 @@
 | IDLE | 10-bit | K5~K8；不加扰；两个拼成 20-bit |
 | LSP raw | 256-bit → 280-bit | 编码后按 70×4 对齐 |
 | 线上 packet | 20-bit | driver LSB-first |
-| DUT 输出 | 24-bit + 2-bit valid | `long_decoding_top` |
+| DUT 输出 | 24-bit + 2-bit valid | `long_decoding_top`（`dec_data_buf` 42→44-bit；K3 复位延 4 拍 `K3_FIND_rp_d[3]`） |
 
-## 4. 0717~0722 关键修改摘要
+## 4. 基线后新增组件（0721v1 → 1028 服务器包波次）
+
+| 组件 | 波次 | 说明 |
+|------|------|------|
+| `chpi_training_packet_sequence.sv` | 0924 新增 | CHPI 训练包序列（8B/10B 与 420b 双模式）；420b 模式：`send_420b_lsp → K4+CTRL_F(不加扰)+idle → K1+CTRL_L+line1(不加扰)+K3+key 复位 → K1+CTRL_L+line2(加扰)+K2`；服务 BCC 训练（`MULTI4_SHARED_BCC` case，当前为 8B/10B 模式） |
+| BCC 训练体系 | 1022 新增 | `bcc_monitor / bcc_scoreboard / bcc_sequence`：covergroup（command×response 交叉）、pending 请求队列、70us 响应超时、ID_ASSIGN / EQ_ID / TRAINING_RESULT 命令追踪 |
+| BOE 回放通路 | 1022 新增 | `BOE_420B_TEST` 宏：driver 锁定前 `drive_idle_ct()`（完整 CT 符号）→ LOCK 后从 `sim_data_BOE_opt/Pat01..12/0001|0002/chpi_tx.txt` 逐 10-bit 符号回放（12 Pat × 2 doc，PARTNUM/DOCNUM 选图案） |
+| MULTI_CHIP / multi4 | 0924 骨架，1010 落地 | PPM 严格 P3 ASCII 校验 + 按 chip id 切片 + fork 隔离防跨芯片 cancel；CH_SEL→subpix_cnt 表（966/960/726/720/864）；`lane_delay_reverse` 装配模块；env `config_db` 改相对路径（多芯片各 env 独立） |
+| EOL / unlock 故障注入与恢复 | 0924 / 1010 | `eol_missing_test` 顶替 K2/K3 与行尾 K4+CTRL_F 槽位（行时长不变）；`unlock_recovery_mode` 故障序列优雅停止 + `send_recovery_image()`；`drive_post_bcc_training` 等新鲜 LOCK 高稳定 4us 后才交回图像 |
+| `auto_script/` 生成链 + `cmodel/dplc.pl` | 0807 起 | `gen_cfg_frame / gen_i2c_reg / gen_cfg_check / run_all` 等寄存器配置帧自动生成；DPLC c-model（`--ave_rgbw --ave_last --dplc_group`）入库，并经 `send_ppm_420b` 每帧 `process_line + exec_c` 接入 420b 主流程 C-model golden 闭环 |
+| RTL 侧编码 TX 通路 | 0807 后新增 | `long_encoding/LONG_ENCODING_ALIGN.v`（559 行，K1~K4 检测/对齐/BK_ST，含 R_BAC、R_KHEAD_20B_SEL）+ `LONG_ENCODING_ERROR_CTRL.v`（263 行）+ `LONG_ENCODING_OUTPUT.v`（477 行）——芯片自身 420b 编码发送通路成型（本站早期图版仅画了解码链） |
+
+## 5. 0717~0722 关键修改摘要
 
 | 修改项 | 说明 | 侧 |
 |--------|------|----|
-| Config Line 单独成行 | VACT 结束后单独发送 `K4+CTRL_F(ENC)+Dmy+K2` | <span class="badge badge-tx">TX 侧</span> |
+| Config Line 单独成行 | VACT 结束后单独发送 `K4+CTRL_F(ENC)+Dmy+K2`（0924 起演进为第一条 VFP 行承载 + K3\|K2 结尾，见 §3.1） | <span class="badge badge-tx">TX 侧</span> |
 | Active Line 结束标记 | 统一以 K2 结束（不再嵌入 K4+CTRL_F） | <span class="badge badge-tx">TX 侧</span> |
 | `din_20b_aligned` 接线 | 误接 `DATA_POINT_LAT` → 改接 `DATA0_ALIGN_LONG` | <span class="badge badge-rtl">RTL 侧</span> |
 | 加扰策略对齐 | 三处 `scramble_en` 硬编码 `1'b1` → `env_cfg.SCREN` | <span class="badge badge-tx">TX 侧</span> |
@@ -759,4 +779,4 @@ const lightbox = document.getElementById('lightbox');
 </body>
 </html>
 
-<!-- ymzhu 2026-11-04 15:52 -->
+<!-- ymzhu 2026-11-05 11:58 -->

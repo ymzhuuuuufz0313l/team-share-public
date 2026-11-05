@@ -510,16 +510,61 @@
   <script type="text/template" id="md">
 # 五、Case 命名规则
 
-## 1. 命名格式
+> **2026-11-05 按当前 DV_TCON_C 环境（HEAD `a7130ba7`，1028 包后）全量重写**：07-13 基线页的「53 规划 case / 七分类」是建站时的规划稿，与现状完全脱节——现实是 **192 个实际入库 case**，命名族与维度矩阵见 §1~§4；基线规划保留在 §5 作历史对照。
 
-沿用 8B/10B 风格，统一加 `_420b` 后缀：
+## 1. 命名格式（现状）
+
+统一命名族（0924 维度矩阵成型，1022 补 2 个特例），统一加 `_420b` 后缀：
 
 ```text
-t_8b{lane_num}lane_420b_{function}[_{param}]
-t_H{HACT}_V{VACT}_FPS{FPS}_PORT_NUM{PORT_NUM}_420b[_{extra_param}]
+t_H{HACT}_V16_FPS{FPS}_PORT_NUM{PORT_NUM}[_{维度参数...}]_420b[_{用途后缀}]
 ```
 
-## 2. 数量分布
+- **维度参数**按需叠加：`DPLC_MODE1` / `DPLC_GROUP1` / `AVE_MODE1` / `AVE_LAST0|1` / `AVE_RGBW0~7` / `SD_CHOP_F{0..3}_SD_CHOP{0..5}` / `H4INV0|1` / `POL20` / `POL21` / `POLC0|1` / `CH_SEL0|2|3|4` / `SDC0` / `power`
+- **用途后缀**：`_boe_test`（BOE 回放）、`_for_chengli_test`（SCREN1 特例）
+- 07-13 基线规划的 `t_8b{lane}lane_420b_{function}` 命名族**未采用**
+
+## 2. 数量与波次
+
+| 时点 | 420b case 数 | 变化 |
+|------|-------------|------|
+| 07-13 基线 `66ecf97d` | 1（`t_H3840_V16_FPS120_420b`） | — |
+| 0721v1 / 0807v1 / 0825 | 1 | 无新增 |
+| **0924 `44e48592`** | **190** | **+189，维度矩阵一次性成型** |
+| **1022 `5bf35dcf`** | **192** | +2：`t_H1440_..._DPLC_MODE1_420b_boe_test`（BOE 回放）、`t_H3840_V16_FPS120_SCREN1_420b_for_chengli_test`（SCREN=1 + BYTE0_BIT3_0） |
+| 1028 / HEAD `a7130ba7` | 192 | — |
+
+## 3. 维度矩阵总览（192 case）
+
+![基线 vs 现状：case 规模与维度对比](./images/anim/delta_case_matrix.svg?v=20261105)
+
+> **before → after**：基线只有 1 个 case、cfg 4 字段；0924 一次落地 +189，分辨率 ×6、FPS ×8、PORT ×4 全分布，再叠加 DPLC / SD_CHOP / 极性 / CH_SEL / SDC 等参数族构成维度矩阵；1022 补 BOE 回放与 SCREN1 两个特例达到 192。cfg 字段实测并集 **4 → 18**（t1 摘要的 17 为不计 `BYTE0_BIT3_0` 特例的口径）。
+
+| 维度 | 取值分布（计数） |
+|------|------------------|
+| 分辨率 ×6 | H1440（47）/ H1920（52）/ H2560（6）/ H2880（18）/ H3456（10）/ H3840（59） |
+| FPS ×8 | 60（1）/ 120（57）/ 144（20）/ 165（8）/ 180（1）/ 240（3）/ 280（98）/ 360（4） |
+| PORT_NUM ×4 | 6（2）/ 8（6）/ 12（97）/ 24（1），其余默认 |
+| DPLC 族 | `DPLC_MODE1`（173 处标注）× `DPLC_GROUP1`（33）× `AVE_MODE1` × `AVE_LAST0/1` × `AVE_RGBW0~7`（各 8）——H1440/H1920 为主全枚举行列 |
+| SD_CHOP | H3840 下 `SD_CHOP_F0~F3 × CHOP0~5` 全枚举 24 个 |
+| 极性 / 反相 | `H4INV0/1 × POL20 × POL21 × POLC0/1` 组合（28/20/20/25/13 计数） |
+| SDC | `SDC0` 变体 55 |
+| CH_SEL | `CH_SEL0/2/3/4`（12/12/6/10；决定 subpix_cnt 966/960/726/720/864） |
+| 特殊 | `boe_test`（BOE 回放）、`SCREN1_for_chengli_test`、`power`（`t_H1920_..._power_420b`、`t_H3840_V16_FPS180_power_420b`、`t_H3840_V16_FPS60_PORT_NUM24_DPLC_MODE1_power_420b`） |
+
+## 4. case 目录内容与 cfg 字段
+
+- **每个 case 目录**：`cfg_frame0..8.txt` + `user_def.sv`（`CHPI_MODE_420B` 宏；boe 另有 `BOE_420B_TEST` / `PARTNUM` / `DOCNUM`）+ `ctrl_l_line_cfg.txt`（逐行 CTRL_L 覆盖，0825 起；实测 **188/192** 目录具备，缺失 4：基线原版 `t_H3840_V16_FPS120_420b`、SCREN1×2（for_chengli 与非 chengli 各 1）、`SD_CHOP_F3_SD_CHOP5`）
+- **cfg 字段**：基线仅 POL / PORSD / CH_SEL / TEST_PRTCT 4 个 → 当前实测并集 **18**（新增 DPLC_MODE、AVE_MODE、AVE_LAST、AVE_RGBW、SDC、POL2、H4INV、POLC、DPLC_GROUP、SD_CHOP_F、SD_CHOP、SCREN（18 处）、DPOLINV（8 处）、BYTE0_BIT3_0（1 处，仅 SCREN1 特例）；POL 与 POL2 并存）
+- **特例补充**（t1 摘要之外 2026-11-05 实测确认）：`CTRL_L_LINE_OVERRIDE`×1 与 SCREN1（非 chengli）×1 存在
+
+### 4.1 周边 420b 体系 case（非 `_420b` 后缀但同体系）
+
+`t_8b1lane_multi4` / `t_8b1lane_multi4_bcc`（MULTI_CHIP + `MULTI4_SHARED_BCC`，BCC 训练）、`t_8b1lane_SSFC0`、`t_8b1lane_unlock_bwda/bwdb/bwdl/utc*`（unlock 故障/恢复）、`t_8b1lane_eol_test12_0/1`、`t_8b1lane_reg_eol0/reg_eol_det0/reg_pin_eol_det1`（EOL 检测寄存器）。tests 目录总数 677。
+
+## 5. 基线规划对照（07-13，未采用）
+
+> 建站时的 53-case 七分类规划稿，保留作历史对照；命名族与分类均未被实际 case 采用，实际演进见 §2。
 
 | 类别 | 数量 | 说明 |
 |------|------|------|
@@ -530,7 +575,7 @@ t_H{HACT}_V{VACT}_FPS{FPS}_PORT_NUM{PORT_NUM}_420b[_{extra_param}]
 | Multi-lane | 9 | 2lane/4lane、70-bit 对齐、R_BAC/AEQ/debugpin/packpos/RGB |
 | Resolution Sweep | 8 | 4K/1080p/1440p 等 × 多刷新率/端口 |
 | Isolation | 2 | 420b vs 8B/10B、8B/10B regression |
-| **合计** | **53** | 按 Phase 1~7 分阶段执行 |
+| **合计** | **53** | 按 Phase 1~7 分阶段执行（未采用，见「阶段」页 §5） |
 
 ---
   </script>
@@ -646,4 +691,4 @@ const lightbox = document.getElementById('lightbox');
   <script src="./fx.js?v=11"></script>
 </body>
 </html>
-<!-- ymzhu 2026-11-02 18:50 -->
+<!-- ymzhu 2026-11-05 11:58 -->
