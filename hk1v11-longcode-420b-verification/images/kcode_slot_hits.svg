@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 540" width="1200" height="540">
+  <style>text { font-family: 'Helvetica Neue', Helvetica, Arial, 'PingFang SC', 'Microsoft YaHei', 'Microsoft JhengHei', 'SimHei', sans-serif; }</style>
+  <defs>
+    <marker id="ar-amber" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#b45309"/></marker>
+  </defs>
+  <rect width="1200" height="540" fill="#ffffff"/>
+  <text x="600" y="40" font-size="22" fill="#1e293b" text-anchor="middle" font-weight="600">K 码槽位命中分布（Pat01/0001 · 122284 符号全量）</text>
+  <text x="600" y="64" font-size="12" fill="#64748b" text-anchor="middle">K 码在固定行槽位整序列出现 · 与 encData 区"固定偏移单符号"区分开 · 位反后 = RTL 模板</text>
+
+  <!-- line bar with slot markers -->
+  <text x="50" y="100" font-size="13" fill="#1e293b" font-weight="700">单行 899 符号 · K 码槽位命中</text>
+  <g>
+    <!-- base line -->
+    <rect x="80" y="130" width="1040" height="20" rx="4" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.2"/>
+    <!-- encData region shading -->
+    <rect x="116" y="130" width="850" height="20" fill="#eff6ff" opacity="0.5"/>
+    <!-- K1 slot at off20 -->
+    <rect x="95" y="118" width="16" height="44" rx="3" fill="#22c55e" stroke="#15803d" stroke-width="1.5"/>
+    <text x="103" y="180" font-size="11" fill="#166534" text-anchor="middle" font-weight="700">K1</text>
+    <text x="103" y="194" font-size="9.5" fill="#166534" text-anchor="middle">@20</text>
+    <!-- K2 slot at off815 -->
+    <rect x="980" y="118" width="16" height="44" rx="3" fill="#22c55e" stroke="#15803d" stroke-width="1.5"/>
+    <text x="988" y="180" font-size="11" fill="#166534" text-anchor="middle" font-weight="700">K2</text>
+    <text x="988" y="194" font-size="9.5" fill="#166534" text-anchor="middle">@815</text>
+    <!-- encData fixed-offset single symbols (gray dots) -->
+    <g fill="#cbd5e1">
+      <circle cx="210" cy="140" r="3"/><circle cx="330" cy="140" r="3"/><circle cx="450" cy="140" r="3"/>
+      <circle cx="560" cy="140" r="3"/><circle cx="680" cy="140" r="3"/><circle cx="800" cy="140" r="3"/>
+    </g>
+    <text x="541" y="158" font-size="9.5" fill="#94a3b8" text-anchor="middle">encData 区：固定偏移单符号（非 K 码）</text>
+  </g>
+  <!-- ruler -->
+  <g font-family="'IBM Plex Mono', monospace" font-size="9.5" fill="#64748b">
+    <line x1="80" y1="172" x2="1120" y2="172" stroke="#94a3b8" stroke-width="1"/>
+    <text x="80" y="186" text-anchor="middle">0</text>
+    <text x="116" y="186" text-anchor="middle">24</text>
+    <text x="970" y="186" text-anchor="middle">815</text>
+    <text x="1120" y="186" text-anchor="middle">898</text>
+  </g>
+
+  <!-- count bars -->
+  <text x="50" y="232" font-size="13" fill="#1e293b" font-weight="700">槽位命中次数（136 行累计）</text>
+  <g>
+    <!-- y axis -->
+    <line x1="120" y1="250" x2="120" y2="430" stroke="#94a3b8" stroke-width="1"/>
+    <line x1="120" y1="430" x2="760" y2="430" stroke="#94a3b8" stroke-width="1"/>
+    <!-- K1 bar: 130 (max scale 140) -->
+    <rect x="180" y="260" width="90" height="160" rx="4" fill="#22c55e" stroke="#15803d" stroke-width="1.5"/>
+    <text x="225" y="252" font-size="13" fill="#166534" text-anchor="middle" font-weight="700">130</text>
+    <text x="225" y="448" font-size="11.5" fill="#1e293b" text-anchor="middle" font-weight="600">K1 @20</text>
+    <!-- K2 bar: 130 -->
+    <rect x="330" y="260" width="90" height="160" rx="4" fill="#22c55e" stroke="#15803d" stroke-width="1.5"/>
+    <text x="375" y="252" font-size="13" fill="#166534" text-anchor="middle" font-weight="700">130</text>
+    <text x="375" y="448" font-size="11.5" fill="#1e293b" text-anchor="middle" font-weight="600">K2 @815</text>
+    <!-- K3 bar: 5 (scaled: 5/140*160 ≈ 6px, min 12) -->
+    <rect x="480" y="418" width="90" height="12" rx="3" fill="#f59e0b" stroke="#b45309" stroke-width="1.5"/>
+    <text x="525" y="410" font-size="13" fill="#b45309" text-anchor="middle" font-weight="700">5</text>
+    <text x="525" y="448" font-size="11.5" fill="#1e293b" text-anchor="middle" font-weight="600">K3 (LSP/尾)</text>
+    <!-- K4 bar: 3 (min 10) -->
+    <rect x="630" y="420" width="90" height="10" rx="3" fill="#f59e0b" stroke="#b45309" stroke-width="1.5"/>
+    <text x="675" y="412" font-size="13" fill="#b45309" text-anchor="middle" font-weight="700">3</text>
+    <text x="675" y="448" font-size="11.5" fill="#1e293b" text-anchor="middle" font-weight="600">K4 (CTRL_F首)</text>
+  </g>
+
+  <!-- contrast panel -->
+  <g>
+    <rect x="800" y="240" width="350" height="210" rx="10" fill="#fffdf7" stroke="#ddd6c8" stroke-width="1.5"/>
+    <text x="820" y="266" font-size="13" fill="#b45309" font-weight="700">对照：真 K 码 vs 假"K 码"</text>
+    <text x="820" y="292" font-size="11.5" fill="#166534">✓ 真 K 码（K1/K2）</text>
+    <text x="820" y="310" font-size="10.5" fill="#475569">· 落在固定行槽位 @20 / @815</text>
+    <text x="820" y="326" font-size="10.5" fill="#475569">· 4 符号序列完整 · 130 次/行</text>
+    <text x="820" y="342" font-size="10.5" fill="#475569">· 位反后 == RTL 模板</text>
+    <line x1="820" y1="356" x2="1130" y2="356" stroke="#e2e8f0" stroke-width="1"/>
+    <text x="820" y="378" font-size="11.5" fill="#b91c1c">✗ 假"K 码"（encData 固定偏移符号）</text>
+    <text x="820" y="396" font-size="10.5" fill="#475569">· 落在行中部随机偏移（150/654/720/736…）</text>
+    <text x="820" y="412" font-size="10.5" fill="#475569">· 单符号 / ≤ 巧合基线 3.7 次</text>
+    <text x="820" y="428" font-size="10.5" fill="#475569">· 矛盾①③ 的误读来源</text>
+  </g>
+
+  <!-- bottom note -->
+  <g>
+    <rect x="50" y="466" width="1100" height="52" rx="8" fill="#f0fdf4" stroke="#86efac" stroke-width="1.5"/>
+    <text x="70" y="488" font-size="12" fill="#065f46" font-weight="700">结论</text>
+    <text x="70" y="508" font-size="11.5" fill="#166534">K1/K2 在固定行槽位整序列出现（各 130 次），位反后精确等于 RTL 模板；K3/K4 少量出现在 LSP/CTRL_F 槽。encData 区的固定偏移单符号是数据 pattern，不是 K 码。</text>
+  </g>
+</svg>

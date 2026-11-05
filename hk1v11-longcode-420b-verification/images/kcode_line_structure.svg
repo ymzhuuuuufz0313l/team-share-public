@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 560" width="1200" height="560">
+  <style>text { font-family: 'Helvetica Neue', Helvetica, Arial, 'PingFang SC', 'Microsoft YaHei', 'Microsoft JhengHei', 'SimHei', sans-serif; }</style>
+  <defs>
+    <marker id="ar-amber" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#b45309"/></marker>
+    <marker id="ar-green" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#059669"/></marker>
+  </defs>
+  <rect width="1200" height="560" fill="#ffffff"/>
+  <text x="600" y="40" font-size="22" fill="#1e293b" text-anchor="middle" font-weight="600">真行结构示意图：文件 = 20 HBP 尾 + 136 行 × 899 = 122284 符号</text>
+  <text x="600" y="64" font-size="12" fill="#64748b" text-anchor="middle">行周期 899 · K1@off20 · encData@24..814 · K2@off815 · HBP@819..898 · 122284 = 20 + 136×899 全闭合</text>
+
+  <!-- top-level file composition -->
+  <text x="50" y="100" font-size="14" fill="#1e293b" font-weight="700">文件整体布局（Pat01/0001）</text>
+  <g>
+    <!-- 20 HBP tail -->
+    <rect x="50" y="112" width="36" height="46" rx="5" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/>
+    <text x="68" y="131" font-size="10" fill="#475569" text-anchor="middle" font-weight="600">20</text>
+    <text x="68" y="147" font-size="9" fill="#64748b" text-anchor="middle">HBP尾</text>
+    <!-- 136 lines x 899 -->
+    <rect x="92" y="112" width="1000" height="46" rx="5" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1.5"/>
+    <text x="592" y="131" font-size="12" fill="#1e40af" text-anchor="middle" font-weight="700">136 行 × 899 符号 = 122264</text>
+    <text x="592" y="148" font-size="10" fill="#3b82f6" text-anchor="middle">Active 行 130（K1 头 + K2 尾）· 其余 6（K4 CTRL_F 等）</text>
+    <!-- total -->
+    <text x="1112" y="138" font-size="13" fill="#b45309" font-weight="700">= 122284</text>
+  </g>
+
+  <!-- divider -->
+  <line x1="50" y1="182" x2="1150" y2="182" stroke="#e2e8f0" stroke-width="1.5"/>
+  <text x="50" y="210" font-size="14" fill="#1e293b" font-weight="700">单行（899 符号）槽位结构（放大）</text>
+
+  <!-- zoomed line bar: total width ~1080 for 899 symbols -->
+  <g>
+    <!-- HBP tail 0-19 (20 sym) -->
+    <rect x="50" y="226" width="24" height="60" rx="4" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.5"/>
+    <text x="62" y="300" font-size="9" fill="#475569" text-anchor="middle" transform="rotate(-90 62 300)">HBP尾 0-19</text>
+
+    <!-- K1 @ 20-23 (4 sym) -->
+    <rect x="78" y="226" width="34" height="60" rx="4" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+    <text x="95" y="250" font-size="11" fill="#166534" text-anchor="middle" font-weight="700">K1</text>
+    <text x="95" y="264" font-size="8.5" fill="#166534" text-anchor="middle" font-family="'IBM Plex Mono', monospace">0FC 3FF</text>
+    <text x="95" y="276" font-size="8.5" fill="#166534" text-anchor="middle" font-family="'IBM Plex Mono', monospace">03C 003</text>
+
+    <!-- encData 24-814 (791 sym) -->
+    <rect x="116" y="226" width="850" height="60" rx="4" fill="#eff6ff" stroke="#bfdbfe" stroke-width="1.5"/>
+    <text x="541" y="250" font-size="12" fill="#1e40af" text-anchor="middle" font-weight="700">encData（编码数据）</text>
+    <text x="541" y="266" font-size="10" fill="#3b82f6" text-anchor="middle">off 24 .. 814（791 符号）· CTRL_L + Video 420b 编码 + 加扰</text>
+    <text x="541" y="280" font-size="9.5" fill="#60a5fa" text-anchor="middle">K 码符号在此区以"固定偏移单符号"出现（如 0x1FA@off150×100）——非 K 码标记</text>
+
+    <!-- K2 @ 815-818 (4 sym) -->
+    <rect x="970" y="226" width="34" height="60" rx="4" fill="#dcfce7" stroke="#16a34a" stroke-width="2"/>
+    <text x="987" y="250" font-size="11" fill="#166534" text-anchor="middle" font-weight="700">K2</text>
+    <text x="987" y="264" font-size="8.5" fill="#166534" text-anchor="middle" font-family="'IBM Plex Mono', monospace">0CC 3FF</text>
+    <text x="987" y="276" font-size="8.5" fill="#166534" text-anchor="middle" font-family="'IBM Plex Mono', monospace">0C3 3FC</text>
+
+    <!-- HBP 819-898 (100 sym) -->
+    <rect x="1008" y="226" width="116" height="60" rx="4" fill="#fef3c7" stroke="#fcd34d" stroke-width="1.5"/>
+    <text x="1066" y="252" font-size="11" fill="#92400e" text-anchor="middle" font-weight="700">HBP</text>
+    <text x="1066" y="268" font-size="9.5" fill="#b45309" text-anchor="middle">off 819..898</text>
+    <text x="1066" y="282" font-size="9.5" fill="#b45309" text-anchor="middle">（100 符号）</text>
+  </g>
+
+  <!-- offset ruler -->
+  <g font-family="'IBM Plex Mono', monospace" font-size="10" fill="#64748b">
+    <line x1="50" y1="294" x2="1124" y2="294" stroke="#94a3b8" stroke-width="1"/>
+    <text x="50" y="310" text-anchor="middle">0</text>
+    <text x="78" y="310" text-anchor="middle">20</text>
+    <text x="116" y="310" text-anchor="middle">24</text>
+    <text x="970" y="310" text-anchor="middle">815</text>
+    <text x="1008" y="310" text-anchor="middle">819</text>
+    <text x="1124" y="310" text-anchor="middle">898</text>
+  </g>
+
+  <!-- K3/K4 note -->
+  <g>
+    <rect x="50" y="330" width="1074" height="64" rx="8" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.2"/>
+    <text x="66" y="354" font-size="12" fill="#1e293b" font-weight="700">K3 / K4 槽位（非每行都出现）</text>
+    <text x="66" y="374" font-size="11.5" fill="#475569">K3 = (303 000 30C 003) × 5 次 · 落在 LSP / 行尾 K3 槽（SCREN 提交）</text>
+    <text x="66" y="390" font-size="11.5" fill="#475569">K4 = (00F 000 333 3FC) × 3 次 · 落在 CTRL_F 行首（Config Line）</text>
+  </g>
+
+  <!-- bottom summary -->
+  <g>
+    <rect x="50" y="410" width="1074" height="128" rx="10" fill="#fffdf7" stroke="#ddd6c8" stroke-width="1.5"/>
+    <text x="70" y="436" font-size="13" fill="#b45309" font-weight="700">关键事实（队长三重验证）</text>
+    <text x="70" y="460" font-size="12" fill="#1e293b">① 行槽位实测：K1 在 off20 出现 130 次（每 Active 行一次）· K2 在 off815 出现 130 次 · 行首非逗号行 = 6（K4 CTRL_F 等）</text>
+    <text x="70" y="482" font-size="12" fill="#1e293b">② 全闭合：20（HBP尾） + 136 × 899 = 122284 符号 = 文件大小，无余数、无错位</text>
+    <text x="70" y="504" font-size="12" fill="#1e293b">③ K 码符号是"分散单符号槽位"，不是连续 4 符号窗——但 4 符号序列在 K1/K2 槽完整存在（位反后 = RTL 模板）</text>
+    <text x="70" y="526" font-size="11.5" fill="#64748b">注：早期"100 次单符号"（如 0x1FA@off150）是 encData 区固定偏移的数据 pattern 符号，不是 K 码标记——这是矛盾①的误读来源。</text>
+  </g>
+</svg>

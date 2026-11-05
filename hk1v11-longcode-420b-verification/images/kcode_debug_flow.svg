@@ -1,0 +1,77 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 680" width="1200" height="680">
+  <style>text { font-family: 'Helvetica Neue', Helvetica, Arial, 'PingFang SC', 'Microsoft YaHei', 'Microsoft JhengHei', 'SimHei', sans-serif; }</style>
+  <defs>
+    <marker id="ar-gray" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#64748b"/></marker>
+    <marker id="ar-red" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#b91c1c"/></marker>
+    <marker id="ar-green" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#059669"/></marker>
+  </defs>
+  <rect width="1200" height="680" fill="#ffffff"/>
+  <text x="600" y="40" font-size="22" fill="#1e293b" text-anchor="middle" font-weight="600">分析过程与矛盾裁决：从"两套码本"到"位序反转定案"</text>
+  <text x="600" y="64" font-size="12" fill="#64748b" text-anchor="middle">8 路盲测 + 1 路仲裁 + 3 路矛盾③裁决 + 队长直接验证 · 诚实呈现曲折 · 2026-11-05</text>
+
+  <!-- spine -->
+  <line x1="600" y1="90" x2="600" y2="650" stroke="#cbd5e1" stroke-width="2" stroke-dasharray="4 4"/>
+
+  <!-- Phase 1: 盲测 -->
+  <g>
+    <circle cx="600" cy="120" r="9" fill="#94a3b8" stroke="#fff" stroke-width="2"/>
+    <rect x="80" y="96" width="480" height="72" rx="10" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+    <text x="100" y="120" font-size="13" fill="#1e293b" font-weight="700">① 第一轮盲测（8 路）</text>
+    <text x="100" y="140" font-size="11.5" fill="#475569">t1/t2/t6/t8 等收敛于"两套码本"框架——K1~K4 全找不到</text>
+    <text x="100" y="158" font-size="11" fill="#b91c1c">✗ 实际读错模块：抓的是 SHORT 路径 u_CHPI_KCODE_ALIGN_L0</text>
+    <line x1="560" y1="132" x2="591" y2="132" stroke="#64748b" stroke-width="2" marker-end="url(#ar-gray)"/>
+  </g>
+
+  <!-- Phase 2: 矛盾 -->
+  <g>
+    <circle cx="600" cy="210" r="9" fill="#94a3b8" stroke="#fff" stroke-width="2"/>
+    <rect x="640" y="180" width="480" height="96" rx="10" fill="#fffbeb" stroke="#fcd34d" stroke-width="1.5"/>
+    <text x="660" y="204" font-size="13" fill="#92400e" font-weight="700">② 矛盾点爆发</text>
+    <text x="660" y="224" font-size="11.5" fill="#475569">矛盾①：0x2A8 计数（qwen-f 称 0 / qwen-h 称 100）</text>
+    <text x="660" y="242" font-size="11.5" fill="#475569">矛盾②：两套码本 vs "BOE 不输出 K 符号"</text>
+    <text x="660" y="262" font-size="11.5" fill="#475569">矛盾③：qwen-d 突破——部分 pattern 有 K 码对 vs GLM 全 0</text>
+    <line x1="609" y1="208" x2="631" y2="208" stroke="#64748b" stroke-width="2" marker-end="url(#ar-gray)"/>
+  </g>
+
+  <!-- Phase 3: 三路裁决 + 模板纠错 -->
+  <g>
+    <circle cx="600" cy="330" r="9" fill="#94a3b8" stroke="#fff" stroke-width="2"/>
+    <rect x="80" y="296" width="480" height="96" rx="10" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+    <text x="100" y="320" font-size="13" fill="#1e293b" font-weight="700">③ 三路并行裁决 + 模板转写纠错</text>
+    <text x="100" y="340" font-size="11.5" fill="#475569">t10/t11/t12：23 / 27 / 102 次命中复数 → 全 ≤ 巧合基线，非真 K 码</text>
+    <text x="100" y="358" font-size="11.5" fill="#475569">仲裁 qwen-i：① qwen-h 对 ② 两码本更准 ③ GLM 实质正确</text>
+    <text x="100" y="378" font-size="11" fill="#b91c1c">✗ 转写漂移：K3=0x18F(非 0x16F)、K4 序、BOE 首符 0x0FC(非 0x3FC)</text>
+    <line x1="560" y1="330" x2="591" y2="330" stroke="#64748b" stroke-width="2" marker-end="url(#ar-gray)"/>
+  </g>
+
+  <!-- Phase 4: 突破 (pivot) -->
+  <g>
+    <circle cx="600" cy="440" r="11" fill="#b91c1c" stroke="#fff" stroke-width="2"/>
+    <rect x="640" y="400" width="480" height="96" rx="10" fill="#fef2f2" stroke="#f87171" stroke-width="2"/>
+    <text x="660" y="424" font-size="13.5" fill="#991b1b" font-weight="700">④ 关键突破（t3 / t7 独立发现）</text>
+    <text x="660" y="446" font-size="11.5" fill="#7f1d1d">位序反转：RTL 模板 = 文件真实 K 码的 40-bit 整串位反</text>
+    <text x="660" y="464" font-size="11.5" fill="#7f1d1d">真模块：LONG_ENCODING_ALIGN（LONG 路径）</text>
+    <text x="660" y="484" font-size="11" fill="#991b1b">★ 推翻"两套码本"框架 → 码本只有一个、位序约定相反</text>
+    <line x1="609" y1="438" x2="631" y2="438" stroke="#b91c1c" stroke-width="2.5" marker-end="url(#ar-red)"/>
+  </g>
+
+  <!-- Phase 5: 队长三重验证 -->
+  <g>
+    <circle cx="600" cy="550" r="9" fill="#059669" stroke="#fff" stroke-width="2"/>
+    <rect x="80" y="516" width="480" height="96" rx="10" fill="#f0fdf4" stroke="#86efac" stroke-width="2"/>
+    <text x="100" y="540" font-size="13" fill="#065f46" font-weight="700">⑤ 队长三重验证（captain_verify_long*.py）</text>
+    <text x="100" y="560" font-size="11.5" fill="#166534">V1 行槽位实测：K1@20×130 · K2@815×130 · 20+136×899 全闭合</text>
+    <text x="100" y="578" font-size="11.5" fill="#166534">V2 bitrev40 精确匹配：四码 RTL == bitrev40(文件) 无一例外</text>
+    <text x="100" y="596" font-size="11.5" fill="#166534">V3 K3/K4 计数 + LONG 实例化确认（非 SHORT 孤儿文件）</text>
+    <line x1="560" y1="550" x2="591" y2="550" stroke="#059669" stroke-width="2.5" marker-end="url(#ar-green)"/>
+  </g>
+
+  <!-- Phase 6: 定案 -->
+  <g>
+    <circle cx="600" cy="640" r="11" fill="#059669" stroke="#fff" stroke-width="2"/>
+    <rect x="640" y="610" width="480" height="56" rx="10" fill="#059669" stroke="#047857" stroke-width="2"/>
+    <text x="660" y="634" font-size="14" fill="#ffffff" font-weight="700">⑥ 定案：40-bit 整串位序约定相反</text>
+    <text x="660" y="654" font-size="11.5" fill="#d1fae5">修复：LONG_ENCODING_ALIGN 4×2 模板改为文件原样值 · 保持 BIT_SWAP ON</text>
+    <line x1="609" y1="638" x2="631" y2="638" stroke="#059669" stroke-width="2.5" marker-end="url(#ar-green)"/>
+  </g>
+</svg>

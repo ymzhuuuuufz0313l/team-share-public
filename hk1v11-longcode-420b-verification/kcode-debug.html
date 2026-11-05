@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet">
+  <title>KCODE 420b 位序反转根因 · HK1V11 420b 长编码验证体系</title>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <link rel="stylesheet" href="./fx.css?v=10">
+  <style>
+    :root {
+      --bg: #f4f1ea;
+      --surface: #fffdf7;
+      --text: #1c2534;
+      --muted: #667180;
+      --accent: #b45309;
+      --accent-strong: #92400e;
+      --accent-soft: #f7e8d4;
+      --ink: #0d1526;
+      --ink-2: #131f38;
+      --line: #ddd6c8;
+      --chip: #efe9db;
+      --shadow: 0 12px 32px rgba(28, 37, 52, 0.10);
+      --ok: #047857;
+      --ok-bg: rgba(4, 120, 87, 0.08);
+      --bad: #b91c1c;
+      --bad-bg: rgba(185, 28, 28, 0.08);
+      --warn: #b45309;
+      --warn-bg: rgba(180, 83, 9, 0.10);
+      --info: #1d4ed8;
+      --info-bg: rgba(29, 78, 216, 0.08);
+      --purp: #7c3aed;
+      --purp-bg: rgba(124, 58, 237, 0.08);
+      --font-mono: "IBM Plex Mono", "SFMono-Regular", Consolas, "JetBrains Mono", monospace;
+      --font-serif: "Noto Serif SC", "Songti SC", serif;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0e1420;
+        --surface: #161f31;
+        --text: #e9e5d9;
+        --muted: #9aa4b5;
+        --accent: #f0a137;
+        --accent-strong: #f6b95c;
+        --accent-soft: #3a2f1a;
+        --line: #2b3852;
+        --chip: #1e2a44;
+        --shadow: 0 12px 32px rgba(0, 0, 0, 0.45);
+        --ok: #34d399;
+        --ok-bg: rgba(52, 211, 153, 0.10);
+        --bad: #f87171;
+        --bad-bg: rgba(248, 113, 113, 0.10);
+        --warn: #f0a137;
+        --warn-bg: rgba(240, 161, 55, 0.12);
+        --info: #93c5fd;
+        --info-bg: rgba(147, 197, 253, 0.10);
+        --purp: #c4b5fd;
+        --purp-bg: rgba(196, 181, 253, 0.10);
+      }
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      font-size: 16px;
+      line-height: 1.75;
+    }
+    .mono { font-family: var(--font-mono); }
+    .container { max-width: 1170px; margin: 0 auto; padding: 48px 24px; }
+    .article {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 52px 60px;
+      box-shadow: var(--shadow);
+    }
+    @media (max-width: 640px) {
+      .container { padding: 24px 16px; }
+      .article { padding: 30px 20px; border-radius: 12px; }
+    }
+    h1 { font-family: var(--font-serif); font-size: 34px; margin: 0 0 20px; color: var(--text); font-weight: 900; line-height: 1.28; letter-spacing: 0.01em; }
+    h2 { font-family: var(--font-serif); font-size: 24px; margin: 48px 0 18px; padding-bottom: 10px; border-bottom: 1px solid var(--line); color: var(--text); font-weight: 700; }
+    h3 { font-size: 19px; margin: 32px 0 14px; color: var(--text); font-weight: 700; }
+    h4 { font-family: var(--font-mono); font-size: 13px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); margin: 24px 0 10px; }
+    p { margin: 14px 0; }
+    strong { color: var(--accent-strong); }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    img { max-width: 100%; border-radius: 8px; border: 1px solid var(--line); cursor: zoom-in; display: block; margin: 28px auto; box-shadow: var(--shadow); }
+    table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 14.5px; }
+    th, td { border: 1px solid var(--line); padding: 10px 14px; text-align: left; }
+    th { background: var(--chip); font-weight: 700; color: var(--text); }
+    tr:nth-child(even) { background: rgba(0,0,0,0.02); }
+    tr:hover td { background: var(--accent-soft); }
+    @media (prefers-color-scheme: dark) { tr:nth-child(even) { background: rgba(255,255,255,0.02); } }
+    code { background: var(--chip); padding: 2px 7px; border-radius: 5px; font-family: var(--font-mono); font-size: 13px; color: var(--accent-strong); }
+    pre { background: linear-gradient(160deg, var(--ink) 0%, var(--ink-2) 100%); border: 1px solid var(--ink); padding: 18px 20px; border-radius: 10px; overflow-x: auto; box-shadow: var(--shadow); }
+    pre code { padding: 0; background: transparent; color: #e9e5d9; font-size: 13.5px; line-height: 1.7; }
+    blockquote { border-left: 4px solid var(--accent); margin: 20px 0; padding: 14px 20px; background: var(--accent-soft); border-radius: 0 10px 10px 0; color: var(--text); }
+    ul, ol { padding-left: 28px; }
+    li { margin: 8px 0; }
+    li::marker { color: var(--accent); }
+    hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
+    .footer { text-align: center; color: var(--muted); margin-top: 48px; font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.06em; }
+
+    /* callout cards */
+    .note { border-left: 4px solid var(--info); background: var(--info-bg); border-radius: 0 10px 10px 0; padding: 14px 20px; margin: 20px 0; }
+    .warn-box { border-left: 4px solid var(--warn); background: var(--warn-bg); border-radius: 0 10px 10px 0; padding: 14px 20px; margin: 20px 0; }
+    .bad-box { border-left: 4px solid var(--bad); background: var(--bad-bg); border-radius: 0 10px 10px 0; padding: 14px 20px; margin: 20px 0; }
+    .ok-box { border-left: 4px solid var(--ok); background: var(--ok-bg); border-radius: 0 10px 10px 0; padding: 14px 20px; margin: 20px 0; }
+    .kicker { font-family: var(--font-mono); font-size: 12.5px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; }
+
+    .top-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 32px; padding: 0 4px; }
+    .top-nav a { font-size: 14px; font-weight: 600; color: var(--accent); display: inline-flex; align-items: center; gap: 6px; }
+    .top-nav .home { font-size: 15px; }
+    .page-nav { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 40px; }
+    .page-nav a { display: block; padding: 16px 20px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; color: var(--text); transition: border-color 0.2s, box-shadow 0.2s, transform 0.16s ease; }
+    .page-nav a:hover { border-color: var(--accent); box-shadow: var(--shadow); transform: translateY(-2px); text-decoration: none; }
+    .page-nav a.next { text-align: right; margin-left: auto; }
+    .page-nav .label { display: block; font-family: var(--font-mono); font-size: 11.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+    .page-nav .title { font-weight: 700; color: var(--accent); }
+    @media (max-width: 640px) { .page-nav { grid-template-columns: 1fr; } .page-nav a.next { text-align: left; margin-left: 0; } }
+
+    .lightbox { position: fixed; inset: 0; background: rgba(13, 21, 38, 0.93); display: flex; align-items: center; justify-content: center; z-index: 1000; opacity: 0; visibility: hidden; transition: opacity 0.25s ease, visibility 0.25s ease; cursor: grab; }
+    .lightbox.active { opacity: 1; visibility: visible; }
+    .lightbox img { max-width: none; max-height: none; border: none; border-radius: 4px; cursor: grab; transform-origin: center center; transition: none; margin: 0; box-shadow: 0 0 80px rgba(0, 0, 0, 0.6); }
+    .lightbox img.grabbing { cursor: grabbing; }
+    .lightbox .hint { position: absolute; bottom: 26px; left: 50%; transform: translateX(-50%); color: rgba(233, 229, 217, 0.7); font-family: var(--font-mono); font-size: 12.5px; pointer-events: none; user-select: none; background: rgba(0, 0, 0, 0.5); padding: 6px 16px; border-radius: 999px; border: 1px solid rgba(233, 229, 217, 0.18); }
+    .lightbox .close { position: absolute; top: 18px; right: 22px; color: rgba(233, 229, 217, 0.85); font-size: 34px; line-height: 1; cursor: pointer; user-select: none; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: background 0.2s; border: 1px solid transparent; }
+    .lightbox .close:hover { background: rgba(255,255,255,0.12); color: #fff; }
+
+    .navbar { position: sticky; top: 0; z-index: 100; background: var(--surface); border-bottom: 1px solid var(--line); }
+    .navbar-inner { max-width: 1170px; margin: 0 auto; padding: 10px 24px; display: flex; align-items: center; gap: 16px; }
+    .navbar-brand { font-family: var(--font-mono); font-weight: 600; color: var(--accent); white-space: nowrap; font-size: 14px; letter-spacing: 0.04em; text-decoration: none; }
+    .navbar-brand:hover { text-decoration: none; }
+    .navbar-links { display: flex; align-items: center; gap: 4px; overflow-x: auto; flex: 1; scrollbar-width: none; }
+    .navbar-links::-webkit-scrollbar { display: none; }
+    .navbar-links a { padding: 5px 10px; border-radius: 6px; font-size: 13.5px; color: var(--text); white-space: nowrap; transition: background 0.15s, color 0.15s; text-decoration: none; }
+    .navbar-links a:hover { background: var(--chip); color: var(--text); text-decoration: none; }
+    .navbar-links a.active { background: var(--accent); color: #fff; font-weight: 600; }
+    @media (max-width: 640px) { .navbar-inner { padding: 8px 14px; gap: 10px; } .navbar-brand { font-size: 13px; } .navbar-links a { font-size: 12.5px; padding: 4px 8px; } }
+
+    /* TOC layout */
+    .container.with-toc { display: flex; gap: 32px; align-items: flex-start; max-width: 1560px; }
+    .toc-wrapper { width: 260px; flex-shrink: 0; align-self: stretch; }
+    .toc {
+      position: sticky;
+      top: 64px;
+      max-height: calc(100vh - 88px);
+      overflow-y: auto;
+      padding: 16px;
+      background: var(--surface);
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      font-size: 13.5px;
+      box-shadow: var(--shadow);
+    }
+    .toc a {
+      display: block;
+      padding: 6px 10px;
+      border-radius: 6px;
+      color: var(--muted);
+      margin: 2px 0;
+      transition: background 0.15s, color 0.15s;
+    }
+    .toc a:hover { background: var(--chip); color: var(--text); text-decoration: none; }
+    .toc a.active { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+    .toc a.toc-h2 { position: relative; padding-left: 24px; }
+    .toc a.toc-h3 { padding-left: 38px; font-size: 13px; }
+    h2, h3 { scroll-margin-top: 72px; }
+    .content { flex: 1; min-width: 0; }
+    @media (max-width: 1024px) {
+      .toc-wrapper { display: none; }
+      .container.with-toc { display: block; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a class="navbar-brand" href="./">HK1V11 420b</a>
+      <div class="navbar-links">
+        <a href="./">首页</a>
+        <a href="./architecture.html">架构</a>
+        <a href="./comparison.html">对比</a>
+        <a href="./frame.html">帧结构</a>
+        <a href="./phases.html">阶段</a>
+        <a href="./cases.html">Case</a>
+        <a href="./decoder.html">解码</a>
+        <a href="./encoding.html">编码</a>
+        <a href="./issues.html">问题</a>
+        <a href="./debug-log.html">排障</a>
+        <a class="active" href="./kcode-debug.html">KCODE</a>
+      </div>
+    </div>
+  </nav>
+  <div class="container with-toc">
+    <aside class="toc-wrapper" id="toc-wrapper"><nav class="toc" id="toc"></nav></aside>
+    <div class="content">
+      <article class="article" id="article"></article>
+      <div class="page-nav">
+        <a href="./debug-log.html">
+          <span class="label">上一篇</span>
+          <span class="title">排障实录</span>
+        </a>
+        <a class="next" href="./next.html">
+          <span class="label">下一篇</span>
+          <span class="title">后续工作</span>
+        </a>
+      </div>
+      <div class="footer">Shared from team knowledge base</div>
+    </div>
+  </div>
+  <div class="lightbox" id="lightbox">
+    <span class="close" id="lightbox-close">&times;</span>
+    <img id="lightbox-img" src="" alt="">
+    <div class="hint">滚轮缩放 · 拖拽移动 · 点击关闭</div>
+  </div>
+
+  <script type="text/template" id="md">
+# BOE 420b KCODE 调试全过程：位序反转根因定案
+
+> **一句话结论**：BOE 420b 回放 case 里 `K1_FIND~K4_FIND` 全不置位，**根因是 420b K 码模板的 40-bit 位序与 I_INDATA 实际位序相反（整串 bit-reverse）**——码本只有一个，只是位序约定相反。真模块是 **`LONG_ENCODING_ALIGN`（LONG 路径）**，不是任务书/早期分析指向的 `u_CHPI_KCODE_ALIGN_L0`（SHORT 路径）。
+
+![位序反转对照：文件真实 K 码 → RTL 模板](./images/kcode_bitrev_compare.svg?v=20261105)
+
+---
+
+## 1. 背景
+
+### 1.1 同事请求
+
+BOE 激励回放 case `t_H1440_V16_FPS280_PORT_NUM12_DPLC_MODE1_420b_boe_test` 中，420b K 码对齐器的 `K1_FIND / K2_FIND / K3_FIND / K4_FIND` **全时间不置位**——四码全部找不到。请求定位根因并给修复方向。
+
+### 1.2 团队构成（多模型交叉验证）
+
+- **8 路盲测**：1×glm-5.3 + 1×glm-5.3-flash + 6×Qwen，对同一任务独立分析（t1/t2/t3/t5/t6/t7/t8 等）
+- **1 路仲裁**：qwen-i 交叉裁决三个矛盾点
+- **3 路矛盾③裁决**：qwen-f / qwen-h / qwen-d 对"全 0 命中 vs 部分有 K 码对"并行复核
+- **队长直接验证**：captain_linecheck / captain_probe2 / captain_verify_long / captain_verify_long2 四脚本，行槽位实测 + bitrev40 精确匹配 + 实例化确认
+
+> ⚠️ **重要前提**：第一轮 8 路盲测里，多数路抓的是 **`u_CHPI_KCODE_ALIGN_L0`（SHORT 编码路径 / 旧命名）**——这其实是**读错了模块**。420b 通路真正的 K 码匹配器是 **`LONG_ENCODING_ALIGN`（LONG 路径）**。这一轮错位是"两套码本"假象的来源，也是整个 debug 曲折的起点。
+
+---
+
+## 2. 问题定义
+
+### 2.1 K*_FIND 机制
+
+K 码匹配在 `LONG_ENCODING_ALIGN` 内，核心是 **20-bit 半窗 + 40-bit 全命中 + BK_ST 门控**：
+
+```
+DATA_KCODE_00..19 = {I_INDATA_D1[19:0], I_INDATA[19:0]} 上 20 个 10-bit 滑动窗
+DATA_POINT[n]  = (&DATA_KCODE_n) | (&~DATA_KCODE_n)      ← 全 0/全 1 的 10-bit 窗 = 420b 对齐锚点
+Kx_CODE1  = (DATA_ALIGN_PRE[19:0] == Kx_CODE[19:0])   | (== Kx_CODE_1[19:0])   (下半 2 符号)
+Kx_CODE2  = (DATA_ALIGN_PRE[19:0] == Kx_CODE[39:20])  | (== Kx_CODE_1[39:20])  (上半 2 符号)
+KCODE_FIND = K1_CODE2 | K2_CODE2 | K3_CODE2 | K4_CODE2
+K1_FIND    = K1_CODE2 & K1_CODE1_D1 & BK_ST            (40-bit 全命中 + BK_ST 门控)
+K2/K3/K4_FIND = 各自 CODE2（另受 BK_ST / 状态机约束）
+```
+
+- **20-bit 半窗逻辑**：`CODE2` 比上半 20-bit（`Kx_CODE[39:20]`），`CODE1_D1` 比前拍下半 20-bit（`Kx_CODE[19:0]`）——流序要求 **下 20-bit 先行、上 20-bit 后行**。
+- **DATA_POINT**：全 0 / 全 1 的 10-bit 窗是 420b 对齐锚点（K 码里含 `0x3ff` 全 1 / `0x0` 全 0）。
+- **BK_ST**：位对齐状态门控（复位 1、K1_FIND 清、BIT_ALIGN_ST 置）；若 `BK_ST` 恒 0，即便 K 码匹配也不置位（H2，与位序正交）。
+
+### 2.2 正确的 Verdi 层次
+
+```
+chip_tb_top.u_HK1V11.u_HK1V11_digital_top
+  .u_LOGIC_CENTER.LINK_LOGIC.LC_CHPI_DECODE.LONG_ENCODING.LONG_ENCODING_ALIGN
+```
+
+> ⚠️ 任务书里的 `u_CHPI_KCODE_ALIGN_L0` 是 **SHORT 编码匹配器 / 旧命名**（`HK1V11_ref.v` 才实例化它）；**420b 通路实际是 `LONG_ENCODING_ALIGN`**。抓信号、对模板都用本层次，不要抓错模块。
+
+---
+
+## 3. 分析过程时间线（诚实呈现曲折）
+
+![分析过程与矛盾裁决：从"两套码本"到"位序反转定案"](./images/kcode_debug_flow.svg?v=20261105)
+
+| 阶段 | 发生了什么 | 结论 / 偏差 |
+|---|---|---|
+| **① 第一轮盲测（8 路）** | t1/t2/t6/t8 等收敛于"**两套码本**"框架（K1~K4 全找不到） | ✗ 实际读错模块：抓的是 SHORT 路径 `u_CHPI_KCODE_ALIGN_L0` |
+| **② 矛盾点爆发** | ① 0x2A8 计数（f 称 0 / h 称 100）② 两码本 vs "BOE 不输出 K 符号" ③ qwen-d 突破：部分 pattern 有 K 码对 vs GLM 全 0 | 三个矛盾点，需裁决 |
+| **③ 三路裁决 + 转写纠错** | t10/t11/t12 复数 23/27/102 次命中 → 全 ≤ 巧合基线；仲裁 qwen-i；转写漂移发现（K3=0x18F 非 0x16F、K4 序、BOE 首符 0x0FC 非 0x3FC） | 矛盾①②③裁决；但仍在 SHORT 模块里打转 |
+| **④ 关键突破（t3/t7）** | 独立发现**位序反转** + **LONG 路径真模块** | ★ 推翻"两套码本"：码本只有一个、位序约定相反 |
+| **⑤ 队长三重验证** | 行槽位实测 + bitrev40 精确匹配 + 实例化确认 | 定案证据链闭合 |
+| **⑥ 定案** | 40-bit 整串位序约定相反 | 修复：模板改为文件原样值 |
+
+---
+
+## 4. 现象汇总
+
+### 4.1 行结构
+
+![真行结构示意图：文件 = 20 HBP 尾 + 136 行 × 899 = 122284](./images/kcode_line_structure.svg?v=20261105)
+
+文件（Pat01/0001）= **20 个 HBP 尾符号 + 136 行 × 899 = 122284 符号**（全闭合，无余数）。单行 899 符号槽位：
+
+| 槽位 | off | 符号数 | 内容 |
+|---|---|---|---|
+| HBP 尾 | 0..19 | 20 | 上一帧 HBP 尾 |
+| **K1** | **20..23** | 4 | 行首 K 码（Active 行） |
+| encData | 24..814 | 791 | CTRL_L + Video 420b 编码 + 加扰 |
+| **K2** | **815..818** | 4 | 行尾 K 码 |
+| HBP | 819..898 | 100 | 行尾 HBP |
+
+### 4.2 真实 K 码值（chpi_tx.txt 实测）
+
+![K 码槽位命中分布](./images/kcode_slot_hits.svg?v=20261105)
+
+| K | 文件真实 K 码（4×10bit） | 40-bit 整数 | 出现次数 | 槽位 |
+|---|---|---|---|---|
+| K1 | `0FC 3FF 03C 003` | 0x0FC3FFF803 | **130** | @off20（每 Active 行） |
+| K2 | `0CC 3FF 0C3 3FC` | 0x0CC3FF0C3FC | **130** | @off815（每 Active 行） |
+| K3 | `303 000 30C 003` | 0x30300030C03 | 5 | LSP / 行尾 K3 槽 |
+| K4 | `00F 000 333 3FC` | 0x00F0003333FC | 3 | CTRL_F 行首 |
+
+> 注：K 码含 `0x3ff`（全 1）/ `0x0`（全 0）——非 8b/10b 合法符号，说明 420b 用**自定义 10-bit 编码**，对齐锚点正是这些全 0/全 1 窗（`DATA_POINT`）。
+
+### 4.3 RTL LONG 模板值 + bitrev40 对照
+
+| K | 文件真实 K 码 | RTL 模板当前值（40'h） | 40'b 源码 | 关系 |
+|---|---|---|---|---|
+| K1 | `0FC 3FF 03C 003` | `0xC00F0FFCFC` | `40'b11_0000000000_11110000_1111111111_0011111100` | **RTL = bitrev40(文件)** |
+| K2 | `0CC 3FF 0C3 3FC` | `0x3FF0CFFCCC` | `40'b00_1111111111_00001100_1111111111_0011001100` | **RTL = bitrev40(文件)** |
+| K3 | `303 000 30C 003` | `0xC00C300303` | `40'b11_0000000000_11000011_0000000000_1100000011` | **RTL = bitrev40(文件)** |
+| K4 | `00F 000 333 3FC` | `0x3FF33003C0` | `40'b00_1111111111_00110011_0000000000_1111000000` | **RTL = bitrev40(文件)** |
+
+> **四码全部精确满足 `RTL == bitrev40(文件真实 K 码)`，无一例外。** 码本只有一个，位序约定相反——不是"两套码本"。
+
+### 4.4 已排除的公共环节
+
+| 假设 | 结论 | 依据 |
+|---|---|---|
+| 串行位序（BIT_SWAP 开/关 × 极性 × 相位穷举） | 在 **SHORT 模块**上 0 命中 | 早期在错模块上穷举，均不置位 |
+| 复位 / 使能 / BK_ST | 与位序正交（H2） | 需波形分离；位序修复后若 BK_ST 正常则四码置位 |
+| DPLC_MODE1 只驱动 lane0 | 低（H4） | 420b 通路单 pair 承载 10-bit 符号流 |
+
+> **关键**：在 SHORT 模块上"位序穷举 0 命中"不能否定位序根因——因为**在 LONG 模块上，位序恰恰就是根因**。错位到错模块的穷举是无效排除。
+
+### 4.5 "100 次单符号"解释（矛盾①的误读来源）
+
+encData 区存在**固定偏移的数据 pattern 符号**（如 `0x1FA@off150 ×100`、`0x2A8@off736 ×100`、`0x205@off654 ×100`）——这些是**确定性数据位置值**（420b 编码 + scramble 在固定线结构下的产物），**不是 K 码标记、也不在 K 码槽位**。早期把"单符号周期性出现"误读为"K 码存在但顺序/值不对"，是矛盾①（0x2A8 计数）的误读来源。
+
+---
+
+## 5. 根因定案
+
+**40-bit 整串位序约定相反**：模板按"位反约定"写（`RTL = bitrev40(文件)`），流按"原样"出（`BIT_SWAP` ON + `I_INDATA[0]=首bit`，I_INDATA 呈文件值原样）。二者位序相反 → 40-bit 窗口（文件原样）≠ 模板（整串反转）→ **四码同时不置位**。
+
+证据链：
+
+1. **逐码 bitrev40 精确匹配**：四码 `RTL == bitrev40(文件)`，无一例外（§4.3）。
+2. **行槽位实测**：K1@20 ×130、K2@815 ×130，`20 + 136×899 = 122284` 全闭合（§4.1）。
+3. **全量仿真**：`BIT_SWAP=OFF + I_INDATA[0]=首bit` → K1=130 / K2=138 / K3=5 / K4=3（与帧结构逐行吻合）；`BIT_SWAP=ON`（当前）→ **0 命中**（两种 serdes 约定皆 0）。
+4. **实例化确认**：420b 通路走 `LONG_ENCODING_ALIGN`（LONG 路径），`CHPI_KCODE_ALIGN_LONG_L0.v` 为同值孤儿文件（未被实例化）。
+
+> 这是**公共环节**（共享的 40-bit 位序约定），不是"单个 K 码模板写错"。四码同断正因为它是一条共享的位序约定不一致——四个模板各自都是"合法的 420b K 码（只是位序反了）"。
+
+---
+
+## 6. 修复方案
+
+**推荐：把 `LONG_ENCODING_ALIGN.v` 的 4 个 `K*_CODE` 与 `K*_CODE_1` 改为文件原样值（= 当前值的 bitrev40），保持 `BIT_SWAP` ON。**
+
+| K | K*_CODE 当前值 | 改为（文件原样） |
+|---|---|---|
+| K1 | `0xC00F0FFCFC` | `0x0FC3FFF803` |
+| K2 | `0x3FF0CFFCCC` | `0x0CC3FF0C3FC` |
+| K3 | `0xC00C300303` | `0x30300030C03` |
+| K4 | `0x3FF33003C0` | `0x00F0003333FC` |
+
+```
+K1_CODE  : 40'b11_0000000000_11110000_1111111111_0011111100  →  40'b0011111100_1111111111_0000111100_0000000011
+K2_CODE  : 40'b00_1111111111_00001100_1111111111_0011001100  →  40'b0011001100_1111111111_0011000011_1111111100
+K3_CODE  : 40'b11_0000000000_11000011_0000000000_1100000011  →  40'b1100000011_0000000000_1100001100_0000000011
+K4_CODE  : 40'b00_1111111111_00110011_0000000000_1111000000  →  40'b0000001111_0000000000_1100110011_1111111100
+```
+
+**配套与注意：**
+
+- **保持 `BIT_SWAP` ON**：数据解码 / 参考模型是 LSB-first，依赖它；**不要**改用 `BIT_SWAP` OFF（会破坏数据通路，像素比对 FAIL）。
+- **`K*_CODE_1` 同步位反**：改 `K*_CODE` 时 `K*_CODE_1`（互补值）也要同步位反，保持互补关系。
+- **可选同步孤儿文件**：`CHPI_KCODE_ALIGN_LONG_L0.v` 为同值孤儿（未被实例化），可选同步以保持一致。
+- **下游影响**：K3 还驱动 `LONG_ENCODING_DESCRAMBLE` 的 scramble 状态提交（`LONG_ENCODING_DESCRAMBLE.v:125`「K3 commits the latched scramble state」）——位序修复后 K3_FIND 置位，下游 420b 解码 / 帧对齐一并恢复。
+- **改 RTL 走三关**（AGENTS.md）：① iverilog 语法检查；② `rtl-code-review` 对抗评审（含重定时/成对消费审计）；③ `rtl-signal-trace` 信号链路追踪。
+
+---
+
+## 7. 给同事对齐的 3 个关键问题（更新版）
+
+1. **ref model 侧 K 码位序约定以谁为准（文件原样 vs 位反）？**
+   BOE 参考模型（`long_encoding_ref_model`）内部是 LSB-first（"reversed concat so wire carries fg[0] first"），而 RTL 模板是整串反转。需确认 ref model 侧的 K 码 40-bit 位序约定到底以哪个为准——这决定修复该"改模板"还是"改 ref model 驱动约定"。
+
+2. **协议归谁定 / 量产其他 panel 是否同样位反（判 BOE 特例 vs 系统缺陷）？**
+   量产时 Hi image 芯片对接其他 panel，K 码位序约定是否也相反？若**只有 BOE 相反** → BOE 集成特例（改模板或加 BOE 码本分支即可）；若**多家 panel 都相反** → 系统性位序约定缺陷（优先级提升，需架构层面统一）。
+
+3. **SHORT 路径模板（`CHPI_KCODE_ALIGN_L0`）是否也有同样位序问题（内部 training 场景）？**
+   SHORT 路径 `u_CHPI_KCODE_ALIGN_L0`（K1=0x1FA,0x2A8,0x2A8,0x205，8b/10b 风格 K28.x）在内部 training 场景下，其模板位序是否与数据流一致？需确认 SHORT 路径是否同样存在位序约定不一致——若一致则本 case 仅是 LONG 路径特例。
+
+---
+
+## 8. 服务器验证清单
+
+应用模板修复后重跑 case，预期与观测点：
+
+```
+1. 重跑：t_H1440_V16_FPS280_PORT_NUM12_DPLC_MODE1_420b_boe_test（PARTNUM=1, DOCNUM=1, BIT_SWAP=ON）
+2. 预期：
+   - K1_FIND 在每行符号 off20 处置位（≈130 次）
+   - K2_FIND 在 off815 处置位（≈130 次）
+   - K3_FIND ≈5、K4_FIND ≈3
+   - 数据解码 / 像素比对恢复正常（scramble 状态随 K3 提交）
+3. Verdi 看正确层次：
+   u_LOGIC_CENTER.LINK_LOGIC.LC_CHPI_DECODE.LONG_ENCODING.LONG_ENCODING_ALIGN
+   信号：DATA_ALIGN_PRE / K1_CODE2 / K1_CODE1_D1 / DATA_POINT / BK_ST / K1~K4_FIND
+4. sim.log 关键行：KCODE_FIND / K1_FIND 置位计数、DATA_ALIGN 锁相
+5. BIT_SWAP 宏确认：case 仍为 BIT_SWAP ON（数据解码依赖），仅改模板
+```
+
+**判别实验（不依赖修复的快速验证）：**
+
+- 用 **内部 training 数据**（ref model 流）跑同一 `LONG_ENCODING_ALIGN`：K1~K4_FIND 应置位——一锤定音证明"模板对内部协议正确、对 BOE 位序不匹配"。
+- 或 `BIT_SWAP=OFF` 重跑：四码应置位（但数据解码 FAIL）——证明位序因子，同时说明"仅改 BIT_SWAP"不是正确修复。
+
+---
+
+## 9. 附录
+
+### 9.1 成员报告清单（`docs/boe_kcode_debug_1105/`）
+
+| 报告 | 路 | 核心贡献 |
+|---|---|---|
+| `m_glm53a.md` | GLM 盲测 | 4 符号全序列 24 份全 0 命中 |
+| `m_glm53flash_b.md` | GLM-flash 盲测 | 同上（SHORT 模块） |
+| `m_qwen_c.md` | qwen-c 盲测 | **位序反转根因 + LONG 真模块**（bitrev40 逐码验证） |
+| `m_qwen_d.md` | qwen-d 盲测 | 部分 pattern 有 K 码对（矛盾③突破口） |
+| `m_qwen_e.md` | qwen-e 盲测 | 标记符对、载荷错（4 解释下 2 符号窗 0 命中） |
+| `m_qwen_f.md` / `m_qwen_f2.md` | qwen-f 仲裁/裁决 | 0x2A8 计数（矛盾①）+ 23 次命中复数 |
+| `m_qwen_g.md` | qwen-g 盲测 | **位序反转 + BIT_SWAP 假设排序** |
+| `m_qwen_h.md` / `m_qwen_h2.md` | qwen-h 盲测/裁决 | 100 次单符号 + 行结构槽位映射（offset 815） |
+| `m_qwen_i.md` | qwen-i 仲裁 | 三矛盾点裁决 + 修复方向 |
+| `m_qwen_d2.md` | qwen-d 裁决 | 102 次命中（20-bit 模式）+ GLM 穷举审计 |
+
+### 9.2 队长验证脚本清单
+
+| 脚本 | 作用 |
+|---|---|
+| `captain_linecheck.py` | 行结构决定性核查：每行首符号是否逗号 0x1F8~0x1FB、K2 槽位 |
+| `captain_probe2.py` | 行槽位 + K 码 4 元组定位（文件真实 K 值来源） |
+| `captain_verify_long.py` | 决定性验证：LONG 路径 RTL 模板 vs 文件真实 K 码（bitrev40 关系） |
+| `captain_verify_long2.py` | K3/K4 计数 + 实例化确认（LONG vs SHORT 孤儿文件） |
+
+> 所有数字均出自上述报告与脚本输出；未决点已在 §7（3 问）标注，待与同事对齐后闭环。
+
+---
+</script>
+
+  <script>
+    document.getElementById('article').innerHTML = marked.parse(document.getElementById('md').innerHTML);
+    // lightbox
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightbox-img');
+    document.querySelectorAll('#article img').forEach(img => {
+      img.addEventListener('click', () => {
+        lightboxImg.src = img.src; lightboxImg.alt = img.alt;
+        lightbox.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      });
+    });
+    function closeLightbox() { lightbox.classList.remove('active'); document.body.style.overflow = ''; lightboxImg.src = ''; }
+    document.getElementById('lightbox-close').addEventListener('click', closeLightbox);
+    lightbox.addEventListener('click', e => { if (e.target === lightbox) closeLightbox(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+    // zoom + drag
+    let scale = 1, tx = 0, ty = 0, dragging = false, sx = 0, sy = 0;
+    function applyT() { lightboxImg.style.transform = 'translate(' + tx + 'px,' + ty + 'px) scale(' + scale + ')'; }
+    lightbox.addEventListener('wheel', e => { e.preventDefault(); scale = Math.min(8, Math.max(0.2, scale - Math.sign(e.deltaY) * 0.15)); applyT(); }, { passive: false });
+    lightboxImg.addEventListener('mousedown', e => { dragging = true; sx = e.clientX - tx; sy = e.clientY - ty; lightboxImg.classList.add('grabbing'); });
+    window.addEventListener('mousemove', e => { if (dragging) { tx = e.clientX - sx; ty = e.clientY - sy; applyT(); } });
+    window.addEventListener('mouseup', () => { dragging = false; lightboxImg.classList.remove('grabbing'); });
+    // TOC
+    const toc = document.getElementById('toc');
+    const headings = Array.from(document.querySelectorAll('#article h2, #article h3'));
+    headings.forEach(h => { if (!h.id) h.id = 'h-' + Math.random().toString(36).slice(2, 8); });
+    let html = '';
+    const h3ToH2 = {};
+    let lastH2 = null;
+    headings.forEach(h => {
+      const text = h.textContent.trim();
+      if (h.tagName === 'H2') {
+        if (lastH2 && lastH2.children.length) html += '</ul>';
+        html += '<div class="toc-h2-group"><a class="toc-h2" href="#' + h.id + '">' + text + '</a><ul class="toc-h3-list"></ul></div>';
+        lastH2 = { id: h.id, children: [] };
+      } else {
+        if (lastH2) { html += '<li><a class="toc-h3" href="#' + h.id + '">' + text + '</a></li>'; h3ToH2[h.id] = lastH2.id; }
+      }
+    });
+    if (lastH2 && lastH2.children.length) html += '</ul>';
+    toc.innerHTML = html;
+    const tocLinks = Array.from(toc.querySelectorAll('a'));
+    function updateTocActive() {
+      let current = '';
+      headings.forEach(h => { if (h.getBoundingClientRect().top < 100) current = h.id; });
+      tocLinks.forEach(a => a.classList.remove('active'));
+      if (current) { const active = tocLinks.find(a => a.getAttribute('href') === '#' + current); if (active) active.classList.add('active'); }
+    }
+    window.addEventListener('scroll', updateTocActive);
+    updateTocActive();
+  </script>
+  <script src="./fx.js?v=11"></script>
+</body>
+</html>
