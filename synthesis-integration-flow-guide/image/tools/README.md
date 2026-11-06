@@ -15,6 +15,7 @@
 | `gen_postpt_skew_tables_anim.py` | `image/anim/30_postpt_{trans,physkew}_{2p,1p}.svg`、`image/anim/31_postpt_physkew_1p.svg`、`image/anim/33_postpt_sdskew_margin_2p.svg`、`image/anim/34_postpt_sdskew_margin_1p.svg` | postPT trans/physkew/sdskew-margin 六张表动画 SVG 生成器（同上六项校验）；用法 `--all` 或 `--metric trans|physkew|sdskew --mode 2P|1P` |
 | `gen_buf_type_anim.py` | `image/anim/38_buf_type.svg` | IO 首/末级 buffer type 统计双栏表动画 SVG 生成器：直读 `server-reports/{input,output}_port_{first,last}_buf_type.tsv`；幂等 |
 | `make_flow_anim.py` | `image/anim/script-flow-overview.svg`（动画版） | 从静态主名 `image/script-flow-overview.svg` 确定性重建动画版（flowdot 装饰 + 虚线 dash march）；幂等，md5 可复验 |
+| `gen_power_compare_descramble.py` | `image/power_compare_descramble_1106.png` | descramble/noscramble 2lane 1.6G 单独对比图（1106，teal 6 列同款模板）；数据硬编码 1106 PTPX 实测（noscramble 13.3 / 8b 15.2 / 24b 14.7 mW）；4x 超采样 + 单字体整串 + ascent 居中（pil-table-render teal 节合规） |
 
 ## 复跑（在站点根目录下）
 
