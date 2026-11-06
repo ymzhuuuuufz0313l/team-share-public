@@ -289,7 +289,7 @@ chip_tb_top.u_HK1V11.u_HK1V11_digital_top
 | **③ 三路裁决 + 转写纠错** | t10/t11/t12 复数 23/27/102 次命中 → 全 ≤ 巧合基线；仲裁 qwen-i；转写漂移发现（K3=0x18F 非 0x16F、K4 序、BOE 首符 0x0FC 非 0x3FC） | 矛盾①②③裁决；但仍在 SHORT 模块里打转 |
 | **④ 关键突破（t3/t7）** | 独立发现**位序反转** + **LONG 路径真模块** | ★ 推翻"两套码本"：码本只有一个、位序约定相反 |
 | **⑤ 队长三重验证** | 行槽位实测 + bitrev40 精确匹配 + 实例化确认 | 定案证据链闭合 |
-| **⑥ 定案 → 队长 v3 定案** | t21"跨 word 配对错配"→ v2"关 BIT_SWAP"→ 队长 v3 亲读 driver 推翻：真根因 = BIT_SWAP 语法非法从未生效 + CDR shift-down + 回文陷阱 | 修复：修好 BIT_SWAP 语法（MSB-first 生效）；**1106 实测：训练段 K 码 K2K3K2K3K2K3K2K3K4 完整找到（✅ 验证生效，训练后阶段另有异常定位中）** |
+| **⑥ 定案 → 队长 v3 定案** | 用户质疑 → 提供决定性事实（`tmp[0:9]` 语法非法）→ 队长 v3 亲读 driver 推翻 t21/v2：真根因 = BIT_SWAP 语法非法从未生效 + CDR shift-down + 回文陷阱 | 修复：修好 BIT_SWAP 语法（MSB-first 生效）；**1106 实测：训练段 K 码 K2K3K2K3K2K3K2K3K4 完整找到（✅ 验证生效，训练后阶段另有异常定位中）** |
 
 ---
 
@@ -313,14 +313,16 @@ chip_tb_top.u_HK1V11.u_HK1V11_digital_top
 
 ![K 码槽位命中分布](./images/kcode_slot_hits.svg?v=20261105)
 
-| K | 文件真实 K 码（4×10bit） | 40-bit 整数 | 出现次数 | 槽位 |
+| K | 文件真实 K 码（4×10bit） | 40-bit 整数（4 符号 MSB-first 拼接） | 出现次数 | 槽位 |
 |---|---|---|---|---|
-| K1 | `0FC 3FF 03C 003` | 0x0FC3FFF803 | **130** | @off20（每 Active 行） |
-| K2 | `0CC 3FF 0C3 3FC` | 0x0CC3FF0C3FC | **130** | @off815（每 Active 行） |
-| K3 | `303 000 30C 003` | 0x30300030C03 | 5 | LSP / 行尾 K3 槽 |
-| K4 | `00F 000 333 3FC` | 0x00F0003333FC | 3 | CTRL_F 行首 |
+| K1 | `0FC 3FF 03C 003` | 0x3F3FF0F003 | **130** | @off20（每 Active 行） |
+| K2 | `0CC 3FF 0C3 3FC` | 0x333FF30FFC | **138** | @off815 主帧槽(130) + 6 训练头 + 2 额外插入 |
+| K3 | `303 000 30C 003` | 0xC0C00C3003 | 5 | LSP / 行尾 K3 槽 |
+| K4 | `00F 000 333 3FC` | 0x03C00CCFFC | 3 | CTRL_F 行首 |
 
 > 注：K 码含 `0x3ff`（全 1）/ `0x0`（全 0）——非 8b/10b 合法符号，说明 420b 用**自定义 10-bit 编码**，对齐锚点正是这些全 0/全 1 窗（`DATA_POINT`）。
+>
+> 「40-bit 整数」列 = 文件 4 符号按 **MSB-first** 拼成的 40-bit 整数；其 `bitrev40` = RTL 模板（§4.3：K1 `0xC00F0FFCFC` / K2 `0x3FF0CFFCCC` / K3 `0xC00C300303` / K4 `0x3FF33003C0`），四码全部满足 `RTL == bitrev40(文件)`。
 
 ### 4.3 RTL LONG 模板值 + bitrev40 对照
 
@@ -351,7 +353,7 @@ encData 区存在**固定偏移的数据 pattern 符号**（如 `0x1FA@off150 ×
 
 ## 5. 根因定案
 
-**真根因 = `BIT_SWAP 语法非法从未生效` + `CDR shift-down` + `回文陷阱`**（队长终局复核 v3 定案，推翻 t21「跨 word 配对错配」与 v2「关 BIT_SWAP」）。**【✅ 已实测确认（2026-11-06）】**：修复 driver `BIT_SWAP` 语法（`tmp[0:9]` 非法逆序 part-select → 合法显式拼接，MSB-first 生效）后，仿真训练阶段已找到完整 K 码序列 `K2K3K2K3K2K3K2K3K4`（与 RTL LSP 状态机设计序列吻合）——同时**反向实证 CDR=shift-down（约定 B）排除法结论**。
+**真根因 = `BIT_SWAP 语法非法从未生效` + `CDR shift-down` + `回文陷阱`**（队长终局复核 v3 定案，推翻 t21「跨 word 配对错配」与 v2「关 BIT_SWAP」）。**【✅ 已实测确认（2026-11-06）】**：修复 driver `BIT_SWAP` 语法（`tmp[0:9]` 非法逆序 part-select → 合法显式拼接，MSB-first 生效）后，仿真训练阶段已找到完整 K 码序列 `K2K3K2K3K2K3K2K3K4`（与 RTL LSP 状态机设计序列吻合；**来源：2026-11-06 服务器仿真实测，用户提供 fsdb 结果**）——同时**反向实证 CDR=shift-down（约定 B）排除法结论**。
 
 > ⚠️ **根因定案版（v3，2026-11-06）**：t21"跨 word 配对错配"、v2"BIT_SWAP=ON 往返抵消、关 BIT_SWAP"——**均被推翻**。决定性代码事实：`isptx_driver.sv:1111` 的 `drive_one_symbol(tmp[0:9])` 是**非法逆序 part-select**（`tmp` 为 `int unsigned`，位选方向 `[31:0]`），VCS 直接编译报错 → **`BIT_SWAP` 分支从未编译通过、从未生效**；线上一直是 `else` 分支 `drive_one_symbol(tmp[9:0])`（合法：原始文件值、LSB-first、bit0 先发）。CDR 排除法钉死为 **shift-down**（dout[19]=新，"约定 B"）。
 
@@ -401,8 +403,12 @@ encData 区存在**固定偏移的数据 pattern 符号**（如 `0x1FA@off150 ×
 **编译事实（队长亲读 `isptx_driver.sv:1080-1121`）**：
 
 ```
+1089|    int unsigned  tmp;                  // int，位选方向 [31:0]
+1110|    `ifdef BIT_SWAP
 1111|        drive_one_symbol(tmp[0:9]);     // BIT_SWAP 分支：非法逆序 part-select → VCS 编译错误
+1112|    `else
 1113|        drive_one_symbol(tmp[9:0]);     // else 分支：合法，文件值，drive symbol[0] 先发 = LSB-first
+1114|    `endif
 ```
 
 `tmp` 为 `int unsigned`（位选方向 `[31:0]`），`tmp[0:9]` 逆序 part-select 非法 → **BIT_SWAP 分支从未编译通过、从未生效** ⇒ 所有跑过的 case 线上 = **原始文件值、LSB-first（bit0 先发）**（编译事实，非假设）。
@@ -499,7 +505,7 @@ u_LOGIC_CENTER.LINK_LOGIC.LC_CHPI_DECODE.LONG_ENCODING.LONG_ENCODING_ALIGN
 
 ```
 重跑 t_H1440_V16_FPS280_PORT_NUM12_DPLC_MODE1_420b_boe_test（BIT_SWAP 语法修好，MSB-first 生效）：
-- 预期 K1_FIND ≈130 / K2_FIND ≈130 / K3_FIND ≈5 / K4_FIND ≈3 置位
+- 预期 K1_FIND ≈130 / K2_FIND ≈138 / K3_FIND ≈5 / K4_FIND ≈3 置位（K2 全量 138 = 130 主帧槽@off815 + 6 训练头 + 2 额外插入）
 - 数据解码 / 像素比对需确认在 MSB-first 下正常
 ```
 
@@ -525,14 +531,16 @@ u_LOGIC_CENTER.LINK_LOGIC.LC_CHPI_DECODE.LONG_ENCODING.LONG_ENCODING_ALIGN
 | `m_qwen_h.md` / `m_qwen_h2.md` | qwen-h 盲测/裁决 | 100 次单符号 + 行结构槽位映射（offset 815） |
 | `m_qwen_i.md` | qwen-i 仲裁 | 三矛盾点裁决 + 修复方向 |
 | `m_qwen_d2.md` | qwen-d 裁决 | 102 次命中（20-bit 模式）+ GLM 穷举审计 |
-| `m_qwen_c2.md` | qwen-c 数据链·路1 | driver 侧 wire bit 序钉死（BIT_SWAP=ON → 线 MSB-first） |
+| `m_qwen_c2.md` | qwen-c 数据链·路1 | driver 侧 wire bit 序钉死（BIT_SWAP 语法非法从未编译 → 线上恒 else 分支 LSB-first）【结论已被 v3 修正】 |
 | `m_qwen_d3.md` | qwen-d 数据链·路2 | CDR 重组 bit 序 + 4 组合关系表；**CDR 移位方向已由队长 v3 排除法钉死 shift-down（convB）**（dout_lane [待确认] 关闭，与 t12/t4/qwen-d 互锁） |
-| `m_qwen_e2.md` | qwen-e 数据链·路3 | RTL 滑窗 / 半窗比较 + 40-bit 叠放序（S3,S4,S1,S2） |
+| `m_qwen_e2.md` | qwen-e 数据链·路3 | RTL 滑窗 / 半窗比较 + 40-bit 叠放序（S3,S4,S1,S2）（=RTL 比对期望序，非 wire 实际到达序；wire 实际=文件序） |
 | `m_qwen_f3.md` | qwen-f 数据链·路4 | 用户变换数学复核 + 与 RTL 叠放序对位 |
 | `m_qwen_g2.md` | qwen-g 数据链·路5 | 审查盲区复盘（为什么之前没查到） |
 | `m_qwen_h3.md` | qwen-h 数据链·路6 | driver→CDR→滑窗→模板 端到端 bit 级推演 |
 | `m_qwen_i2.md` | qwen-i 终局仲裁（t21） | 叠放序 / 用户变换对位（**t21 结论已被队长复核 v3 定案修正**） |
 | `m_captain_bitrev_cancel.md` | **队长终局复核 v3（定案）** | **BIT_SWAP 语法非法从未生效 + CDR shift-down + 回文陷阱**（推翻 t21 与 v2，亲读 `isptx_driver.sv:1080-1121` + RTL 337 行手工推演；§5/§6/§7 依据） |
+
+> **注（模块同一性，队长 HDL 查实，v3 §9）**：数据通路真模块 = **`LONG_ENCODING_ALIGN`**（`LONG_ENCODING.v:81` 实例化）；**`CHPI_KCODE_ALIGN_LONG_L0.v`**（337 行，`long_encoding.f:1` 编译包含、**从未实例化**）是其**同构孪生**——两文件 K 码模板常量逐 bit 相同、`DATA_ALIGN_PRE` 缝合表达式逐条相同、半窗比对语义相同（真模块比 `DATA_ALIGN_PRE_D` 多一级打拍 + CODE2 多 `~KEY_CODE_20B` 掩码），v3 结论全部成立。站点 RTL 行号一律以真模块 `LONG_ENCODING_ALIGN.v` 为准：K 码模板 :101-104 / `DATA_ALIGN_PRE` 缝合 :394-413 / K1_CODE1/2 比对 :419-420 / 训练序列注释 :280-282。
 
 ### 10.2 队长验证脚本清单
 
@@ -603,4 +611,4 @@ u_LOGIC_CENTER.LINK_LOGIC.LC_CHPI_DECODE.LONG_ENCODING.LONG_ENCODING_ALIGN
   <script src="./fx.js?v=11"></script>
 </body>
 </html>
-<!-- ymzhu 2026-11-05 20:13 -->
+<!-- ymzhu 2026-11-06 11:59 -->

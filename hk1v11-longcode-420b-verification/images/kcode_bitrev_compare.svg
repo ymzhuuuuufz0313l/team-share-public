@@ -26,7 +26,7 @@
     <rect x="560" y="136" width="280" height="32" rx="6" fill="#fee2e2" stroke="#fca5a5" stroke-width="1.5"/>
     <text x="700" y="157" font-size="14" fill="#991b1b" text-anchor="middle" font-family="'IBM Plex Mono', monospace" font-weight="600">0xC00F0FFCFC</text>
     <rect x="880" y="136" width="260" height="32" rx="6" fill="#d1fae5" stroke="#6ee7b7" stroke-width="1.5"/>
-    <text x="1010" y="157" font-size="14" fill="#065f46" text-anchor="middle" font-family="'IBM Plex Mono', monospace" font-weight="600">0x0FC3FFF803</text>
+    <text x="1010" y="157" font-size="14" fill="#065f46" text-anchor="middle" font-family="'IBM Plex Mono', monospace" font-weight="600">0x3F3FF0F003</text>
   </g>
   <!-- K2 -->
   <g>
@@ -37,7 +37,7 @@
     <rect x="560" y="192" width="280" height="32" rx="6" fill="#fee2e2" stroke="#fca5a5" stroke-width="1.5"/>
     <text x="700" y="213" font-size="14" fill="#991b1b" text-anchor="middle" font-family="'IBM Plex Mono', monospace" font-weight="600">0x3FF0CFFCCC</text>
     <rect x="880" y="192" width="260" height="32" rx="6" fill="#d1fae5" stroke="#6ee7b7" stroke-width="1.5"/>
-    <text x="1010" y="213" font-size="14" fill="#065f46" text-anchor="middle" font-family="'IBM Plex Mono', monospace" font-weight="600">0x0CC3FF0C3FC</text>
+    <text x="1010" y="213" font-size="14" fill="#065f46" text-anchor="middle" font-family="'IBM Plex Mono', monospace" font-weight="600">0x333FF30FFC</text>
   </g>
   <!-- K3 -->
   <g>
@@ -48,7 +48,7 @@
     <rect x="560" y="248" width="280" height="32" rx="6" fill="#fee2e2" stroke="#fca5a5" stroke-width="1.5"/>
     <text x="700" y="269" font-size="14" fill="#991b1b" text-anchor="middle" font-family="'IBM Plex Mono', monospace" font-weight="600">0xC00C300303</text>
     <rect x="880" y="248" width="260" height="32" rx="6" fill="#d1fae5" stroke="#6ee7b7" stroke-width="1.5"/>
-    <text x="1010" y="269" font-size="14" fill="#065f46" text-anchor="middle" font-family="'IBM Plex Mono', monospace" font-weight="600">0x30300030C03</text>
+    <text x="1010" y="269" font-size="14" fill="#065f46" text-anchor="middle" font-family="'IBM Plex Mono', monospace" font-weight="600">0xC0C00C3003</text>
   </g>
   <!-- K4 -->
   <g>
@@ -59,7 +59,7 @@
     <rect x="560" y="304" width="280" height="32" rx="6" fill="#fee2e2" stroke="#fca5a5" stroke-width="1.5"/>
     <text x="700" y="325" font-size="14" fill="#991b1b" text-anchor="middle" font-family="'IBM Plex Mono', monospace" font-weight="600">0x3FF33003C0</text>
     <rect x="880" y="304" width="260" height="32" rx="6" fill="#d1fae5" stroke="#6ee7b7" stroke-width="1.5"/>
-    <text x="1010" y="325" font-size="14" fill="#065f46" text-anchor="middle" font-family="'IBM Plex Mono', monospace" font-weight="600">0x00F0003333FC</text>
+    <text x="1010" y="325" font-size="14" fill="#065f46" text-anchor="middle" font-family="'IBM Plex Mono', monospace" font-weight="600">0x03C00CCFFC</text>
   </g>
 
   <!-- divider -->
@@ -69,7 +69,7 @@
   <!-- File 40-bit string -->
   <text x="60" y="426" font-size="12" fill="#166534" font-weight="700">文件真实 K1（原样）</text>
   <g font-family="'IBM Plex Mono', monospace" font-size="15" font-weight="600">
-    <text x="250" y="430" fill="#166534">0011111100 1111111111 0000011110 0000000011</text>
+    <text x="250" y="430" fill="#166534">0011111100 1111111111 0000111100 0000000011</text>
   </g>
   <g font-family="'IBM Plex Mono', monospace" font-size="11" fill="#94a3b8">
     <text x="250" y="448">39 ────────── 30  29 ────────── 20  19 ────────── 10   9 ────────── 0</text>
@@ -82,7 +82,7 @@
   <!-- RTL 40-bit string -->
   <text x="60" y="520" font-size="12" fill="#991b1b" font-weight="700">RTL 模板 K1（位反）</text>
   <g font-family="'IBM Plex Mono', monospace" font-size="15" font-weight="600">
-    <text x="250" y="524" fill="#991b1b">1100000000 0011110000 1111111111 1100111111 00</text>
+    <text x="250" y="524" fill="#991b1b">1100000000 0011110000 1111111111 0011111100</text>
   </g>
   <g font-family="'IBM Plex Mono', monospace" font-size="11" fill="#94a3b8">
     <text x="250" y="542">39 ────────── 30  29 ────────── 20  19 ────────── 10   9 ────────── 0</text>
@@ -92,7 +92,7 @@
   <g>
     <rect x="40" y="558" width="1120" height="82" rx="8" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1.2"/>
     <text x="60" y="582" font-size="12" fill="#475569" font-weight="700">40-bit 整数关系（验证）</text>
-    <text x="60" y="606" font-size="13" fill="#166534" font-family="'IBM Plex Mono', monospace">bitrev40( 0x0FC3FFF803 )  =  0xC00F0FFCFC  =  RTL K1_CODE</text>
+    <text x="60" y="606" font-size="13" fill="#166534" font-family="'IBM Plex Mono', monospace">bitrev40( 0x3F3FF0F003 )  =  0xC00F0FFCFC  =  RTL K1_CODE</text>
     <text x="60" y="626" font-size="12" fill="#64748b">四个 K 码全部满足 RTL == bitrev40(文件)：K1=0xC00F0FFCFC · K2=0x3FF0CFFCCC · K3=0xC00C300303 · K4=0x3FF33003C0</text>
   </g>
 </svg>

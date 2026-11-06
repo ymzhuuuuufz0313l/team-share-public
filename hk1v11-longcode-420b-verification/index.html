@@ -576,8 +576,8 @@
     </a>
     <a class="chapter-card" href="./kcode-debug.html">
       <div class="num">11</div>
-      <div class="title">KCODE 位序反转定案</div>
-      <div class="desc">BOE 420b K1~K4 全找不到根因：LONG 路径模板 40-bit 整串位反 · 8 路盲测+仲裁+队长三重验证全过程</div>
+      <div class="title">KCODE 全找不到定案（BIT_SWAP 语法非法从未生效）</div>
+      <div class="desc">BOE 420b K1~K4 全找不到根因：driver BIT_SWAP 语法非法(tmp[0:9]) 从未生效 → 线上恒 LSB-first + CDR shift-down → 上半窗永不命中；模板本身正确(=bitrev40 文件) · 8 路盲测+仲裁+队长 v3 终局复核</div>
     </a>
   </div>
 
@@ -627,4 +627,4 @@ const lightbox = document.getElementById('lightbox');
 </body>
 </html>
 
-<!-- ymzhu 2026-11-05 11:58 -->
+<!-- ymzhu 2026-11-06 11:59 -->
