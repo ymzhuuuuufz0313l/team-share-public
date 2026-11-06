@@ -70,8 +70,8 @@
   <g>
     <circle cx="600" cy="640" r="11" fill="#059669" stroke="#fff" stroke-width="2"/>
     <rect x="640" y="610" width="480" height="56" rx="10" fill="#059669" stroke="#047857" stroke-width="2"/>
-    <text x="660" y="634" font-size="14" fill="#ffffff" font-weight="700">⑥ 定案：40-bit 整串位序约定相反</text>
-    <text x="660" y="654" font-size="11.5" fill="#d1fae5">修复：LONG_ENCODING_ALIGN 4×2 模板改为文件原样值 · 保持 BIT_SWAP ON</text>
+    <text x="660" y="634" font-size="14" fill="#ffffff" font-weight="700">⑥ 定案 → 队长 v3 定案（亲读 driver 推翻 t21/v2）</text>
+    <text x="660" y="654" font-size="11.5" fill="#d1fae5">修复：修好 BIT_SWAP 语法（MSB-first 生效）· CDR shift-down</text>
     <line x1="609" y1="638" x2="631" y2="638" stroke="#059669" stroke-width="2.5" marker-end="url(#ar-green)"/>
   </g>
 </svg>

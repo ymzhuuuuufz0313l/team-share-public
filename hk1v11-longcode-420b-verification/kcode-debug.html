@@ -9,7 +9,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet">
-  <title>KCODE 420b 位序反转根因 · HK1V11 420b 长编码验证体系</title>
+  <title>KCODE 420b 位序反转根因（BIT_SWAP 语法非法从未生效 + shift-down，v3 定案）· HK1V11 420b 长编码验证体系</title>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <link rel="stylesheet" href="./fx.css?v=10">
   <style>
@@ -222,9 +222,9 @@
   </div>
 
   <script type="text/template" id="md">
-# BOE 420b KCODE 调试全过程：位序反转根因定案
+# BOE 420b KCODE 调试全过程：BIT_SWAP 语法非法从未生效根因定案（v3）
 
-> **一句话结论**：BOE 420b 回放 case 里 `K1_FIND~K4_FIND` 全不置位，**根因是 420b K 码模板的 40-bit 整串位序约定相反（`RTL = bitrev40(文件)`）**——其机理是 20-bit 滑窗的**符号顺序/配对错配**（S2/S3 被拆到两个 word），**不是 per-bit 位序（BIT_SWAP）问题**。码本只有一个，只是位序/符号顺序约定相反。真模块是 **`LONG_ENCODING_ALIGN`（LONG 路径）**，不是任务书/早期分析指向的 `u_CHPI_KCODE_ALIGN_L0`（SHORT 路径）。
+> **一句话结论（队长终局复核 v3 定案，推翻 t21「跨 word 配对错配」与 v2「关 BIT_SWAP」）**：BOE 420b 回放 case 里 `K1_FIND~K4_FIND` 全不置位，**真根因 = driver 的 `BIT_SWAP` 实现语法非法（`tmp[0:9]` 逆序 part-select，VCS 编译报错）→ 从未生效 → 线上恒为 else 分支：原始文件值 LSB-first（bit0 先发）**；CDR 为 **shift-down 型**（新位进 dout[19]，"约定 B"，排除法唯一解）→ 比对窗内重组出的是原始文件值（03C/003），模板上半窗需要的翻转值 0F0/300 永不出现 → `K1_CODE2` 恒 0。**K1 前两符号 0FC/3FF 恰为回文**（翻转不变）→ 下半窗任何位序都命中 = 此前 102 次"半对命中"假象来源。**激励、模板、对齐引擎都没问题**（`DATA_POINT` 锚点自动吸收任意相位）。**BIT_SWAP 的意图（MSB-first 发送）恰是正确修复方向，只是实现从未生效——修复 = 一行合法语法（显式拼接 `{tmp[0],…tmp[9]}` 使其 MSB-first 生效）**。真模块是 `LONG_ENCODING_ALIGN`（LONG 路径）。
 
 ![位序反转对照：文件真实 K 码 → RTL 模板](./images/kcode_bitrev_compare.svg?v=20261105)
 
@@ -289,7 +289,7 @@ chip_tb_top.u_HK1V11.u_HK1V11_digital_top
 | **③ 三路裁决 + 转写纠错** | t10/t11/t12 复数 23/27/102 次命中 → 全 ≤ 巧合基线；仲裁 qwen-i；转写漂移发现（K3=0x18F 非 0x16F、K4 序、BOE 首符 0x0FC 非 0x3FC） | 矛盾①②③裁决；但仍在 SHORT 模块里打转 |
 | **④ 关键突破（t3/t7）** | 独立发现**位序反转** + **LONG 路径真模块** | ★ 推翻"两套码本"：码本只有一个、位序约定相反 |
 | **⑤ 队长三重验证** | 行槽位实测 + bitrev40 精确匹配 + 实例化确认 | 定案证据链闭合 |
-| **⑥ 定案** | 40-bit 整串位序约定相反 | 修复：模板改为文件原样值 |
+| **⑥ 定案 → 队长 v3 定案** | t21"跨 word 配对错配"→ v2"关 BIT_SWAP"→ 队长 v3 亲读 driver 推翻：真根因 = BIT_SWAP 语法非法从未生效 + CDR shift-down + 回文陷阱 | 修复：修好 BIT_SWAP 语法（MSB-first 生效） |
 
 ---
 
@@ -351,25 +351,34 @@ encData 区存在**固定偏移的数据 pattern 符号**（如 `0x1FA@off150 ×
 
 ## 5. 根因定案
 
-**40-bit 整串位序约定相反（`RTL = bitrev40(文件)`）**。终局仲裁（t21）进一步钉死其机理：`bitrev40 = 〔每 10bit 翻转〕+〔符号顺序反转〕`，其中**真正导致 K_FIND 恒 0 的是"符号顺序/配对"这一半，不是 per-bit 位序（BIT_SWAP）这一半**——详见 §6 终局复核。
+**真根因 = `BIT_SWAP 语法非法从未生效` + `CDR shift-down` + `回文陷阱`**（队长终局复核 v3 定案，推翻 t21「跨 word 配对错配」与 v2「关 BIT_SWAP」）。
 
-> ⚠️ **更正早期表述**：早期说"40-bit 窗口（文件原样）≠ 模板（整串反转）"，把匹配当成"两个 40-bit 值直接比较"——这**过于简化**。RTL 实际是 **20-bit 滑窗** `DATA_ALIGN_PRE`（跨两个连续 word 各取 1 符号拼窗）；窗拼不出模板的 `{S3,S4}` / `{S1,S2}` 两半，根因是 **S2/S3 被文件拆到两个 word（配对错配）**，不是"40-bit 值整体位反"这么笼统。
+> ⚠️ **根因定案版（v3，2026-11-06）**：t21"跨 word 配对错配"、v2"BIT_SWAP=ON 往返抵消、关 BIT_SWAP"——**均被推翻**。决定性代码事实：`isptx_driver.sv:1111` 的 `drive_one_symbol(tmp[0:9])` 是**非法逆序 part-select**（`tmp` 为 `int unsigned`，位选方向 `[31:0]`），VCS 直接编译报错 → **`BIT_SWAP` 分支从未编译通过、从未生效**；线上一直是 `else` 分支 `drive_one_symbol(tmp[9:0])`（合法：原始文件值、LSB-first、bit0 先发）。CDR 排除法钉死为 **shift-down**（dout[19]=新，"约定 B"）。
+
+**三没问题 + 唯一断点**：
+
+| 环节 | 状态 | 说明 |
+|------|------|------|
+| 激励（文件 K 码） | ✅ 没问题 | 4 符号值、到达序都对（到达序 = 文件序） |
+| RTL 模板 `K*_CODE` | ✅ 没问题 | 构造 = 用户 KCODE 解法（每 10bit 翻转 + 首符号落低），逐码验证 |
+| 对齐引擎 `DATA_POINT` | ✅ 没问题 | 20 相位滑窗找 3FF/000 锚点，自动吸收任意 word 相位错位 |
+| **driver `BIT_SWAP` 实现 × CDR 移位方向** | ❌ **唯一断点** | `BIT_SWAP` 语法非法从未生效 → 线上恒 LSB-first（else 分支）+ shift-down CDR → 窗内重组出原始文件值 |
 
 证据链：
 
-1. **逐码 bitrev40 精确匹配**：四码 `RTL == bitrev40(文件)`，无一例外（§4.3）。
-2. **行槽位实测**：K1@20 ×130、K2@815 ×130，`20 + 136×899 = 122284` 全闭合（§4.1）。
-3. **全量仿真**：`BIT_SWAP=OFF + I_INDATA[0]=首bit` → K1=130 / K2=138 / K3=5 / K4=3（与帧结构逐行吻合）；`BIT_SWAP=ON`（当前）→ **0 命中**（两种 serdes 约定皆 0）。
-4. **实例化确认**：420b 通路走 `LONG_ENCODING_ALIGN`（LONG 路径），`CHPI_KCODE_ALIGN_LONG_L0.v` 为同值孤儿文件（未被实例化）。
-5. **终局仲裁（t21）**：逐 bit 仿真确认两种 CDR 位序约定下 K1_FIND 均 = 0；根因 = 符号顺序/配对错配（详见 §6）。
+1. **代码事实（队长亲读）**：`tmp[0:9]` 逆序 part-select → VCS 编译错误 → BIT_SWAP 从未生效；线上 = else 分支（原始文件值、LSB-first、bit0 先发）——**编译事实，非假设**（§6.2）。
+2. **CDR 排除法**：线上 LSB-first（事实）下，shift-up（convA）会命中（与 case 矛盾）→ 排除；**shift-down（convB）不命中 = 现状**，与 t12 的 102 命中（按 convB）、t4"MSB-first shift"、qwen-d 猜想全互锁（§6.3）。
+3. **逐 bit 推演**：shift-down（`reg <= {newbit, reg[19:1]}`）先发位落低权位 → LSB-first 线序 + 先发位落低 = 窗内符号保持原始文件值（03C 重组回 03C）→ 上半窗需 0F0/300 永不出现 → `K1_CODE2` 恒 0（§6.2）。
+4. **逐拍时间线**：word1=3FF_0FC → T+2 `DATA_ALIGN_PRE=3FF_0FC` → `K1_CODE1` 置位（在脉冲）；T+3 `D2=003_03C≠300_0F0` → `K1_CODE2` 永不置位 → `K1_FIND=0`，与 case 逐拍一致（§6.2）。
+5. **回文陷阱**：K1 前两符号 0FC/3FF 回文 → 下半窗任何位序都命中 → 102 次"半对命中"假象来源（§6.4）。
 
-> 这是**公共环节**（共享的 40-bit 位序 / 符号顺序约定），不是"单个 K 码模板写错"。四码同断正因为它是一条共享的位序 / 符号顺序约定不一致——四个模板各自都是"合法的 420b K 码（只是位序反了）"。
+> 四码同断正因为共用同一条断点（`BIT_SWAP` 语法非法从未生效 → 线上恒 LSB-first + shift-down CDR），且四码前两符号都含回文符号（K1 `0FC/3FF`、K2 `0CC/3FF` 等）→ 下半窗全假命中、上半窗全真断。
 
 ---
 
-## 6. 终局复核：叠放序与用户变换对位
+## 6. 终局复核：BIT_SWAP 语法非法从未生效 + shift-down + 回文陷阱
 
-> 本节是 t15~t21 数据链 check + 终局仲裁（qwen-i）对"用户变换到底对不对"的逐 bit 复核。结论：**用户变换数学上完全正确，但与 RTL 真实叠放序不一致——真正根因是符号顺序/配对错配，不是 per-bit 位序（BIT_SWAP）问题。**
+> 本节是 t15~t21 数据链 check + 队长终局复核 v3 对"用户变换到底对不对"的逐 bit 复核。结论：**用户变换数学上完全正确（模板就是按它构造的），激励 / 模板 / 对齐引擎都没问题——真正断点是 driver `BIT_SWAP` 实现语法非法从未生效（线上恒 else 分支 LSB-first）+ CDR shift-down（+ 回文陷阱误导）。**
 
 ### 6.1 用户变换的逐 bit 验算
 
@@ -385,76 +394,83 @@ encData 区存在**固定偏移的数据 pattern 符号**（如 `0x1FA@off150 ×
 
 > 注意：这里"RTL 模板"是 **LONG 模块**的模板。早期 t18 比的 `CHPI_KCODE_ALIGN_L0.v`（`seperated_code/`，`0x1FA_2A8_2A8_205`）是 **SHORT 模块**，420b 不走它——读错模块，"用户叠放 ≠ RTL 模板"不成立。
 
-### 6.2 RTL 实际叠放序（引 t17 / t20）
+### 6.2 对齐引擎相位吸收 + 编译事实 + shift-down 推演
 
-RTL 匹配用 **20-bit 滑窗** `DATA_ALIGN_PRE`（`LONG_ENCODING_ALIGN.v:403` / `CHPI_KCODE_ALIGN_LONG_L0.v:171`）：
+**对齐引擎不是断点**：`DATA_POINT[i]` 在 {D1, 当前} 40bit 空间按 20 相位滑窗找 **10bit 全 0/全 1（3FF/000 锚点符号）**，上升沿锁存锚点相位到 `DATA_POINT_LAT`，再按锁存相位重排 `DATA_ALIGN_PRE`（锚点 offset 0 → 原始 D2 word；offset 10 → `{D1[9:0], D2[19:10]}` 缝合窗）。**任意 word 相位错位都被自动吸收**——t21 的"跨 word 配对错配"不是真正断点，那是对齐机制正常工作的一部分。
+
+**编译事实（队长亲读 `isptx_driver.sv:1080-1121`）**：
 
 ```
-DATA_ALIGN_PRE[19:0] = { I_INDATA_D1[9:0], I_INDATA_D2[19:10] }   // off=10 符号边界
-  窗[19:10]（高 10bit）= D1[9:0]   = 新 word（1 拍前）的低符号
-  窗[9:0]  （低 10bit）= D2[19:10] = 旧 word（2 拍前）的高符号
+1111|        drive_one_symbol(tmp[0:9]);     // BIT_SWAP 分支：非法逆序 part-select → VCS 编译错误
+1113|        drive_one_symbol(tmp[9:0]);     // else 分支：合法，文件值，drive symbol[0] 先发 = LSB-first
 ```
 
-- **半窗时序**：`CODE1` 比模板下半 `{S3,S4}`（T-1 拍）、`CODE2` 比上半 `{S1,S2}`（T 拍）→ 同一 20-bit 窗每拍推进 2 符号（= CDR 每拍 20-bit / 2 符号）。
-- **旧符号（首符号）落窗低 10bit `[9:0]`，新符号落高 10bit `[19:10]`**（t19 判对、t17 判反）。
-- 要 K_FIND=1，反推 RTL 期望 4 符号按 **`S4`（前 word `[19:10]`）→ `S2,S3`（同一 word：S2 高 `[19:10]`、S3 低 `[9:0]`）→ `S1`（后 word `[9:0]`）** 到达。
+`tmp` 为 `int unsigned`（位选方向 `[31:0]`），`tmp[0:9]` 逆序 part-select 非法 → **BIT_SWAP 分支从未编译通过、从未生效** ⇒ 所有跑过的 case 线上 = **原始文件值、LSB-first（bit0 先发）**（编译事实，非假设）。
 
-### 6.3 两者是否一致 + 真正根因
+**断点在 shift-down CDR（逐 bit）**：
+- shift-down 移位寄存器（`reg <= {newbit, reg[19:1]}`）：新位进 dout[19]、旧位往低位移 ⇒ **先到的位落低权位**。
+- LSB-first 线序 + 先发位落低 ⇒ 重组出的 word 内符号 = **原始文件值原样**（03C 重组回 03C）。
+- 逐拍时间线（word 对齐相位）：word1=`{3FF,0FC}`=K1_CODE[19:0]（回文，天然对上）→ 锚点 3FF@word1[19:10] → T+1 `DATA_POINT[0]` 锁存 → T+2 `DATA_ALIGN_PRE = D2 = 3FF_0FC` → **`K1_CODE1` 置位（在脉冲）**；T+3 `D2 = word2 = 003_03C ≠ 300_0F0` → **`K1_CODE2` 永不置位** → `K1_FIND=0`，与 case 现象逐拍一致。
 
-**不一致。** 文件 4 符号（每 10bit 翻转后，驱动序）= `S4,S3,S2,S1`，被 CDR 装成 word1=`{S4,S3}`、word2=`{S2,S1}`；而 RTL 要 word1=`{S2,S3}`（S2 高、S3 低）。
+### 6.3 两行真值表（K1，线上 LSB-first 为编译事实）
 
-| 符号 | RTL 要求（要 K_FIND=1） | 文件实际 | 一致？ |
+| CDR | 线上（LSB-first，事实） | 窗 2 实际值 | K1 命中？ |
 |---|---|---|---|
-| S4 | 前 word `[19:10]` | word1 | ✓ 可对齐 |
-| S2 | **中 word 高 `[19:10]`** | word2 高 | ✗ 错 word |
-| S3 | **中 word 低 `[9:0]`** | word1 低 | ✗ 错 word |
-| S1 | 后 word `[9:0]` | word2 低 | ✓ 可对齐 |
+| shift-up（dout[0]=新，convA） | 文件值 | 300_0F0 | ✓（与 case 矛盾 → 排除） |
+| **shift-down（dout[19]=新，convB）** | 文件值 | **003_03C** | **✗ ← 现状** |
 
-> **真正根因 = 符号顺序 / 配对错配**：S2 与 S3 被文件拆到两个 word（S3 在 word1、S2 在 word2），RTL 要它们同在一个 word（中 word，S2 高 S3 低）。**不是 per-bit 位序（BIT_SWAP）问题**：两种 CDR 位序约定下 K1_FIND 均 = 0（Python 仿真，`arb_t21_check.py`），与 case 现象一致。BIT_SWAP=ON（数据解码依赖）不是根因；CDR 位序 A/B 也不是根因。
+> 线上 LSB-first 是**编译事实**（非假设）→ 四组合表只剩两行。**shift-down（convB）唯一对应 case 现象**，排除法钉死 t16 的 CDR 移位方向 [待确认]。**旁证全互锁**：qwen-d 猜想约定 B；t12 按约定 B（newest@MSB）搜到 102 次命中；t4 最早判断"CDR 为 MSB-first shift"——全部一致。
 
-### 6.4 审查盲区复盘（引 t19）
+### 6.4 审查盲区复盘：回文陷阱（为什么 8+1 路全员被骗）
 
-8 路全停在"文件 40-bit 值 vs 模板 40-bit 值"的**静态命中比对**，没有把 RTL 的 20-bit 滑窗 `DATA_ALIGN_PRE` 展开成"符号到达序 / 跨 word 配对"。审查把"符号顺序反转"当成"还差的一环（无人承担）"，其实它由 RTL 滑窗的跨 word 叠放承担——这一步静态比对根本看不到。t10/t11/t12 的穷举 / 命中统计也在"文件原始符号序"上做，未考虑滑窗跨 word 叠放，"0 命中 / 巧合命中"结论因此失真（详见 `m_qwen_g2.md`）。
+8+1 路全停在"文件 40-bit 值 vs 模板 40-bit 值"的**静态命中比对**，没人按"上下半窗分别验"的思路查过：
+
+- **下半窗回文陷阱**：K1 前两个符号 `0FC=0011111100`（回文）、`3FF`（回文）→ **下半窗 `3FF_0FC` 任何位序约定都对** → t10/t11/t12 在数据里搜到 **102 次"半对命中"**、qwen-d"Pat03/06/12 有 K 码对"，全是这个假象。
+- **上半窗才见分晓**：上半窗 `03C/003` **非回文**，翻转丢没丢一测就露馅——但此前没有任何一路分别验上下半窗。
+- **四码同构**：K2 `0CC`（回文）/`3FF`（回文）| `0C3`、`3FC`（非回文），四码同一陷阱。
+
+详见 `m_qwen_g2.md`（审查盲区）+ `m_captain_bitrev_cancel.md`（队长 v3 逐 bit 推演）。
 
 ---
 
 ## 7. 修复方案
 
-**推荐：把 `LONG_ENCODING_ALIGN.v` 的 4 个 `K*_CODE` 与 `K*_CODE_1` 改为文件原样值（= 当前值的 bitrev40），保持 `BIT_SWAP` ON。**
+**唯一修复：修好 driver 的 `BIT_SWAP` 语法，使其 MSB-first 意图真正生效**（一行合法语法）。shift-down CDR + MSB-first 线 → 先发位落低权位 → 窗口重组出翻转值 0F0/300 → 上下半窗全对上，K1~K4_FIND 应置位。
 
-| K | K*_CODE 当前值 | 改为（文件原样 = bitrev40） |
-|---|---|---|
-| K1 | `0xC00F0FFCFC` | `0x3F3FF0F003` |
-| K2 | `0x3FF0CFFCCC` | `0x333FF30FFC` |
-| K3 | `0xC00C300303` | `0xC0C00C3003` |
-| K4 | `0x3FF33003C0` | `0x03C00CCFFC` |
+> ❌ **已作废方案**：① t21/t22"把 `K*_CODE` 改为文件原样值（S2/S3 对调 / 位反）"——不成立（模板构造本来就正确，`RTL == bitrev40(文件)`）；② v2"关 `BIT_SWAP`"——**方向反了**（BIT_SWAP 意图 MSB-first 恰是正确方向，只是实现从未生效；关掉它反而让线上继续 LSB-first 不命中）。
 
-> 注：上表"改为"列的 16 进制值为 t22 终局复核逐码重算（`bitrev40`）后更正（下方二进制串即文件原样 4 符号，与符号值 `0FC 3FF 03C 003` 等一致）。
+**修复代码（`isptx_driver.sv`，把非法 `tmp[0:9]` 换成合法等价物）**：
 
-```
-K1_CODE  : 40'b11_0000000000_11110000_1111111111_0011111100  →  40'b0011111100_1111111111_0000111100_0000000011
-K2_CODE  : 40'b00_1111111111_00001100_1111111111_0011001100  →  40'b0011001100_1111111111_0011000011_1111111100
-K3_CODE  : 40'b11_0000000000_11000011_0000000000_1100000011  →  40'b1100000011_0000000000_1100001100_0000000011
-K4_CODE  : 40'b00_1111111111_00110011_0000000000_1111000000  →  40'b0000001111_0000000000_1100110011_1111111100
+```systemverilog
+`ifdef BIT_SWAP
+    // tmp[0:9] is an illegal reversed part-select; explicit concat instead
+    drive_one_symbol({tmp[0],tmp[1],tmp[2],tmp[3],tmp[4],
+                      tmp[5],tmp[6],tmp[7],tmp[8],tmp[9]});
+`else
+    drive_one_symbol(tmp[9:0]);
+`endif
 ```
 
-**配套与注意：**
+> 拼接 slice[0]=tmp[9] 先发 → MSB-first；或封装 `bitrev10` 函数（注释英文、只改代码不跑仿真，AGENTS.md）。
 
-- **保持 `BIT_SWAP` ON**：数据解码 / 参考模型是 LSB-first，依赖它；**不要**改用 `BIT_SWAP` OFF（会破坏数据通路，像素比对 FAIL）。
-- **`K*_CODE_1` 同步位反**：改 `K*_CODE` 时 `K*_CODE_1`（互补值）也要同步位反，保持互补关系。
-- **可选同步孤儿文件**：`CHPI_KCODE_ALIGN_LONG_L0.v` 为同值孤儿（未被实例化），可选同步以保持一致。
-- **下游影响**：K3 还驱动 `LONG_ENCODING_DESCRAMBLE` 的 scramble 状态提交（`LONG_ENCODING_DESCRAMBLE.v:125`「K3 commits the latched scramble state」）——位序修复后 K3_FIND 置位，下游 420b 解码 / 帧对齐一并恢复。
-- **改 RTL 走三关**（AGENTS.md）：① iverilog 语法检查；② `rtl-code-review` 对抗评审（含重定时/成对消费审计）；③ `rtl-signal-trace` 信号链路追踪。
+**影响与注意：**
+
+- **CDR 移位方向 = shift-down（convB）**（排除法钉死，§6.3）；fsdb 直接观察 `dout_lane` 新 bit 进 `[19]` 确认（§9）。
+- **不动 RTL 模板**：`K*_CODE` 保持现值（已正确），无需位反 / 对调。
+- **下游影响**：K3_FIND 置位后驱动 `LONG_ENCODING_DESCRAMBLE` 的 scramble 状态提交，下游 420b 解码 / 帧对齐一并恢复。
+- **改 RTL 走三关**（AGENTS.md）：① iverilog 语法检查（重点：`tmp[0:9]` 已消除编译错误）；② `rtl-code-review` 对抗评审；③ `rtl-signal-trace` 信号链路追踪。
+
+**验证见 §9（现有 fsdb 冒烟，无需改代码重跑）。**
 
 ---
 
 ## 8. 给同事对齐的 3 个关键问题（更新版）
 
-1. **ref model 侧 K 码位序约定以谁为准（文件原样 vs 位反）？**
-   BOE 参考模型（`long_encoding_ref_model`）内部是 LSB-first（"reversed concat so wire carries fg[0] first"），而 RTL 模板是整串反转。需确认 ref model 侧的 K 码 40-bit 位序约定到底以哪个为准——这决定修复该"改模板"还是"改 ref model 驱动约定"。
+1. **修好 `BIT_SWAP` 语法（MSB-first 生效）后，数据解码 / ref model 侧约定是否同步？**
+   修复 = driver 修好 `BIT_SWAP` 语法使其 MSB-first 意图生效。需确认 `long_encoding_ref_model` 与数据解码路径在 MSB-first 下正常。**遗留 [待确认] 两项已关闭**：① **BOE 编码器 4 符号到达序 = 不再需要确认**（用户变换链本身无误，到达序 = 文件序）；② **CDR 移位方向 = 排除法钉死 shift-down（convB）**（case 现象唯一对应，见 §6.3，与 t12/t4/qwen-d 互锁；t16 的 [待确认] 关闭）。
 
-2. **协议归谁定 / 量产其他 panel 是否同样位反（判 BOE 特例 vs 系统缺陷）？**
-   量产时 Hi image 芯片对接其他 panel，K 码位序约定是否也相反？若**只有 BOE 相反** → BOE 集成特例（改模板或加 BOE 码本分支即可）；若**多家 panel 都相反** → 系统性位序约定缺陷（优先级提升，需架构层面统一）。
+2. **量产其他 panel 的 CDR 移位方向是否同为 shift-down（convB）（判 BOE 特例 vs 系统缺陷）？**
+   真根因 = `BIT_SWAP` 语法非法从未生效 + shift-down CDR。量产时其他 panel 的 CDR 移位方向若同为 **shift-down** → 本修复（修好 BIT_SWAP 语法使其 MSB-first 生效）通用；若为 **shift-up** → 需另加相位 / 按 panel 配置。需确认其他 panel 的 CDR 移位方向，判 BOE 特例 vs 系统缺陷。
 
 3. **SHORT 路径模板（`CHPI_KCODE_ALIGN_L0`）是否也有同样位序问题（内部 training 场景）？**
    SHORT 路径 `u_CHPI_KCODE_ALIGN_L0`（K1=0x1FA,0x2A8,0x2A8,0x205，8b/10b 风格 K28.x）在内部 training 场景下，其模板位序是否与数据流一致？需确认 SHORT 路径是否同样存在位序约定不一致——若一致则本 case 仅是 LONG 路径特例。
@@ -463,26 +479,27 @@ K4_CODE  : 40'b00_1111111111_00110011_0000000000_1111000000  →  40'b0000001111
 
 ## 9. 服务器验证清单
 
-应用模板修复后重跑 case，预期与观测点：
+**现有 fsdb 冒烟验证（无需改代码重跑，两条预言）**：
 
 ```
-1. 重跑：t_H1440_V16_FPS280_PORT_NUM12_DPLC_MODE1_420b_boe_test（PARTNUM=1, DOCNUM=1, BIT_SWAP=ON）
-2. 预期：
-   - K1_FIND 在每行符号 off20 处置位（≈130 次）
-   - K2_FIND 在 off815 处置位（≈130 次）
-   - K3_FIND ≈5、K4_FIND ≈3
-   - 数据解码 / 像素比对恢复正常（scramble 状态随 K3 提交）
-3. Verdi 看正确层次：
-   u_LOGIC_CENTER.LINK_LOGIC.LC_CHPI_DECODE.LONG_ENCODING.LONG_ENCODING_ALIGN
-   信号：DATA_ALIGN_PRE / K1_CODE2 / K1_CODE1_D1 / DATA_POINT / BK_ST / K1~K4_FIND
-4. sim.log 关键行：KCODE_FIND / K1_FIND 置位计数、DATA_ALIGN 锁相
-5. BIT_SWAP 宏确认：case 仍为 BIT_SWAP ON（数据解码依赖），仅改模板
+1. K1 行期间：K1_CODE1 应在脉冲（下半窗 3FF_0FC 命中，回文）、K1_CODE2 一次不动（上半窗需 300_0F0，窗内 003_03C 永不命中）、DATA_ALIGN_PRE 序列 = 3FF_0FC → 003_03C（方向无关，两 CDR 假设下预言相同）
+2. 直接看 dout_lane 移位方向：单符号翻转沿观察新 bit 进 [19]（shift-down/convB，本定案预期）还是 [0]（shift-up/convA，与 case 矛盾）
 ```
 
-**判别实验（不依赖修复的快速验证）：**
+**Verdi 看正确层次：**
 
-- 用 **内部 training 数据**（ref model 流）跑同一 `LONG_ENCODING_ALIGN`：K1~K4_FIND 应置位——一锤定音证明"模板对内部协议正确、对 BOE 位序不匹配"。
-- 或 `BIT_SWAP=OFF` 重跑：四码应置位（但数据解码 FAIL）——证明位序因子，同时说明"仅改 BIT_SWAP"不是正确修复。
+```
+u_LOGIC_CENTER.LINK_LOGIC.LC_CHPI_DECODE.LONG_ENCODING.LONG_ENCODING_ALIGN
+信号：DATA_ALIGN_PRE / K1_CODE2 / K1_CODE1 / DATA_POINT / BK_ST / K1~K4_FIND
+```
+
+**修好 `BIT_SWAP` 语法后重跑验证**（修复落地）：
+
+```
+重跑 t_H1440_V16_FPS280_PORT_NUM12_DPLC_MODE1_420b_boe_test（BIT_SWAP 语法修好，MSB-first 生效）：
+- 预期 K1_FIND ≈130 / K2_FIND ≈130 / K3_FIND ≈5 / K4_FIND ≈3 置位
+- 数据解码 / 像素比对需确认在 MSB-first 下正常
+```
 
 ---
 
@@ -503,12 +520,13 @@ K4_CODE  : 40'b00_1111111111_00110011_0000000000_1111000000  →  40'b0000001111
 | `m_qwen_i.md` | qwen-i 仲裁 | 三矛盾点裁决 + 修复方向 |
 | `m_qwen_d2.md` | qwen-d 裁决 | 102 次命中（20-bit 模式）+ GLM 穷举审计 |
 | `m_qwen_c2.md` | qwen-c 数据链·路1 | driver 侧 wire bit 序钉死（BIT_SWAP=ON → 线 MSB-first） |
-| `m_qwen_d3.md` | qwen-d 数据链·路2 | CDR 重组 bit 序（dout_lane `[待确认]`）+ 4 组合关系表 |
+| `m_qwen_d3.md` | qwen-d 数据链·路2 | CDR 重组 bit 序 + 4 组合关系表；**CDR 移位方向已由队长 v3 排除法钉死 shift-down（convB）**（dout_lane [待确认] 关闭，与 t12/t4/qwen-d 互锁） |
 | `m_qwen_e2.md` | qwen-e 数据链·路3 | RTL 滑窗 / 半窗比较 + 40-bit 叠放序（S3,S4,S1,S2） |
 | `m_qwen_f3.md` | qwen-f 数据链·路4 | 用户变换数学复核 + 与 RTL 叠放序对位 |
 | `m_qwen_g2.md` | qwen-g 数据链·路5 | 审查盲区复盘（为什么之前没查到） |
 | `m_qwen_h3.md` | qwen-h 数据链·路6 | driver→CDR→滑窗→模板 端到端 bit 级推演 |
-| `m_qwen_i2.md` | qwen-i 终局仲裁 | **叠放序 / 用户变换对位 + 符号顺序·配对错配根因**（§6） |
+| `m_qwen_i2.md` | qwen-i 终局仲裁（t21） | 叠放序 / 用户变换对位（**t21 结论已被队长复核 v3 定案修正**） |
+| `m_captain_bitrev_cancel.md` | **队长终局复核 v3（定案）** | **BIT_SWAP 语法非法从未生效 + CDR shift-down + 回文陷阱**（推翻 t21 与 v2，亲读 `isptx_driver.sv:1080-1121` + RTL 337 行手工推演；§5/§6/§7 依据） |
 
 ### 10.2 队长验证脚本清单
 
