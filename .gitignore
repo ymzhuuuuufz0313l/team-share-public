@@ -13,3 +13,6 @@ synthesis-integration-flow-guide/pptimage/
 
 # 图表动画化 PNG 预览缓存（正式图为 images/ 下 SVG，页面未引用），不入库
 hk1v11-synthesis-postpt-practice/png_preview/
+
+# Python 字节码缓存（含 image/tools/），不入库
+__pycache__/
