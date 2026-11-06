@@ -491,6 +491,7 @@ HV2M23_digital_top        1.17e-02  2.58e-03  1.76e-06  1.43e-02  100.0
 |------|----------|-----------|---------|-------------|------|
 | `2lane_descramble24b_1106` | - | - | - | **14.7 mW** | descramble 24b（2lane 1.6G；细分待补） |
 | `2lane_descramble8b_1106` | - | - | - | **15.2 mW** | descramble 8b（2lane 1.6G；细分待补） |
+| `2lane_noscramble_1106` | - | - | - | **13.3 mW** | noscramble（2lane 1.6G；细分待补） |
 
 ![PTPX 功耗对比（SVT，1106，descramble 2lane 1.6G）](./image/power_compare_descramble_1106.png)
 
@@ -502,7 +503,7 @@ HV2M23_digital_top        1.17e-02  2.58e-03  1.76e-06  1.43e-02  100.0
 
 ![功耗对比全览（PowerPro / PTPX，LVT → SVT）](./image/power_compare_vertical.png)
 
-- HV2M23 SVT 当前值与本章 §2.3 的 0812 六组实测一致（1L 14.3 / 15.0 / 15.0、2L 15.5 / 16.1 / 17.9 mW）；1106 新增 descramble 2lane 1.6G 实测（24b 14.7 / 8b 15.2 mW，见 §2.3 descramble 对比图）；
+- HV2M23 SVT 当前值与本章 §2.3 的 0812 六组实测一致（1L 14.3 / 15.0 / 15.0、2L 15.5 / 16.1 / 17.9 mW）；1106 新增 descramble 2lane 1.6G 实测（24b 14.7 / 8b 15.2 / noscramble 13.3 mW，见 §2.3 descramble 对比图）；
 - 造图脚本：`HV2M23/back_ppt/gen_power_compare_vertical.py`（数据源为 0720~0814 报表 Excel 汇总，与 BE Review PPT v30 对比页同源同图）。
 
 </script>
