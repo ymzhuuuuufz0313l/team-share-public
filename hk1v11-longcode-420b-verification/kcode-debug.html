@@ -289,7 +289,7 @@ chip_tb_top.u_HK1V11.u_HK1V11_digital_top
 | **③ 三路裁决 + 转写纠错** | t10/t11/t12 复数 23/27/102 次命中 → 全 ≤ 巧合基线；仲裁 qwen-i；转写漂移发现（K3=0x18F 非 0x16F、K4 序、BOE 首符 0x0FC 非 0x3FC） | 矛盾①②③裁决；但仍在 SHORT 模块里打转 |
 | **④ 关键突破（t3/t7）** | 独立发现**位序反转** + **LONG 路径真模块** | ★ 推翻"两套码本"：码本只有一个、位序约定相反 |
 | **⑤ 队长三重验证** | 行槽位实测 + bitrev40 精确匹配 + 实例化确认 | 定案证据链闭合 |
-| **⑥ 定案 → 队长 v3 定案** | t21"跨 word 配对错配"→ v2"关 BIT_SWAP"→ 队长 v3 亲读 driver 推翻：真根因 = BIT_SWAP 语法非法从未生效 + CDR shift-down + 回文陷阱 | 修复：修好 BIT_SWAP 语法（MSB-first 生效） |
+| **⑥ 定案 → 队长 v3 定案** | t21"跨 word 配对错配"→ v2"关 BIT_SWAP"→ 队长 v3 亲读 driver 推翻：真根因 = BIT_SWAP 语法非法从未生效 + CDR shift-down + 回文陷阱 | 修复：修好 BIT_SWAP 语法（MSB-first 生效）；**1106 实测：训练段 K 码 K2K3K2K3K2K3K2K3K4 完整找到（✅ 验证生效，训练后阶段另有异常定位中）** |
 
 ---
 
@@ -351,7 +351,7 @@ encData 区存在**固定偏移的数据 pattern 符号**（如 `0x1FA@off150 ×
 
 ## 5. 根因定案
 
-**真根因 = `BIT_SWAP 语法非法从未生效` + `CDR shift-down` + `回文陷阱`**（队长终局复核 v3 定案，推翻 t21「跨 word 配对错配」与 v2「关 BIT_SWAP」）。
+**真根因 = `BIT_SWAP 语法非法从未生效` + `CDR shift-down` + `回文陷阱`**（队长终局复核 v3 定案，推翻 t21「跨 word 配对错配」与 v2「关 BIT_SWAP」）。**【✅ 已实测确认（2026-11-06）】**：修复 driver `BIT_SWAP` 语法（`tmp[0:9]` 非法逆序 part-select → 合法显式拼接，MSB-first 生效）后，仿真训练阶段已找到完整 K 码序列 `K2K3K2K3K2K3K2K3K4`（与 RTL LSP 状态机设计序列吻合）——同时**反向实证 CDR=shift-down（约定 B）排除法结论**。
 
 > ⚠️ **根因定案版（v3，2026-11-06）**：t21"跨 word 配对错配"、v2"BIT_SWAP=ON 往返抵消、关 BIT_SWAP"——**均被推翻**。决定性代码事实：`isptx_driver.sv:1111` 的 `drive_one_symbol(tmp[0:9])` 是**非法逆序 part-select**（`tmp` 为 `int unsigned`，位选方向 `[31:0]`），VCS 直接编译报错 → **`BIT_SWAP` 分支从未编译通过、从未生效**；线上一直是 `else` 分支 `drive_one_symbol(tmp[9:0])`（合法：原始文件值、LSB-first、bit0 先发）。CDR 排除法钉死为 **shift-down**（dout[19]=新，"约定 B"）。
 
@@ -437,6 +437,8 @@ encData 区存在**固定偏移的数据 pattern 符号**（如 `0x1FA@off150 ×
 
 **唯一修复：修好 driver 的 `BIT_SWAP` 语法，使其 MSB-first 意图真正生效**（一行合法语法）。shift-down CDR + MSB-first 线 → 先发位落低权位 → 窗口重组出翻转值 0F0/300 → 上下半窗全对上，K1~K4_FIND 应置位。
 
+> ✅ **已实施并验证（2026-11-06）**：用户已按此修复（合法显式拼接，MSB-first 生效），仿真实测**训练阶段 K 码序列完整找到**（K2K3K2K3K2K3K2K3K4，与 RTL LSP 状态机设计序列吻合）。
+
 > ❌ **已作废方案**：① t21/t22"把 `K*_CODE` 改为文件原样值（S2/S3 对调 / 位反）"——不成立（模板构造本来就正确，`RTL == bitrev40(文件)`）；② v2"关 `BIT_SWAP`"——**方向反了**（BIT_SWAP 意图 MSB-first 恰是正确方向，只是实现从未生效；关掉它反而让线上继续 LSB-first 不命中）。
 
 **修复代码（`isptx_driver.sv`，把非法 `tmp[0:9]` 换成合法等价物）**：
@@ -500,6 +502,10 @@ u_LOGIC_CENTER.LINK_LOGIC.LC_CHPI_DECODE.LONG_ENCODING.LONG_ENCODING_ALIGN
 - 预期 K1_FIND ≈130 / K2_FIND ≈130 / K3_FIND ≈5 / K4_FIND ≈3 置位
 - 数据解码 / 像素比对需确认在 MSB-first 下正常
 ```
+
+**实测确认（2026-11-06）**：修复后仿真训练阶段 K 码序列已完整找到（K2K3K2K3K2K3K2K3K4，与 RTL LSP 状态机设计序列吻合）→ 根因 + 修复双确认。
+
+**遗留：训练阶段之后的后续问题** 🟡 [定位中]：已定位到训练段 K 码正常，训练之后阶段仍有异常，细节定位中（[待确认]）。原两条 [待确认]（CDR 移位方向 = 排除法钉死 shift-down；BOE 编码器 4 符号到达序 = 无需确认）已闭合。
 
 ---
 
