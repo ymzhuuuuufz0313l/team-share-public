@@ -816,6 +816,22 @@ chip_sel=0/1 默认字节映射、checksum 地址覆盖、LSI 保护范围、复
 
 三字段存储/复位/写译码/读回全部既有（R_REG51_F[6:2] / R_REG52_F[7:6] / R_REG56_F[7]），仅加输出端口+门控 assign；LC_REG_MAPPING 1027v1 的 `R_KHEAD_20B_SEL` 端口整体回退摘除（端口本就挂账未连，LINK_CONFIG_CTRL 零残连）。0x1D 仍为 Seg1 checksum 参与寄存器，回 Reserved 后 checksum 机制不变。0x33 字节默认 0X08→0X00 与 RTL（0827v1 起）一致无动作。验收：iverilog 受控对照双文件错误集逐行一致；三字段五项既有性核实。无动作记录：TESTO_SEL 表重排（消费方三件套外）、reg_define +436 行（不含新字段 define）、TEST_MODE/leak 小改。表笔误待反馈：history "khead @0x1D[7:5]"、cs=1 描述 TP_SEL@0x03[6:5]。Excel 登记 NO53。
 
+## 35. 20261106 表全链更新：字段迁址 + 复位维度（依 HK1V11_Register_20261106.xlsm，1106v2）
+
+**表源**：20261106 新表 COM 全量 diff（双盲审 t7/t8 + 交叉验证 t10/t11 + 裁决修复 t12）。用户 11/06 补充复位规格三条作为本代关键规格。三件套升 **1106v2**（HDL/ 与 LC_CPUWR_history/ 逐字节一致），changelist **NO57@R59**。详见 [1106v2 全链更新页](./sync-1106v2.html) + [复位规格页](./reset-spec.html)。
+
+| 字段 | 旧（1106v1 / 1104 代） | 新（20261106 表，1106v2） | 落位 |
+|------|------------------------|---------------------------|------|
+| `VPS_EN_0` | R_REG40_F[6]（0x28[6]，LSI 门控） | R_REG29_F[0]（0x1D[0]，**去 LSI 门控**） | LC_CPUWR；0x28[6] 回 Reserved |
+| `SP_S[2:0]` | R_REG29_F[2:0]（0x1D[2:0]） | R_REG29_F[3:1]（0x1D[3:1]） | LC_REG_MAPPING |
+| `reg_eq_rbc0/1` | R_REG08_F[1:0]（0x08[1:0]，ungated） | R_REG35_F[1:0]（0x23[1:0]，**带出 LSI 门控**，>31 规则） | 输出口迁 LC_CPUWR |
+| `reg_eol` | R_REG56_F[6]（0x38[6]） | R_REG57_F[6]（0x39[6]，LSI 保留） | LC_CPUWR |
+| unlock reset 6 组 | N_RST_NLOCK 域 | **RSTN 域**（13 组全 RSTN） | 详见 [复位规格](./reset-spec.html) |
+
+**复位维度**（用户亲自 review）：① unlock reset 例外 13 组全 RSTN（6 组 t9 迁 + 7 组原符合）② I2C_EN=1 全免（I2C_EN_CTL→TEST_EN→I_TEST_REG_EN→RSTNGEN:50）③ PORSD 不受 password&checksum 保护（RSTN+ungated，checksum 排除属 BCC 软件口径）④ password error reset 例外地址段 32-38 / 40-47 / 51 / 53-57 / 144-147（与表 AC 列逐一致）+ 0x40~0x44 端点消歧 + 0xA0~0xA1 只读。
+
+**验证**：RTL 三关全过（iverilog 三件套 syntax_err=0 / rtl-code-review critical=0·high=0·low=3 / rtl-signal-trace 四信号全链连通）。**表作者反馈 5 项**（主表 0X1D 补 SP_S@[3:1] / CTRL_L 注解消歧 / 0x40~0x43 端点明确 / 0xA0~0xA1 注明 / 服务器侧 flat+env+test 重生成 + VPS_EN_1@0x43[7] 建模）。Excel 登记 NO57。
+
   </script>
   <script>
     document.getElementById('article').innerHTML = marked.parse(document.getElementById('md').textContent.trim());
@@ -830,7 +846,9 @@ const chapters = [
       ['verification', '验证'],
       ['status', '后续'],
       ['sync-1104', '1104同步'],
-      ['sync-1106', '1106同步']
+      ['sync-1106', '1106同步'],
+  ['sync-1106v2', '1106v2全链'],
+  ['reset-spec', '复位规格']
     ];
     const currentPath = location.pathname.split('/').pop() || 'index.html';
     const linksContainer = document.getElementById('navbar-links');

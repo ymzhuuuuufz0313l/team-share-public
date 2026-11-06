@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>复位规格 · 20261106（1106v2）· LC_CPUWR 修改记录</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <style>
+:root {
+      --bg: #f4f1ea;
+      --surface: #fffdf7;
+      --text: #1c2534;
+      --muted: #667180;
+      --accent: #b45309;
+      --accent-soft: #f7e8d4;
+      --line: #ddd6c8;
+      --shadow: 0 12px 32px rgba(28,37,52,0.10);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0e1420;
+        --surface: #161f31;
+        --text: #e9e5d9;
+        --muted: #9aa4b5;
+        --accent: #f0a137;
+        --accent-soft: #3a2f1a;
+        --line: #2b3852;
+        --shadow: 0 12px 32px rgba(0,0,0,0.45);
+      }
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      font-size: 16px;
+      line-height: 1.75;
+    }
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--surface);
+      border-bottom: 1px solid var(--line);
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    }
+    .navbar-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .navbar-brand {
+      font-weight: 700;
+      color: var(--accent);
+      white-space: nowrap;
+      font-size: 15px;
+    }
+    .navbar-links {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      overflow-x: auto;
+      flex: 1;
+      scrollbar-width: none;
+    }
+    .navbar-links::-webkit-scrollbar { display: none; }
+    .navbar-links a {
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 14px;
+      color: var(--text);
+      white-space: nowrap;
+      transition: background 0.15s;
+    }
+    .navbar-links a:hover { background: var(--bg); text-decoration: none; }
+    .navbar-links a.active { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+    @media (max-width: 640px) {
+      .navbar-inner { padding: 10px 16px; gap: 10px; }
+      .navbar-brand { font-size: 14px; }
+      .navbar-links a { font-size: 13px; padding: 5px 8px; }
+    }
+    .container { max-width: 1200px; margin: 0 auto; padding: 48px 24px; }
+    .container.with-toc { display: flex; gap: 32px; align-items: stretch; }
+    .toc-wrapper { width: 260px; flex-shrink: 0; align-self: stretch; }
+    .toc {
+      position: sticky;
+      top: 64px;
+      max-height: calc(100vh - 88px);
+      overflow-y: auto;
+      padding: 16px;
+      background: var(--surface);
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      font-size: 14px;
+      box-shadow: var(--shadow);
+    }
+    .toc a { display: block; padding: 6px 8px; border-radius: 6px; color: var(--muted); margin: 2px 0; transition: background 0.15s, color 0.15s; }
+    .toc a:hover { background: var(--bg); color: var(--accent); text-decoration: none; }
+    .toc a.active { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+    .toc a.toc-h1 { font-weight: 700; color: var(--accent); margin-bottom: 8px; cursor: default; }
+    .toc a.toc-h2 { position: relative; padding-left: 24px; } /* all h2 reserve the arrow slot so entries align */
+    .toc a.toc-h3 { padding-left: 38px; font-size: 13px; }
+    .toc a.toc-parent { position: relative; }
+    .toc .toc-arrow {
+      position: absolute; left: 6px; top: 50%;
+      transform: translateY(-50%) rotate(90deg);
+      font-size: 11px; color: var(--muted);
+      cursor: pointer; user-select: none; padding: 2px 4px;
+      transition: transform .15s, color .15s;
+    }
+    .toc a.collapsed .toc-arrow { transform: translateY(-50%) rotate(0deg); }
+    .toc .toc-arrow:hover { color: var(--accent); }
+    .toc-h3-group.collapsed { display: none; } /* 折叠整组 h3 缩进项（箭头在父 a.toc-parent 内） */
+    h2, h3 { scroll-margin-top: 72px; }
+    .content { flex: 1; min-width: 0; }
+    .article {
+      background: var(--surface);
+      border-radius: 20px;
+      padding: 56px 64px;
+      box-shadow: var(--shadow);
+    }
+    @media (max-width: 640px) {
+      .container { padding: 24px 16px; }
+      .article { padding: 32px 24px; border-radius: 16px; }
+      .toc-wrapper { display: none; }
+      .container.with-toc { display: block; }
+    }
+    h1 { font-size: 36px; margin: 0 0 20px; color: var(--accent); font-weight: 700; letter-spacing: -0.5px; }
+    h2 { font-size: 26px; margin: 48px 0 18px; padding-bottom: 10px; border-bottom: 1px solid var(--line); color: var(--text); font-weight: 600; }
+    h3 { font-size: 20px; margin: 32px 0 14px; color: var(--text); font-weight: 600; }
+    p { margin: 14px 0; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    img { max-width: 100%; border-radius: 10px; border: 1px solid var(--line); cursor: zoom-in; display: block; margin: 28px auto; }
+    table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 14.5px; }
+    th, td { border: 1px solid var(--line); padding: 10px 14px; text-align: left; }
+    th { background: var(--accent-soft); font-weight: 600; }
+    tr:nth-child(even) { background: rgba(0,0,0,0.02); }
+    code { background: var(--bg); padding: 3px 7px; border-radius: 5px; font-family: "IBM Plex Mono", "SFMono-Regular", Consolas, monospace; font-size: 14px; color: var(--accent); }
+    pre { background: var(--bg); padding: 18px; border-radius: 10px; overflow-x: auto; border: 1px solid var(--line); }
+    pre code { padding: 0; background: transparent; color: var(--text); }
+    blockquote { border-left: 4px solid var(--accent); margin: 20px 0; padding: 14px 20px; background: var(--accent-soft); border-radius: 0 10px 10px 0; }
+    ul, ol { padding-left: 28px; }
+    li { margin: 8px 0; }
+    hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
+    .footer { text-align: center; color: var(--muted); margin-top: 48px; font-size: 13px; }
+    .page-nav { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 48px; }
+    .page-nav a { display: block; padding: 16px 20px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; color: var(--text); transition: border-color 0.2s, box-shadow 0.2s; }
+    .page-nav a:hover { border-color: var(--accent); box-shadow: var(--shadow); text-decoration: none; }
+    .page-nav a.next { text-align: right; margin-left: auto; }
+    .page-nav .label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+    .page-nav .title { font-weight: 600; color: var(--accent); }
+    @media (max-width: 640px) { .page-nav { grid-template-columns: 1fr; } .page-nav a.next { text-align: left; margin-left: 0; } }
+    .hero { text-align: center; margin-bottom: 40px; }
+    .hero h1 { margin-bottom: 12px; }
+    .hero .author { color: var(--muted); font-size: 14px; margin-bottom: 16px; }
+    .hero .lead { font-size: 17px; max-width: 720px; margin: 0 auto; }
+    .section-title { font-size: 14px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin: 40px 0 16px; }
+    .chapter-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+    .chapter-card { display: block; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 20px; color: var(--text); transition: border-color 0.2s, transform 0.15s, box-shadow 0.2s; }
+    .chapter-card:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: var(--shadow); text-decoration: none; }
+    .chapter-card .num { display: inline-block; width: 28px; height: 28px; line-height: 28px; border-radius: 50%; background: var(--accent-soft); color: var(--accent); font-size: 13px; font-weight: 700; text-align: center; margin-bottom: 10px; }
+    .chapter-card .title { font-weight: 600; font-size: 15px; margin-bottom: 6px; }
+    .chapter-card .desc { font-size: 13px; color: var(--muted); line-height: 1.5; }
+
+    /* Image lightbox */
+    .lightbox {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.92);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.25s ease, visibility 0.25s ease;
+      cursor: grab;
+    }
+    .lightbox.active {
+      opacity: 1;
+      visibility: visible;
+    }
+    .lightbox img {
+      max-width: none;
+      max-height: none;
+      border: none;
+      border-radius: 4px;
+      cursor: grab;
+      transform-origin: center center;
+      transition: none;
+      margin: 0;
+    }
+    .lightbox img.grabbing { cursor: grabbing; }
+    .lightbox .hint {
+      position: absolute;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: rgba(255,255,255,0.7);
+      font-size: 13px;
+      pointer-events: none;
+      user-select: none;
+      background: rgba(0,0,0,0.4);
+      padding: 6px 14px;
+      border-radius: 20px;
+    }
+    .lightbox .close {
+      position: absolute;
+      top: 20px;
+      right: 24px;
+      color: rgba(255,255,255,0.8);
+      font-size: 32px;
+      line-height: 1;
+      cursor: pointer;
+      user-select: none;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: background 0.2s;
+    }
+    .lightbox .close:hover { background: rgba(255,255,255,0.15); color: #fff; }
+  </style>
+  <link rel="stylesheet" href="./fx.css?v=10">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a class="navbar-brand" href="./">LC_CPUWR</a>
+      <div class="navbar-links" id="navbar-links"></div>
+    </div>
+  </nav>
+
+  <div class="container with-toc">
+    <aside class="toc-wrapper" id="toc-wrapper"><nav class="toc" id="toc"></nav></aside>
+    <div class="content">
+      <article class="article" id="article"></article>
+      <div class="page-nav">
+      <a href="./sync-1106v2.html"><span class="label">上一篇</span><span class="title">1106v2 · 20261106 全链更新</span></a>
+      <span></span>
+      </div>
+      <div class="footer">Shared from team knowledge base</div>
+    </div>
+  </div>
+
+  <script type="text/template" id="md">
+# 十二、复位规格 · 20261106（1106v2 落地）
+
+> 用户补充复位规格三条（11/06）已全部落地/核实：① unlock reset 例外清单 ② PORSD 不受 password&checksum 保护 ③ password error reset 例外地址段。本轮（t12）复位相关**零新增修复项**——t10 复位专项 finding=0、t11 复位分歧 2 条裁定均无需 RTL 改动；t9 的复位改动经 RTL 三关复核维持正确。**本节为用户亲自 review 材料。**
+
+## 1. 复位规格图（四维度）
+
+![复位规格 · 20261106（1106v2 落地）](./images/anim/reset_spec_1106v2.svg?v=20261106r1)
+
+> 四复位规格维度：unlock reset 例外清单 / I2C_EN=1 全免 / PORSD 不受 password&checksum 保护 / password error reset 例外地址段。
+
+## 2. unlock reset 例外清单（13 组 CTRL_F 信号，全 RSTN 域）
+
+| 组 | 字段 | 位段 | 状态 |
+|----|------|------|------|
+| 1 | AVE_RGBW | 0x00[7:5] | t9 迁 RSTN |
+| 2 | AVE_LAST | 0x01[7] | t9 迁 RSTN |
+| 3 | DPLC_GROUP | 0x05[7:5] | t9 迁 RSTN |
+| 4 | DPOLINV / AVE_MODE | 0x06[7,5,3,2,1] | t9 迁 RSTN |
+| 5 | CTRLF_CHECKSUM | 0x07[3:0] | t9 迁 RSTN（跨 unlock 保持 chksum_mode）|
+| 6 | 0x20 组 | 0x20[5:0] | 原符合 RSTN |
+| 7 | 0x21 组 | 0x21[5:4] | 原符合 RSTN |
+| 8 | 0x30 组 | 0x30[7:0] | 原符合 RSTN |
+| 9 | I2C HIT0 / HIT1 | 0xF0 / 0xF1 | 原符合 RSTN |
+
+- **13 组全部落在 RSTN 域**；**6 组由 t9 迁 RSTN**（模式照抄既有 PORSD/CH_SEL/SDC 例外块：写译码带 `(!chksum_mode || unlock_one_shot_a)` 门控、shadow 随迁、默认值不变），**7 组原本已符合**（CH_SEL / SDC / DPLC_MODE / TEST_PRTCT / R_UTC / R_TESTO_SEL / I2C HIT0&1）。
+- **语义**：unlock 时值保持 = 表 R 列例外意图（"显示/unlock 期间操作需维持"）；CTRLF_CHECKSUM 跨 unlock 保持 = chksum_mode 状态维持、AVE/DPLC 保持 = 画面保持。
+
+## 3. I2C_EN=1 全免 unlock reset
+
+- **RTL 零改动**（链路已存在）：`I2C_EN_CTL → TEST_EN → I_TEST_REG_EN → RSTNGEN:50`；I2C_EN=1 时寄存器不进入 unlock reset 语义。
+
+## 4. PORSD 不受 password & checksum 保护
+
+- **RTL 零改动**：PORSD = RSTN 域 + 不在 LSI（password 保护）集。
+- **checksum 排除**属 BCC 主端软件口径（非 RTL）；DV checker 按 0x01 字节追踪不受影响（PORSD 位在 expected 中保持，与 RTL 读回一致）——已注明。
+
+## 5. password error reset 例外地址段
+
+- **RTL 门控集与表 AC 列逐一致 → 零改动**：受门控地址段 = **32-38 / 40-47 / 51 / 53-57 / 144-147（dec）**，与 20261106 表 AC 列逐一致。
+- **0x40~0x43（dec 64~68）端点消歧**：AC 列不含任何 CTRL_L 地址、RTL 所有 `_L` 寄存器全无门控 → **判 0x40~0x44 整块（dec 64~68）不做 password error reset**，两读法行为等价、零改动。
+- **0xA0~0xA1（dec 160/161）**：只读 BCC 监视寄存器（RTL 无存储、直通输入，L138 注释 "reg160/161 have no mask per register map"）→ 无复位语义、零改动；是否应入表口径列入表作者反馈。
+
+## 6. 用户 review 材料入口
+
+- 本文件（复位规格四维度 + 13 组明细）
+- `xverify_glm.md` §三 复位专节
+- `CHANGES.md` 1106v2 (5) 条
+- 每日记录_1109 §四
+
+</script>
+  <script>
+    document.getElementById('article').innerHTML = marked.parse(document.getElementById('md').textContent.trim());
+const chapters = [
+      ['index', '首页'],
+      ['intro', '引言'],
+      ['diagrams', '图解'],
+      ['timeline', '时间线'],
+      ['checksum', '校验和'],
+      ['regmap', '寄存器'],
+      ['register-research', '交叉验证'],
+      ['verification', '验证'],
+      ['status', '后续'],
+      ['sync-1104', '1104同步'],
+      ['sync-1106', '1106同步'],
+  ['sync-1106v2', '1106v2全链'],
+  ['reset-spec', '复位规格']
+    ];
+    const currentPath = location.pathname.split('/').pop() || 'index.html';
+    const linksContainer = document.getElementById('navbar-links');
+    chapters.forEach(([slug, label]) => {
+      const href = slug === 'index' ? './' : `./${slug}.html`;
+      const filename = slug === 'index' ? 'index.html' : `${slug}.html`;
+      const a = document.createElement('a');
+      a.href = href;
+      a.textContent = label;
+      if (currentPath === filename || currentPath.endsWith('/' + filename) || (currentPath === '' && slug === 'index')) {
+        a.classList.add('active');
+      }
+      linksContainer.appendChild(a);
+    });
+const article = document.getElementById('article');
+    const toc = document.getElementById('toc');
+    const h1 = article.querySelector('h1');
+    if (h1) {
+      const a = document.createElement('a');
+      a.href = '#';
+      a.textContent = h1.textContent;
+      a.className = 'toc-h1';
+      toc.appendChild(a);
+    }
+    /* TOC 折叠（对齐 site-template/js/site.js）：带 h3 子标题的 h2 挂 ▸ 箭头，点箭头只折叠/展开不跳转；
+       h3 成组缩进跟随；折叠时高亮落回父级 h2；默认全展开。标题 id 保持 toc-N 以不改既有锚点。 */
+    const headings = Array.from(article.querySelectorAll('h2, h3'));
+    headings.forEach((h, i) => { h.id = 'toc-' + i; });
+    const tocLinks = [];
+    const h3ToH2 = {};   /* h3 id -> 父 h2 id（折叠组激活时高亮回父级） */
+    headings.forEach((h, i) => {
+      if (h.tagName !== 'H2') return;
+      const children = [];
+      let j = i + 1;
+      while (j < headings.length && headings[j].tagName === 'H3') { children.push(headings[j]); j++; }
+      const a = document.createElement('a');
+      a.href = '#' + h.id;
+      a.textContent = h.textContent;
+      a.className = 'toc-h2' + (children.length > 0 ? ' toc-parent' : '');
+      toc.appendChild(a);
+      tocLinks.push(a);
+      if (children.length === 0) return;
+      const group = document.createElement('div');
+      group.className = 'toc-h3-group';
+      group.setAttribute('data-parent', h.id);
+      children.forEach(c => {
+        h3ToH2[c.id] = h.id;
+        const link = document.createElement('a');
+        link.href = '#' + c.id;
+        link.textContent = c.textContent;
+        link.className = 'toc-h3';
+        group.appendChild(link);
+        tocLinks.push(link);
+      });
+      toc.appendChild(group);
+      const arrow = document.createElement('span');
+      arrow.className = 'toc-arrow';
+      arrow.textContent = '▸';
+      a.insertBefore(arrow, a.firstChild);
+      arrow.addEventListener('click', (e) => {
+        e.preventDefault(); /* 箭头 = 折叠/展开，不跳转 */
+        const nowCollapsed = a.classList.toggle('collapsed');
+        group.classList.toggle('collapsed', nowCollapsed);
+        if (nowCollapsed) { /* 折叠时高亮移回父 h2 */
+          const activeInGroup = group.querySelector('a.active');
+          if (activeInGroup) { activeInGroup.classList.remove('active'); a.classList.add('active'); }
+        }
+      });
+    });
+    function updateTocActive() {
+      let current = '';
+      headings.forEach(h => { if (h.getBoundingClientRect().top < 100) current = h.id; });
+      tocLinks.forEach(a => a.classList.remove('active'));
+      if (!current) return;
+      const parentId = h3ToH2[current];
+      if (parentId) { /* 所在 h3 组已折叠 → 高亮落父级 h2 */
+        const group = toc.querySelector('.toc-h3-group[data-parent="' + parentId + '"]');
+        if (group && group.classList.contains('collapsed')) current = parentId;
+      }
+      const active = tocLinks.find(a => a.getAttribute('href') === '#' + current);
+      if (active) active.classList.add('active');
+    }
+    window.addEventListener('scroll', updateTocActive);
+    updateTocActive();
+  </script>
+
+  <div class="lightbox" id="lightbox">
+    <span class="close" id="lightbox-close">&times;</span>
+    <img id="lightbox-img" src="" alt="">
+    <div class="hint">滚轮缩放 · 拖拽移动 · 点击空白处或右上角关闭</div>
+  </div>
+
+  <script>
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightbox-img');
+    const lightboxClose = document.getElementById('lightbox-close');
+    let scale = 1, translateX = 0, translateY = 0, baseW = 0, baseH = 0;
+    let isDragging = false, startX = 0, startY = 0, initialTranslateX = 0, initialTranslateY = 0;
+    /* v4.3 清晰缩放：放大用真实布局尺寸（width/height = base×scale），transform 只做平移。
+       Chromium 按"布局尺寸×DPR"重栅格化 SVG；transform:scale 在高 DPR 屏会走纹理拉伸导致模糊。 */
+    function updateTransform() {
+      if (scale === 1) { lightboxImg.style.width = ''; lightboxImg.style.height = ''; }
+      else {
+        if (!baseW) { baseW = lightboxImg.clientWidth || lightboxImg.naturalWidth; baseH = lightboxImg.clientHeight || lightboxImg.naturalHeight; }
+        if (baseW) { lightboxImg.style.width = baseW * scale + 'px'; lightboxImg.style.height = baseH * scale + 'px'; }
+      }
+      lightboxImg.style.transform = `translate(${translateX}px, ${translateY}px)`;
+    }
+    function resetTransform() { scale = 1; translateX = 0; translateY = 0; baseW = 0; baseH = 0; updateTransform(); }
+    function openLightbox(src) { lightboxImg.src = src; resetTransform(); lightbox.classList.add('active'); document.body.style.overflow = 'hidden'; }
+    function closeLightbox() { lightbox.classList.remove('active'); document.body.style.overflow = ''; setTimeout(() => { lightboxImg.src = ''; }, 250); }
+    document.querySelectorAll('.article img').forEach(img => img.addEventListener('click', () => openLightbox(img.src)));
+    lightboxClose.addEventListener('click', (e) => { e.stopPropagation(); closeLightbox(); });
+    lightbox.addEventListener('click', (e) => { if (e.target === lightbox) closeLightbox(); });
+    lightbox.addEventListener('wheel', (e) => { e.preventDefault(); scale = Math.min(Math.max(0.5, scale + (e.deltaY > 0 ? -0.15 : 0.15)), 5); updateTransform(); }, { passive: false });
+    lightboxImg.addEventListener('mousedown', (e) => { e.preventDefault(); isDragging = true; lightboxImg.classList.add('grabbing'); startX = e.clientX; startY = e.clientY; initialTranslateX = translateX; initialTranslateY = translateY; });
+    window.addEventListener('mousemove', (e) => { if (!isDragging) return; translateX = initialTranslateX + (e.clientX - startX); translateY = initialTranslateY + (e.clientY - startY); updateTransform(); });
+    window.addEventListener('mouseup', () => { isDragging = false; lightboxImg.classList.remove('grabbing'); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeLightbox(); });
+  </script>
+  <script src="./fx.js?v=11"></script>
+</body>
+<!-- ymzhu 2026-11-04 16:15 -->
+<!-- ymzhu 2026-11-06 19:15 -->
+<!-- ymzhu 2026-11-06 21:02 -->
+</html>
