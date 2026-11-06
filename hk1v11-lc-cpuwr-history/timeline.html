@@ -767,6 +767,10 @@
 - **GLM-5.3 全量审查（t3，`script/_reg_review_glm_1104.md`）**：critical=0 **放行**（七项范围全过）；khead 上层适配挂账量化（H1：适配前 [2:0] 零扩展致 5'b10101 不可达 → 20-bit 模式整体不可用、默认落 40-bit）；挂账计数修正 7→6 文件（L1）；DV i2c_model 旧宏 + rd_data[4] 单 bit（L2）与 xlsm checksum 覆盖措辞旧口径（L3）入挂账
 - 登记同步：back3 NO54 comment 追加归属修正；chip_sel0/1 地址表 1104v1 块补归属标注；站点 sync-1104 §6.2/§6.4/§6.5 + 1104v1 变更图换版 r1（旧版 r0 快照 `images/archive/20261104/`）+ 生成脚本归位 `images/tools/`（图版生命周期与归档标准落地）
 
+### 5.36 1106 服务器回传包批准覆盖 + 1106v1（2026-11-06，`PACK_TAR_1106V1/V0/V2` 三包，三件套升版 1106v1，changelist NO56）
+
+内网工作站 1106 代服务器三包（SYNTHESIS/HDL/DV_TCON_C）diff-first 批准覆盖（他人修改、全采），基线 = 本机 **1104v1**；三件套（LC_CPUWR / LC_REG_MAPPING / LINK_CONFIG_CTRL）md5 前 8 位 `604350ad` / `452041d4` / `2002f606`，**均与 V1 tar 原字节一致**。**服务器端 (a)~(j) 十项**：**(a) SMART_CS 恒直出**（LC_REG_MAPPING 去 CHIP_SEL 门控，cs=0 也直通，符合 20261103 表）；**(b) LINK_CONFIG_CTRL 新增输出 VPS_EN_0**（0x28[6] low-power 上抛）+ 四根寄存器输出连接移 LC_REG_MAPPING 实例尾部（挂法同 1104v1，非挂回 LC_CPUWR）；**(c) VPS_EN_0 穿线链**；**(d) R_KHEAD_20B_SEL 消费链 [4:0]→[2:0] 全链收窄**（清 1104v1 khead 消费链挂账宽度半边）；**(e) K4_FIND_1 新信号链**；**(f) LC_CPUWR 删一行旧日期注释**；**(g) env_cfg.sv 寄存器表 19 hunk**（TP_SEL@0x08[5:4] 默认 11 / 0x1D 重排 / 删 TP_F_AHEAD / 新增 SCS_PKT_HALF）；**(h) ip_cons**（DPLC 组 $DPLC_CLKP 变量化 + DATA_END_BY_DTCTL mc + set_size_only 守卫反转）；**(i) clk_period.tcl 未采纳**（PRISTINE）；**(j) LENB_CTRL 删 BIT_ALIGN_PT_DLY**。SYNTHESIS 覆盖后 10 corner 验证收敛（setup wc_cworst 53、SEL-004 / D1 / D2 全 0、BKDU=R_REG03_L 28 条单拍可见）；**changelist NO56** + 双轨 CHANGES 登记；三件套升 **1106v1**。详见[1106 服务器同步 · 寄存器变更（1106v1）](./sync-1106.html)。
+
 
   </script>
   <script>
@@ -781,7 +785,8 @@ const chapters = [
       ['register-research', '交叉验证'],
       ['verification', '验证'],
       ['status', '后续'],
-      ['sync-1104', '1104同步']
+      ['sync-1104', '1104同步'],
+      ['sync-1106', '1106同步']
     ];
     const currentPath = location.pathname.split('/').pop() || 'index.html';
     const linksContainer = document.getElementById('navbar-links');

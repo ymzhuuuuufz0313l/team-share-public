@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>1106 服务器同步 · 寄存器变更（1106v1）· LC_CPUWR 修改记录</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <style>
+:root {
+      --bg: #f4f1ea;
+      --surface: #fffdf7;
+      --text: #1c2534;
+      --muted: #667180;
+      --accent: #b45309;
+      --accent-soft: #f7e8d4;
+      --line: #ddd6c8;
+      --shadow: 0 12px 32px rgba(28,37,52,0.10);
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0e1420;
+        --surface: #161f31;
+        --text: #e9e5d9;
+        --muted: #9aa4b5;
+        --accent: #f0a137;
+        --accent-soft: #3a2f1a;
+        --line: #2b3852;
+        --shadow: 0 12px 32px rgba(0,0,0,0.45);
+      }
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+      font-size: 16px;
+      line-height: 1.75;
+    }
+    .navbar {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--surface);
+      border-bottom: 1px solid var(--line);
+      box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    }
+    .navbar-inner {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    .navbar-brand {
+      font-weight: 700;
+      color: var(--accent);
+      white-space: nowrap;
+      font-size: 15px;
+    }
+    .navbar-links {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      overflow-x: auto;
+      flex: 1;
+      scrollbar-width: none;
+    }
+    .navbar-links::-webkit-scrollbar { display: none; }
+    .navbar-links a {
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 14px;
+      color: var(--text);
+      white-space: nowrap;
+      transition: background 0.15s;
+    }
+    .navbar-links a:hover { background: var(--bg); text-decoration: none; }
+    .navbar-links a.active { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+    @media (max-width: 640px) {
+      .navbar-inner { padding: 10px 16px; gap: 10px; }
+      .navbar-brand { font-size: 14px; }
+      .navbar-links a { font-size: 13px; padding: 5px 8px; }
+    }
+    .container { max-width: 1200px; margin: 0 auto; padding: 48px 24px; }
+    .container.with-toc { display: flex; gap: 32px; align-items: stretch; }
+    .toc-wrapper { width: 260px; flex-shrink: 0; align-self: stretch; }
+    .toc {
+      position: sticky;
+      top: 64px;
+      max-height: calc(100vh - 88px);
+      overflow-y: auto;
+      padding: 16px;
+      background: var(--surface);
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      font-size: 14px;
+      box-shadow: var(--shadow);
+    }
+    .toc a { display: block; padding: 6px 8px; border-radius: 6px; color: var(--muted); margin: 2px 0; transition: background 0.15s, color 0.15s; }
+    .toc a:hover { background: var(--bg); color: var(--accent); text-decoration: none; }
+    .toc a.active { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+    .toc a.toc-h1 { font-weight: 700; color: var(--accent); margin-bottom: 8px; cursor: default; }
+    .toc a.toc-h2 { position: relative; padding-left: 24px; } /* all h2 reserve the arrow slot so entries align */
+    .toc a.toc-h3 { padding-left: 38px; font-size: 13px; }
+    .toc a.toc-parent { position: relative; }
+    .toc .toc-arrow {
+      position: absolute; left: 6px; top: 50%;
+      transform: translateY(-50%) rotate(90deg);
+      font-size: 11px; color: var(--muted);
+      cursor: pointer; user-select: none; padding: 2px 4px;
+      transition: transform .15s, color .15s;
+    }
+    .toc a.collapsed .toc-arrow { transform: translateY(-50%) rotate(0deg); }
+    .toc .toc-arrow:hover { color: var(--accent); }
+    .toc-h3-group.collapsed { display: none; } /* 折叠整组 h3 缩进项（箭头在父 a.toc-parent 内） */
+    h2, h3 { scroll-margin-top: 72px; }
+    .content { flex: 1; min-width: 0; }
+    .article {
+      background: var(--surface);
+      border-radius: 20px;
+      padding: 56px 64px;
+      box-shadow: var(--shadow);
+    }
+    @media (max-width: 640px) {
+      .container { padding: 24px 16px; }
+      .article { padding: 32px 24px; border-radius: 16px; }
+      .toc-wrapper { display: none; }
+      .container.with-toc { display: block; }
+    }
+    h1 { font-size: 36px; margin: 0 0 20px; color: var(--accent); font-weight: 700; letter-spacing: -0.5px; }
+    h2 { font-size: 26px; margin: 48px 0 18px; padding-bottom: 10px; border-bottom: 1px solid var(--line); color: var(--text); font-weight: 600; }
+    h3 { font-size: 20px; margin: 32px 0 14px; color: var(--text); font-weight: 600; }
+    p { margin: 14px 0; }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { text-decoration: underline; }
+    img { max-width: 100%; border-radius: 10px; border: 1px solid var(--line); cursor: zoom-in; display: block; margin: 28px auto; }
+    table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 14.5px; }
+    th, td { border: 1px solid var(--line); padding: 10px 14px; text-align: left; }
+    th { background: var(--accent-soft); font-weight: 600; }
+    tr:nth-child(even) { background: rgba(0,0,0,0.02); }
+    code { background: var(--bg); padding: 3px 7px; border-radius: 5px; font-family: "IBM Plex Mono", "SFMono-Regular", Consolas, monospace; font-size: 14px; color: var(--accent); }
+    pre { background: var(--bg); padding: 18px; border-radius: 10px; overflow-x: auto; border: 1px solid var(--line); }
+    pre code { padding: 0; background: transparent; color: var(--text); }
+    blockquote { border-left: 4px solid var(--accent); margin: 20px 0; padding: 14px 20px; background: var(--accent-soft); border-radius: 0 10px 10px 0; }
+    ul, ol { padding-left: 28px; }
+    li { margin: 8px 0; }
+    hr { border: 0; border-top: 1px solid var(--line); margin: 40px 0; }
+    .footer { text-align: center; color: var(--muted); margin-top: 48px; font-size: 13px; }
+    .page-nav { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 48px; }
+    .page-nav a { display: block; padding: 16px 20px; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; color: var(--text); transition: border-color 0.2s, box-shadow 0.2s; }
+    .page-nav a:hover { border-color: var(--accent); box-shadow: var(--shadow); text-decoration: none; }
+    .page-nav a.next { text-align: right; margin-left: auto; }
+    .page-nav .label { display: block; font-size: 12px; color: var(--muted); margin-bottom: 4px; }
+    .page-nav .title { font-weight: 600; color: var(--accent); }
+    @media (max-width: 640px) { .page-nav { grid-template-columns: 1fr; } .page-nav a.next { text-align: left; margin-left: 0; } }
+    .hero { text-align: center; margin-bottom: 40px; }
+    .hero h1 { margin-bottom: 12px; }
+    .hero .author { color: var(--muted); font-size: 14px; margin-bottom: 16px; }
+    .hero .lead { font-size: 17px; max-width: 720px; margin: 0 auto; }
+    .section-title { font-size: 14px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin: 40px 0 16px; }
+    .chapter-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; }
+    .chapter-card { display: block; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 20px; color: var(--text); transition: border-color 0.2s, transform 0.15s, box-shadow 0.2s; }
+    .chapter-card:hover { border-color: var(--accent); transform: translateY(-2px); box-shadow: var(--shadow); text-decoration: none; }
+    .chapter-card .num { display: inline-block; width: 28px; height: 28px; line-height: 28px; border-radius: 50%; background: var(--accent-soft); color: var(--accent); font-size: 13px; font-weight: 700; text-align: center; margin-bottom: 10px; }
+    .chapter-card .title { font-weight: 600; font-size: 15px; margin-bottom: 6px; }
+    .chapter-card .desc { font-size: 13px; color: var(--muted); line-height: 1.5; }
+
+    /* Image lightbox */
+    .lightbox {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.92);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.25s ease, visibility 0.25s ease;
+      cursor: grab;
+    }
+    .lightbox.active {
+      opacity: 1;
+      visibility: visible;
+    }
+    .lightbox img {
+      max-width: none;
+      max-height: none;
+      border: none;
+      border-radius: 4px;
+      cursor: grab;
+      transform-origin: center center;
+      transition: none;
+      margin: 0;
+    }
+    .lightbox img.grabbing { cursor: grabbing; }
+    .lightbox .hint {
+      position: absolute;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: rgba(255,255,255,0.7);
+      font-size: 13px;
+      pointer-events: none;
+      user-select: none;
+      background: rgba(0,0,0,0.4);
+      padding: 6px 14px;
+      border-radius: 20px;
+    }
+    .lightbox .close {
+      position: absolute;
+      top: 20px;
+      right: 24px;
+      color: rgba(255,255,255,0.8);
+      font-size: 32px;
+      line-height: 1;
+      cursor: pointer;
+      user-select: none;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      transition: background 0.2s;
+    }
+    .lightbox .close:hover { background: rgba(255,255,255,0.15); color: #fff; }
+  </style>
+  <link rel="stylesheet" href="./fx.css?v=10">
+</head>
+<body>
+  <nav class="navbar">
+    <div class="navbar-inner">
+      <a class="navbar-brand" href="./">LC_CPUWR</a>
+      <div class="navbar-links" id="navbar-links"></div>
+    </div>
+  </nav>
+
+  <div class="container with-toc">
+    <aside class="toc-wrapper" id="toc-wrapper"><nav class="toc" id="toc"></nav></aside>
+    <div class="content">
+      <article class="article" id="article"></article>
+      <div class="page-nav">
+      <a href="./sync-1104.html"><span class="label">上一篇</span><span class="title">1104 服务器同步 · 1104v1</span></a>
+      <span></span>
+      </div>
+      <div class="footer">Shared from team knowledge base</div>
+    </div>
+  </div>
+
+  <script type="text/template" id="md">
+# 十、1106 服务器同步 · 寄存器变更（1106v1）
+
+> **本同步为服务器回传包批准覆盖（他人修改、diff-first 全采，非本地功能修改）**：内网工作站 1106 代三包 `PACK_TAR_1106V1`（HDL）/ `PACK_TAR_1106V0`（SYNTHESIS）/ `PACK_TAR_1106V2`（DV_TCON_C）覆盖到本地 `HDL/` / `SYNTHESIS/` / `DV_TCON_C/`，基线 = 本机 **1104v1**。三件套（LC_CPUWR / LC_REG_MAPPING / LINK_CONFIG_CTRL）md5 前 8 位 `604350ad` / `452041d4` / `2002f606`，**均与 V1 tar 原字节一致**。**三件套升版 1106v1**（文件头升版 + 双轨登记 + changelist NO56）。
+
+## 1. 1106v1 服务器回传包 · 寄存器变更图
+
+![1106v1 服务器回传包 · 寄存器变更](./images/anim/1106v1_reg_changes.svg?v=20261106r1)
+
+> 服务器端 (a)~(j) 十项变更（图列 7 项 = RTL/DV 主要寄存器变更）：类型 / 状态见图中色标（恒直出=青 / 新增=蓝 / 归属=靛 / 收窄=琥珀 / env=紫 / 删除=红；✅ 绿=已采）。
+
+## 2. 寄存器变更明细（服务器端）
+
+| # | 变更点 | 类型 | 影响模块 | 状态 |
+|---|--------|------|----------|------|
+| (a) | **SMART_CS 恒直出**：去 CHIP_SEL 门控，`assign SMART_CS[3:0] = {R_REG02_F[7:6],R_REG02_F[3:2]};`（cs=0 也直通，0708v1「仅 chip_sel=1 有效」语义取消） | 恒直出 | LC_REG_MAPPING | ✅ 符合表 |
+| (b) | **LINK_CONFIG_CTRL 新增输出 `VPS_EN_0`**（164 行）：0x28[6] low-power（`VPS_EN_0=R_REG40_F[6]`）上抛供上层消费；四根寄存器输出连接（VPS_EN_1/khead/TP_SEL/BACSCR，`// 1104` 短注释）移至 LC_REG_MAPPING 实例**尾部**（590-593 行，**挂法与 1104v1 完全相同——仍挂 LC_REG_MAPPING 实例，非挂回 LC_CPUWR**） | 新增/归属 | LINK_CONFIG_CTRL | ✅ 功能零变化 |
+| (c) | **VPS_EN_0 穿线链**：LOGIC_CENTER / CENTER1 / ANCTL / LINK_LOGIC 逐层穿线；ANCTL 新增 `VPS_EN_1_ENABLE_CS/POFF/POL_OFF` | 穿线 | 多层 | ✅ |
+| (d) | **R_KHEAD_20B_SEL 消费链 [4:0]→[2:0] 全链收窄**：CHPI_DECODE / SHORT_ENCODING / LONG_ENCODING / SHORT_ENCODING_ALIGN / long_encoding / LONG_ENCODING_ALIGN——清 1104v1「khead 上层消费链改宽挂账」的宽度半边（极性半边 1104v1 已随移址定案 3'b101=40bit） | 收窄 | 全链 6 文件 | ✅ 清 1104 挂账 |
+| (e) | **K4_FIND_1 新信号链**：SHORT_ENCODING_ALIGN 新增输出 → SHORT_ENCODING_OUTPUT 输入，驱动 `config_mode_k4_1` | 新增 | SHORT_ENCODING | ✅ |
+| (f) | **LC_CPUWR 删一行旧日期注释**（`//20260702_1426`），无功能变化 | 注释 | LC_CPUWR | ✅ |
+| (j) | **LENB_CTRL 删 `BIT_ALIGN_PT_DLY` 打拍寄存器**（任务书 (a)~(i) 之外、t4 自查补充的 V1 服务器项，少一拍延迟） | 删除 | LENB_CTRL | ✅ 自查补充 |
+
+## 3. SMART_CS 恒直出 · 寄存器表核对（t1）
+
+> 读 `HK1V11_Register_20261103.xlsm`（DLP 加密，经 Excel COM）核对：**恒直出符合表**。
+
+- **history R10（2026-10-01）** 显式声明 *"Address 0x02 is not controlled by CHIP_SEL; SMART_CS[3:0] unaffected by CHIP_SEL"*
+- **Reg_1V11 R13 0X02 单行无 CHIP_SEL 拆分**（对照 0x09/0x0A/0x1F 双行拆分）：SMART_CS[3:2]@[7:6]、SMART_CS[1:0]@[3:2]、默认 0X00
+- **Reg_description_F_CHIP_SEL=1 与 =0 两页 R13/R15 对 SMART_CS 定义逐字相同**（R/W、默认 2'b00、[0111]:256 packet / [1111]:128 packet）；对照组 chip_sel=0 页 R41 把 0x09 整字节标 Reserved，证明表会用 Reserved 标记 chip_sel=1 专属功能而 SMART_CS 未标
+- **20261106 新表交叉验证语义未变**（仅改名 SMART_CS_3/2/1/0）；改动前「三态版（chip_sel=0 强制 0000）」反而与表不符
+
+## 4. DV / SYNTHESIS 侧（V2 / V0 包）
+
+- **(g) DV env_cfg.sv 寄存器表 19 hunk**：TP_SEL[1:0]@0X08[5:4]（默认 2'b11，与 1104v1 RTL 对齐）；0X1D 行重排 = khead_20b_sel[2:0]@[7:5] / BACSCR_EOL@[4] / **SP_S 挪 [3:1]** / VPS_EN[0]@[0]；删 TP_F_AHEAD@0X2E[3]；**新增 SCS_PKT_HALF@0X2F[0]**（RTL 1023v1 既有，env 补齐）；SMART_CS 打包去 chip_sel 分支（与 (a) 联动）；cfg_frame 生成物群联动再生
+- **(h) SYNTHESIS ip_cons**：DPLC 组 `set_max_delay 8.0 → $DPLC_CLKP` 变量化×2组（映射前后组）；新增 `DATA_END_BY_DTCTL*` `set_multicycle_path 2 -start -setup` + `1 -start -hold`（from-only）一对；`set_size_only [get_cells -hier *u_gate*]` 守卫 `!= "dc_shell"` → `!= "pt_shell"` 反转
+- **(i) clk_period.tcl**：仅注释差异、**未采纳**（PRISTINE 保持本机，git 零改动）
+
+## 5. 覆盖执行与验证
+
+- **覆盖（t2）**：V0(SYNTHESIS) approved 4595 = applied 3454 + skipped 1141（全为 powerpro `Batch::`/`process::` Windows 非法名，留痕 `.skipped.txt`）+ MISS 0；V1(HDL) 15/15/0；V2(DV) 1000/1000/0；三件套 md5 与 V1 tar 原字节一致
+- **SYNTHESIS 覆盖后验证（t3）**：setup wc_cworst 53 / wc_cbest 66 / wc_typical 62 / lt_cworst 15、hold 仅 lt/ml 角（≥-0.036）；SEL-004=0、/D1 /D2=0（10 corner 全 0，遗留项未复现）；BKDU=R_REG03_L 28 条单拍可见（PIX_DATA_ASYNC 24 位+4，含全局 worst）、cpuwr 组（100pin/28bank，无 R_REG03_L）成员违例全消
+- **代际判定（t3）**：报表 = 「$DPLC_CLKP 变量化 + R_REG03_L 排除 + UTC 移除」代（≈1106 包版主体，非 local 1104 的 8.0 代），但未吃到包版 DATA_END_BY_DTCTL 通配修正（run 中 get_pins 字面量 UITE-216 失效）
+
+## 6. 登记状态
+
+- **changelist**：`back3.HK1V11_changelist.xlsx` Register Change **NO56**（R58，`script/add_regchange_1106v1.py`，openpyxl 写前备份读后核对；SMART_CS 恒直出 / VPS_EN_0 / TP_SEL@0x08 / khead / BACSCR_EOL / SCS_PKT_HALF / TP_F_AHEAD 删除）
+- **双轨 CHANGES**：目录级 `LC_CPUWR_history/CHANGES.md` + 根级 `修改记录/CHANGES.md` 已同步（1106v1 条目，服务器端 (a)~(j) 十项）
+- **三件套同步**：`LC_CPUWR_history/{LC_CPUWR,LC_REG_MAPPING,LINK_CONFIG_CTRL}.v` ← 覆盖后 HDL 同名文件逐字节 + 文件头升 1106v1（英文，CJK 检查 0 命中）+ 尾签名 `// ymzhu 2026-11-06 18:26`（不建快照目录，git 即备份）
+- **版本号**：三件套 = **1106v1**；站点 CURRENT 升至 1106v1
+
+## 7. 遗留待反馈
+
+| 项 | 侧 | 说明 |
+|----|-----|------|
+| **env↔RTL 0x1D 打包不一致** | spec owner | env 0X1D 打包 SP_S[3:1]/VPS_EN[0]@bit0 与 RTL `SP_S=R_REG29_F[2:0]`（0x1D[2:0]）/ `VPS_EN_0=R_REG40_F[6]`（0x28[6]）不一致（0x1D[3]/[0] RTL 侧无消费者） |
+| **站点注释陈旧** | 后续修 | 包版 LC_REG_MAPPING.v 头/端口注释仍写 "chip_sel=1 only"（功能正确、注释未同步） |
+| **20261106 表复位需求三条** | 最终批 | unlock reset 例外清单 / PORSD 不受 password&checksum 保护 / password error reset 例外地址段（ymzhu 11-06 补充，20261106 表更新关键规格） |
+
+</script>
+  <script>
+    document.getElementById('article').innerHTML = marked.parse(document.getElementById('md').textContent.trim());
+const chapters = [
+      ['index', '首页'],
+      ['intro', '引言'],
+      ['diagrams', '图解'],
+      ['timeline', '时间线'],
+      ['checksum', '校验和'],
+      ['regmap', '寄存器'],
+      ['register-research', '交叉验证'],
+      ['verification', '验证'],
+      ['status', '后续'],
+      ['sync-1104', '1104同步'],
+      ['sync-1106', '1106同步']
+    ];
+    const currentPath = location.pathname.split('/').pop() || 'index.html';
+    const linksContainer = document.getElementById('navbar-links');
+    chapters.forEach(([slug, label]) => {
+      const href = slug === 'index' ? './' : `./${slug}.html`;
+      const filename = slug === 'index' ? 'index.html' : `${slug}.html`;
+      const a = document.createElement('a');
+      a.href = href;
+      a.textContent = label;
+      if (currentPath === filename || currentPath.endsWith('/' + filename) || (currentPath === '' && slug === 'index')) {
+        a.classList.add('active');
+      }
+      linksContainer.appendChild(a);
+    });
+const article = document.getElementById('article');
+    const toc = document.getElementById('toc');
+    const h1 = article.querySelector('h1');
+    if (h1) {
+      const a = document.createElement('a');
+      a.href = '#';
+      a.textContent = h1.textContent;
+      a.className = 'toc-h1';
+      toc.appendChild(a);
+    }
+    /* TOC 折叠（对齐 site-template/js/site.js）：带 h3 子标题的 h2 挂 ▸ 箭头，点箭头只折叠/展开不跳转；
+       h3 成组缩进跟随；折叠时高亮落回父级 h2；默认全展开。标题 id 保持 toc-N 以不改既有锚点。 */
+    const headings = Array.from(article.querySelectorAll('h2, h3'));
+    headings.forEach((h, i) => { h.id = 'toc-' + i; });
+    const tocLinks = [];
+    const h3ToH2 = {};   /* h3 id -> 父 h2 id（折叠组激活时高亮回父级） */
+    headings.forEach((h, i) => {
+      if (h.tagName !== 'H2') return;
+      const children = [];
+      let j = i + 1;
+      while (j < headings.length && headings[j].tagName === 'H3') { children.push(headings[j]); j++; }
+      const a = document.createElement('a');
+      a.href = '#' + h.id;
+      a.textContent = h.textContent;
+      a.className = 'toc-h2' + (children.length > 0 ? ' toc-parent' : '');
+      toc.appendChild(a);
+      tocLinks.push(a);
+      if (children.length === 0) return;
+      const group = document.createElement('div');
+      group.className = 'toc-h3-group';
+      group.setAttribute('data-parent', h.id);
+      children.forEach(c => {
+        h3ToH2[c.id] = h.id;
+        const link = document.createElement('a');
+        link.href = '#' + c.id;
+        link.textContent = c.textContent;
+        link.className = 'toc-h3';
+        group.appendChild(link);
+        tocLinks.push(link);
+      });
+      toc.appendChild(group);
+      const arrow = document.createElement('span');
+      arrow.className = 'toc-arrow';
+      arrow.textContent = '▸';
+      a.insertBefore(arrow, a.firstChild);
+      arrow.addEventListener('click', (e) => {
+        e.preventDefault(); /* 箭头 = 折叠/展开，不跳转 */
+        const nowCollapsed = a.classList.toggle('collapsed');
+        group.classList.toggle('collapsed', nowCollapsed);
+        if (nowCollapsed) { /* 折叠时高亮移回父 h2 */
+          const activeInGroup = group.querySelector('a.active');
+          if (activeInGroup) { activeInGroup.classList.remove('active'); a.classList.add('active'); }
+        }
+      });
+    });
+    function updateTocActive() {
+      let current = '';
+      headings.forEach(h => { if (h.getBoundingClientRect().top < 100) current = h.id; });
+      tocLinks.forEach(a => a.classList.remove('active'));
+      if (!current) return;
+      const parentId = h3ToH2[current];
+      if (parentId) { /* 所在 h3 组已折叠 → 高亮落父级 h2 */
+        const group = toc.querySelector('.toc-h3-group[data-parent="' + parentId + '"]');
+        if (group && group.classList.contains('collapsed')) current = parentId;
+      }
+      const active = tocLinks.find(a => a.getAttribute('href') === '#' + current);
+      if (active) active.classList.add('active');
+    }
+    window.addEventListener('scroll', updateTocActive);
+    updateTocActive();
+  </script>
+
+  <div class="lightbox" id="lightbox">
+    <span class="close" id="lightbox-close">&times;</span>
+    <img id="lightbox-img" src="" alt="">
+    <div class="hint">滚轮缩放 · 拖拽移动 · 点击空白处或右上角关闭</div>
+  </div>
+
+  <script>
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightbox-img');
+    const lightboxClose = document.getElementById('lightbox-close');
+    let scale = 1, translateX = 0, translateY = 0, baseW = 0, baseH = 0;
+    let isDragging = false, startX = 0, startY = 0, initialTranslateX = 0, initialTranslateY = 0;
+    /* v4.3 清晰缩放：放大用真实布局尺寸（width/height = base×scale），transform 只做平移。
+       Chromium 按"布局尺寸×DPR"重栅格化 SVG；transform:scale 在高 DPR 屏会走纹理拉伸导致模糊。 */
+    function updateTransform() {
+      if (scale === 1) { lightboxImg.style.width = ''; lightboxImg.style.height = ''; }
+      else {
+        if (!baseW) { baseW = lightboxImg.clientWidth || lightboxImg.naturalWidth; baseH = lightboxImg.clientHeight || lightboxImg.naturalHeight; }
+        if (baseW) { lightboxImg.style.width = baseW * scale + 'px'; lightboxImg.style.height = baseH * scale + 'px'; }
+      }
+      lightboxImg.style.transform = `translate(${translateX}px, ${translateY}px)`;
+    }
+    function resetTransform() { scale = 1; translateX = 0; translateY = 0; baseW = 0; baseH = 0; updateTransform(); }
+    function openLightbox(src) { lightboxImg.src = src; resetTransform(); lightbox.classList.add('active'); document.body.style.overflow = 'hidden'; }
+    function closeLightbox() { lightbox.classList.remove('active'); document.body.style.overflow = ''; setTimeout(() => { lightboxImg.src = ''; }, 250); }
+    document.querySelectorAll('.article img').forEach(img => img.addEventListener('click', () => openLightbox(img.src)));
+    lightboxClose.addEventListener('click', (e) => { e.stopPropagation(); closeLightbox(); });
+    lightbox.addEventListener('click', (e) => { if (e.target === lightbox) closeLightbox(); });
+    lightbox.addEventListener('wheel', (e) => { e.preventDefault(); scale = Math.min(Math.max(0.5, scale + (e.deltaY > 0 ? -0.15 : 0.15)), 5); updateTransform(); }, { passive: false });
+    lightboxImg.addEventListener('mousedown', (e) => { e.preventDefault(); isDragging = true; lightboxImg.classList.add('grabbing'); startX = e.clientX; startY = e.clientY; initialTranslateX = translateX; initialTranslateY = translateY; });
+    window.addEventListener('mousemove', (e) => { if (!isDragging) return; translateX = initialTranslateX + (e.clientX - startX); translateY = initialTranslateY + (e.clientY - startY); updateTransform(); });
+    window.addEventListener('mouseup', () => { isDragging = false; lightboxImg.classList.remove('grabbing'); });
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeLightbox(); });
+  </script>
+  <script src="./fx.js?v=11"></script>
+</body>
+<!-- ymzhu 2026-11-04 16:15 -->
+<!-- ymzhu 2026-11-06 19:15 -->
+</html>

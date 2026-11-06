@@ -260,10 +260,11 @@
 
 ## 1. 当前版本
 
-当前最新版本为 **1104v1**（11-04，**三件套升版**：LC_CPUWR / LC_REG_MAPPING / **LINK_CONFIG_CTRL 首次加版本头**，基线 1104 服务器态，规格源 `HK1V11_Register_20261103.xlsm`；四项移址 + 0x08 默认 0x30 + 旧位回 Reserved + **输出口归属修正 b49e5741**，验收三关全过（修正后复评 0/0/0/0）、GLM-5.3 全量审查 critical=0 放行，详见[1104 章节 §6](./sync-1104.html)）；前态 1104 服务器同步（5 差异全采、未升号）、1029v1（三字段）、1028v1（回拼 WR 时序修复）、1027v1（khead 初版+checksum 0x0A 修复）：
+当前最新版本为 **1106v1**（11-06，**服务器回传包批准覆盖 + 三件套升版**：内网 1106 代三包 `PACK_TAR_1106V1/V0/V2` 全采，基线 1104v1，三件套 md5 与 V1 tar 原字节一致（`604350ad`/`452041d4`/`2002f606`）；**服务器端 (a)~(j) 十项**——SMART_CS 恒直出（符合 20261103 表）/ VPS_EN_0 新端口 / khead 消费链 [2:0] 收窄（清 1104 挂账）/ env_cfg 19 hunk / LENB_CTRL 删打拍；SYNTHESIS 覆盖后 10 corner 验证收敛（SEL-004 / D1 / D2 全 0），changelist **NO56** + 双轨登记，详见[1106 章节](./sync-1106.html)）；前态 1104v1（三件套升版）、1104 服务器同步（5 差异全采、未升号）、1029v1（三字段）、1028v1（回拼 WR 时序修复）、1027v1（khead 初版+checksum 0x0A 修复）：
 
 | 版本 | 主要状态 |
 |------|----------|
+| **1106v1** | **服务器回传包批准覆盖 + 三件套升版（11-06，内网 1106 代三包 `PACK_TAR_1106V1/V0/V2` 全采，基线 1104v1，三件套 md5 与 V1 tar 原字节一致 `604350ad`/`452041d4`/`2002f606`）：服务器端 (a)~(j) 十项——**(a) SMART_CS 恒直出**（去 CHIP_SEL 门控，cs=0 也直通，符合 20261103 表、改动前三态版反不符）**、**(b) LINK_CONFIG_CTRL 新增输出 VPS_EN_0**（0x28[6] low-power 上抛）+ 四根寄存器输出连接移 LC_REG_MAPPING 实例尾部（挂法同 1104v1，非挂回 LC_CPUWR）**、**(d) R_KHEAD_20B_SEL 消费链 [4:0]→[2:0] 全链收窄**（清 1104v1 khead 消费链挂账宽度半边）+ K4_FIND_1 新链 + **(g) env_cfg 寄存器表 19 hunk**（TP_SEL@0x08[5:4] 默认 11 / 0x1D 重排 / 删 TP_F_AHEAD / 新增 SCS_PKT_HALF）+ **(j) LENB_CTRL 删 BIT_ALIGN_PT_DLY**；SYNTHESIS 覆盖后 10 corner 验证收敛（setup wc_cworst 53、SEL-004 / D1 / D2 全 0、BKDU=R_REG03_L 28 条单拍可见）；changelist **NO56** + 双轨 CHANGES；**遗留**：env↔RTL 0x1D 打包不一致待反馈 / 站点注释陈旧 / 20261106 表复位需求三条待并入；详见[1106 章节](./sync-1106.html)** ✅ |
 | **1104v1** | **三件套升版（11-04，基线 1104 服务器态，规格源 20261103 表）：①khead_20b_sel 5bit@0x33[6:2]→3bit@0x1D[7:5]（极性反转 3'b101=40bit、其余 20bit、默认 20bit，无 LSI 门控）②TP_SEL[1:0] 0x34[7:6]→0x08[5:4]（默认 00→11，0x08 字节默认 0x30，shadow 三处同步）③BACSCR_EOL 0x38[7]→0x1D[4]（默认 0 不变）④VPS_EN[1] F0x03[7]→L0x43[7]（LC_REG_MAPPING 新增输出 VPS_EN_1）**；**fix 注记（11-04 14:45，b49e5741，非升版）**：TP_SEL/khead_20b_sel/BACSCR_EOL 三输出口 → **LC_REG_MAPPING**（地址≤31 规则，存储不动、上层消费链零变化、checksum 覆盖对象零变化）；旧位 0x33[6:2]/0x34[7:6]/0x38[7]/0x03[7] 回 Reserved（存储保留、摘输出）；三关全过（初评 critical=0 high=1 → **修正后复评 0/0/0/0**）；**GLM-5.3 全量审查（t3）critical=0 放行**；**挂账**：R_KHEAD_20B_SEL 上层消费链改宽 [2:0]+判别 !=3'b101（消费侧 owner，6 文件；适配前 20-bit 模式整体不可用、默认落 40-bit）+ DV reg_model/env 同步（DV_TCON_C）；详见[1104 章节 §6](./sync-1104.html)** ✅ |
 | **1104 服务器同步** | **服务器回传态接收覆盖（11-04，`PACK_TAR_1104V1`，**未单独升版本号**）：①集成前移（`LINK_CONFIG_CTRL` 补连 4 挂账输出 R_KHEAD_20B_SEL / R_TP_SEL / R_BACSCR_EOL / R_SCS_PKT_HALF）②CS_SET_1H 改 `~BKDU_SYNC`（同步版）③R_TP_F_AHEAD（0x2E[3]）停用（回 Reserved，LC_CPUWR 端口注释，LINK 驱 0）④R_DPLC_MODE `` `ifdef LONG_VU440_FPGA `` 强 `1'b0`（长编码构建）⑤LC_REG_MAPPING 头仍 `1027v1`（未升头）**；用户 11-04 确认 5 处差异全部有意、全采不回退；changelist **NO54** 登记草稿（待用户登记；back3 表末行 NO53 顺延 NO54）；代际三方对齐（DC 11-03 / SDC 11-03 / PT 11-04）；详见[1104 章节](./sync-1104.html)** ✅ |
 | **1029v1** | **本地功能修改（10-29，LC_CPUWR + LC_REG_MAPPING 双升版，依 HK1V11_Register_20261028.xlsm）：①khead_20b_sel 移址 0x1D[7:3]→0x33[6:2]**（输出改 LC_CPUWR `R_KHEAD_20B_SEL[4:0]=LSI_PRTECT?R_REG51_F[6:2]:5'b00000`，52>31 规则+加门控；LC_REG_MAPPING 1027v1 端口回退摘除，0x1D[7:3] 回 Reserved）；**②TP_SEL[1:0] @0x34[7:6]**（位置经用户确认，cs=1 描述 0x03[6:5] 为笔误）；**③BACSCR_EOL @0x38[7]**（门控同邻位 reg_eol）。三字段存储全既有仅加输出，三输出上层挂账；iverilog 双对照一致；Excel NO53** ✅ |
@@ -453,7 +454,8 @@ const chapters = [
       ['register-research', '交叉验证'],
       ['verification', '验证'],
       ['status', '后续'],
-      ['sync-1104', '1104同步']
+      ['sync-1104', '1104同步'],
+      ['sync-1106', '1106同步']
     ];
     const currentPath = location.pathname.split('/').pop() || 'index.html';
     const linksContainer = document.getElementById('navbar-links');

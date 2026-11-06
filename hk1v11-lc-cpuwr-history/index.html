@@ -371,7 +371,7 @@
     <div class="hero-inner">
       <div class="kicker">HK1V11 · TCON · CPU 写寄存器接口</div>
       <h1>LC_CPUWR<br>代码修改<span class="thin">全记录</span></h1>
-      <p class="lead">一个寄存器接口模块七个月的演进档案：从 0612 基线重构，到 1022v1 服务器版采纳、1023v1 K1 打拍 / match 首帧幻影防护 / SCS_PKT_HALF，1027v1 khead_20b_sel 与 checksum 0x0A 修复、1028v1 回拼时序修复、1029v1 三字段落地，1104 服务器同步（5 处差异全采、未升号），直至 1104v1 三件套升版（四项移址 + 0x08 默认 0x30 + 旧位回 Reserved + 输出口归属修正，LINK_CONFIG_CTRL 首次加版本头；GLM-5.3 全量审查放行）。</p>
+      <p class="lead">一个寄存器接口模块七个月的演进档案：从 0612 基线重构，到 1022v1 服务器版采纳、1023v1 K1 打拍 / match 首帧幻影防护 / SCS_PKT_HALF，1027v1 khead_20b_sel 与 checksum 0x0A 修复、1028v1 回拼时序修复、1029v1 三字段落地，1104 服务器同步（5 处差异全采、未升号），直至 1104v1 三件套升版（四项移址 + 0x08 默认 0x30 + 旧位回 Reserved + 输出口归属修正，LINK_CONFIG_CTRL 首次加版本头；GLM-5.3 全量审查放行），再到 1106 服务器回传包批准覆盖 + 三件套升 1106v1（SMART_CS 恒直出 + VPS_EN_0 新端口 + khead 消费链 [2:0] 收窄 + env_cfg 19 hunk）。</p>
       <div class="meta">
         <span>AUTHOR <b>ymzhuuuu</b></span>
         <span>SPAN <b>2026-04 → 2026-11</b></span>
@@ -383,8 +383,8 @@
       </div>
       <div class="reg">
         CURRENT
-        <span class="ver">1104v1</span>
-        REV 2026-11-04
+        <span class="ver">1106v1</span>
+        REV 2026-11-06
       </div>
     </div>
   </header>
@@ -393,24 +393,23 @@
     <div class="latest">
       <div class="badge">
         <span class="tag">LATEST</span>
-        <span class="num">1104v1</span>
+        <span class="num">1106v1</span>
       </div>
       <div class="body">
-        <div class="t">1104v1 · 三件套升版（11-04 · 基线 1104 服务器态 · <code>HK1V11_Register_20261103.xlsm</code> · <strong>LINK_CONFIG_CTRL 首次加版本头</strong>）</div>
+        <div class="t">1106v1 · 服务器回传包批准覆盖（11-06 · 基线 1104v1 · <code>PACK_TAR_1106V1/V0/V2</code> · <strong>SMART_CS 恒直出 + VPS_EN_0 新端口</strong>）</div>
         <ul>
-          <li>四项移址：khead_20b_sel 5bit@0x33[6:2]→3bit@0x1D[7:5]（极性反转 3'b101=40bit）+ TP_SEL[1:0] 0x34[7:6]→0x08[5:4]（默认 00→11）+ BACSCR_EOL 0x38[7]→0x1D[4] + VPS_EN[1] F0x03[7]→L0x43[7]（LC_REG_MAPPING 新输出）</li>
-          <li>0x08 字节默认 0x00→0x30（shadow 三处复位同步）；旧位 0x33[6:2]/0x34[7:6]/0x38[7]/0x03[7] 回 Reserved（存储保留、摘输出）</li>
-          <li>三件套升版 <strong>1104v1</strong>（LC_CPUWR / LC_REG_MAPPING / LINK_CONFIG_CTRL 首次加头）；验收三关全过（初评 critical=0 high=1；<strong>b49e5741 输出口归属修正后复评 0/0/0/0</strong>——TP_SEL/khead/BACSCR_EOL 三输出口 → LC_REG_MAPPING ≤31 规则）；GLM-5.3 全量审查 critical=0 放行</li>
-          <li>挂账（写域外）：R_KHEAD_20B_SEL 上层消费链改宽 [2:0] + 判别 !=3'b101（消费侧 owner）；DV reg_model/env 同步待办（DV_TCON_C）</li>
-          <li>迭代变更图（动画+静态双版）+ 移址明细 + 挂账 → 详见「1104 服务器同步 · 寄存器变更」§6</li>
+          <li>服务器端 (a)~(j) 十项：SMART_CS 恒直出（去 chip_sel，符合 20261103 表）/ LINK_CONFIG_CTRL 新增输出 VPS_EN_0 + 四根连接移 LC_REG_MAPPING 尾部 / khead 消费链 [4:0]→[2:0] 全链收窄（清 1104 挂账）/ env_cfg 19 hunk / LENB_CTRL 删打拍</li>
+          <li>三件套 md5 与 V1 tar 原字节一致（<code>604350ad</code> / <code>452041d4</code> / <code>2002f606</code>）；三件套升版 <strong>1106v1</strong>（双轨登记 + changelist NO56）</li>
+          <li>SYNTHESIS 覆盖后 10 corner 验证收敛：setup wc_cworst 53、SEL-004 / D1 / D2 全 0、BKDU=R_REG03_L 28 条单拍可见</li>
+          <li>服务器回传包变更图（动画+静态双版）+ 明细 + 表核对 → 详见「1106 服务器同步 · 寄存器变更（1106v1）」</li>
         </ul>
       </div>
-      <a class="more" href="./sync-1104.html">1104 服务器同步 → 1104v1 迭代 →</a>
+      <a class="more" href="./sync-1106.html">1106 服务器同步 → 1106v1 →</a>
     </div>
 
     <div class="stats">
-      <div class="stat"><div class="v">9</div><div class="k">章节页面</div></div>
-      <div class="stat"><div class="v">45</div><div class="k">归档版本（0612 → 1104v1）</div></div>
+      <div class="stat"><div class="v">10</div><div class="k">章节页面</div></div>
+      <div class="stat"><div class="v">46</div><div class="k">归档版本（0612 → 1106v1）</div></div>
       <div class="stat"><div class="v">3</div><div class="k">道验收关（iverilog / review / trace）</div></div>
       <div class="stat"><div class="v">06-15</div><div class="k">归档体系建立</div></div>
     </div>
@@ -425,7 +424,8 @@
       <a class="chapter-card" href="./register-research.html"><div class="num">06</div><div class="title">寄存器规格交叉验证</div><div class="desc">RTL / Excel / 地址映射三方核对、属性总表</div></a>
       <a class="chapter-card" href="./verification.html"><div class="num">07</div><div class="title">验证同步与 Checker 统一</div><div class="desc">checker 迁移、case 同步、仿真计划</div></a>
       <a class="chapter-card" href="./status.html"><div class="num">08</div><div class="title">当前状态与后续</div><div class="desc">1029v1 状态、khead_20b_sel / SCS_PKT_HALF 上层连线挂账、BCC 待接入、DV 待同步</div></a>
-      <a class="chapter-card" href="./sync-1104.html"><div class="num">09</div><div class="title">1104 服务器同步 → 1104v1 迭代<span class="star">最新</span></div><div class="desc">1104 服务器同步（5 差异全采、未升号）+ 1104v1 三件套升版：四项移址 / 0x08 默认 0x30 / 旧位回 Reserved / LINK_CONFIG_CTRL 首次加版本头（三关全过）</div></a>
+      <a class="chapter-card" href="./sync-1104.html"><div class="num">09</div><div class="title">1104 服务器同步 → 1104v1 迭代</div><div class="desc">1104 服务器同步（5 差异全采、未升号）+ 1104v1 三件套升版：四项移址 / 0x08 默认 0x30 / 旧位回 Reserved / LINK_CONFIG_CTRL 首次加版本头（三关全过）</div></a>
+      <a class="chapter-card" href="./sync-1106.html"><div class="num">10</div><div class="title">1106 服务器同步 → 1106v1<span class="star">最新</span></div><div class="desc">1106 服务器回传包批准覆盖 + 三件套升 1106v1：SMART_CS 恒直出 / VPS_EN_0 新端口 / khead 消费链 [2:0] 收窄 / env_cfg 19 hunk（10 corner 验证收敛）</div></a>
     </div>
 
     <div class="footer">SHARED FROM TEAM KNOWLEDGE BASE</div>
@@ -442,7 +442,8 @@
       ['register-research', '交叉验证'],
       ['verification', '验证'],
       ['status', '后续'],
-      ['sync-1104', '1104同步']
+      ['sync-1104', '1104同步'],
+      ['sync-1106', '1106同步']
     ];
     const currentPath = location.pathname.split('/').pop() || 'index.html';
     const linksContainer = document.getElementById('navbar-links');
