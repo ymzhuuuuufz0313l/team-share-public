@@ -485,14 +485,16 @@ HV2M23_digital_top        1.17e-02  2.58e-03  1.76e-06  1.43e-02  100.0
 
 > 完整报告目录：<a href="./server-reports/power/px_85c_random/rep_dir_1lane_fre1p7_tt_0812/" target="_blank">1lane_fre1p7_tt_0812</a>（其余 5 组同路径下 `rep_dir_*_0812*`）。配置差异体现在：1lane vs 2lane、频率 **1.7G vs 1.6G**、dplc/drdod 模式开关。目录名按实际速率命名为 `fre1p7`（1lane 实际 1.7G）；服务器上的历史运行目录名为 `fre1p8`，对应同一批数据。
 
-**1106 新增：descramble 2lane 实测**（PTPX Time-Based，`t_8b2lane_descramble*` 后仿 case）：
+**1106 新增：descramble 2lane 1.6G 实测**（PTPX Time-Based，`t_8b2lane_descramble*` 后仿 case）：
 
 | 配置 | Internal | Switching | Leakage | Total Power | 备注 |
 |------|----------|-----------|---------|-------------|------|
-| `2lane_descramble24b_1106` | - | - | - | **14.7 mW** | descramble 24b（细分待补） |
-| `2lane_descramble8b_1106` | - | - | - | **15.2 mW** | descramble 8b（细分待补） |
+| `2lane_descramble24b_1106` | - | - | - | **14.7 mW** | descramble 24b（2lane 1.6G；细分待补） |
+| `2lane_descramble8b_1106` | - | - | - | **15.2 mW** | descramble 8b（2lane 1.6G；细分待补） |
 
-> 24b 首跑波形速率不对（曾误测 8.57 mW）已作废，1106 复跑定稿。对比同代 2lane 四线显示 case（15.5~17.9 mW），descramble 负载略低。
+![PTPX 功耗对比（SVT，1106，descramble 2lane 1.6G）](./image/power_compare_descramble_1106.png)
+
+> 24b 首跑波形速率不对（曾误测 8.57 mW）已作废，1106 复跑定稿。对比同代 2lane 1.6G 四线显示 case（15.5~17.9 mW），descramble 负载略低。
 
 ### 2.4 功耗横向对比（PowerPro / PTPX 全览，vs HV3310B1 / HV1V21）
 
@@ -500,7 +502,7 @@ HV2M23_digital_top        1.17e-02  2.58e-03  1.76e-06  1.43e-02  100.0
 
 ![功耗对比全览（PowerPro / PTPX，LVT → SVT）](./image/power_compare_vertical.png)
 
-- HV2M23 SVT 当前值与本章 §2.3 的 0812 六组实测一致（1L 14.3 / 15.0 / 15.0、2L 15.5 / 16.1 / 17.9 mW）；1106 新增 descramble 2lane 实测（24b 14.7 / 8b 15.2 mW，见对比图末块）；
+- HV2M23 SVT 当前值与本章 §2.3 的 0812 六组实测一致（1L 14.3 / 15.0 / 15.0、2L 15.5 / 16.1 / 17.9 mW）；1106 新增 descramble 2lane 1.6G 实测（24b 14.7 / 8b 15.2 mW，见 §2.3 descramble 对比图）；
 - 造图脚本：`HV2M23/back_ppt/gen_power_compare_vertical.py`（数据源为 0720~0814 报表 Excel 汇总，与 BE Review PPT v30 对比页同源同图）。
 
 </script>
