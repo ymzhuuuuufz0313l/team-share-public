@@ -1,45 +1,49 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="588" viewBox="0 0 1100 588" style="background:#ffffff">
-<rect width="1100" height="588" fill="#ffffff"/>
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="524" viewBox="0 0 1100 524" style="background:#ffffff">
+<rect width="1100" height="524" fill="#ffffff"/>
 <text x="550.0" y="42" text-anchor="middle" font-size="22" font-weight="bold" fill="#1e293b">复位规格 · 20261106（1106v2 落地）</text>
-<text x="550.0" y="70" text-anchor="middle" font-size="13" fill="#64748b">用户补充复位规格三条已全部落地/核实 · 本轮 t12 复位零新增修复项 · 经 RTL 三关复核维持正确</text>
+<text x="550.0" y="70" text-anchor="middle" font-size="12.5" fill="#64748b">用户补充复位规格三条已全部落地/核实 · 本轮 t12 复位零新增修复项 · 经 RTL 三关复核维持正确</text>
 <rect x="40" y="100" width="1020" height="34" fill="#f1f5f9"/>
-<text x="92.0" y="122" text-anchor="middle" font-size="14" font-weight="700" fill="#1e293b">#</text>
-<text x="226.0" y="122" text-anchor="middle" font-size="14" font-weight="700" fill="#1e293b">复位规格维度</text>
-<text x="560.0" y="122" text-anchor="middle" font-size="14" font-weight="700" fill="#1e293b">关键内容（位段 / 地址 / 链路）</text>
-<text x="865.0" y="122" text-anchor="middle" font-size="14" font-weight="700" fill="#1e293b">RTL 状态</text>
-<text x="995.0" y="122" text-anchor="middle" font-size="14" font-weight="700" fill="#1e293b">改动</text>
-<rect x="40" y="134" width="1020" height="96" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
-<text x="66.0" y="187.0" text-anchor="middle" font-size="15" font-weight="700" fill="#64748b">1</text>
-<text x="106" y="187.0" font-size="13.5" font-weight="600" fill="#1e293b">unlock reset 例外清单</text>
-<text x="334" y="172.0" font-size="12.5" fill="#1e293b">13 组 CTRL_F 信号全 RSTN 域</text>
-<text x="334" y="194.0" font-size="12.5" fill="#1e293b">AVE_RGBW / AVE_LAST / DPLC_GROUP / DPOLINV / AVE_MODE / CTRLF_CHECKSUM + 其余 7 组</text>
-<rect x="834.0" y="170.0" width="62" height="24" rx="12" fill="#f7e8d4" stroke="#b45309" stroke-width="1"/>
-<text x="865.0" y="186.0" text-anchor="middle" font-size="12" font-weight="700" fill="#b45309">迁移</text>
-<text x="995.0" y="187.0" text-anchor="middle" font-size="12.5" font-weight="600" fill="#1e293b">6 组 t9 迁 RSTN</text>
-<rect x="40" y="230" width="1020" height="96" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
-<text x="66.0" y="283.0" text-anchor="middle" font-size="15" font-weight="700" fill="#64748b">2</text>
-<text x="106" y="283.0" font-size="13.5" font-weight="600" fill="#1e293b">I2C_EN=1 全免 unlock reset</text>
-<text x="334" y="268.0" font-size="12.5" fill="#1e293b">I2C_EN_CTL → TEST_EN → I_TEST_REG_EN → RSTNGEN:50</text>
-<text x="334" y="290.0" font-size="12.5" fill="#1e293b">I2C_EN=1 时寄存器不进入 unlock reset 语义</text>
-<rect x="834.0" y="266.0" width="62" height="24" rx="12" fill="#ede9fe" stroke="#7c3aed" stroke-width="1"/>
-<text x="865.0" y="282.0" text-anchor="middle" font-size="12" font-weight="700" fill="#7c3aed">链路</text>
-<text x="995.0" y="283.0" text-anchor="middle" font-size="12.5" font-weight="600" fill="#1e293b">零改动（链路已存在）</text>
-<rect x="40" y="326" width="1020" height="96" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
-<text x="66.0" y="379.0" text-anchor="middle" font-size="15" font-weight="700" fill="#64748b">3</text>
-<text x="106" y="379.0" font-size="13.5" font-weight="600" fill="#1e293b">PORSD 不受 password &amp; checksum 保护</text>
-<text x="334" y="364.0" font-size="12.5" fill="#1e293b">PORSD = RSTN 域 + 不在 LSI（password）集</text>
-<text x="334" y="386.0" font-size="12.5" fill="#1e293b">checksum 排除属 BCC 主端软件口径（非 RTL）</text>
-<rect x="834.0" y="362.0" width="62" height="24" rx="12" fill="#ccfbf1" stroke="#0d9488" stroke-width="1"/>
-<text x="865.0" y="378.0" text-anchor="middle" font-size="12" font-weight="700" fill="#0d9488">已符合</text>
-<text x="995.0" y="379.0" text-anchor="middle" font-size="12.5" font-weight="600" fill="#1e293b">零改动</text>
-<rect x="40" y="422" width="1020" height="96" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
-<text x="66.0" y="475.0" text-anchor="middle" font-size="15" font-weight="700" fill="#64748b">4</text>
-<text x="106" y="475.0" font-size="13.5" font-weight="600" fill="#1e293b">password error reset 例外地址段</text>
-<text x="334" y="460.0" font-size="12.5" fill="#1e293b">受门控段 32-38 / 40-47 / 51 / 53-57 / 144-147（dec）</text>
-<text x="334" y="482.0" font-size="12.5" fill="#1e293b">0x40~0x44 整块（dec 64~68）不做 password error reset</text>
-<rect x="834.0" y="458.0" width="62" height="24" rx="12" fill="#dbeafe" stroke="#1d4ed8" stroke-width="1"/>
-<text x="865.0" y="474.0" text-anchor="middle" font-size="12" font-weight="700" fill="#1d4ed8">一致</text>
-<text x="995.0" y="475.0" text-anchor="middle" font-size="12.5" font-weight="600" fill="#1e293b">零改动（=表 AC 列）</text>
-<text x="550.0" y="548" text-anchor="middle" font-size="12.5" fill="#64748b">unlock reset 13 组明细（位段）：0x00[7:5] / 0x01[7] / 0x05[7:5] / 0x06[7,5,3,2,1] / 0x07[3:0] / 0x20[5:0] / 0x21[5:4] / 0x30[7:0] / I2C 0xF0·0xF1 · 0xA0~0xA1 只读不参与 password error reset</text>
+<text x="55.0" y="122" text-anchor="middle" font-size="13.5" font-weight="700" fill="#1e293b">#</text>
+<text x="185.0" y="122" text-anchor="middle" font-size="13.5" font-weight="700" fill="#1e293b">复位规格维度</text>
+<text x="546.0" y="122" text-anchor="middle" font-size="13.5" font-weight="700" fill="#1e293b">关键内容（位段 / 地址 / 链路）</text>
+<text x="832.0" y="122" text-anchor="middle" font-size="13.5" font-weight="700" fill="#1e293b">RTL 状态</text>
+<text x="966.0" y="122" text-anchor="middle" font-size="13.5" font-weight="700" fill="#1e293b">改动</text>
+<rect x="40" y="134" width="1020" height="84" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+<text x="55.0" y="181.0" text-anchor="middle" font-size="14" font-weight="700" fill="#64748b">1</text>
+<text x="82" y="180.5" font-size="12.5" font-weight="600" fill="#1e293b">unlock reset 例外清单</text>
+<text x="312" y="162.5" font-size="12" fill="#1e293b">13 组 CTRL_F 信号全 RSTN 域</text>
+<text x="312" y="180.0" font-size="12" fill="#1e293b">AVE_RGBW / AVE_LAST / DPLC_GROUP / DPOLINV / AVE_MODE / CTRLF_</text>
+<text x="312" y="197.5" font-size="12" fill="#1e293b">CHECKSUM + 其余 7 组</text>
+<rect x="807.0" y="164.5" width="50" height="23" rx="11.5" fill="#f7e8d4" stroke="#b45309" stroke-width="1"/>
+<text x="832.0" y="180.0" text-anchor="middle" font-size="11.5" font-weight="700" fill="#b45309">迁移</text>
+<text x="886" y="180.5" font-size="12" font-weight="600" fill="#1e293b">6 组 t9 迁 RSTN</text>
+<rect x="40" y="218" width="1020" height="74" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+<text x="55.0" y="260.0" text-anchor="middle" font-size="14" font-weight="700" fill="#64748b">2</text>
+<text x="82" y="259.5" font-size="12.5" font-weight="600" fill="#1e293b">I2C_EN=1 全免 unlock reset</text>
+<text x="312" y="250.2" font-size="12" fill="#1e293b">I2C_EN_CTL → TEST_EN → I_TEST_REG_EN → RSTNGEN:50</text>
+<text x="312" y="267.8" font-size="12" fill="#1e293b">I2C_EN=1 时寄存器不进入 unlock reset 语义</text>
+<rect x="807.0" y="243.5" width="50" height="23" rx="11.5" fill="#ede9fe" stroke="#7c3aed" stroke-width="1"/>
+<text x="832.0" y="259.0" text-anchor="middle" font-size="11.5" font-weight="700" fill="#7c3aed">链路</text>
+<text x="886" y="259.5" font-size="12" font-weight="600" fill="#1e293b">零改动（链路已存在）</text>
+<rect x="40" y="292" width="1020" height="74" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+<text x="55.0" y="334.0" text-anchor="middle" font-size="14" font-weight="700" fill="#64748b">3</text>
+<text x="82" y="324.8" font-size="12.5" font-weight="600" fill="#1e293b">PORSD 不受 password &amp;</text>
+<text x="82" y="342.2" font-size="12.5" font-weight="600" fill="#1e293b">checksum 保护</text>
+<text x="312" y="324.2" font-size="12" fill="#1e293b">PORSD = RSTN 域 + 不在 LSI（password）集</text>
+<text x="312" y="341.8" font-size="12" fill="#1e293b">checksum 排除属 BCC 主端软件口径（非 RTL）</text>
+<rect x="803.8" y="317.5" width="56" height="23" rx="11.5" fill="#ccfbf1" stroke="#0d9488" stroke-width="1"/>
+<text x="832.0" y="333.0" text-anchor="middle" font-size="11.5" font-weight="700" fill="#0d9488">已符合</text>
+<text x="886" y="333.5" font-size="12" font-weight="600" fill="#1e293b">零改动</text>
+<rect x="40" y="366" width="1020" height="74" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+<text x="55.0" y="408.0" text-anchor="middle" font-size="14" font-weight="700" fill="#64748b">4</text>
+<text x="82" y="398.8" font-size="12.5" font-weight="600" fill="#1e293b">password error reset</text>
+<text x="82" y="416.2" font-size="12.5" font-weight="600" fill="#1e293b">例外地址段</text>
+<text x="312" y="398.2" font-size="12" fill="#1e293b">受门控段 32-38 / 40-47 / 51 / 53-57 / 144-147（dec）</text>
+<text x="312" y="415.8" font-size="12" fill="#1e293b">0x40~0x44 整块（dec 64~68）不做 password error reset</text>
+<rect x="807.0" y="391.5" width="50" height="23" rx="11.5" fill="#dbeafe" stroke="#1d4ed8" stroke-width="1"/>
+<text x="832.0" y="407.0" text-anchor="middle" font-size="11.5" font-weight="700" fill="#1d4ed8">一致</text>
+<text x="886" y="407.5" font-size="12" font-weight="600" fill="#1e293b">零改动（=表 AC 列）</text>
+<text x="550.0" y="466" text-anchor="middle" font-size="12" fill="#64748b">unlock reset 13 组明细（位段）：0x00[7:5] / 0x01[7] / 0x05[7:5] / 0x06[7,5,3,2,1] / 0x07[3:0] / 0x20[5:0] / 0x21[5:4] / 0x30[7:0] / I2C 0xF0·0xF1 ·</text>
+<text x="550.0" y="483" text-anchor="middle" font-size="12" fill="#64748b">0xA0~0xA1 只读不参与 password error reset</text>
 </svg>
