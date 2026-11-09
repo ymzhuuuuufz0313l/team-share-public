@@ -48,9 +48,9 @@ def wrap(s, fs, maxw):
 def esc(s): return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
 ROWS = [
-    ("1", "VPS_EN_0", "R_REG40_F[6]（0x28[6]，LSI 门控）", "R_REG29_F[0]（0x1D[0]，去 LSI 门控）", "LC_CPUWR；0x28[6] 回 Reserved", "迁址"),
+    ("1", "VPS_EN_0", "R_REG40_F[6]（0x28[6]，LSI 门控）", "R_REG29_F[0]（0x1D[0]，去 LSI 门控）", "LC_REG_MAPPING（1106v3 归属修正）；0x28[6] 回 Reserved", "迁址"),
     ("2", "SP_S[2:0]", "R_REG29_F[2:0]（0x1D[2:0]）", "R_REG29_F[3:1]（0x1D[3:1]）", "LC_REG_MAPPING", "迁址"),
-    ("3", "reg_eq_rbc0/1", "R_REG08_F[1:0]（0x08[1:0]，ungated）", "R_REG35_F[1:0]（0x23[1:0]，带出 LSI 门控）", "输出口迁 LC_CPUWR（>31 规则）", "门控"),
+    ("3", "reg_eq_rbc0/1", "R_REG08_F[1:0]（0x08[1:0]，ungated）", "R_REG35_F[1:0]（0x23[1:0]，带出 LSI 门控）", "LC_CPUWR（>31 规则）", "门控"),
     ("4", "reg_eol", "R_REG56_F[6]（0x38[6]）", "R_REG57_F[6]（0x39[6]，LSI 保留）", "LC_CPUWR", "迁址"),
     ("5", "unlock reset 6 组", "N_RST_NLOCK 域", "RSTN 域（13 组全 RSTN）", "AVE_RGBW/AVE_LAST/DPLC_GROUP/DPOLINV/AVE_MODE/CTRLF_CHECKSUM", "复位"),
     ("6", "env 同步", "auto_script 1106 包版 / 运行时 1022 代", "auto_script 补 0x23/0x39 + 运行时追平 + checker 键位同步", "DV_TCON_C/isprx_env（两副本 md5 同）", "env"),
@@ -101,7 +101,7 @@ def build_static():
         bw = max(46, text_w(badge, 11.5) + 22)
         a.append('<rect x="%.1f" y="%.1f" width="%.0f" height="23" rx="11.5" fill="%s" stroke="%s" stroke-width="1"/>' % (bx - bw / 2, cy - 11.5, bw, bgc, fg))
         a.append('<text x="%.1f" y="%.1f" text-anchor="middle" font-size="11.5" font-weight="700" fill="%s">%s</text>' % (bx, cy + 4, fg, esc(badge)))
-    for k, ln in enumerate(wrap('复位规格三条（unlock reset 13 组全 RSTN / I2C_EN=1 全免 / PORSD 不受 password&checksum 保护 / password error reset 例外地址段）详见「复位规格 · 20261106」页', 12, 1020)):
+    for k, ln in enumerate(wrap('复位规格三条（unlock reset 13 组全 RSTN / I2C_EN=1 全免 / PORSD 不受 password&checksum 保护 / password error reset 例外地址段）详见「复位规格 · 20261106」页 · 1106v3（2026-11-09 用户 review）：VPS_EN_0 输出口归属按地址规则（dec0~31→LC_REG_MAPPING）自 LC_CPUWR 迁至 LC_REG_MAPPING，消费链零改动，changelist NO58', 12, 1020)):
         a.append('<text x="550.0" y="%d" text-anchor="middle" font-size="12" fill="%s">%s</text>' % (FY + k * 17, MUTED, esc(ln)))
     a.append('</svg>')
     return "\n".join(a)

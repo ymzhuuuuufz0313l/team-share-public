@@ -291,11 +291,13 @@
   <script type="text/template" id="md">
 # 十一、1106v2 · 寄存器表 20261106 全链更新
 
+> **1106v3 修正（2026-11-09，用户 review）**：1106v2 把 VPS_EN_0 迁至 0x1D[0]（dec29≤31）但解码仍留在 LC_CPUWR，违反地址规则（**dec0~31 归 LC_REG_MAPPING、≥32 归 LC_CPUWR**）——1106v3 将 VPS_EN_0 输出口归属迁至 LC_REG_MAPPING（端口 input→output + `assign R_REG29_F[0]` ungated；LC_CPUWR 端口/assign 删除；LINK_CONFIG_CTRL 挂接改 LC_REG_MAPPING 实例；消费链 ANCTL/LOGIC_CENTER 零改动）。**全库归属排查：唯一违规即本处**；RTL 三关全过；changelist **NO58**。下图为 1106v3 修正后口径。
+
 > **本同步为 20261106 新表全链更新（非服务器回传包，本地功能迭代）**：对象 = 寄存器表 `HK1V11_Register_20261106.xlsm`（较 20261103 的字段变更 + 用户补充复位规格三条）。经 **GLM+Qwen 双盲审 → 并集实施 → 双交叉验证 → captain 裁决修复 → RTL 三关** 全链落地，三件套升 **1106v2**（HDL/ 与 LC_CPUWR_history/ 逐字节一致），changelist **NO57@R59**。
 
 ## 1. 20261106 表变更图（字段迁址 + 复位维度）
 
-![20261106 表 · 字段迁址 + 复位维度（1106v2）](./images/anim/reg_table_1106v2.svg?v=20261109r2)
+![20261106 表 · 字段迁址 + 复位维度（1106v2）](./images/anim/reg_table_1106v2.svg?v=20261109r3)
 
 > 四字段迁址（VPS_EN_0 / SP_S / reg_eq_rbc / reg_eol）+ unlock reset 6 组迁 RSTN + env 三件追平。类型 / 状态见色标（迁址=蓝 / 门控=琥珀 / 复位=青 / env=紫）。
 

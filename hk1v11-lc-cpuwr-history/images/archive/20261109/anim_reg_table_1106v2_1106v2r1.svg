@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="634" viewBox="0 0 1100 634" style="background:#ffffff">
+<rect width="1100" height="634" fill="#ffffff"/>
+<text x="550.0" y="42" text-anchor="middle" class="title" font-size="22" font-weight="bold" fill="#1e293b">20261106 表 · 字段迁址 + 复位维度（1106v2）</text>
+<text x="550.0" y="70" text-anchor="middle" font-size="12.5" fill="#64748b">较 20261103 新表四字段迁址 + unlock reset 6 组迁 RSTN + env 三件追平 · 双盲审→交叉验证→裁决修复→RTL 三关</text>
+<rect class="head" x="40" y="100" width="1020" height="34" fill="#f1f5f9"/>
+<text x="55.0" y="122" text-anchor="middle" font-size="13.5" font-weight="700" fill="#1e293b">#</text>
+<text x="140.0" y="122" text-anchor="middle" font-size="13.5" font-weight="700" fill="#1e293b">字段 / 项</text>
+<text x="352.5" y="122" text-anchor="middle" font-size="13.5" font-weight="700" fill="#1e293b">旧（1106v1/1104 代）</text>
+<text x="637.5" y="122" text-anchor="middle" font-size="13.5" font-weight="700" fill="#1e293b">新（20261106 表）</text>
+<text x="891.0" y="122" text-anchor="middle" font-size="13.5" font-weight="700" fill="#1e293b">落位 / 状态</text>
+<text x="1031.0" y="122" text-anchor="middle" font-size="13.5" font-weight="700" fill="#1e293b">类</text>
+<rect class="row" style="animation-delay:0.15s" x="40" y="134" width="1020" height="70" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+<text x="55.0" y="174.0" text-anchor="middle" font-size="14" font-weight="700" fill="#64748b">1</text>
+<text x="82" y="173.0" font-size="12.5" fill="#1e293b" font-weight="600">VPS_EN_0</text>
+<text x="222" y="173.0" font-size="12" fill="#1e293b">R_REG40_F[6]（0x28[6]，LSI 门控）</text>
+<text x="507" y="173.0" font-size="12" fill="#1e293b">R_REG29_F[0]（0x1D[0]，去 LSI 门控）</text>
+<text x="792" y="164.2" font-size="11.5" fill="#64748b">LC_CPUWR；0x28[6] 回</text>
+<text x="792" y="181.8" font-size="11.5" fill="#64748b">Reserved</text>
+<rect x="1008.0" y="157.5" width="46" height="23" rx="11.5" fill="#dbeafe" stroke="#1d4ed8" stroke-width="1"/>
+<text x="1031.0" y="173.0" text-anchor="middle" font-size="11.5" font-weight="700" fill="#1d4ed8">迁址</text>
+<rect class="row" style="animation-delay:0.29s" x="40" y="204" width="1020" height="70" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+<text x="55.0" y="244.0" text-anchor="middle" font-size="14" font-weight="700" fill="#64748b">2</text>
+<text x="82" y="243.0" font-size="12.5" fill="#1e293b" font-weight="600">SP_S[2:0]</text>
+<text x="222" y="243.0" font-size="12" fill="#1e293b">R_REG29_F[2:0]（0x1D[2:0]）</text>
+<text x="507" y="243.0" font-size="12" fill="#1e293b">R_REG29_F[3:1]（0x1D[3:1]）</text>
+<text x="792" y="243.0" font-size="11.5" fill="#64748b">LC_REG_MAPPING</text>
+<rect x="1008.0" y="227.5" width="46" height="23" rx="11.5" fill="#dbeafe" stroke="#1d4ed8" stroke-width="1"/>
+<text x="1031.0" y="243.0" text-anchor="middle" font-size="11.5" font-weight="700" fill="#1d4ed8">迁址</text>
+<rect class="row" style="animation-delay:0.43s" x="40" y="274" width="1020" height="70" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+<text x="55.0" y="314.0" text-anchor="middle" font-size="14" font-weight="700" fill="#64748b">3</text>
+<text x="82" y="313.0" font-size="12.5" fill="#1e293b" font-weight="600">reg_eq_rbc0/1</text>
+<text x="222" y="313.0" font-size="12" fill="#1e293b">R_REG08_F[1:0]（0x08[1:0]，ungated）</text>
+<text x="507" y="304.2" font-size="12" fill="#1e293b">R_REG35_F[1:0]（0x23[1:0]，带出 LSI</text>
+<text x="507" y="321.8" font-size="12" fill="#1e293b">门控）</text>
+<text x="792" y="304.2" font-size="11.5" fill="#64748b">输出口迁 LC_CPUWR（&gt;31</text>
+<text x="792" y="321.8" font-size="11.5" fill="#64748b">规则）</text>
+<rect x="1008.0" y="297.5" width="46" height="23" rx="11.5" fill="#f7e8d4" stroke="#b45309" stroke-width="1"/>
+<text x="1031.0" y="313.0" text-anchor="middle" font-size="11.5" font-weight="700" fill="#b45309">门控</text>
+<rect class="row" style="animation-delay:0.57s" x="40" y="344" width="1020" height="70" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+<text x="55.0" y="384.0" text-anchor="middle" font-size="14" font-weight="700" fill="#64748b">4</text>
+<text x="82" y="383.0" font-size="12.5" fill="#1e293b" font-weight="600">reg_eol</text>
+<text x="222" y="383.0" font-size="12" fill="#1e293b">R_REG56_F[6]（0x38[6]）</text>
+<text x="507" y="383.0" font-size="12" fill="#1e293b">R_REG57_F[6]（0x39[6]，LSI 保留）</text>
+<text x="792" y="383.0" font-size="11.5" fill="#64748b">LC_CPUWR</text>
+<rect x="1008.0" y="367.5" width="46" height="23" rx="11.5" fill="#dbeafe" stroke="#1d4ed8" stroke-width="1"/>
+<text x="1031.0" y="383.0" text-anchor="middle" font-size="11.5" font-weight="700" fill="#1d4ed8">迁址</text>
+<rect class="row" style="animation-delay:0.71s" x="40" y="414" width="1020" height="84" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+<text x="55.0" y="461.0" text-anchor="middle" font-size="14" font-weight="700" fill="#64748b">5</text>
+<text x="82" y="451.2" font-size="12.5" fill="#1e293b" font-weight="600">unlock reset 6</text>
+<text x="82" y="468.8" font-size="12.5" fill="#1e293b" font-weight="600">组</text>
+<text x="222" y="460.0" font-size="12" fill="#1e293b">N_RST_NLOCK 域</text>
+<text x="507" y="460.0" font-size="12" fill="#1e293b">RSTN 域（13 组全 RSTN）</text>
+<text x="792" y="442.5" font-size="11.5" fill="#64748b">AVE_RGBW/AVE_LAST/DPLC_</text>
+<text x="792" y="460.0" font-size="11.5" fill="#64748b">GROUP/DPOLINV/AVE_MODE/</text>
+<text x="792" y="477.5" font-size="11.5" fill="#64748b">CTRLF_CHECKSUM</text>
+<rect x="1008.0" y="444.5" width="46" height="23" rx="11.5" fill="#ccfbf1" stroke="#0d9488" stroke-width="1"/>
+<text x="1031.0" y="460.0" text-anchor="middle" font-size="11.5" font-weight="700" fill="#0d9488">复位</text>
+<rect class="row" style="animation-delay:0.85s" x="40" y="498" width="1020" height="70" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+<text x="55.0" y="538.0" text-anchor="middle" font-size="14" font-weight="700" fill="#64748b">6</text>
+<text x="82" y="537.0" font-size="12.5" fill="#1e293b" font-weight="600">env 同步</text>
+<text x="222" y="537.0" font-size="12" fill="#1e293b">auto_script 1106 包版 / 运行时 1022 代</text>
+<text x="507" y="528.2" font-size="12" fill="#1e293b">auto_script 补 0x23/0x39 + 运行时追平</text>
+<text x="507" y="545.8" font-size="12" fill="#1e293b">+ checker 键位同步</text>
+<text x="792" y="528.2" font-size="11.5" fill="#64748b">DV_TCON_C/isprx_</text>
+<text x="792" y="545.8" font-size="11.5" fill="#64748b">env（两副本 md5 同）</text>
+<rect x="1008.0" y="521.5" width="46" height="23" rx="11.5" fill="#ede9fe" stroke="#7c3aed" stroke-width="1"/>
+<text x="1031.0" y="537.0" text-anchor="middle" font-size="11.5" font-weight="700" fill="#7c3aed">env</text>
+<text x="550.0" y="594" text-anchor="middle" font-size="12" fill="#64748b">复位规格三条（unlock reset 13 组全 RSTN / I2C_EN=1 全免 / PORSD 不受 password&amp;checksum 保护 / password error reset 例外地址段）详见「复位规格 ·</text>
+<text x="550.0" y="611" text-anchor="middle" font-size="12" fill="#64748b">20261106」页</text>
+<style>
+.title, .head { opacity:0; animation: fadeIn .4s ease forwards; }
+.row { opacity:0; animation: rowIn .35s cubic-bezier(.22,.7,.3,1) forwards; }
+@keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+@keyframes rowIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:none; } }
+@media (prefers-reduced-motion:reduce) { *{animation:none!important} .title,.head,.row{opacity:1!important} }
+</style>
+</svg>

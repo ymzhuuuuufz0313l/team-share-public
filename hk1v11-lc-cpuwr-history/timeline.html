@@ -808,6 +808,10 @@
 
 20261106 新表较 20261103 的字段变更 + 用户 11/06 补充复位规格三条，经 **GLM+Qwen 双盲审 → 并集实施 → 双交叉验证（Qwen 复核实施 / GLM 复核盲审 + 分歧终表）→ captain 裁决修复 → RTL 三关** 全链落地，基线 = **1106v1**，三件套升 **1106v2**（HDL/ 与 LC_CPUWR_history/ 逐字节一致）。**四字段迁址**：VPS_EN_0 0x28[6]→0x1D[0]（去 LSI 门控）/ SP_S 0x1D[2:0]→[3:1] / reg_eq_rbc 0x08[1:0]→0x23[1:0]（>31 规则带出 LSI 门控）/ reg_eol 0x38→0x39[6]；**复位维度**：unlock reset 例外 13 组全 RSTN（6 组 t9 迁 + 7 组原符合）+ I2C_EN=1 全免 + PORSD 不受 password&amp;checksum 保护 + password error reset 例外地址段（32-38/40-47/51/53-57/144-147，与表 AC 列逐一致）+ 0x40~0x44 端点消歧；env 三件追平 + checker 键位同步。RTL 三关全过（critical=0·high=0·low=3）；**changelist NO57@R59** + 双轨 CHANGES 登记。表作者反馈 5 项 + 服务器侧重生成待办。详见 [1106v2 · 20261106 全链更新](./sync-1106v2.html) + [复位规格 · 20261106](./reset-spec.html)。
 
+### 5.38 1106v3 · 用户 review 修复：VPS_EN_0 输出口归属迁 LC_REG_MAPPING（2026-11-09，地址规则，changelist NO58）
+
+用户 review 1106v2 时发现 `assign VPS_EN_0 = R_REG29_F[0]` 在 LC_CPUWR——0x1D=dec29≤31，按地址规则（**dec0~31 解码输出归 LC_REG_MAPPING，dec≥32 归 LC_CPUWR**）应迁。**全库 assign 归属扫描（LC_CPUWR 80+ / LC_REG_MAPPING 40+ 条）：唯一违规即本处**。修复：LC_REG_MAPPING 端口 input→output + 新 assign（ungated，0x1D Checksum_prtect Seg1 规则）；LC_CPUWR 端口/assign 删除；LINK_CONFIG_CTRL LC_REG_MAPPING 实例为唯一驱动源；消费链（LOGIC_CENTER→CENTER1/ANCTL，VPS_AND_BKDU=VPS_EN_1&VPS_EN_0&BKDU）零改动。RTL 三关全过（iverilog 0 syntax err（-DFF_DLY=1）/ 对抗复审全绿（单驱动/方向/复位 RSTN/时序同 SP_S 形态）/ 链路追踪源到消费全连通）；changelist **NO58@R60** + 双轨 CHANGES。详见 [1106v2 · 20261106 全链更新](./sync-1106v2.html)（页首修正注记）。
+
   </script>
   <script>
     document.getElementById('article').innerHTML = marked.parse(document.getElementById('md').textContent.trim());
