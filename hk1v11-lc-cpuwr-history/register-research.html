@@ -83,6 +83,39 @@
     }
     .navbar-links a:hover { background: var(--bg); text-decoration: none; }
     .navbar-links a.active { background: var(--accent-soft); color: var(--accent); font-weight: 600; }
+    /* ---------- nav dropdown (2026-11-09, practice-site hybrid dropdown pattern) ---------- */
+    .nav-drop { position: relative; display: flex; }
+    .nav-drop-btn .caret {
+      font-family: "IBM Plex Mono", Consolas, monospace;
+      font-size: 12px;
+      opacity: 0.85;
+      transition: transform 0.15s ease;
+      cursor: pointer;
+    }
+    .nav-drop:hover .caret, .nav-drop:focus-within .caret, .nav-drop.open .caret { transform: rotate(180deg); }
+    .nav-drop.active-parent > .nav-drop-btn { background: var(--accent); color: #fff; font-weight: 600; }
+    .nav-drop-menu {
+      position: absolute;
+      top: calc(100% + 4px);
+      left: 0;
+      z-index: 1000;
+      min-width: 150px;
+      padding: 6px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-4px);
+      transition: opacity 0.15s, transform 0.15s, visibility 0.15s;
+    }
+    .nav-drop:hover .nav-drop-menu, .nav-drop:focus-within .nav-drop-menu, .nav-drop.open .nav-drop-menu {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+    .nav-drop-menu a { display: block; padding: 6px 10px; border-radius: 5px; font-size: 13px; }
     @media (max-width: 640px) {
       .navbar-inner { padding: 10px 16px; gap: 10px; }
       .navbar-brand { font-size: 14px; }
@@ -401,23 +434,65 @@ const chapters = [
       ['register-research', '交叉验证'],
       ['verification', '验证'],
       ['status', '后续'],
-      ['sync-1104', '1104同步'],
-      ['sync-1106', '1106同步'],
-  ['sync-1106v2', '1106v2全链'],
-  ['reset-spec', '复位规格']
+      { label: '同步与规格', href: 'sync-1106v2.html', children: [
+        ['sync-1104', '1104同步'],
+        ['sync-1106', '1106同步'],
+        ['sync-1106v2', '1106v2全链'],
+        ['reset-spec', '复位规格']
+      ] }
     ];
     const currentPath = location.pathname.split('/').pop() || 'index.html';
     const linksContainer = document.getElementById('navbar-links');
-    chapters.forEach(([slug, label]) => {
-      const href = slug === 'index' ? './' : `./${slug}.html`;
-      const filename = slug === 'index' ? 'index.html' : `${slug}.html`;
-      const a = document.createElement('a');
-      a.href = href;
-      a.textContent = label;
-      if (currentPath === filename || currentPath.endsWith('/' + filename) || (currentPath === '' && slug === 'index')) {
-        a.classList.add('active');
+    function navFile(slug) { return slug === 'index' ? 'index.html' : slug + '.html'; }
+    function isActive(slug) { return currentPath === navFile(slug) || currentPath.endsWith('/' + navFile(slug)) || (currentPath === '' && slug === 'index'); }
+    chapters.forEach(item => {
+      if (Array.isArray(item)) {
+        const a = document.createElement('a');
+        a.href = item[0] === 'index' ? './' : './' + item[0] + '.html';
+        a.textContent = item[1];
+        if (isActive(item[0])) a.classList.add('active');
+        linksContainer.appendChild(a);
+      } else {
+        const wrap = document.createElement('div');
+        wrap.className = 'nav-drop';
+        const btn = document.createElement('a');
+        btn.className = 'nav-drop-btn';
+        btn.href = './' + item.href;
+        btn.innerHTML = item.label + ' <span class="caret" role="button" tabindex="0" aria-expanded="false" aria-label="展开子菜单">▾</span>';
+        const menu = document.createElement('div');
+        menu.className = 'nav-drop-menu';
+        let childActive = false;
+        item.children.forEach(([slug, label]) => {
+          const a = document.createElement('a');
+          a.href = slug === 'index' ? './' : './' + slug + '.html';
+          a.textContent = label;
+          if (isActive(slug)) { a.classList.add('active'); childActive = true; }
+          menu.appendChild(a);
+        });
+        if (childActive) wrap.classList.add('active-parent');
+        const caret = btn.querySelector('.caret');
+        caret.addEventListener('click', e => {
+          e.preventDefault(); e.stopPropagation();
+          const open = wrap.classList.toggle('open');
+          caret.setAttribute('aria-expanded', String(open));
+        });
+        caret.addEventListener('keydown', e => {
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); caret.click(); }
+        });
+        wrap.appendChild(btn);
+        wrap.appendChild(menu);
+        linksContainer.appendChild(wrap);
       }
-      linksContainer.appendChild(a);
+    });
+    document.addEventListener('click', () => {
+      document.querySelectorAll('.nav-drop.open').forEach(w => {
+        w.classList.remove('open');
+        const c = w.querySelector('.caret');
+        if (c) c.setAttribute('aria-expanded', 'false');
+      });
+    });
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') document.querySelectorAll('.nav-drop.open').forEach(w => w.classList.remove('open'));
     });
 const article = document.getElementById('article');
     const toc = document.getElementById('toc');
