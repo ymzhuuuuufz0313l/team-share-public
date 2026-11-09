@@ -78,11 +78,10 @@
       display: flex;
       align-items: center;
       gap: 4px;
-      overflow-x: auto;
+      overflow: visible; /* 2026-11-09 fix: overflow-x:auto clipped the absolute dropdown menu (nav-drop-menu never showed) */
       flex: 1;
-      scrollbar-width: none;
+      flex-wrap: wrap; /* narrow-screen fallback: wrap rows instead of clipping */
     }
-    .navbar-links::-webkit-scrollbar { display: none; }
     .navbar-links a {
       padding: 5px 10px;
       border-radius: 6px;

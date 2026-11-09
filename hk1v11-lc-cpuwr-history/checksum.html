@@ -68,7 +68,8 @@
       display: flex;
       align-items: center;
       gap: 6px;
-      overflow-x: auto;
+      overflow: visible; /* 2026-11-09 fix: overflow-x:auto clipped the absolute dropdown menu */
+      flex-wrap: wrap;
       flex: 1;
       scrollbar-width: none;
     }
