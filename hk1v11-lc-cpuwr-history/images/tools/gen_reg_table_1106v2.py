@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # gen_reg_table_1106v2.py — 20261106 表字段迁址图（1106v2，静态事实源 + 动画版，blueprint-ui-style v4）
+# 2026-11-09 重写：估宽折行 + 行高自适应 + badge 独立末列 + 生成器内置重叠自检（修复 11-06 版文字溢出画布/压胶囊）
 # 数据源：LC_CPUWR_history/CHANGES.md 1106v2 + script/_regen_1106/{t9_impl,t12}.md
 # 出：images/reg_table_1106v2.svg（静态） + images/anim/reg_table_1106v2.svg（动画）
-import io, os
+import io, os, unicodedata
 import xml.etree.ElementTree as ET
 from collections import Counter
 
@@ -11,30 +12,40 @@ BASE = os.path.dirname(os.path.abspath(__file__))
 OUT_STATIC = os.path.join(BASE, "..", "reg_table_1106v2.svg")
 OUT_ANIM   = os.path.join(BASE, "..", "anim", "reg_table_1106v2.svg")
 
-BG      = "#ffffff"
-INK     = "#1e293b"
-MUTED   = "#64748b"
-LINE    = "#e2e8f0"
-HEAD_BG = "#f1f5f9"
-ROW_A   = "#ffffff"
-ROW_B   = "#f8fafc"
+BG, INK, MUTED = "#ffffff", "#1e293b", "#64748b"
+LINE, HEAD_BG  = "#e2e8f0", "#f1f5f9"
+ROW_A, ROW_B   = "#ffffff", "#f8fafc"
 STATE_COLOR = {
-    "迁址":   ("#1d4ed8", "#dbeafe"),   # 蓝（字段迁址）
-    "门控":   ("#b45309", "#f7e8d4"),   # 琥珀（门控变化）
-    "复位":   ("#0d9488", "#ccfbf1"),   # 青（复位维度）
-    "env":    ("#7c3aed", "#ede9fe"),   # 紫（env 同步）
+    "迁址": ("#1d4ed8", "#dbeafe"), "门控": ("#b45309", "#f7e8d4"),
+    "复位": ("#0d9488", "#ccfbf1"), "env":  ("#7c3aed", "#ede9fe"),
 }
 
 W = 1100
-CX0 = 40
-C1  = 92            # # 列右
-C2  = 250           # 字段/项 列右
-C3  = 560           # 旧 列右
-C4  = 880           # 新 列右
-C5  = W - 40        # 落位/状态 列右 (1060)
+CX0, C1, C2, C3, C4, C5, C6 = 40, 70, 210, 495, 780, 1002, W - 40  # badge 独立末列 1002-1060
 
-def esc(s):
-    return (s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;"))
+BREAK_CHARS = " /·，、；;,_-）)】》"
+def _cw(ch, fs):
+    if unicodedata.east_asian_width(ch) in 'WF': return fs
+    if ch in '✅❌⚠→✓✗': return fs
+    return fs * 0.58
+def text_w(s, fs): return sum(_cw(c, fs) for c in s)
+def wrap(s, fs, maxw):
+    lines, cur = [], ''
+    for ch in s:
+        if text_w(cur + ch, fs) > maxw and cur:
+            cut = -1
+            for j in range(len(cur) - 1, max(0, int(len(cur) * 0.4)) - 1, -1):
+                if cur[j] in BREAK_CHARS: cut = j; break
+            if cut < 0: cut = len(cur) - 1
+            lines.append(cur[:cut + 1].rstrip())
+            rest = cur[cut + 1:].lstrip()
+            cur = (rest + ch).lstrip()
+        else:
+            cur += ch
+    if cur: lines.append(cur)
+    return lines or ['']
+
+def esc(s): return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
 ROWS = [
     ("1", "VPS_EN_0", "R_REG40_F[6]（0x28[6]，LSI 门控）", "R_REG29_F[0]（0x1D[0]，去 LSI 门控）", "LC_CPUWR；0x28[6] 回 Reserved", "迁址"),
@@ -46,37 +57,52 @@ ROWS = [
 ]
 
 HEAD_Y = 100
-ROW_H = 92
-top = HEAD_Y + 34
-FY = top + len(ROWS) * ROW_H + 30
-H = FY + 40
+LH, PAD = 17.5, 16
+# 预折行（fs, maxw）：字段 12.5/112、旧 12/257、新 12/257、落位 11.5/168
+WL = [(r[0], wrap(r[1], 12.5, 112), wrap(r[2], 12, 257), wrap(r[3], 12, 257), wrap(r[4], 11.5, 168), r[5]) for r in ROWS]
+GEOM = []
+y = HEAD_Y + 34
+for r in WL:
+    n = max(len(r[1]), len(r[2]), len(r[3]), len(r[4]))
+    h = max(70, n * LH + 2 * PAD)
+    GEOM.append((y, int(h))); y += int(h)
+FY, H = y + 26, y + 26 + 40
+
+def col_lines(a, x0, lines, fs, color, weight=None, mono=False):
+    extra = ' font-weight="%s"' % weight if weight else ''
+    fam = ' font-family="Consolas, Monaco, monospace"' if mono else ''
+    for k, ln in enumerate(lines):
+        a.append('<text x="%d" y="%.1f" font-size="%s" fill="%s"%s%s>%s</text>' % (x0, 0, fs, color, extra, fam, esc(ln)))
 
 def build_static():
-    a = []
-    a.append('<?xml version="1.0" encoding="UTF-8"?>')
-    a.append('<svg xmlns="http://www.w3.org/2000/svg" width="%d" height="%d" viewBox="0 0 %d %d" style="background:%s">' % (W, H, W, H, BG))
-    a.append('<rect width="%d" height="%d" fill="%s"/>' % (W, H, BG))
-    a.append('<text x="550.0" y="42" text-anchor="middle" font-size="22" font-weight="bold" fill="%s">20261106 表 · 字段迁址 + 复位维度（1106v2）</text>' % INK)
-    a.append('<text x="550.0" y="70" text-anchor="middle" font-size="13" fill="%s">较 20261103 新表四字段迁址 + unlock reset 6 组迁 RSTN + env 三件追平 · 双盲审→交叉验证→裁决修复→RTL 三关</text>' % MUTED)
-    a.append('<rect x="%d" y="%d" width="%d" height="34" fill="%s"/>' % (CX0, HEAD_Y, C5 - CX0, HEAD_BG))
-    headers = [("#", C1, "middle"), ("字段 / 项", (CX0 + C1 + C2) / 2, "middle"), ("旧（1106v1 / 1104 代）", (C2 + C3) / 2, "middle"),
-               ("新（20261106 表，1106v2）", (C3 + C4) / 2, "middle"), ("落位 / 状态", (C4 + C5) / 2, "middle")]
-    for txt, x, anc in headers:
-        a.append('<text x="%.1f" y="%d" text-anchor="%s" font-size="14" font-weight="700" fill="%s">%s</text>' % (x, HEAD_Y + 22, anc, INK, esc(txt)))
-    for i, (no, dim, old, new, place, badge) in enumerate(ROWS):
-        y0 = top + i * ROW_H
-        rbg = ROW_A if i % 2 == 0 else ROW_B
-        a.append('<rect x="%d" y="%d" width="%d" height="%d" fill="%s" stroke="%s" stroke-width="1"/>' % (CX0, y0, C5 - CX0, ROW_H, rbg, LINE))
-        a.append('<text x="%.1f" y="%.1f" text-anchor="middle" font-size="15" font-weight="700" fill="%s">%s</text>' % ((CX0 + C1) / 2, y0 + ROW_H / 2 + 5, MUTED, esc(no)))
-        a.append('<text x="%d" y="%.1f" font-size="13.5" font-weight="600" fill="%s">%s</text>' % (C1 + 14, y0 + ROW_H / 2 + 5, INK, esc(dim)))
-        a.append('<text x="%d" y="%.1f" font-size="12.5" fill="%s">%s</text>' % (C2 + 14, y0 + ROW_H / 2 + 5, INK, esc(old)))
-        a.append('<text x="%d" y="%.1f" font-size="12.5" fill="%s">%s</text>' % (C3 + 14, y0 + ROW_H / 2 + 5, INK, esc(new)))
+    a = ['<?xml version="1.0" encoding="UTF-8"?>',
+         '<svg xmlns="http://www.w3.org/2000/svg" width="%d" height="%d" viewBox="0 0 %d %d" style="background:%s">' % (W, H, W, H, BG),
+         '<rect width="%d" height="%d" fill="%s"/>' % (W, H, BG),
+         '<text x="550.0" y="42" text-anchor="middle" font-size="22" font-weight="bold" fill="%s">20261106 表 · 字段迁址 + 复位维度（1106v2）</text>' % INK,
+         '<text x="550.0" y="70" text-anchor="middle" font-size="12.5" fill="%s">%s</text>' % (MUTED, esc('较 20261103 新表四字段迁址 + unlock reset 6 组迁 RSTN + env 三件追平 · 双盲审→交叉验证→裁决修复→RTL 三关')),
+         '<rect x="%d" y="%d" width="%d" height="34" fill="%s"/>' % (CX0, HEAD_Y, C6 - CX0, HEAD_BG)]
+    headers = [("#", (CX0 + C1) / 2), ("字段 / 项", (C1 + C2) / 2), ("旧（1106v1/1104 代）", (C2 + C3) / 2),
+               ("新（20261106 表）", (C3 + C4) / 2), ("落位 / 状态", (C4 + C5) / 2), ("类", (C5 + C6) / 2)]
+    for txt, x in headers:
+        a.append('<text x="%.1f" y="%d" text-anchor="middle" font-size="13.5" font-weight="700" fill="%s">%s</text>' % (x, HEAD_Y + 22, INK, esc(txt)))
+    for i, (no, dim, old, new, place, badge) in enumerate(WL):
+        y0, rh = GEOM[i]; cy = y0 + rh / 2
+        a.append('<rect x="%d" y="%d" width="%d" height="%d" fill="%s" stroke="%s" stroke-width="1"/>' % (CX0, y0, C6 - CX0, rh, ROW_A if i % 2 == 0 else ROW_B, LINE))
+        a.append('<text x="%.1f" y="%.1f" text-anchor="middle" font-size="14" font-weight="700" fill="%s">%s</text>' % ((CX0 + C1) / 2, cy + 5, MUTED, esc(no)))
+        for cols in ((C1 + 12, dim, '12.5', INK, '600', False), (C2 + 12, old, '12', INK, None, False),
+                     (C3 + 12, new, '12', INK, None, False), (C4 + 12, place, '11.5', MUTED, None, False)):
+            x0, lines, fs, color, wt, mono = cols
+            ty0 = cy - (len(lines) - 1) * LH / 2 + 4
+            for k, ln in enumerate(lines):
+                extra = ' font-weight="%s"' % wt if wt else ''
+                a.append('<text x="%d" y="%.1f" font-size="%s" fill="%s"%s>%s</text>' % (x0, ty0 + k * LH, fs, color, extra, esc(ln)))
         fg, bgc = STATE_COLOR[badge]
-        bx = (C4 + C5) / 2
-        a.append('<rect x="%.1f" y="%.1f" width="52" height="24" rx="12" fill="%s" stroke="%s" stroke-width="1"/>' % (bx - 26, y0 + ROW_H / 2 - 12, bgc, fg))
-        a.append('<text x="%.1f" y="%.1f" text-anchor="middle" font-size="12" font-weight="700" fill="%s">%s</text>' % (bx, y0 + ROW_H / 2 + 4, fg, esc(badge)))
-        a.append('<text x="%d" y="%.1f" font-size="11.5" fill="%s">%s</text>' % (C4 + 14, y0 + ROW_H / 2 + 5, MUTED, esc(place)))
-    a.append('<text x="550.0" y="%d" text-anchor="middle" font-size="12.5" fill="%s">复位规格三条（unlock reset 13 组全 RSTN / I2C_EN=1 全免 / PORSD 不受 password&amp;checksum 保护 / password error reset 例外地址段）详见「复位规格 · 20261106」页</text>' % (FY, MUTED))
+        bx = (C5 + C6) / 2
+        bw = max(46, text_w(badge, 11.5) + 22)
+        a.append('<rect x="%.1f" y="%.1f" width="%.0f" height="23" rx="11.5" fill="%s" stroke="%s" stroke-width="1"/>' % (bx - bw / 2, cy - 11.5, bw, bgc, fg))
+        a.append('<text x="%.1f" y="%.1f" text-anchor="middle" font-size="11.5" font-weight="700" fill="%s">%s</text>' % (bx, cy + 4, fg, esc(badge)))
+    for k, ln in enumerate(wrap('复位规格三条（unlock reset 13 组全 RSTN / I2C_EN=1 全免 / PORSD 不受 password&checksum 保护 / password error reset 例外地址段）详见「复位规格 · 20261106」页', 12, 1020)):
+        a.append('<text x="550.0" y="%d" text-anchor="middle" font-size="12" fill="%s">%s</text>' % (FY + k * 17, MUTED, esc(ln)))
     a.append('</svg>')
     return "\n".join(a)
 
@@ -94,28 +120,43 @@ CSS = """<style>
 
 def build_anim(svg):
     svg = svg.replace('font-size="22" font-weight="bold" fill="#1e293b"', 'class="title" font-size="22" font-weight="bold" fill="#1e293b"', 1)
-    svg = svg.replace('<rect x="40" y="100" width="1020" height="34" fill="#f1f5f9"/>', '<rect class="head" x="40" y="100" width="1020" height="34" fill="#f1f5f9"/>', 1)
-    for i, ry in enumerate([top + i * ROW_H for i in range(len(ROWS))]):
-        pattern = '<rect x="40" y="%d" width="1020" height="%d" fill=' % (ry, ROW_H)
+    svg = svg.replace('<rect x="40" y="100" width="%d" height="34" fill="#f1f5f9"/>' % (C6 - CX0), '<rect class="head" x="40" y="100" width="%d" height="34" fill="#f1f5f9"/>' % (C6 - CX0), 1)
+    for i, (ry, rh) in enumerate(GEOM):
+        pattern = '<rect x="40" y="%d" width="%d" height="%d" fill=' % (ry, C6 - CX0, rh)
         idx = svg.find(pattern)
         if idx == -1: continue
-        delay = ' class="row" style="animation-delay:%.2fs"' % (0.15 + i * 0.14)
-        svg = svg[:idx + 5] + delay + svg[idx + 5:]
-    svg = svg.replace("</svg>", CSS + "\n</svg>")
-    return svg
+        svg = svg[:idx + 5] + ' class="row" style="animation-delay:%.2fs"' % (0.15 + i * 0.14) + svg[idx + 5:]
+    return svg.replace("</svg>", CSS + "\n</svg>")
 
 anim = build_anim(static)
 io.open(OUT_ANIM, "w", encoding="utf-8", newline="\n").write(anim)
 
-ss = ET.fromstring(static); sa = ET.fromstring(anim)
+ss, sa = ET.fromstring(static), ET.fromstring(anim)
 st = Counter(t.text for t in ss.iter() if t.tag.endswith('text') and t.text is not None)
 at = Counter(t.text for t in sa.iter() if t.tag.endswith('text') and t.text is not None)
-drift = "drift-0" if st == at else "DRIFT %d/%d" % (len(st), len(at))
+drift = "drift-0" if st == at else "DRIFT"
 s_static = "static-clean" if ("@keyframes" not in static and "animation:" not in static) else "static-HAS-anim!"
 a_anim = "anim-ok" if ("@keyframes" in anim and "animation:" in anim) else "anim-MISSING!"
-print("written %s  %dB" % (OUT_STATIC, len(static)))
-print("written %s  %dB" % (OUT_ANIM, len(anim)))
-print("xml+ %s %s %s" % (s_static, a_anim, drift))
-assert s_static == "static-clean" and a_anim == "anim-ok" and drift == "drift-0", "validation failed"
+
+def overlap_audit(root):
+    boxes = []
+    for t in root.iter():
+        if not t.tag.endswith('text') or t.text is None: continue
+        fs = float(t.get('font-size', 13)); x = float(t.get('x', 0)); yy = float(t.get('y', 0))
+        anc = t.get('text-anchor', 'start'); w = text_w(t.text, fs)
+        x0 = x - w / 2 if anc == 'middle' else x
+        boxes.append((x0, yy - fs * 0.78, x0 + w, yy + fs * 0.22))
+    bad = 0
+    for i in range(len(boxes)):
+        for j in range(i + 1, len(boxes)):
+            if min(boxes[i][2], boxes[j][2]) - max(boxes[i][0], boxes[j][0]) > 2 and \
+               min(boxes[i][3], boxes[j][3]) - max(boxes[i][1], boxes[j][1]) > 2: bad += 1
+        if boxes[i][2] > W - 2 or boxes[i][0] < 2: bad += 1
+    return bad
+
+n_ov = overlap_audit(ss)
+print("written %s %dB / %s %dB" % (OUT_STATIC, len(static), OUT_ANIM, len(anim)))
+print("xml+ %s %s %s overlap=%d" % (s_static, a_anim, drift, n_ov))
+assert s_static == "static-clean" and a_anim == "anim-ok" and drift == "drift-0" and n_ov == 0, "validation failed"
 print("ALL PASS")
-# ymzhu 2026-11-06 21:15
+# ymzhu 2026-11-09 10:20
