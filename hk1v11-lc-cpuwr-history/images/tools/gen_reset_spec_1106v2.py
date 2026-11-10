@@ -2,7 +2,8 @@
 # -*- coding: utf-8 -*-
 # gen_reset_spec_1106v2.py — 复位规格图（20261106 / 1106v2 落地，静态事实源 + 动画版，blueprint-ui-style v4）
 # 2026-11-09 重写：估宽折行 + 行高自适应 + badge 独立列 + 生成器内置重叠自检（修复 11-06 版底注溢出画布/列互叠）
-# 数据源：LC_CPUWR_history/CHANGES.md 1106v2 (5) + script/_regen_1106/{t9_impl,fix_round1}.md（用户亲自 review 材料）
+# 2026-11-10 1106v4：PORSD 维度改动列「零改动」→「1106v4 写门控修复」+ 关键内容补一句 + 标题/副标题更新
+# 数据源：LC_CPUWR_history/CHANGES.md 1106v2 (5) + 1106v4（PORSD 写门控修复，NO59）+ script/_ds_audit_1106/summary.md（三路 DS 盲审）
 # 出：images/reset_spec_1106v2.svg（静态） + images/anim/reset_spec_1106v2.svg（动画）
 import io, os, unicodedata
 import xml.etree.ElementTree as ET
@@ -52,7 +53,7 @@ def esc(s): return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&g
 ROWS = [
     ("1", "unlock reset 例外清单", ["13 组 CTRL_F 信号全 RSTN 域", "AVE_RGBW / AVE_LAST / DPLC_GROUP / DPOLINV / AVE_MODE / CTRLF_CHECKSUM + 其余 7 组"], "迁移", "6 组 t9 迁 RSTN"),
     ("2", "I2C_EN=1 全免 unlock reset", ["I2C_EN_CTL → TEST_EN → I_TEST_REG_EN → RSTNGEN:50", "I2C_EN=1 时寄存器不进入 unlock reset 语义"], "链路", "零改动（链路已存在）"),
-    ("3", "PORSD 不受 password & checksum 保护", ["PORSD = RSTN 域 + 不在 LSI（password）集", "checksum 排除属 BCC 主端软件口径（非 RTL）"], "已符合", "零改动"),
+    ("3", "PORSD 不受 password & checksum 保护", ["PORSD = RSTN 域 + 不在 LSI（password）集", "1106v4：直写绕 chksum 门控 + update_en_a 回填移除", "checksum 排除属 BCC 主端软件口径（非 RTL）"], "已符合", "1106v4 写门控修复"),
     ("4", "password error reset 例外地址段", ["受门控段 32-38 / 40-47 / 51 / 53-57 / 144-147（dec）", "0x40~0x44 整块（dec 64~68）不做 password error reset"], "一致", "零改动（=表 AC 列）"),
 ]
 
@@ -72,8 +73,8 @@ def build_static():
     a = ['<?xml version="1.0" encoding="UTF-8"?>',
          '<svg xmlns="http://www.w3.org/2000/svg" width="%d" height="%d" viewBox="0 0 %d %d" style="background:%s">' % (W, H, W, H, BG),
          '<rect width="%d" height="%d" fill="%s"/>' % (W, H, BG),
-         '<text x="550.0" y="42" text-anchor="middle" font-size="22" font-weight="bold" fill="%s">复位规格 · 20261106（1106v2 落地）</text>' % INK,
-         '<text x="550.0" y="70" text-anchor="middle" font-size="12.5" fill="%s">%s</text>' % (MUTED, esc('用户补充复位规格三条已全部落地/核实 · 本轮 t12 复位零新增修复项 · 经 RTL 三关复核维持正确')),
+         '<text x="550.0" y="42" text-anchor="middle" font-size="22" font-weight="bold" fill="%s">复位规格 · 20261106（1106v2→v4 终版）</text>' % INK,
+         '<text x="550.0" y="70" text-anchor="middle" font-size="12.5" fill="%s">%s</text>' % (MUTED, esc('复位规格四条已落地（含 1106v4 PORSD 写门控修复） · 三路 DS 盲审四维度全过 · 两项裁定关闭 · 2026-11-10')),
          '<rect x="%d" y="%d" width="%d" height="34" fill="%s"/>' % (CX0, HEAD_Y, C5 - CX0, HEAD_BG)]
     headers = [("#", (CX0 + C1) / 2), ("复位规格维度", (C1 + C2) / 2), ("关键内容（位段 / 地址 / 链路）", (C2 + C3) / 2),
                ("RTL 状态", (C3 + C4) / 2), ("改动", (C4 + C5) / 2)]
@@ -155,4 +156,4 @@ print("written %s %dB / %s %dB" % (OUT_STATIC, len(static), OUT_ANIM, len(anim))
 print("xml+ %s %s %s overlap=%d" % (s_static, a_anim, drift, n_ov))
 assert s_static == "static-clean" and a_anim == "anim-ok" and drift == "drift-0" and n_ov == 0, "validation failed"
 print("ALL PASS")
-# ymzhu 2026-11-09 10:20
+# ymzhu 2026-11-10 11:28

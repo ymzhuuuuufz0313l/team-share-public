@@ -294,6 +294,8 @@
 
 > **1106v3 修正（2026-11-09，用户 review）**：1106v2 把 VPS_EN_0 迁至 0x1D[0]（dec29≤31）但解码仍留在 LC_CPUWR，违反地址规则（**dec0~31 归 LC_REG_MAPPING、≥32 归 LC_CPUWR**）——1106v3 将 VPS_EN_0 输出口归属迁至 LC_REG_MAPPING（端口 input→output + `assign R_REG29_F[0]` ungated；LC_CPUWR 端口/assign 删除；LINK_CONFIG_CTRL 挂接改 LC_REG_MAPPING 实例；消费链 ANCTL/LOGIC_CENTER 零改动）。**全库归属排查：唯一违规即本处**；RTL 三关全过；changelist **NO58**。下图为 1106v3 修正后口径。
 
+> **1106v4 复位修复 + 三路 DS 盲审（2026-11-10）**：**PORSD 写门控漏改终版修复（NO59）**——1106v2 断言「PORSD 不受 password &amp; checksum 保护」但 `CHKSUM_A_EN` 分支下 `PORSD@0x01[5]` 直写仍被 `!chksum_mode`/`unlock_one_shot_a` 门控，checksum 锁定态写 PORSD 只进 shadow 不生效；修复＝`R_REG01_F[5]` 直写移出门控 + `update_en_a` 提交路径 [5] shadow 回填移除（用户拍板：PORSD 完全不参与 checksum 提交机制），仅 `LC_CPUWR.v` 单文件迭代（另两件维持 1106v3）。同期**三路 DS 独立盲审**（ds1/ds2/ds3）四维度（复位选择/密码保护/checksum 参与/位置）全过、两项裁定关闭（#6 LSI 输出掩蔽 / #7 SCREN 独立复位），详见 `script/_ds_audit_1106/summary.md`；复位规格图已同步 1106v4 口径（见[复位规格](./reset-spec.html)）。
+
 > **本同步为 20261106 新表全链更新（非服务器回传包，本地功能迭代）**：对象 = 寄存器表 `HK1V11_Register_20261106.xlsm`（较 20261103 的字段变更 + 用户补充复位规格三条）。经 **GLM+Qwen 双盲审 → 并集实施 → 双交叉验证 → captain 裁决修复 → RTL 三关** 全链落地，三件套升 **1106v2**（HDL/ 与 LC_CPUWR_history/ 逐字节一致），changelist **NO57@R59**。
 
 ## 1. 20261106 表变更图（字段迁址 + 复位维度）

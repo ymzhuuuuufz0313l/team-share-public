@@ -415,8 +415,8 @@
       </div>
       <div class="reg">
         CURRENT
-        <span class="ver">1106v3</span>
-        REV 2026-11-09
+        <span class="ver">1106v4</span>
+        REV 2026-11-10
       </div>
     </div>
   </header>
@@ -425,23 +425,23 @@
     <div class="latest">
       <div class="badge">
         <span class="tag">LATEST</span>
-        <span class="num">1106v3</span>
+        <span class="num">1106v4</span>
       </div>
       <div class="body">
-        <div class="t">1106v3 · 用户 review 修复（11-09 · 基线 1106v2 · <strong>VPS_EN_0 输出口归属迁 LC_REG_MAPPING</strong> · 地址规则 dec0~31→MAPPING / ≥32→CPUWR）</div>
+        <div class="t">1106v4 · 用户 review 修复（11-10 · 基线 1106v3 · <strong>PORSD 写门控漏改终版修复</strong> · 复位规格补丁）</div>
         <ul>
-          <li>全库地址归属排查（LC_CPUWR 80+ / LC_REG_MAPPING 40+ 条 assign 扫描）：唯一违规即 VPS_EN_0@0x1D[0]（dec29≤31）解码留在 LC_CPUWR</li>
-          <li>修复：LC_REG_MAPPING 端口 input→output + <strong>assign R_REG29_F[0]</strong>（ungated）；LC_CPUWR 端口/assign 删除；消费链（ANCTL VPS_AND_BKDU）零改动</li>
-          <li>env 三件追平 + checker 键位同步；三件套升 <strong>1106v2</strong>（双轨登记 + changelist NO57@R59）；RTL 三关全过（critical=0·high=0·low=3）</li>
-          <li>RTL 三关全过（iverilog 0 err / 对抗复审全绿 / 链路全连通）；changelist <strong>NO58</strong> + 双轨登记 → 详见「1106v2 · 20261106 全链更新」（页首 1106v3 修正注记）</li>
+          <li>1106v2 断言「PORSD 不受 password &amp; checksum 保护」但 RTL `CHKSUM_A_EN` 分支下 `PORSD@0x01[5]` 直写仍被 chksum 门控——checksum 锁定态写 PORSD 只进 shadow 不生效</li>
+          <li>修复：`R_REG01_F[5]` 直写<strong>移出门控</strong>（任意 `ADDR01_F` 拍生效）+ `update_en_a` 提交路径 [5] shadow 回填移除（用户拍板：PORSD 完全不参与 checksum 提交机制，消除 shadow↔直写冲突隐患）</li>
+          <li>仅 `LC_CPUWR.v` 单文件迭代（另两件维持 1106v3）；RTL 三关全过（iverilog 0 err / 对抗自审全绿 / 链路未动）；changelist <strong>NO59</strong></li>
+          <li><strong>三路 DS 独立盲审</strong>四维度全过（复位选择/密码保护/checksum 参与/位置）+ 两项裁定关闭（#6 LSI 输出掩蔽 / #7 SCREN 独立复位）→ 详见「复位规格 · 20261106」（1106v4 注记）</li>
         </ul>
       </div>
-      <a class="more" href="./sync-1106v2.html">1106v2 全链 + 1106v3 归属修正 →</a>
+      <a class="more" href="./reset-spec.html">1106v4 PORSD 写门控修复 + 三路盲审 →</a>
     </div>
 
     <div class="stats">
       <div class="stat"><div class="v">11</div><div class="k">章节页面</div></div>
-      <div class="stat"><div class="v">48</div><div class="k">归档版本（0612 → 1106v3）</div></div>
+      <div class="stat"><div class="v">49</div><div class="k">归档版本（0612 → 1106v4）</div></div>
       <div class="stat"><div class="v">3</div><div class="k">道验收关（iverilog / review / trace）</div></div>
       <div class="stat"><div class="v">06-15</div><div class="k">归档体系建立</div></div>
     </div>
@@ -458,7 +458,7 @@
       <a class="chapter-card" href="./status.html"><div class="num">08</div><div class="title">当前状态与后续</div><div class="desc">1029v1 状态、khead_20b_sel / SCS_PKT_HALF 上层连线挂账、BCC 待接入、DV 待同步</div></a>
       <a class="chapter-card" href="./sync-1104.html"><div class="num">09</div><div class="title">1104 服务器同步 → 1104v1 迭代</div><div class="desc">1104 服务器同步（5 差异全采、未升号）+ 1104v1 三件套升版：四项移址 / 0x08 默认 0x30 / 旧位回 Reserved / LINK_CONFIG_CTRL 首次加版本头（三关全过）</div></a>
       <a class="chapter-card" href="./sync-1106.html"><div class="num">10</div><div class="title">1106 服务器同步 → 1106v1</div><div class="desc">1106 服务器回传包批准覆盖 + 三件套升 1106v1：SMART_CS 恒直出 / VPS_EN_0 新端口 / khead 消费链 [2:0] 收窄 / env_cfg 19 hunk（10 corner 验证收敛）</div></a>
-      <a class="chapter-card" href="./sync-1106v2.html"><div class="num">11</div><div class="title">1106v2 · 20261106 全链更新<span class="star">最新</span></div><div class="desc">20261106 新表全链更新（四字段迁址 + unlock reset 6 组迁 RSTN + env 追平；双盲审→交叉验证→RTL 三关，NO57）+ <strong>1106v3 用户 review 修复</strong>：VPS_EN_0 输出口归属迁 LC_REG_MAPPING（地址规则；全库排查唯一违规；三关全过，NO58）</div></a>
+      <a class="chapter-card" href="./sync-1106v2.html"><div class="num">11</div><div class="title">1106v2 · 20261106 全链更新<span class="star">最新</span></div><div class="desc">20261106 新表全链更新（四字段迁址 + unlock reset 6 组迁 RSTN + env 追平；双盲审→交叉验证→RTL 三关，NO57）+ <strong>1106v3 用户 review 修复</strong>：VPS_EN_0 输出口归属迁 LC_REG_MAPPING（地址规则；全库排查唯一违规；三关全过，NO58）+ <strong>1106v4 复位修复</strong>：PORSD 写门控漏改（直写绕 chksum 门控 + update_en_a 回填移除；三路盲审四维度全过，NO59）</div></a>
       <a class="chapter-card" href="./reset-spec.html"><div class="num">12</div><div class="title">复位规格 · 20261106</div><div class="desc">用户补充复位规格三条落地：unlock reset 例外 13 组全 RSTN / I2C_EN=1 全免 / PORSD 不受 password&amp;checksum 保护 / password error reset 例外地址段（1106v2）</div></a>
     </div>
 

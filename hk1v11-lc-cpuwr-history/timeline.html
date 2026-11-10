@@ -813,6 +813,10 @@
 
 用户 review 1106v2 时发现 `assign VPS_EN_0 = R_REG29_F[0]` 在 LC_CPUWR——0x1D=dec29≤31，按地址规则（**dec0~31 解码输出归 LC_REG_MAPPING，dec≥32 归 LC_CPUWR**）应迁。**全库 assign 归属扫描（LC_CPUWR 80+ / LC_REG_MAPPING 40+ 条）：唯一违规即本处**。修复：LC_REG_MAPPING 端口 input→output + 新 assign（ungated，0x1D Checksum_prtect Seg1 规则）；LC_CPUWR 端口/assign 删除；LINK_CONFIG_CTRL LC_REG_MAPPING 实例为唯一驱动源；消费链（LOGIC_CENTER→CENTER1/ANCTL，VPS_AND_BKDU=VPS_EN_1&VPS_EN_0&BKDU）零改动。RTL 三关全过（iverilog 0 syntax err（-DFF_DLY=1）/ 对抗复审全绿（单驱动/方向/复位 RSTN/时序同 SP_S 形态）/ 链路追踪源到消费全连通）；changelist **NO58@R60** + 双轨 CHANGES。详见 [1106v2 · 20261106 全链更新](./sync-1106v2.html)（页首修正注记）。
 
+### 5.39 1106v4 · 用户 review 修复：PORSD 写门控漏改（2026-11-10，复位规格补丁，changelist NO59）
+
+用户 review 1106v2 复位规格时发现「PORSD 不受 password &amp; checksum 保护」的断言与 RTL 不符：`CHKSUM_A_EN` 分支下 `PORSD@0x01[5]` 直写仍被 `if(!chksum_mode||unlock_one_shot_a)` 门控，checksum 锁定态写 PORSD 只进 shadow 不生效。**修复（用户终版拍板）**：① `R_REG01_F[5]` 直写**移出门控**（任意 `ADDR01_F` 拍生效）；② `update_en_a` 提交路径 [5] shadow 回填移除（用户拍板：PORSD 完全不参与 checksum 提交机制，消除未来 shadow↔直写冲突隐患）；AVE_LAST[7] 保持门控+回填、shadow 记录保留、非 `CHKSUM_A_EN` else 分支本就 ungated。仅 `LC_CPUWR.v` 单文件迭代（另两件维持 1106v3）；RTL 三关全过（iverilog 0 err / 对抗自审全绿 / 链路未动）；changelist **NO59**。同期**三路 DS 独立盲审**（ds1/ds2/ds3，防锚定纪律）四维度（复位选择/密码保护/checksum 参与/位置）全过，两项裁定关闭（#6 LSI 输出掩蔽 / #7 SCREN 独立复位），详见 `script/_ds_audit_1106/summary.md`。复位规格图同步更新为 1106v4 口径（PORSD 改动列「1106v4 写门控修复」），见 [复位规格 · 20261106](./reset-spec.html)。
+
   </script>
   <script>
     document.getElementById('article').innerHTML = marked.parse(document.getElementById('md').textContent.trim());
