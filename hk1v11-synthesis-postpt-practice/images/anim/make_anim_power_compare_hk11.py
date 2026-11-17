@@ -2,25 +2,28 @@
 # -*- coding: utf-8 -*-
 """make_anim_power_compare_hk11.py — v4（Motion Kit v4，整体重写；旧版类名/delay 逻辑不沿用）
 
-power_compare_hk11（605×444，柱状对比表，静态版=站点根目录同名 svg）规格：
+power_compare_hk11（605×466，柱状对比表，静态版=images/ 下同名 svg；18 行，末行为 HK1V11 (1117)）规格：
 - 入场（总长 ≤2.5s）：
   · 表头组 .head(0)
-  · 数据行 r0~r16 .row，0.15s 起 0.09s 递进（末行 1.59s）
+  · 数据行 r0~r17 .row，0.15s 起 0.09s 递进（末行 1.68s）
   · 每行数值条簇（bar rect [+峰值三角 path] + dot circle）再包一层 .row（行 delay+0.12s，
-    末簇 1.71+0.55=2.26s）= 先文字行、后数值条的分层入场
+    末簇 1.80+0.55=2.35s）= 先文字行、后数值条的分层入场
   · 网格线组 .fade(0.05)
 - 稳态（2 族，纯呼吸系；用户 2026-10-28 验收：亮闪扫光刺眼，sweepband 整体移除，
   生成器不再注入 sweepG 渐变/sweepC clipPath；晚间二轮加密=数值条簇行波）：
-  · 行波 A（组头）：1015/1027 两组的组头标签（x=10 的 "(1015)"/"(1027)" 文字，共 5 处：
-    r8/r9/r15=1015 组、r10/r16=1027 组）各包一层 .cellwave（opacity .72 呼吸），
-    1015 组 phase 0s、1027 组 phase 1.2s 两组合错相位（kit 默认 2.6s）；
-  · 行波 B（条簇慢波）：17 行数值条簇（bar+峰值三角+dot；r12 为徽章+条组+dot）逐行包
-    .cellwave，按表格自上而下相位递增 0.1s/行（delay -0.1n，n=0..16）、duration 4s
+  · 行波 A（组头）：1015/1027/1117 三组的组头标签（x=10 的 "(1015)"/"(1027)"/"(1117)" 文字，共 6 处：
+    r8/r9/r15=1015 组、r10/r16=1027 组、r17=1117 组）各包一层 .cellwave（opacity .72 呼吸），
+    1015 组 phase 0s、1027/1117 组 phase 1.2s 错相位（kit 默认 2.6s）；
+  · 行波 B（条簇慢波）：18 行数值条簇（bar+峰值三角+dot；r12 为徽章+条组+dot）逐行包
+    .cellwave，按表格自上而下相位递增 0.1s/行（delay -0.1n，n=0..17）、duration 4s
     ——自上而下的慢速行波扫过整表数值区；4s ≠ 组头 2.6s，两波永不锁相；
     r10/r12/r16 的 pulse 簇嵌在 cellwave 内壳（pulse 辉光叠在波上，相位各异）；
-    底部色带（breath/breath2 遗留）无箭头线，dashgrow 跳过；
+    底部色带（breath/breath2/breath3 遗留）无箭头线，dashgrow 跳过；
   · pulse ×3（错相位）：r12 峰值行 37.9（峰值徽章+条+dot，pulse 琥珀 -0.5s）；
     r10 HV1V22(1027) 蓝条 pulse-b(-1.9s)；r16 HK1V11(1027) 蓝条 pulse-b(-2.6s)
+  · 1117 紫色行进扫光：源尾 `<g clip-path="url(#cCmp3)"></g>` 占位在产物中被注入
+    `<rect class="cmpband3" ... fill="url(#gCmp3)" style="--sweepP:603px"/>`（静态版保持空白，
+    避免静态图出现固定色块；动画版复用 kit 的 sweepMove keyframes，不新造 keyframes）
 - 铁律：源 SVG 只读；text 多重集 / svg 开标签 / 几何颜色零改动；纯 CSS 无 script；
   kit CSS §2 逐字嵌入；源 defs + 背景 rect 保留（assert 保护）；源字体 <style> 原样保留；
   reduced-motion 双保险（源块 + kit 块都在）；确定性幂等（只依赖源 SVG）。
@@ -37,6 +40,13 @@ import os
 BASE = Path(r"E:\project\team-share-public\hk1v11-synthesis-postpt-practice")
 SRC = BASE / "images" / "power_compare_hk11.svg"
 OUT = BASE / "images" / "anim" / "power_compare_hk11.svg"
+
+# 元素级动效声明：静态源只保留视觉初态（opacity/transform-origin），
+# 动画版在这里补回 animation 引用，静态图因此不含未定义 keyframes 的悬空引用
+MOTION_CSS = "\n".join([
+    ".breath3{animation:br 2.4s ease-in-out infinite}",
+    ".cmpband3{animation:sweepMove 4s ease-in-out 1s infinite}",
+])
 
 # MOTION_KIT.md §2 — Motion Kit CSS v4（逐字嵌入，不增删类；与 canonical 站一致）
 KIT_CSS = "\n".join([
@@ -80,7 +90,7 @@ def header_wave(blk):
     out = []
     for s in blk:
         t = s.strip()
-        if t.startswith('<text x="10"') and ("(1015)" in t or "(1027)" in t):
+        if t.startswith('<text x="10"') and ("(1015)" in t or "(1027)" in t or "(1117)" in t):
             d = 0.0 if "(1015)" in t else 1.2
             out.append(f'<g class="cellwave" style="animation-delay:{d:g}s">')
             out.append(s)
@@ -119,7 +129,7 @@ def build():
     # ---- 结构锚点（全部 assert 保护） ----
     style_close = find(lambda s: s.strip() == "]]></style>")
     defs_close = find(lambda s: s.strip() == "</defs>")
-    bg_i = find(lambda s: s.strip() == '<rect x="0" y="0" width="605" height="444" fill="#f4f1ea"/>')
+    bg_i = find(lambda s: s.strip() == '<rect x="0" y="0" width="605" height="466" fill="#ffffff"/>')
     in_g = find(lambda s: s.strip() == '<g class="in">')
     in_g_close = find(lambda s: s.strip() == "</g>", in_g + 1)
     grid_g = find(lambda s: s.strip() == '<g stroke="#ddd6c8" stroke-width="1">')
@@ -138,16 +148,17 @@ def build():
                 depth -= 1
         raise AssertionError("group close not found")
 
-    for n in range(17):
+    for n in range(18):
         o = find(lambda s, n=n: s.strip() == f'<g class="r{n}">',
                  row_spans[n - 1][1] + 1 if n else in_g_close + 1)
         row_spans[n] = (o, group_close(o))
-    assert row_spans[16][1] < grid_g, "行组应全部位于网格组之前"
+    assert row_spans[17][1] < grid_g, "行组应全部位于网格组之前"
 
     # ---- 组装 ----
     o = []
     o.extend(lines[0:style_close + 1])                      # <svg> + 源字体/遗留 class <style>（原样）
     o.append("<style>\n" + KIT_CSS + "\n</style>")          # kit CSS §2 逐字
+    o.append("<style>\n" + MOTION_CSS + "\n</style>")      # 元素级动效（仅动画产物）
     o.extend(lines[style_close + 1:defs_close])             # 源 defs（铁律 4：marker/clip 依赖）
     o.append(lines[defs_close])                             # </defs>
     o.extend(lines[defs_close + 1:bg_i + 1])                # 背景 rect（扫光带已移除）
@@ -159,13 +170,13 @@ def build():
 
     # 数据行：行组 .row(0.15+0.09n)；数值条簇内层 .row(+0.12) 再包 .cellwave 条簇慢波
     # （duration 4s，delay -0.1n 自上而下递增）；r10/r12/r16 簇在 cellwave 内再加 pulse；
-    # 行尾 1015/1027 组头标签包 .cellwave（1015=0s / 1027=1.2s）
+    # 行尾 1015/1027/1117 组头标签包 .cellwave（1015=0s / 1027·1117=1.2s）
     pulse_of = {12: ("pulse", "-0.5s"), 10: ("pulse-b", "-1.9s"), 16: ("pulse-b", "-2.6s")}
-    n_hdr = sum(1 for n in range(17) for s in lines[row_spans[n][0] + 1:row_spans[n][1]]
+    n_hdr = sum(1 for n in range(18) for s in lines[row_spans[n][0] + 1:row_spans[n][1]]
                 if s.strip().startswith('<text x="10"')
-                and ("(1015)" in s or "(1027)" in s))
-    assert n_hdr == 5, f"1015/1027 组头标签应 5 处，实得 {n_hdr}"
-    for n in range(17):
+                and ("(1015)" in s or "(1027)" in s or "(1117)" in s))
+    assert n_hdr == 6, f"1015/1027/1117 组头标签应 6 处，实得 {n_hdr}"
+    for n in range(18):
         ro, rc = row_spans[n]
         d = 0.15 + 0.09 * n
         o.append(f'<g class="r{n} row" style="animation-delay:{d:.2f}s">')
@@ -178,7 +189,7 @@ def build():
         assert blk[cs].strip().startswith("<rect") and blk[ce].strip().startswith("<circle")
         o.extend(blk[:cs])
         o.append(f'<g class="row" style="animation-delay:{d + 0.12:.2f}s">')
-        # 条簇行波：整表 17 行连续慢波（4s，相位 -0.1s/行递增）
+        # 条簇行波：整表 18 行连续慢波（4s，相位 -0.1s/行递增）
         ph = -0.1 * n
         ph_s = f"{ph:g}" if ph else "0"
         o.append(f'<g class="cellwave" style="animation-duration:4s;animation-delay:{ph_s}s">')
@@ -200,7 +211,19 @@ def build():
     o.append("</g>")
 
     # 其余原样（zeband/呼吸高亮/cmpband 遗留覆盖层 + 边框 + 源尾注释 + </svg>）
-    o.extend(lines[grid_g_close + 1:])
+    # 例外：1117 的扫光占位 <g clip-path="url(#cCmp3)"></g> 在动画版注入行进色带
+    #（静态版保持空白，避免静态图出现固定色块）；sweepMove keyframes 来自 kit，不新造
+    cCmp3_empty = '<g clip-path="url(#cCmp3)"></g>'
+    cCmp3_full = ('<g clip-path="url(#cCmp3)"><rect class="cmpband3" x="0" y="431" width="150" '
+                  'height="152" fill="url(#gCmp3)" style="--sweepP:603px"/></g>')
+    n_fill = 0
+    for s in lines[grid_g_close + 1:]:
+        if s.strip() == cCmp3_empty:
+            o.append(cCmp3_full)
+            n_fill += 1
+        else:
+            o.append(s)
+    assert n_fill == 1, f"1117 扫光占位应 1 处，实得 {n_fill}"
 
     text = eol.join(o)
     if tail_nl:
@@ -264,11 +287,11 @@ def main():
     res = check()
     data = OUT.read_text(encoding="utf-8")
     cluster_waves = len(re.findall(r'class="cellwave" style="animation-duration:4s', data))
-    assert cluster_waves == 17, f"条簇行波应 17 行，实得 {cluster_waves}"
+    assert cluster_waves == 18, f"条簇行波应 18 行，实得 {cluster_waves}"
     print("[make_anim_power_compare_hk11 v4.1]",
           "row_g=", len(re.findall(r'class="r\d+ row"', data)),
           "cellwave=", data.count('class="cellwave"'),
-          "(hdr 5 + cluster", cluster_waves, ")",
+          "(hdr 6 + cluster", cluster_waves, ")",
           "pulse=", len(re.findall(r'class="(pulse|pulse-b)"', data)),
           "fade=", data.count('class="fade"'))
     ok = True
@@ -283,4 +306,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-# ymzhu 2026-11-04 16:06
+# ymzhu 2026-11-17 11:33

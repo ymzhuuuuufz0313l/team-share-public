@@ -1,0 +1,464 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="605" height="444" viewBox="0 0 605 444">
+<style><![CDATA[
+text{font-family:ui-monospace,Consolas,monospace,"Microsoft YaHei",sans-serif;font-size:11px;}
+
+
+
+
+.in{}
+.bar{transform-box:fill-box;transform-origin:left center;}
+.r0{}
+.b0{}
+.r1{}
+.b1{}
+.r2{}
+.b2{}
+.r3{}
+.b3{}
+.r4{}
+.b4{}
+.r5{}
+.b5{}
+.r6{}
+.b6{}
+.r7{}
+.b7{}
+.r8{}
+.b8{}
+.r9{}
+.b9{}
+.r10{}
+.b10{}
+.r11{}
+.b11{}
+.r12{}
+.b12{}
+.r13{}
+.b13{}
+.r14{}
+.b14{}
+.r15{}
+.b15{}
+.r16{}
+.b16{}
+.sweep{transform-box:fill-box;transform-origin:left center;}
+.cap{}
+.breath{opacity:.4;}
+.maxpulse{opacity:1;}
+
+.cmpband{transform-box:fill-box;transform-origin:left center;}
+.breath2{opacity:.4;}
+.cmpband2{transform-box:fill-box;transform-origin:left center;}
+
+.dot{}
+.d0{}.d1{}.d2{}.d3{}.d4{}.d5{}.d6{}.d7{}.d8{}.d9{}.d10{}.d11{}.d12{}.d13{}.d14{}.d15{}.d16{}
+
+.peakglow{}
+
+.zeband{transform-box:fill-box;transform-origin:center;}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+]]></style>
+<style>
+.row{opacity:0;animation:rowIn .55s cubic-bezier(.22,.7,.3,1) forwards}
+.head{opacity:0;animation:rowIn .55s cubic-bezier(.22,.7,.3,1) forwards}
+@keyframes rowIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.draw{stroke-dasharray:100;animation:drawIn .6s cubic-bezier(.4,0,.2,1) forwards}
+@keyframes drawIn{from{stroke-dashoffset:100}to{stroke-dashoffset:0}}
+.fade{opacity:0;animation:fadeIn .6s ease forwards}
+@keyframes fadeIn{to{opacity:1}}
+.flowdot{fill:none;stroke-linecap:round;stroke-dasharray:9 91;stroke-width:3.5;animation:flow 2.6s linear infinite}
+@keyframes flow{to{stroke-dashoffset:-100}}
+.flowtail{fill:none;stroke-linecap:round;stroke-dasharray:4 96;stroke-width:8;opacity:.25;animation:flow 2.6s linear infinite}
+.pulse{transform-box:fill-box;transform-origin:center;animation:pulse 2.8s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;filter:drop-shadow(0 0 0 rgba(180,83,9,0))}50%{opacity:.8;filter:drop-shadow(0 0 10px rgba(180,83,9,.75))}}
+.pulse-t{transform-box:fill-box;transform-origin:center;animation:pulseT 2.8s ease-in-out infinite}
+@keyframes pulseT{0%,100%{opacity:1;filter:drop-shadow(0 0 0 rgba(14,116,144,0))}50%{opacity:.8;filter:drop-shadow(0 0 10px rgba(14,116,144,.75))}}
+.pulse-b{transform-box:fill-box;transform-origin:center;animation:pulseB 2.8s ease-in-out infinite}
+@keyframes pulseB{0%,100%{opacity:1;filter:drop-shadow(0 0 0 rgba(29,78,216,0))}50%{opacity:.8;filter:drop-shadow(0 0 10px rgba(29,78,216,.75))}}
+.sweepband{opacity:.85;animation:sweepMove 8s linear infinite}
+@keyframes sweepMove{to{transform:translateX(var(--sweepP,160px))}}
+.dashgrow{stroke-dasharray:7 5;animation:dashgrow 2.6s linear infinite}
+@keyframes dashgrow{from{stroke-dashoffset:72}to{stroke-dashoffset:0}}
+.march{animation:march 1.5s linear infinite}
+@keyframes march{to{stroke-dashoffset:-16}}
+.cellwave{animation:wave 2.6s ease-in-out infinite}
+@keyframes wave{0%,100%{opacity:1}50%{opacity:.72}}
+.breathe{animation:br 3.2s ease-in-out infinite}
+@keyframes br{0%,100%{opacity:1}50%{opacity:.55}}
+.step{animation:stepLit 6s ease-in-out infinite}
+@keyframes stepLit{0%,16%{filter:drop-shadow(0 0 9px rgba(29,78,216,.85))}24%,92%{filter:drop-shadow(0 0 0 rgba(29,78,216,0))}100%{filter:drop-shadow(0 0 9px rgba(29,78,216,.85))}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}.row,.head,.fade{opacity:1!important}.flowdot,.flowtail,.sweepband{display:none!important}}
+</style>
+<defs>
+<clipPath id="cCmp"><rect x="1" y="255" width="603" height="20"/><rect x="1" y="387" width="603" height="20"/></clipPath>
+<clipPath id="cCmp2"><rect x="1" y="276" width="603" height="20"/><rect x="1" y="408" width="603" height="20"/></clipPath>
+<clipPath id="cBody"><rect x="0" y="56" width="605" height="374"/></clipPath>
+</defs>
+<rect x="0" y="0" width="605" height="444" fill="#f4f1ea"/>
+<g class="in head">
+<rect x="0" y="0" width="605" height="30" fill="#1c2534"/>
+<text x="10" y="15.0" dominant-baseline="central" fill="#f4f1ea" font-weight="bold">PowerPro 功耗对比 — HK1V11（前仿）vs 其他芯片（后仿）</text>
+<rect class="sweep" x="0" y="29" width="605" height="2" fill="#b45309"/>
+<rect x="0" y="30" width="605" height="26" fill="#1c2534"/>
+<text x="10" y="43.0" dominant-baseline="central" fill="#f4f1ea" font-weight="bold">CHIP/Case</text>
+<text x="192" y="43.0" text-anchor="end" dominant-baseline="central" fill="#f4f1ea" font-weight="bold">Clk Freq</text>
+<text x="254" y="43.0" text-anchor="end" dominant-baseline="central" fill="#f4f1ea" font-weight="bold">Process</text>
+<text x="310" y="43.0" text-anchor="end" dominant-baseline="central" fill="#f4f1ea" font-weight="bold">Area</text>
+<text x="354" y="43.0" text-anchor="end" dominant-baseline="central" fill="#f4f1ea" font-weight="bold">Lane</text>
+<text x="440" y="43.0" text-anchor="end" dominant-baseline="central" fill="#f4f1ea" font-weight="bold">Normal (mW)</text>
+<text x="514" y="43.0" text-anchor="end" dominant-baseline="central" fill="#f4f1ea" font-weight="bold">DPLC (mW)</text>
+<text x="594" y="43.0" text-anchor="end" dominant-baseline="central" fill="#f4f1ea" font-weight="bold">DRDOD (mW)</text>
+</g>
+<g class="r0 row" style="animation-delay:0.15s">
+<g class="row" style="animation-delay:0.27s">
+<g class="cellwave" style="animation-duration:4s;animation-delay:0s">
+<rect class="bar b0" x="366" y="60" width="10" height="14" rx="2" fill="#0e7490" fill-opacity="0.25"/>
+<circle class="dot d0" cx="376" cy="67" r="2.5" fill="#0e7490"/>
+</g>
+</g>
+<text x="10" y="67.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HV2M23 (opt)</text>
+<text x="192" y="67.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1.8G</text>
+<text x="254" y="67.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
+<text x="310" y="67.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">170352</text>
+<text x="354" y="67.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1L</text>
+<text x="440" y="67.0" text-anchor="end" dominant-baseline="central" fill="#047857" font-weight="bold">8.91</text>
+<text x="514" y="67.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">9.672</text>
+<text x="594" y="67.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">9.571</text>
+</g>
+<g class="r1 row" style="animation-delay:0.24s">
+<rect x="0" y="78" width="605" height="22" fill="#1c2534" fill-opacity="0.045"/>
+<g class="row" style="animation-delay:0.36s">
+<g class="cellwave" style="animation-duration:4s;animation-delay:-0.1s">
+<rect class="bar b1" x="366" y="82" width="15" height="14" rx="2" fill="#0e7490" fill-opacity="0.25"/>
+<circle class="dot d1" cx="381" cy="89" r="2.5" fill="#0e7490"/>
+</g>
+</g>
+<text x="10" y="89.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HV2M23</text>
+<text x="192" y="89.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1.8G</text>
+<text x="254" y="89.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
+<text x="310" y="89.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">170352</text>
+<text x="354" y="89.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1L</text>
+<text x="440" y="89.0" text-anchor="end" dominant-baseline="central" fill="#047857" font-weight="bold">12.503</text>
+<text x="514" y="89.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">13.447</text>
+<text x="594" y="89.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">13.65</text>
+</g>
+<g class="r2 row" style="animation-delay:0.33s">
+<g class="row" style="animation-delay:0.45s">
+<g class="cellwave" style="animation-duration:4s;animation-delay:-0.2s">
+<rect class="bar b2" x="366" y="104" width="7" height="14" rx="2" fill="#0e7490" fill-opacity="0.25"/>
+<circle class="dot d2" cx="373" cy="111" r="2.5" fill="#0e7490"/>
+</g>
+</g>
+<text x="10" y="111.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HV2M23</text>
+<text x="192" y="111.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">0.9G</text>
+<text x="254" y="111.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
+<text x="310" y="111.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">170352</text>
+<text x="354" y="111.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">2L</text>
+<text x="440" y="111.0" text-anchor="end" dominant-baseline="central" fill="#047857" font-weight="bold">6.229</text>
+<text x="514" y="111.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">7.519</text>
+<text x="594" y="111.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">7.976</text>
+</g>
+<g class="r3 row" style="animation-delay:0.42s">
+<rect x="0" y="122" width="605" height="22" fill="#1c2534" fill-opacity="0.045"/>
+<g class="row" style="animation-delay:0.54s">
+<g class="cellwave" style="animation-duration:4s;animation-delay:-0.3s">
+<rect class="bar b3" x="366" y="126" width="14" height="14" rx="2" fill="#0e7490" fill-opacity="0.25"/>
+<circle class="dot d3" cx="380" cy="133" r="2.5" fill="#0e7490"/>
+</g>
+</g>
+<text x="10" y="133.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HV3310B1</text>
+<text x="192" y="133.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1.8G</text>
+<text x="254" y="133.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">110</text>
+<text x="310" y="133.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">229381</text>
+<text x="354" y="133.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1L</text>
+<text x="440" y="133.0" text-anchor="end" dominant-baseline="central" fill="#047857" font-weight="bold">12.234</text>
+<text x="514" y="133.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
+<text x="594" y="133.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
+</g>
+<g class="r4 row" style="animation-delay:0.51s">
+<g class="row" style="animation-delay:0.63s">
+<g class="cellwave" style="animation-duration:4s;animation-delay:-0.4s">
+<rect class="bar b4" x="366" y="148" width="12" height="14" rx="2" fill="#0e7490" fill-opacity="0.25"/>
+<circle class="dot d4" cx="378" cy="155" r="2.5" fill="#0e7490"/>
+</g>
+</g>
+<text x="10" y="155.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HV3310B1</text>
+<text x="192" y="155.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">0.9G</text>
+<text x="254" y="155.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">110</text>
+<text x="310" y="155.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">229381</text>
+<text x="354" y="155.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">2L</text>
+<text x="440" y="155.0" text-anchor="end" dominant-baseline="central" fill="#047857" font-weight="bold">9.99</text>
+<text x="514" y="155.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
+<text x="594" y="155.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
+</g>
+<g class="r5 row" style="animation-delay:0.60s">
+<rect x="0" y="166" width="605" height="22" fill="#1c2534" fill-opacity="0.045"/>
+<g class="row" style="animation-delay:0.72s">
+<g class="cellwave" style="animation-duration:4s;animation-delay:-0.5s">
+<rect class="bar b5" x="366" y="170" width="10" height="14" rx="2" fill="#0e7490" fill-opacity="0.25"/>
+<circle class="dot d5" cx="376" cy="177" r="2.5" fill="#0e7490"/>
+</g>
+</g>
+<text x="10" y="177.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HV1V21</text>
+<text x="192" y="177.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1.8G</text>
+<text x="254" y="177.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
+<text x="310" y="177.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">123623</text>
+<text x="354" y="177.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1L</text>
+<text x="440" y="177.0" text-anchor="end" dominant-baseline="central" fill="#047857" font-weight="bold">8.62</text>
+<text x="514" y="177.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
+<text x="594" y="177.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
+</g>
+<g class="r6 row" style="animation-delay:0.69s">
+<g class="row" style="animation-delay:0.81s">
+<g class="cellwave" style="animation-duration:4s;animation-delay:-0.6s">
+<rect class="bar b6" x="366" y="192" width="7" height="14" rx="2" fill="#0e7490" fill-opacity="0.25"/>
+<circle class="dot d6" cx="373" cy="199" r="2.5" fill="#0e7490"/>
+</g>
+</g>
+<text x="10" y="199.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HV1V21</text>
+<text x="192" y="199.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">0.9G</text>
+<text x="254" y="199.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
+<text x="310" y="199.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">123623</text>
+<text x="354" y="199.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">2L</text>
+<text x="440" y="199.0" text-anchor="end" dominant-baseline="central" fill="#047857" font-weight="bold">6.34</text>
+<text x="514" y="199.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
+<text x="594" y="199.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
+</g>
+<g class="r7 row" style="animation-delay:0.78s">
+<rect x="0" y="210" width="605" height="22" fill="#1c2534" fill-opacity="0.045"/>
+<g class="row" style="animation-delay:0.90s">
+<g class="cellwave" style="animation-duration:4s;animation-delay:-0.7s">
+<rect class="bar b7" x="366" y="214" width="18" height="14" rx="2" fill="#0e7490" fill-opacity="0.25"/>
+<circle class="dot d7" cx="384" cy="221" r="2.5" fill="#0e7490"/>
+</g>
+</g>
+<text x="10" y="221.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HV1V22</text>
+<text x="192" y="221.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">4G</text>
+<text x="254" y="221.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
+<text x="310" y="221.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">162475</text>
+<text x="354" y="221.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1L</text>
+<text x="440" y="221.0" text-anchor="end" dominant-baseline="central" fill="#047857" font-weight="bold">15.8</text>
+<text x="514" y="221.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">14.8</text>
+<text x="594" y="221.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
+</g>
+<g class="r8 row" style="animation-delay:0.87s">
+<rect x="0" y="232" width="605" height="22" fill="#b45309" fill-opacity="0.08"/>
+<g class="row" style="animation-delay:0.99s">
+<g class="cellwave" style="animation-duration:4s;animation-delay:-0.8s">
+<rect class="bar b8" x="366" y="236" width="13" height="14" rx="2" fill="#b45309" fill-opacity="0.30"/>
+<circle class="dot d8" cx="379" cy="243" r="2.5" fill="#b45309"/>
+</g>
+</g>
+<g class="cellwave" style="animation-delay:0s">
+<text x="10" y="243.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HV1V22 (1015)</text>
+</g>
+<text x="192" y="243.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">2.67G</text>
+<text x="254" y="243.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
+<text x="310" y="243.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">162475</text>
+<text x="354" y="243.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1L</text>
+<text x="440" y="243.0" text-anchor="end" dominant-baseline="central" fill="#047857" font-weight="bold">11.33</text>
+<text x="514" y="243.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
+<text x="594" y="243.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
+</g>
+<g class="r9 row" style="animation-delay:0.96s">
+<rect x="0" y="254" width="605" height="22" fill="#1c2534" fill-opacity="0.045"/>
+<rect x="0" y="254" width="605" height="22" fill="#b45309" fill-opacity="0.08"/>
+<g class="row" style="animation-delay:1.08s">
+<g class="cellwave" style="animation-duration:4s;animation-delay:-0.9s">
+<rect class="bar b9" x="366" y="258" width="22" height="14" rx="2" fill="#b45309" fill-opacity="0.30"/>
+<circle class="dot d9" cx="388" cy="265" r="2.5" fill="#b45309"/>
+</g>
+</g>
+<g class="cellwave" style="animation-delay:0s">
+<text x="10" y="265.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HV1V22 (1015)</text>
+</g>
+<text x="192" y="265.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">4.46G</text>
+<text x="254" y="265.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
+<text x="310" y="265.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">162475</text>
+<text x="354" y="265.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1L</text>
+<text x="440" y="265.0" text-anchor="end" dominant-baseline="central" fill="#047857" font-weight="bold">18.97</text>
+<text x="514" y="265.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
+<text x="594" y="265.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
+</g>
+<g class="r10 row" style="animation-delay:1.05s">
+<rect x="0" y="276" width="605" height="22" fill="#1d4ed8" fill-opacity="0.20"/>
+<g class="row" style="animation-delay:1.17s">
+<g class="cellwave" style="animation-duration:4s;animation-delay:-1s">
+<g class="pulse-b" style="animation-delay:-1.9s">
+<rect class="bar b10" x="366" y="280" width="20" height="14" rx="2" fill="#1d4ed8" fill-opacity="0.85"/>
+<path d="M441 290 L447 290 L444 284 Z" fill="#1d4ed8"/>
+<circle class="dot d10" cx="386" cy="287" r="2.5" fill="#1d4ed8"/>
+</g>
+</g>
+</g>
+<g class="cellwave" style="animation-delay:1.2s">
+<text x="10" y="287.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HV1V22 (1027)</text>
+</g>
+<text x="192" y="287.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">4G</text>
+<text x="254" y="287.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
+<text x="310" y="287.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">162475</text>
+<text x="354" y="287.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1L</text>
+<text x="440" y="287.0" text-anchor="end" dominant-baseline="central" fill="#1d4ed8" font-weight="bold">17.00</text>
+<text x="514" y="287.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
+<text x="594" y="287.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
+</g>
+<g class="r11 row" style="animation-delay:1.14s">
+<rect x="0" y="298" width="605" height="22" fill="#1c2534" fill-opacity="0.045"/>
+<rect x="0" y="298" width="605" height="22" fill="#1d4ed8" fill-opacity="0.07"/>
+<g class="row" style="animation-delay:1.26s">
+<g class="cellwave" style="animation-duration:4s;animation-delay:-1.1s">
+<rect class="bar b11" x="366" y="302" width="24" height="14" rx="2" fill="#1d4ed8" fill-opacity="0.25"/>
+<circle class="dot d11" cx="390" cy="309" r="2.5" fill="#1d4ed8"/>
+</g>
+</g>
+<text x="10" y="309.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HK1V11 (0922)</text>
+<text x="192" y="309.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">2.97G</text>
+<text x="254" y="309.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
+<text x="310" y="309.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">294907</text>
+<text x="354" y="309.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1L</text>
+<text x="440" y="309.0" text-anchor="end" dominant-baseline="central" fill="#047857" font-weight="bold">21.08</text>
+<text x="514" y="309.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">21.36</text>
+<text x="594" y="309.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
+</g>
+<g class="r12 row" style="animation-delay:1.23s">
+<rect x="0" y="320" width="605" height="22" fill="#1d4ed8" fill-opacity="0.07"/>
+<g class="row" style="animation-delay:1.35s">
+<g class="cellwave" style="animation-duration:4s;animation-delay:-1.2s">
+<g class="pulse" style="animation-delay:-0.5s">
+<rect class="peakglow" x="404" y="322" width="48" height="18" rx="9" fill="#b45309"/>
+<g class="maxpulse">
+<rect class="bar b12" x="366" y="324" width="44" height="14" rx="2" fill="#b45309" fill-opacity="0.85"/>
+<path d="M441 334 L447 334 L444 328 Z" fill="#b45309"/>
+</g>
+<circle class="dot d12" cx="410" cy="331" r="2.5" fill="#b45309"/>
+</g>
+</g>
+</g>
+<text x="10" y="331.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HK1V11 4K180 (0922)</text>
+<text x="192" y="331.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">4.47G</text>
+<text x="254" y="331.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
+<text x="310" y="331.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">294907</text>
+<text x="354" y="331.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1L</text>
+<text x="440" y="331.0" text-anchor="end" dominant-baseline="central" fill="#047857" font-weight="bold">37.9</text>
+<text x="514" y="331.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
+<text x="594" y="331.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
+</g>
+<g class="r13 row" style="animation-delay:1.32s">
+<rect x="0" y="342" width="605" height="22" fill="#1c2534" fill-opacity="0.045"/>
+<rect x="0" y="342" width="605" height="22" fill="#1d4ed8" fill-opacity="0.07"/>
+<g class="row" style="animation-delay:1.44s">
+<g class="cellwave" style="animation-duration:4s;animation-delay:-1.3s">
+<rect class="bar b13" x="366" y="346" width="19" height="14" rx="2" fill="#1d4ed8" fill-opacity="0.25"/>
+<circle class="dot d13" cx="385" cy="353" r="2.5" fill="#1d4ed8"/>
+</g>
+</g>
+<text x="10" y="353.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HK1V11 (1003)</text>
+<text x="192" y="353.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">2.97G</text>
+<text x="254" y="353.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
+<text x="310" y="353.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">314707</text>
+<text x="354" y="353.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1L</text>
+<text x="440" y="353.0" text-anchor="end" dominant-baseline="central" fill="#047857" font-weight="bold">16.3</text>
+<text x="514" y="353.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">16.3</text>
+<text x="594" y="353.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
+</g>
+<g class="r14 row" style="animation-delay:1.41s">
+<rect x="0" y="364" width="605" height="22" fill="#1d4ed8" fill-opacity="0.07"/>
+<g class="row" style="animation-delay:1.53s">
+<g class="cellwave" style="animation-duration:4s;animation-delay:-1.4s">
+<rect class="bar b14" x="366" y="368" width="34" height="14" rx="2" fill="#1d4ed8" fill-opacity="0.25"/>
+<circle class="dot d14" cx="400" cy="375" r="2.5" fill="#1d4ed8"/>
+</g>
+</g>
+<text x="10" y="375.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HK1V11 4K180 (1003)</text>
+<text x="192" y="375.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">4.47G</text>
+<text x="254" y="375.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
+<text x="310" y="375.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">314707</text>
+<text x="354" y="375.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1L</text>
+<text x="440" y="375.0" text-anchor="end" dominant-baseline="central" fill="#047857" font-weight="bold">29.47</text>
+<text x="514" y="375.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
+<text x="594" y="375.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
+</g>
+<g class="r15 row" style="animation-delay:1.50s">
+<rect x="0" y="386" width="605" height="22" fill="#1c2534" fill-opacity="0.045"/>
+<rect x="0" y="386" width="605" height="22" fill="#b45309" fill-opacity="0.08"/>
+<g class="row" style="animation-delay:1.62s">
+<g class="cellwave" style="animation-duration:4s;animation-delay:-1.5s">
+<rect class="bar b15" x="366" y="390" width="30" height="14" rx="2" fill="#b45309" fill-opacity="0.30"/>
+<circle class="dot d15" cx="396" cy="397" r="2.5" fill="#b45309"/>
+</g>
+</g>
+<g class="cellwave" style="animation-delay:0s">
+<text x="10" y="397.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HK1V11 (1015)</text>
+</g>
+<text x="192" y="397.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">4.46G</text>
+<text x="254" y="397.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
+<text x="310" y="397.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">314707</text>
+<text x="354" y="397.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1L</text>
+<text x="440" y="397.0" text-anchor="end" dominant-baseline="central" fill="#047857" font-weight="bold">25.65</text>
+<text x="514" y="397.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
+<text x="594" y="397.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
+</g>
+<g class="r16 row" style="animation-delay:1.59s">
+<rect x="0" y="408" width="605" height="22" fill="#1d4ed8" fill-opacity="0.20"/>
+<g class="row" style="animation-delay:1.71s">
+<g class="cellwave" style="animation-duration:4s;animation-delay:-1.6s">
+<g class="pulse-b" style="animation-delay:-2.6s">
+<rect class="bar b16" x="366" y="412" width="28" height="14" rx="2" fill="#1d4ed8" fill-opacity="0.85"/>
+<path d="M441 422 L447 422 L444 416 Z" fill="#1d4ed8"/>
+<circle class="dot d16" cx="394" cy="419" r="2.5" fill="#1d4ed8"/>
+</g>
+</g>
+</g>
+<g class="cellwave" style="animation-delay:1.2s">
+<text x="10" y="419.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HK1V11 (1027)</text>
+</g>
+<text x="192" y="419.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">4G</text>
+<text x="254" y="419.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
+<text x="310" y="419.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">299276</text>
+<text x="354" y="419.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1L</text>
+<text x="440" y="419.0" text-anchor="end" dominant-baseline="central" fill="#1d4ed8" font-weight="bold">24.42</text>
+<text x="514" y="419.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
+<text x="594" y="419.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
+</g>
+<g class="fade" style="animation-delay:0.05s">
+<g stroke="#ddd6c8" stroke-width="1">
+<line x1="0" y1="30" x2="0" y2="443"/>
+<line x1="134" y1="30" x2="134" y2="443"/>
+<line x1="202" y1="30" x2="202" y2="443"/>
+<line x1="264" y1="30" x2="264" y2="443"/>
+<line x1="320" y1="30" x2="320" y2="443"/>
+<line x1="364" y1="30" x2="364" y2="443"/>
+<line x1="450" y1="30" x2="450" y2="443"/>
+<line x1="524" y1="30" x2="524" y2="443"/>
+<line x1="604" y1="30" x2="604" y2="443"/>
+<line x1="0" y1="30" x2="605" y2="30"/>
+<line x1="0" y1="56" x2="605" y2="56"/>
+<line x1="0" y1="78" x2="605" y2="78"/>
+<line x1="0" y1="100" x2="605" y2="100"/>
+<line x1="0" y1="122" x2="605" y2="122"/>
+<line x1="0" y1="144" x2="605" y2="144"/>
+<line x1="0" y1="166" x2="605" y2="166"/>
+<line x1="0" y1="188" x2="605" y2="188"/>
+<line x1="0" y1="210" x2="605" y2="210"/>
+<line x1="0" y1="232" x2="605" y2="232"/>
+<line x1="0" y1="254" x2="605" y2="254"/>
+<line x1="0" y1="276" x2="605" y2="276"/>
+<line x1="0" y1="298" x2="605" y2="298"/>
+<line x1="0" y1="320" x2="605" y2="320"/>
+<line x1="0" y1="342" x2="605" y2="342"/>
+<line x1="0" y1="364" x2="605" y2="364"/>
+<line x1="0" y1="386" x2="605" y2="386"/>
+<line x1="0" y1="408" x2="605" y2="408"/>
+<line x1="0" y1="430" x2="605" y2="430"/>
+</g>
+</g>
+<g class="breath" fill="#b45309">
+<rect x="1" y="255" width="603" height="20" rx="3"/>
+<rect x="1" y="387" width="603" height="20" rx="3"/>
+</g>
+<g class="breath2" fill="#1d4ed8"><rect x="1" y="276" width="603" height="20" rx="3"/><rect x="1" y="408" width="603" height="20" rx="3"/></g>
+<g clip-path="url(#cCmp)"></g>
+<g clip-path="url(#cCmp2)"></g>
+<rect x="0.5" y="0.5" width="604" height="443" fill="none" stroke="#ddd6c8" stroke-width="1"/>
+<!-- ymzhu 2026-10-27 18:55 -->
+</svg>
