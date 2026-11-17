@@ -36,9 +36,11 @@ from pathlib import Path
 import re
 import os
 
-BASE = Path("E:/project/team-share-public/hk1v11-lc-cpuwr-history/images")
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))   # = images/
+from _siteio import out_path, archive_snapshot, read_text_lf  # noqa: E402
+BASE = Path(__file__).resolve().parents[1]   # images/（随脚本位置推导，不再写死绝对路径）
 SRC = BASE / "chip_sel1_register_map.svg"
-OUT = BASE / "anim" / "chip_sel1_register_map.svg"
+OUT = out_path("images/anim/chip_sel1_register_map.svg")
 
 # MOTION_KIT.md §2 — Motion Kit CSS v4（逐字嵌入，不增删类）
 KIT_CSS = "\n".join([
@@ -96,7 +98,7 @@ def text_of(line):
 
 
 def build():
-    raw = SRC.read_text(encoding="utf-8", newline="")
+    raw = read_text_lf(SRC)   # 源若为 CRLF 也归一为 LF，产物不继承换行符
     eol = "\r\n" if "\r\n" in raw else "\n"
     tail_nl = raw.endswith(eol)
     lines = raw.split(eol)
@@ -185,7 +187,7 @@ def build():
     text = eol.join(o)
     if tail_nl:
         text += eol
-    OUT.parent.mkdir(parents=True, exist_ok=True)
+    archive_snapshot("images/anim/chip_sel1_register_map.svg", "auto" + __import__("datetime").date.today().strftime("%Y%m%d"))
     OUT.write_text(text, encoding="utf-8", newline="")
     return {"cellwave_chrome": text.count('class="cellwave"'),
             "pulse": len(re.findall(r'class="pulse(-[tb])?"', text)),
@@ -254,4 +256,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-# ymzhu 2026-10-29 11:52
+# ymzhu 2026-11-17 19:34

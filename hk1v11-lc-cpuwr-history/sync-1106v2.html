@@ -357,7 +357,28 @@
 
 </script>
   <script>
-    document.getElementById('article').innerHTML = marked.parse(document.getElementById('md').textContent.trim());
+    (function renderMarkdown() {
+      /* F08 降级兜底：marked 由 jsdelivr CDN 提供，内网/断网/被墙时 typeof marked === 'undefined'，
+         旧代码会在这里抛 ReferenceError，整页 article 空白（17 页里 15 页依赖此路径）。
+         兜底策略：拿不到 marked 就把 Markdown 原文放进 <pre> 显示，导航/图/表格骨架照常可用。 */
+      var mdEl = document.getElementById('md');
+      var art = document.getElementById('article');
+      if (!mdEl || !art) return;
+      var raw = mdEl.textContent.trim();
+      if (typeof marked !== 'undefined' && marked && typeof marked.parse === 'function') {
+        art.innerHTML = marked.parse(raw);
+        return;
+      }
+      art.innerHTML = '';
+      var tip = document.createElement('p');
+      tip.style.cssText = 'margin:0 0 14px;padding:10px 14px;border-left:4px solid #f59e0b;background:#fffbeb;color:#92400e;font-size:13px;border-radius:4px;';
+      tip.textContent = '渲染库 marked 未加载（CDN 不可达），以下为原始 Markdown 文本；页面导航与图表不受影响。';
+      var pre = document.createElement('pre');
+      pre.style.cssText = 'white-space:pre-wrap;word-break:break-word;font-family:ui-monospace,Consolas,"Courier New",monospace;font-size:13px;line-height:1.7;background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:16px;margin:0;';
+      pre.textContent = raw;
+      art.appendChild(tip);
+      art.appendChild(pre);
+    })();
 const chapters = [
       ['index', '首页'],
       ['intro', '引言'],
@@ -536,7 +557,7 @@ const article = document.getElementById('article');
   </script>
   <script src="./fx.js?v=11"></script>
 </body>
-<!-- ymzhu 2026-11-04 16:15 -->
+<!-- ymzhu 2026-11-17 19:27 -->
 <!-- ymzhu 2026-11-06 19:15 -->
-<!-- ymzhu 2026-11-06 21:02 -->
+<!-- ymzhu 2026-11-17 19:33 -->
 </html>

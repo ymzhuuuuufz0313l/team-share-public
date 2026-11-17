@@ -8,11 +8,15 @@
 import io, os, re
 import xml.etree.ElementTree as ET
 from collections import Counter
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))   # = images/
+from _siteio import out_path, write_text_lf, archive_snapshot, table_anim  # noqa: E402
 
 # 本脚本位于 images/tools/（2026-11-04 归位），输出 = 上级 images/ 主名位（当前采纳版）
 BASE = os.path.dirname(os.path.abspath(__file__))
-OUT_STATIC = os.path.join(BASE, "..", "1104_reg_sync_changes.svg")
-OUT_ANIM   = os.path.join(BASE, "..", "anim", "1104_reg_sync_changes.svg")
+OUT_STATIC = out_path("images/1104_reg_sync_changes.svg")
+OUT_ANIM   = out_path("images/anim/1104_reg_sync_changes.svg")
 
 # ---- 站点/现有图配色（对齐 chip_sel*_register_map.svg）----
 BG      = "#ffffff"
@@ -101,38 +105,17 @@ def build_static():
 
 H = 720  # 高度（标题+副题+表头+5行×88+底注）
 static = build_static()
-os.makedirs(os.path.dirname(OUT_ANIM), exist_ok=True)
-io.open(OUT_STATIC, "w", encoding="utf-8", newline="\n").write(static)
+archive_snapshot("images/1104_reg_sync_changes.svg", "auto" + __import__("datetime").date.today().strftime("%Y%m%d"))
+write_text_lf(OUT_STATIC, static)
 
 # ---- 动画版：静态 + <style>（@keyframes 行级渐入 + 类型/状态脉冲）----
-CSS = """<style>
-.title, .head { opacity:0; animation: fadeIn .4s ease forwards; }
-.row { opacity:0; animation: rowIn .35s cubic-bezier(.22,.7,.3,1) forwards; }
-@keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
-@keyframes rowIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:none; } }
-@media (prefers-reduced-motion:reduce) { *{animation:none!important} .title,.head,.row{opacity:1!important} }
-</style>"""
-
 def build_anim(svg):
-    # 给标题加 class title
-    svg = svg.replace('font-size="22" font-weight="bold" fill="#1e293b"', 'class="title" font-size="22" font-weight="bold" fill="#1e293b"', 1)
-    # 表头背景 rect 加 head
-    svg = svg.replace('<rect x="40" y="100" width="1020" height="34" fill="#f1f5f9"/>', '<rect class="head" x="40" y="100" width="1020" height="34" fill="#f1f5f9"/>', 1)
-    # 数据行：在每行背景 rect 的 <rect 后插入 class row + 延迟
-    row_ys = [134, 222, 310, 398, 486]
-    for i, ry in enumerate(row_ys):
-        pattern = '<rect x="40" y="%d" width="1020" height="88" fill=' % ry
-        idx = svg.find(pattern)
-        if idx == -1:
-            continue
-        delay = ' class="row" style="animation-delay:%.2fs"' % (0.15 + i * 0.12)
-        svg = svg[:idx + 5] + delay + svg[idx + 5:]
-    # 注入 CSS 在 </svg> 前
-    svg = svg.replace("</svg>", CSS + "\n</svg>")
-    return svg
+    """动画版：Kit v4 全套 CSS + sweepband 扫光 + cellwave 行波（不触碰任何 <text>）。"""
+    return table_anim(svg)
 
 anim = build_anim(static)
-io.open(OUT_ANIM, "w", encoding="utf-8", newline="\n").write(anim)
+archive_snapshot("images/anim/1104_reg_sync_changes.svg", "auto" + __import__("datetime").date.today().strftime("%Y%m%d"))
+write_text_lf(OUT_ANIM, anim)
 
 # ---- 校验：XML 有效 / 静态无动画 / 动画有 / <text> 零漂移 ----
 ss = ET.fromstring(static); sa = ET.fromstring(anim)
@@ -146,4 +129,4 @@ print("written %s  %dB" % (OUT_ANIM, len(anim)))
 print("xml+ %s %s %s" % (s_static, a_anim, drift))
 assert s_static == "static-clean" and a_anim == "anim-ok" and drift == "drift-0", "validation failed"
 print("ALL PASS")
-# ymzhu 2026-11-04 16:10
+# ymzhu 2026-11-17 19:33

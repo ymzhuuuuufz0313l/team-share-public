@@ -2,6 +2,11 @@
 # Generate config_data_beat_regroup_0721.svg
 # LC_CPUWR 0721v1 beat regroup comparison: 0716_v1_work (2B/beat) vs 0721_v1 (3B/beat)
 
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))   # = images/
+from _siteio import out_path, write_text_lf, archive_snapshot  # noqa: E402
+
 CELL_W, CELL_H, CELL_GAP = 34, 34, 6
 BEAT_PAD = 8
 
@@ -153,11 +158,13 @@ parts.append('<text x="656" y="826" font-size="12" fill="#c2410c">全芯片 FCON
 
 parts.append('</svg>')
 
-out = r"E:\project\team-share-public\hk1v11-lc-cpuwr-history\images\config_data_beat_regroup_0721.svg"
-with open(out, "w", encoding="utf-8") as f:
-    f.write("\n".join(parts))
+out = out_path("images/config_data_beat_regroup_0721.svg")
+archive_snapshot("images/config_data_beat_regroup_0721.svg", "auto" + __import__("datetime").date.today().strftime("%Y%m%d"))
+write_text_lf(out, "\n".join(parts))
 print("written:", out)
 
 import xml.etree.ElementTree as ET
 ET.parse(out)
 print("XML valid")
+
+# ymzhu 2026-11-17 19:33

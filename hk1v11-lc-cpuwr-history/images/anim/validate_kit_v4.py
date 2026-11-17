@@ -66,10 +66,53 @@ def check(t):
     ok = all(str(r.get(k, "NG")) == "OK" or str(r.get(k, "NG")).startswith("OK(") for k in hard) \
         and str(r["steady>=2fam"]).startswith("OK")
     detail = " ".join(f"{k}={v}" for k, v in r.items() if k not in hard)
-    print(f"{'PASS' if ok else 'FAIL'} {t}  [{detail}]")
+    ng = [k for k in hard
+          if not (str(r.get(k, "NG")) == "OK" or str(r.get(k, "NG")).startswith("OK("))]
+    if not str(r["steady>=2fam"]).startswith("OK"):
+        ng.append("steady>=2fam")
+    print(f"{'PASS' if ok else 'FAIL'} {t}  [{detail}]"
+          + ("" if ok else "  <== NG: " + ",".join(ng)))
     return ok
 
+def main(argv):
+    """逐个校验、绝不短路；无参数时默认全量扫描 anim 目录。
+
+    2026-11-17 修复（审查 finding）：
+      · 旧版 `all(check(t) for t in sys.argv[1:])` 在**无参数**时 all(()) == True，
+        空跑也打印 "OVERALL: ALL PASS" 并 exit 0 —— 假通过；
+      · `all()` 短路，第一张 FAIL 就停，后面的图根本没校验、也没输出。
+    """
+    global ROOT, SITE
+    anim_dir, site_dir, names = ROOT, SITE, []
+    args = list(argv)
+    while args:
+        a = args.pop(0)
+        if a == "--anim-dir":
+            anim_dir = os.path.abspath(args.pop(0))
+        elif a == "--site-dir":
+            site_dir = os.path.abspath(args.pop(0))
+        elif a in ("-h", "--help"):
+            print(__doc__)
+            return 0
+        else:
+            names.append(a)
+    ROOT, SITE = anim_dir, site_dir
+    if not names:
+        names = sorted(os.path.splitext(f)[0] for f in os.listdir(ROOT) if f.endswith(".svg"))
+        if not names:
+            print("FATAL: 未给图名，且 %s 下没有 *.svg —— 拒绝空跑" % ROOT)
+            return 2
+        print("no-arg = 全量校验：%s 下 %d 个动画图" % (ROOT, len(names)))
+        print("")
+    results = [check(t) for t in names]      # 逐个跑完，不短路
+    bad = [t for t, ok in zip(names, results) if not ok]
+    print("")
+    print("OVERALL: %d/%d PASS%s" % (len(names) - len(bad), len(names),
+          "" if not bad else "  FAILED: " + ",".join(bad)))
+    return 0 if not bad else 1
+
+
 if __name__ == "__main__":
-    allok = all(check(t) for t in sys.argv[1:])
-    print("\nOVERALL:", "ALL PASS" if allok else "SOME FAILED")
-    sys.exit(0 if allok else 1)
+    sys.exit(main(sys.argv[1:]))
+
+# ymzhu 2026-11-17 19:33

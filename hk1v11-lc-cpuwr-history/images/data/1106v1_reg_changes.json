@@ -1,0 +1,92 @@
+{
+  "figure": "1106v1_reg_changes",
+  "source": "单一事实源（A0 抽取，2026-11-17）：本文件是 gen_reg_1106v1.py 的唯一表格数据，生成器不再内嵌字面量；改动请只改这里。",
+  "columns": [
+    "序号",
+    "变更内容",
+    "类型",
+    "归属",
+    "状态",
+    "状态色"
+  ],
+  "rows": [
+    [
+      "1",
+      [
+        "SMART_CS 恒直出（去 CHIP_SEL 门控）",
+        "0x02 无条件直通 {R_REG02_F[7:6],[3:2]}，cs=0 也直出"
+      ],
+      "恒直出",
+      "LC_REG_MAPPING",
+      "✅ 符合 20261103 表",
+      "#22c55e"
+    ],
+    [
+      "2",
+      [
+        "VPS_EN_0 新增输出端口",
+        "0x28[6] low-power 上抛（R_REG40_F[6]），164 行"
+      ],
+      "新增",
+      "LINK_CONFIG_CTRL",
+      "✅ 新端口",
+      "#22c55e"
+    ],
+    [
+      "3",
+      [
+        "四根寄存器输出连接移位",
+        "VPS_EN_1/khead/TP_SEL/BACSCR → LC_REG_MAPPING 实例尾部（挂法同 1104v1）"
+      ],
+      "归属",
+      "LINK_CONFIG_CTRL",
+      "✅ 功能零变化",
+      "#22c55e"
+    ],
+    [
+      "4",
+      [
+        "khead 消费链收窄 [4:0]→[2:0]",
+        "CHPI_DECODE / SHORT&LONG_ENCODING(_ALIGN) / long_encoding 全链"
+      ],
+      "收窄",
+      "全链 6 文件",
+      "✅ 清 1104 挂账",
+      "#22c55e"
+    ],
+    [
+      "5",
+      [
+        "K4_FIND_1 新信号链",
+        "SHORT_ENCODING_ALIGN 输出 → SHORT_ENCODING_OUTPUT",
+        "config_mode_k4_1（新配置模式寄存器）"
+      ],
+      "新增",
+      "SHORT_ENCODING",
+      "✅ 新链",
+      "#22c55e"
+    ],
+    [
+      "6",
+      [
+        "env_cfg 寄存器表 19 hunk",
+        "TP_SEL@0x08[5:4] 默认 11 / 0x1D 重排 / 删 TP_F_AHEAD / 新增 SCS_PKT_HALF"
+      ],
+      "env",
+      "DV_TCON_C",
+      "✅ 19 hunk",
+      "#22c55e"
+    ],
+    [
+      "7",
+      [
+        "LENB_CTRL 删 BIT_ALIGN_PT_DLY",
+        "打拍寄存器删除（少一拍延迟，任务书外 V1 服务器项）"
+      ],
+      "删除",
+      "LENB_CTRL",
+      "✅ 自查补充",
+      "#22c55e"
+    ]
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "figure": "reset_spec_1106v2",
+  "source": "单一事实源（A0 抽取，2026-11-17）：本文件是 gen_reset_spec_1106v2.py 的唯一表格数据，生成器不再内嵌字面量；改动请只改这里。",
+  "columns": [
+    "序号",
+    "变更内容",
+    "类型",
+    "归属",
+    "状态",
+    "状态色"
+  ],
+  "rows": [
+    [
+      "1",
+      "unlock reset 例外清单",
+      [
+        "13 组 CTRL_F 信号全 RSTN 域",
+        "AVE_RGBW / AVE_LAST / DPLC_GROUP / DPOLINV / AVE_MODE / CTRLF_CHECKSUM + 其余 7 组"
+      ],
+      "迁移",
+      "6 组 t9 迁 RSTN"
+    ],
+    [
+      "2",
+      "I2C_EN=1 全免 unlock reset",
+      [
+        "I2C_EN_CTL → TEST_EN → I_TEST_REG_EN → RSTNGEN:50",
+        "I2C_EN=1 时寄存器不进入 unlock reset 语义"
+      ],
+      "链路",
+      "零改动（链路已存在）"
+    ],
+    [
+      "3",
+      "PORSD 不受 password & checksum 保护",
+      [
+        "PORSD = RSTN 域 + 不在 LSI（password）集",
+        "1106v4：直写绕 chksum 门控 + update_en_a 回填移除",
+        "checksum 排除属 BCC 主端软件口径（非 RTL）"
+      ],
+      "已符合",
+      "1106v4 写门控修复"
+    ],
+    [
+      "4",
+      "password error reset 例外地址段",
+      [
+        "受门控段 32-38 / 40-47 / 51 / 53-57 / 144-147（dec）",
+        "0x40~0x44 整块（dec 64~68）不做 password error reset"
+      ],
+      "一致",
+      "零改动（=表 AC 列）"
+    ]
+  ]
+}

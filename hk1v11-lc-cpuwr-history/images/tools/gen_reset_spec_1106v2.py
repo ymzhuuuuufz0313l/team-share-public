@@ -8,10 +8,14 @@
 import io, os, unicodedata
 import xml.etree.ElementTree as ET
 from collections import Counter
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))   # = images/
+from _siteio import out_path, write_text_lf, archive_snapshot, table_anim  # noqa: E402
 
 BASE = os.path.dirname(os.path.abspath(__file__))
-OUT_STATIC = os.path.join(BASE, "..", "reset_spec_1106v2.svg")
-OUT_ANIM   = os.path.join(BASE, "..", "anim", "reset_spec_1106v2.svg")
+OUT_STATIC = out_path("images/reset_spec_1106v2.svg")
+OUT_ANIM   = out_path("images/anim/reset_spec_1106v2.svg")
 
 BG, INK, MUTED = "#ffffff", "#1e293b", "#64748b"
 LINE, HEAD_BG  = "#e2e8f0", "#f1f5f9"
@@ -26,6 +30,15 @@ W = 1100
 CX0, C1, C2, C3, C4, C5 = 40, 70, 300, 792, 872, W - 40  # badge 独立列 792-872；改动 872-1060
 
 BREAK_CHARS = " /·，、；;,_-）)】》"
+
+def _load_rows(fig):
+    """读取 images/data/<fig>.json 的行数据（A0：表格数据单一事实源）。"""
+    import json as _json
+    p = Path(__file__).resolve().parents[1] / "data" / (fig + ".json")
+    with io.open(p, encoding="utf-8") as f:
+        d = _json.load(f)
+    return [tuple(r) for r in d["rows"]]
+
 def _cw(ch, fs):
     if unicodedata.east_asian_width(ch) in 'WF': return fs
     if ch in '✅❌⚠→✓✗': return fs
@@ -50,12 +63,7 @@ def wrap(s, fs, maxw):
 def esc(s): return s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
 
 # 数据行（# | 维度 | 关键内容[行列表] | RTL 状态 badge | 改动）
-ROWS = [
-    ("1", "unlock reset 例外清单", ["13 组 CTRL_F 信号全 RSTN 域", "AVE_RGBW / AVE_LAST / DPLC_GROUP / DPOLINV / AVE_MODE / CTRLF_CHECKSUM + 其余 7 组"], "迁移", "6 组 t9 迁 RSTN"),
-    ("2", "I2C_EN=1 全免 unlock reset", ["I2C_EN_CTL → TEST_EN → I_TEST_REG_EN → RSTNGEN:50", "I2C_EN=1 时寄存器不进入 unlock reset 语义"], "链路", "零改动（链路已存在）"),
-    ("3", "PORSD 不受 password & checksum 保护", ["PORSD = RSTN 域 + 不在 LSI（password）集", "1106v4：直写绕 chksum 门控 + update_en_a 回填移除", "checksum 排除属 BCC 主端软件口径（非 RTL）"], "已符合", "1106v4 写门控修复"),
-    ("4", "password error reset 例外地址段", ["受门控段 32-38 / 40-47 / 51 / 53-57 / 144-147（dec）", "0x40~0x44 整块（dec 64~68）不做 password error reset"], "一致", "零改动（=表 AC 列）"),
-]
+ROWS = _load_rows("reset_spec_1106v2")   # 数据源 = images/data/reset_spec_1106v2.json（唯一事实源，勿在此改数）
 
 HEAD_Y = 100
 LH, PAD = 17.5, 16
@@ -104,29 +112,16 @@ def build_static():
     return "\n".join(a)
 
 static = build_static()
-os.makedirs(os.path.dirname(OUT_ANIM), exist_ok=True)
-io.open(OUT_STATIC, "w", encoding="utf-8", newline="\n").write(static)
-
-CSS = """<style>
-.title, .head { opacity:0; animation: fadeIn .4s ease forwards; }
-.row { opacity:0; animation: rowIn .35s cubic-bezier(.22,.7,.3,1) forwards; }
-@keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
-@keyframes rowIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:none; } }
-@media (prefers-reduced-motion:reduce) { *{animation:none!important} .title,.head,.row{opacity:1!important} }
-</style>"""
+archive_snapshot("images/reset_spec_1106v2.svg", "auto" + __import__("datetime").date.today().strftime("%Y%m%d"))
+write_text_lf(OUT_STATIC, static)
 
 def build_anim(svg):
-    svg = svg.replace('font-size="22" font-weight="bold" fill="#1e293b"', 'class="title" font-size="22" font-weight="bold" fill="#1e293b"', 1)
-    svg = svg.replace('<rect x="40" y="100" width="%d" height="34" fill="#f1f5f9"/>' % (C5 - CX0), '<rect class="head" x="40" y="100" width="%d" height="34" fill="#f1f5f9"/>' % (C5 - CX0), 1)
-    for i, (ry, rh) in enumerate(GEOM):
-        pattern = '<rect x="40" y="%d" width="%d" height="%d" fill=' % (ry, C5 - CX0, rh)
-        idx = svg.find(pattern)
-        if idx == -1: continue
-        svg = svg[:idx + 5] + ' class="row" style="animation-delay:%.2fs"' % (0.15 + i * 0.14) + svg[idx + 5:]
-    return svg.replace("</svg>", CSS + "\n</svg>")
+    """动画版：Kit v4 全套 CSS + sweepband 扫光 + cellwave 行波（不触碰任何 <text>）。"""
+    return table_anim(svg)
 
 anim = build_anim(static)
-io.open(OUT_ANIM, "w", encoding="utf-8", newline="\n").write(anim)
+archive_snapshot("images/anim/reset_spec_1106v2.svg", "auto" + __import__("datetime").date.today().strftime("%Y%m%d"))
+write_text_lf(OUT_ANIM, anim)
 
 ss, sa = ET.fromstring(static), ET.fromstring(anim)
 st = Counter(t.text for t in ss.iter() if t.tag.endswith('text') and t.text is not None)
@@ -156,4 +151,4 @@ print("written %s %dB / %s %dB" % (OUT_STATIC, len(static), OUT_ANIM, len(anim))
 print("xml+ %s %s %s overlap=%d" % (s_static, a_anim, drift, n_ov))
 assert s_static == "static-clean" and a_anim == "anim-ok" and drift == "drift-0" and n_ov == 0, "validation failed"
 print("ALL PASS")
-# ymzhu 2026-11-10 11:28
+# ymzhu 2026-11-17 19:34

@@ -3,7 +3,7 @@
 <rect width="1100" height="648" fill="#ffffff"/>
 <text x="550.0" y="42" text-anchor="middle" class="title" font-size="22" font-weight="bold" fill="#1e293b">20261106 表 · 字段迁址 + 复位维度（1106v2）</text>
 <text x="550.0" y="70" text-anchor="middle" font-size="12.5" fill="#64748b">较 20261103 新表四字段迁址 + unlock reset 6 组迁 RSTN + env 三件追平 · 双盲审→交叉验证→裁决修复→RTL 三关</text>
-<rect class="head" x="40" y="100" width="1020" height="34" fill="#f1f5f9"/>
+<defs><linearGradient id="sweepG-1" gradientUnits="userSpaceOnUse" x1="-640" y1="0" x2="620" y2="0"><stop offset="0" stop-color="#b45309" stop-opacity="0"/><stop offset="0.46" stop-color="#b45309" stop-opacity="0"/><stop offset="0.5" stop-color="#b45309" stop-opacity="0.30"/><stop offset="0.54" stop-color="#b45309" stop-opacity="0"/><stop offset="1" stop-color="#b45309" stop-opacity="0"/></linearGradient><clipPath id="sweepC-1"><rect x="40" y="100" width="1020" height="482"/></clipPath></defs><g clip-path="url(#sweepC-1)"><rect class="sweepband" x="-640" y="100" width="1260" height="482" fill="url(#sweepG-1)" style="--sweepP:1260px"/></g><rect class="head" x="40" y="100" width="1020" height="34" fill="#f1f5f9"/>
 <text x="55.0" y="122" text-anchor="middle" font-size="13.5" font-weight="700" fill="#1e293b">#</text>
 <text x="140.0" y="122" text-anchor="middle" font-size="13.5" font-weight="700" fill="#1e293b">字段 / 项</text>
 <text x="352.5" y="122" text-anchor="middle" font-size="13.5" font-weight="700" fill="#1e293b">旧（1106v1/1104 代）</text>
@@ -20,7 +20,7 @@
 <text x="792" y="197.5" font-size="11.5" fill="#64748b">Reserved</text>
 <rect x="1008.0" y="164.5" width="46" height="23" rx="11.5" fill="#dbeafe" stroke="#1d4ed8" stroke-width="1"/>
 <text x="1031.0" y="180.0" text-anchor="middle" font-size="11.5" font-weight="700" fill="#1d4ed8">迁址</text>
-<rect class="row" style="animation-delay:0.29s" x="40" y="218" width="1020" height="70" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+<g class="cellwave" style="animation-delay:-0.4s"><rect class="row" style="animation-delay:0.27s" x="40" y="218" width="1020" height="70" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
 <text x="55.0" y="258.0" text-anchor="middle" font-size="14" font-weight="700" fill="#64748b">2</text>
 <text x="82" y="257.0" font-size="12.5" fill="#1e293b" font-weight="600">SP_S[2:0]</text>
 <text x="222" y="257.0" font-size="12" fill="#1e293b">R_REG29_F[2:0]（0x1D[2:0]）</text>
@@ -28,7 +28,7 @@
 <text x="792" y="257.0" font-size="11.5" fill="#64748b">LC_REG_MAPPING</text>
 <rect x="1008.0" y="241.5" width="46" height="23" rx="11.5" fill="#dbeafe" stroke="#1d4ed8" stroke-width="1"/>
 <text x="1031.0" y="257.0" text-anchor="middle" font-size="11.5" font-weight="700" fill="#1d4ed8">迁址</text>
-<rect class="row" style="animation-delay:0.43s" x="40" y="288" width="1020" height="70" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+</g><g class="cellwave" style="animation-delay:-0.8s"><rect class="row" style="animation-delay:0.39s" x="40" y="288" width="1020" height="70" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
 <text x="55.0" y="328.0" text-anchor="middle" font-size="14" font-weight="700" fill="#64748b">3</text>
 <text x="82" y="327.0" font-size="12.5" fill="#1e293b" font-weight="600">reg_eq_rbc0/1</text>
 <text x="222" y="327.0" font-size="12" fill="#1e293b">R_REG08_F[1:0]（0x08[1:0]，ungated）</text>
@@ -37,7 +37,7 @@
 <text x="792" y="327.0" font-size="11.5" fill="#64748b">LC_CPUWR（&gt;31 规则）</text>
 <rect x="1008.0" y="311.5" width="46" height="23" rx="11.5" fill="#f7e8d4" stroke="#b45309" stroke-width="1"/>
 <text x="1031.0" y="327.0" text-anchor="middle" font-size="11.5" font-weight="700" fill="#b45309">门控</text>
-<rect class="row" style="animation-delay:0.57s" x="40" y="358" width="1020" height="70" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+</g><g class="cellwave" style="animation-delay:-1.2s"><rect class="row" style="animation-delay:0.51s" x="40" y="358" width="1020" height="70" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
 <text x="55.0" y="398.0" text-anchor="middle" font-size="14" font-weight="700" fill="#64748b">4</text>
 <text x="82" y="397.0" font-size="12.5" fill="#1e293b" font-weight="600">reg_eol</text>
 <text x="222" y="397.0" font-size="12" fill="#1e293b">R_REG56_F[6]（0x38[6]）</text>
@@ -45,7 +45,7 @@
 <text x="792" y="397.0" font-size="11.5" fill="#64748b">LC_CPUWR</text>
 <rect x="1008.0" y="381.5" width="46" height="23" rx="11.5" fill="#dbeafe" stroke="#1d4ed8" stroke-width="1"/>
 <text x="1031.0" y="397.0" text-anchor="middle" font-size="11.5" font-weight="700" fill="#1d4ed8">迁址</text>
-<rect class="row" style="animation-delay:0.71s" x="40" y="428" width="1020" height="84" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+</g><g class="cellwave" style="animation-delay:-1.6s"><rect class="row" style="animation-delay:0.63s" x="40" y="428" width="1020" height="84" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
 <text x="55.0" y="475.0" text-anchor="middle" font-size="14" font-weight="700" fill="#64748b">5</text>
 <text x="82" y="465.2" font-size="12.5" fill="#1e293b" font-weight="600">unlock reset 6</text>
 <text x="82" y="482.8" font-size="12.5" fill="#1e293b" font-weight="600">组</text>
@@ -56,7 +56,7 @@
 <text x="792" y="491.5" font-size="11.5" fill="#64748b">CTRLF_CHECKSUM</text>
 <rect x="1008.0" y="458.5" width="46" height="23" rx="11.5" fill="#ccfbf1" stroke="#0d9488" stroke-width="1"/>
 <text x="1031.0" y="474.0" text-anchor="middle" font-size="11.5" font-weight="700" fill="#0d9488">复位</text>
-<rect class="row" style="animation-delay:0.85s" x="40" y="512" width="1020" height="70" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+</g><rect class="row" style="animation-delay:0.75s" x="40" y="512" width="1020" height="70" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
 <text x="55.0" y="552.0" text-anchor="middle" font-size="14" font-weight="700" fill="#64748b">6</text>
 <text x="82" y="551.0" font-size="12.5" fill="#1e293b" font-weight="600">env 同步</text>
 <text x="222" y="551.0" font-size="12" fill="#1e293b">auto_script 1106 包版 / 运行时 1022 代</text>
@@ -70,10 +70,35 @@
 <text x="550.0" y="625" text-anchor="middle" font-size="12" fill="#64748b">20261106」页 · 1106v3（2026-11-09 用户 review）：VPS_EN_0 输出口归属按地址规则（dec0~31→LC_REG_MAPPING）自 LC_CPUWR 迁至 LC_REG_MAPPING，消费链零改动，</text>
 <text x="550.0" y="642" text-anchor="middle" font-size="12" fill="#64748b">changelist NO58</text>
 <style>
-.title, .head { opacity:0; animation: fadeIn .4s ease forwards; }
-.row { opacity:0; animation: rowIn .35s cubic-bezier(.22,.7,.3,1) forwards; }
-@keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
-@keyframes rowIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:none; } }
-@media (prefers-reduced-motion:reduce) { *{animation:none!important} .title,.head,.row{opacity:1!important} }
+.row{opacity:0;animation:rowIn .55s cubic-bezier(.22,.7,.3,1) forwards}
+.head{opacity:0;animation:rowIn .55s cubic-bezier(.22,.7,.3,1) forwards}
+.title{opacity:0;animation:rowIn .5s cubic-bezier(.22,.7,.3,1) forwards}
+@keyframes rowIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.draw{stroke-dasharray:100;animation:drawIn .6s cubic-bezier(.4,0,.2,1) forwards}
+@keyframes drawIn{from{stroke-dashoffset:100}to{stroke-dashoffset:0}}
+.fade{opacity:0;animation:fadeIn .6s ease forwards}
+@keyframes fadeIn{to{opacity:1}}
+.flowdot{fill:none;stroke-linecap:round;stroke-dasharray:9 91;stroke-width:3.5;animation:flow 2.6s linear infinite}
+@keyframes flow{to{stroke-dashoffset:-100}}
+.flowtail{fill:none;stroke-linecap:round;stroke-dasharray:4 96;stroke-width:8;opacity:.25;animation:flow 2.6s linear infinite}
+.pulse{transform-box:fill-box;transform-origin:center;animation:pulse 2.8s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;filter:drop-shadow(0 0 0 rgba(180,83,9,0))}50%{opacity:.8;filter:drop-shadow(0 0 10px rgba(180,83,9,.75))}}
+.pulse-t{transform-box:fill-box;transform-origin:center;animation:pulseT 2.8s ease-in-out infinite}
+@keyframes pulseT{0%,100%{opacity:1;filter:drop-shadow(0 0 0 rgba(14,116,144,0))}50%{opacity:.8;filter:drop-shadow(0 0 10px rgba(14,116,144,.75))}}
+.pulse-b{transform-box:fill-box;transform-origin:center;animation:pulseB 2.8s ease-in-out infinite}
+@keyframes pulseB{0%,100%{opacity:1;filter:drop-shadow(0 0 0 rgba(29,78,216,0))}50%{opacity:.8;filter:drop-shadow(0 0 10px rgba(29,78,216,.75))}}
+.sweepband{opacity:.85;animation:sweepMove 8s linear infinite}
+@keyframes sweepMove{to{transform:translateX(var(--sweepP,160px))}}
+.dashgrow{stroke-dasharray:7 5;animation:dashgrow 2.6s linear infinite}
+@keyframes dashgrow{from{stroke-dashoffset:72}to{stroke-dashoffset:0}}
+.march{animation:march 1.5s linear infinite}
+@keyframes march{to{stroke-dashoffset:-16}}
+.cellwave{animation:wave 2.6s ease-in-out infinite}
+@keyframes wave{0%,100%{opacity:1}50%{opacity:.72}}
+.breathe{animation:br 3.2s ease-in-out infinite}
+@keyframes br{0%,100%{opacity:1}50%{opacity:.55}}
+.step{animation:stepLit 6s ease-in-out infinite}
+@keyframes stepLit{0%,16%{filter:drop-shadow(0 0 9px rgba(29,78,216,.85))}24%,92%{filter:drop-shadow(0 0 0 rgba(29,78,216,0))}100%{filter:drop-shadow(0 0 9px rgba(29,78,216,.85))}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}.row,.head,.fade,.title{opacity:1!important}.flowdot,.flowtail,.sweepband{display:none!important}}
 </style>
 </svg>

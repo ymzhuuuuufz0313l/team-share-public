@@ -12,10 +12,17 @@
 #
 # 用法：python regen_lsi_map.py   （覆盖写 images/lsi_unprotected_address_map.svg）
 
+import os
 import xml.etree.ElementTree as ET
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))   # = images/
+from _siteio import out_path, write_text_lf, archive_snapshot, table_anim  # noqa: E402
 
-MD0 = r"E:\project\HK1V11\LC_CPUWR_history\chip_sel0_register_address_map.md"
-DST = r"E:\project\team-share-public\hk1v11-lc-cpuwr-history\images\lsi_unprotected_address_map.svg"
+MD0 = os.environ.get("CPUWR_SRC_MD") or r"E:\project\HK1V11\LC_CPUWR_history\chip_sel0_register_address_map.md"
+if not os.path.exists(MD0):
+    raise SystemExit("FATAL: 数据源缺失: %s（可用环境变量 CPUWR_SRC_MD 覆盖）" % MD0)
+DST = out_path("images/lsi_unprotected_address_map.svg")
 
 VERSION = "0827v1"
 
@@ -176,8 +183,11 @@ out.append(f'<text x="{cx}" y="{ly + 52}" text-anchor="middle" font-size="11" fi
 out.append(f'<text x="{cx}" y="{ly + 72}" text-anchor="middle" font-size="11" fill="#64748b">chip_sel=1 差异（0x02 SMART_CS、0x09/0x0A/0x1F 回拼默认值）见 chip_sel1 寄存器图；保护状态两种 chip_sel 一致</text>')
 out.append('</svg>')
 
-open(DST, "w", encoding="utf-8").write("\n".join(out))
+archive_snapshot("images/lsi_unprotected_address_map.svg", "auto" + __import__("datetime").date.today().strftime("%Y%m%d"))
+write_text_lf(DST, "\n".join(out))
 print("written:", DST, f"({width}x{height}, {n_rows} rows)")
 
 ET.parse(DST)
 print("XML valid")
+
+# ymzhu 2026-11-17 19:33

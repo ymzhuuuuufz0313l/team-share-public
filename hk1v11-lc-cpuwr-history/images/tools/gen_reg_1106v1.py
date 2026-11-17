@@ -7,10 +7,14 @@
 import io, os, re, unicodedata
 import xml.etree.ElementTree as ET
 from collections import Counter
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))   # = images/
+from _siteio import out_path, write_text_lf, archive_snapshot, table_anim  # noqa: E402
 
 BASE = os.path.dirname(os.path.abspath(__file__))
-OUT_STATIC = os.path.join(BASE, "..", "1106v1_reg_changes.svg")
-OUT_ANIM   = os.path.join(BASE, "..", "anim", "1106v1_reg_changes.svg")
+OUT_STATIC = out_path("images/1106v1_reg_changes.svg")
+OUT_ANIM   = out_path("images/anim/1106v1_reg_changes.svg")
 
 BG, INK, MUTED = "#ffffff", "#1e293b", "#64748b"
 LINE, HEAD_BG  = "#e2e8f0", "#f1f5f9"
@@ -27,6 +31,15 @@ CX0, C1, C2, C3, C4, C5 = 40, 72, 556, 662, 868, W - 40   # 列 x 边界（类�
 
 # ---- layout core：估宽 + 贪心折行（2026-11-09，防重叠核心）----
 BREAK_CHARS = " /·，、；;,_-）)】》"
+
+def _load_rows(fig):
+    """读取 images/data/<fig>.json 的行数据（A0：表格数据单一事实源）。"""
+    import json as _json
+    p = Path(__file__).resolve().parents[1] / "data" / (fig + ".json")
+    with io.open(p, encoding="utf-8") as f:
+        d = _json.load(f)
+    return [tuple(r) for r in d["rows"]]
+
 def _cw(ch, fs):
     if unicodedata.east_asian_width(ch) in 'WF': return fs
     if ch in '✅❌⚠→✓✗': return fs
@@ -52,15 +65,7 @@ def wrap(s, fs, maxw):
 def esc(s):
     return (s.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;"))
 
-ROWS = [
-    ("1", ["SMART_CS 恒直出（去 CHIP_SEL 门控）", "0x02 无条件直通 {R_REG02_F[7:6],[3:2]}，cs=0 也直出"], "恒直出", "LC_REG_MAPPING", "✅ 符合 20261103 表", OK_GREEN),
-    ("2", ["VPS_EN_0 新增输出端口", "0x28[6] low-power 上抛（R_REG40_F[6]），164 行"], "新增", "LINK_CONFIG_CTRL", "✅ 新端口", OK_GREEN),
-    ("3", ["四根寄存器输出连接移位", "VPS_EN_1/khead/TP_SEL/BACSCR → LC_REG_MAPPING 实例尾部（挂法同 1104v1）"], "归属", "LINK_CONFIG_CTRL", "✅ 功能零变化", OK_GREEN),
-    ("4", ["khead 消费链收窄 [4:0]→[2:0]", "CHPI_DECODE / SHORT&LONG_ENCODING(_ALIGN) / long_encoding 全链"], "收窄", "全链 6 文件", "✅ 清 1104 挂账", OK_GREEN),
-    ("5", ["K4_FIND_1 新信号链", "SHORT_ENCODING_ALIGN 输出 → SHORT_ENCODING_OUTPUT", "config_mode_k4_1（新配置模式寄存器）"], "新增", "SHORT_ENCODING", "✅ 新链", OK_GREEN),
-    ("6", ["env_cfg 寄存器表 19 hunk", "TP_SEL@0x08[5:4] 默认 11 / 0x1D 重排 / 删 TP_F_AHEAD / 新增 SCS_PKT_HALF"], "env", "DV_TCON_C", "✅ 19 hunk", OK_GREEN),
-    ("7", ["LENB_CTRL 删 BIT_ALIGN_PT_DLY", "打拍寄存器删除（少一拍延迟，任务书外 V1 服务器项）"], "删除", "LENB_CTRL", "✅ 自查补充", OK_GREEN),
-]
+ROWS = _load_rows("1106v1_reg_changes")   # 数据源 = images/data/1106v1_reg_changes.json（唯一事实源，勿在此改数）
 
 HEAD_Y = 100
 LH, PAD = 19, 17   # 内容行高 / 上下留白
@@ -109,29 +114,16 @@ def build_static():
     return "\n".join(a)
 
 static = build_static()
-os.makedirs(os.path.dirname(OUT_ANIM), exist_ok=True)
-io.open(OUT_STATIC, "w", encoding="utf-8", newline="\n").write(static)
-
-CSS = """<style>
-.title, .head { opacity:0; animation: fadeIn .4s ease forwards; }
-.row { opacity:0; animation: rowIn .35s cubic-bezier(.22,.7,.3,1) forwards; }
-@keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
-@keyframes rowIn { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:none; } }
-@media (prefers-reduced-motion:reduce) { *{animation:none!important} .title,.head,.row{opacity:1!important} }
-</style>"""
+archive_snapshot("images/1106v1_reg_changes.svg", "auto" + __import__("datetime").date.today().strftime("%Y%m%d"))
+write_text_lf(OUT_STATIC, static)
 
 def build_anim(svg):
-    svg = svg.replace('font-size="22" font-weight="bold" fill="#1e293b"', 'class="title" font-size="22" font-weight="bold" fill="#1e293b"', 1)
-    svg = svg.replace('<rect x="40" y="100" width="%d" height="34" fill="#f1f5f9"/>' % (C5 - CX0), '<rect class="head" x="40" y="100" width="%d" height="34" fill="#f1f5f9"/>' % (C5 - CX0), 1)
-    for i, (ry, rh) in enumerate(GEOM):
-        pattern = '<rect x="40" y="%d" width="%d" height="%d" fill=' % (ry, C5 - CX0, rh)
-        idx = svg.find(pattern)
-        if idx == -1: continue
-        svg = svg[:idx + 5] + ' class="row" style="animation-delay:%.2fs"' % (0.15 + i * 0.12) + svg[idx + 5:]
-    return svg.replace("</svg>", CSS + "\n</svg>")
+    """动画版：Kit v4 全套 CSS + sweepband 扫光 + cellwave 行波（不触碰任何 <text>）。"""
+    return table_anim(svg)
 
 anim = build_anim(static)
-io.open(OUT_ANIM, "w", encoding="utf-8", newline="\n").write(anim)
+archive_snapshot("images/anim/1106v1_reg_changes.svg", "auto" + __import__("datetime").date.today().strftime("%Y%m%d"))
+write_text_lf(OUT_ANIM, anim)
 
 # ---- 校验：XML / 双版 / 零漂移 + 重叠自检（硬门禁）----
 ss, sa = ET.fromstring(static), ET.fromstring(anim)
@@ -163,4 +155,4 @@ print("written %s %dB / %s %dB" % (OUT_STATIC, len(static), OUT_ANIM, len(anim))
 print("xml+ %s %s %s overlap=%d" % (s_static, a_anim, drift, n_ov))
 assert s_static == "static-clean" and a_anim == "anim-ok" and drift == "drift-0" and n_ov == 0, "validation failed"
 print("ALL PASS")
-# ymzhu 2026-11-09 10:20
+# ymzhu 2026-11-17 19:33
