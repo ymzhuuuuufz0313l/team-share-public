@@ -7,26 +7,15 @@
     
     
     
-    .hdr{transform-origin:center;animation:breathe 2.4s ease-in-out infinite}
-    
-    .tl{animation:tl 6s linear infinite}
+    .hdr{transform-origin:center}
     
     
     
-    .rg1{animation:rg1 5.6s linear infinite}
-    .rg2{animation:rg2 5.6s linear infinite}
-    .rg3{animation:rg3 5.6s linear infinite}
     
-    .pl1{animation:pl 3.2s ease-in-out infinite}
-    .pl2{animation:pl 3.2s ease-in-out 1.07s infinite}
-    .pl3{animation:pl 3.2s ease-in-out 2.13s infinite}
     
-    .cB{animation:cellB 3s ease-in-out infinite}
-    .cBx{animation:pl 3.2s ease-in-out 2.13s infinite,cellB 3s ease-in-out .45s infinite}
     
-    .wash{animation:wash 5.2s ease-in-out infinite}
     
-    .diag{animation:diag 7s linear infinite}
+    
     @media (prefers-reduced-motion:reduce){*{animation:none!important}}
   </style>
 <style>
@@ -59,6 +48,27 @@
 .step{animation:stepLit 6s ease-in-out infinite}
 @keyframes stepLit{0%,16%{filter:drop-shadow(0 0 9px rgba(29,78,216,.85))}24%,92%{filter:drop-shadow(0 0 0 rgba(29,78,216,0))}100%{filter:drop-shadow(0 0 9px rgba(29,78,216,.85))}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important}.row,.head,.fade{opacity:1!important}.flowdot,.flowtail,.sweepband{display:none!important}}
+.hdr{animation:rowIn .55s cubic-bezier(.22,.7,.3,1) forwards,breathe 2.4s ease-in-out infinite}
+@keyframes breathe{0%,100%{filter:brightness(1)}50%{filter:brightness(1.12)}}
+.tl{animation:tl 6s linear infinite}
+@keyframes tl{0%{opacity:0}18%,72%{opacity:.9}100%{opacity:0}}
+.rg1{animation:rg1 5.6s linear infinite}
+@keyframes rg1{0%{opacity:0}10%,16%{opacity:.1}28%,100%{opacity:0}}
+.rg2{animation:rg2 5.6s linear infinite}
+@keyframes rg2{0%,30%{opacity:0}40%,46%{opacity:.1}58%,100%{opacity:0}}
+.rg3{animation:rg3 5.6s linear infinite}
+@keyframes rg3{0%,60%{opacity:0}70%,76%{opacity:.1}88%,100%{opacity:0}}
+@keyframes pl{0%,100%{transform:scale(1)}50%{transform:scale(1.035)}}
+.cB{animation:cellB 3s ease-in-out infinite}
+@keyframes cellB{0%,100%{opacity:1}50%{opacity:.62}}
+.diag{animation:diag 7s linear infinite}
+@keyframes diag{from{transform:translate(19.8px,-19.8px)}to{transform:translate(0,0)}}
+.pl1{transform-box:fill-box;transform-origin:center;animation:pl 3.2s ease-in-out infinite}
+.pl2{transform-box:fill-box;transform-origin:center;animation:pl 3.2s ease-in-out infinite,pulse 2.8s ease-in-out infinite}
+.pl3{transform-box:fill-box;transform-origin:center;animation:pl 3.2s ease-in-out infinite,pulseT 2.8s ease-in-out infinite}
+.cBx{transform-box:fill-box;transform-origin:center;animation:pl 3.2s ease-in-out 2.13s infinite,cellB 3s ease-in-out .45s infinite}
+.wash{animation:wash 5.2s ease-in-out infinite}
+@keyframes wash{0%,100%{opacity:0}14%,84%{opacity:.85}}
 </style>
   <defs>
     <pattern id="diagF2" width="28" height="28" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">

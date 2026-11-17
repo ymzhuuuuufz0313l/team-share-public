@@ -11,7 +11,7 @@
 <linearGradient id="sweepG-1" gradientUnits="userSpaceOnUse" x1="-456" y1="0" x2="404" y2="0"><stop offset="0" stop-color="#ffffff" stop-opacity="0"/><stop offset="0.40" stop-color="#ffffff" stop-opacity="0"/><stop offset="0.46" stop-color="#ffffff" stop-opacity=".3"/><stop offset="0.5" stop-color="#ffffff" stop-opacity=".65"/><stop offset="0.54" stop-color="#ffffff" stop-opacity=".3"/><stop offset="0.60" stop-color="#ffffff" stop-opacity="0"/><stop offset="1" stop-color="#ffffff" stop-opacity="0"/></linearGradient>
 <clipPath id="sweepC-1"><use href="#shT0"/><use href="#shT1"/></clipPath>
 </defs>
-<style>text{font-family:"Microsoft YaHei","Courier New","Lucida Console","SimHei",monospace;fill:#1c2534}.mono{font-family:"Consolas","Microsoft YaHei","Courier New",monospace}.mut{fill:#667180}.p1{animation-delay:2.5s}.pulseU{animation:glowPulse 3.2s ease-in-out infinite}.tL{animation:tickBreathe 3s ease-in-out infinite}.rowB{animation:rowBreathe 3.2s ease-in-out infinite}.nGlow{animation:numGlow 5.2s ease-in-out infinite}@media (prefers-reduced-motion: reduce){*{animation:none!important}}</style>
+<style>text{font-family:"Microsoft YaHei","Courier New","Lucida Console","SimHei",monospace;fill:#1c2534}.mono{font-family:"Consolas","Microsoft YaHei","Courier New",monospace}.mut{fill:#667180}@media (prefers-reduced-motion: reduce){*{animation:none!important}}</style>
 <style>
 .row{opacity:0;animation:rowIn .55s cubic-bezier(.22,.7,.3,1) forwards}
 .head{opacity:0;animation:rowIn .55s cubic-bezier(.22,.7,.3,1) forwards}
@@ -42,6 +42,14 @@
 .step{animation:stepLit 6s ease-in-out infinite}
 @keyframes stepLit{0%,16%{filter:drop-shadow(0 0 9px rgba(29,78,216,.85))}24%,92%{filter:drop-shadow(0 0 0 rgba(29,78,216,0))}100%{filter:drop-shadow(0 0 9px rgba(29,78,216,.85))}}
 @media (prefers-reduced-motion:reduce){*{animation:none!important}.row,.head,.fade{opacity:1!important}.flowdot,.flowtail,.sweepband{display:none!important}}
+.pulseU{animation:glowPulse 3.2s ease-in-out infinite}
+@keyframes glowPulse{0%,100%{opacity:0}50%{opacity:.9}}
+.tL{animation:tickBreathe 3s ease-in-out infinite}
+@keyframes tickBreathe{0%,100%{opacity:.12}50%{opacity:.78}}
+.rowB{animation:rowBreathe 3.2s ease-in-out infinite}
+@keyframes rowBreathe{0%,100%{opacity:.08}50%{opacity:.2}}
+.nGlow{animation:numGlow 5.2s ease-in-out infinite}
+@keyframes numGlow{0%,100%{opacity:0}50%{opacity:.3}}
 </style>
 <rect x="0" y="0" width="1440" height="950" fill="#f4f1ea"/>
 <rect x="0" y="0" width="1440" height="950" fill="url(#grid)" opacity="0.45"/>

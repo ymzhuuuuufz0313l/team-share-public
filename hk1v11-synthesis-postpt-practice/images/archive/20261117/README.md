@@ -16,4 +16,16 @@
 
 替换关系：`images/` 与 `images/anim/` 两份主名的 1027v0 内容由 1117v0 替换升为当前采纳版；站点根两份无主副本（PNG、flat SVG）归入本日期夹，不再占站点根。
 
-<!-- ymzhu 2026-11-17 11:20 -->
+## 补丁前快照 1102v2（三张表图动画 SVG，取自修复前 git HEAD）
+原因是这三份动画产物里有多条 `animation:` 引用了**文件内从未定义的 `@keyframes`**（GLOW/BREATH 类装饰
+动效），浏览器一律按无效动画处理，等于永远不动。修复方式：只补 CSS `@keyframes`（不动文字/数字/几何），
+并清掉三份静态源里同名的死 `animation:` 声明。修复前后图像素差证据见 t18 验收记录。
+
+- `delay_skew_14vs12_1102v2.svg` — 修复前动画产物（= 修复前 `images/anim/delay_skew_14vs12.svg`）
+- `dc_area_evolution_table_1102v2.svg` — 修复前动画产物（= 修复前 `images/anim/dc_area_evolution_table.svg`）
+- `dc_gen_summary_table_1102v2.svg` — 修复前动画产物（= 修复前 `images/anim/dc_gen_summary_table.svg`）
+
+替换关系：三份主名内容由 1102v2 替换为 1117 版（补 keyframes 后重跑生成器），旧版只进本日期夹，不删除。
+
+<!-- ymzhu 2026-11-17 14:12 -->
+

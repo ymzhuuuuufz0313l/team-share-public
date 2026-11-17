@@ -7,23 +7,14 @@
     
     
     
-    .hdr{transform-origin:center;animation:breathe 2.4s ease-in-out infinite}
-    
-    .tl{animation:tl 6s linear infinite}
+    .hdr{transform-origin:center}
     
     
     
-    .rg1{animation:rg1 5.6s linear infinite}
-    .rg2{animation:rg2 5.6s linear infinite}
-    .rg3{animation:rg3 5.6s linear infinite}
     
-    .pl1{animation:pl 3.2s ease-in-out infinite}
-    .pl2{animation:pl 3.2s ease-in-out 1.6s infinite}
     
-    .cB{animation:cellB 3s ease-in-out infinite}
-    .cBx{animation:pl 3.2s ease-in-out 1.6s infinite,cellB 3s ease-in-out .3s infinite}
     
-    .diag{animation:diag 7s linear infinite}
+    
     @media (prefers-reduced-motion:reduce){*{animation:none!important}}
   </style>
   <defs>

@@ -52,6 +52,23 @@ BASE = Path(r"E:\project\team-share-public\hk1v11-synthesis-postpt-practice")
 SRC = BASE / "images" / "delay_skew_14vs12.svg"
 OUT = BASE / "images" / "anim" / "delay_skew_14vs12.svg"
 
+# FX_CSS — 源样式里被引用的动画名，其 @keyframes 在源文件里从未定义（v4 重写时留下的
+# 悬空引用）。静态源不承载动效，改为在这里定义 keyframes + 类声明，只注入动画产物。
+#   glowPulse  pulseU 16x2.5 强调短线（opacity=0）：辉光脉冲
+#   tickBreathe tL 3x11 刻度（opacity=0）：刻度呼吸
+#   rowBreathe  rowB 620x128 行洗底（opacity .08）：整行呼吸
+#   numGlow     nGlow 数值底椭圆（opacity=0）：数值辉光
+FX_CSS = "\n".join([
+    ".pulseU{animation:glowPulse 3.2s ease-in-out infinite}",
+    "@keyframes glowPulse{0%,100%{opacity:0}50%{opacity:.9}}",
+    ".tL{animation:tickBreathe 3s ease-in-out infinite}",
+    "@keyframes tickBreathe{0%,100%{opacity:.12}50%{opacity:.78}}",
+    ".rowB{animation:rowBreathe 3.2s ease-in-out infinite}",
+    "@keyframes rowBreathe{0%,100%{opacity:.08}50%{opacity:.2}}",
+    ".nGlow{animation:numGlow 5.2s ease-in-out infinite}",
+    "@keyframes numGlow{0%,100%{opacity:0}50%{opacity:.3}}",
+])
+
 # MOTION_KIT.md §2 — Motion Kit CSS v4（逐字嵌入，不增删类；与 canonical 站一致）
 KIT_CSS = "\n".join([
     ".row{opacity:0;animation:rowIn .55s cubic-bezier(.22,.7,.3,1) forwards}",
@@ -317,7 +334,9 @@ def build():
         ins_after(e_, [closes])
 
     # kit 样式 + 扫光 defs
-    ins_after(style_i, ["<style>\n" + KIT_CSS + "\n</style>"])
+    # kit 样式与 FX keyframes 合并进同一个 <style> 元素：多插一个 <style> 会在元素之间
+    # 多留一个换行，导致「去掉样式块后的标记」与旧产物差一个空行，故合并输出。
+    ins_after(style_i, ["<style>\n" + KIT_CSS + "\n" + FX_CSS + "\n</style>"])
     ins_before(defs_close, [sweep_defs(SWEEP)])
 
     # 页眉
@@ -497,4 +516,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-# ymzhu 2026-11-02 19:20
+# ymzhu 2026-11-17 14:24

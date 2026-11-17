@@ -30,6 +30,39 @@ BASE = Path(r"E:\project\team-share-public\hk1v11-synthesis-postpt-practice")
 SRC = BASE / "images" / "dc_gen_summary_table.svg"
 OUT = BASE / "images" / "anim" / "dc_gen_summary_table.svg"
 
+# FX_CSS — 源样式引用了这些动画名但源文件里 0 个 @keyframes（v4 重写留下的悬空引用）。
+# 静态源不承载动效；这里定义 keyframes + 类声明，只注入动画产物。
+#   breathe  .hdr 深色表头带：整块呼吸（brightness，避开 rowIn 的 opacity/transform）
+#   tl       .tl 行顶 6px 扫描亮线（opacity=0）：亮线扫过
+#   rg1..3   .rg1..3 整行高亮带（opacity=0，5.6s 同长）：自上而下错相位的行进高亮
+#   pl       .pl1..3 / .cBx 红色增量数字：脉冲（scale，避开 .pulse 的 opacity/filter）
+#   cellB    .cB/.cBx 单元格文字：单元格呼吸（opacity）
+#   diag     .diag 对角斜纹组：沿条纹法向逐格平移（19.8px = rotate45 后 28px 方格的格距）
+#   wash     .wash 行洗色带（仅 dc_gen）：扫过
+FX_CSS = "\n".join([
+    ".hdr{animation:rowIn .55s cubic-bezier(.22,.7,.3,1) forwards,breathe 2.4s ease-in-out infinite}",
+    "@keyframes breathe{0%,100%{filter:brightness(1)}50%{filter:brightness(1.12)}}",
+    ".tl{animation:tl 6s linear infinite}",
+    "@keyframes tl{0%{opacity:0}18%,72%{opacity:.9}100%{opacity:0}}",
+    ".rg1{animation:rg1 5.6s linear infinite}",
+    "@keyframes rg1{0%{opacity:0}10%,16%{opacity:.1}28%,100%{opacity:0}}",
+    ".rg2{animation:rg2 5.6s linear infinite}",
+    "@keyframes rg2{0%,30%{opacity:0}40%,46%{opacity:.1}58%,100%{opacity:0}}",
+    ".rg3{animation:rg3 5.6s linear infinite}",
+    "@keyframes rg3{0%,60%{opacity:0}70%,76%{opacity:.1}88%,100%{opacity:0}}",
+    "@keyframes pl{0%,100%{transform:scale(1)}50%{transform:scale(1.035)}}",
+    ".cB{animation:cellB 3s ease-in-out infinite}",
+    "@keyframes cellB{0%,100%{opacity:1}50%{opacity:.62}}",
+    ".diag{animation:diag 7s linear infinite}",
+    "@keyframes diag{from{transform:translate(19.8px,-19.8px)}to{transform:translate(0,0)}}",
+    ".pl1{transform-box:fill-box;transform-origin:center;animation:pl 3.2s ease-in-out infinite}",
+    ".pl2{transform-box:fill-box;transform-origin:center;animation:pl 3.2s ease-in-out infinite,pulse 2.8s ease-in-out infinite}",
+    ".pl3{transform-box:fill-box;transform-origin:center;animation:pl 3.2s ease-in-out infinite,pulseT 2.8s ease-in-out infinite}",
+    ".cBx{transform-box:fill-box;transform-origin:center;animation:pl 3.2s ease-in-out 2.13s infinite,cellB 3s ease-in-out .45s infinite}",
+    ".wash{animation:wash 5.2s ease-in-out infinite}",
+    "@keyframes wash{0%,100%{opacity:0}14%,84%{opacity:.85}}",
+])
+
 # MOTION_KIT.md §2 — Motion Kit CSS v4（逐字嵌入，不增删类；与 canonical 站一致）
 KIT_CSS = "\n".join([
     ".row{opacity:0;animation:rowIn .55s cubic-bezier(.22,.7,.3,1) forwards}",
@@ -157,7 +190,8 @@ def build():
     # ---- 组装 ----
     o = []
     o.extend(lines[0:style_close + 1])
-    o.append("<style>\n" + KIT_CSS + "\n</style>")
+    # 合并成单个 <style>：分成两个元素会在元素之间多留一个换行，破坏"仅样式变化"的标记一致性。
+    o.append("<style>\n" + KIT_CSS + "\n" + FX_CSS + "\n</style>")
     o.extend(lines[style_close + 1:defs_close])
     o.append(sweep_defs(SWEEP))
     o.append(lines[defs_close])
@@ -305,4 +339,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-# ymzhu 2026-11-02 19:20
+# ymzhu 2026-11-17 14:24
