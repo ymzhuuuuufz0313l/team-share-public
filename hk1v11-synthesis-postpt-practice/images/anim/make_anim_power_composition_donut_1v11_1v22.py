@@ -3,6 +3,9 @@
 """make_anim_power_composition_donut_1v11_1v22.py — v4（Motion Kit v4，整体重写）
 
 power_composition_donut_1v11_1v22（1200×578，双环形图，静态版=站点根目录同名 svg）规格：
+（2026-11-17：静态源已由 t14 清理为「无 animation/@keyframes」的干净版；本生成器只注入
+ kit CSS 与动画包装层，sector 圆（含 1V22 侧 cx=870 全部扇区）行内容逐字节原样搬运，
+ 1V22 环与图例几何/数值零改动。）
 - 入场（总长 ≤2.5s）：
   · 标题 .head(0)、副标题 .head(0.1)
   · 1V11 图例行 .row(0.2)、1V22 图例行 .row(0.35)
@@ -188,7 +191,7 @@ def build():
     o.append("</g>")
     sec = [i for i, s in enumerate(blk) if 'class="sector' in s]
     assert len(sec) == 9, f"左环 sector 应 9（含 top1），实得 {len(sec)}"
-    first_lbl = min(i for i, s in enumerate(blk) if s.strip() == '<g class="lbl">')
+    first_lbl = min(i for i, s in enumerate(blk) if s.strip().startswith('<g class="lbl"'))
     # 逐行发射扇区段
     o.append('<g class="fade" style="animation-delay:0.65s">')
     o.append('<g class="pulse-t" style="animation-delay:-0.7s">')
@@ -202,7 +205,7 @@ def build():
     li = first_lbl
     k = 0
     while li < ci:
-        if blk[li].strip() == '<g class="lbl">':
+        if blk[li].strip().startswith('<g class="lbl"'):
             lc = li
             depth = 0
             while True:
@@ -259,10 +262,10 @@ def build():
     for k, i in enumerate(sec[1:], start=1):
         o.extend(sector_wave(blk[i], 0.9 + 0.07 * k, -(1.9 + 0.3 * k)))
     ci = [i for i, s in enumerate(blk) if 'class="center centerR"' in s][0]
-    li = min(i for i, s in enumerate(blk) if s.strip() == '<g class="lbl">')
+    li = min(i for i, s in enumerate(blk) if s.strip().startswith('<g class="lbl"'))
     k = 0
     while li < ci:
-        if blk[li].strip() == '<g class="lbl">':
+        if blk[li].strip().startswith('<g class="lbl"'):
             lc = li
             depth = 0
             while True:
@@ -381,4 +384,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-# ymzhu 2026-11-04 16:06
+# ymzhu 2026-11-17 15:45

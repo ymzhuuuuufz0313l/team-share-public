@@ -2,14 +2,15 @@
 # -*- coding: utf-8 -*-
 """make_anim_power_module_compare_1v11_1v22.py — v4（Motion Kit v4，整体重写）
 
-power_module_compare_1v11_1v22（1200×688，双条横向柱状图，静态版=站点根目录同名 svg）规格：
+power_module_compare_1v11_1v22（1260×688，双条横向柱状图，静态版=站点根目录同名 svg）规格：
 - 源样式中和（唯一一处偏离"逐字保留"，assert 保护）：源 .hdr 规则残留
   `animation:sweepMove 6s linear infinite`（静态中因无同名 keyframes 而惰性化）。
   kit CSS 定义了 @keyframes sweepMove，若不中和将使网格/模块名/图例/标题整体平移 160px
   —— 输出中删除该 animation 声明，其余字节不动。
 - 入场（总长 ≤2.5s）：
   · 标题 .head(0)；网格/轴线组 .fade(0.05)；模块名双行列 .fade(0.1)
-  · 11 组双条块（g0~g10，注释行起整块）.row，0.3s 起 0.1s 递进（末组 1.3+0.55=1.85s）
+  · 11 组双条块（g0~g10，注释行起整块；bar rect 以 data-g 标识）.row，0.3s 起 0.1s 递进
+    （末组 1.3+0.55=1.85s）
   · 柔光辉光矩形 .fade(1.5/1.55)；图例 .head(1.65)；基线扫光条 .fade(1.7)
   · 末项 1.7+0.6 = 2.3s ≤ 2.5s
 - 稳态（2 族，纯呼吸系；用户 2026-10-28 验收：亮闪扫光极度影响视线，v4.1 数据图表
@@ -20,7 +21,7 @@ power_module_compare_1v11_1v22（1200×688，双条横向柱状图，静态版=�
   · 行波 A（模块名）：3 个故事行标签各包一层 .cellwave（opacity .72 呼吸）——
     g0 短编码解码（峰值对）phase 0s、g9 rx_phy(EQ/LEQ)（1V22 独有大条）phase 0.6s、
     g10 MON_DISP（1V22 独有）phase 1.2s，相位错开，名行呼应条区 pulse（kit 默认 2.6s）；
-  · 行波 B（柱对慢波）：11 组双柱 rect 对逐组包 .cellwave，按组序相位递增 0.15s/组
+  · 行波 B（柱对慢波）：11 组双柱 rect 对（data-g=i 的 bar rect，0 值系列单条）逐组包 .cellwave，按组序相位递增 0.15s/组
     （delay -0.15i，i=0..10）、duration 4s——柱区自上而下的慢速行波；
     4s ≠ 模块名 2.6s，两波永不锁相；数值文本不入波（保持可读性）；
     g0/g9 的 pulse 包在 cellwave 外壳内（辉光叠在波上）；
@@ -123,15 +124,23 @@ def build():
 
     # ---- 结构锚点 ----
     style_close = find(lambda s: s.strip() == "</style>")
-    # 源样式中和：.hdr 残留 animation:sweepMove（kit 定义同名 keyframes，必须去除）
+    # 源样式中和：.hdr 残留 animation:sweepMove（kit 定义同名 keyframes，必须去除）。
+    # 2026-11-17：静态源已彻底去动画（零 animation/@keyframes），此处改为「有则中和、无则跳过」。
     tgt = ";animation:sweepMove 6s linear infinite}"
     hits = [i for i in range(style_close) if tgt in lines[i]]
-    assert len(hits) == 1, f".hdr sweepMove 残留应恰 1 处，实得 {len(hits)}"
-    lines[hits[0]] = lines[hits[0]].replace(tgt, "}", 1)
+    assert len(hits) <= 1, f".hdr sweepMove 残留应 ≤1 处，实得 {len(hits)}"
+    for i in hits:
+        lines[i] = lines[i].replace(tgt, "}", 1)
+    # 源自带的 reduced-motion 守卫：产物只保留 kit 的 1 块 1 声明（避免同一守卫出现两块）。
+    # 2026-11-17：静态源已无守卫时跳过（同 reason）。
+    rm = [i for i in range(style_close) if "prefers-reduced-motion" in lines[i]]
+    assert len(rm) <= 1, f"源 reduced-motion 守卫应 ≤1 处，实得 {len(rm)}"
+    for i in rm:
+        lines[i] = ""
 
     defs_close = find(lambda s: s.strip() == "</defs>")
     assert 'id="softGlow"' in lines[defs_close - 1] or any('id="softGlow"' in lines[i] for i in range(style_close, defs_close))
-    bg_i = find(lambda s: s.strip() == '<rect x="0" y="0" width="1200" height="688" fill="#f4f1ea"/>')
+    bg_i = find(lambda s: s.strip() == '<rect x="0" y="0" width="1260" height="688" fill="#f4f1ea"/>')
     hdr_gs = [i for i in range(bg_i, end) if lines[i].strip().startswith('<g class="hdr"')]
     assert len(hdr_gs) == 3, f"应有 3 个 <g class=hdr>（网格/模块名/图例），实得 {len(hdr_gs)}"
     grid_g, names_g, legend_g = hdr_gs
@@ -177,7 +186,8 @@ def build():
         o.append(f'<g class="row" style="animation-delay:{d:.1f}s">')
         blk = lines[bs:be]
         assert blk[0].strip().startswith("<!-- g"), "块首应为注释行"
-        bars = [j for j, s in enumerate(blk) if s.strip().startswith('<rect class="bar"')]
+        bars = [j for j, s in enumerate(blk)
+                if s.strip().startswith('<rect class="bar"') and f'data-g="{i}"' in s]
         assert 1 <= len(bars) <= 2 and bars == list(range(bars[0], bars[-1] + 1)), \
             f"块 {i} 应有相邻 1~2 根 bar rect（0 值系列源图无条），实得 {bars}"
         o.append(blk[0])                                     # 注释行（pulse 外）
@@ -305,4 +315,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-# ymzhu 2026-11-04 16:06
+# ymzhu 2026-11-17 16:01
