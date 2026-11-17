@@ -47,8 +47,22 @@ DATA_JSON = os.path.join(TOOLS, "data", "descramble_power.json")
 with io.open(DATA_JSON, encoding="utf-8") as _f:
     _D = json.load(_f)
 _CH = _D["chart"]
+
+
+def area_display(chart):
+    """R3：面积不在 descramble_power.json 存副本，按 area_ref 从 svt_summary.json 取（唯一事实源）。"""
+    ref = chart.get("area_ref")
+    if not ref:                       # 兼容旧结构（旧字段直存数值）
+        return str(chart["area"])
+    with io.open(os.path.join(TOOLS, "data", ref["file"]), encoding="utf-8") as fh:
+        src = json.load(fh)
+    v = src[ref["field"]]
+    return str(int(round(float(v)))) if ref.get("format") == "int" else str(v)
+
+
+_AREA = area_display(_CH)
 ROWS = [
-    [r["chart_label"], _CH["clk_freq"], _CH["process"], _CH["area"], _CH["lane"], str(r["total_power_mW"])]
+    [r["chart_label"], _CH["clk_freq"], _CH["process"], _AREA, _CH["lane"], str(r["total_power_mW"])]
     for r in _D["rows"]
 ]
 TITLE = _D["title"]
@@ -119,4 +133,4 @@ snapshot(out, note="出图前归档旧版")
 img.save(out)
 print("done", img.size, "->", os.path.normpath(out))
 
-# ymzhu 2026-11-17 19:43
+# ymzhu 2026-11-17 20:50

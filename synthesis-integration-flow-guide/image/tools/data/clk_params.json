@@ -1,0 +1,42 @@
+{
+  "schema": "clk_params/v1",
+  "_meta": {
+    "purpose": "时钟周期/工艺参数单一事实源：pt-intro.html、script-dict.html、gen_clkperiod_image.py 均从本文件读数，禁止再在页面/脚本里写死",
+    "source_file": "SYNTHESIS/common/tcl_dir/common/clk_period.tcl",
+    "source_lines": "clk_period.tcl:1-5（create_clock 定义）+ :14-25（备选周期与展频注释）",
+    "source_status": "ok",
+    "reproduce": "站点副本见 image/26_clk_period.png 与 image/tools/gen_clkperiod_image.py（直接读真实 tcl 渲染）；本文件是页面对外陈述用的摘录视图",
+    "gate": "python image/tools/gen_param_blocks.py --check"
+  },
+  "active": {
+    "mode": "1P",
+    "dpsel_port": "DPSEL_I",
+    "dpsel_value": "0",
+    "rx0_ns": "10.08",
+    "rx1_ns": "17.1"
+  },
+  "spec": {
+    "rx0_g": "1.7G",
+    "rx1_g": "1G",
+    "divisor": "18",
+    "spread": "1.05",
+    "rx0_div_mhz": "99.16M",
+    "rx1_div_mhz": "58M",
+    "slow_clock_g": "1.8G"
+  },
+  "options_ns": ["9.5", "10.08", "10.71", "11.42"],
+  "options_note": "对应 1.8G/1.7G/1.6G 不同档位，注释保留",
+  "margin": {
+    "syn": "0.80",
+    "pt": "1.00"
+  },
+  "uncertainty": {
+    "hold_ns": "0.15",
+    "hold_ps": "150",
+    "setup_fast_lane_ps": "400",
+    "setup_other_ns_range_scriptdict": "0.4275 ~ 2",
+    "setup_other_ns_range_ptintro": "0.4 ~ 2"
+  },
+  "slow_clock_sample_ns": "15",
+  "process_node": "145"
+}

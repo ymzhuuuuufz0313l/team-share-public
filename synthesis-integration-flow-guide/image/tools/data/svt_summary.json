@@ -1,0 +1,17 @@
+{
+  "schema": "svt_summary/v1",
+  "leaf_cell_count": 7655,
+  "leaf_cell_line": 15329,
+  "total_cell_area_um2": 167727.281494,
+  "area_display": "167727.28",
+  "area_line": 434,
+  "vt_group": "SVT",
+  "vt_percent": 100,
+  "source_file": "server-reports/HV2M23_digital_top.rpt",
+  "_meta": {
+    "purpose": "SVT 换库结论（cell 数 / 面积 / VT 占比）的单一事实源；environment.html、pt-intro.html 由 gen_param_blocks.py 渲染",
+    "reproduce": "python image/tools/gen_svt_summary.py（解析 server-reports/HV2M23_digital_top.rpt 的 Leaf Cell Count 与 Total cell area 两行）",
+    "note": "VT 分组百分比（SVT 100%）来自 report_vt_cell_usage 报告页（image/27_svt_100.png），本 JSON 只固化其结论字符串，不重新推导",
+    "gate": "python image/tools/gen_param_blocks.py --check"
+  }
+}

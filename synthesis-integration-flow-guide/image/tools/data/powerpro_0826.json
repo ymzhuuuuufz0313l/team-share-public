@@ -1,0 +1,22 @@
+{
+  "schema": "powerpro_0826/v1",
+  "quantity": "Total Power (mW)，PowerPro",
+  "rows": {
+    "svt_1l_1p8g": {"normal": "11.387", "dplc": "11.838", "drdod": "11.836"},
+    "svt_2l_0p9g": {"normal": "6.399", "dplc": "6.619", "drdod": "7.427"},
+    "svt_1l_1p7g": {"normal": "10.54"},
+    "svt_2l_1p6g": {"normal": "12.66"},
+    "lvt_1l_1p8g": {"normal": "12.503"},
+    "lvt_2l_0p9g": {"normal": "6.229"},
+    "lvt_opt_1l": {"normal": "8.91"}
+  },
+  "source_status": "external-missing",
+  "_meta": {
+    "purpose": "0826 SVT 同速率对比（1.8G/0.9G）与 0720 LVT 对照的单一事实源；powerpro.html §3 与 §4.1 的 bullet 由 gen_param_blocks.py 渲染",
+    "source_file": "HV2M23/back_ppt/ 报表 Excel 汇总（库外 tar，未随站点归档）",
+    "source_lines": "HV2M23/back_ppt/gen_powerpro_1800_0900.py 与 gen_power_compare_vertical.py 的输入 xlsx",
+    "source_status_reason": "原始 PowerPro 报表 Excel / tar 未进入 team-share-public 仓库，站点只保留实测数值与出处标记；找回后改 source_status=ok 并把数值搬进本文件（数值本身不在此处重新推导）",
+    "registered_in": "image/tools/README.md · M4 库外数据源表",
+    "gate": "python image/tools/gen_param_blocks.py --check"
+  }
+}

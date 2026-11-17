@@ -67,7 +67,12 @@
   "chart": {
     "clk_freq": "1.6G",
     "process": "145",
-    "area": "167727",
+    "area_ref": {
+      "file": "svt_summary.json",
+      "field": "total_cell_area_um2",
+      "format": "int",
+      "note": "R3：面积不在本文件存副本，渲染时从 svt_summary.json（库内 rpt 解析）取值"
+    },
     "lane": "2L"
   }
 }

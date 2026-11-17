@@ -63,7 +63,8 @@ $P image/tools/gen_clkperiod_image.py        # 含 HV2M23 本机数据源，仅�
 | 脚本字典页的时钟表 | `script/extracted_4/…/sdc_pr/HV2M23_digital_top.tcl` | 从服务器包里抽取的 tcl | 页面只保留结论，源文件不入库（含内部路径） |
 | `image/26_clk_period.png` | `SYNTHESIS/common/tcl_dir/common/clk_period.tcl` | 仓库外 | 通过 `HV_ROOT` 注入路径运行 |
 | BE Review 全套 PNG | `server-reports/`（入库）+ `HV2M23/SYNTHESIS/`（仓库外） | 部分入库 | 已入库部分可复现；仓库外部分仅本机可跑 |
+| **0826 PowerPro 六组**（`powerpro.html` §3.1/§4.1、`image/42_powerpro_6mode_0826.png`、`43_powerpro_compare_0826.png`） | `HV2M23/back_ppt/` 的 0826 tar（`PACK_TAR_0826V0` 解压后 `rep_dir_*_1800/_0900` 的 `hier_pwr_detail.csv` total 块） | **仓库外缺失**（`source_status: external-missing`） | 数值 11.387 / 11.838 / 11.836、6.399 / 6.619 / 7.427、10.54、12.66、LVT 12.503 / 6.229 / 8.91 已登记进站内 `image/tools/data/powerpro_0826.json`（含出处与缺失状态）；页面 bullet 由 `gen_param_blocks.py` 从该 JSON 渲染，不再手写；找回 tar 后把 `source_status` 改 `ok` |
 
-> 结论：这 5 类是"数据源在库外"，不是"图缺归档"。图本身全部在 `image/` 且有历史快照（见 `image/archive/README.md` 覆盖率表）。
+> 结论：这 6 类是"数据源在库外"，不是"图缺归档"。图本身全部在 `image/` 且有历史快照（见 `image/archive/README.md` 覆盖率表）。
 
-<!-- ymzhu 2026-11-17 19:43 -->
+<!-- ymzhu 2026-11-17 20:50 -->

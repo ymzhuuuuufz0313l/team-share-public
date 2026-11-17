@@ -502,7 +502,7 @@ TIP: 同一项目下的不同 IP 应尽量使用相同的 `CORNER` 和库配置�
 
 **历史背景（旧）**：145 制程项目曾统一只使用 LVT（低阈值库）并全部拉满。原因：排期紧张；且该工艺下 SVT / LVT 混用会导致 DRC 过不了（该工艺库特有的问题）。
 
-**当前状态（HV2M23，已换 SVT）**：本项目已从 **LVT 换到 SVT**（标准阈值库）。综合报告 `report_vt_cell_usage` 输出 **`SVT 100%`**（cell 数 7655、面积 167727.28 全部 100% SVT），证明换库成功。
+**当前状态（HV2M23，已换 SVT）**：本项目已从 **LVT 换到 SVT**（标准阈值库）。综合报告 `report_vt_cell_usage` 输出 **`SVT 100%`**（cell 数 7655、面积 167727.28 全部 100% SVT），证明换库成功。（数值出处：`server-reports/HV2M23_digital_top.rpt` 第 15329 行 `Leaf Cell Count`、第 434 行 `Total cell area`）
 
 - 换库开关在 **`design.set`** 的 `LVT_EN` / `SVT_EN`：`LVT_EN 0 / SVT_EN 1` 表示用 SVT；`LVT_EN 1 / SVT_EN 0` 表示用 LVT。**prePT / 综合 / postPT 各环境各有一份 design.set，需保持口径一致。**
 - 库名在 **`common_db.tcl`** 定义，LVT/SVT 靠库名 **L/S 后缀**区分：`M31HSSC900EL150**SL**`（LVT）、`M31HSSC900EL150**SS**`（SVT）。
@@ -751,4 +751,4 @@ headings.forEach(h => observer.observe(h));
 </body>
 </html>
 
-<!-- ymzhu 2026-10-27 14:01 -->
+<!-- ymzhu 2026-11-17 20:50 -->

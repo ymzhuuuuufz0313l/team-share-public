@@ -1,0 +1,60 @@
+{
+  "schema": "power_0812/v1",
+  "unit": "mW",
+  "rows": {
+    "1l_normal": {
+      "label": "1L 1.7G normal",
+      "dir": "rep_dir_1lane_fre1p7_tt_0812",
+      "rpt": "server-reports/power/px_85c_random/rep_dir_1lane_fre1p7_tt_0812/HV2M23_digital_top_power.rpt",
+      "line": 907,
+      "total_power_mW": "14.3",
+      "total_power_W_raw": "0.0143"
+    },
+    "1l_dplc": {
+      "label": "1L 1.7G dplc",
+      "dir": "rep_dir_1lane_fre1p7_tt_0812_dplc",
+      "rpt": "server-reports/power/px_85c_random/rep_dir_1lane_fre1p7_tt_0812_dplc/HV2M23_digital_top_power.rpt",
+      "line": 907,
+      "total_power_mW": "15.0",
+      "total_power_W_raw": "0.015"
+    },
+    "1l_drdod": {
+      "label": "1L 1.7G drdod",
+      "dir": "rep_dir_1lane_fre1p7_tt_0812_drdod",
+      "rpt": "server-reports/power/px_85c_random/rep_dir_1lane_fre1p7_tt_0812_drdod/HV2M23_digital_top_power.rpt",
+      "line": 907,
+      "total_power_mW": "15.0",
+      "total_power_W_raw": "0.015"
+    },
+    "2l_normal": {
+      "label": "2L 1.6G normal",
+      "dir": "rep_dir_2lane_fre1p6_tt_0812",
+      "rpt": "server-reports/power/px_85c_random/rep_dir_2lane_fre1p6_tt_0812/HV2M23_digital_top_power.rpt",
+      "line": 907,
+      "total_power_mW": "15.5",
+      "total_power_W_raw": "0.0155"
+    },
+    "2l_dplc": {
+      "label": "2L 1.6G dplc",
+      "dir": "rep_dir_2lane_fre1p6_tt_dplc_0812",
+      "rpt": "server-reports/power/px_85c_random/rep_dir_2lane_fre1p6_tt_dplc_0812/HV2M23_digital_top_power.rpt",
+      "line": 907,
+      "total_power_mW": "16.1",
+      "total_power_W_raw": "0.0161"
+    },
+    "2l_drdod": {
+      "label": "2L 1.6G drdod",
+      "dir": "rep_dir_2lane_fre1p6_tt_drdod_0812",
+      "rpt": "server-reports/power/px_85c_random/rep_dir_2lane_fre1p6_tt_drdod_0812/HV2M23_digital_top_power.rpt",
+      "line": 907,
+      "total_power_mW": "17.9",
+      "total_power_W_raw": "0.0179"
+    }
+  },
+  "_meta": {
+    "purpose": "0812 六组 PTPX Total Power 的单一事实源；memory-power.html 正文六组数字由 gen_param_blocks.py 渲染",
+    "extract_rule": "Time Based Power 层级表首行 HV2M23_digital_top 的 Total Power 列（单位 W）×1000 取 1 位小数",
+    "reproduce": "python image/tools/gen_power_0812.py",
+    "gate": "python image/tools/gen_param_blocks.py --check"
+  }
+}
