@@ -1,0 +1,190 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="578" viewBox="0 0 1200 578" role="img" aria-label="1V11 vs 1V22 功耗组成 @3G">
+<title>1V11 vs 1V22 功耗组成 @3G（PowerPro Initial）</title>
+<style>  .f-cjk { font-family: "Microsoft YaHei", sans-serif; }
+  .f-num { font-family: ui-monospace, Consolas, monospace; }
+  .title { }
+  .subtitle { }
+  .leg { }
+  .leg1 { }
+  .leg2 { }
+  .center { }
+  .centerL { }
+  .centerR { }
+  .lbl { }
+  .lead { stroke: #5b6675; stroke-width: .9; opacity: .5; fill: none; }
+  .sector { }
+  .top1 {
+           transform-box: fill-box; transform-origin: 50% 50%; }
+  .glowL { }
+  .glowR { }
+  .sweep { opacity: .08; transform-box: fill-box; transform-origin: 50% 50%; }
+  .sweepR { }
+   }
+   }
+   }
+   50% { opacity: .5; } }
+   50% { transform: scale(1.02); } }
+   to { transform: rotate(360deg); } }
+  </style>
+<defs><filter id="glowF" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="5"/></filter></defs>
+<rect width="1200" height="578" fill="#f4f1ea"/>
+<text class="f-cjk title" x="600" y="32" font-size="21" font-weight="bold" fill="#1c2534" text-anchor="middle">1V11 vs 1V22 功耗组成 @3G</text>
+<text class="f-cjk subtitle" x="600" y="56" font-size="11" fill="#5b6675" text-anchor="middle">PowerPro Initial Design · 同工具/同库/同日 · 扇区占比 = 组成项 / 该代构成合计（top-N+其他；1V11 与 1V22 均按全分类闭合）</text>
+<g data-gen="1V11">
+  <rect x="105.0" y="71" width="30" height="13" rx="3" fill="#0e7490"/>
+  <text class="f-cjk" x="120.0" y="81" font-size="8.5" font-weight="bold" fill="#fffdf7" text-anchor="middle">1V11</text>
+  <rect x="143.0" y="72.5" width="9" height="9" rx="2" fill="#0e7490" fill-opacity="1.00"/>
+  <text class="f-cjk" x="156.0" y="81" font-size="7.5" fill="#1c2534">短编码解码 <tspan class="f-num" fill="#5b6675">7346.01 µW</tspan></text>
+  <rect x="255.5" y="72.5" width="9" height="9" rx="2" fill="#0e7490" fill-opacity="0.85"/>
+  <text class="f-cjk" x="268.5" y="81" font-size="7.5" fill="#1c2534">显示时序 DTCTL(含DPLC) <tspan class="f-num" fill="#5b6675">3321.65 µW</tspan></text>
+  <rect x="420.2" y="72.5" width="9" height="9" rx="2" fill="#0e7490" fill-opacity="0.72"/>
+  <text class="f-cjk" x="433.2" y="81" font-size="7.5" fill="#1c2534">面板SD时序族 <tspan class="f-num" fill="#5b6675">2123.67 µW</tspan></text>
+  <rect x="541.4" y="72.5" width="9" height="9" rx="2" fill="#0e7490" fill-opacity="0.60"/>
+  <text class="f-cjk" x="554.4" y="81" font-size="7.5" fill="#1c2534">BUFFER_I 输入同步 <tspan class="f-num" fill="#5b6675">1711.31 µW</tspan></text>
+  <rect x="685.5" y="72.5" width="9" height="9" rx="2" fill="#0e7490" fill-opacity="0.50"/>
+  <text class="f-cjk" x="698.5" y="81" font-size="7.5" fill="#1c2534">寄存器配置 <tspan class="f-num" fill="#5b6675">1104.74 µW</tspan></text>
+  <rect x="798.0" y="72.5" width="9" height="9" rx="2" fill="#0e7490" fill-opacity="0.42"/>
+  <text class="f-cjk" x="811.0" y="81" font-size="7.5" fill="#1c2534">长编码 <tspan class="f-num" fill="#5b6675">617.19 µW</tspan></text>
+  <rect x="891.0" y="72.5" width="9" height="9" rx="2" fill="#0e7490" fill-opacity="0.36"/>
+  <text class="f-cjk" x="904.0" y="81" font-size="7.5" fill="#1c2534">ANCTL <tspan class="f-num" fill="#5b6675">856.03 µW</tspan></text>
+  <rect x="983.3" y="72.5" width="9" height="9" rx="2" fill="#0e7490" fill-opacity="0.30"/>
+  <text class="f-cjk" x="996.3" y="81" font-size="7.5" fill="#1c2534">时钟生成 <tspan class="f-num" fill="#5b6675">356.93 µW</tspan></text>
+  <rect x="1083.8" y="72.5" width="9" height="9" rx="2" fill="#0e7490" fill-opacity="0.25"/>
+  <text class="f-cjk" x="1096.8" y="81" font-size="7.5" fill="#1c2534">其他 <tspan class="f-num" fill="#5b6675">1037.1 µW</tspan></text>
+</g>
+<g data-gen="1V22">
+  <rect x="106.6" y="89" width="30" height="13" rx="3" fill="#b45309"/>
+  <text class="f-cjk" x="121.6" y="99" font-size="8.5" font-weight="bold" fill="#fffdf7" text-anchor="middle">1V22</text>
+  <rect x="144.6" y="90.5" width="9" height="9" rx="2" fill="#b45309" fill-opacity="1.00"/>
+  <text class="f-cjk" x="157.6" y="99" font-size="8" fill="#1c2534">LC_CSPIF_L0(含SD时序核) <tspan class="f-num" fill="#5b6675">3861.65 µW</tspan></text>
+  <rect x="324.2" y="90.5" width="9" height="9" rx="2" fill="#b45309" fill-opacity="0.85"/>
+  <text class="f-cjk" x="337.2" y="99" font-size="8" fill="#1c2534">rx_phy(EQ/LEQ) <tspan class="f-num" fill="#5b6675">38.07 µW</tspan></text>
+  <rect x="457.5" y="90.5" width="9" height="9" rx="2" fill="#b45309" fill-opacity="0.70"/>
+  <text class="f-cjk" x="470.5" y="99" font-size="8" fill="#1c2534">TOTAL_DTCTL(含DPLC) <tspan class="f-num" fill="#5b6675">1994.99 µW</tspan></text>
+  <rect x="622.4" y="90.5" width="9" height="9" rx="2" fill="#b45309" fill-opacity="0.56"/>
+  <text class="f-cjk" x="635.4" y="99" font-size="8" fill="#1c2534">CSPI_CMD_ALIGN <tspan class="f-num" fill="#5b6675">1357.68 µW</tspan></text>
+  <rect x="765.4" y="90.5" width="9" height="9" rx="2" fill="#b45309" fill-opacity="0.44"/>
+  <text class="f-cjk" x="778.4" y="99" font-size="8" fill="#1c2534">LC_CPUWR <tspan class="f-num" fill="#5b6675">444.56 µW</tspan></text>
+  <rect x="875.7" y="90.5" width="9" height="9" rx="2" fill="#b45309" fill-opacity="0.35"/>
+  <text class="f-cjk" x="888.7" y="99" font-size="8" fill="#1c2534">MON_DISP <tspan class="f-num" fill="#5b6675">2.69 µW</tspan></text>
+  <rect x="976.4" y="90.5" width="9" height="9" rx="2" fill="#b45309" fill-opacity="0.27"/>
+  <text class="f-cjk" x="989.4" y="99" font-size="8" fill="#1c2534">ANCTL+其他 <tspan class="f-num" fill="#5b6675">692.46 µW</tspan></text>
+</g>
+<g data-gen="1V11" class="donut donutL">
+  <circle class="sweep sweepL" cx="330" cy="330" r="210" fill="none" stroke="#fffdf7" stroke-width="5" stroke-dasharray="12 88" pathLength="100"/>
+  <circle class="sector top1" cx="330" cy="330" r="170" pathLength="100" fill="none" stroke="#0e7490" stroke-opacity="1.00" stroke-width="52" stroke-dasharray="39.7627 60.2373" stroke-dashoffset="25.0000"/>
+  <circle class="sector" cx="330" cy="330" r="170" pathLength="100" fill="none" stroke="#0e7490" stroke-opacity="0.85" stroke-width="52" stroke-dasharray="17.9795 82.0205" stroke-dashoffset="85.2373"/>
+  <circle class="sector" cx="330" cy="330" r="170" pathLength="100" fill="none" stroke="#0e7490" stroke-opacity="0.72" stroke-width="52" stroke-dasharray="11.4951 88.5049" stroke-dashoffset="67.2578"/>
+  <circle class="sector" cx="330" cy="330" r="170" pathLength="100" fill="none" stroke="#0e7490" stroke-opacity="0.60" stroke-width="52" stroke-dasharray="9.2630 90.7370" stroke-dashoffset="55.7627"/>
+  <circle class="sector" cx="330" cy="330" r="170" pathLength="100" fill="none" stroke="#0e7490" stroke-opacity="0.50" stroke-width="52" stroke-dasharray="5.9798 94.0202" stroke-dashoffset="46.4997"/>
+  <circle class="sector" cx="330" cy="330" r="170" pathLength="100" fill="none" stroke="#0e7490" stroke-opacity="0.42" stroke-width="52" stroke-dasharray="3.3407 96.6593" stroke-dashoffset="40.5199"/>
+  <circle class="sector" cx="330" cy="330" r="170" pathLength="100" fill="none" stroke="#0e7490" stroke-opacity="0.36" stroke-width="52" stroke-dasharray="4.6335 95.3665" stroke-dashoffset="37.1792"/>
+  <circle class="sector" cx="330" cy="330" r="170" pathLength="100" fill="none" stroke="#0e7490" stroke-opacity="0.30" stroke-width="52" stroke-dasharray="1.9320 98.0680" stroke-dashoffset="32.5457"/>
+  <circle class="sector" cx="330" cy="330" r="170" pathLength="100" fill="none" stroke="#0e7490" stroke-opacity="0.25" stroke-width="52" stroke-dasharray="5.6137 94.3863" stroke-dashoffset="30.6137"/>
+  <g class="lbl">
+    <polyline class="lead" points="518.8,267.1 531.4,263.9"/>
+    <text class="f-cjk" x="525.4" y="258.9" font-size="10" fill="#1c2534" text-anchor="start">短编码解码</text>
+    <text class="f-num val" x="525.4" y="272.9" font-size="9.5" fill="#5b6675" text-anchor="start">7346.01 µW · 39.8%</text>
+  </g>
+  <g class="lbl">
+    <polyline class="lead" points="345.6,528.4 346.1,534.4"/>
+    <text class="f-cjk" x="346.1" y="529.4" font-size="10" fill="#1c2534" text-anchor="middle">显示时序 DTCTL(含DPLC)</text>
+    <text class="f-num val" x="346.1" y="543.4" font-size="9.5" fill="#5b6675" text-anchor="middle">3321.65 µW · 18.0%</text>
+  </g>
+  <g class="lbl">
+    <polyline class="lead" points="180.8,461.7 169.6,465.3"/>
+    <text class="f-cjk" x="175.6" y="460.3" font-size="10" fill="#1c2534" text-anchor="end">面板SD时序族</text>
+    <text class="f-num val" x="175.6" y="474.3" font-size="9.5" fill="#5b6675" text-anchor="end">2123.67 µW · 11.5%</text>
+  </g>
+  <g class="lbl">
+    <polyline class="lead" points="131.5,344.1 118.5,343.6"/>
+    <text class="f-cjk" x="124.5" y="338.6" font-size="10" fill="#1c2534" text-anchor="end">BUFFER_I 输入同步</text>
+    <text class="f-num val" x="124.5" y="352.6" font-size="9.5" fill="#5b6675" text-anchor="end">1711.31 µW · 9.3%</text>
+  </g>
+  <g class="lbl">
+    <polyline class="lead" points="147.3,251.1 134.9,247.3"/>
+    <text class="f-cjk" x="140.9" y="242.3" font-size="10" fill="#1c2534" text-anchor="end">寄存器配置</text>
+    <text class="f-num val" x="140.9" y="256.3" font-size="9.5" fill="#5b6675" text-anchor="end">1104.74 µW · 6.0%</text>
+  </g>
+  <g class="lbl">
+    <polyline class="lead" points="177.9,201.7 166.5,213.2"/>
+    <text class="f-cjk" x="172.5" y="208.2" font-size="10" fill="#1c2534" text-anchor="end">长编码</text>
+    <text class="f-num val" x="172.5" y="222.2" font-size="9.5" fill="#5b6675" text-anchor="end">617.19 µW · 3.3%</text>
+  </g>
+  <g class="lbl">
+    <polyline class="lead" points="214.4,168.0 204.4,184.2"/>
+    <text class="f-cjk" x="210.4" y="179.2" font-size="10" fill="#1c2534" text-anchor="end">ANCTL</text>
+    <text class="f-num val" x="210.4" y="193.2" font-size="9.5" fill="#5b6675" text-anchor="end">856.03 µW · 4.6%</text>
+  </g>
+  <g class="lbl">
+    <polyline class="lead" points="250.1,147.8 241.2,155.2"/>
+    <text class="f-cjk" x="247.2" y="150.2" font-size="10" fill="#1c2534" text-anchor="end">时钟生成</text>
+    <text class="f-num val" x="247.2" y="164.2" font-size="9.5" fill="#5b6675" text-anchor="end">356.93 µW · 1.9%</text>
+  </g>
+  <g class="lbl">
+    <polyline class="lead" points="295.1,134.1 287.9,126.2"/>
+    <text class="f-cjk" x="293.9" y="121.2" font-size="10" fill="#1c2534" text-anchor="end">其他</text>
+    <text class="f-num val" x="293.9" y="135.2" font-size="9.5" fill="#5b6675" text-anchor="end">1037.1 µW · 5.6%</text>
+  </g>
+  <g class="center centerL">
+    <text class="f-num glow glowL" x="330" y="336" font-size="34" font-weight="bold" fill="#0e7490" text-anchor="middle" opacity="0.35" filter="url(#glowF)">18.47</text>
+    <text class="f-cjk" x="330" y="288" font-size="13" font-weight="bold" fill="#0e7490" text-anchor="middle">1V11</text>
+    <text class="f-num total" x="330" y="336" font-size="34" font-weight="bold" fill="#0e7490" text-anchor="middle">18.47</text>
+    <text class="f-num" x="330" y="358" font-size="12" fill="#5b6675" text-anchor="middle">mW</text>
+    <text class="f-num" x="330" y="374" font-size="10.5" fill="#5b6675" text-anchor="middle">@3G</text>
+  </g>
+</g>
+<g data-gen="1V22" class="donut donutR">
+  <circle class="sweep sweepR" cx="870" cy="330" r="210" fill="none" stroke="#fffdf7" stroke-width="5" stroke-dasharray="12 88" pathLength="100"/>
+  <circle class="sector top1" cx="870" cy="330" r="170" pathLength="100" fill="none" stroke="#b45309" stroke-opacity="1.00" stroke-width="52" stroke-dasharray="46.0153 53.9847" stroke-dashoffset="25.0000"/>
+  <circle class="sector" cx="870" cy="330" r="170" pathLength="100" fill="none" stroke="#b45309" stroke-opacity="0.85" stroke-width="52" stroke-dasharray="0.4536 99.5464" stroke-dashoffset="78.9847"/>
+  <circle class="sector" cx="870" cy="330" r="170" pathLength="100" fill="none" stroke="#b45309" stroke-opacity="0.70" stroke-width="52" stroke-dasharray="23.7722 76.2278" stroke-dashoffset="78.5311"/>
+  <circle class="sector" cx="870" cy="330" r="170" pathLength="100" fill="none" stroke="#b45309" stroke-opacity="0.56" stroke-width="52" stroke-dasharray="16.1781 83.8219" stroke-dashoffset="54.7589"/>
+  <circle class="sector" cx="870" cy="330" r="170" pathLength="100" fill="none" stroke="#b45309" stroke-opacity="0.44" stroke-width="52" stroke-dasharray="5.2974 94.7026" stroke-dashoffset="38.5808"/>
+  <circle class="sector" cx="870" cy="330" r="170" pathLength="100" fill="none" stroke="#b45309" stroke-opacity="0.35" stroke-width="52" stroke-dasharray="0.0321 99.9679" stroke-dashoffset="33.2834"/>
+  <circle class="sector" cx="870" cy="330" r="170" pathLength="100" fill="none" stroke="#b45309" stroke-opacity="0.27" stroke-width="52" stroke-dasharray="8.2513 91.7487" stroke-dashoffset="33.2513"/>
+  <g class="lbl">
+    <polyline class="lead" points="1067.4,305.2 1080.4,303.3"/>
+    <text class="f-cjk" x="1074.4" y="298.3" font-size="10" fill="#1c2534" text-anchor="start">LC_CSPIF_L0(含SD时序核)</text>
+    <text class="f-num val" x="1074.4" y="312.3" font-size="9.5" fill="#5b6675" text-anchor="start">3861.65 µW · 46.0%</text>
+  </g>
+  <g class="lbl">
+    <polyline class="lead" points="916.6,523.5 924.2,529.3"/>
+    <text class="f-cjk" x="918.2" y="524.3" font-size="10" fill="#1c2534" text-anchor="start">rx_phy(EQ/LEQ)</text>
+    <text class="f-num val" x="918.2" y="538.3" font-size="9.5" fill="#5b6675" text-anchor="start">38.07 µW · 0.5%</text>
+  </g>
+  <g class="lbl">
+    <polyline class="lead" points="770.3,502.2 760.8,507.3"/>
+    <text class="f-cjk" x="766.8" y="502.3" font-size="10" fill="#1c2534" text-anchor="end">TOTAL_DTCTL(含DPLC)</text>
+    <text class="f-num val" x="766.8" y="516.3" font-size="9.5" fill="#5b6675" text-anchor="end">1994.99 µW · 23.8%</text>
+  </g>
+  <g class="lbl">
+    <polyline class="lead" points="675.3,288.7 662.5,286.2"/>
+    <text class="f-cjk" x="668.5" y="281.2" font-size="10" fill="#1c2534" text-anchor="end">CSPI_CMD_ALIGN</text>
+    <text class="f-num val" x="668.5" y="295.2" font-size="9.5" fill="#5b6675" text-anchor="end">1357.68 µW · 16.2%</text>
+  </g>
+  <g class="lbl">
+    <polyline class="lead" points="743.8,176.1 733.4,187.9"/>
+    <text class="f-cjk" x="739.4" y="182.9" font-size="10" fill="#1c2534" text-anchor="end">LC_CPUWR</text>
+    <text class="f-num val" x="739.4" y="196.9" font-size="9.5" fill="#5b6675" text-anchor="end">444.56 µW · 5.3%</text>
+  </g>
+  <g class="lbl">
+    <polyline class="lead" points="771.2,157.2 761.7,158.9"/>
+    <text class="f-cjk" x="767.7" y="153.9" font-size="10" fill="#1c2534" text-anchor="end">MON_DISP</text>
+    <text class="f-num val" x="767.7" y="167.9" font-size="9.5" fill="#5b6675" text-anchor="end">2.69 µW · 0.0%</text>
+  </g>
+  <g class="lbl">
+    <polyline class="lead" points="819.0,137.6 811.2,129.9"/>
+    <text class="f-cjk" x="817.2" y="124.9" font-size="10" fill="#1c2534" text-anchor="end">ANCTL+其他</text>
+    <text class="f-num val" x="817.2" y="138.9" font-size="9.5" fill="#5b6675" text-anchor="end">692.46 µW · 8.3%</text>
+  </g>
+  <g class="center centerR">
+    <text class="f-num glow glowR" x="870" y="336" font-size="34" font-weight="bold" fill="#b45309" text-anchor="middle" opacity="0.35" filter="url(#glowF)">8.39</text>
+    <text class="f-cjk" x="870" y="288" font-size="13" font-weight="bold" fill="#b45309" text-anchor="middle">1V22</text>
+    <text class="f-num total" x="870" y="336" font-size="34" font-weight="bold" fill="#b45309" text-anchor="middle">8.39</text>
+    <text class="f-num" x="870" y="358" font-size="12" fill="#5b6675" text-anchor="middle">mW</text>
+    <text class="f-num" x="870" y="374" font-size="10.5" fill="#5b6675" text-anchor="middle">@3G</text>
+  </g>
+</g>
+</svg>
+<!-- ymzhu 2026-11-17 15:53 -->

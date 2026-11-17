@@ -92,3 +92,19 @@ static 98f9b6c1 / anim 38f8942f / png 06c28d6a），主名由新版覆盖，引�
 引用：`images/anim/*_3g.svg?v=20261117`（静态主名 `images/*_3g.svg` 留档，页面走动画版）。
 
 <!-- ymzhu 2026-11-17 17:45 -->
+
+## v22label1（2026-11-17 18:22）— F1 修正：1V22 环末组标签 `ANCTL+其他` → `ANCTL+时钟+其他`
+
+非替换、非改主名：只把 1V22 侧环形图末组（= others + anctl + clkgen，3G 恒等式
+692.46 = 552.36 + 134.78 + 5.32）标签改名，数值/几何/配色全不变。快照为**改动前**主名内容，
+只增不删；主名由重生成版覆盖，引用路径不变。
+
+文件（改动前，md5）：
+- `power_composition_donut_1v11_1v22_v22label1.svg` — 静态源 4.46G 档（b1894312…）
+- `power_composition_donut_1v11_1v22_3g_v22label1.svg` — 静态源 3G 档（a57a524e…）
+- `power_composition_donut_1v11_1v22_v22label1_anim.svg` — 动画产物 4.46G 档（39aebe3b…）
+- `power_composition_donut_1v11_1v22_3g_v22label1_anim.svg` — 动画产物 3G 档（836300c0…）
+- `power_composition_donut_1v11_1v22_v22label1.png` — png_preview/back_ppt 源 PNG 4.46G（096370f3…）
+- `power_composition_donut_1v11_1v22_3g_v22label1.png` — png_preview/back_ppt 源 PNG 3G（0c334c82…）
+
+<!-- ymzhu 2026-11-17 18:22 -->
