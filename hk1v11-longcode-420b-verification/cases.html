@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet">
   <title>Case 命名规则 · HK1V11 420b 长编码验证体系</title>
-  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="./vendor/marked.min.js"></script>
   <style>
 :root {
       --bg: #f4f1ea;
@@ -545,7 +545,7 @@ t_H{HACT}_V16_FPS{FPS}_PORT_NUM{PORT_NUM}[_{维度参数...}]_420b[_{用途后�
 | 分辨率 ×6 | H1440（47）/ H1920（52）/ H2560（6）/ H2880（18）/ H3456（10）/ H3840（59） |
 | FPS ×8 | 60（1）/ 120（57）/ 144（20）/ 165（8）/ 180（1）/ 240（3）/ 280（98）/ 360（4） |
 | PORT_NUM ×4 | 6（2）/ 8（6）/ 12（97）/ 24（1），其余默认 |
-| DPLC 族 | `DPLC_MODE1`（173 处标注）× `DPLC_GROUP1`（33）× `AVE_MODE1` × `AVE_LAST0/1` × `AVE_RGBW0~7`（各 8）——H1440/H1920 为主全枚举行列 |
+| DPLC 族 | `DPLC_MODE1`（104 处标注）× `DPLC_GROUP1`（33）× `AVE_MODE1` × `AVE_LAST0/1` × `AVE_RGBW0~7`（各 8）——H1440/H1920 为主全枚举行列 |
 | SD_CHOP | H3840 下 `SD_CHOP_F0~F3 × CHOP0~5` 全枚举 24 个 |
 | 极性 / 反相 | `H4INV0/1 × POL20 × POL21 × POLC0/1` 组合（28/20/20/25/13 计数） |
 | SDC | `SDC0` 变体 55 |
@@ -581,7 +581,27 @@ t_H{HACT}_V16_FPS{FPS}_PORT_NUM{PORT_NUM}[_{维度参数...}]_420b[_{用途后�
   </script>
 
   <script>
-    document.getElementById('article').innerHTML = marked.parse(document.getElementById('md').textContent.trim());
+    /* 离线兜底（F01）：marked 走本地 vendor；若仍不可用（文件缺失/被拦），
+       退化为 <pre> 纯文本视图，保证断网/CDN 屏蔽时页面仍可读。 */
+    (function renderMarkdown() {
+      const mdEl = document.getElementById('md');
+      const artEl = document.getElementById('article');
+      if (!mdEl || !artEl) return;
+      const src = mdEl.textContent.trim();
+      if (typeof marked !== 'undefined' && marked && typeof marked.parse === 'function') {
+        artEl.innerHTML = marked.parse(src);
+        return;
+      }
+      artEl.innerHTML = '';
+      const tip = document.createElement('p');
+      tip.className = 'md-offline-tip';
+      tip.textContent = '[离线提示] Markdown 渲染器（vendor/marked.min.js）未加载，已退化为纯文本视图。';
+      const pre = document.createElement('pre');
+      pre.className = 'md-offline-fallback';
+      pre.textContent = src;
+      artEl.appendChild(tip);
+      artEl.appendChild(pre);
+    })();
 const lightbox = document.getElementById('lightbox');
     const lightboxImg = document.getElementById('lightbox-img');
     const lightboxClose = document.getElementById('lightbox-close');
@@ -691,4 +711,4 @@ const lightbox = document.getElementById('lightbox');
   <script src="./fx.js?v=11"></script>
 </body>
 </html>
-<!-- ymzhu 2026-11-05 11:58 -->
+<!-- ymzhu 2026-11-17 19:55 -->

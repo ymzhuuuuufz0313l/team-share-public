@@ -1,5 +1,26 @@
 # -*- coding: utf-8 -*-
-"""Motion Kit v2 中央校验：7 点 + 动效结构检查。用法: python validate_kit_v2.py <name1> [name2 ...]"""
+"""!! DEPRECATED —— 请勿用于新校验 !!
+============================================================
+本脚本是 MOTION_KIT **v2** 规范的中央校验器，仅作历史存档保留。
+
+**当前规范是 v4**，对应校验器为同目录 `validate_kit_v4.py`：
+    python images/tools/validate_kit_v4.py <name1> [name2 ...]
+
+为什么废弃（v2 与 v4 规范冲突，用 v2 跑现行图只会得到相反结论）：
+  * v2 校验的是 v2 kit（`glow-*` 类、`<animate>` 驱动的旧动效）；
+  * v4 明令禁止 `<script>` / `<animate>` / `glow-*`，改为纯 CSS `@keyframes`，
+    并要求 >=10 个 keyframes、>=2 个稳态族、`.flowdot` stroke-width 3.5、
+    `.pulse{transform-box:fill-box}`、`var(--sweepP)`、reduced-motion 兜底。
+
+保留原因：溯源 2026-10-28~11-04 期间的 v2 图版审计结论。任务书 N4 明令
+**不可删除、不可改名**，故只加本横幅。台账见 `images/anim/MOTION_KIT.md`
+「校验器代际」小节。
+
+已知缺陷（历史脚本，不再修；v4 校验器里已修）：
+  * `all(check(t) for t in sys.argv[1:])` 短路 —— 第一个 FAIL 后不再校验其余文件；
+  * 无参数运行时不校验任何文件，却打印 `OVERALL: ALL PASS` 并返回 0。
+============================================================
+Motion Kit v2 中央校验：7 点 + 动效结构检查。用法: python validate_kit_v2.py <name1> [name2 ...]"""
 import xml.etree.ElementTree as ET
 from collections import Counter
 import re, os, sys
@@ -54,4 +75,4 @@ if __name__ == "__main__":
     allok = all(check(t) for t in sys.argv[1:])
     print("\nOVERALL:", "ALL PASS" if allok else "SOME FAILED")
     sys.exit(0 if allok else 1)
-# ymzhu 2026-11-04 17:20
+# ymzhu 2026-11-17 19:55

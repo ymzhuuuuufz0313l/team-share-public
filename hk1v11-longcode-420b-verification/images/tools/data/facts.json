@@ -1,0 +1,75 @@
+{
+  "_meta": {
+    "generator": "images/tools/extract_facts.py",
+    "src_root": "HK1V11 @ commit a7130ba7 (2026-11-04 17:42:43) —— 站点自己声明的基线，不是「今天的工作区」",
+    "tests_root": "DV_TCON_C/top/tests @ a7130ba7",
+    "count_rule": "×N = case 目录名中含该标记的目录数（同一 case 只计 1 次）",
+    "count_rule_check": "DPLC_GROUP1=33 且 SDC0=55 时该口径成立（站点图内并列项自洽）",
+    "reproduce": "git -C <HK1V11> archive a7130ba7 DV_TCON_C/top/tests | tar -xf - -C <tmpdir> && python images/tools/extract_facts.py --src <tmpdir> --out images/tools/data/facts.json",
+    "anchor_commit": "a7130ba7",
+    "IMPORTANT": "必须用 anchor 快照生成，不要用今天的工作区：对今日 HK1V11 树直接跑 extract_facts.py 会得到 case_count=196（新增 4 个 case：t_8b1lane_KHEAD_20B_SEL_420b、t_H3840_V16_FPS120_420b_EXTRA_DUMMY70、t_H3840_V16_FPS40_420b、t_bcc_mode2_420b）。站点当前文字写的是 192（基线口径），192→196 属于「内容时效性」事项，已列入待用户裁决清单，不在本次代码修复范围；本 facts.json 固定取 192/104/33/55 口径。",
+    "gate": "python images/tools/check_facts.py  —— facts ↔ 生成器产物 ↔ 页面文字 一致性闸门"
+  },
+  "case_count": 192,
+  "name_counts": {
+    "DPLC_MODE1": 104,
+    "DPLC_GROUP1": 33,
+    "SDC0": 55
+  },
+  "resolution": {
+    "1440": 47,
+    "1920": 52,
+    "2560": 6,
+    "2880": 18,
+    "3456": 10,
+    "3840": 59
+  },
+  "fps": {
+    "120": 57,
+    "144": 20,
+    "165": 8,
+    "180": 1,
+    "240": 3,
+    "280": 98,
+    "360": 4,
+    "60": 1
+  },
+  "port": {
+    "12": 97,
+    "24": 1,
+    "6": 2,
+    "8": 6,
+    "other": 86
+  },
+  "cfg_field_union": [
+    "AVE_LAST",
+    "AVE_MODE",
+    "AVE_RGBW",
+    "BYTE0_BIT3_0",
+    "CH_SEL",
+    "DPLC_GROUP",
+    "DPLC_MODE",
+    "DPOLINV",
+    "H4INV",
+    "POL",
+    "POL2",
+    "POLC",
+    "PORSD",
+    "SCREN",
+    "SDC",
+    "SD_CHOP",
+    "SD_CHOP_F",
+    "TEST_PRTCT"
+  ],
+  "cfg_field_count": 18,
+  "ctrl_l_line_cfg": {
+    "covered": 188,
+    "total": 192,
+    "missing": [
+      "t_H3840_V16_FPS120_420b",
+      "t_H3840_V16_FPS120_SCREN1_420b",
+      "t_H3840_V16_FPS120_SCREN1_420b_for_chengli_test",
+      "t_H3840_V16_FPS120_SD_CHOP_F3_SD_CHOP5_420b"
+    ]
+  }
+}

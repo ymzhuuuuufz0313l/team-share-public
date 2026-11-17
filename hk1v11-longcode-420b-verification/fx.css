@@ -357,4 +357,39 @@ html.fx-on .flow.fx-r.fx-in .farrow {
 }
 @keyframes fxArcLit { to { opacity: 1; } }
 
-/* ymzhu 2026-11-05 14:35 */
+
+/* ===== 审查修正（2026-11-17）===== */
+/* F-low-1：fx.js:354 会 toggle html.page-static，但此前 fx.css 无任何对应规则，
+   该类实际为空操作。这里补上「静态模式 kill 块」——v4 契约 §7 所述双保险的第二道：
+   静态模式下关闭全页 animation / transition，避免页面级入场动画与静态 SVG 语义冲突。 */
+html.page-static *,
+html.page-static *::before,
+html.page-static *::after {
+  animation: none !important;
+  transition: none !important;
+}
+
+/* F01 配套：marked 离线兜底提示条 + 纯文本视图（仅 vendor 渲染器不可用时出现） */
+.md-offline-tip {
+  margin: 0 0 12px;
+  padding: 10px 14px;
+  border-left: 3px solid #b45309;
+  background: #fffbeb;
+  color: #7c2d12;
+  font-size: 13px;
+  line-height: 1.6;
+  border-radius: 0 6px 6px 0;
+}
+.md-offline-fallback {
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-family: var(--mono, ui-monospace, "IBM Plex Mono", "Consolas", monospace);
+  font-size: 13px;
+  line-height: 1.65;
+  background: var(--surface, #fffdf7);
+  border: 1px solid var(--line, #ddd6c8);
+  border-radius: 8px;
+  padding: 16px 18px;
+  overflow-x: auto;
+}
+/* ymzhu 2026-11-17 19:55 */

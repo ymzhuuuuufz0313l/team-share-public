@@ -1,0 +1,100 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 620" width="1200" height="620">
+  <style>text { font-family: 'Helvetica Neue', Helvetica, Arial, 'PingFang SC', 'Microsoft YaHei', 'Microsoft JhengHei', 'SimHei', sans-serif; }</style>
+  <defs>
+    <marker id="ar-blue" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#2563eb"/></marker>
+    <marker id="ar-green" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#059669"/></marker>
+    <marker id="ar-purple" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#7c3aed"/></marker>
+    <marker id="ar-orange" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#ea580c"/></marker>
+    <marker id="ar-gray" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#9ca3af"/></marker>
+  </defs>
+  <rect width="1200" height="620" fill="#ffffff"/>
+<text x="600" y="40" font-size="21" fill="#1e293b" text-anchor="middle" font-weight="600">LSP 序列与 K 码（K1 ~ K4）</text>
+<text x="600" y="64" font-size="12" fill="#64748b" text-anchor="middle">LSP：K3 放在序列最后；至少发送 5 次，连续发送 ≥ 1us · K 码 40-bit · 不加扰</text>
+<text x="52" y="140" font-size="10" fill="#64748b" text-anchor="end">编码前</text>
+<rect x="60" y="114" width="56" height="38" rx="8" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
+<text x="88.0" y="136.5" font-size="11" fill="#166534" text-anchor="middle" font-weight="600">K2</text>
+<rect x="120" y="114" width="46" height="38" rx="8" fill="#ffedd5" stroke="#fdba74" stroke-width="1.5"/>
+<text x="143.0" y="136.5" font-size="9.5" fill="#9a3412" text-anchor="middle" font-weight="600">0xEA</text>
+<rect x="170" y="114" width="46" height="38" rx="8" fill="#ffedd5" stroke="#fdba74" stroke-width="1.5"/>
+<text x="193.0" y="136.5" font-size="9.5" fill="#9a3412" text-anchor="middle" font-weight="600">0xEB</text>
+<rect x="220" y="114" width="46" height="38" rx="8" fill="#ffedd5" stroke="#fdba74" stroke-width="1.5"/>
+<text x="243.0" y="136.5" font-size="9.5" fill="#9a3412" text-anchor="middle" font-weight="600">0xEC</text>
+<rect x="270" y="114" width="46" height="38" rx="8" fill="#ffedd5" stroke="#fdba74" stroke-width="1.5"/>
+<text x="293.0" y="136.5" font-size="9.5" fill="#9a3412" text-anchor="middle" font-weight="600">0xED</text>
+<rect x="320" y="114" width="46" height="38" rx="8" fill="#ffedd5" stroke="#fdba74" stroke-width="1.5"/>
+<text x="343.0" y="136.5" font-size="9.5" fill="#9a3412" text-anchor="middle" font-weight="600">0xEA</text>
+<rect x="370" y="114" width="46" height="38" rx="8" fill="#ffedd5" stroke="#fdba74" stroke-width="1.5"/>
+<text x="393.0" y="136.5" font-size="9.5" fill="#9a3412" text-anchor="middle" font-weight="600">0xEB</text>
+<rect x="420" y="114" width="46" height="38" rx="8" fill="#ffedd5" stroke="#fdba74" stroke-width="1.5"/>
+<text x="443.0" y="136.5" font-size="9.5" fill="#9a3412" text-anchor="middle" font-weight="600">0xEC</text>
+<rect x="470" y="114" width="46" height="38" rx="8" fill="#ffedd5" stroke="#fdba74" stroke-width="1.5"/>
+<text x="493.0" y="136.5" font-size="9.5" fill="#9a3412" text-anchor="middle" font-weight="600">0xED</text>
+<text x="536" y="140" font-size="13" fill="#64748b" text-anchor="middle">…</text>
+<rect x="556" y="114" width="46" height="38" rx="8" fill="#ffedd5" stroke="#fdba74" stroke-width="1.5"/>
+<text x="579.0" y="136.5" font-size="9.5" fill="#9a3412" text-anchor="middle" font-weight="600">0xEA</text>
+<rect x="606" y="114" width="46" height="38" rx="8" fill="#ffedd5" stroke="#fdba74" stroke-width="1.5"/>
+<text x="629.0" y="136.5" font-size="9.5" fill="#9a3412" text-anchor="middle" font-weight="600">0xEB</text>
+<rect x="656" y="114" width="46" height="38" rx="8" fill="#ffedd5" stroke="#fdba74" stroke-width="1.5"/>
+<text x="679.0" y="136.5" font-size="9.5" fill="#9a3412" text-anchor="middle" font-weight="600">0xEC</text>
+<rect x="706" y="114" width="46" height="38" rx="8" fill="#ffedd5" stroke="#fdba74" stroke-width="1.5"/>
+<text x="729.0" y="136.5" font-size="9.5" fill="#9a3412" text-anchor="middle" font-weight="600">0xED</text>
+<rect x="760" y="114" width="56" height="38" rx="8" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
+<text x="788.0" y="136.5" font-size="11" fill="#166534" text-anchor="middle" font-weight="600">K3</text>
+<path d="M 120 158 L 120 166 L 520 166 L 520 158" stroke="#64748b" stroke-width="1" fill="none"/>
+<text x="320" y="180" font-size="9.5" fill="#64748b" text-anchor="middle">0xEA/EB/EC/ED × 8 = 32 Byte</text>
+<text x="52" y="236" font-size="10" fill="#64748b" text-anchor="end">编码后</text>
+<rect x="60" y="210" width="56" height="38" rx="8" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
+<text x="88.0" y="232.5" font-size="11" fill="#166534" text-anchor="middle" font-weight="600">K2</text>
+<rect x="120" y="210" width="46" height="38" rx="8" fill="#ffedd5" stroke="#fdba74" stroke-width="1.5"/>
+<text x="143.0" y="232.5" font-size="9.5" fill="#9a3412" text-anchor="middle" font-weight="600">0xEA</text>
+<rect x="170" y="210" width="46" height="38" rx="8" fill="#ffedd5" stroke="#fdba74" stroke-width="1.5"/>
+<text x="193.0" y="232.5" font-size="9.5" fill="#9a3412" text-anchor="middle" font-weight="600">0xEB</text>
+<rect x="220" y="210" width="46" height="38" rx="8" fill="#ffedd5" stroke="#fdba74" stroke-width="1.5"/>
+<text x="243.0" y="232.5" font-size="9.5" fill="#9a3412" text-anchor="middle" font-weight="600">0xEC</text>
+<rect x="270" y="210" width="46" height="38" rx="8" fill="#ffedd5" stroke="#fdba74" stroke-width="1.5"/>
+<text x="293.0" y="232.5" font-size="9.5" fill="#9a3412" text-anchor="middle" font-weight="600">0xED</text>
+<rect x="320" y="210" width="46" height="38" rx="8" fill="#ffedd5" stroke="#fdba74" stroke-width="1.5"/>
+<text x="343.0" y="232.5" font-size="9.5" fill="#9a3412" text-anchor="middle" font-weight="600">0xEA</text>
+<rect x="370" y="210" width="46" height="38" rx="8" fill="#ffedd5" stroke="#fdba74" stroke-width="1.5"/>
+<text x="393.0" y="232.5" font-size="9.5" fill="#9a3412" text-anchor="middle" font-weight="600">0xEB</text>
+<rect x="420" y="210" width="46" height="38" rx="8" fill="#ffedd5" stroke="#fdba74" stroke-width="1.5"/>
+<text x="443.0" y="232.5" font-size="9.5" fill="#9a3412" text-anchor="middle" font-weight="600">0xEC</text>
+<rect x="470" y="210" width="46" height="38" rx="8" fill="#ffedd5" stroke="#fdba74" stroke-width="1.5"/>
+<text x="493.0" y="232.5" font-size="9.5" fill="#9a3412" text-anchor="middle" font-weight="600">0xED</text>
+<text x="536" y="236" font-size="13" fill="#64748b" text-anchor="middle">…</text>
+<rect x="556" y="210" width="46" height="38" rx="8" fill="#ffedd5" stroke="#fdba74" stroke-width="1.5"/>
+<text x="579.0" y="232.5" font-size="9.5" fill="#9a3412" text-anchor="middle" font-weight="600">0xEA</text>
+<rect x="606" y="210" width="46" height="38" rx="8" fill="#ffedd5" stroke="#fdba74" stroke-width="1.5"/>
+<text x="629.0" y="232.5" font-size="9.5" fill="#9a3412" text-anchor="middle" font-weight="600">0xEB</text>
+<rect x="656" y="210" width="46" height="38" rx="8" fill="#ffedd5" stroke="#fdba74" stroke-width="1.5"/>
+<text x="679.0" y="232.5" font-size="9.5" fill="#9a3412" text-anchor="middle" font-weight="600">0xEC</text>
+<rect x="706" y="210" width="46" height="38" rx="8" fill="#ffedd5" stroke="#fdba74" stroke-width="1.5"/>
+<text x="729.0" y="232.5" font-size="9.5" fill="#9a3412" text-anchor="middle" font-weight="600">0xED</text>
+<rect x="760" y="210" width="70" height="38" rx="8" fill="#e5e7eb" stroke="#d1d5db" stroke-width="1.5"/>
+<text x="795.0" y="232.5" font-size="10" fill="#6b7280" text-anchor="middle" font-weight="600">dmy</text>
+<rect x="834" y="210" width="56" height="38" rx="8" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
+<text x="862.0" y="232.5" font-size="11" fill="#166534" text-anchor="middle" font-weight="600">K3</text>
+<text x="797" y="272" font-size="9.5" fill="#64748b" text-anchor="middle">编码后末尾补 dmy → 280b（70×4）</text>
+<text x="60" y="330" font-size="13" fill="#1e293b" text-anchor="start" font-weight="600">K 码（K1 ~ K4）· 40-bit · 不加扰</text>
+<rect x="60" y="350" width="70" height="40" rx="6" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
+<text x="95" y="376" font-size="12" fill="#166534" text-anchor="middle" font-weight="700">K1</text>
+<rect x="134" y="350" width="860" height="40" rx="6" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+<text x="564" y="376" font-size="14" fill="#1e293b" text-anchor="middle" font-family="Consolas, Menlo, monospace">11 0000000000 11110000 1111111111 0011111100</text>
+<rect x="60" y="396" width="70" height="40" rx="6" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
+<text x="95" y="422" font-size="12" fill="#166534" text-anchor="middle" font-weight="700">K2</text>
+<rect x="134" y="396" width="860" height="40" rx="6" fill="#f9fafb" stroke="#d1d5db" stroke-width="1.5"/>
+<text x="564" y="422" font-size="14" fill="#1e293b" text-anchor="middle" font-family="Consolas, Menlo, monospace">00 1111111111 00001100 1111111111 0011001100</text>
+<rect x="60" y="442" width="70" height="40" rx="6" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
+<text x="95" y="468" font-size="12" fill="#166534" text-anchor="middle" font-weight="700">K3</text>
+<rect x="134" y="442" width="860" height="40" rx="6" fill="#ffffff" stroke="#d1d5db" stroke-width="1.5"/>
+<text x="564" y="468" font-size="14" fill="#1e293b" text-anchor="middle" font-family="Consolas, Menlo, monospace">11 0000000000 11000011 0000000000 1100000011</text>
+<rect x="60" y="488" width="70" height="40" rx="6" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
+<text x="95" y="514" font-size="12" fill="#166534" text-anchor="middle" font-weight="700">K4</text>
+<rect x="134" y="488" width="860" height="40" rx="6" fill="#f9fafb" stroke="#d1d5db" stroke-width="1.5"/>
+<text x="564" y="514" font-size="14" fill="#1e293b" text-anchor="middle" font-family="Consolas, Menlo, monospace">00 1111111111 00110011 0000000000 1111000000</text>
+<line x1="950" y1="542" x2="950" y2="528" stroke="#2563eb" stroke-width="1.5" marker-end="url(#ar-blue)"/>
+<text x="950" y="560" font-size="11" fill="#2563eb" text-anchor="middle" font-weight="700">先发</text>
+<line x1="178" y1="542" x2="178" y2="528" stroke="#2563eb" stroke-width="1.5" marker-end="url(#ar-blue)"/>
+<text x="178" y="560" font-size="11" fill="#2563eb" text-anchor="middle" font-weight="700">后发</text>
+<text x="564" y="560" font-size="10.5" fill="#2563eb" text-anchor="middle">串行发送方向：右 → 左（LSB-first，与 8B/10B 一致）</text>
+</svg>

@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet">
   <title>KCODE 420b 位序反转根因（BIT_SWAP 语法非法从未生效 + shift-down，v3 定案）· HK1V11 420b 长编码验证体系</title>
-  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="./vendor/marked.min.js"></script>
   <link rel="stylesheet" href="./fx.css?v=10">
   <style>
     :root {
@@ -557,7 +557,27 @@ u_LOGIC_CENTER.LINK_LOGIC.LC_CHPI_DECODE.LONG_ENCODING.LONG_ENCODING_ALIGN
 </script>
 
   <script>
-    document.getElementById('article').innerHTML = marked.parse(document.getElementById('md').innerHTML);
+    /* 离线兜底（F01）：marked 走本地 vendor；若仍不可用（文件缺失/被拦），
+       退化为 <pre> 纯文本视图，保证断网/CDN 屏蔽时页面仍可读。 */
+    (function renderMarkdown() {
+      const mdEl = document.getElementById('md');
+      const artEl = document.getElementById('article');
+      if (!mdEl || !artEl) return;
+      const src = mdEl.textContent.trim();
+      if (typeof marked !== 'undefined' && marked && typeof marked.parse === 'function') {
+        artEl.innerHTML = marked.parse(src);
+        return;
+      }
+      artEl.innerHTML = '';
+      const tip = document.createElement('p');
+      tip.className = 'md-offline-tip';
+      tip.textContent = '[离线提示] Markdown 渲染器（vendor/marked.min.js）未加载，已退化为纯文本视图。';
+      const pre = document.createElement('pre');
+      pre.className = 'md-offline-fallback';
+      pre.textContent = src;
+      artEl.appendChild(tip);
+      artEl.appendChild(pre);
+    })();
     // lightbox
     const lightbox = document.getElementById('lightbox');
     const lightboxImg = document.getElementById('lightbox-img');
@@ -611,4 +631,4 @@ u_LOGIC_CENTER.LINK_LOGIC.LC_CHPI_DECODE.LONG_ENCODING.LONG_ENCODING_ALIGN
   <script src="./fx.js?v=11"></script>
 </body>
 </html>
-<!-- ymzhu 2026-11-06 11:59 -->
+<!-- ymzhu 2026-11-17 19:55 -->

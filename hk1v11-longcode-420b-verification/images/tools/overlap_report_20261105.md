@@ -300,7 +300,6 @@
 python images/tools/check_overlap.py --anim --gate-severity high
 ```
 
-<!-- ymzhu 2026-11-05 16:05 -->
 
 ## 修复定位提示（供生成器修复阶段直查）
 
@@ -344,5 +343,4 @@ python images/tools/check_overlap.py --anim --gate-severity high
   证据 `overlap_evidence_20261105_after_fix/`）。
 - 基线一度被 t2 自验时同名覆盖，已从 git HEAD（=修复前 SVG）重跑本工具完整复原
   （数值逐项一致：B4/H39/L65）。
-
-<!-- ymzhu 2026-11-05 16:05 -->
+<!-- ymzhu 2026-11-17 19:55 -->

@@ -32,8 +32,10 @@ import xml.etree.ElementTree as ET
 from collections import Counter
 from pathlib import Path
 
-BASE = Path(r"E:\project\team-share-public\hk1v11-longcode-420b-verification")
-SRC = BASE / "images" / "spec_lsp_kcode.svg"
+from site_paths import site_base, src_base, write_svg  # noqa: E402
+BASE = site_base()      # 输出根：可被 --out <dir> / SITE_ROOT 覆盖
+SRC_BASE = src_base()   # 输入根（只读源 SVG）：永不受 --out 影响
+SRC = SRC_BASE / "images" / "spec_lsp_kcode.svg"
 OUT = BASE / "images" / "anim" / "spec_lsp_kcode.svg"
 NAME = "make_anim_spec_lsp_kcode"
 
@@ -110,7 +112,7 @@ def cw(delay, dur):
 
 def build():
     raw = SRC.read_text(encoding="utf-8", newline="")
-    eol = "\r\n" if "\r\n" in raw else "\n"
+    eol = "\n"  # 统一 LF（历史：跟随源文件 EOL 导致仓库 LF/CRLF 分裂）
     lines = raw.split(eol)
     tail = raw.endswith(eol)
     assert lines[0].lstrip().startswith("<svg"), "line1 应为 <svg>"
@@ -288,7 +290,7 @@ def build():
     out.append(lines[end])
     text = eol.join(out) + (eol if tail else "")
     OUT.parent.mkdir(parents=True, exist_ok=True)
-    OUT.write_text(text, encoding="utf-8", newline="")
+    write_svg(OUT, text)
     return counts
 
 
@@ -340,4 +342,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-# ymzhu 2026-11-05 11:35
+# ymzhu 2026-11-17 19:55

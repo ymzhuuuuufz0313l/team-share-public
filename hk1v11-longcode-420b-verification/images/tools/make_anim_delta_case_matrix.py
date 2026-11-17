@@ -33,7 +33,31 @@ import xml.etree.ElementTree as ET
 from collections import Counter
 from pathlib import Path
 
-BASE = Path(r"E:\project\team-share-public\hk1v11-longcode-420b-verification")
+from site_paths import site_base, write_svg  # noqa: E402
+BASE = site_base()
+
+# ---- 单一数据源（facts.json）----
+# 分辨率/POL/维度族等业务数字不再写死在脚本里：一律从 data/facts.json 读取。
+# facts.json 由 extract_facts.py 从 DV_TCON_C case 源统计生成（口径见该脚本 docstring）。
+# 重生成： python images/tools/extract_facts.py --src <HK1V11> --out images/tools/data/facts.json
+def _load_facts():
+    import json
+    cands = [Path(__file__).resolve().parent / "data" / "facts.json",
+             BASE / "images" / "tools" / "data" / "facts.json"]
+    for c in cands:
+        if c.exists():
+            with open(c, encoding="utf-8") as fh:
+                return json.load(fh)
+    raise SystemExit("facts.json not found; run images/tools/extract_facts.py first")
+
+FACTS = _load_facts()
+CASE_N = FACTS["case_count"]
+RES_ORDER = ["1440", "1920", "2560", "2880", "3456", "3840"]
+FPS_ORDER = ["60", "120", "144", "165", "180", "240", "280", "360"]
+PORT_ORDER = ["6", "8", "12", "24"]
+DM1 = FACTS["name_counts"]["DPLC_MODE1"]
+DPLCG1 = FACTS["name_counts"]["DPLC_GROUP1"]
+SDC0 = FACTS["name_counts"]["SDC0"]
 OUT_STATIC = BASE / "images" / "delta_case_matrix.svg"
 OUT_ANIM = BASE / "images" / "anim" / "delta_case_matrix.svg"
 
@@ -312,8 +336,7 @@ def build_scene():
                    9.5, C["dark"], 600)], wrap=("row", 0.6, None)))
 
     # 分辨率分布
-    res = [("H1440", 47), ("H1920", 52), ("H2560", 6), ("H2880", 18),
-           ("H3456", 10), ("H3840", 59)]
+    res = [("H" + k, FACTS["resolution"][k]) for k in RES_ORDER]
     bars = [T(486, 208, "分辨率分布（192 case 全量）", 11, C["dark"], 600, "start")]
     maxc = 59.0
     for i, (lab, n) in enumerate(res):
@@ -328,25 +351,26 @@ def build_scene():
               stroke="none", rx=3),
             T(552 + wv + 8, y + 13, str(n), 9.5, C["muted"], None, "start"),
         ], wrap=wrap))
-    bars.append(T(486, 372, "合计 47+52+6+18+10+59 = 192（FPS / PORT 计数同口径合计 192）",
+    _sum = "+".join(str(n) for _, n in res)
+    bars.append(T(486, 372, f"合计 {_sum} = {CASE_N}（FPS / PORT 计数同口径合计 {CASE_N}）",
                   9.5, C["muted"], None, "start"))
     rk.append(G(bars, wrap=("row", 0.75, None)))
 
-    fps, fw = chip_row(486, 396, ["60 · 1", "120 · 57", "144 · 20", "165 · 8",
-                                  "180 · 1", "240 · 3", "280 · 98", "360 · 4"],
+    fps, fw = chip_row(486, 396, [f"{k} · {FACTS['fps'][k]}" for k in FPS_ORDER],
                        size=9.5, per_wave=(1.0, 0.1, 3.6))
     rk.append(G([T(486, 390, "FPS 维度（×8）", 11, C["dark"], 600, "start")] +
                 [fps], wrap=("row", 1.05, None)))
-    port, pw = chip_row(486, 458, ["6 · 2", "8 · 6", "12 · 97", "24 · 1", "其余默认"],
+    port, pw = chip_row(486, 458,
+                        [f"{k} · {FACTS['port'][k]}" for k in PORT_ORDER] + ["其余默认"],
                         size=9.5, fill="#f1f5f9", stroke="#cbd5e1", tfill="#475569")
     rk.append(G([T(486, 452, "PORT_NUM（显式标注 ×4）", 11, C["dark"], 600, "start")] +
                 [port], wrap=("row", 1.15, None)))
 
-    dim1, _ = chip_row(486, 518, ["DPLC_MODE1 ×173", "DPLC_GROUP1 ×33", "AVE_RGBW 0-7",
+    dim1, _ = chip_row(486, 518, [f"DPLC_MODE1 ×{DM1}", f"DPLC_GROUP1 ×{DPLCG1}", "AVE_RGBW 0-7",
                                   "AVE_MODE / AVE_LAST", "SD_CHOP F0-F3 × CHOP0-5（24 · H3840）"],
                        size=9, fill="#ecfdf5", stroke="#a7f3d0", tfill="#065f46")
     dim2, _ = chip_row(486, 548, ["H4INV · POL20/21 · POLC",
-                                  "CH_SEL 0/2/3/4（subpix 966/960/726/720/864）", "SDC0 ×55"],
+                                  "CH_SEL 0/2/3/4（subpix 966/960/726/720/864）", f"SDC0 ×{SDC0}"],
                        size=9, fill="#ecfdf5", stroke="#a7f3d0", tfill="#065f46")
     dim3, _ = chip_row(486, 578, ["power ×3", "boe_test", "SCREN1 ×2",
                                   "CTRL_L_LINE_OVERRIDE ×1", "POL2 · DPOLINV"],
@@ -428,15 +452,25 @@ def selfcheck(static, anim):
         pass  # 几何由 est() 自适应 + 外部 QA 兜底
 
 
+def _facts_guard():
+    """口径守卫：DPLC_GROUP1=33 且 SDC0=55 时，"目录名计数"口径成立。"""
+    assert DPLCG1 == 33, f"DPLC_GROUP1 口径异常: {DPLCG1}"
+    assert SDC0 == 55, f"SDC0 口径异常: {SDC0}"
+    assert sum(FACTS["resolution"][k] for k in RES_ORDER) == CASE_N
+    assert sum(FACTS["fps"][k] for k in FPS_ORDER) == CASE_N
+    assert sum(FACTS["port"].get(k, 0) for k in PORT_ORDER) + FACTS["port"]["other"] == CASE_N
+
+
 def main():
+    _facts_guard()
     static, anim = build("static"), build("anim")
     selfcheck(static, anim)
-    OUT_STATIC.write_text(static, encoding="utf-8", newline="\n")
-    OUT_ANIM.write_text(anim, encoding="utf-8", newline="\n")
+    write_svg(OUT_STATIC, static)
+    write_svg(OUT_ANIM, anim)
     print(f"OK static={OUT_STATIC.stat().st_size}B anim={OUT_ANIM.stat().st_size}B")
     return 0
 
 
 if __name__ == "__main__":
     sys.exit(main())
-# ymzhu 2026-11-05 11:30
+# ymzhu 2026-11-17 19:55

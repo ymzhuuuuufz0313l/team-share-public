@@ -27,8 +27,10 @@ Clock → LSP → 帧 0 配置行 → VBP×2 → Active×3 → VFP 第 0 行（=
 """
 from pathlib import Path
 
-BASE = Path(r"E:\project\team-share-public\hk1v11-longcode-420b-verification")
-SRC = BASE / "images" / "spec_frame_flow.svg"
+from site_paths import site_base, src_base, write_svg  # noqa: E402
+BASE = site_base()      # 输出根：可被 --out <dir> / SITE_ROOT 覆盖
+SRC_BASE = src_base()   # 输入根（只读源 SVG）：永不受 --out 影响
+SRC = SRC_BASE / "images" / "spec_frame_flow.svg"
 OUT = BASE / "images" / "anim" / "spec_frame_flow.svg"
 
 # ---- Motion Kit v4 CSS（MOTION_KIT.md §2 逐字，勿改）----
@@ -89,7 +91,7 @@ UNITS = [
 
 def build():
     raw = SRC.read_text(encoding="utf-8", newline="")
-    eol = "\r\n" if "\r\n" in raw else "\n"
+    eol = "\n"  # 统一 LF（历史：跟随源文件 EOL 导致仓库 LF/CRLF 分裂）
     tail_nl = raw.endswith(eol)
     lines = raw.split(eol)
     if tail_nl:
@@ -148,11 +150,10 @@ def build():
     out.append(lines[114])                              # </svg>
 
     text = eol.join(out) + (eol if tail_nl else "")
-    OUT.write_text(text, encoding="utf-8", newline="")
+    write_svg(OUT, text)
     print("written: %s (%d bytes)  effects=%s" % (OUT, OUT.stat().st_size, counts))
 
 
 if __name__ == "__main__":
     build()
-
-# ymzhu 2026-11-05 11:20
+# ymzhu 2026-11-17 19:55

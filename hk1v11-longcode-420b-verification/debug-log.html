@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet">
   <title>排障实录 · HK1V11 420b 长编码验证体系</title>
-  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script src="./vendor/marked.min.js"></script>
   <style>
 :root {
       --bg: #f4f1ea;
@@ -741,7 +741,27 @@
   </script>
 
   <script>
-    document.getElementById('article').innerHTML = marked.parse(document.getElementById('md').textContent.trim());
+    /* 离线兜底（F01）：marked 走本地 vendor；若仍不可用（文件缺失/被拦），
+       退化为 <pre> 纯文本视图，保证断网/CDN 屏蔽时页面仍可读。 */
+    (function renderMarkdown() {
+      const mdEl = document.getElementById('md');
+      const artEl = document.getElementById('article');
+      if (!mdEl || !artEl) return;
+      const src = mdEl.textContent.trim();
+      if (typeof marked !== 'undefined' && marked && typeof marked.parse === 'function') {
+        artEl.innerHTML = marked.parse(src);
+        return;
+      }
+      artEl.innerHTML = '';
+      const tip = document.createElement('p');
+      tip.className = 'md-offline-tip';
+      tip.textContent = '[离线提示] Markdown 渲染器（vendor/marked.min.js）未加载，已退化为纯文本视图。';
+      const pre = document.createElement('pre');
+      pre.className = 'md-offline-fallback';
+      pre.textContent = src;
+      artEl.appendChild(tip);
+      artEl.appendChild(pre);
+    })();
 const lightbox = document.getElementById('lightbox');
     const lightboxImg = document.getElementById('lightbox-img');
     const lightboxClose = document.getElementById('lightbox-close');
@@ -851,4 +871,4 @@ const lightbox = document.getElementById('lightbox');
   <script src="./fx.js?v=11"></script>
 </body>
 </html>
-<!-- ymzhu 2026-11-05 11:58 -->
+<!-- ymzhu 2026-11-17 19:55 -->

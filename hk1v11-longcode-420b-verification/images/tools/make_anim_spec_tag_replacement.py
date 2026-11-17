@@ -26,8 +26,10 @@ from pathlib import Path
 import re
 import os
 
-BASE = Path(r"E:\project\team-share-public\hk1v11-longcode-420b-verification")
-SRC = BASE / "images" / "spec_tag_replacement.svg"
+from site_paths import site_base, src_base, write_svg  # noqa: E402
+BASE = site_base()      # 输出根：可被 --out <dir> / SITE_ROOT 覆盖
+SRC_BASE = src_base()   # 输入根（只读源 SVG）：永不受 --out 影响
+SRC = SRC_BASE / "images" / "spec_tag_replacement.svg"
 OUT = BASE / "images" / "anim" / "spec_tag_replacement.svg"
 
 # MOTION_KIT.md §2 — Motion Kit CSS v4（逐字嵌入，不增删类）
@@ -66,7 +68,7 @@ KIT_CSS = "\n".join([
 
 def build():
     raw = SRC.read_text(encoding="utf-8", newline="")
-    eol = "\r\n" if "\r\n" in raw else "\n"
+    eol = "\n"  # 统一 LF（历史：跟随源文件 EOL 导致仓库 LF/CRLF 分裂）
     lines = raw.split(eol)
     tail_nl = raw.endswith(eol)
     assert lines[0].lstrip().startswith("<svg"), "line1 应为 <svg>"
@@ -221,7 +223,7 @@ def build():
     if tail_nl:
         text += eol
     OUT.parent.mkdir(parents=True, exist_ok=True)
-    OUT.write_text(text, encoding="utf-8", newline="")
+    write_svg(OUT, text)
 
 
 NS = "{http://www.w3.org/2000/svg}"
@@ -284,4 +286,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-# ymzhu 2026-11-04 17:20
+# ymzhu 2026-11-17 19:55

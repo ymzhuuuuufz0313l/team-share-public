@@ -19,9 +19,17 @@
 
 ## 1. 路径
 
-- 源 SVG（只读）：`E:\project\team-share-public\hk1v11-longcode-420b-verification\images\<name>.svg`
-- 输出：`...\hk1v11-longcode-420b-verification\images\anim\<name>.svg`
-- 生成器：`...\images\tools\make_anim_<name>.py`
+- 源 SVG（只读）：`<site>/images/<name>.svg`
+- 输出：`<site>/images/anim/<name>.svg`
+- 生成器：`<site>/images/tools/make_anim_<name>.py`
+
+> **路径解析（N2 修正，2026-11-17）**：`<site>` 不再写死本机绝对路径。生成器统一用
+> `images/tools/site_paths.py` 的 `site_base()` 解析，优先级
+> **`--out <dir>` > 环境变量 `SITE_ROOT` > 脚本自身位置推导**（`parents[2]`）。
+> 换机器 / 换 clone 路径都能直接跑：
+> `python images/tools/make_anim_<name>.py --out <目标目录>`
+> 本文档及生成器 docstring 里的路径一律写成 `<site>/...`。
+
 - v2 生成器已存在：**先读它**理解结构锚点（哪些行是面板/盒子/箭头），然后整体重写为 v4（v2 的类名/delay 逻辑不要照抄，稳态选型按 §6 的新规格）。
 
 ## 2. Motion Kit CSS v4（逐字嵌入生成器，作为新增 `<style>` 行内容）
@@ -212,6 +220,18 @@ python images/tools/validate_kit_v4.py <name1> [name2 ...]
 ```
 全 PASS 才算完成。另加人工检查（写进报告）：源 SVG 无改动（git status 源图无 M）；一次性总长 ≤2.5s；持续族 ≤4（spec_dummy_70b 列车族已按 §3-2 短箭头规则删除，现存 cellwave/pulse/sweepband/step = 4 族，不许再加新族）；相位错开；flowdot 不穿文字。
 
+## 8b. 校验器代际（N4，2026-11-17）
+
+| 校验器 | 规范 | 状态 | 用法 |
+|--------|------|------|------|
+| `images/tools/validate_kit_v4.py` | MOTION_KIT v4 | **当前，唯一应使用** | `python images/tools/validate_kit_v4.py <name1> [name2 ...]` |
+| `images/tools/validate_kit_v2.py` | MOTION_KIT v2（历史） | **DEPRECATED**，文件头已加横幅；不删除不改名，仅溯源 | `python images/tools/validate_kit_v2.py <name1> [name2 ...]`（勿用） |
+
+> v2 与 v4 规范方向相反（v2 期待 `glow-*` / `<animate>`，v4 明令禁止），
+> 用 v2 跑现行 anim SVG 会得到与规范相反的结论。
+> 两个已知脚本缺陷（`all(...)` 短路、无参数打印 ALL PASS 且返回 0）仅存在于 v2，
+> v4 已修。详见 `images/tools/validate_kit_v2.py` 文件头横幅。
+
 ## 9. 报告格式（DONE 消息）
 
 ```
@@ -231,5 +251,4 @@ DONE — <name1> / <name2> ...
 - v2（2026-10-27）：首版 kit（rowIn/drawIn/flowdot/cellwave/glow/step）。
 - v4.2（2026-10-29）：用户定调"所有带列车的图，列车速度全部再降"——元素级列车时长下限 2.4s（0.7/0.8s→2.4s、1.4/1.5s→3.2s 档）；列车仍只允许复制既有箭头几何，不扩新图；donut 永不加行进（用户点名）。
 - v4.2 补充（2026-10-29）：数据密集图（行≥20 且列≥6）数据区禁弥漫性动效（用户：行列多加呼吸影响体验；低密度加很好）；列车全站再降速（元素级 ≥2.4s）。
-
-<!-- ymzhu 2026-11-05 11:45 -->
+<!-- ymzhu 2026-11-17 19:55 -->

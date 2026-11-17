@@ -36,7 +36,8 @@ import xml.etree.ElementTree as ET
 from collections import Counter
 from pathlib import Path
 
-BASE = Path(r"E:\project\team-share-public\hk1v11-longcode-420b-verification")
+from site_paths import site_base, write_svg  # noqa: E402
+BASE = site_base()
 OUT_STATIC = BASE / "images" / "delta_env_components.svg"
 OUT_ANIM = BASE / "images" / "anim" / "delta_env_components.svg"
 
@@ -426,12 +427,12 @@ def selfcheck(static, anim):
 def main():
     static, anim = build("static"), build("anim")
     selfcheck(static, anim)
-    OUT_STATIC.write_text(static, encoding="utf-8", newline="\n")
-    OUT_ANIM.write_text(anim, encoding="utf-8", newline="\n")
+    write_svg(OUT_STATIC, static)
+    write_svg(OUT_ANIM, anim)
     print(f"OK static={OUT_STATIC.stat().st_size}B anim={OUT_ANIM.stat().st_size}B")
     return 0
 
 
 if __name__ == "__main__":
     sys.exit(main())
-# ymzhu 2026-11-05 15:39
+# ymzhu 2026-11-17 19:55

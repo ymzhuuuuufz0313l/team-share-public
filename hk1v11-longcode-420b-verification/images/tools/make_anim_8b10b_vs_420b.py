@@ -25,8 +25,10 @@ MOTION_KIT.md §6.3 规格（1400x1210 双列 8B/10B vs 420B 对比图）：
 import re
 from pathlib import Path
 
-BASE = Path(r"E:\project\team-share-public\hk1v11-longcode-420b-verification")
-SRC = BASE / "images" / "8b10b_vs_420b_architecture.svg"
+from site_paths import site_base, src_base, write_svg  # noqa: E402
+BASE = site_base()      # 输出根：可被 --out <dir> / SITE_ROOT 覆盖
+SRC_BASE = src_base()   # 输入根（只读源 SVG）：永不受 --out 影响
+SRC = SRC_BASE / "images" / "8b10b_vs_420b_architecture.svg"
 OUT = BASE / "images" / "anim" / "8b10b_vs_420b_architecture.svg"
 
 # ---- Motion Kit v4 CSS（MOTION_KIT.md §2 逐字，勿改）----
@@ -219,11 +221,10 @@ def build():
         row_group(1.45 + 0.03 * r, s0, s0 + 6)
 
     out.append(L[SVG_END])    # </svg>
-    OUT.write_text("\n".join(out) + "\n", encoding="utf-8", newline="\n")
+    write_svg(OUT, "\n".join(out) + "\n")
     print(f"written: {OUT} ({OUT.stat().st_size} bytes)")
 
 
 if __name__ == "__main__":
     build()
-
-# ymzhu 2026-11-05 11:35
+# ymzhu 2026-11-17 19:55

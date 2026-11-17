@@ -231,5 +231,4 @@
 # 生成图后强制校验：任何 BLOCKER/HIGH 直接失败
 python images/tools/check_overlap.py --anim --gate-severity high
 ```
-
-<!-- ymzhu 2026-11-05 16:05 -->
+<!-- ymzhu 2026-11-17 19:55 -->
