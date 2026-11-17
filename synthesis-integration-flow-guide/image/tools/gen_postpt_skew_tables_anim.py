@@ -32,6 +32,12 @@ import argparse
 import csv
 import hashlib
 import os
+
+try:
+    from _archive import snapshot
+except Exception:  # 归档动作失败不应阻断出图
+    def snapshot(p, note=""):
+        return None
 import sys
 import xml.etree.ElementTree as ET
 
@@ -153,6 +159,7 @@ CSS = """<style>
 @keyframes breathe { 0%,100% { opacity:1; } 50% { opacity:0.55; } }
 .frameBreath { animation: frameB 2.8s ease-in-out infinite; }
 @keyframes frameB { 0%,100% { stroke-opacity:1; } 50% { stroke-opacity:0.45; } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation:none !important; transition:none !important; } }
 </style>"""
 
 
@@ -286,6 +293,7 @@ def run_one(metric: str, mode: str) -> dict:
 
     s1, s2 = build_svg(spec), build_svg(spec)          # ⑥ 幂等：同输入两遍
     md5a, md5b = hashlib.md5(s1.encode("utf-8")).hexdigest(), hashlib.md5(s2.encode("utf-8")).hexdigest()
+    snapshot(path, note="出图前归档旧版")
     with open(path, "w", encoding="utf-8", newline="") as f:
         f.write(s1)
     md5c = hashlib.md5(open(path, "rb").read()).hexdigest()
@@ -340,4 +348,4 @@ def main():
 if __name__ == "__main__":
     main()
 
-# ymzhu 2026-11-04 15:54
+# ymzhu 2026-11-17 19:43

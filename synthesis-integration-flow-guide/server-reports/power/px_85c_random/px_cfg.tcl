@@ -1,6 +1,6 @@
 
 
-set pr_dir "/project/HV2M23/DataBase/APR/${TOP_NAME}/latest/" 
+set pr_dir "<proj_root>/DataBase/APR/${TOP_NAME}/latest/" 
 
     #set CORNER "wc_cmax_125_setup"  
     #set CORNER "wc_rcmax_125_setup" 
@@ -32,11 +32,11 @@ set pr_dir "/project/HV2M23/DataBase/APR/${TOP_NAME}/latest/"
 
    set CORNER "tt_typ" 
 
-#set verilog_file "/project/HK4U31/DataBase/Digital/Release/Netlist/APR/latest/HK4U31.v.gz"
-set verilog_file "/project/HV2M23/designer/AD/yzhao/release/HV2M23_digital_top/timing/latest/HV2M23_digital_top.v.gz"
-set sdc_file     [list "/project/HV2M23/DataBase/Digital/Release/HV2M23_digital_top_to_APR/latest/HV2M23_digital_top_postcts.sdc"]
-#set upf_file     [list "/project/HK6888/designer/DD/ttao/HK6888/Release/Netlist/Prescan/HK6888_PLANB_to_APR/latest/HK6888_final.upf"]
-set spef_dir     "/project/HV2M23/designer/AD/yzhao/release/HV2M23_digital_top/timing/latest/"
+#set verilog_file "<proj_root>/DataBase/Digital/Release/Netlist/APR/latest/HK4U31.v.gz"
+set verilog_file "<proj_root>/designer/AD/<user>/release/HV2M23_digital_top/timing/latest/HV2M23_digital_top.v.gz"
+set sdc_file     [list "<proj_root>/DataBase/Digital/Release/HV2M23_digital_top_to_APR/latest/HV2M23_digital_top_postcts.sdc"]
+#set upf_file     [list "<proj_root>/designer/DD/ttao/HK6888/Release/Netlist/Prescan/HK6888_PLANB_to_APR/latest/HK6888_final.upf"]
+set spef_dir     "<proj_root>/designer/AD/<user>/release/HV2M23_digital_top/timing/latest/"
 
 set saif_file    ""
 # vcd|saif
@@ -50,7 +50,7 @@ set ip0_inst       "HV2M23_digital_top"
 set ip0_strip      "chip_tb_top/u_HV2M23/u_HV2M23_digital_top"
 #set ip0_vcd        "/simulation/yfzhong/HK6888/TOP_NETLIST_PLANB/t_4400_2250_120_8b8p2l_full_480/verilog.dump"
 #set ip0_vcd        "/simulation/ttao/HK3M31/TOP_NETLIST_POST/t_2560_1440_90_8b4p2l_1920chmod_1shl_0dotc_full_L/verilog1.dump" 
-set ip0_vcd        "/sim_dd/ymzhu/HV2M23/TOP_NETLIST_POST_TCON_C/four_line_fre1p8_2lane_tt_0729v0.dump" 
+set ip0_vcd        "<sim_root>/<user>/HV2M23/TOP_NETLIST_POST_TCON_C/four_line_fre1p8_2lane_tt_0729v0.dump" 
 #set ip0_vcd        "/simulation/ttao/HK3M31/TOP_NETLIST_POST/t_2560_1440_165_8b4p4l_1920chmod_1shl_0dotc_full_R/one_line.dump" 
 # inst strip_path vcd
 set vcd_file "\

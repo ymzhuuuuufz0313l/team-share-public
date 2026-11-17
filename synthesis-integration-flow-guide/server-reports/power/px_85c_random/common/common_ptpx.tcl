@@ -15,7 +15,7 @@ set timing_crpr_threshold_ps                        10
 set case_analysis_log_file                          rep_dir/case_analysis.log
 set timing_clock_source_driver_pin_use_dirrver_arc_compatibility false
 set CONS_CHECK 1
-source /project/HK3671/designer/DD/ppchen/HK3671/SYNTHESIS/common/tcl_dir/common/common_db.tcl -verbose -echo
+source <proj_root>/designer/DD/ppchen/HK3671/SYNTHESIS/common/tcl_dir/common/common_db.tcl -verbose -echo
 set link_path [concat "*" $link_library]
 
 ## read_verilog

@@ -8,6 +8,12 @@
 """
 import csv
 import os
+
+try:
+    from _archive import snapshot
+except Exception:  # 归档动作失败不应阻断出图
+    def snapshot(p, note=""):
+        return None
 import re
 from collections import Counter
 
@@ -17,7 +23,10 @@ BASE = os.path.dirname(os.path.abspath(__file__))          # .../image/tools（2
 GUIDE = os.path.dirname(os.path.dirname(BASE))             # 站点根
 IMG_DIR = os.path.join(GUIDE, "image")
 SR = os.path.join(GUIDE, "server-reports")
-HV = r"E:/project/HV2M23"
+# 数据源根目录由环境变量 HV_ROOT 注入，仓库内不留内部工程绝对路径
+HV = os.environ.get("HV_ROOT") or os.path.join(os.path.dirname(os.path.dirname(GUIDE)), "HV2M23")
+if not os.path.isdir(HV):
+    raise SystemExit("请先设置环境变量 HV_ROOT 指向综合数据源工程根目录后再运行本脚本")
 
 S = 2  # supersample factor
 
@@ -88,6 +97,7 @@ def title_bar(draw, W, title, subtitle=""):
 
 def save(img, name):
     out = os.path.join(IMG_DIR, name)
+    snapshot(out, note="出图前归档旧版")
     img.save(out)
     print(f"  {name}: {img.width}x{img.height}")
 
@@ -505,4 +515,4 @@ if __name__ == "__main__":
     gen_buf_type()
     print("done.")
 
-# ymzhu 2026-11-04 15:54
+# ymzhu 2026-11-17 19:43

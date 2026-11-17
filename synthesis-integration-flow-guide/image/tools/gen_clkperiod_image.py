@@ -5,7 +5,7 @@ import sys, os
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import _gen_be_review_images as G
 
-SRC = r"E:/project/HV2M23/SYNTHESIS/common/tcl_dir/common/clk_period.tcl"
+SRC = os.path.join(G.HV, "SYNTHESIS", "common", "tcl_dir", "common", "clk_period.tcl")
 lines = G.read_lines(SRC, 1, 8) + [(None, "        ……")] + G.read_lines(SRC, 14, 25)
 
 G.render_code(
@@ -16,3 +16,5 @@ G.render_code(
     hl_lines=(1, 2, 3, 4, 5, 16, 20, 21),
 )
 print("done")
+
+# ymzhu 2026-11-17 19:43

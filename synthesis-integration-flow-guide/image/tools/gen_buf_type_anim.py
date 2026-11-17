@@ -175,6 +175,7 @@ def build_svg(in_agg, out_agg, plan):
     for i in range(len(plan)):
         s.append(f".b{i}{{animation-delay:{i * 0.35:.2f}s;}}")
     s.append("@keyframes br{0%,100%{opacity:1;}50%{opacity:0.55;}}")
+    s.append('@media (prefers-reduced-motion: reduce){*, *::before, *::after{animation:none !important;transition:none !important;}}')
     s.append("</style>")
     # 静态底：画布 + 四边 2px 外框（#c0c6c6，与 PNG 一致）
     s.append(f'<rect x="0" y="0" width="{W}" height="{H}" fill="{C_WHITE}"/>')
@@ -334,4 +335,4 @@ def main():
 if __name__ == "__main__":
     sys.exit(main())
 
-# ymzhu 2026-11-04 15:54
+# ymzhu 2026-11-17 19:43

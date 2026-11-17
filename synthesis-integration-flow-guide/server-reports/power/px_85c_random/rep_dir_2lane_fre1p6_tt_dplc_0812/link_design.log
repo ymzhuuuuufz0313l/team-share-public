@@ -1,5 +1,5 @@
 Loading db file '/eda/process/015/ENEXCHIP/standcell/M31HSSC900EL150SL_00.01.000/ccs_db/M31HSSC900EL150SL_25CTT1P8_typ_ccs.db'
-Loading verilog file '/project/HV2M23/designer/AD/yzhao/release/HV2M23_digital_top/timing/latest/HV2M23_digital_top.v.gz'
+Loading verilog file '<proj_root>/designer/AD/<user>/release/HV2M23_digital_top/timing/latest/HV2M23_digital_top.v.gz'
 Loading db file '/eda/process/015/ENEXCHIP/standcell/M31HSSC900EL150SS_01.05.000/ccs_db/M31HSSC900EL150SS_25CTT1P8_typ_ccs.db'
 Linking design HV2M23_digital_top...
 Warning: Unable to resolve reference to 'APR_CDM' in 'HV2M23_digital_top'. (LNK-005)

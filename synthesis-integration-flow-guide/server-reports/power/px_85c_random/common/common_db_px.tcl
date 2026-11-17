@@ -845,9 +845,9 @@ if {$synopsys_program_name != "pt_shell"} {
 }
 
 
-set MEM_DIR_SNPS              "/project/HV8107/DataBase/Digital/memory_library/snps/lib/${MEM_PVT}"
-set MEM_DIR_FARA              "/project/HV8107/DataBase/Digital/memory_library/fara/lib/${MEM_PVTM}"
-set MEM_DIR_ARM               "/project/HV8107/DataBase/Digital/memory_library/arm/lib/${MEM_PVTM}"
+set MEM_DIR_SNPS              "<proj_root>/DataBase/Digital/memory_library/snps/lib/${MEM_PVT}"
+set MEM_DIR_FARA              "<proj_root>/DataBase/Digital/memory_library/fara/lib/${MEM_PVTM}"
+set MEM_DIR_ARM               "<proj_root>/DataBase/Digital/memory_library/arm/lib/${MEM_PVTM}"
 
 if {[regexp {_40_} $LINK_LIB]} {
 #set IO_DIR_0                  "/eda/process/40/UMC_LP/IP/IO/UMK40GIOLP25MVSRFS_C02_TAPEOUTKIT/synopsys"
@@ -858,8 +858,8 @@ set IO_DIR_2                  "/eda/process/40/UMC_LP/IP/IO_KIWI/umc40lp_kiwi_io
 set TIECELL_DIR               "/eda/process/40/UMC_LP/IP/u40lp_mrom_tie/V1/db"
 } elseif { [regexp {_55_} $LINK_LIB]} {
 
-#set IO_DIR_0                  "/project/KT6806/cad/IO/UM055GIOLP25MVSRFS/synopsys"
-set IO_DIR_1                  "/project/KT6806/cad/IO/UM055GIOLP25MVIRFS/synopsys"
+#set IO_DIR_0                  "<proj_root>/cad/IO/UM055GIOLP25MVSRFS/synopsys"
+set IO_DIR_1                  "<proj_root>/cad/IO/UM055GIOLP25MVIRFS/synopsys"
 set IO_DIR_2                  ""
 set TIECELL_DIR               ""
 } elseif { [regexp {_28p_} $LINK_LIB]} {

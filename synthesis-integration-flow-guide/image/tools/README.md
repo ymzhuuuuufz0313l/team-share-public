@@ -15,7 +15,12 @@
 | `gen_postpt_skew_tables_anim.py` | `image/anim/30_postpt_{trans,physkew}_{2p,1p}.svg`、`image/anim/31_postpt_physkew_1p.svg`、`image/anim/33_postpt_sdskew_margin_2p.svg`、`image/anim/34_postpt_sdskew_margin_1p.svg` | postPT trans/physkew/sdskew-margin 六张表动画 SVG 生成器（同上六项校验）；用法 `--all` 或 `--metric trans|physkew|sdskew --mode 2P|1P` |
 | `gen_buf_type_anim.py` | `image/anim/38_buf_type.svg` | IO 首/末级 buffer type 统计双栏表动画 SVG 生成器：直读 `server-reports/{input,output}_port_{first,last}_buf_type.tsv`；幂等 |
 | `make_flow_anim.py` | `image/anim/script-flow-overview.svg`（动画版） | 从静态主名 `image/script-flow-overview.svg` 确定性重建动画版（flowdot 装饰 + 虚线 dash march）；幂等，md5 可复验 |
-| `gen_power_compare_descramble.py` | `image/power_compare_descramble_1106.png` | descramble/noscramble 2lane 1.6G 单独对比图（1106，teal 6 列同款模板）；数据硬编码 1106 PTPX 实测（noscramble 13.3 / 8b 15.2 / 24b 14.7 mW）；4x 超采样 + 单字体整串 + ascent 居中（pil-table-render teal 节合规） |
+| `gen_power_compare_descramble.py` | `image/power_compare_descramble_1106.png` | descramble/noscramble 2lane 1.6G 单独对比图（1106，teal 6 列同款模板）；**数值从 `image/tools/data/descramble_power.json` 读取**（与页面表格同源）；4x 超采样 + 单字体整串 + ascent 居中（pil-table-render teal 节合规） |
+| `gen_descramble_power_table.py` | `memory-power.html` 的 `AUTO-GEN:descramble_power` 块 | 把 `image/tools/data/descramble_power.json`（含 provenance / 原始报告缺失标记）渲染成页面 markdown 表格；`--check` 用于 QA 一致性校验 |
+| `archive_history.py` | `image/archive/<日期>/…` + `image/archive/MANIFEST.md` | 把 `image/` 下每张图在 git 历史里的每个不同版本导出成可浏览快照；`--check` / `--apply` |
+| `_archive.py` | 被生成脚本调用的归档动作 | `snapshot(path)`：覆盖前把磁盘旧版存进 `image/archive/<今天>/<stem>_<HEAD7>.ext`（同内容不重复存） |
+| `normalize_kit_v4.py` | `image/anim/*.svg`、`image/script-flow-overview.svg` | Kit v4 幂等修正：删游离 CSS 残片、补 `prefers-reduced-motion`、根元素 `pt`→px；`--check` / `--apply` |
+| `validate_kit_v4.py` | 只看不写 | Kit v4 机器校验：XML 良构 / 无 `<script>` / 无外链 / keyframes / reduced-motion 唯一 / 单位 / 与静态版几何+文字一致 |
 
 ## 复跑（在站点根目录下）
 
@@ -40,10 +45,25 @@ $P image/tools/gen_clkperiod_image.py        # 含 HV2M23 本机数据源，仅�
 - `script/_check_glossary.js`：glossary 内容校验器，非图生成器，留 `script/`。
 - `script/` 下 `.venv/`、`extracted_1..4/`、`script_*_ppchen.tar.gz`、`__pycache__/`、`.notes_scripts.md`：服务器脚本原始包/运行环境/笔记，本就被仓库根 `.gitignore` 排除（含内部路径/项目名），不动。
 
-## 入库边界（重要）
+## 入库边界（2026-11-17 修正）
 
-- 仓库根 `.gitignore` 本就排除 `synthesis-integration-flow-guide/script/`（"服务器脚本原始包与解压内容（含内部路径/项目名），不入库"）。
-- 本站新增站点级 `.gitignore`：`image/tools/*.py` 不入库——`_gen_be_review_images.py` 与 `gen_clkperiod_image.py` 含 HV2M23 内部工程路径（`E:/project/HV2M23/...`），公开共享仓库不得暴露；其余脚本为相对路径或本站绝对路径，敏感性低，但为与既有排除口径一致统一本地化。
-- 本 README（`image/tools/README.md`）入库，作为每组图来源的唯一事实源；若日后要公布脚本，先清除 HV2M23 内部路径再移除 `.gitignore` 对应行。
+- 仓库根 `.gitignore` 排除的是 `synthesis-integration-flow-guide/script/`（"服务器脚本原始包与解压内容（含内部路径/项目名），不入库"）、`后端/`、`*.docx`、`*.pptx`、`pptimage/`。
+- **`image/tools/*.py` 实际上是入库的**（`git ls-files image/tools` 可查）。此前本 README 写的是"站点级 `.gitignore` 排除 `image/tools/*.py`"——**该站点级 .gitignore 从未存在，属过期说明，已删除**。
+- 因此脚本入库的前提是**脚本本身不携带内部路径**：`_gen_be_review_images.py` 的数据源根目录改为环境变量 `HV_ROOT` 注入（默认按站点相对位置推断，找不到就报错退出），`gen_clkperiod_image.py` 复用同一变量；库内不再出现内部工程绝对路径。
+- 换版快照与 Kit 契约分列两处事实源：`image/archive/README.md`（归档规则/覆盖更正）与 `image/anim/MOTION_KIT.md`（动效契约）。本 README 只负责"哪个脚本生成哪张图"。
 
-<!-- ymzhu 2026-11-04 15:54 -->
+## 数据源被 `.gitignore` 吞掉的部分（M4，2026-11-17 记录，不搬文件）
+
+以下数据源在 `.gitignore` 排除的 `script/`（约 394MB）里，仓库内**没有**副本；对应的图/表只能复现"结论数值"，不能在本仓库内一键重跑：
+
+| 图/表 | 数据源（仓库外） | 现状 | 处理 |
+|---|---|---|---|
+| `image/power_compare_vertical.png` | `HV2M23/back_ppt/gen_power_compare_vertical.py` + 0720~0814 报表 Excel 汇总 | 脚本与 Excel 均不在库内 | 数值已在页面 §2.3/§2.4 写明，出处标注到脚本名；不搬 394MB |
+| `image/power_compare_descramble_1106.png` | 1106 PTPX 后仿 VCD（`t_8b2lane_descramble*`），原始报告未归档 | 报告缺失 | 已建站内轻量数据源 `image/tools/data/descramble_power.json`（数值 + provenance + `source_status: missing`） |
+| 脚本字典页的时钟表 | `script/extracted_4/…/sdc_pr/HV2M23_digital_top.tcl` | 从服务器包里抽取的 tcl | 页面只保留结论，源文件不入库（含内部路径） |
+| `image/26_clk_period.png` | `SYNTHESIS/common/tcl_dir/common/clk_period.tcl` | 仓库外 | 通过 `HV_ROOT` 注入路径运行 |
+| BE Review 全套 PNG | `server-reports/`（入库）+ `HV2M23/SYNTHESIS/`（仓库外） | 部分入库 | 已入库部分可复现；仓库外部分仅本机可跑 |
+
+> 结论：这 5 类是"数据源在库外"，不是"图缺归档"。图本身全部在 `image/` 且有历史快照（见 `image/archive/README.md` 覆盖率表）。
+
+<!-- ymzhu 2026-11-17 19:43 -->

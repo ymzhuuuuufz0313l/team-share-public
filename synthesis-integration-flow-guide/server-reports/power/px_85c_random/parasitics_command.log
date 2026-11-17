@@ -406,7 +406,7 @@ Note - message 'PARA-044' default limit (100) exceeded.  Remainder will be suppr
 Information: Merged 2 parallel coupling capacitors to total 1.3116e-05 pf between file nodes 'AVSS' and 'DBR3[7]'. (PARA-050)
 
 ****************************************
-Report : read_parasitics /project/HV1V22/designer/AD/yzhao/release/HV1V22_digital_top/timing/latest/HV1V22_digital_top_typical_25c.spef.gz
+Report : read_parasitics <proj_root>/designer/AD/<user>/release/HV1V22_digital_top/timing/latest/HV1V22_digital_top_typical_25c.spef.gz
 	-keep_capacitive_coupling
 Design : HV2M23_digital_top
 Version: M-2017.06-SP3-3

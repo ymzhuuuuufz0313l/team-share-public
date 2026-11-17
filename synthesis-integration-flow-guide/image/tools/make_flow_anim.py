@@ -36,6 +36,12 @@ make_flow_anim.py — 确定性生成脚本：静态 graphviz SVG -> 动画 SVG�
 import html
 import math
 import os
+
+try:
+    from _archive import snapshot
+except Exception:  # 归档动作失败不应阻断出图
+    def snapshot(p, note=""):
+        return None
 import re
 import sys
 import xml.etree.ElementTree as ET
@@ -197,6 +203,7 @@ def build_css(dot_params):
     c.append(f"  /* 3) 门禁节点呼吸(仅 2: signoff / to_signoff): opacity 1↔0.55, {BREATH_PERIOD}s */")
     c.append(f"  .breath{{animation:breath {BREATH_PERIOD:.2f}s ease-in-out infinite}}")
     c.append("  @keyframes breath{0%,100%{opacity:1}50%{opacity:0.55}}")
+    c.append("  " + '@media (prefers-reduced-motion: reduce){*, *::before, *::after{animation:none !important;transition:none !important;}}')
     c.append(" </style>")
     return c
 
@@ -341,6 +348,7 @@ def main():
     out_text = build(lines, header, title_idx, poly_idx, head_idx, blocks, order, edges, dot_params, css_lines)
 
     os.makedirs(os.path.dirname(OUT), exist_ok=True)
+    snapshot(OUT, note="出图前归档旧版")
     with open(OUT, "w", encoding="utf-8", newline="\n") as f:
         f.write(out_text)
 
@@ -369,4 +377,4 @@ def main():
 if __name__ == "__main__":
     main()
 
-# ymzhu 2026-11-04 15:54
+# ymzhu 2026-11-17 19:43

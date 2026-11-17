@@ -8,7 +8,15 @@
 #   3. ascent 基线居中（font.getmetrics()[0]，禁 (cell_h-size)//2 近似）
 # 数据源：1106 PTPX Time-Based 实测（t_8b2lane_descramble24b/8b/noscramble 后仿 VCD，2lane 1.6G）。
 # 24b 首跑波形速率不对曾误测 8.57 mW，已作废，以复跑 14.7 mW 为准。
+# 数值不写在本文件：从 image/tools/data/descramble_power.json 读取（与页面表格同源）。
+import io
 import os
+
+try:
+    from _archive import snapshot
+except Exception:  # 归档动作失败不应阻断出图
+    def snapshot(p, note=""):
+        return None
 import sys
 
 TOOLS = os.path.dirname(os.path.abspath(__file__))
@@ -33,14 +41,17 @@ TXT_HL   = (14, 60, 52)
 
 HDR = ["CHIP", "Clk Freq", "Process", "Area", "Lane", "Normal"]
 
-# 1106 实测：noscramble=13.3 / descramble 8b=15.2 / 24b=14.7 mW（Total；细分列待补报告）
+# 数值唯一事实源：image/tools/data/descramble_power.json（与页面表格共用，勿在本文件硬编码数值）
+import json
+DATA_JSON = os.path.join(TOOLS, "data", "descramble_power.json")
+with io.open(DATA_JSON, encoding="utf-8") as _f:
+    _D = json.load(_f)
+_CH = _D["chart"]
 ROWS = [
-    ["HV2M23(noscramble)", "1.6G", "145", "167727", "2L", "13.3"],
-    ["HV2M23(descr8b)", "1.6G", "145", "167727", "2L", "15.2"],
-    ["HV2M23(descr24b)", "1.6G", "145", "167727", "2L", "14.7"],
+    [r["chart_label"], _CH["clk_freq"], _CH["process"], _CH["area"], _CH["lane"], str(r["total_power_mW"])]
+    for r in _D["rows"]
 ]
-
-TITLE = "PTPX 功耗对比（SVT，1106，descramble 2lane 1.6G）"
+TITLE = _D["title"]
 
 TITLE_H = 22 * S
 HDR_H   = 20 * S
@@ -104,7 +115,8 @@ for i, r in enumerate(ROWS):
 d.rectangle([MARGIN, MARGIN, W - MARGIN, y], outline=BORDER, width=S)
 
 out = os.path.join(TOOLS, "..", "power_compare_descramble_1106.png")
+snapshot(out, note="出图前归档旧版")
 img.save(out)
 print("done", img.size, "->", os.path.normpath(out))
 
-# ymzhu 2026-11-06 16:05
+# ymzhu 2026-11-17 19:43

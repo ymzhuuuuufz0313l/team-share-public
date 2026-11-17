@@ -436,7 +436,7 @@ NOTE: 当前 Driver 类项目均未使用 memory，flow 里 memory 相关配置�
 **① 在后仿 case 目录截取 four-line VCD**（`-bt` / `-et` 框出 4 条 line 的时间区间，输出 `.dump` 即 VCD 格式）：
 
 ```bash
-cd /sim_dd/ymzhu/HV2M23/TOP_NETLIST_POST_TCON_C/t_8b2lane
+cd <sim_root>/<user>/HV2M23/TOP_NETLIST_POST_TCON_C/t_8b2lane
 bsub -Ip fsdb2vcd chip_tb_top_000.fsdb -bt 452us -et 467us -o four_line.dump
 ```
 
@@ -444,7 +444,7 @@ bsub -Ip fsdb2vcd chip_tb_top_000.fsdb -bt 452us -et 467us -o four_line.dump
 
 ![px_cfg.tcl 中 ip0_vcd 指向 four-line dump 文件](./image/17_px_cfg_ip0_vcd.jpg)
 
-如图：`set ip0_vcd "/sim_dd/ymzhu/HV2M23/TOP_NETLIST_POST_TCON_C/four_line_fre1p8_2lane_tt_0729v0.dump"`；`power_mode` 用 `time_based`（按时间窗分析），`use_vcd_saif` 用 `vcd`。
+如图：`set ip0_vcd "<sim_root>/<user>/HV2M23/TOP_NETLIST_POST_TCON_C/four_line_fre1p8_2lane_tt_0729v0.dump"`；`power_mode` 用 `time_based`（按时间窗分析），`use_vcd_saif` 用 `vcd`。
 
 ### 2.3 运行与查看
 
@@ -485,17 +485,21 @@ HV2M23_digital_top        1.17e-02  2.58e-03  1.76e-06  1.43e-02  100.0
 
 > 完整报告目录：<a href="./server-reports/power/px_85c_random/rep_dir_1lane_fre1p7_tt_0812/" target="_blank">1lane_fre1p7_tt_0812</a>（其余 5 组同路径下 `rep_dir_*_0812*`）。配置差异体现在：1lane vs 2lane、频率 **1.7G vs 1.6G**、dplc/drdod 模式开关。目录名按实际速率命名为 `fre1p7`（1lane 实际 1.7G）；服务器上的历史运行目录名为 `fre1p8`，对应同一批数据。
 
+<!-- AUTO-GEN:descramble_power BEGIN（源 image/tools/data/descramble_power.json，勿手改） -->
+
 **1106 新增：descramble 2lane 1.6G 实测**（PTPX Time-Based，`t_8b2lane_descramble*` 后仿 case）：
 
 | 配置 | Internal | Switching | Leakage | Total Power | 备注 |
-|------|----------|-----------|---------|-------------|------|
+|------|------|------|------|------|------|
 | `2lane_noscramble_1106` | - | - | - | **13.3 mW** | noscramble（2lane 1.6G；细分待补） |
 | `2lane_descramble8b_1106` | - | - | - | **15.2 mW** | descramble 8b（2lane 1.6G；细分待补） |
 | `2lane_descramble24b_1106` | - | - | - | **14.7 mW** | descramble 24b（2lane 1.6G；细分待补） |
 
 ![PTPX 功耗对比（SVT，1106，descramble 2lane 1.6G）](./image/power_compare_descramble_1106.png)
 
-> 24b 首跑波形速率不对（曾误测 8.57 mW）已作废，1106 复跑定稿。对比同代 2lane 1.6G 四线显示 case（15.5~17.9 mW），descramble 负载略低。
+> 数值单一事实源：`image/tools/data/descramble_power.json`（本表格与对比图均由它渲染）。 原始 PTPX 报告未随站点归档（`source_status: missing`，server-reports/power/px_85c_random/ 下无 descramble 报告目录），此处只保留实测数值与出处标记，不做溯源补全。 24b 首跑波形速率不对，已作废（曾误测 8.57 mW），1106 复跑定稿 14.7 mW。 对比同代 2lane 1.6G 四线显示 case（rep_dir_2lane_fre1p6_tt_0812 系列）Total Power 区间（15.5~17.9 mW），descramble 负载略低。
+
+<!-- AUTO-GEN:descramble_power END -->
 
 ### 2.4 功耗横向对比（PowerPro / PTPX 全览，vs HV3310B1 / HV1V21）
 
@@ -717,4 +721,4 @@ headings.forEach(h => observer.observe(h));
 </body>
 </html>
 
-<!-- ymzhu 2026-10-27 14:01 -->
+<!-- ymzhu 2026-11-17 19:43 -->

@@ -234,7 +234,7 @@
     "id": "sec-6",
     "level": 3,
     "title": "2.2 实例：生成 four-line 波形并让 PTPX 指向它",
-    "text": "① 在后仿 case 目录截取 four-line VCD（-bt / -et 框出 4 条 line 的时间区间，输出 .dump 即 VCD 格式）： cd /simdd/ymzhu/HV2M23/TOPNETLISTPOSTTCONC/t8b2lane bsub -Ip fsdb2vcd chiptbtop000.fsdb -bt 452us -et 467us -o fourline.dump ② 修改 PTPX 路径下 pxcfg.tcl 的 ip0vcd 指向这个 dump 文件（同时核对 verilogfile / sdcfile / spefdir / ip0inst / ip0strip 均指向对应 release 路径）： 如图：set ip0vcd \"/simdd/ymzhu/HV2M23/TOPNETLISTPOSTTCONC/fourlinefre1p82lanett0729v0.dump\"；powermode 用 timebased（按时间窗分析），usevcdsaif 用 vcd。"
+    "text": "① 在后仿 case 目录截取 four-line VCD（-bt / -et 框出 4 条 line 的时间区间，输出 .dump 即 VCD 格式）： cd /simdd/<user>/HV2M23/TOPNETLISTPOSTTCONC/t8b2lane bsub -Ip fsdb2vcd chiptbtop000.fsdb -bt 452us -et 467us -o fourline.dump ② 修改 PTPX 路径下 pxcfg.tcl 的 ip0vcd 指向这个 dump 文件（同时核对 verilogfile / sdcfile / spefdir / ip0inst / ip0strip 均指向对应 release 路径）： 如图：set ip0vcd \"/simdd/<user>/HV2M23/TOPNETLISTPOSTTCONC/fourlinefre1p82lanett0729v0.dump\"；powermode 用 timebased（按时间窗分析），usevcdsaif 用 vcd。"
    },
    {
     "id": "sec-7",

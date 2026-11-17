@@ -1,0 +1,73 @@
+{
+  "schema": "descramble_power/v1",
+  "title": "PTPX 功耗对比（SVT，1106，descramble 2lane 1.6G）",
+  "unit": "mW",
+  "generated_for": "memory-power.html §2.3",
+  "columns": [
+    "配置",
+    "Internal",
+    "Switching",
+    "Leakage",
+    "Total Power",
+    "备注"
+  ],
+  "rows": [
+    {
+      "key": "2lane_noscramble_1106",
+      "internal": null,
+      "switching": null,
+      "leakage": null,
+      "total_power_mW": 13.3,
+      "note": "noscramble（2lane 1.6G；细分待补）",
+      "chart_label": "HV2M23(noscramble)"
+    },
+    {
+      "key": "2lane_descramble8b_1106",
+      "internal": null,
+      "switching": null,
+      "leakage": null,
+      "total_power_mW": 15.2,
+      "note": "descramble 8b（2lane 1.6G；细分待补）",
+      "chart_label": "HV2M23(descr8b)"
+    },
+    {
+      "key": "2lane_descramble24b_1106",
+      "internal": null,
+      "switching": null,
+      "leakage": null,
+      "total_power_mW": 14.7,
+      "note": "descramble 24b（2lane 1.6G；细分待补）",
+      "chart_label": "HV2M23(descr24b)"
+    }
+  ],
+  "provenance": {
+    "source_status": "missing",
+    "source_report": null,
+    "source_cases": [
+      "t_8b2lane_noscramble",
+      "t_8b2lane_descramble8b",
+      "t_8b2lane_descramble24b"
+    ],
+    "source_dir_hint": "server-reports/power/px_85c_random/ 下无 descramble 报告目录",
+    "measurement": "PTPX Time-Based，后仿 VCD，2lane 1.6G，SVT",
+    "measured_on": "2026-11-06",
+    "voided": {
+      "value_mW": 8.57,
+      "reason": "24b 首跑波形速率不对，已作废",
+      "superseded_by_mW": 14.7
+    },
+    "same_generation_reference": {
+      "desc": "同代 2lane 1.6G 四线显示 case（rep_dir_2lane_fre1p6_tt_0812 系列）Total Power 区间",
+      "range_mW": [
+        15.5,
+        17.9
+      ]
+    }
+  },
+  "chart": {
+    "clk_freq": "1.6G",
+    "process": "145",
+    "area": "167727",
+    "lane": "2L"
+  }
+}

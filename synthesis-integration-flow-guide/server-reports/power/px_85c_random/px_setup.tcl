@@ -23,7 +23,7 @@ source ./common/common_ptpx.tcl -verbose -echo
 set si_enable_analysis true
 set power_limit_extrapolation_range false 
 set power_use_ccsp_pin_capacitance false 
-read_parasitics -keep_capacitive_coupling -complete_with zero -verbose /project/HV1V22/designer/AD/yzhao/release/HV1V22_digital_top/timing/latest/HV1V22_digital_top_typical_25c.spef.gz > ./rep_dir/read_parasitics_verbose.log
+read_parasitics -keep_capacitive_coupling -complete_with zero -verbose <proj_root>/designer/AD/<user>/release/HV1V22_digital_top/timing/latest/HV1V22_digital_top_typical_25c.spef.gz > ./rep_dir/read_parasitics_verbose.log
 report_annotated_parasitics -check > ./rep_dir/report_annotated_parasitics.log
 #set_operating_conditions tt0p9v85c -analysis_type on_chip_variation
 set_operating_conditions  -analysis_type on_chip_variation

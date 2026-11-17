@@ -29,6 +29,12 @@ import argparse
 import csv
 import hashlib
 import os
+
+try:
+    from _archive import snapshot
+except Exception:  # 归档动作失败不应阻断出图
+    def snapshot(p, note=""):
+        return None
 import sys
 import xml.etree.ElementTree as ET
 
@@ -124,6 +130,7 @@ def build_svg(corners, data, metric, mode):
     p.append(f".chg{{animation:breath {F(BREATH_PERIOD)}s ease-in-out infinite;}}")
     p.append("@keyframes rowIn{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:none;}}")
     p.append("@keyframes breath{0%{opacity:1;}50%{opacity:0.55;}100%{opacity:1;}}")
+    p.append('@media (prefers-reduced-motion: reduce){*, *::before, *::after{animation:none !important;transition:none !important;}}')
     p.append("]]></style>")
 
     # white canvas
@@ -247,6 +254,7 @@ def main():
     res.append(("6. idempotent (2 builds, md5 equal)", md5_a == md5_b, f"{md5_a} == {md5_b}"))
 
     os.makedirs(OUT_DIR, exist_ok=True)
+    snapshot(out_path, note="出图前归档旧版")
     with open(out_path, "w", encoding="utf-8", newline="\n") as f:
         f.write(svg)
     with open(out_path, "rb") as f:
@@ -267,3 +275,5 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+# ymzhu 2026-11-17 19:43

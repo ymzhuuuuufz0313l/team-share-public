@@ -14,20 +14,20 @@ source ./design.set -verbose -echo
 set TOP_NAME HV2M23_digital_top
 HV2M23_digital_top
 set PROJECT_PATH $env(PROJECT_PATH)
-/project/HV2M23/designer/DD/ymzhu/HV2M23
+<proj_root>/designer/DD/<user>/HV2M23
 #set PROJECT_NAME env(PROJECT_NAME)
 set SYN_DIR              "."
 .
 set TCL_DIR              [format "%s%s" $PROJECT_PATH "/SYNTHESIS/common/tcl_dir/"]
-/project/HV2M23/designer/DD/ymzhu/HV2M23/SYNTHESIS/common/tcl_dir/
+<proj_root>/designer/DD/<user>/HV2M23/SYNTHESIS/common/tcl_dir/
 set IP_CONS_DIR          [format "%s%s" $PROJECT_PATH "/SYNTHESIS/common/ip_cons/"]
-/project/HV2M23/designer/DD/ymzhu/HV2M23/SYNTHESIS/common/ip_cons/
+<proj_root>/designer/DD/<user>/HV2M23/SYNTHESIS/common/ip_cons/
 set TOP_CONS_DIR         [format "%s%s" $PROJECT_PATH "/SYNTHESIS/common/top_cons/"]
-/project/HV2M23/designer/DD/ymzhu/HV2M23/SYNTHESIS/common/top_cons/
+<proj_root>/designer/DD/<user>/HV2M23/SYNTHESIS/common/top_cons/
 set HDL_DIR              [format "%s%s" $PROJECT_PATH "/HDL/"]
-/project/HV2M23/designer/DD/ymzhu/HV2M23/HDL/
+<proj_root>/designer/DD/<user>/HV2M23/HDL/
 set UPF_DIR              [format "%s%s" $PROJECT_PATH "/SYNTHESIS/common/upf/"]
-/project/HV2M23/designer/DD/ymzhu/HV2M23/SYNTHESIS/common/upf/
+<proj_root>/designer/DD/<user>/HV2M23/SYNTHESIS/common/upf/
 set UPPER_CASE           0
 0
 set PARA_DESIGN          1 
@@ -151,7 +151,7 @@ set timing_clock_source_driver_pin_use_dirrver_arc_compatibility false
 false
 set CONS_CHECK 1
 1
-source /project/HK3671/designer/DD/ppchen/HK3671/SYNTHESIS/common/tcl_dir/common/common_db.tcl -verbose -echo
+source <proj_root>/designer/DD/ppchen/HK3671/SYNTHESIS/common/tcl_dir/common/common_db.tcl -verbose -echo
 source $TCL_DIR/common/common_db_pvt.tcl
 25CTT1P8_typ
 25CTT1P8_typ
@@ -166,7 +166,7 @@ ccs_db
 ###############################################################
 ## Memory setup
 ###############################################################
-#set MEM_DIR   "/project/HK3671/DataBase/Digital/memory_library/nexchip"
+#set MEM_DIR   "<proj_root>/DataBase/Digital/memory_library/nexchip"
 #set LIB_MEM_NAME  "mem_nexchip_${PVT_MEM}_lib"
 #set mem_link_library   [list ]
 #if { $MEM_EN == 1 } {
@@ -193,7 +193,7 @@ if {$synopsys_program_name == "pt"} {
   set wireload_type "pre"
 }
 pre
-#set ANA_DIR   "/project/HK3671/DataBase/Analog"
+#set ANA_DIR   "<proj_root>/DataBase/Analog"
 #set ana_link_library [list ]
 #if { $ANA_EN==1 } {
 #  foreach lib_ana [glob ${ANA_DIR}/DB/updated/*/*_${PVT_ANA}.${db_type}] {
@@ -210,9 +210,9 @@ pre
 ###############################################################
 ## Lef setup
 ###############################################################
-#set lef_file [list #  "/project/HK3671/cad/LEF_Techfile/header4m_V55.ori.lef" #]
+#set lef_file [list #  "<proj_root>/cad/LEF_Techfile/header4m_V55.ori.lef" #]
 #
-#set qrc_tech_file  "/project/HK3671/cad/QRC/cmax/qrcTechFile"
+#set qrc_tech_file  "<proj_root>/cad/QRC/cmax/qrcTechFile"
 ###############################################################
 ## STD setup
 ###############################################################
@@ -580,9 +580,9 @@ if { $synopsys_program_name != "pt_shell"} {
   set PT_HOLD 0
 }
 if { $PT_HOLD == 1 } {
-set library_tsmc_22ulp_tsmc_7t_hvt [list   "/project/HK4U61/cad/STD/7t/db/${PVT_HOLD}/tcbn22ulpbwp7t30p140hvt${PVTM}_ccs_hold_margin_inserted.${db_type}"   "/project/HK4U61/cad/STD/7t/db/${PVT_HOLD}/tcbn22ulpbwp7t35p140hvt${PVTM}_ccs_hold_margin_inserted.${db_type}"   "/project/HK4U61/cad/STD/7t/db/${PVT_HOLD}/tcbn22ulpbwp7t40p140hvt${PVTM}_ccs_hold_margin_inserted.${db_type}" ]
-set library_tsmc_22ulp_tsmc_7t_svt [list   "/project/HK4U61/cad/STD/7t/db/${PVT_HOLD}/tcbn22ulpbwp7t30p140${PVTM}_ccs_hold_margin_inserted.${db_type}"   "/project/HK4U61/cad/STD/7t/db/${PVT_HOLD}/tcbn22ulpbwp7t35p140${PVTM}_ccs_hold_margin_inserted.${db_type}"   "/project/HK4U61/cad/STD/7t/db/${PVT_HOLD}/tcbn22ulpbwp7t40p140${PVTM}_ccs_hold_margin_inserted.${db_type}" ]
-set library_tsmc_22ulp_tsmc_7t_lvt [list   "/project/HK4U61/cad/STD/7t/db/${PVT_HOLD}/tcbn22ulpbwp7t30p140lvt${PVTM}_ccs_hold_margin_inserted.${db_type}"   "/project/HK4U61/cad/STD/7t/db/${PVT_HOLD}/tcbn22ulpbwp7t35p140lvt${PVTM}_ccs_hold_margin_inserted.${db_type}"   "/project/HK4U61/cad/STD/7t/db/${PVT_HOLD}/tcbn22ulpbwp7t40p140lvt${PVTM}_ccs_hold_margin_inserted.${db_type}" ]
+set library_tsmc_22ulp_tsmc_7t_hvt [list   "<proj_root>/cad/STD/7t/db/${PVT_HOLD}/tcbn22ulpbwp7t30p140hvt${PVTM}_ccs_hold_margin_inserted.${db_type}"   "<proj_root>/cad/STD/7t/db/${PVT_HOLD}/tcbn22ulpbwp7t35p140hvt${PVTM}_ccs_hold_margin_inserted.${db_type}"   "<proj_root>/cad/STD/7t/db/${PVT_HOLD}/tcbn22ulpbwp7t40p140hvt${PVTM}_ccs_hold_margin_inserted.${db_type}" ]
+set library_tsmc_22ulp_tsmc_7t_svt [list   "<proj_root>/cad/STD/7t/db/${PVT_HOLD}/tcbn22ulpbwp7t30p140${PVTM}_ccs_hold_margin_inserted.${db_type}"   "<proj_root>/cad/STD/7t/db/${PVT_HOLD}/tcbn22ulpbwp7t35p140${PVTM}_ccs_hold_margin_inserted.${db_type}"   "<proj_root>/cad/STD/7t/db/${PVT_HOLD}/tcbn22ulpbwp7t40p140${PVTM}_ccs_hold_margin_inserted.${db_type}" ]
+set library_tsmc_22ulp_tsmc_7t_lvt [list   "<proj_root>/cad/STD/7t/db/${PVT_HOLD}/tcbn22ulpbwp7t30p140lvt${PVTM}_ccs_hold_margin_inserted.${db_type}"   "<proj_root>/cad/STD/7t/db/${PVT_HOLD}/tcbn22ulpbwp7t35p140lvt${PVTM}_ccs_hold_margin_inserted.${db_type}"   "<proj_root>/cad/STD/7t/db/${PVT_HOLD}/tcbn22ulpbwp7t40p140lvt${PVTM}_ccs_hold_margin_inserted.${db_type}" ]
 
 } else {
 set library_tsmc_22ulp_tsmc_7t_hvt [list   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t30p140hvt_100d/AN61001_20190412/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp7t30p140hvt_100d/tcbn22ulpbwp7t30p140hvt${PVTM}_ccs.${db_type}"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t35p140hvt_100d/AN61001_20190412/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp7t35p140hvt_100d/tcbn22ulpbwp7t35p140hvt${PVTM}_ccs.${db_type}"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t40p140hvt_100d/AN61001_20190412/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp7t40p140hvt_100d/tcbn22ulpbwp7t40p140hvt${PVTM}_ccs.${db_type}"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t30p140mbhvt_100d/0K56002_20200703/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp7t30p140mbhvt_100d/tcbn22ulpbwp7t30p140mbhvt${PVTM}_ccs.${db_type}"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t35p140mbhvt_100d/0K56002_20200703/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp7t35p140mbhvt_100d/tcbn22ulpbwp7t35p140mbhvt${PVTM}_ccs.${db_type}"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t40p140mbhvt_100d/0K56002_20200703/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp7t40p140mbhvt_100d/tcbn22ulpbwp7t40p140mbhvt${PVTM}_ccs.${db_type}"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t30p140pmhvt_100d/AN61001_20190412/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp7t30p140pmhvt_100d/tcbn22ulpbwp7t30p140pmhvt${PVTM}_ccs.${db_type}"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t35p140pmhvt_100d/AN61001_20190412/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp7t35p140pmhvt_100d/tcbn22ulpbwp7t35p140pmhvt${PVTM}_ccs.${db_type}"   "/eda/process/22/TSMC_CLN/standcell/tsmc/tcbn22ulpbwp7t40p140pmhvt_100d/AN61001_20190412/TSMCHOME/digital/Front_End/timing_power_noise/CCS/tcbn22ulpbwp7t40p140pmhvt_100d/tcbn22ulpbwp7t40p140pmhvt${PVTM}_ccs.${db_type}" ]
@@ -1090,7 +1090,7 @@ foreach vfile $verilog_file {
   echo "read_verilog ${vfile}"
   read_verilog $vfile  >> rep_dir/read_verilog.log
 }
-read_verilog /project/HV2M23/designer/AD/yzhao/release/HV2M23_digital_top/timing/latest/HV2M23_digital_top.v.gz
+read_verilog <proj_root>/designer/AD/<user>/release/HV2M23_digital_top/timing/latest/HV2M23_digital_top.v.gz
 current_design $TOP_NAME
 Information: current_design won't return any data before link (DES-071)
 link_design $TOP_NAME > rep_dir/link_design.log
@@ -1105,7 +1105,7 @@ foreach sfile $sdc_file {
   puts "source ${sfile}"
   source $sfile -verbose -echo >> ./rep_dir/sdc.log
 }
-source /project/HV2M23/DataBase/Digital/Release/HV2M23_digital_top_to_APR/latest/HV2M23_digital_top_postcts.sdc
+source <proj_root>/DataBase/Digital/Release/HV2M23_digital_top_to_APR/latest/HV2M23_digital_top_postcts.sdc
 #update_timing > ./rep_dir/update_timing.log
 set CONS_REPORT     ./rep_dir/${TOP_NAME}_cons.rpt
 ./rep_dir/HV2M23_digital_top_cons.rpt
@@ -1147,7 +1147,7 @@ set power_limit_extrapolation_range false
 false
 set power_use_ccsp_pin_capacitance false 
 false
-read_parasitics -keep_capacitive_coupling -complete_with zero -verbose /project/HV1V22/designer/AD/yzhao/release/HV1V22_digital_top/timing/latest/HV1V22_digital_top_typical_25c.spef.gz > ./rep_dir/read_parasitics_verbose.log
+read_parasitics -keep_capacitive_coupling -complete_with zero -verbose <proj_root>/designer/AD/<user>/release/HV1V22_digital_top/timing/latest/HV1V22_digital_top_typical_25c.spef.gz > ./rep_dir/read_parasitics_verbose.log
 report_annotated_parasitics -check > ./rep_dir/report_annotated_parasitics.log
 #set_operating_conditions tt0p9v85c -analysis_type on_chip_variation
 set_operating_conditions  -analysis_type on_chip_variation
@@ -1181,7 +1181,7 @@ Total number of leaf cells = 9029
 Number of fully annotated leaf cells = 9029 (100.00%)
 ======================================================================
 
-read_vcd 1 inst:HV2M23_digital_top strip:chip_tb_top/u_HV2M23/u_HV2M23_digital_top vcd:/sim_dd/ymzhu/HV2M23/TOP_NETLIST_POST_TCON_C/four_line_fre1P8_1lane_drdod_tt_0812v0.dump
+read_vcd 1 inst:HV2M23_digital_top strip:chip_tb_top/u_HV2M23/u_HV2M23_digital_top vcd:<sim_root>/<user>/HV2M23/TOP_NETLIST_POST_TCON_C/four_line_fre1P8_1lane_drdod_tt_0812v0.dump
 if {$use_vcd_saif == "saif"} {
      read_saif "$saif_file" -strip_path "$vcd_stribe_path"
      echo "use $use_vcd_saif"

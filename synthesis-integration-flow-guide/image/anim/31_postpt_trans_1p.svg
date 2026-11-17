@@ -3,7 +3,7 @@
 .head{opacity:0;animation:rowIn 0.4s ease forwards;}
 .row{opacity:0;animation:rowIn 0.4s ease forwards;}
 @keyframes rowIn{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:none;}}
- 50% { opacity: 0.25; } }
+@media (prefers-reduced-motion: reduce){*, *::before, *::after{animation:none !important;transition:none !important;}}
 ]]></style>
 <rect x="0" y="0" width="2519" height="288.168" fill="#ffffff"/>
 <g class="head">
