@@ -49,8 +49,8 @@ text{font-family:ui-monospace,Consolas,monospace,"Microsoft YaHei",sans-serif;fo
 .maxpulse{opacity:1;}
 
 .breath2{opacity:.4;}
-.breath3{animation:br 2.4s ease-in-out infinite;opacity:.4;}
-.cmpband3{transform-box:fill-box;transform-origin:left center;animation:sweepMove 4s ease-in-out 1s infinite;}
+.breath3{opacity:.4;}
+.cmpband3{transform-box:fill-box;transform-origin:left center;}
 
 .dot{}
 .d0{}.d1{}.d2{}.d3{}.d4{}.d5{}.d6{}.d7{}.d8{}.d9{}.d10{}.d11{}.d12{}.d13{}.d14{}.d15{}.d16{}.d17{}
