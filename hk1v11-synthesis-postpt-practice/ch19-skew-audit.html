@@ -72,12 +72,11 @@
 > - **rx0_00 行语义（同日定案）**：max/min 两行是**不同路径**的最差 slack——max=FF→FF setup（INDATA_SYNC→D1，借 3.81ns 周期）、min=port→FF hold（dout_lane，±0.3 input delay 模型 + 0.15 uncertainty 吃满窗口），不是「skew 最大/最小」；2M23 的 min 7.0~9.0 = DIV2 生成时钟（10.08ns）整周期边沿差一项即达 slack 的 1.39 倍（占数据到达 71%），跨项目不可比。1028 真违例跟办项：wc_cbest port→FF hold 族 ~50ps（−0.051536 起，多 bit）。
 > - **教训重演**：09-16 遗留问题 L46 已记「UITE-416 非法起点回退产生假得合理的 margin，空/回退报告必须显式留空+点名」，09-18 新增的 dplc 探针又踩同一坑且未触发任何哨兵。修复清单 P1-P9（pin 补层 / 3 处错误注释同步 / UITE-416 哨兵 / b 侧数据按 launch 分组 / 窗口收口 / io 约束补齐 / latest 混代清理 / isprx 版本对齐）见审计文档 §5。
 
-![skew 探针审计四面板图解（动画版：窗口机制 / 污染链 / rx0 语义 / 三约束）](./images/anim/skew_probe_audit_1028.svg?v=20261101)
+![skew 探针审计四面板图解（动画版：窗口机制 / 污染链 / rx0 语义 / 三约束）](./images/anim/skew_probe_audit_1028.svg?v=20261102)
 
 > - **第二轮八路复审（10-28 深夜）**：九角真值逐角在窗（最差 wc_cworst r −0.816993）、1008 对账一致、26 探针 RTL 全对；新挖 8 处 perl 健壮性隐患（修复清单 P10）与 5 处文档行号修正；15.12 之谜 = 时钟族确有 RX0_CLK_DIV1P5_1P（15.12），A 路抓错时钟名。详证：HK1V11 仓库审计文档 §6.1。
 > **全文**：本审计完整证据链（十角真值表 / P1-P10 / 两轮复核仲裁）已独立成章 <a href="./ch21-skew-probe-audit.html">ch21 · skew 探针污染审计定案</a>。
 > 静态版 fallback：`./images/skew_probe_audit_1028.svg`；项目内事实源与生成器：HK1V11 仓库 `docs/skew_probe_audit_1028/`。
-
 
 ## 0. 结论速览（TL;DR）
 
@@ -90,7 +89,7 @@
 - **2M23 残留**：F1-F8 全修完（学习笔记重写 + 3 份 SDC NOTE + 2M23 专用脚本标注），live 树功能干净。
 - **全量审计**：12 项发现全部低危（行号漂移/笔误），当场修正；裁决 = 通过。
 
-![DELAY vs SKEW — set_max_delay (14/12) 与 skew 数值的关系](./images/anim/delay_skew_14vs12.svg?v=20261101)
+![DELAY vs SKEW — set_max_delay (14/12) 与 skew 数值的关系](./images/anim/delay_skew_14vs12.svg?v=20261117)
 
 ---
 
@@ -342,9 +341,6 @@ margin 落在窗内 = 数据↔时钟相对到达满足面板采样要求；出�
 | RX 输入同步探针 | `SYNTHESIS/top/sta/post/common/report_timing_skew_isprx.tcl` L3-8 |
 | I2C IO 探针（当前空）| `SYNTHESIS/top/sta/post/common/report_timing_skew_io.tcl` L12-17 |
 
-<!-- ymzhu 2026-10-21 11:44 -->
-
-
 ---
 
 ## 2. 1p/dplc 5G3G 推演（报告原文）
@@ -523,9 +519,6 @@ margin 落在窗内 = 数据↔时钟相对到达满足面板采样要求；出�
 | DPLC CLKB 终审 −1.93~−6.42 / 三态 / 哨兵 | `script/_skew_最终核验.md` S1-S3（1008v4，10-09） |
 | 哨兵 −993 事故与修复 | `report_timing_skew_sd.tcl:13-24` |
 
-<!-- ymzhu 2026-10-19 17:07 -->
-
-
 ---
 
 ## 3. 2M23 拷贝残留全量审计（报告原文）
@@ -554,7 +547,6 @@ margin 落在窗内 = 数据↔时钟相对到达满足面板采样要求；出�
 | C：1V11 误导拷贝（需修/标注） | 2 文件 / 约 8 行 | 学习笔记 1P/2P 行；SDC 注释态 2M23 命名残留 |
 
 ---
-
 
 #### 3.1.2 ① 全量引用清单（文件 / 行 / 引用 / 分类）
 
@@ -745,7 +737,6 @@ margin 落在窗内 = 数据↔时钟相对到达满足面板采样要求；出�
 - 同内容亦见：SYNTHESIS/ip/syn_HK1V11_digital_top/powerpro/sdc/HK1V11_digital_top.tcl:129-150、SYNTHESIS/common/ip_cons/HK1V11_digital_top_中文复盘_20261016.tcl:278-288（t2 后行号）
 - 分类：C（注释态 2M23 命名残留，需标注；注：此处 "1P5"=1.5 数值（÷1.5 分频），不是 2M23 的 "1P" 模式，勿误判——见 ④-D1）
 
-
 ---
 
 #### 3.1.3 ② 2M23 vs 1V11 关键差异表
@@ -824,9 +815,6 @@ D6. 2M23 专属参考文档整篇保留
 - 按边界只列清单、未读细节：script/_syn_*（_syn_0917v0 … _syn_1015v3 等历史服务器包归档，其中含 2M23 命中的 report_timing_skew_sd.tcl / ip_cons 拷贝，属历史包，未展开）、pack_*（0828/0909/1004/1006 提取目录，仅对 0909v2 做了 tar 清单核对 2p 文件）。
 - 边界外（未纳入主清单，仅备注）：DV_TCON_C/（tests_netlist_post 的 user_def.sv / waves_dumper.sv / make_post_case.py / tb_post.f 含 2M23 命中，属验证目录，不在本审计主边界内；其 2M23 引用多为"对照 2M23"注释，性质同 B 类，如需可另起一轮）、resume/（简历含 2M23 字样，与本项目技术内容无关）。
 - 2M23 侧只读确认：HV2M23 SDC（1P 后缀时钟 + output_delay + set_max_delay 14 位置）、summary/latest_1p+latest_2p 双目录、RTL I_INDATA[17:0]=18bit——均用于 2 差异表口径确认，未对 HV2M23 做任何改动。
-
-<!-- ymzhu 2026-10-19 16:45 -->
-
 
 ---
 
@@ -958,8 +946,6 @@ D6. 2M23 专属参考文档整篇保留
 | 修改边界 | mtime 扫描（script/pack_*/.kimi/HDL，2026-10-19） | 无今日修改文件 |
 | AGENTS.md 索引 | §5 新增行 vs 实际文件 | 3 行（t1/t3/t4 文档）+ docs/delay_skew/（并行任务）全部存在 |
 
-<!-- ymzhu 2026-10-19 17:12 -->
-
 ---
 
 ## 5. 交叉引用
@@ -974,4 +960,4 @@ D6. 2M23 专属参考文档整篇保留
   <script src="./fx.js?v=11"></script>
 </body>
 </html>
-<!-- ymzhu 2026-11-04 16:06 -->
+<!-- ymzhu 2026-11-17 19:21 -->

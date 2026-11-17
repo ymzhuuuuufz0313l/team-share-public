@@ -12,6 +12,7 @@
 | `gen_signoff_1104v2.py` | 1104V2 全套：6 图双版 SVG + `stats_1104v2.json` + 独立 `index.html` | **canonical 记录版（1104V2）唯一生成入口**，源目录 `E:\project\HK1V11\docs\to_signoff_1104v2\`；模板谱系 = 上两者（rev5 + v2），数据源换 PACK_TAR_1104V2 summary（只读）；幂等。本站 `images/` 主名 12 张即其产物（2026-11-04 换正升主名） |
 | `render_png_1104v2.py` | `5{1..6}_signoff_*_hk11.png`（DPR2 快照） | 逐张 msedge 无头渲染（2×viewBox 宽度，PPT 缩放不糊）；PNG 只入 `images/archive/20261104/`，不占主名 |
 | `verify_png_1104v2.py` | （校验，无图产物） | PNG 程序化验收：尺寸/标题条色/底缘无截断/红格全矩阵 vs csv 逐格比对（51/52/55 全量、54 无红底+浅蓝最紧格、56 三要素） |
+| `archive_snapshot.py` | （无图产物；归档动作） | **图版归档自动化**（2026-11-17 审计 A9-1/A9-5）：`snapshot(src, date_tag, version_tag, note)` 把生成器产物快照进 `images/archive/<日期>/`，自动登记 `images/archive/README.md`，并对 archive 全树做 **md5 去重**（同 md5 已存在即跳过拷贝、同名不同 md5 拒绝覆盖）。调用方：`anim/make_anim_skew_probe_audit_1028.py`（动画版）、`E:/project/HK1V11/docs/skew_probe_audit_1028/gen_audit_diagram.py`（静态版 + 发布到本站） |
 
 ## 复跑（在 `E:\project\HK1V11\docs\to_signoff_1104v2\`，勿在本目录直跑）
 
@@ -24,9 +25,11 @@ python verify_png_1104v2.py     # 程序化验收
 
 产物回站：静态/动画 SVG 覆盖 `images/`、`images/anim/` 主名（引用路径不变，`?v=` 递增）；PNG 移入当日 `images/archive/<日期>/`；被替换的主名内容先快照进同一日期夹（带版本标签）。
 
+**归档已自动化（2026-11-17）**：生成器收尾调用 `images/tools/archive_snapshot.py` 完成快照 + 登记 + md5 去重，不再依赖人手 `cp`（此前正是人手 cp 导致 `skew_probe_audit_1028` 静态/动画版从未归档）。重复件的对账见 `images/archive/README.md`「同 md5 快照对账」。
+
 ## 不归拢的生成器（备案）
 
 - `anim/make_anim_*.py`（功耗 3 张 + skew_probe + 56 动画版）与 `images/anim/make_anim_*.py`（表格 3 张动画版）：按 `anim/MOTION_KIT.md` v4 契约**生成器与输出同目录**，位置即约定，不移入本目录。
 - 仓库根 `scripts/` 下其它站的生成器（search index / chip_sel 等）与 `synthesis-integration-flow-guide/script/`：非本站 signoff 图版体系，不在本目录范围。
 
-<!-- ymzhu 2026-11-04 17:38 -->
+<!-- ymzhu 2026-11-17 19:28 -->

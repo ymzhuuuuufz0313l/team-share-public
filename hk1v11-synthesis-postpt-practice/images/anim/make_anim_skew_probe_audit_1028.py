@@ -126,7 +126,23 @@ def build():
 
     io.open(OUT, "w", encoding="utf-8", newline="\n").write(s)
     print("written", OUT, len(s), "bytes; src untouched:", io.open(SRC, encoding='utf-8').read() == n0.replace("\r\n", "\n") or True)
+    archive_snapshot(OUT)
+
+# 图版归档自动化（2026-11-17 审计 A9-1/A9-5）：生成即快照进 images/archive/<采纳日期>/。
+# 修复前该图静态+动画两版**从未归档**，根因是归档靠人手 cp；改为生成器收尾自动登记
+# （同 md5 已存在则不重复拷贝，见 images/tools/archive_snapshot.py）。
+ARCHIVE_DATE = "20261102"
+
+
+def archive_snapshot(path):
+    sys.path.insert(0, os.path.join(BASE, "..", "tools"))
+    try:
+        import archive_snapshot as AS
+    except ImportError as e:                       # 工具缺失不应阻断造图，但要显式告警
+        print("[archive] SKIP（archive_snapshot 不可用）:", e)
+        return None
+    return AS.snapshot(path, date_tag=ARCHIVE_DATE, version_tag="anim", note="skew_probe_audit_1028 动画版（A9-1 自动化归档）")
 
 if __name__ == "__main__":
     build()
-# ymzhu 2026-11-04 16:06
+# ymzhu 2026-11-17 19:25

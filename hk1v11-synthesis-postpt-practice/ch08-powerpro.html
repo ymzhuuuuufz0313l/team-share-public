@@ -398,8 +398,6 @@ WARNING: PowerPro 读取的 RTL 必须是可综合代码，无法综合会 inter
 
 差距几乎全部来自 1V11 的独立功能块与实现形态：面板 SD 时序 2124 + 短编码实现差 2127 + 输入同步 1711 + DTCTL 1327 + ANCTL 721 + 配置 660 + 长编码 617 + 其他 485 + 时钟 352 ≈ **10123.29 µW**；1V22 侧独有的 rx_phy 38.07 + MON_DISP 2.69 仅 **40.76 µW** 抵扣。组成占比上，1V11 前三大项为短编码解码 39.8%、显示时序 18.0%、面板 SD 时序 11.5%；1V22 侧为 LC_CSPIF_L0（含融合的 SD 时序核）46.0%、TOTAL_DTCTL 23.8%、CSPI_CMD_ALIGN 16.2%。全部结论以两侧 top total 为锚，模块级明细供逐项复核。
 
-<!-- ymzhu 2026-11-17 17:45 -->
-
 ## 5. 交叉引用
 
 - 指南站同章：<a href="../synthesis-integration-flow-guide/powerpro.html" target="_blank">SYN_FLOW_GUIDE · PowerPro 功耗评估</a>（培训课件全记录 / HV2M23 六组实测 / 常见问题 9 条）
@@ -410,4 +408,4 @@ WARNING: PowerPro 读取的 RTL 必须是可综合代码，无法综合会 inter
   <script src="./fx.js?v=11"></script>
 </body>
 </html>
-<!-- ymzhu 2026-11-17 15:55 -->
+<!-- ymzhu 2026-11-17 19:21 -->
