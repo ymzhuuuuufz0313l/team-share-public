@@ -20,6 +20,7 @@
 """
 import argparse
 import datetime
+import hashlib
 import os
 import re
 import shutil
@@ -90,8 +91,16 @@ def archive_snapshot(rel, tag, date=None):
     # 动画版与静态版同主名，归档名沿用站内既有惯例加 anim_ 前缀，避免互相覆盖
     prefix = "anim_" if src.parent.name == "anim" else ""
     dst = IMAGES / "archive" / date / f"{prefix}{src.stem}_{tag}{src.suffix}"
-    if dst.exists() and dst.read_bytes() == src.read_bytes():
-        return dst
+    if dst.exists():
+        if dst.read_bytes() == src.read_bytes():
+            return dst
+        # 2026-11-17 加固（审查 R1 返工时实测）：旧版这里直接 shutil.copy2 覆盖，
+        # 生成器**重跑一次**就会把「即将被替换的旧版本」快照换成当前版本 —— 归档静默丢历史。
+        # 现改为：绝不覆盖既有快照，改用内容指纹后缀（同内容幂等复用）。
+        digest = hashlib.md5(src.read_bytes()).hexdigest()[:8]
+        dst = dst.with_name(f"{prefix}{src.stem}_{tag}_{digest}{src.suffix}")
+        if dst.exists() and dst.read_bytes() == src.read_bytes():
+            return dst
     dst.parent.mkdir(parents=True, exist_ok=True)
     shutil.copy2(src, dst)
     return dst
@@ -197,4 +206,4 @@ def table_anim(svg, title_anchor='font-size="22" font-weight="bold" fill="#1e293
     out = out.replace("</svg>", "<style>\n" + KIT_CSS + "\n</style>\n</svg>", 1)
     return out
 
-# ymzhu 2026-11-17 19:33
+# ymzhu 2026-11-17 20:28

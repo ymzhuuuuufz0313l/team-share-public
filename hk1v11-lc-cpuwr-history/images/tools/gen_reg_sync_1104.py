@@ -103,9 +103,21 @@ def build_static():
     a.append('</svg>')
     return "\n".join(a)
 
+def snapshot_if_changing(rel, tag, new_text):
+    """内容没变（幂等重跑）就不归档：否则每跑一次都会把旧版本快照再覆盖/再堆一份。"""
+    cur_p = out_path(rel)
+    if cur_p.exists():
+        cur = io.open(cur_p, encoding="utf-8", newline="").read()
+        if cur == new_text:
+            print("unchanged  %s  (skip archive)" % rel)
+            return None
+    return archive_snapshot(rel, tag)
+
+
 H = 720  # 高度（标题+副题+表头+5行×88+底注）
 static = build_static()
-archive_snapshot("images/1104_reg_sync_changes.svg", "auto" + __import__("datetime").date.today().strftime("%Y%m%d"))
+TAG = "auto" + __import__("datetime").date.today().strftime("%Y%m%d")
+snapshot_if_changing("images/1104_reg_sync_changes.svg", TAG, static)
 write_text_lf(OUT_STATIC, static)
 
 # ---- 动画版：静态 + <style>（@keyframes 行级渐入 + 类型/状态脉冲）----
@@ -114,7 +126,7 @@ def build_anim(svg):
     return table_anim(svg)
 
 anim = build_anim(static)
-archive_snapshot("images/anim/1104_reg_sync_changes.svg", "auto" + __import__("datetime").date.today().strftime("%Y%m%d"))
+snapshot_if_changing("images/anim/1104_reg_sync_changes.svg", TAG, anim)
 write_text_lf(OUT_ANIM, anim)
 
 # ---- 校验：XML 有效 / 静态无动画 / 动画有 / <text> 零漂移 ----
@@ -129,4 +141,4 @@ print("written %s  %dB" % (OUT_ANIM, len(anim)))
 print("xml+ %s %s %s" % (s_static, a_anim, drift))
 assert s_static == "static-clean" and a_anim == "anim-ok" and drift == "drift-0", "validation failed"
 print("ALL PASS")
-# ymzhu 2026-11-17 19:33
+# ymzhu 2026-11-17 20:28
