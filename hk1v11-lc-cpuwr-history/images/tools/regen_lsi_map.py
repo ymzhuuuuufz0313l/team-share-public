@@ -17,7 +17,7 @@ import xml.etree.ElementTree as ET
 import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))   # = images/
-from _siteio import out_path, write_text_lf, archive_snapshot, table_anim  # noqa: E402
+from _siteio import out_path, write_text_lf, archive_snapshot, is_dry_run, table_anim  # noqa: E402
 
 MD0 = os.environ.get("CPUWR_SRC_MD") or r"E:\project\HK1V11\LC_CPUWR_history\chip_sel0_register_address_map.md"
 if not os.path.exists(MD0):
@@ -183,8 +183,20 @@ out.append(f'<text x="{cx}" y="{ly + 52}" text-anchor="middle" font-size="11" fi
 out.append(f'<text x="{cx}" y="{ly + 72}" text-anchor="middle" font-size="11" fill="#64748b">chip_sel=1 差异（0x02 SMART_CS、0x09/0x0A/0x1F 回拼默认值）见 chip_sel1 寄存器图；保护状态两种 chip_sel 一致</text>')
 out.append('</svg>')
 
+# ---- 内容回归护栏（2026-11-17 审查发现）----
+# 本脚本的数据源是对应 0827v1 的 chip_sel0 .md；线上图已迭代到 1023v1（VSYNC_SEL 1112v1、
+# TP_SEL/khead_20b_sel 重新落位等），直接覆盖会把线上更新的内容**回退**成 0827v1。
+# 因此正式写线上前先比对：内容不同则拒绝（除非人工确认后设 CPUWR_ALLOW_REGEN=1）。
+text = "\n".join(out)
+if not is_dry_run() and DST.exists():
+    cur = DST.read_bytes().decode("utf-8")
+    if cur != text and os.environ.get("CPUWR_ALLOW_REGEN") != "1":
+        raise SystemExit(
+            "REFUSED: 生成结果与线上 %s 不一致（数据源可能已过期：%s）。\n"
+            "  线上图可能已手工迭代到更新版本；确认要覆盖请设 CPUWR_ALLOW_REGEN=1，"
+            "或先更新数据源/脚本。\n  用 --out <临时目录> 可安全预演。" % (DST, MD0))
 archive_snapshot("images/lsi_unprotected_address_map.svg", "auto" + __import__("datetime").date.today().strftime("%Y%m%d"))
-write_text_lf(DST, "\n".join(out))
+write_text_lf(DST, text)
 print("written:", DST, f"({width}x{height}, {n_rows} rows)")
 
 ET.parse(DST)
