@@ -19,7 +19,9 @@
   2. 生成器产物：`images/delta_case_matrix.svg` 与 `images/anim/delta_case_matrix.svg`
      里的分辨率/FPS/PORT/维度族/合计文字必须与 facts.json 一致（静/动两版同源）；
   3. 页面文字：`cases.html` 的维度表必须与 facts.json 一致；
-  4. 全站禁止再出现已知的漂移值 `DPLC_MODE1 ×173` / `（173 处标注）`。
+  4. 全站禁止再出现已知的漂移值 `DPLC_MODE1 ×173` / `（173 处标注）`；
+  5. 行数族（V2）：`facts.file_lines` 自洽 + 2 对静/动 SVG + 4 个页面里的
+     `77 / 1456 / 1865 / 559 / 263 / 477` 必须与事实源逐字一致。
 
 用法：
     python images/tools/check_facts.py            # 默认站点根由 site_paths 解析
@@ -129,6 +131,78 @@ def check_cases_page(path: Path, facts):
     return errs
 
 
+def check_file_lines(site: Path, facts):
+    """5) 行数族（V2）：facts.file_lines 自洽 + 生成器产物/页面文字逐字一致。
+
+    V2 修复前，`77 / 1865 / 1456 / 559 / 263 / 477` 这组行数被硬编码在生成器、
+    SVG 与 4 个页面里，共 7 处写死；改一处就要人肉同步。现在唯一来源是
+    `facts.json` 的 `file_lines` 块：生成器经 `site_paths.file_lines()` 读它，
+    页面（静态 HTML，本站无构建步骤）由本闸门反向核对——与 `cases.html` 同一套
+    单一事实源约定。本闸门不生成任何东西。
+    """
+    errs = []
+    fl = facts.get("file_lines")
+    if not fl:
+        return ["facts.json 缺少 file_lines 块（V2 行数族事实源缺失）"]
+    try:
+        base = fl["isptx_sequence_baseline"]
+        head = fl["isptx_sequence_head"]
+        delta = fl["isptx_sequence_delta"]
+        chk = fl["checker_420b"]
+        align = fl["long_encoding_align"]
+        ectrl = fl["long_encoding_error_ctrl"]
+        pout = fl["long_encoding_output"]
+    except KeyError as e:
+        return [f"facts.file_lines 缺少字段 {e}"]
+
+    # 5.1 内部自洽：HEAD - 基线 == delta（改一个值就自相矛盾）
+    if head - base != delta:
+        errs.append(f"facts.file_lines 自相矛盾：{head} - {base} = {head - base} != delta {delta}")
+
+    # 5.2 生成器产物（静/动两版，同源逐字）
+    env_exp = [
+        "isptx_sequence.sv（%d 行）" % base,
+        "checker_420b.sv · %d 行" % chk,
+        "isptx_sequence.sv：%d → %d 行（+%d）" % (base, head, delta),
+        "checker_420b.sv · %d 行（自建库以来未改）" % chk,
+    ]
+    for rel in (("images", "delta_env_components.svg"),
+                ("images", "anim", "delta_env_components.svg")):
+        errs += check_svg(site.joinpath(*rel), env_exp)
+    arch_exp = [
+        "isptx_sequence.sv（%d 行 · 420b 分支）" % head,
+        "%d 行：scramble_en 硬编码 1'b1" % chk,
+    ]
+    for rel in (("images", "longcode_verification_architecture.svg"),
+                ("images", "anim", "longcode_verification_architecture.svg")):
+        errs += check_svg(site.joinpath(*rel), arch_exp)
+
+    # 5.3 页面文字（静态 HTML，逐字核对；空白压缩以容忍排版）
+    page_exp = {
+        "architecture.html": [
+            "含 %d 行 display-only 的 `checker_420b.sv`" % chk,
+            "基线 %d 行 → HEAD %d 行" % (base, head),
+            "仍 %d 行" % chk,
+            "LONG_ENCODING_ALIGN.v`（%d 行，" % align,
+            "`LONG_ENCODING_ERROR_CTRL.v`（%d 行）" % ectrl,
+            "`LONG_ENCODING_OUTPUT.v`（%d 行）" % pout,
+        ],
+        "encoding.html": ["仍 %d 行 display-only" % chk],
+        "next.html": ["仍 %d 行 display-only" % chk],
+        "debug-log.html": ["%d 行 display-only" % chk],
+    }
+    for name, frags in page_exp.items():
+        p = site / name
+        if not p.exists():
+            errs.append(f"{name} 不存在")
+            continue
+        flat = re.sub(r"\s+", "", p.read_text(encoding="utf-8"))
+        for frag in frags:
+            if re.sub(r"\s+", "", frag) not in flat:
+                errs.append(f"{name}: 行数族期望片段缺失 {frag!r}")
+    return errs
+
+
 def check_forbidden(site: Path):
     errs = []
     for p in sorted(site.glob("*.html")):
@@ -136,7 +210,12 @@ def check_forbidden(site: Path):
         for bad, why in FORBIDDEN:
             if bad in t:
                 errs.append(f"{p.name}: 出现禁用漂移值 {bad!r}（{why}）")
+    # 归档快照（images/archive/）是**历史版本原件**，其漂移值必须保留不动：
+    # 它们的存在正是为了证明「当时那样写」，不能参与禁用值检查。
+    arch = site / "images" / "archive"
     for p in sorted((site / "images").rglob("*.svg")):
+        if arch in p.parents:
+            continue
         t = p.read_text(encoding="utf-8")
         for bad, why in FORBIDDEN:
             if bad in t:
@@ -160,6 +239,8 @@ def main():
          + check_svg(site / "images" / "anim" / "delta_case_matrix.svg", exp)),
         ("3) 页面文字 cases.html", check_cases_page(site / "cases.html", facts)),
         ("4) 全站禁用漂移值", check_forbidden(site)),
+        ("5) 行数族 file_lines（facts ↔ SVG ↔ 页面）",
+         check_file_lines(site, facts)),
     ]
 
     n_err = 0
@@ -182,4 +263,4 @@ def main():
 
 if __name__ == "__main__":
     sys.exit(main())
-# ymzhu 2026-11-17 19:55
+# ymzhu 2026-11-17 20:35

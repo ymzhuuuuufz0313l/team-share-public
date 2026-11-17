@@ -11,8 +11,8 @@ delta_env_components：激励源体系组件演进（isptx_agent 及周边，基
 - 动画：images/anim/delta_env_components.svg（text 多重集与 <svg> 开标签一致）
 
 三色标注（右 panel = 现状状态）：
-- 灰 = 未变（isptx_transaction/if/agent/sequencer/bus_monitor、checker_420b 77 行零变更）
-- 琥珀 = 已变（isptx_sequence 1456→1865、isptx_driver +222、ref model 0807 三修、
+- 灰 = 未变（isptx_transaction/if/agent/sequencer/bus_monitor、checker_420b 零行变更）
+- 琥珀 = 已变（isptx_sequence 行数增长、isptx_driver +222、ref model 0807 三修、
   checker_for_checksum、env_cfg +267 / env.sv）
 - 青 = 新增（训练包序列、BCC 体系、BOE 回放、MULTI_CHIP/multi4、故障注入与恢复、
   auto_script + dplc.pl）
@@ -28,6 +28,9 @@ delta_env_components：激励源体系组件演进（isptx_agent 及周边，基
   238px ≥80px，2.6s ≥2.4s）。
 - 组件盒文字均为非数据 chrome + 波次 chips 8×3 行（低密度，行 < 20）。
 
+V2（2026-11-17）：行数族字面量已全部移入 facts.json `file_lines`，本文件只读不写；
+渲染文字与搬迁前逐字一致（`check_facts.py` 第 5 节守住）。
+
 铁律：纯 CSS in-SVG；确定性幂等；零第三方依赖。
 """
 import re
@@ -36,8 +39,15 @@ import xml.etree.ElementTree as ET
 from collections import Counter
 from pathlib import Path
 
-from site_paths import site_base, write_svg  # noqa: E402
+from site_paths import file_lines, site_base, write_svg  # noqa: E402
 BASE = site_base()
+# V2：行数族唯一事实源 = images/tools/data/facts.json 的 file_lines 块
+# （由 extract_facts.py --lines-src 从 HK1V11 anchor a7130ba7 实测生成）
+FL = file_lines(BASE)
+_SEQ_BASE = FL["isptx_sequence_baseline"]
+_SEQ_HEAD = FL["isptx_sequence_head"]
+_SEQ_DELTA = FL["isptx_sequence_delta"]
+_CHK420B = FL["checker_420b"]
 OUT_STATIC = BASE / "images" / "delta_env_components.svg"
 OUT_ANIM = BASE / "images" / "anim" / "delta_env_components.svg"
 
@@ -240,12 +250,12 @@ def build_scene():
           T(205, 122, "基线 · 07-13", 13, "#b45309", 600),
           LINE(56, 134, 354, 134, C["line"])]
     L = [
-        ("isptx_sequence.sv（1456 行）",
+        ("isptx_sequence.sv（%d 行）" % _SEQ_BASE,
          ["send_ppm_420b 主流程", "CTRL_F / Config Line 为 0717 版语义"]),
         ("isptx_driver.sv", ["常规驱动主循环"]),
         ("isptx_transaction · if · agent · sequencer",
          ["另 bus_monitor.sv", "六文件基线 = HEAD 逐字节相同"]),
-        ("checker_420b.sv · 77 行",
+        ("checker_420b.sv · %d 行" % _CHK420B,
          ["display-only · check_all() 硬编码", "scramble_en=1 + 每块 LFSR 复位 0XFFFF"]),
         ("long_encoding_ref_model.sv",
          ["编码 / 解码 ref（0807 三修前状态）"]),
@@ -304,7 +314,7 @@ def build_scene():
     RX = 656
     RW = 488
     amber = [
-        ("isptx_sequence.sv：1456 → 1865 行（+409）",
+        ("isptx_sequence.sv：%d → %d 行（+%d）" % (_SEQ_BASE, _SEQ_HEAD, _SEQ_DELTA),
          ["CTRL_F 恒不加扰 · VFP[0] 承载 · 相位感知 CTRL_L（0825）",
           "EOL 注入 · unlock 优雅停止 · send_recovery_image · MULTI_CHIP fork · exec_c C-model golden"], 54, None),
         ("isptx_driver.sv（+222 · 1022 为主）",
@@ -320,7 +330,7 @@ def build_scene():
     gray = [
         ("isptx_transaction · if · agent · sequencer · bus_monitor",
          ["基线 = HEAD 逐字节相同（零变更）"], 36, "未变"),
-        ("checker_420b.sv · 77 行（自建库以来未改）",
+        ("checker_420b.sv · %d 行（自建库以来未改）" % _CHK420B,
          ["display-only · check_all() 硬编码 scramble_en=1 · 每块 LFSR 复位 0XFFFF",
           "正式比对启用前的改造点（站点 5.3 论断至今成立）"], 54, "未变"),
     ]

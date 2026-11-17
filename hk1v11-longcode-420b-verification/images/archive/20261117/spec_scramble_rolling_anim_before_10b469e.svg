@@ -1,0 +1,315 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 560" width="1200" height="560">
+
+  <style>text { font-family: 'Helvetica Neue', Helvetica, Arial, 'PingFang SC', 'Microsoft YaHei', 'Microsoft JhengHei', 'SimHei', sans-serif; }</style>
+
+<style>
+.row{opacity:0;animation:rowIn .55s cubic-bezier(.22,.7,.3,1) forwards}
+.head{opacity:0;animation:rowIn .55s cubic-bezier(.22,.7,.3,1) forwards}
+@keyframes rowIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.draw{stroke-dasharray:100;animation:drawIn .6s cubic-bezier(.4,0,.2,1) forwards}
+@keyframes drawIn{from{stroke-dashoffset:100}to{stroke-dashoffset:0}}
+.fade{opacity:0;animation:fadeIn .6s ease forwards}
+@keyframes fadeIn{to{opacity:1}}
+.flowdot{fill:none;stroke-linecap:round;stroke-dasharray:9 91;stroke-width:3.5;animation:flow 2.6s linear infinite}
+@keyframes flow{to{stroke-dashoffset:-100}}
+.flowtail{fill:none;stroke-linecap:round;stroke-dasharray:4 96;stroke-width:8;opacity:.25;animation:flow 2.6s linear infinite}
+.pulse{transform-box:fill-box;transform-origin:center;animation:pulse 2.8s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;filter:drop-shadow(0 0 0 rgba(180,83,9,0))}50%{opacity:.8;filter:drop-shadow(0 0 10px rgba(180,83,9,.75))}}
+.pulse-t{transform-box:fill-box;transform-origin:center;animation:pulseT 2.8s ease-in-out infinite}
+@keyframes pulseT{0%,100%{opacity:1;filter:drop-shadow(0 0 0 rgba(14,116,144,0))}50%{opacity:.8;filter:drop-shadow(0 0 10px rgba(14,116,144,.75))}}
+.pulse-b{transform-box:fill-box;transform-origin:center;animation:pulseB 2.8s ease-in-out infinite}
+@keyframes pulseB{0%,100%{opacity:1;filter:drop-shadow(0 0 0 rgba(29,78,216,0))}50%{opacity:.8;filter:drop-shadow(0 0 10px rgba(29,78,216,.75))}}
+.sweepband{opacity:.85;animation:sweepMove 8s linear infinite}
+@keyframes sweepMove{to{transform:translateX(var(--sweepP,160px))}}
+.dashgrow{stroke-dasharray:7 5;animation:dashgrow 2.6s linear infinite}
+@keyframes dashgrow{from{stroke-dashoffset:72}to{stroke-dashoffset:0}}
+.march{animation:march 1.5s linear infinite}
+@keyframes march{to{stroke-dashoffset:-16}}
+.cellwave{animation:wave 2.6s ease-in-out infinite}
+@keyframes wave{0%,100%{opacity:1}50%{opacity:.72}}
+.breathe{animation:br 3.2s ease-in-out infinite}
+@keyframes br{0%,100%{opacity:1}50%{opacity:.55}}
+.step{animation:stepLit 6s ease-in-out infinite}
+@keyframes stepLit{0%,16%{filter:drop-shadow(0 0 9px rgba(29,78,216,.85))}24%,92%{filter:drop-shadow(0 0 0 rgba(29,78,216,0))}100%{filter:drop-shadow(0 0 9px rgba(29,78,216,.85))}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}.row,.head,.fade{opacity:1!important}.flowdot,.flowtail,.sweepband{display:none!important}}
+</style>
+
+  <defs>
+
+    <marker id="ar-blue" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#2563eb"/></marker>
+
+    <marker id="ar-green" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#059669"/></marker>
+
+    <marker id="ar-purple" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#7c3aed"/></marker>
+
+    <marker id="ar-orange" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#ea580c"/></marker>
+
+    <marker id="ar-gray" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto"><polygon points="0 0, 10 3.5, 0 7" fill="#9ca3af"/></marker>
+
+  </defs>
+
+  <rect width="1200" height="560" fill="#ffffff"/>
+
+<g class="head">
+
+<text x="600" y="40" font-size="21" fill="#1e293b" text-anchor="middle" font-weight="600">Scramble key 滚动与门控（0924 后）</text>
+
+<text x="600" y="64" font-size="12" fill="#64748b" text-anchor="middle">加扰域 = Active/VBK 行 payload（CTRL_L + Data · SCREN 门控）；CTRL_F 恒不加扰 · 不推进 SCR_KEY；K 码 / IDLE / LSP 不加扰；K3 边界共享 key 复位 0XFFFF</text>
+
+</g>
+
+<g class="row" style="animation-delay:0.2s">
+
+<text x="60" y="96" font-size="12.5" fill="#1e293b" text-anchor="start" font-weight="600">① Active / VBK 行 payload（SCREN 门控）——加扰域</text>
+
+<text x="50" y="132" font-size="10.5" fill="#64748b" text-anchor="end">Active 行</text>
+
+<rect x="60" y="106" width="56" height="40" rx="8" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
+
+<text x="88.0" y="129.5" font-size="10" fill="#166534" text-anchor="middle" font-weight="600">K1</text>
+
+<rect x="120" y="106" width="90" height="40" rx="8" fill="#cffafe" stroke="#67e8f9" stroke-width="1.5"/>
+
+<text x="165.0" y="129.5" font-size="10" fill="#155e75" text-anchor="middle" font-weight="600">CTR_L</text>
+
+<rect x="214" y="106" width="416" height="40" rx="8" fill="#dbeafe" stroke="#93c5fd" stroke-width="1.5"/>
+
+<text x="422.0" y="129.5" font-size="11" fill="#1e40af" text-anchor="middle" font-weight="600">Enc Data</text>
+
+<rect x="634" y="106" width="56" height="40" rx="8" fill="#e5e7eb" stroke="#d1d5db" stroke-width="1.5"/>
+
+<text x="662.0" y="129.5" font-size="10" fill="#6b7280" text-anchor="middle" font-weight="600">Dmy</text>
+
+<rect x="694" y="106" width="56" height="40" rx="8" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
+
+<text x="722.0" y="129.5" font-size="10" fill="#166534" text-anchor="middle" font-weight="600">K2</text>
+
+<g class="cellwave" style="animation-duration:2.4s;animation-delay:0s">
+
+<rect x="754" y="106" width="40" height="40" rx="8" fill="#fef9c3" stroke="#fde047" stroke-width="1.5"/>
+
+<text x="774.0" y="129.5" font-size="10" fill="#854d0e" text-anchor="middle" font-weight="600">K5</text>
+
+</g>
+
+<g class="cellwave" style="animation-duration:2.4s;animation-delay:0.3s">
+
+<rect x="798" y="106" width="40" height="40" rx="8" fill="#fef9c3" stroke="#fde047" stroke-width="1.5"/>
+
+<text x="818.0" y="129.5" font-size="10" fill="#854d0e" text-anchor="middle" font-weight="600">K6</text>
+
+</g>
+
+<g class="cellwave" style="animation-duration:2.4s;animation-delay:0.6s">
+
+<rect x="842" y="106" width="40" height="40" rx="8" fill="#fef9c3" stroke="#fde047" stroke-width="1.5"/>
+
+<text x="862.0" y="129.5" font-size="10" fill="#854d0e" text-anchor="middle" font-weight="600">K7</text>
+
+</g>
+
+<g class="cellwave" style="animation-duration:2.4s;animation-delay:0.9s">
+
+<rect x="886" y="106" width="40" height="40" rx="8" fill="#fef9c3" stroke="#fde047" stroke-width="1.5"/>
+
+<text x="906.0" y="129.5" font-size="10" fill="#854d0e" text-anchor="middle" font-weight="600">K8</text>
+
+</g>
+
+<text x="940" y="132" font-size="13" fill="#64748b" text-anchor="middle">…</text>
+
+<g class="cellwave" style="animation-duration:2.4s;animation-delay:1.2s">
+
+<rect x="966" y="106" width="40" height="40" rx="8" fill="#fef9c3" stroke="#fde047" stroke-width="1.5"/>
+
+<text x="986.0" y="129.5" font-size="10" fill="#854d0e" text-anchor="middle" font-weight="600">K5</text>
+
+</g>
+
+</g>
+
+<g class="row" style="animation-delay:0.85s">
+
+<text x="120" y="159" font-size="9.5" fill="#16a34a" text-anchor="start">加扰区间（CTR_L ~ Dmy）· SCR_KEY update</text>
+
+<rect x="120" y="168" width="540" height="10" rx="5" fill="#16a34a" stroke="#16a34a" stroke-width="1" class="draw" pathLength="100" style="animation-delay:0.85s"/>
+
+<path class="flowdot" d="M 120 173 L 660 173" stroke="#ffffff" pathLength="100" style="animation-duration:4.2s;animation-delay:-0.75s"/>
+
+<path class="flowdot" d="M 120 173 L 660 173" stroke="#ffffff" pathLength="100" style="animation-duration:4.2s;animation-delay:-2.85s"/>
+
+<rect x="120" y="190" width="540" height="10" rx="5" fill="#ea580c" stroke="#ea580c" stroke-width="1" class="draw" pathLength="100" style="animation-delay:0.95s"/>
+
+<text x="730" y="176" font-size="9.5" fill="#9ca3af" text-anchor="start">K 码 / IDLE 期间：不加扰 · key 不推进</text>
+
+<rect x="214" y="212" width="356" height="10" rx="5" fill="#2563eb" stroke="#2563eb" stroke-width="1" class="draw" pathLength="100" style="animation-delay:1.05s"/>
+
+<path class="flowdot" d="M 214 217 L 570 217" stroke="#ffffff" pathLength="100" style="animation-duration:4.2s;animation-delay:-2.85s"/>
+
+<path class="flowdot" d="M 214 217 L 570 217" stroke="#ffffff" pathLength="100" style="animation-duration:4.2s;animation-delay:-1.05s"/>
+
+<path class="flowtail" d="M 214 217 L 570 217" stroke="#1d4ed8" pathLength="100" style="animation-duration:4.2s;animation-delay:-2.85s"/>
+
+<path class="flowtail" d="M 214 217 L 570 217" stroke="#1d4ed8" pathLength="100" style="animation-duration:4.2s;animation-delay:-1.05s"/>
+
+</g>
+
+<g class="head" style="animation-delay:1.05s">
+
+<rect x="1010" y="168" width="14" height="10" rx="3" fill="#16a34a" stroke="#16a34a" stroke-width="1"/>
+
+<text x="1030" y="177" font-size="10" fill="#64748b" text-anchor="start">SCR_KEY update</text>
+
+<rect x="1010" y="190" width="14" height="10" rx="3" fill="#ea580c" stroke="#ea580c" stroke-width="1"/>
+
+<text x="1030" y="199" font-size="10" fill="#64748b" text-anchor="start">SCR_XOR</text>
+
+<rect x="1010" y="212" width="14" height="10" rx="3" fill="#2563eb" stroke="#2563eb" stroke-width="1"/>
+
+<text x="1030" y="221" font-size="10" fill="#64748b" text-anchor="start">413/420 ENC</text>
+
+<rect x="1010" y="234" width="14" height="10" rx="3" fill="#9ca3af" stroke="#9ca3af" stroke-width="1"/>
+
+<text x="1030" y="243" font-size="10" fill="#64748b" text-anchor="start">key 不推进</text>
+
+</g>
+
+<g class="row" style="animation-delay:1.15s">
+
+<path d="M 700 226 C 770 232 760 244 700 252 L 220 252 L 220 266" stroke="#059669" stroke-width="2" fill="none" stroke-dasharray="6,3" marker-end="url(#ar-green)" class="dashgrow"/>
+
+<g class="pulse-t" style="animation-delay:-0.7s">
+
+<text x="430" y="244" font-size="10" fill="#16a34a" text-anchor="middle">n 行截止状态 → n+1 行起始状态（LFSR 连续 · 不复位）</text>
+
+</g>
+
+</g>
+
+<g class="row" style="animation-delay:1.25s">
+
+<text x="50" y="292" font-size="10.5" fill="#64748b" text-anchor="end">n+1 行</text>
+
+<rect x="60" y="266" width="56" height="40" rx="8" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
+
+<text x="88.0" y="289.5" font-size="10" fill="#166534" text-anchor="middle" font-weight="600">K1</text>
+
+<rect x="120" y="266" width="90" height="40" rx="8" fill="#cffafe" stroke="#67e8f9" stroke-width="1.5"/>
+
+<text x="165.0" y="289.5" font-size="10" fill="#155e75" text-anchor="middle" font-weight="600">CTR_L</text>
+
+<rect x="214" y="266" width="300" height="40" rx="8" fill="#dbeafe" stroke="#93c5fd" stroke-width="1.5"/>
+
+<text x="364.0" y="289.5" font-size="11" fill="#1e40af" text-anchor="middle" font-weight="600">Enc Data</text>
+
+<text x="524" y="292" font-size="13" fill="#64748b" text-anchor="middle">…</text>
+
+<rect x="120" y="318" width="394" height="8" rx="4" fill="#16a34a" stroke="#16a34a" stroke-width="1" class="draw" pathLength="100" style="animation-delay:1.25s"/>
+
+<text x="524" y="326" font-size="9.5" fill="#16a34a" text-anchor="start">scramble 继续滚动</text>
+
+</g>
+
+<g class="row" style="animation-delay:1.4s">
+
+<text x="60" y="352" font-size="12.5" fill="#1e293b" text-anchor="start" font-weight="600">② Config 行（第一条 VFP 行）——0924：CTRL_F 恒不加扰</text>
+
+<text x="50" y="388" font-size="10.5" fill="#64748b" text-anchor="end">Config 行</text>
+
+</g>
+
+<g class="row" style="animation-delay:1.5s">
+
+<rect x="60" y="362" width="56" height="40" rx="8" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
+
+<text x="88.0" y="385.5" font-size="10" fill="#166534" text-anchor="middle" font-weight="600">K4</text>
+
+<rect x="120" y="362" width="150" height="40" rx="8" fill="#fce7f3" stroke="#f9a8d4" stroke-width="1.5"/>
+
+<text x="195.0" y="385.5" font-size="10" fill="#9d174d" text-anchor="middle" font-weight="600">CTRL_F</text>
+
+<rect x="274" y="362" width="180" height="40" rx="8" fill="#e5e7eb" stroke="#d1d5db" stroke-width="1.5"/>
+
+<text x="364.0" y="385.5" font-size="10" fill="#6b7280" text-anchor="middle" font-weight="600">Dmy</text>
+
+<rect x="458" y="362" width="110" height="40" rx="8" fill="#dcfce7" stroke="#86efac" stroke-width="1.5"/>
+
+<text x="513.0" y="385.5" font-size="9.5" fill="#166534" text-anchor="middle" font-weight="600">K3|K2</text>
+
+<g class="cellwave" style="animation-duration:2.4s;animation-delay:0s">
+
+<rect x="572" y="362" width="40" height="40" rx="8" fill="#fef9c3" stroke="#fde047" stroke-width="1.5"/>
+
+<text x="592.0" y="385.5" font-size="10" fill="#854d0e" text-anchor="middle" font-weight="600">K5</text>
+
+</g>
+
+<g class="cellwave" style="animation-duration:2.4s;animation-delay:0.3s">
+
+<rect x="616" y="362" width="40" height="40" rx="8" fill="#fef9c3" stroke="#fde047" stroke-width="1.5"/>
+
+<text x="636.0" y="385.5" font-size="10" fill="#854d0e" text-anchor="middle" font-weight="600">K6</text>
+
+</g>
+
+<g class="cellwave" style="animation-duration:2.4s;animation-delay:0.6s">
+
+<rect x="660" y="362" width="40" height="40" rx="8" fill="#fef9c3" stroke="#fde047" stroke-width="1.5"/>
+
+<text x="680.0" y="385.5" font-size="10" fill="#854d0e" text-anchor="middle" font-weight="600">K7</text>
+
+</g>
+
+<g class="cellwave" style="animation-duration:2.4s;animation-delay:0.9s">
+
+<rect x="704" y="362" width="40" height="40" rx="8" fill="#fef9c3" stroke="#fde047" stroke-width="1.5"/>
+
+<text x="724.0" y="385.5" font-size="10" fill="#854d0e" text-anchor="middle" font-weight="600">K8</text>
+
+</g>
+
+<text x="758" y="388" font-size="13" fill="#64748b" text-anchor="middle">…</text>
+
+<g class="cellwave" style="animation-duration:2.4s;animation-delay:1.2s">
+
+<rect x="784" y="362" width="40" height="40" rx="8" fill="#fef9c3" stroke="#fde047" stroke-width="1.5"/>
+
+<text x="804.0" y="385.5" font-size="10" fill="#854d0e" text-anchor="middle" font-weight="600">K5</text>
+
+</g>
+
+</g>
+
+<g class="row" style="animation-delay:1.65s">
+
+<rect x="120" y="414" width="410" height="10" rx="5" fill="#9ca3af" stroke="#9ca3af" stroke-width="1" class="draw" pathLength="100" style="animation-delay:1.65s"/>
+
+<text x="540" y="423" font-size="9.5" fill="#6b7280" text-anchor="start">SCR_KEY 不推进（恒不加扰 · 不推 key）</text>
+
+<rect x="120" y="436" width="334" height="10" rx="5" fill="#2563eb" stroke="#2563eb" stroke-width="1" class="draw" pathLength="100" style="animation-delay:1.75s"/>
+
+<text x="462" y="445" font-size="9.5" fill="#6b7280" text-anchor="start">413/420 ENC（编码但恒不加扰）</text>
+
+<path class="flowdot" d="M 120 441 L 454 441" stroke="#ffffff" pathLength="100" style="animation-duration:4.2s;animation-delay:-0.35s"/>
+
+<path class="flowdot" d="M 120 441 L 454 441" stroke="#ffffff" pathLength="100" style="animation-duration:4.2s;animation-delay:-2.45s"/>
+
+</g>
+
+<g class="row" style="animation-delay:1.8s">
+
+<g class="pulse" style="animation-delay:-1.4s">
+
+<rect x="60" y="470" width="1080" height="66" rx="8" fill="#ecfdf5" stroke="#34d399" stroke-width="2"/>
+
+<text x="76" y="492" font-size="12" fill="#047857" text-anchor="start" font-weight="600">③ K3（SCREN=1 时 Config 行尾）</text>
+
+<text x="76" y="510" font-size="10" fill="#047857" text-anchor="start">TX：lfsr_key_420b = 16'hFFFF（行尾同步复位） · RX：锁存 SCREN + 共享加扰 key 复位 0XFFFF</text>
+
+<text x="76" y="526" font-size="10" fill="#047857" text-anchor="start">RX 复位 / 使能延 4 拍生效：K3_FIND_rp_d[3]（long_decoding_top.v）· SCREN=0 → 行尾 K2（不复位）</text>
+
+</g>
+
+</g>
+
+</svg>

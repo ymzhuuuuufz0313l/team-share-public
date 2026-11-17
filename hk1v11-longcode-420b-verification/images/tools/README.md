@@ -29,14 +29,16 @@
 | `validate_kit_v4.py` | MOTION_KIT v4 规范校验（**当前唯一应使用**） |
 | `validate_kit_v2.py` | MOTION_KIT v2 规范校验（**DEPRECATED**，仅溯源保留，文件头有横幅） |
 | `check_overlap.py` | 无头 Chrome 几何/墨迹重叠检测（逐图出 full/F00x 截图 + json/md 报告） |
-| `site_paths.py` | 路径解析 helper：`site_base()` / `write_svg()`（统一 LF、`newline=""`、禁 CRLF） |
+| `site_paths.py` | 路径解析 helper：`site_base()` / `src_base()` / `write_svg()`（统一 LF、`newline=""`、禁 CRLF；**覆盖前自动归档旧版**）/ `load_facts()` / `file_lines()` |
 | `extract_facts.py` | 从 case 源统计业务数字 → `data/facts.json`（唯一事实源） |
-| `check_facts.py` | **一致性闸门**：facts.json ↔ 生成器产物 ↔ 页面文字，出站数字漂移即报红 |
+| `check_facts.py` | **一致性闸门**：facts.json ↔ 生成器产物 ↔ 页面文字，出站数字漂移即报红；§5 专管行数族 `file_lines` |
+| `check_archive.py` | **归档闸门**：相对 `--base` 被改动的每张图，必须有 LF 归一化 md5 相等的归档快照，缺一即 FAIL（连手改也能抓） |
 
 ### 一条命令跑交付自检
 
 ```bash
 python images/tools/check_facts.py            # 业务数字一致性（快，先跑这个）
+python images/tools/check_archive.py --base <rev>  # 被替换图版是否都留了快照
 python images/tools/validate_kit_v4.py <name...>   # 动效规范
 python scripts/check_anim_pairs.py            # 静/动配对完整性（数字以输出为准）
 python images/tools/check_overlap.py          # 版式重叠（慢，需 Chrome）
@@ -111,4 +113,4 @@ reduced-motion）；静态 + 动画全部生成器复跑字节一致（幂等）
 布局 QA（CJK/ASCII 宽度包络估算 × 区域包含）零越界。配对自检见上文勘误
 （`python scripts/check_anim_pairs.py`，数字以脚本输出为准，2026-11-17 实测 75/75）。引用落点建议见 t5 任务 output（index 版本区 /
 frame · encoding · cases · architecture · debug-log 变更史）。
-<!-- ymzhu 2026-11-17 19:55 -->
+<!-- ymzhu 2026-11-17 20:35 -->

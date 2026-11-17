@@ -22,6 +22,74 @@ from pathlib import Path
 
 EOL = "\n"
 
+# 归档根（相对站点根）：被替换的图版快照统一落这里，目录名 = 更新日期
+ARCHIVE_ROOT = ("images", "archive")
+
+
+def _git_short_rev(site):
+    """取站点所在仓库的短 rev；不在 git 仓库内则回退 'worktree'。
+
+    用途：自动归档文件名里的 `<rev>` 段，标明「这份快照替代的是哪个提交的版本」。
+    """
+    import subprocess
+
+    try:
+        r = subprocess.run(["git", "-C", str(site), "rev-parse", "--short", "HEAD"],
+                           capture_output=True)
+        if r.returncode == 0:
+            return r.stdout.decode("utf-8", "replace").strip() or "worktree"
+    except Exception:  # git 缺失等：归档文件名退化为 worktree，不阻断生成
+        pass
+    return "worktree"
+
+
+def archive_before_overwrite(path, site=None, date=None, tag=None):
+    """覆盖写之前，把**当前磁盘上的旧版**快照到 images/archive/<YYYYMMDD>/<rel>_before_<rev>.<ext>。
+
+    这是 `images/archive/20261117/README.md`「归档规范（新）」的机械化版本（F05/V1 根因修复）：
+    规范原文只写在 README 里、没有任何代码执行它，于是 2026-11-17 那次修复把 3 个图版
+    原地覆盖掉而没留快照，直到 t15 验收才发现。
+
+    行为：
+      - 目标不存在 → 什么都不做（无「被替换的旧版」）；
+      - 旧版内容与新内容相同 → 什么都不做（幂等重跑不产生噪声快照）；
+      - `--out` / `SITE_ROOT` 预览模式（site_base() != 脚本站点）→ 什么都不做（不污染仓库）；
+      - 已存在内容相同的快照 → 跳过（二次运行幂等）。
+    返回落盘路径或 None。
+    """
+    from pathlib import Path
+    import datetime
+    import shutil
+
+    path = Path(path)
+    if not path.exists():
+        return None
+    site = Path(site) if site else src_base()          # 预览模式判据用脚本站点根
+    try:
+        rel = path.resolve().relative_to((site / "images").resolve())
+    except ValueError:
+        return None                                    # 不在 images/ 下，不管
+    if rel.parts and rel.parts[0] == ARCHIVE_ROOT[1]:
+        return None                                    # 已在归档目录内，避免自我归档
+    tag = tag or ("before_" + _git_short_rev(site))
+    date = date or datetime.date.today().strftime("%Y%m%d")
+    dst = site.joinpath(*ARCHIVE_ROOT) / date / rel.parent / f"{rel.stem}_{tag}{rel.suffix}"
+    cur = path.read_bytes()
+    if dst.exists() and _norm_bytes(dst.read_bytes()) == _norm_bytes(cur):
+        return dst                                     # 幂等
+    dst.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copyfile(path, dst)
+    return dst
+
+
+def _norm_bytes(b):
+    return b.replace(b"\r\n", b"\n").replace(b"\r", b"\n")
+
+
+def is_preview(path=None):
+    """当前是否在「预览到别处」模式（--out / SITE_ROOT 生效）。"""
+    return bool(_argv_out(list(sys.argv)) or __import__("os").environ.get("SITE_ROOT"))
+
 
 def _argv_out(argv):
     """从 argv 里取 --out <dir> / --out=<dir>；没有则返回 None。"""
@@ -59,11 +127,26 @@ def src_base(argv=None):
     return Path(__file__).resolve().parents[2]
 
 
-def write_svg(path, text, argv=None):
-    """写 SVG 文本：UTF-8 无 BOM、LF 换行、不做平台换行转换。"""
+def write_svg(path, text, argv=None, archive=None):
+    """写 SVG 文本：UTF-8 无 BOM、LF 换行、不做平台换行转换。
+
+    `archive`（默认 None = 自动判断）：
+      - True  → 覆盖前先 `archive_before_overwrite()` 留旧版快照（F05/V1 根因修复）；
+      - False → 不留快照（导出/一次性工具）；
+      - None  → 仅当旧版内容与新内容**不同**且不在预览模式时留快照。
+    """
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
     normalized = text.replace("\r\n", "\n").replace("\r", "\n")
+    if archive is None:
+        archive = True
+    if archive and not is_preview() and path.exists():
+        try:
+            same = _norm_bytes(path.read_bytes()) == _norm_bytes(normalized.encode("utf-8"))
+        except OSError:
+            same = False
+        if not same:
+            archive_before_overwrite(path)
     with open(path, "w", encoding="utf-8", newline="") as fh:
         fh.write(normalized)
     return path
@@ -73,4 +156,34 @@ def read_text(path):
     """读文本并归一为 LF（供生成器解析源 SVG 用）。"""
     with open(path, "r", encoding="utf-8", newline="") as fh:
         return fh.read().replace("\r\n", "\n").replace("\r", "\n")
-# ymzhu 2026-11-17 19:55
+
+
+# ---------------------------------------------------------------------------
+# 单一事实源（V2 修复：行数族不再散落在生成器里）
+# ---------------------------------------------------------------------------
+FACTS_REL = ("images", "tools", "data", "facts.json")
+
+
+def load_facts(site=None):
+    """读 `images/tools/data/facts.json`（唯一事实源），返回 dict。
+
+    生成器一律从这里取业务数字，不得在源码里写字面量；页面（静态 HTML，
+    本站无构建步骤）由 `check_facts.py` 反向核对，属于同一套单一事实源约定。
+    """
+    import json
+
+    p = Path(site if site is not None else site_base()) / Path(*FACTS_REL)
+    if not p.exists():
+        raise SystemExit(f"[site_paths] 缺少事实源：{p}")
+    with open(p, "r", encoding="utf-8") as fh:
+        return json.load(fh)
+
+
+def file_lines(site=None):
+    """`facts.json` 的 `file_lines` 块（RTL/checker 行数族）。"""
+    facts = load_facts(site)
+    if "file_lines" not in facts:
+        raise SystemExit("[site_paths] facts.json 缺少 file_lines 块"
+                         "（用 extract_facts.py --lines-src 生成）")
+    return facts["file_lines"]
+# ymzhu 2026-11-17 20:35

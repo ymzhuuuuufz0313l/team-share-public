@@ -71,5 +71,25 @@
       "t_H3840_V16_FPS120_SCREN1_420b_for_chengli_test",
       "t_H3840_V16_FPS120_SD_CHOP_F3_SD_CHOP5_420b"
     ]
+  },
+  "file_lines": {
+    "_source": "HK1V11 仓 anchor a7130ba7 的 wc -l 实测（基线列取 66ecf97d）；由 extract_facts.py --lines-src 可重算",
+    "_reproduce": "git -C <HK1V11> archive a7130ba7 DV_TCON_C/top/agents/isprx_env/isptx_agent/checker_420b.sv DV_TCON_C/top/agents/isprx_env/isptx_agent/isptx_sequence.sv HDL/HK1V11_digital_top/long_encoding | tar -xf - -C <tmp> && python images/tools/extract_facts.py --lines-src <tmp> --src <anchor tests 目录> --out images/tools/data/facts.json",
+    "paths": {
+      "checker_420b": "DV_TCON_C/top/agents/isprx_env/isptx_agent/checker_420b.sv",
+      "isptx_sequence": "DV_TCON_C/top/agents/isprx_env/isptx_agent/isptx_sequence.sv",
+      "long_encoding_align": "HDL/HK1V11_digital_top/long_encoding/LONG_ENCODING_ALIGN.v",
+      "long_encoding_error_ctrl": "HDL/HK1V11_digital_top/long_encoding/LONG_ENCODING_ERROR_CTRL.v",
+      "long_encoding_output": "HDL/HK1V11_digital_top/long_encoding/LONG_ENCODING_OUTPUT.v"
+    },
+    "baseline_commit": "66ecf97d",
+    "head_commit": "a7130ba7",
+    "checker_420b": 77,
+    "isptx_sequence_baseline": 1456,
+    "isptx_sequence_head": 1865,
+    "isptx_sequence_delta": 409,
+    "long_encoding_align": 559,
+    "long_encoding_error_ctrl": 263,
+    "long_encoding_output": 477
   }
 }

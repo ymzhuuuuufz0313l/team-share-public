@@ -25,6 +25,25 @@ from collections import Counter, OrderedDict
 
 TOKEN = "420b"
 
+# 文件行数族（V2 / t15 验收）：站点 architecture.html + delta_env_components 图内用到的行数。
+# 事实源在 HK1V11 仓，故与 case 统计分开取源：`--lines-src` 指向 anchor 快照解包目录。
+FILE_LINE_FILES = OrderedDict([
+    ("checker_420b", "DV_TCON_C/top/agents/isprx_env/isptx_agent/checker_420b.sv"),
+    ("isptx_sequence", "DV_TCON_C/top/agents/isprx_env/isptx_agent/isptx_sequence.sv"),
+    ("long_encoding_align", "HDL/HK1V11_digital_top/long_encoding/LONG_ENCODING_ALIGN.v"),
+    ("long_encoding_error_ctrl",
+     "HDL/HK1V11_digital_top/long_encoding/LONG_ENCODING_ERROR_CTRL.v"),
+    ("long_encoding_output", "HDL/HK1V11_digital_top/long_encoding/LONG_ENCODING_OUTPUT.v"),
+])
+HEAD_COMMIT = "a7130ba7"
+BASELINE_COMMIT = "66ecf97d"
+
+
+def line_count(path):
+    """与 `wc -l` 同口径：数 '\\n' 的个数（末行无换行则不计）。"""
+    with open(path, "rb") as fh:
+        return fh.read().count(b"\n")
+
 # 名称标记 → 统计项名（图内 "×N" 项）
 NAME_TOKENS = [
     ("DPLC_MODE1", r"DPLC_MODE"),      # 名称里出现 DPLC_MODE(=1)
@@ -99,6 +118,13 @@ def main():
                          "两者都没有则报错退出（不再回落到某个人的本机绝对路径）")
     ap.add_argument("--out", default=None,
                     help="facts.json 输出路径（默认 images/tools/data/facts.json，相对本脚本）")
+    ap.add_argument("--lines-src", default=os.environ.get("HK11_LINES_SRC"),
+                    help="文件行数族的源树根（anchor 快照解包目录，需含 DV_TCON_C/ 与 HDL/）；"
+                         "不给则沿用现有 facts.json 里的 file_lines（不臆造）")
+    ap.add_argument("--baseline-src", default=os.environ.get("HK11_LINES_BASELINE_SRC"),
+                    help="基线版本源树根（默认沿用现有 file_lines 的基线值）")
+    ap.add_argument("--head-commit", default=HEAD_COMMIT)
+    ap.add_argument("--baseline-commit", default=BASELINE_COMMIT)
     a = ap.parse_args()
 
     if not a.src:
@@ -138,6 +164,62 @@ def main():
     ])
 
     out = a.out or os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "facts.json")
+
+    # —— 文件行数族（V2）：有源则重算，无源则沿用旧值（绝不臆造一个数字）——
+    prev = {}
+    if os.path.exists(out):
+        try:
+            with open(out, encoding="utf-8") as fh:
+                prev = json.load(fh)
+        except Exception:
+            prev = {}
+    if a.lines_src:
+        fl = OrderedDict()
+        root_ = os.path.abspath(a.lines_src).replace("\\", "/")
+        fl["_source"] = ("HK1V11 仓 anchor %s 的 wc -l 实测（基线列取 %s）；"
+                         "由 extract_facts.py --lines-src 可重算" % (a.head_commit, a.baseline_commit))
+        fl["_reproduce"] = (
+            "git -C <HK1V11> archive %s DV_TCON_C/top/agents/isprx_env/isptx_agent/checker_420b.sv "
+            "DV_TCON_C/top/agents/isprx_env/isptx_agent/isptx_sequence.sv "
+            "HDL/HK1V11_digital_top/long_encoding | tar -xf - -C <tmp> && "
+            "python images/tools/extract_facts.py --lines-src <tmp> --src <anchor tests 目录> "
+            "--out images/tools/data/facts.json" % a.head_commit)
+        fl["paths"] = OrderedDict(FILE_LINE_FILES)
+        fl["baseline_commit"] = a.baseline_commit
+        fl["head_commit"] = a.head_commit
+        counts = {}
+        for key, rel in FILE_LINE_FILES.items():
+            fp = os.path.join(a.lines_src, rel)
+            if not os.path.exists(fp):
+                raise SystemExit("[extract_facts] 行数源缺失：%s（--lines-src 需含 DV_TCON_C/ 与 HDL/）"
+                                 % fp)
+            counts[key] = line_count(fp)
+        fl["checker_420b"] = counts["checker_420b"]
+        fl["isptx_sequence_head"] = counts["isptx_sequence"]
+        fl["long_encoding_align"] = counts["long_encoding_align"]
+        fl["long_encoding_error_ctrl"] = counts["long_encoding_error_ctrl"]
+        fl["long_encoding_output"] = counts["long_encoding_output"]
+        base = None
+        if a.baseline_src:
+            bp = os.path.join(a.baseline_src, FILE_LINE_FILES["isptx_sequence"])
+            if not os.path.exists(bp):
+                raise SystemExit("[extract_facts] 基线源缺失：%s" % bp)
+            base = line_count(bp)
+        elif "file_lines" in prev:
+            base = prev["file_lines"].get("isptx_sequence_baseline")
+        if base is None:
+            raise SystemExit("[extract_facts] 缺基线行数：给 --baseline-src 或先有一份含 "
+                             "file_lines.isptx_sequence_baseline 的 facts.json")
+        fl["isptx_sequence_baseline"] = base
+        fl["isptx_sequence_delta"] = fl["isptx_sequence_head"] - base
+        facts["file_lines"] = fl
+    elif "file_lines" in prev:
+        facts["file_lines"] = prev["file_lines"]
+        print("[extract_facts] 未给 --lines-src：沿用现有 facts.json 的 file_lines（行数族来自 HK1V11 仓）")
+    else:
+        raise SystemExit("[extract_facts] facts.json 无 file_lines 且未给 --lines-src，"
+                         "拒绝产出缺行数族的事实源")
+
     os.makedirs(os.path.dirname(out) or ".", exist_ok=True)
     with open(out, "w", encoding="utf-8", newline="") as fh:
         json.dump(facts, fh, ensure_ascii=False, indent=2)
