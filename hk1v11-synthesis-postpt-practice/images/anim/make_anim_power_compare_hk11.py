@@ -45,7 +45,7 @@ import os
 BASE = Path(r"E:\project\team-share-public\hk1v11-synthesis-postpt-practice")
 SRC = BASE / "images" / "power_compare_hk11.svg"
 OUT = BASE / "images" / "anim" / "power_compare_hk11.svg"
-N_ROWS = 20          # 静态源 = 20 行（原 18 行 + 1117 3G/4G/4.46G 三条新增行）
+N_ROWS = 21          # 静态源 = 21 行（原 18 行 + 1117 三条 + 1V22(1027) 3G 8.39 一条，2026-11-17）
 
 # 元素级动效声明：静态源只保留视觉初态（opacity/transform-origin），
 # 动画版在这里补回 animation 引用，静态图因此不含未定义 keyframes 的悬空引用
@@ -146,7 +146,7 @@ def build():
     assert len(rm) == 1, f"源 reduced-motion 守卫应恰 1 处，实得 {len(rm)}"
     lines[rm[0]] = ""
     defs_close = find(lambda s: s.strip() == "</defs>")
-    bg_i = find(lambda s: s.strip() == '<rect x="0" y="0" width="605" height="510" fill="#ffffff"/>')
+    bg_i = find(lambda s: s.strip() == '<rect x="0" y="0" width="605" height="532" fill="#ffffff"/>')
     in_g = find(lambda s: s.strip() == '<g class="in">')
     in_g_close = find(lambda s: s.strip() == "</g>", in_g + 1)
     grid_g = find(lambda s: s.strip() == '<g stroke="#ddd6c8" stroke-width="1">')
@@ -183,7 +183,7 @@ def build():
             assert m, f"r{n} 紫色行底 rect 解析失败: {band}"
             purple_rows.append(n)
             purp_spans.append((float(m.group(1)), float(m.group(1)) + float(m.group(2))))
-    assert purple_rows == [17, 18, 19], f"1117 紫色新增行应 r17~r19，实得 {purple_rows}"
+    assert purple_rows == [18, 19, 20], f"1117 紫色新增行应 r18~r20，实得 {purple_rows}"
     sweep_y0 = min(a for a, _ in purp_spans)
     sweep_y1 = max(b for _, b in purp_spans)
 
@@ -207,18 +207,18 @@ def build():
     # 数据行：行组 .row(0.15+0.09n)；数值条簇内层 .row(+0.12) 再包 .cellwave 条簇慢波
     # （duration 4s，delay -0.1n 自上而下递增）；r10/r12/r16 簇在 cellwave 内再加 pulse；
     # 行尾 1015/1027/1117 组头标签包 .cellwave（1015=0s / 1027·1117=1.2s）
-    pulse_of = {12: ("pulse", "-0.5s"), 10: ("pulse-b", "-1.9s"), 16: ("pulse-b", "-2.6s"),
-                19: ("pulse-b3", "-1.2s")}
+    pulse_of = {13: ("pulse", "-0.5s"), 10: ("pulse-b", "-1.9s"), 11: ("pulse-b", "-2.2s"),
+                17: ("pulse-b", "-2.6s"), 20: ("pulse-b3", "-1.2s")}
     n_hdr = sum(1 for n in range(N_ROWS) for s in lines[row_spans[n][0] + 1:row_spans[n][1]]
                 if s.strip().startswith('<text x="10"')
                 and ("(1015)" in s or "(1027)" in s or "(1117)" in s))
-    assert n_hdr == 8, f"1015/1027/1117 组头标签应 8 处，实得 {n_hdr}"
+    assert n_hdr == 9, f"1015/1027/1117 组头标签应 9 处，实得 {n_hdr}"
     for n in range(N_ROWS):
         ro, rc = row_spans[n]
         d = 0.15 + 0.09 * n
         o.append(f'<g class="r{n} row" style="animation-delay:{d:.2f}s">')
         blk = lines[ro + 1:rc]
-        if n == 12:
+        if n == 13:
             cs = find_in(blk, lambda s: 'class="peakglow"' in s)
         else:
             cs = find_in(blk, lambda s: 'class="bar b' in s and f'b{n}"' in s)
@@ -343,7 +343,7 @@ def main():
     print("[make_anim_power_compare_hk11 v4.1]",
           "row_g=", rows_g,
           "cellwave=", data.count('class="cellwave"'),
-          "(hdr 8 + cluster", cluster_waves, ")",
+          "(hdr", n_hdr if "n_hdr" in dir() else 9, "+ cluster", cluster_waves, ")",
           "purpband=", purp,
           "pulse=", len(re.findall(r'class="(pulse|pulse-b|pulse-b3)"', data)),
           "fade=", data.count('class="fade"'))
@@ -359,4 +359,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-# ymzhu 2026-11-17 15:40
+# ymzhu 2026-11-17 17:35
