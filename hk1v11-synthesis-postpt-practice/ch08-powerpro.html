@@ -111,7 +111,7 @@ WARNING: PowerPro 读取的 RTL 必须是可综合代码，无法综合会 inter
 
 ![HK1V11 vs 其他项目 PowerPro 功耗对比](./images/anim/power_compare_hk11.svg?v=20261117b)
 
-> 数据源：HV2M23/3310B1/1V21 = back_ppt（PowerPro LVT）；**HV1V22 = Nexchip 145nm 实测（Normal=4G 不开 DPLC 15.8，DPLC=3G 开 14.8）**；HV1V31 数据暂缺已移除。**HK1V11 双组带 run 代**：**(0922)** = 21.08 / DPLC 21.36 / 4K180 37.9（Area 294907）；**(1003)**（1008 包 `rep_dir_*_1003` Initial Design）= 16.30 / DPLC 16.30 / 4K180 29.47（Area 314707，1003 DC 报告）；**1027 代（1V11 4G 24.42，Area=299276；1V22 4G 17.00、3G 8.39，Area=162475）**；**1117 代（1V11，Area=310144）三档：3G 18.47 / 4G 24.15 / 4.46G 27.04 mW**（1015 / 1027 各代数据保留备查）；对比图上 1117 三行用**紫色高亮**，与 1015 代琥珀、1027 代蓝并列区分。**DPLC 列**口径 = 该 run 开启 DPLC 时的功耗（mW），1117 代 3G 档 DPLC = 18.087 mW。
+> 数据源：HV2M23/3310B1/1V21 = back_ppt（PowerPro LVT）；**HV1V22 = Nexchip 145nm 实测（Normal=4G 不开 DPLC 15.8，DPLC=3G 开 14.8）**；HV1V31 数据暂缺已移除。**HK1V11 双组带 run 代**：**(0922)** = 21.08 / DPLC 21.36 / 4K180 37.9（Area 294907）；**(1003)**（1008 包 `rep_dir_*_1003` Initial Design）= 16.30 / DPLC 16.30 / 4K180 29.47（Area 314707，1003 DC 报告）；**1027 代（1V11 4G 24.42，Area=299276；1V22 3G 8.39、4G 17.00，Area=162475）**；**1117 代（1V11，Area=310144）三档：3G 18.47 / 4G 24.15 / 4.46G 27.04 mW**（1015 / 1027 各代数据保留备查）；对比图上 1117 三行用**紫色高亮**，与 1015 代琥珀、1027 代蓝并列区分。**DPLC 列**口径 = 该 run 开启 DPLC 时的功耗（mW），1117 代 3G 档 DPLC = 18.087 mW。
 
 > ⚠️ HK1V11 功耗绝对值偏高**主因速率更高**（2.97G/4.47G vs 其他 1.8G/0.9G），**非同速率对比**，直接比 mW 会偏（HV1V22 为 4G/3G，对比注意口径）。HV1V22 的**双边同流程 PowerPro 对账**（同工具同库同 Initial 口径）见 §4.5。
 
@@ -319,6 +319,81 @@ WARNING: PowerPro 读取的 RTL 必须是可综合代码，无法综合会 inter
 - **位置迁移**（BUFFER_I/K 码对齐在 1V22 沉入 rx_phy）：双边同计净差 **+2.5 mW**
 
 > RTL 根因与优化建议详见 `script/_1v11_vs_1v22_hdl_crossvalidate.md`（三模型交叉验证权威版）；面板族逐子功能 1V22 对应物排查见 `script/_panel_ctrl_final.md`（t16 交叉验证最终版，K3 t14 × GLM t15）。关键优化着手点：CHPI_SD_CTRL L270/271 有 2 个被注释的 ICG 可直接启用（1V22 已在 LC_CSPIF_L0 实装同款）。
+
+### 4.6 跨项目对比：1V11 vs 1V22（HV1V22）同频 3G 模块级功耗
+
+> 数据源：口径统一为 **Initial Design**（PowerPro 报告 `__Top_Node__` / top total 行）；1V11 = 11-17 交付的 1117 包（top total **18474.63 µW = 18.47 mW**）；1V22 = 11-17 用户新交的 3G 报告（top total **8392.10 µW = 8.39 mW**）。两侧同工具（**PowerPro 2024.2_1**）、同库（M31HSSC900EL150SL_125CSS1P62_cmax_ccs）、同 Initial 口径；档位归属按**用户交付说明**标注。总差距 = **10082.53 µW**。
+
+<div class="section-title">对比 · 1V11 vs 1V22 @3G 净差对账</div>
+<div class="chapter-grid" style="margin-bottom: 12px;">
+  <div class="chapter-card card-span card-hero card-center">
+    <div class="num">1V11 vs 1V22（同工具 · 同库 · 同 Initial 口径 · 3G）</div>
+    <div class="title" style="font-family: var(--font-mono); font-weight: 600; color: var(--accent);">18.47 <span style="color: var(--muted); font-size: 22px;">vs</span> 8.39 <span style="font-size: 20px;">mW</span></div>
+    <div class="desc" style="margin-top: 10px; font-size: 14px;">净差 <b>10082.53 µW</b><span class="badge badge-warn" style="margin-left: 10px;">×2.20</span>　对账 = 1V11 多出 10123.29 − 1V22 独有 40.76 = 10082.53 ✓</div>
+  </div>
+  <div class="chapter-card card-center card-mini">
+    <div class="num">1V11 多出（九类）</div>
+    <div class="title" style="font-family: var(--font-mono);">+10.12 mW</div>
+    <div class="desc">短编码 2127 + 面板 SD 时序 2124 + 输入同步 1711 + DTCTL 1327 + ANCTL 721 + 配置 660 + 长编码 617 + 其他 485 + 时钟 352</div>
+  </div>
+  <div class="chapter-card card-center card-mini">
+    <div class="num">1V22 独有</div>
+    <div class="title" style="font-family: var(--font-mono); color: var(--ok);">+0.04 mW</div>
+    <div class="desc">rx_phy(EQ/LEQ) 38.07 + MON_DISP 2.69</div>
+  </div>
+  <div class="chapter-card card-center card-mini">
+    <div class="num">残差闭合</div>
+    <div class="title" style="font-family: var(--font-mono);">两侧各 = total</div>
+    <div class="desc">1V11 其他 1037.10 / 1V22 其他 552.36；1V22 侧未单列的层级块份额落在「其他」，11 类逐项相加各自等于 top total</div>
+  </div>
+</div>
+
+#### 4.6.1 功耗组成可视化
+
+![1V11 vs 1V22 Module Power Comparison @3G](./images/anim/power_module_compare_1v11_1v22_3g.svg?v=20261117)
+
+![1V11 vs 1V22 Power Composition Donut @3G](./images/anim/power_composition_donut_1v11_1v22_3g.svg?v=20261117)
+
+#### 4.6.2 模块级功耗对比（按功能块对齐，按 1V11−1V22 降序）
+
+<style>
+.pwr46 th:nth-child(1), .pwr46 td:nth-child(1) { width: 30%; }
+.pwr46 th:nth-child(2), .pwr46 td:nth-child(2) { width: 10%; }
+.pwr46 th:nth-child(3), .pwr46 td:nth-child(3) { width: 10%; }
+.pwr46 th:nth-child(4), .pwr46 td:nth-child(4) { width: 11%; min-width: 88px; }
+.pwr46 td.num, .pwr46 th.num { white-space: nowrap; }
+</style>
+
+<div class="pwr46">
+
+| 功能块（模块名） | 1V11 (µW) | 1V22 (µW) | **差 (µW)** | 说明 |
+|---|---:|---:|---:|---|
+| **短编码解码**（SHORT_ENCODING ↔ LC_CSPIF_L0 + CSPI_CMD_ALIGN） | 7346.01 | 5219.33 | **+2126.68** | 1V22 侧 = LC_CSPIF_L0 3861.65 + CSPI_CMD_ALIGN 1357.68，面板 SD 时序核融合其中、不可单拆 |
+| **面板 SD 时序**（CHPI_SD_CTRL ↔ 融合进 LC_CSPIF_L0） | 2123.67 | 0 | **+2123.67** | 1V22 独立项为 0，已并入上一行；同功能不同实现形态 |
+| **输入同步**（BUFFER_I ↔ 沉入 rx_phy） | 1711.31 | 0 | **+1711.31** | 1V22 侧不单列，份额落进 rx_phy 层级 |
+| **显示时序**（DTCTL ↔ TOTAL_DTCTL，含 DPLC） | 3321.65 | 1994.99 | **+1326.66** | 同功能：两侧均含 DPLC 数据生成 |
+| **ANCTL** | 856.03 | 134.78 | **+721.25** | 同名功能块 |
+| **寄存器配置**（CONFIG_CTRL ↔ LC_CPUWR） | 1104.74 | 444.56 | **+660.18** | 同功能，两侧配置通路宽度不同 |
+| **长编码**（LONG_ENCODING） | 617.19 | 0 | **+617.19** | 1V22 无该通路 |
+| **其他小模块** | 1037.10 | 552.36 | **+484.74** | 两侧均为残差项（MONBLOCK/FAULT/IO/WD/RSTN 等未单列层级之和） |
+| **时钟生成**（CLKGEN ↔ CLKGEN_U0） | 356.93 | 5.32 | **+351.61** | 同功能，1V11 多协议 mux + 多级 ICG |
+| rx_phy（EQ/LEQ） | 0 | **38.07** | **−38.07** | 1V11 无独立 rx_phy 层级 |
+| MON_DISP（校准屏显） | 0 | **2.69** | **−2.69** | 1V11 无该功能 |
+| **1V11 多出小计** | | | **+10123.29** | |
+| **1V22 独有小计** | | | **−40.76** | |
+| **净差距** | 18474.63 | 8392.10 | **= 10082.53** ✓ | |
+
+</div>
+
+> **可比性边界**：① 两侧均为 **Initial Design** 的 top total 与层级子树口径，11 类逐项相加各自等于 top total（1V11 18474.63 / 1V22 8392.10），差额可逐项对账；② 工具（PowerPro 2024.2_1）与库（M31HSSC900EL150SL_125CSS1P62_cmax_ccs）相同，口径一致；③ 两侧层级集合不完全相同——1V22 报告缺 `LC_MONBLOCK` 层级块，该份额落进「其他小模块」，故「其他」一行不可当作同功能对比；④ 模块级差额是两侧**结构差异**的投影，本节不对差额做机理归因，也不由档位标注反推时钟频率与周期数值。
+
+#### 4.6.3 结论
+
+**1V11@3G 为 18.47 mW，1V22@3G 为 8.39 mW，1V11 高出 10082.53 µW（×2.20）。**
+
+差距几乎全部来自 1V11 的独立功能块与实现形态：面板 SD 时序 2124 + 短编码实现差 2127 + 输入同步 1711 + DTCTL 1327 + ANCTL 721 + 配置 660 + 长编码 617 + 其他 485 + 时钟 352 ≈ **10123.29 µW**；1V22 侧独有的 rx_phy 38.07 + MON_DISP 2.69 仅 **40.76 µW** 抵扣。组成占比上，1V11 前三大项为短编码解码 39.8%、显示时序 18.0%、面板 SD 时序 11.5%；1V22 侧为 LC_CSPIF_L0（含融合的 SD 时序核）46.0%、TOTAL_DTCTL 23.8%、CSPI_CMD_ALIGN 16.2%。全部结论以两侧 top total 为锚，模块级明细供逐项复核。
+
+<!-- ymzhu 2026-11-17 17:45 -->
 
 ## 5. 交叉引用
 

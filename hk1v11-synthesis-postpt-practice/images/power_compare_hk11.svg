@@ -215,30 +215,30 @@ text{font-family:ui-monospace,Consolas,monospace,"Microsoft YaHei",sans-serif;fo
 <text x="594" y="265.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
 </g>
 <g class="r10">
-<rect x="0" y="276" width="605" height="22" fill="#1d4ed8" fill-opacity="0.20"/>
-<rect class="bar b10" x="366" y="280" width="20" height="14" rx="2" fill="#1d4ed8" fill-opacity="0.85"/>
-<path d="M441 290 L447 290 L444 284 Z" fill="#1d4ed8"/>
-<circle class="dot d10" cx="386" cy="287" r="2.5" fill="#1d4ed8"/>
+<rect x="0" y="276" width="605" height="22" fill="#3b82f6" fill-opacity="0.12"/>
+<rect class="bar b10" x="366" y="280" width="10" height="14" rx="2" fill="#3b82f6" fill-opacity="0.85"/>
+<path d="M441 290 L447 290 L444 284 Z" fill="#3b82f6"/>
+<circle class="dot d10" cx="376" cy="287" r="2.5" fill="#3b82f6"/>
 <text x="10" y="287.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HV1V22 (1027)</text>
-<text x="192" y="287.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">4G</text>
+<text x="192" y="287.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">3G</text>
 <text x="254" y="287.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
 <text x="310" y="287.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">162475</text>
 <text x="354" y="287.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1L</text>
-<text x="440" y="287.0" text-anchor="end" dominant-baseline="central" fill="#1d4ed8" font-weight="bold">17.00</text>
+<text x="440" y="287.0" text-anchor="end" dominant-baseline="central" fill="#3b82f6" font-weight="bold">8.39</text>
 <text x="514" y="287.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
 <text x="594" y="287.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
 </g>
 <g class="r11">
-<rect x="0" y="298" width="605" height="22" fill="#1d4ed8" fill-opacity="0.20"/>
-<rect class="bar b11" x="366" y="302" width="10" height="14" rx="2" fill="#1d4ed8" fill-opacity="0.85"/>
-<path d="M441 312 L447 312 L444 306 Z" fill="#1d4ed8"/>
-<circle class="dot d11" cx="376" cy="309" r="2.5" fill="#1d4ed8"/>
+<rect x="0" y="298" width="605" height="22" fill="#3b82f6" fill-opacity="0.12"/>
+<rect class="bar b11" x="366" y="302" width="20" height="14" rx="2" fill="#3b82f6" fill-opacity="0.85"/>
+<path d="M441 312 L447 312 L444 306 Z" fill="#3b82f6"/>
+<circle class="dot d11" cx="386" cy="309" r="2.5" fill="#3b82f6"/>
 <text x="10" y="309" dominant-baseline="central" fill="#1c2534" font-weight="bold">HV1V22 (1027)</text>
-<text x="192" y="309" text-anchor="end" dominant-baseline="central" fill="#1c2534">3G</text>
+<text x="192" y="309" text-anchor="end" dominant-baseline="central" fill="#1c2534">4G</text>
 <text x="254" y="309" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
 <text x="310" y="309" text-anchor="end" dominant-baseline="central" fill="#1c2534">162475</text>
 <text x="354" y="309" text-anchor="end" dominant-baseline="central" fill="#1c2534">1L</text>
-<text x="440" y="309" text-anchor="end" dominant-baseline="central" fill="#1d4ed8" font-weight="bold">8.39</text>
+<text x="440" y="309" text-anchor="end" dominant-baseline="central" fill="#3b82f6" font-weight="bold">17.00</text>
 <text x="514" y="309" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
 <text x="594" y="309" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
 </g>
@@ -308,16 +308,16 @@ text{font-family:ui-monospace,Consolas,monospace,"Microsoft YaHei",sans-serif;fo
 <text x="594" y="419" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
 </g>
 <g class="r17">
-<rect x="0" y="430" width="605" height="22" fill="#1d4ed8" fill-opacity="0.20"/>
-<rect class="bar b17" x="366" y="434" width="28" height="14" rx="2" fill="#1d4ed8" fill-opacity="0.85"/>
-<path d="M441 444 L447 444 L444 438 Z" fill="#1d4ed8"/>
-<circle class="dot d17" cx="394" cy="441" r="2.5" fill="#1d4ed8"/>
+<rect x="0" y="430" width="605" height="22" fill="#3b82f6" fill-opacity="0.12"/>
+<rect class="bar b17" x="366" y="434" width="28" height="14" rx="2" fill="#3b82f6" fill-opacity="0.85"/>
+<path d="M441 444 L447 444 L444 438 Z" fill="#3b82f6"/>
+<circle class="dot d17" cx="394" cy="441" r="2.5" fill="#3b82f6"/>
 <text x="10" y="441" dominant-baseline="central" fill="#1c2534" font-weight="bold">HK1V11 (1027)</text>
 <text x="192" y="441" text-anchor="end" dominant-baseline="central" fill="#1c2534">4G</text>
 <text x="254" y="441" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
 <text x="310" y="441" text-anchor="end" dominant-baseline="central" fill="#1c2534">299276</text>
 <text x="354" y="441" text-anchor="end" dominant-baseline="central" fill="#1c2534">1L</text>
-<text x="440" y="441" text-anchor="end" dominant-baseline="central" fill="#1d4ed8" font-weight="bold">24.42</text>
+<text x="440" y="441" text-anchor="end" dominant-baseline="central" fill="#3b82f6" font-weight="bold">24.42</text>
 <text x="514" y="441" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
 <text x="594" y="441" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
 </g>
@@ -406,7 +406,7 @@ text{font-family:ui-monospace,Consolas,monospace,"Microsoft YaHei",sans-serif;fo
 <rect x="1" y="255" width="603" height="20" rx="3"/>
 <rect x="1" y="409" width="603" height="20" rx="3"/>
 </g>
-<g class="breath2" fill="#1d4ed8"><rect x="1" y="276" width="603" height="20" rx="3"/><rect x="1" y="430" width="603" height="20" rx="3"/></g>
+<g class="breath2" fill="#3b82f6" fill-opacity="0.5"><rect x="1" y="276" width="603" height="20" rx="3"/><rect x="1" y="430" width="603" height="20" rx="3"/></g>
 <g class="breath3" fill="#7c3aed" fill-opacity="0.16"><rect x="1" y="475" width="603" height="20" rx="3"/></g>
 <g clip-path="url(#cCmp)"></g>
 <g clip-path="url(#cCmp2)"></g>
