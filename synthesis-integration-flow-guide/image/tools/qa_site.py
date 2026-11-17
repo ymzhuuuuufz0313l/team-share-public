@@ -64,13 +64,19 @@ def qa_leak():
     leak_files = []
     ymzhu_files = []
     ymzhu_bad = []
+    scanned = 0
     for f in files:
-        if f == SELF or not os.path.exists(f):
+        if f == SELF:
+            continue
+        # 一律以 GUIDE（脚本自身定位的站根）为锚，与当前 cwd 无关
+        p = os.path.join(GUIDE, f)
+        if not os.path.isfile(p):
             continue
         try:
-            s = io.open(f, encoding="utf-8").read()
+            s = io.open(p, encoding="utf-8").read()
         except Exception:
             continue
+        scanned += 1
         if LEAK.search(s):
             leak_files.append(f)
         if "ymzhu" in s:
@@ -78,9 +84,12 @@ def qa_leak():
             for ln, line in enumerate(s.splitlines(), 1):
                 if "ymzhu" in line and not ALLOW.search(line) and not mention_allowed(f, line):
                     ymzhu_bad.append("%s:%d:%s" % (f, ln, line.strip()[:100]))
-    ok = not leak_files and not ymzhu_bad
-    print("PASS" if ok else "FAIL", "泄露扫描：内部标识命中 %d 文件；含 ymzhu 的文件 %d 个（其中非签名/非公开句柄形态 %d 行）"
-          % (len(leak_files), len(ymzhu_files), len(ymzhu_bad)))
+    # 空扫描不得当 PASS：实扫文件数必须 > 0（防 cwd 错位/目录改名导致的假绿）
+    ok = scanned > 0 and not leak_files and not ymzhu_bad
+    print("PASS" if ok else "FAIL", "泄露扫描：实扫 %d 文件；内部标识命中 %d 文件；含 ymzhu 的文件 %d 个（其中非签名/非公开句柄形态 %d 行）"
+          % (scanned, len(leak_files), len(ymzhu_files), len(ymzhu_bad)))
+    if scanned <= 0:
+        print("    X 实扫文件数为 0（站根=%s）：检查目录/索引，禁止空集合 PASS" % GUIDE)
     for f in leak_files:
         print("    X 内部标识:", f)
     for b in ymzhu_bad[:10]:
@@ -131,16 +140,31 @@ def qa_kit():
 def qa_cache_bust():
     bad = []
     n = 0
+    htmls = 0
     for f in tracked():
         if not f.endswith(".html"):
             continue
-        s = io.open(f, encoding="utf-8").read()
+        # 一律以 GUIDE（脚本自身定位的站根）为锚，与当前 cwd 无关
+        p = os.path.join(GUIDE, f)
+        if not os.path.isfile(p):
+            continue
+        try:
+            s = io.open(p, encoding="utf-8").read()
+        except Exception:
+            continue
+        htmls += 1
         for m in re.finditer(r"(?:src=\"|!\[[^\]]*\]\()([^\")]*image/anim/[^\")]+\.svg)([^\")\s]*)", s):
             n += 1
             if "?v=" not in (m.group(2) or ""):
                 bad.append("%s: %s" % (f, m.group(1)))
-    ok = not bad
-    print("PASS" if ok else "FAIL", "anim 图引用缓存打击：%d 处引用，缺 ?v= %d 处" % (n, len(bad)))
+    # 双重空集合防线：实扫 html > 0；且本站在册 anim 引用必须被匹配到（正则/目录异常不得静默 PASS）
+    ok = htmls > 0 and n > 0 and not bad
+    print("PASS" if ok else "FAIL", "anim 图引用缓存打击：实扫 %d 个 html，%d 处引用，缺 ?v= %d 处"
+          % (htmls, n, len(bad)))
+    if htmls <= 0:
+        print("    X 实扫 html 数为 0（站根=%s）：检查目录/索引，禁止空集合 PASS" % GUIDE)
+    if n <= 0:
+        print("    X 未匹配到任何 image/anim/*.svg 引用：疑似正则或目录异常，禁止空集合 PASS")
     for b in bad:
         print("    X", b)
     return ok
@@ -162,4 +186,4 @@ def main():
 if __name__ == "__main__":
     sys.exit(main())
 
-# ymzhu 2026-11-17 20:50
+# ymzhu 2026-11-17 21:10
