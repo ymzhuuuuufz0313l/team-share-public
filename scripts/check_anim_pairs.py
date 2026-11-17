@@ -63,6 +63,10 @@ def main() -> int:
 
     print('[check_anim_pairs] repo: %s' % root)
     print('[check_anim_pairs] anim svg total: %d' % total)
+    if total == 0:
+        # 0 个动态 SVG 时不能报 OK —— 那是"没做任何判定"而不是"判定通过"（空跑假绿）。
+        print('[check_anim_pairs] RESULT: SKIP (0 anim svg in this repo — no pairing check performed)')
+        return 0
     if missing:
         print('[check_anim_pairs] MISSING static counterpart: %d' % len(missing))
         for anim, expect in missing:
@@ -75,3 +79,5 @@ def main() -> int:
 
 if __name__ == '__main__':
     sys.exit(main())
+
+# ymzhu 2026-11-17 21:23
