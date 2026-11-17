@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 # gen_reg_sync_1104.py — 1104 服务器同步 · 寄存器变更图（静态事实源 + 动画版，blueprint-ui-style v4）
-# 数据源（零手工，源自 t3/t11 双轨 CHANGES + changelist NO=12 草稿）：
+# 数据源（零手工，源自 t3/t11 双轨 CHANGES + changelist NO54 草稿；原 t8 草稿误写 NO=12，2026-11-17 勘误为 NO54 = back3 表末行 NO53 顺延）：
 #   服务器 PACK_TAR_1104V1 态覆盖本地，较 1029v1-clean 5 处差异（用户 11-04 确认全部有意、全采不回退）。
 # 出：images/1104_reg_sync_changes.svg（静态） + images/anim/1104_reg_sync_changes.svg（动画）
 # 配色对齐现有寄存器图（白底 #ffffff / 墨 #1e293b / 灰 #64748b / 线 #94a3b8 #e2e8f0）
@@ -99,7 +99,7 @@ def build_static():
         a.append('<text x="%.1f" y="%.1f" text-anchor="middle" font-size="13" font-weight="700" fill="%s">%s</text>' % ((C4 + C5) / 2, y0 + ROW_H / 2 + 5, scolor, esc(status)))
     # 底注
     FY = top + len(rows) * ROW_H + 26
-    a.append('<text x="550.0" y="%d" text-anchor="middle" font-size="12.5" fill="%s">用户 11-04 确认 5 处差异全部有意 · 全采不回退 · changelist Register Change NO=12 登记草稿（待用户登记）</text>' % (FY, MUTED))
+    a.append('<text x="550.0" y="%d" text-anchor="middle" font-size="12.5" fill="%s">用户 11-04 确认 5 处差异全部有意 · 全采不回退 · changelist Register Change NO54 登记草稿（待用户登记）</text>' % (FY, MUTED))
     a.append('</svg>')
     return "\n".join(a)
 

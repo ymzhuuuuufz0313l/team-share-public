@@ -48,16 +48,32 @@ def check(t):
     fast = [m.group(1) for m in re.finditer(r'flow(?:dot|tail)[^"]*"[^>]*animation-duration:([0-9.]+)s', data)]
     r["train>=2.4s"] = "OK" if all(float(x) >= 2.4 for x in fast) else f"NG({','.join(fast)})"
     # 稳态族 ≥2（march/breathe 不计数）
-    fam = {
-        "train":   len(re.findall(r'class="[^"]*(flowdot|flowtail)', data)),
-        "pulse":   len(re.findall(r'class="[^"]*pulse(-[tb])?', data)),
-        "sweep":   len(re.findall(r'class="[^"]*sweepband', data)),
-        "grow":    len(re.findall(r'class="[^"]*dashgrow', data)),
-        "wave":    len(re.findall(r'class="[^"]*cellwave', data)),
-        "step":    len(re.findall(r'class="[^"]*step"', data)),
+    # 2026-11-17 加固（审查 finding R5）：旧判据只看 class 名出现次数，把整段 <style>（含 @keyframes）
+    # 删掉后仍算「某族存在」——只靠 class 名就能骗过稳态检查。现要求：
+    #   某族计数 > 0 **且** 该族真正依赖的 @keyframes 名在文件里被定义，才算一族生效；
+    #   只有 class 实例、没有对应 keyframes 的族单独记进 steady_kf_missing，供定位。
+    fam_spec = {
+        "train":   (r'class="[^"]*(flowdot|flowtail)',       r"@keyframes\s+flow\s*\{"),
+        "pulse":   (r'class="[^"]*pulse(-[tb])?',            r"@keyframes\s+pulse[TB]?\s*\{"),
+        "sweep":   (r'class="[^"]*sweepband',                r"@keyframes\s+sweepMove\s*\{"),
+        "grow":    (r'class="[^"]*dashgrow',                 r"@keyframes\s+dashgrow\s*\{"),
+        "wave":    (r'class="[^"]*cellwave',                 r"@keyframes\s+wave\s*\{"),
+        "step":    (r'class="[^"]*step"',                    r"@keyframes\s+stepLit\s*\{"),
     }
+    fam, kf_missing = {}, []
+    for name, (cls_re, kf_re) in fam_spec.items():
+        n = len(re.findall(cls_re, data))
+        if n == 0:
+            fam[name] = 0
+        elif re.search(kf_re, data):
+            fam[name] = n
+        else:                      # 有 class 实例但 CSS keyframes 缺失 → 该族不算生效
+            fam[name] = 0
+            kf_missing.append(name)
     n_fam = sum(1 for v in fam.values() if v > 0)
     r["steady>=2fam"] = f"OK({n_fam})" if n_fam >= 2 else f"NG({n_fam})"
+    if kf_missing:
+        r["steady_kf_missing"] = ",".join(kf_missing)
     # 入场元素存在性（结构 sanity，不作硬门）
     for k, pat in (("draw", r'class="draw"'), ("row", r'class="row"'), ("march", r'class="(march|fade)"')):
         r[k] = str(len(re.findall(pat, data)))
