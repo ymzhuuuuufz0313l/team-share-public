@@ -18,12 +18,18 @@
 比对口径与站点 EOL 卫生一致：归档快照落盘时统一把 CRLF/CR 归一为 LF，
 故这里把两侧都归一后比较（不因换行差异误判为「缺归档」）。
 
-用法：
-    python images/tools/check_archive.py                 # 比对 HEAD ↔ 工作区（提交前自查）
-    python images/tools/check_archive.py --base 818ca97  # 事后追查：某历史版本之后被改动的图
-    python images/tools/check_archive.py --site <dir>
+用法（**`--base` 必须显式给出**）：
+    python images/tools/check_archive.py --base HEAD      # 比对 HEAD 与工作区（提交前自查）
+    python images/tools/check_archive.py --base 818ca97   # 事后追查：某历史版本之后被改动的图
+    python images/tools/check_archive.py --base HEAD~1 --site <dir>
 
-退出码：0 = 被改动的图都有快照；1 = 有缺失；2 = 无法判定（不在 git 仓库内等）。
+退出码：0 = 被改动的图都有快照；1 = 有缺失；2 = 无法判定（未给 --base / 不在 git 仓库内等）。
+
+2026-11-17 t28 修复（R2，闸门自伤）：
+    旧版 `--base` 默认 `HEAD`，于是在干净工作树上「被改动的图 = 0」→ 直接打印
+    `RESULT: ALL PASS (无图被改动)` 并 exit 0 —— 等于什么都没检查却给绿灯（静默空跑 PASS）。
+    现在：未显式给 `--base` 一律拒绝运行（exit 2 + 用法提示），绝不返回 PASS；
+    即便给了 `--base` 而差异为 0，也显式打印「本次未检查任何图」的提示，不再静默绿灯。
 """
 import argparse
 import subprocess
@@ -102,9 +108,24 @@ def archive_index(site: Path) -> dict:
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--site", default=None)
-    ap.add_argument("--base", default="HEAD",
-                    help="对比基线 rev（默认 HEAD = 提交前自查工作区改动）")
+    ap.add_argument("--base", default=None,
+                    help="对比基线 rev（必填；提交前自查用 HEAD，事后追查给具体 rev）")
     a = ap.parse_args()
+    for _f in (sys.stdout, sys.stderr):
+        try:
+            _f.reconfigure(encoding="utf-8", errors="replace")
+        except Exception:
+            pass
+    if not a.base:
+        # R2（2026-11-17）：不给基线就无从判定。旧版默认 HEAD，干净树上直接空跑 PASS，
+        # 等于「闸门什么都没查却给绿灯」。这里宁可不跑，也不给假绿。
+        print("[check_archive] ERROR: 必须显式指定 --base <rev>（本闸门不做空跑放行）", file=sys.stderr)
+        print("[check_archive]   提交前自查：python images/tools/check_archive.py --base HEAD",
+              file=sys.stderr)
+        print("[check_archive]   事后追查：  python images/tools/check_archive.py --base <rev>",
+              file=sys.stderr)
+        print("[check_archive] RESULT: 未运行（缺少 --base）", file=sys.stderr)
+        return 2
     site = Path(a.site).resolve() if a.site else site_base()
     root = repo_root(site)
 
@@ -114,7 +135,10 @@ def main():
     print(f"[check_archive] 被改动的图 = {len(changed)}")
 
     if not changed:
-        print("[check_archive] RESULT: ALL PASS (无图被改动)")
+        # 给了 --base 且差异为 0：合法，但必须说清「本次没检查任何图」，避免被读成强绿。
+        print("[check_archive] 注意：base 与工作区之间没有图文件差异 —— 本次未检查任何图"
+              "（这不代表归档完整，只代表这段区间没动图）")
+        print("[check_archive] RESULT: ALL PASS (0 张图被改动，无可检查项)")
         return 0
 
     before = blobs_at(site, root, a.base, changed)
@@ -148,4 +172,4 @@ def main():
 
 if __name__ == "__main__":
     sys.exit(main())
-# ymzhu 2026-11-17 20:30
+# ymzhu 2026-11-17 21:05

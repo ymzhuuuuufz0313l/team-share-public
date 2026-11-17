@@ -973,6 +973,14 @@ def collect_files(args):
 
 
 def main(argv=None):
+    # 2026-11-17 t28 自查（同类风险）：本脚本会打印/落盘中文标签与非 GBK 字符
+    # （U+2194 箭头、U+2714 勾号、U+00B2 上标 2），默认 GBK 控制台下 print 会抛
+    # UnicodeEncodeError，把「其实 PASS」判成红色。这里固定 UTF-8。
+    for _f in (sys.stdout, sys.stderr):
+        try:
+            _f.reconfigure(encoding="utf-8", errors="replace")
+        except Exception:
+            pass
     here = os.path.dirname(os.path.abspath(__file__))
     ap = argparse.ArgumentParser(description="SVG 成图后重叠检测门禁（真浏览器渲染度量）")
     ap.add_argument("--images-dir", default=os.path.dirname(here), help="SVG 所在目录（默认=images/）")

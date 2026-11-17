@@ -66,8 +66,37 @@ def check(t):
     print(f"{'PASS' if ok else 'FAIL'} {t}  [{detail}]")
     return ok
 
+def main(argv):
+    """\u9010\u4e2a\u6821\u9a8c\uff0c\u7edd\u4e0d\u77ed\u8def\u3002
+
+    2026-11-17 t28 \u81ea\u67e5\u4fee\u590d\uff08\u95f8\u95e8\u81ea\u4f24\uff09\uff1a
+      \u00b7 \u65e7\u7248 `all(check(t) for t in sys.argv[1:])` \u5728**\u65e0\u53c2\u6570**\u65f6 all(()) == True\uff0c
+        \u4e00\u5f20\u56fe\u90fd\u6ca1\u6821\u9a8c\u5c31\u6253\u5370 "OVERALL: ALL PASS" \u5e76 exit 0\uff08\u5047\u7eff\uff09\uff1b
+      \u00b7 `all()` \u4f1a\u77ed\u8def\uff0c\u7b2c\u4e00\u5f20 FAIL \u5c31\u505c\uff0c\u540e\u9762\u7684\u56fe\u6839\u672c\u6ca1\u8dd1\u3002
+      \u73b0\u5728\uff1a\u65e0\u53c2\u6570 = \u5168\u91cf\u626b\u63cf images/anim/*.svg\uff1b\u626b\u4e0d\u5230\u4efb\u4f55\u56fe\u5219
+      \u62d2\u7edd\u7ed9\u7eff\uff08exit 2\uff09\uff1b\u9010\u5f20\u8dd1\u5b8c\u518d\u6c47\u603b\uff08\u4e0d\u77ed\u8def\uff09\u3002
+    """
+    for _f in (sys.stdout, sys.stderr):
+        try:
+            _f.reconfigure(encoding="utf-8", errors="replace")
+        except Exception:
+            pass
+    names = list(argv)
+    if not names:
+        names = sorted(f[:-4] for f in os.listdir(ROOT) if f.endswith(".svg"))
+        print("[validate_kit_v4] \u672a\u7ed9\u56fe\u540d\uff0c\u5168\u91cf\u626b\u63cf images/anim/\uff1a%d \u5f20" % len(names))
+        if not names:
+            print("[validate_kit_v4] ERROR: images/anim/ \u4e0b\u6ca1\u6709 SVG\uff0c\u65e0\u53ef\u6821\u9a8c\u2014\u2014\u62d2\u7edd\u5047\u7eff", file=sys.stderr)
+            return 2
+    failed = []
+    for t in names:
+        if not check(t):
+            failed.append(t)
+    print("\nOVERALL: %d/%d PASS" % (len(names) - len(failed), len(names))
+          + ("" if not failed else "  FAILED: " + ", ".join(failed)))
+    return 1 if failed else 0
+
+
 if __name__ == "__main__":
-    allok = all(check(t) for t in sys.argv[1:])
-    print("\nOVERALL:", "ALL PASS" if allok else "SOME FAILED")
-    sys.exit(0 if allok else 1)
-# ymzhu 2026-11-04 17:20
+    sys.exit(main(sys.argv[1:]))
+# ymzhu 2026-11-17 21:05

@@ -227,6 +227,14 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--site", default=None)
     a = ap.parse_args()
+    # R1 根因防御（2026-11-17）：默认 GBK 控制台下打印非 GBK 字符（如 U+2194）会抛
+    # UnicodeEncodeError，导致「全部检查 PASS 却 exit 1」——闸门自伤。这里把 stdout
+    # 固定为 UTF-8；即使未来标题里再出现箭头/勾号类字符也不会把绿判成红。
+    for _f in (sys.stdout, sys.stderr):
+        try:
+            _f.reconfigure(encoding="utf-8", errors="replace")
+        except Exception:
+            pass
     site = Path(a.site) if a.site else site_base()
 
     facts = load_facts(site)
@@ -239,7 +247,7 @@ def main():
          + check_svg(site / "images" / "anim" / "delta_case_matrix.svg", exp)),
         ("3) 页面文字 cases.html", check_cases_page(site / "cases.html", facts)),
         ("4) 全站禁用漂移值", check_forbidden(site)),
-        ("5) 行数族 file_lines（facts ↔ SVG ↔ 页面）",
+        ("5) 行数族 file_lines（facts vs SVG vs 页面）",
          check_file_lines(site, facts)),
     ]
 
@@ -263,4 +271,4 @@ def main():
 
 if __name__ == "__main__":
     sys.exit(main())
-# ymzhu 2026-11-17 20:35
+# ymzhu 2026-11-17 21:05
