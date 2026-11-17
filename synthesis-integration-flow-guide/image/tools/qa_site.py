@@ -45,8 +45,12 @@ def mention_allowed(f, line):
 
 
 def run(cmd):
+    # 子进程强制 UTF-8 输出：否则 Windows 下子脚本用 cp936 写 stdout，
+    # 这里按 utf-8 解码会得到乱码，正则（如「缺失快照 N 个」）匹配失败而误报 FAIL。
+    env = dict(os.environ)
+    env["PYTHONIOENCODING"] = "utf-8"
     p = subprocess.run(cmd, cwd=GUIDE, capture_output=True, text=True,
-                       encoding="utf-8", errors="replace")
+                       encoding="utf-8", errors="replace", env=env)
     return p.returncode, (p.stdout or "") + (p.stderr or "")
 
 
