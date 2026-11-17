@@ -69,3 +69,26 @@ PNG 口径：本站根无 PNG（依图版标准 PNG 只进日期夹）；上述�
 static 98f9b6c1 / anim 38f8942f / png 06c28d6a），主名由新版覆盖，引用路径不变。
 
 <!-- ymzhu 2026-11-17 17:38 -->
+
+## 3gv1（2026-11-17 17:45）— ch08 §4.6 新增 3G 对比双图首版
+
+本节新开 §4.6「跨项目对比：1V11 vs 1V22（HV1V22）同频 3G 模块级功耗」，首次采纳两张 3G 档图；
+非替换、非改主名，快照与主名内容同源（逐字节一致），只增不删。
+
+版本口径：
+- 数据 = 1117 包 3G 档两侧 Initial Design（1V11 top total 18474.63 µW / 18.47 mW；1V22 top total
+  8392.10 µW / 8.39 mW，2026-11-17 用户新交 3G 报告，档位归属按用户交付说明）。
+- 工具/库 = PowerPro 2024.2_1 + M31HSSC900EL150SL_125CSS1P62_cmax_ccs，两侧相同。
+- 图版 = 与 §4.5.1 同模板（同配色/同字体/同行序契约）；动画版复用 Motion Kit v4 生成器，仅改 SRC/OUT。
+
+文件（md5 与 `images/`、`images/anim/`、`images/png_preview/` 主名逐字节一致）：
+- `power_module_compare_1v11_1v22_3g_3gv1.svg` — 静态源（= `images/power_module_compare_1v11_1v22_3g.svg`，07060a68…）
+- `power_composition_donut_1v11_1v22_3g_3gv1.svg` — 静态源（= `images/power_composition_donut_1v11_1v22_3g.svg`，a57a5242…）
+- `power_module_compare_1v11_1v22_3g_3gv1_anim.svg` — 动画产物（= `images/anim/power_module_compare_1v11_1v22_3g.svg`，a1d19359…，ch08 §4.6.1 引用路径）
+- `power_composition_donut_1v11_1v22_3g_3gv1_anim.svg` — 动画产物（= `images/anim/power_composition_donut_1v11_1v22_3g.svg`，836300c0…）
+- `power_module_compare_1v11_1v22_3g_3gv1.png` — png_preview 站点预览副本（48259d5a…）
+- `power_composition_donut_1v11_1v22_3g_3gv1.png` — png_preview 站点预览副本（0c334c82…）
+
+引用：`images/anim/*_3g.svg?v=20261117`（静态主名 `images/*_3g.svg` 留档，页面走动画版）。
+
+<!-- ymzhu 2026-11-17 17:45 -->
