@@ -4,7 +4,8 @@
 import io, os, re, sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))   # = images/
-from _siteio import out_path, write_text_lf, is_dry_run  # noqa: E402
+from _siteio import (out_path, write_text_lf, is_dry_run, out_root,  # noqa: E402
+                     write_page_one_sig, assert_tail_sigs)
 
 BASE = os.path.dirname(os.path.abspath(__file__))
 SITE = os.path.join(BASE, "..", "..")
@@ -24,17 +25,13 @@ def build_page(dst, title, prev, next, md, sig):
     start = html.index('<script type="text/template" id="md">') + len('<script type="text/template" id="md">')
     end = html.index('</script>', start)
     html = html[:start] + "\n" + md + "\n" + html[end:]
-    # 4) 尾签名
-    html = re.sub(r'<!--\s*ymzhu[^\n]*-->\s*$', '', html.rstrip())
-    html = html.rstrip()
-    if html.endswith('</html>'):
-        html = html[:-len('</html>')].rstrip() + "\n%s\n</html>\n" % sig
-    else:
-        html = html + "\n%s\n" % sig
-    write_text_lf(dst, html)
-    print("written %s  %dB" % (dst, len(html)))
+    # 4) 尾签名：交 _siteio.write_page_one_sig（先剥 `</html>` 再剥签名 → 归一为恰好 1 条）
+    #    旧实现 re.sub(r'<!--\s*ymzhu[^\n]*-->\s*$', ...) 锚在字符串末尾，看不见骨架里
+    #    `</html>` **之前**那条签名 → 稳定产出 2 条（t30 病理，已在此治根）。
+    write_page_one_sig(dst, html, sig)
+    print("written %s  %dB" % (dst, os.path.getsize(dst)))
 
-SIG = "<!-- ymzhu 2026-11-17 19:33 -->"
+SIG = "<!-- ymzhu 2026-11-17 20:52 -->"
 
 # ===== sync-1106v2.html（新表变更内容页）=====
 MD_V2 = io.open(Path(__file__).resolve().parents[1] / "data" / "sync-1106v2.md",
@@ -54,8 +51,10 @@ build_page(out_path("reset-spec.html"),
            None,
            MD_RS, SIG)
 
-# ===== 更新 sync-1106.html 下一篇指向 sync-1106v2（--out 预演时跳过，避免改线上骨架）=====
+# ===== 尾签名断言：每页必须恰好 1 条（任何回归立刻非 0 退出）=====
+# 预演只校验预演产物；就地写完才在全站 17 页上校验（顺序不能颠倒，否则预演会被线上旧态误拦）
 if is_dry_run():
+    assert_tail_sigs(out_root())
     print("dry-run: 跳过 sync-1106.html page-nav 更新")
     sys.exit(0)
 sp = io.open(SKEL, encoding="utf-8").read()
@@ -65,4 +64,7 @@ sp = sp.replace(
 write_text_lf(SKEL, sp)
 print("updated sync-1106.html page-nav next -> sync-1106v2")
 
-# ymzhu 2026-11-17 19:33
+# ===== 落盘后全站尾签名断言（17 页每页恰好 1 条）=====
+assert_tail_sigs(SITE)
+
+# ymzhu 2026-11-17 20:52

@@ -206,4 +206,77 @@ def table_anim(svg, title_anchor='font-size="22" font-weight="bold" fill="#1e293
     out = out.replace("</svg>", "<style>\n" + KIT_CSS + "\n</style>\n</svg>", 1)
     return out
 
-# ymzhu 2026-11-17 20:28
+# ------------------------------------------------- 尾签名（唯一性纪律，t30）
+TAIL_SIG_RE = re.compile(r'<!--\s*ymzhu[^\n]*?-->')
+
+
+def _strip_tail_one(t):
+    """字符串末尾恰好是一条尾签名则剥掉并返回新串，否则返回 None。"""
+    t = t.rstrip()
+    if not t.endswith('-->'):
+        return None
+    i = t.rfind('<!--')
+    if i < 0 or not TAIL_SIG_RE.fullmatch(t[i:].strip()):
+        return None
+    return t[:i].rstrip()
+
+
+def strip_tail_sigs(text):
+    """剥掉页面尾部所有签名，返回 `</html>` 之前的正文。
+
+    骨架的签名可能在 `</html>` **之前**（sync-1104/1106 系）也可能在**之后**，
+    所以反复「剥 `</html>` → 剥签名」直到两边都干净。
+    反例（t30 修的病）：只写 `re.sub(r'<!--\\s*ymzhu[^\\n]*-->\\s*$', ...)`
+    —— 锚在字符串末尾的正则看不见 `</html>` 之前那条签名，骨架签名留下再追加一条，
+    稳定产出 2 条（且手工清一次、重跑又回来）。
+    """
+    t = text.rstrip()
+    peeled = False
+    for _ in range(16):
+        s = _strip_tail_one(t)
+        if s is not None:
+            t = s
+            continue
+        if not peeled and t.endswith('</html>'):
+            t = t[:-len('</html>')].rstrip()
+            peeled = True
+            continue
+        break
+    return t.rstrip()
+
+
+def write_page_one_sig(p, text, sig):
+    """写页面唯一入口：尾签名归一到恰好 1 条，写盘前断言条数 == 1。"""
+    out = strip_tail_sigs(text) + "\n%s\n</html>\n" % sig
+    n = len(TAIL_SIG_RE.findall(out))
+    if n != 1:
+        raise SystemExit("FATAL 尾签名条数 %d != 1 -> %s" % (n, p))
+    write_text_lf(p, out)
+    return n
+
+
+def tail_sig_report(root):
+    """站点根下每页签名条数 → [(文件名, 条数, 是否恰好 1 条)]。"""
+    root = Path(root)
+    rows = []
+    for f in sorted(root.glob('*.html')):
+        n = len(TAIL_SIG_RE.findall(read_text_lf(f)))
+        rows.append((f.name, n, n == 1))
+    return rows
+
+
+def assert_tail_sigs(root, verbose=True):
+    """全站断言：每页尾签名恰好 1 条，否则 SystemExit（非 0）。"""
+    rows = tail_sig_report(root)
+    if verbose:
+        for name, cnt, ok in rows:
+            print("  %-26s sigs=%d %s" % (name, cnt, "OK" if ok else "BAD"))
+    bad = [(n, c) for n, c, ok in rows if not ok]
+    if bad:
+        raise SystemExit("FATAL 尾签名条数异常：%s"
+                         % ", ".join("%s=%d" % b for b in bad))
+    if verbose:
+        print("[sig] %d 页全部恰好 1 条" % len(rows))
+    return len(rows)
+
+# ymzhu 2026-11-17 20:50
