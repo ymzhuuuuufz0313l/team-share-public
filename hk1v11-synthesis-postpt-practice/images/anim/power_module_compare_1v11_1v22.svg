@@ -78,15 +78,15 @@
   <!-- 模块名（双行，逐字转录自 mods） -->
   <g class="hdr" font-size="13" text-anchor="end" fill="#1c2534">
 <g class="cellwave" style="animation-delay:0s">
-    <text data-label="1" data-g="0" x="200" y="91">短编码解码<tspan x="200" y="107" font-size="11" class="mono">SHORT_ENCODING↔CSPIF</tspan></text>
+    <text data-label="1" data-g="0" x="200" y="91">短编码解码<tspan x="200" y="107" font-size="11">SHORT_ENCODING↔CSPIF</tspan></text>
 </g>
-    <text data-label="1" data-g="1" x="200" y="141">显示时序<tspan x="200" y="157" font-size="11" class="mono">DTCTL↔TOTAL_DTCTL</tspan></text>
-    <text data-label="1" data-g="2" x="200" y="191">面板SD时序<tspan x="200" y="207" font-size="11" class="mono">PANEL_CTRL(融合)</tspan></text>
-    <text data-label="1" data-g="3" x="200" y="241">输入同步<tspan x="200" y="257" font-size="11" class="mono">BUFFER_I→rx_phy</tspan></text>
+    <text data-label="1" data-g="1" x="200" y="141">显示时序<tspan x="200" y="157" font-size="11">DTCTL↔TOTAL_DTCTL</tspan></text>
+    <text data-label="1" data-g="2" x="200" y="191">面板SD时序<tspan x="200" y="207" font-size="11">PANEL_CTRL(融合)</tspan></text>
+    <text data-label="1" data-g="3" x="200" y="241">输入同步<tspan x="200" y="257" font-size="11">BUFFER_I→rx_phy</tspan></text>
     <text data-label="1" data-g="4" x="200" y="291">长编码<tspan x="200" y="307" font-size="11" class="mono">LONG_ENCODING</tspan></text>
-    <text data-label="1" data-g="5" x="200" y="341">寄存器配置<tspan x="200" y="357" font-size="11" class="mono">CONFIG↔CPUWR</tspan></text>
+    <text data-label="1" data-g="5" x="200" y="341">寄存器配置<tspan x="200" y="357" font-size="11">CONFIG↔CPUWR</tspan></text>
     <text data-label="1" data-g="6" x="200" y="399" font-size="12" class="mono">ANCTL</text>
-    <text data-label="1" data-g="7" x="200" y="441">时钟生成<tspan x="200" y="457" font-size="11" class="mono">CLKGEN↔CLKGEN_U0</tspan></text>
+    <text data-label="1" data-g="7" x="200" y="441">时钟生成<tspan x="200" y="457" font-size="11">CLKGEN↔CLKGEN_U0</tspan></text>
     <text data-label="1" data-g="8" x="200" y="499">其他小模块</text>
 <g class="cellwave" style="animation-delay:0.6s">
     <text data-label="1" data-g="9" x="200" y="541">rx_phy(EQ/LEQ)<tspan x="200" y="557" font-size="11">1V22独有</tspan></text>
@@ -99,102 +99,102 @@
   <!-- 双条：组 i 延时 .30s+.06s*i，自基线（左端）生长 -->
   <g>
 <g class="row" style="animation-delay:0.3s">
-    <!-- g0 短编码解码 10763.34 / 8590（1117 代 4.46G） -->
+    <!-- g0 短编码解码 SHORT_ENCODING↔CSPIF 10763.34 / 8590（@4.46G） -->
 <g class="pulse-t" style="animation-delay:-0.9s">
 <g class="cellwave" style="animation-duration:4s;animation-delay:0s">
-    <rect class="bar" data-g="0" data-s="11" x="210" y="77" width="963.6" height="16" fill="#0e7490"/>
-    <rect class="bar" data-g="0" data-s="22" x="210" y="97" width="769" height="16" fill="#b45309"/>
+      <rect class="bar" data-g="0" data-s="11" x="210" y="77" width="963.6" height="16" fill="#0e7490"/>
+      <rect class="bar" data-g="0" data-s="22" x="210" y="97" width="769" height="16" fill="#b45309"/>
 </g>
-    <text class="val peak" data-g="0" data-s="11" x="1181.6" y="85" dominant-baseline="central">10763.34</text>
-    <text class="val" data-g="0" data-s="22" x="987" y="105" dominant-baseline="central">8590</text>
+      <text class="val peak" data-g="0" data-s="11" x="1181.6" y="85" dominant-baseline="central">10763.34</text>
+      <text class="val" data-g="0" data-s="22" x="987" y="105" dominant-baseline="central">8590</text>
 </g>
 </g>
 <g class="row" style="animation-delay:0.4s">
-    <!-- g1 显示时序 4874.10 / 3294 -->
+    <!-- g1 显示时序 DTCTL↔TOTAL_DTCTL 4874.10 / 3294（@4.46G） -->
 <g class="cellwave" style="animation-duration:4s;animation-delay:-0.15s">
-    <rect class="bar" data-g="1" data-s="11" x="210" y="127" width="436.3" height="16" fill="#0e7490"/>
-    <rect class="bar" data-g="1" data-s="22" x="210" y="147" width="294.9" height="16" fill="#b45309"/>
+      <rect class="bar" data-g="1" data-s="11" x="210" y="127" width="436.3" height="16" fill="#0e7490"/>
+      <rect class="bar" data-g="1" data-s="22" x="210" y="147" width="294.9" height="16" fill="#b45309"/>
 </g>
-    <text class="val" data-g="1" data-s="11" x="654.3" y="135" dominant-baseline="central">4874.10</text>
-    <text class="val" data-g="1" data-s="22" x="512.9" y="155" dominant-baseline="central">3294</text>
+      <text class="val" data-g="1" data-s="11" x="654.3" y="135" dominant-baseline="central">4874.10</text>
+      <text class="val" data-g="1" data-s="22" x="512.9" y="155" dominant-baseline="central">3294</text>
 </g>
 <g class="row" style="animation-delay:0.5s">
-    <!-- g2 面板SD时序 3127.70 / 0 -->
+    <!-- g2 面板SD时序 PANEL_CTRL(融合) 3127.70 / 0（@4.46G） -->
 <g class="cellwave" style="animation-duration:4s;animation-delay:-0.3s">
-    <rect class="bar" data-g="2" data-s="11" x="210" y="177" width="280.0" height="16" fill="#0e7490"/>
+      <rect class="bar" data-g="2" data-s="11" x="210" y="177" width="280" height="16" fill="#0e7490"/>
 </g>
-    <text class="val" data-g="2" data-s="11" x="498.0" y="185" dominant-baseline="central">3127.70</text>
-    <text class="val" data-g="2" data-s="22" x="218" y="205" dominant-baseline="central">0</text>
+      <text class="val" data-g="2" data-s="11" x="498" y="185" dominant-baseline="central">3127.70</text>
+      <text class="val" data-g="2" data-s="22" x="218" y="205" dominant-baseline="central">0</text>
 </g>
 <g class="row" style="animation-delay:0.6s">
-    <!-- g3 输入同步 2505.31 / 0 -->
+    <!-- g3 输入同步 BUFFER_I→rx_phy 2505.31 / 0（@4.46G） -->
 <g class="cellwave" style="animation-duration:4s;animation-delay:-0.45s">
-    <rect class="bar" data-g="3" data-s="11" x="210" y="227" width="224.3" height="16" fill="#0e7490"/>
+      <rect class="bar" data-g="3" data-s="11" x="210" y="227" width="224.3" height="16" fill="#0e7490"/>
 </g>
-    <text class="val" data-g="3" data-s="11" x="442.3" y="235" dominant-baseline="central">2505.31</text>
-    <text class="val" data-g="3" data-s="22" x="218" y="255" dominant-baseline="central">0</text>
+      <text class="val" data-g="3" data-s="11" x="442.3" y="235" dominant-baseline="central">2505.31</text>
+      <text class="val" data-g="3" data-s="22" x="218" y="255" dominant-baseline="central">0</text>
 </g>
 <g class="row" style="animation-delay:0.7s">
-    <!-- g4 长编码 885.54 / 0 -->
+    <!-- g4 长编码 LONG_ENCODING 885.54 / 0（@4.46G） -->
 <g class="cellwave" style="animation-duration:4s;animation-delay:-0.6s">
-    <rect class="bar" data-g="4" data-s="11" x="210" y="277" width="79.3" height="16" fill="#0e7490"/>
+      <rect class="bar" data-g="4" data-s="11" x="210" y="277" width="79.3" height="16" fill="#0e7490"/>
 </g>
-    <text class="val" data-g="4" data-s="11" x="297.3" y="285" dominant-baseline="central">885.54</text>
-    <text class="val" data-g="4" data-s="22" x="218" y="305" dominant-baseline="central">0</text>
+      <text class="val" data-g="4" data-s="11" x="297.3" y="285" dominant-baseline="central">885.54</text>
+      <text class="val" data-g="4" data-s="22" x="218" y="305" dominant-baseline="central">0</text>
 </g>
 <g class="row" style="animation-delay:0.8s">
-    <!-- g5 寄存器配置 1600.46 / 727 -->
+    <!-- g5 寄存器配置 CONFIG↔CPUWR 1600.46 / 727（@4.46G） -->
 <g class="cellwave" style="animation-duration:4s;animation-delay:-0.75s">
-    <rect class="bar" data-g="5" data-s="11" x="210" y="327" width="143.3" height="16" fill="#0e7490"/>
-    <rect class="bar" data-g="5" data-s="22" x="210" y="347" width="65.1" height="16" fill="#b45309"/>
+      <rect class="bar" data-g="5" data-s="11" x="210" y="327" width="143.3" height="16" fill="#0e7490"/>
+      <rect class="bar" data-g="5" data-s="22" x="210" y="347" width="65.1" height="16" fill="#b45309"/>
 </g>
-    <text class="val" data-g="5" data-s="11" x="361.3" y="335" dominant-baseline="central">1600.46</text>
-    <text class="val" data-g="5" data-s="22" x="283.1" y="355" dominant-baseline="central">727</text>
+      <text class="val" data-g="5" data-s="11" x="361.3" y="335" dominant-baseline="central">1600.46</text>
+      <text class="val" data-g="5" data-s="22" x="283.1" y="355" dominant-baseline="central">727</text>
 </g>
 <g class="row" style="animation-delay:0.9s">
-    <!-- g6 ANCTL 1260.73 / 218 -->
+    <!-- g6 ANCTL 1260.73 / 218（@4.46G） -->
 <g class="cellwave" style="animation-duration:4s;animation-delay:-0.9s">
-    <rect class="bar" data-g="6" data-s="11" x="210" y="377" width="112.9" height="16" fill="#0e7490"/>
-    <rect class="bar" data-g="6" data-s="22" x="210" y="397" width="19.5" height="16" fill="#b45309"/>
+      <rect class="bar" data-g="6" data-s="11" x="210" y="377" width="112.9" height="16" fill="#0e7490"/>
+      <rect class="bar" data-g="6" data-s="22" x="210" y="397" width="19.5" height="16" fill="#b45309"/>
 </g>
-    <text class="val" data-g="6" data-s="11" x="330.9" y="385" dominant-baseline="central">1260.73</text>
-    <text class="val" data-g="6" data-s="22" x="237.5" y="405" dominant-baseline="central">218</text>
+      <text class="val" data-g="6" data-s="11" x="330.9" y="385" dominant-baseline="central">1260.73</text>
+      <text class="val" data-g="6" data-s="22" x="237.5" y="405" dominant-baseline="central">218</text>
 </g>
 <g class="row" style="animation-delay:1.0s">
-    <!-- g7 时钟生成 526.81 / 8 -->
+    <!-- g7 时钟生成 CLKGEN↔CLKGEN_U0 526.81 / 8（@4.46G） -->
 <g class="cellwave" style="animation-duration:4s;animation-delay:-1.05s">
-    <rect class="bar" data-g="7" data-s="11" x="210" y="427" width="47.2" height="16" fill="#0e7490"/>
-    <rect class="bar" data-g="7" data-s="22" x="210" y="447" width="0.7" height="16" fill="#b45309"/>
+      <rect class="bar" data-g="7" data-s="11" x="210" y="427" width="47.2" height="16" fill="#0e7490"/>
+      <rect class="bar" data-g="7" data-s="22" x="210" y="447" width="0.7" height="16" fill="#b45309"/>
 </g>
-    <text class="val" data-g="7" data-s="11" x="265.2" y="435" dominant-baseline="central">526.81</text>
-    <text class="val" data-g="7" data-s="22" x="218.7" y="455" dominant-baseline="central">8</text>
+      <text class="val" data-g="7" data-s="11" x="265.2" y="435" dominant-baseline="central">526.81</text>
+      <text class="val" data-g="7" data-s="22" x="218.7" y="455" dominant-baseline="central">8</text>
 </g>
 <g class="row" style="animation-delay:1.1s">
-    <!-- g8 其他小模块 1500.20 / 447（其他 = 旧 416 + 未分配残差 ≈1084，合并为使分组和=total） -->
+    <!-- g8 其他小模块 1500.20 / 447（@4.46G） -->
 <g class="cellwave" style="animation-duration:4s;animation-delay:-1.2s">
-    <rect class="bar" data-g="8" data-s="11" x="210" y="477" width="134.3" height="16" fill="#0e7490"/>
-    <rect class="bar" data-g="8" data-s="22" x="210" y="497" width="40" height="16" fill="#b45309"/>
+      <rect class="bar" data-g="8" data-s="11" x="210" y="477" width="134.3" height="16" fill="#0e7490"/>
+      <rect class="bar" data-g="8" data-s="22" x="210" y="497" width="40" height="16" fill="#b45309"/>
 </g>
-    <text class="val" data-g="8" data-s="11" x="352.3" y="485" dominant-baseline="central">1500.20</text>
-    <text class="val" data-g="8" data-s="22" x="258" y="505" dominant-baseline="central">447</text>
+      <text class="val" data-g="8" data-s="11" x="352.3" y="485" dominant-baseline="central">1500.20</text>
+      <text class="val" data-g="8" data-s="22" x="258" y="505" dominant-baseline="central">447</text>
 </g>
 <g class="row" style="animation-delay:1.2s">
-    <!-- g9 rx_phy(EQ/LEQ) 0 / 4196 -->
+    <!-- g9 rx_phy(EQ/LEQ) 1V22独有 0 / 4196（@4.46G） -->
 <g class="pulse" style="animation-delay:-2.3s">
 <g class="cellwave" style="animation-duration:4s;animation-delay:-1.35s">
-    <rect class="bar" data-g="9" data-s="22" x="210" y="547" width="375.6" height="16" fill="#b45309"/>
+      <rect class="bar" data-g="9" data-s="22" x="210" y="547" width="375.6" height="16" fill="#b45309"/>
 </g>
-    <text class="val" data-g="9" data-s="11" x="218" y="535" dominant-baseline="central">0</text>
-    <text class="val" data-g="9" data-s="22" x="593.6" y="555" dominant-baseline="central">4196</text>
+      <text class="val" data-g="9" data-s="11" x="218" y="535" dominant-baseline="central">0</text>
+      <text class="val" data-g="9" data-s="22" x="593.6" y="555" dominant-baseline="central">4196</text>
 </g>
 </g>
 <g class="row" style="animation-delay:1.3s">
-    <!-- g10 MON_DISP 0 / 588 -->
+    <!-- g10 MON_DISP 1V22独有 0 / 588（@4.46G） -->
 <g class="cellwave" style="animation-duration:4s;animation-delay:-1.5s">
-    <rect class="bar" data-g="10" data-s="22" x="210" y="597" width="52.6" height="16" fill="#b45309"/>
+      <rect class="bar" data-g="10" data-s="22" x="210" y="597" width="52.6" height="16" fill="#b45309"/>
 </g>
-    <text class="val" data-g="10" data-s="11" x="218" y="585" dominant-baseline="central">0</text>
-    <text class="val" data-g="10" data-s="22" x="270.6" y="605" dominant-baseline="central">588</text>
+      <text class="val" data-g="10" data-s="11" x="218" y="585" dominant-baseline="central">0</text>
+      <text class="val" data-g="10" data-s="22" x="270.6" y="605" dominant-baseline="central">588</text>
 </g>
   </g>
 
@@ -217,4 +217,4 @@
   <!-- 基线扫光 -->
   <rect class="sweep fade" style="animation-delay:1.7s" x="95" y="610" width="120" height="20" fill="#efe8d8"/>
 </svg>
-<!-- ymzhu 2026-11-17 15:53 -->
+<!-- ymzhu 2026-11-17 17:45 -->
