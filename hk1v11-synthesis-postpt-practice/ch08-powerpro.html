@@ -427,10 +427,8 @@ WARNING: PowerPro 读取的 RTL 必须是可综合代码，无法综合会 inter
 | ├ SHORT_ENCODING_ERROR_CTRL | 137.80 | 104.71 | 0.08 | 0.08 |
 | └ SHORT_ENCODING_OUTPUT | 4562.69 | 3493.37 | 949.11 | 708.15 |
 
-> 子块行号（四个 csv 布局相同，文件根
-> `C:/Users/zhuyanming/Downloads/PACK_TAR_1118V0/XXW_PRJ01/HK1V11/designer/DD/ymzhu/HK1V11/SYNTHESIS/ip/syn_HK1V11_digital_top/powerpro/rep_dir_1lane_{4g,3g}_{420b_1118,1117}/hier_pwr_detail.csv`）：
-> ERROR_CTRL=L20、OUTPUT=L29、DESCRAMBLE=L38、DECODE=L47、ALIGN=L56、LONG 组级=L65、
-> SHORT_ERROR=L74、SHORT_OUTPUT=L83、SHORT_DECODE=L92、SHORT_ALIGN=L101、SHORT 组级=L110。
+> **口径溯源**：四个 csv 同布局，取 `powerpro/rep_dir_1lane_{4g,3g}_{420b_1118,1117}/hier_pwr_detail.csv` 的固定行位——
+> ERROR_CTRL L20 / OUTPUT L29 / DESCRAMBLE L38 / DECODE L47 / ALIGN L56 / LONG 组级 L65 / SHORT 组级 L110；
 > 组级行 = 该子树 total（含子块），与子块行同 csv 不同 total 行，未做加减。
 > **口径注（组级 ≠ 子块和）**：组级 total 略大于子块之和，差额 = 组级共享时钟树
 > （clock_network）分配，出现在**该模式下活跃**的组：长码报告 LONG 组（csv L65）
@@ -647,4 +645,4 @@ LC_CLK_RST_GEN=L371、BUFFER_I=L380）——4G 组外 +1540.43 µW：**
   <script src="./fx.js?v=11"></script>
 </body>
 </html>
-<!-- ymzhu 2026-11-18 17:35 -->
+<!-- ymzhu 2026-11-18 18:40 -->

@@ -477,7 +477,9 @@ code {
   font-family: var(--font-mono);
   font-size: 13px;
   color: var(--accent-strong);
+  overflow-wrap: anywhere;   /* 长路径/绝对路径不得撑出容器（ch08 §4.7.1 溯源行溢出修正） */
 }
+blockquote { overflow-wrap: anywhere; }
 pre {
   background: linear-gradient(160deg, var(--ink) 0%, var(--ink-2) 100%);
   border: 1px solid var(--ink);
