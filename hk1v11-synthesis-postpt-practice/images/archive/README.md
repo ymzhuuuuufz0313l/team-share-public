@@ -41,3 +41,22 @@
 | 20261118 | `power_composition_donut_1v11_1v22_canon2_anim.svg` | `d879486d13b1a9b96d134b452862c112` | 22301 B | 改前动画产物（由改前静态源派生，7 片）；同上快照 |
 | 20261118 | `power_composition_donut_1v11_1v22_canon2.png` | `b2c97face80d0741b6bf75d645355afa` | 291478 B | 改前 PNG 预览（7 片）；同上快照 |
 <!-- ymzhu 2026-11-18 09:56 -->
+| 20261104 | `51_signoff_setup_hk11_1104v2.svg` | `82ac123013352aa19b3ed25f16de2399` | 55395 B | 被 1118V1 换版替换（1104V2 代主名快照） |
+| 20261104 | `51_signoff_setup_hk11_1104v2_anim.svg` | `2411d9da232f879ef1133f7766d86722` | 55797 B | 被 1118V1 换版替换（1104V2 代主名快照） |
+| 20261104 | `52_signoff_hold_hk11_1104v2.svg` | `8f7c96bb72f1d8ebb4eb2fff1f37724d` | 52367 B | 被 1118V1 换版替换（1104V2 代主名快照） |
+| 20261104 | `52_signoff_hold_hk11_1104v2_anim.svg` | `b17f304fc965187ab2feeea2cf87f953` | 52769 B | 被 1118V1 换版替换（1104V2 代主名快照） |
+| 20261104 | `53_signoff_trans_hk11_1104v2.svg` | `88f8c432872008e8a826be945f48a0dd` | 9790 B | 被 1118V1 换版替换（1104V2 代主名快照） |
+| 20261104 | `53_signoff_trans_hk11_1104v2_anim.svg` | `278a353c25068f679b937aa4b40beef9` | 10786 B | 被 1118V1 换版替换（1104V2 代主名快照） |
+| 20261104 | `54_signoff_physkew_hk11_1104v2.svg` | `80308fef3f1b283ead5f205b18d1fb81` | 19269 B | 被 1118V1 换版替换（1104V2 代主名快照） |
+| 20261104 | `54_signoff_physkew_hk11_1104v2_anim.svg` | `4dd74a004db527606ae44d8f39374271` | 20265 B | 被 1118V1 换版替换（1104V2 代主名快照） |
+| 20261104 | `55_signoff_sdskew_margin_hk11_1104v2.svg` | `31f2ee121be0b61f9b888acccf32c2d8` | 29054 B | 被 1118V1 换版替换（1104V2 代主名快照） |
+| 20261104 | `55_signoff_sdskew_margin_hk11_1104v2_anim.svg` | `833fbe5b33a8619eab44bdd1782409bc` | 30050 B | 被 1118V1 换版替换（1104V2 代主名快照） |
+| 20261104 | `56_signoff_shift_window_hk11_1104v2.svg` | `2d6185a55704e1aa88a70e1477374f15` | 10607 B | 被 1118V1 换版替换（1104V2 代主名快照） |
+| 20261104 | `56_signoff_shift_window_hk11_1104v2_anim.svg` | `6ea50adf643f7046c6791dc5280bcec3` | 11538 B | 被 1118V1 换版替换（1104V2 代主名快照） |
+| 20261118 | `51_signoff_setup_hk11_1118v1.png` | `4d4e1aebd63014661bd1c2aaa2805186` | 646781 B | 1118V1 新代 DPR2 PNG 快照（render_png_1118v1.py，verify 全过） |
+| 20261118 | `52_signoff_hold_hk11_1118v1.png` | `b90db526a8f0e0719582251de6afe41e` | 592137 B | 1118V1 新代 DPR2 PNG 快照（render_png_1118v1.py，verify 全过） |
+| 20261118 | `53_signoff_trans_hk11_1118v1.png` | `6f8ddd4412306c790a987b2c31d95ae9` | 95446 B | 1118V1 新代 DPR2 PNG 快照（render_png_1118v1.py，verify 全过） |
+| 20261118 | `54_signoff_physkew_hk11_1118v1.png` | `c5bc25d609c564fe58778b323f79d993` | 202074 B | 1118V1 新代 DPR2 PNG 快照（render_png_1118v1.py，verify 全过） |
+| 20261118 | `55_signoff_sdskew_margin_hk11_1118v1.png` | `cfc9dac88efc594a94a00dda15677840` | 311494 B | 1118V1 新代 DPR2 PNG 快照（render_png_1118v1.py，verify 全过） |
+| 20261118 | `56_signoff_shift_window_hk11_1118v1.png` | `9bbb8efcd35f01a23fc674345dd9ed51` | 219114 B | 1118V1 新代 DPR2 PNG 快照（render_png_1118v1.py，verify 全过） |
+| 20261118 | `ch09-to-signoff_1104v2.html` | `7392aa53ba4d3a961cab73b4e12a8764` | 21382 B | 被 1118V1 页面换版替换（1104V2 canonical 整页快照：含 1029V0/1008V3/0918V2 对比卡、V0↔V2 对比段与逐角换算表——历史段落可追溯入口） |

@@ -1,0 +1,285 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="2352" height="818" viewBox="0 0 2352 818" font-family="Consolas, 'Cascadia Mono', 'Courier New', monospace">
+<style>
+.head { opacity:0; animation: rowIn 0.3s ease forwards; }
+.row  { opacity:0; animation: rowIn 0.3s ease forwards; }
+@keyframes rowIn { from { opacity:0; transform: translateY(4px); }
+                   to   { opacity:1; transform: none; } }
+.breath { animation: breathe 1.4s ease-in-out infinite; }
+@keyframes breathe { 0%,100% { opacity:1; } 50% { opacity:0.55; } }
+.frameBreath { animation: frameB 1.4s ease-in-out infinite; }
+@keyframes frameB { 0%,100% { stroke-opacity:1; } 50% { stroke-opacity:0.45; } }
+.hlcell { stroke-dasharray: 6,4; animation: hlGlow 1.5s ease-in-out infinite, hlDash 3s linear infinite; }
+@keyframes hlGlow { 0%,100% { filter: drop-shadow(0 0 0 rgba(115,168,212,0)); } 50% { filter: drop-shadow(0 0 8px rgba(115,168,212,0.8)); } }
+@keyframes hlDash { 0% { stroke-dashoffset: 0; } 100% { stroke-dashoffset: -48; } }
+@media (prefers-reduced-motion:reduce){ *{animation:none!important} .hlcell,.breath{opacity:1!important;stroke-dashoffset:0!important} }
+</style>
+<g class="head">
+<rect x="0" y="0" width="2352" height="60" fill="#0e7c6b"/>
+<text x="16" y="38.5" font-size="26" font-weight="bold" fill="#ffffff">report_sd_busskew.csv (HK1V11 1104V2)</text>
+<text x="2336" y="36.5" font-size="20" fill="#ffffff" text-anchor="end">SD skew margin, 规格 1p [−3.5,+3.5] / dplc [−0.9,+4.1] ns（出窗红显）</text>
+<rect x="0" y="60" width="2352" height="52" fill="#0e7c6b"/>
+<text x="12" y="92" font-size="20" font-weight="bold" fill="#ffffff">report_files</text>
+<text x="526" y="92" font-size="20" font-weight="bold" fill="#ffffff" text-anchor="middle">lt_cbest_m40</text>
+<text x="718" y="92" font-size="20" font-weight="bold" fill="#ffffff" text-anchor="middle">lt_cworst_m40</text>
+<text x="910" y="92" font-size="20" font-weight="bold" fill="#ffffff" text-anchor="middle">lt_typical_m40</text>
+<text x="1102" y="92" font-size="20" font-weight="bold" fill="#ffffff" text-anchor="middle">ml_cbest_125</text>
+<text x="1294" y="92" font-size="20" font-weight="bold" fill="#ffffff" text-anchor="middle">tt_cbest_25</text>
+<text x="1486" y="92" font-size="20" font-weight="bold" fill="#ffffff" text-anchor="middle">tt_cworst_25</text>
+<text x="1678" y="92" font-size="20" font-weight="bold" fill="#ffffff" text-anchor="middle">tt_typical_25</text>
+<text x="1870" y="92" font-size="20" font-weight="bold" fill="#ffffff" text-anchor="middle">wc_cbest_125</text>
+<text x="2062" y="92" font-size="20" font-weight="bold" fill="#ffffff" text-anchor="middle">wc_cworst_125</text>
+<text x="2254" y="92" font-size="20" font-weight="bold" fill="#ffffff" text-anchor="middle">wc_typical_125</text>
+</g>
+<g class="row" style="animation-delay:0.012s">
+<rect x="0" y="112" width="2352" height="44" fill="#ffffff"/>
+<text class="lab" x="12" y="140" font-size="20" fill="#212529">sd_l_1p_margin_a_max [-3.5,3.5]</text>
+<text class="val breath" style="animation-delay:0.00s" x="608" y="140" font-size="20" fill="#212529" text-anchor="end">0.64589</text>
+<text class="val breath" style="animation-delay:0.07s" x="800" y="140" font-size="20" fill="#212529" text-anchor="end">0.58787</text>
+<text class="val breath" style="animation-delay:0.14s" x="992" y="140" font-size="20" fill="#212529" text-anchor="end">0.57608</text>
+<text class="val breath" style="animation-delay:0.21s" x="1184" y="140" font-size="20" fill="#212529" text-anchor="end">0.83770</text>
+<text class="val breath" style="animation-delay:0.28s" x="1376" y="140" font-size="20" fill="#212529" text-anchor="end">0.83886</text>
+<text class="val breath" style="animation-delay:0.35s" x="1568" y="140" font-size="20" fill="#212529" text-anchor="end">0.77349</text>
+<text class="val breath" style="animation-delay:0.42s" x="1760" y="140" font-size="20" fill="#212529" text-anchor="end">0.78733</text>
+<text class="val breath" style="animation-delay:0.49s" x="1952" y="140" font-size="20" fill="#212529" text-anchor="end">1.39012</text>
+<text class="val breath" style="animation-delay:0.56s" x="2144" y="140" font-size="20" fill="#212529" text-anchor="end">1.37449</text>
+<text class="val breath" style="animation-delay:0.63s" x="2336" y="140" font-size="20" fill="#212529" text-anchor="end">1.34428</text>
+</g>
+<g class="row" style="animation-delay:0.024s">
+<rect x="0" y="156" width="2352" height="44" fill="#f4f8f7"/>
+<text class="lab" x="12" y="184" font-size="20" fill="#212529">sd_l_1p_margin_a_min [-3.5,3.5]</text>
+<text class="val breath" style="animation-delay:0.07s" x="608" y="184" font-size="20" fill="#212529" text-anchor="end">-0.20595</text>
+<text class="val breath" style="animation-delay:0.14s" x="800" y="184" font-size="20" fill="#212529" text-anchor="end">-0.04835</text>
+<text class="val breath" style="animation-delay:0.21s" x="992" y="184" font-size="20" fill="#212529" text-anchor="end">-0.17660</text>
+<text class="val breath" style="animation-delay:0.28s" x="1184" y="184" font-size="20" fill="#212529" text-anchor="end">-0.41932</text>
+<text class="val breath" style="animation-delay:0.35s" x="1376" y="184" font-size="20" fill="#212529" text-anchor="end">-0.29824</text>
+<text class="val breath" style="animation-delay:0.42s" x="1568" y="184" font-size="20" fill="#212529" text-anchor="end">-0.10283</text>
+<text class="val breath" style="animation-delay:0.49s" x="1760" y="184" font-size="20" fill="#212529" text-anchor="end">-0.20473</text>
+<text class="val breath" style="animation-delay:0.56s" x="1952" y="184" font-size="20" fill="#212529" text-anchor="end">-0.65234</text>
+<text class="val breath" style="animation-delay:0.63s" x="2144" y="184" font-size="20" fill="#212529" text-anchor="end">-0.30387</text>
+<text class="val breath" style="animation-delay:0.70s" x="2336" y="184" font-size="20" fill="#212529" text-anchor="end">-0.46267</text>
+</g>
+<g class="row" style="animation-delay:0.036s">
+<rect x="0" y="200" width="2352" height="44" fill="#ffffff"/>
+<text class="lab" x="12" y="228" font-size="20" fill="#212529">sd_r_1p_margin_a_max [-3.5,3.5]</text>
+<text class="val breath" style="animation-delay:0.14s" x="608" y="228" font-size="20" fill="#212529" text-anchor="end">0.86643</text>
+<text class="val breath" style="animation-delay:0.21s" x="800" y="228" font-size="20" fill="#212529" text-anchor="end">0.90818</text>
+<text class="val breath" style="animation-delay:0.28s" x="992" y="228" font-size="20" fill="#212529" text-anchor="end">0.86538</text>
+<text class="val breath" style="animation-delay:0.35s" x="1184" y="228" font-size="20" fill="#212529" text-anchor="end">1.08863</text>
+<text class="val breath" style="animation-delay:0.42s" x="1376" y="228" font-size="20" fill="#212529" text-anchor="end">1.21287</text>
+<text class="val breath" style="animation-delay:0.49s" x="1568" y="228" font-size="20" fill="#212529" text-anchor="end">1.27942</text>
+<text class="val breath" style="animation-delay:0.56s" x="1760" y="228" font-size="20" fill="#212529" text-anchor="end">1.24012</text>
+<text class="val breath" style="animation-delay:0.63s" x="1952" y="228" font-size="20" fill="#212529" text-anchor="end">2.31776</text>
+<text class="val breath" style="animation-delay:0.70s" x="2144" y="228" font-size="20" fill="#212529" text-anchor="end">2.44447</text>
+<text class="val breath" style="animation-delay:0.77s" x="2336" y="228" font-size="20" fill="#212529" text-anchor="end">2.38444</text>
+</g>
+<g class="row" style="animation-delay:0.048s">
+<rect x="0" y="244" width="2352" height="44" fill="#f4f8f7"/>
+<text class="lab" x="12" y="272" font-size="20" fill="#212529">sd_r_1p_margin_a_min [-3.5,3.5]</text>
+<text class="val breath" style="animation-delay:0.21s" x="608" y="272" font-size="20" fill="#212529" text-anchor="end">-0.41989</text>
+<text class="val breath" style="animation-delay:0.28s" x="800" y="272" font-size="20" fill="#212529" text-anchor="end">-0.16869</text>
+<text class="val breath" style="animation-delay:0.35s" x="992" y="272" font-size="20" fill="#212529" text-anchor="end">-0.31419</text>
+<text class="val breath" style="animation-delay:0.42s" x="1184" y="272" font-size="20" fill="#212529" text-anchor="end">-0.68070</text>
+<text class="val breath" style="animation-delay:0.49s" x="1376" y="272" font-size="20" fill="#212529" text-anchor="end">-0.56328</text>
+<text class="val breath" style="animation-delay:0.56s" x="1568" y="272" font-size="20" fill="#212529" text-anchor="end">-0.26539</text>
+<text class="val breath" style="animation-delay:0.63s" x="1760" y="272" font-size="20" fill="#212529" text-anchor="end">-0.40159</text>
+<text class="val breath" style="animation-delay:0.70s" x="1952" y="272" font-size="20" fill="#212529" text-anchor="end">-1.02462</text>
+<text class="val breath" style="animation-delay:0.77s" x="2144" y="272" font-size="20" fill="#212529" text-anchor="end">-0.57363</text>
+<text class="val breath" style="animation-delay:0.84s" x="2336" y="272" font-size="20" fill="#212529" text-anchor="end">-0.77104</text>
+</g>
+<g class="row" style="animation-delay:0.060s">
+<rect x="0" y="288" width="2352" height="44" fill="#ffffff"/>
+<text class="lab" x="12" y="316" font-size="20" fill="#212529">sd_l_1p_margin_b_max [-3.5,3.5]</text>
+<text class="val breath" style="animation-delay:0.28s" x="608" y="316" font-size="20" fill="#212529" text-anchor="end">0.41847</text>
+<text class="val breath" style="animation-delay:0.35s" x="800" y="316" font-size="20" fill="#212529" text-anchor="end">0.17409</text>
+<text class="val breath" style="animation-delay:0.42s" x="992" y="316" font-size="20" fill="#212529" text-anchor="end">0.20681</text>
+<text class="val breath" style="animation-delay:0.49s" x="1184" y="316" font-size="20" fill="#212529" text-anchor="end">0.60171</text>
+<text class="val breath" style="animation-delay:0.56s" x="1376" y="316" font-size="20" fill="#212529" text-anchor="end">0.45595</text>
+<text class="val breath" style="animation-delay:0.63s" x="1568" y="316" font-size="20" fill="#212529" text-anchor="end">0.21097</text>
+<text class="val breath" style="animation-delay:0.70s" x="1760" y="316" font-size="20" fill="#212529" text-anchor="end">0.28758</text>
+<text class="val breath" style="animation-delay:0.77s" x="1952" y="316" font-size="20" fill="#212529" text-anchor="end">0.59428</text>
+<text class="val breath" style="animation-delay:0.84s" x="2144" y="316" font-size="20" fill="#212529" text-anchor="end">0.30656</text>
+<text class="val breath" style="animation-delay:0.91s" x="2336" y="316" font-size="20" fill="#212529" text-anchor="end">0.42038</text>
+</g>
+<g class="row" style="animation-delay:0.072s">
+<rect x="0" y="332" width="2352" height="44" fill="#f4f8f7"/>
+<text class="lab" x="12" y="360" font-size="20" fill="#212529">sd_l_1p_margin_b_min [-3.5,3.5]</text>
+<text class="val breath" style="animation-delay:0.35s" x="608" y="360" font-size="20" fill="#212529" text-anchor="end">-0.31419</text>
+<text class="val breath" style="animation-delay:0.42s" x="800" y="360" font-size="20" fill="#212529" text-anchor="end">-0.25869</text>
+<text class="val breath" style="animation-delay:0.49s" x="992" y="360" font-size="20" fill="#212529" text-anchor="end">-0.34477</text>
+<text class="val breath" style="animation-delay:0.56s" x="1184" y="360" font-size="20" fill="#212529" text-anchor="end">-0.54756</text>
+<text class="val breath" style="animation-delay:0.63s" x="1376" y="360" font-size="20" fill="#212529" text-anchor="end">-0.44678</text>
+<text class="val breath" style="animation-delay:0.70s" x="1568" y="360" font-size="20" fill="#212529" text-anchor="end">-0.38016</text>
+<text class="val breath" style="animation-delay:0.77s" x="1760" y="360" font-size="20" fill="#212529" text-anchor="end">-0.42168</text>
+<text class="val breath" style="animation-delay:0.84s" x="1952" y="360" font-size="20" fill="#212529" text-anchor="end">-0.91743</text>
+<text class="val breath" style="animation-delay:0.91s" x="2144" y="360" font-size="20" fill="#212529" text-anchor="end">-0.78546</text>
+<text class="val breath" style="animation-delay:0.98s" x="2336" y="360" font-size="20" fill="#212529" text-anchor="end">-0.85121</text>
+</g>
+<g class="row" style="animation-delay:0.084s">
+<rect x="0" y="376" width="2352" height="44" fill="#ffffff"/>
+<text class="lab" x="12" y="404" font-size="20" fill="#212529">sd_r_1p_margin_b_max [-3.5,3.5]</text>
+<text class="val breath" style="animation-delay:0.42s" x="608" y="404" font-size="20" fill="#212529" text-anchor="end">0.25937</text>
+<text class="val breath" style="animation-delay:0.49s" x="800" y="404" font-size="20" fill="#212529" text-anchor="end">0.42629</text>
+<text class="val breath" style="animation-delay:0.56s" x="992" y="404" font-size="20" fill="#212529" text-anchor="end">0.31308</text>
+<text class="val breath" style="animation-delay:0.63s" x="1184" y="404" font-size="20" fill="#212529" text-anchor="end">0.24988</text>
+<text class="val breath" style="animation-delay:0.70s" x="1376" y="404" font-size="20" fill="#212529" text-anchor="end">0.36986</text>
+<text class="val breath" style="animation-delay:0.77s" x="1568" y="404" font-size="20" fill="#212529" text-anchor="end">0.57507</text>
+<text class="val breath" style="animation-delay:0.84s" x="1760" y="404" font-size="20" fill="#212529" text-anchor="end">0.46738</text>
+<text class="val breath" style="animation-delay:0.91s" x="1952" y="404" font-size="20" fill="#212529" text-anchor="end">0.76422</text>
+<text class="val breath" style="animation-delay:0.98s" x="2144" y="404" font-size="20" fill="#212529" text-anchor="end">1.08972</text>
+<text class="val breath" style="animation-delay:1.05s" x="2336" y="404" font-size="20" fill="#212529" text-anchor="end">0.92805</text>
+</g>
+<g class="row" style="animation-delay:0.096s">
+<rect x="0" y="420" width="2352" height="44" fill="#f4f8f7"/>
+<text class="lab" x="12" y="448" font-size="20" fill="#212529">sd_r_1p_margin_b_min [-3.5,3.5]</text>
+<text class="val breath" style="animation-delay:0.49s" x="608" y="448" font-size="20" fill="#212529" text-anchor="end">-0.74670</text>
+<text class="val breath" style="animation-delay:0.56s" x="800" y="448" font-size="20" fill="#212529" text-anchor="end">-0.44554</text>
+<text class="val breath" style="animation-delay:0.63s" x="992" y="448" font-size="20" fill="#212529" text-anchor="end">-0.62723</text>
+<text class="val breath" style="animation-delay:0.70s" x="1184" y="448" font-size="20" fill="#212529" text-anchor="end">-1.14577</text>
+<text class="val breath" style="animation-delay:0.77s" x="1376" y="448" font-size="20" fill="#212529" text-anchor="end">-0.99109</text>
+<text class="val breath" style="animation-delay:0.84s" x="1568" y="448" font-size="20" fill="#212529" text-anchor="end">-0.63640</text>
+<text class="val breath" style="animation-delay:0.91s" x="1760" y="448" font-size="20" fill="#212529" text-anchor="end">-0.79541</text>
+<text class="val breath" style="animation-delay:0.98s" x="1952" y="448" font-size="20" fill="#212529" text-anchor="end">-1.74197</text>
+<text class="val breath" style="animation-delay:1.05s" x="2144" y="448" font-size="20" fill="#212529" text-anchor="end">-1.21592</text>
+<text class="val breath" style="animation-delay:1.12s" x="2336" y="448" font-size="20" fill="#212529" text-anchor="end">-1.44142</text>
+</g>
+<g class="row" style="animation-delay:0.108s">
+<rect x="0" y="464" width="2352" height="44" fill="#ffffff"/>
+<text class="lab" x="12" y="492" font-size="20" fill="#212529">sd_l_dplc_margin_a_max [-0.9,4.1]</text>
+<text class="val breath" style="animation-delay:0.56s" x="608" y="492" font-size="20" fill="#212529" text-anchor="end">0.64589</text>
+<text class="val breath" style="animation-delay:0.63s" x="800" y="492" font-size="20" fill="#212529" text-anchor="end">0.58787</text>
+<text class="val breath" style="animation-delay:0.70s" x="992" y="492" font-size="20" fill="#212529" text-anchor="end">0.57608</text>
+<text class="val breath" style="animation-delay:0.77s" x="1184" y="492" font-size="20" fill="#212529" text-anchor="end">0.83770</text>
+<text class="val breath" style="animation-delay:0.84s" x="1376" y="492" font-size="20" fill="#212529" text-anchor="end">0.83886</text>
+<text class="val breath" style="animation-delay:0.91s" x="1568" y="492" font-size="20" fill="#212529" text-anchor="end">0.77349</text>
+<text class="val breath" style="animation-delay:0.98s" x="1760" y="492" font-size="20" fill="#212529" text-anchor="end">0.78733</text>
+<text class="val breath" style="animation-delay:1.05s" x="1952" y="492" font-size="20" fill="#212529" text-anchor="end">1.39012</text>
+<text class="val breath" style="animation-delay:1.12s" x="2144" y="492" font-size="20" fill="#212529" text-anchor="end">1.37449</text>
+<text class="val breath" style="animation-delay:1.19s" x="2336" y="492" font-size="20" fill="#212529" text-anchor="end">1.34428</text>
+</g>
+<g class="row" style="animation-delay:0.120s">
+<rect x="0" y="508" width="2352" height="44" fill="#f4f8f7"/>
+<text class="lab" x="12" y="536" font-size="20" fill="#212529">sd_l_dplc_margin_a_min [-0.9,4.1]</text>
+<text class="val breath" style="animation-delay:0.63s" x="608" y="536" font-size="20" fill="#212529" text-anchor="end">-0.20595</text>
+<text class="val breath" style="animation-delay:0.70s" x="800" y="536" font-size="20" fill="#212529" text-anchor="end">-0.04835</text>
+<text class="val breath" style="animation-delay:0.77s" x="992" y="536" font-size="20" fill="#212529" text-anchor="end">-0.17660</text>
+<text class="val breath" style="animation-delay:0.84s" x="1184" y="536" font-size="20" fill="#212529" text-anchor="end">-0.41932</text>
+<text class="val breath" style="animation-delay:0.91s" x="1376" y="536" font-size="20" fill="#212529" text-anchor="end">-0.29824</text>
+<text class="val breath" style="animation-delay:0.98s" x="1568" y="536" font-size="20" fill="#212529" text-anchor="end">-0.10283</text>
+<text class="val breath" style="animation-delay:1.05s" x="1760" y="536" font-size="20" fill="#212529" text-anchor="end">-0.20473</text>
+<text class="val breath" style="animation-delay:1.12s" x="1952" y="536" font-size="20" fill="#212529" text-anchor="end">-0.65234</text>
+<text class="val breath" style="animation-delay:1.19s" x="2144" y="536" font-size="20" fill="#212529" text-anchor="end">-0.30387</text>
+<text class="val breath" style="animation-delay:1.26s" x="2336" y="536" font-size="20" fill="#212529" text-anchor="end">-0.46267</text>
+</g>
+<g class="row" style="animation-delay:0.132s">
+<rect x="0" y="552" width="2352" height="44" fill="#ffffff"/>
+<text class="lab" x="12" y="580" font-size="20" fill="#212529">sd_r_dplc_margin_a_max [-0.9,4.1]</text>
+<text class="val breath" style="animation-delay:0.70s" x="608" y="580" font-size="20" fill="#212529" text-anchor="end">0.86643</text>
+<text class="val breath" style="animation-delay:0.77s" x="800" y="580" font-size="20" fill="#212529" text-anchor="end">0.90818</text>
+<text class="val breath" style="animation-delay:0.84s" x="992" y="580" font-size="20" fill="#212529" text-anchor="end">0.86538</text>
+<text class="val breath" style="animation-delay:0.91s" x="1184" y="580" font-size="20" fill="#212529" text-anchor="end">1.08863</text>
+<text class="val breath" style="animation-delay:0.98s" x="1376" y="580" font-size="20" fill="#212529" text-anchor="end">1.21287</text>
+<text class="val breath" style="animation-delay:1.05s" x="1568" y="580" font-size="20" fill="#212529" text-anchor="end">1.27942</text>
+<text class="val breath" style="animation-delay:1.12s" x="1760" y="580" font-size="20" fill="#212529" text-anchor="end">1.24012</text>
+<text class="val breath" style="animation-delay:1.19s" x="1952" y="580" font-size="20" fill="#212529" text-anchor="end">2.31776</text>
+<text class="val breath" style="animation-delay:1.26s" x="2144" y="580" font-size="20" fill="#212529" text-anchor="end">2.44447</text>
+<text class="val breath" style="animation-delay:1.33s" x="2336" y="580" font-size="20" fill="#212529" text-anchor="end">2.38444</text>
+</g>
+<g class="row" style="animation-delay:0.144s">
+<rect x="0" y="596" width="2352" height="44" fill="#f4f8f7"/>
+<text class="lab" x="12" y="624" font-size="20" fill="#212529">sd_r_dplc_margin_a_min [-0.9,4.1]</text>
+<text class="val breath" style="animation-delay:0.77s" x="608" y="624" font-size="20" fill="#212529" text-anchor="end">-0.41989</text>
+<text class="val breath" style="animation-delay:0.84s" x="800" y="624" font-size="20" fill="#212529" text-anchor="end">-0.16869</text>
+<text class="val breath" style="animation-delay:0.91s" x="992" y="624" font-size="20" fill="#212529" text-anchor="end">-0.31419</text>
+<text class="val breath" style="animation-delay:0.98s" x="1184" y="624" font-size="20" fill="#212529" text-anchor="end">-0.68070</text>
+<text class="val breath" style="animation-delay:1.05s" x="1376" y="624" font-size="20" fill="#212529" text-anchor="end">-0.56328</text>
+<text class="val breath" style="animation-delay:1.12s" x="1568" y="624" font-size="20" fill="#212529" text-anchor="end">-0.26539</text>
+<text class="val breath" style="animation-delay:1.19s" x="1760" y="624" font-size="20" fill="#212529" text-anchor="end">-0.40159</text>
+<rect x="1774" y="596" width="192" height="44" fill="#f8dede"/>
+<text class="val breath" style="animation-delay:1.26s" x="1952" y="624" font-size="20" fill="#7f1d1d" text-anchor="end">-1.02462</text>
+<text class="val breath" style="animation-delay:1.33s" x="2144" y="624" font-size="20" fill="#212529" text-anchor="end">-0.57363</text>
+<text class="val breath" style="animation-delay:1.40s" x="2336" y="624" font-size="20" fill="#212529" text-anchor="end">-0.77104</text>
+</g>
+<g class="row" style="animation-delay:0.156s">
+<rect x="0" y="640" width="2352" height="44" fill="#ffffff"/>
+<text class="lab" x="12" y="668" font-size="20" fill="#212529">sd_l_dplc_margin_b_max [-0.9,4.1]</text>
+<text class="val breath" style="animation-delay:0.84s" x="608" y="668" font-size="20" fill="#212529" text-anchor="end">1.18116</text>
+<text class="val breath" style="animation-delay:0.91s" x="800" y="668" font-size="20" fill="#212529" text-anchor="end">0.93966</text>
+<text class="val breath" style="animation-delay:0.98s" x="992" y="668" font-size="20" fill="#212529" text-anchor="end">1.00211</text>
+<text class="val breath" style="animation-delay:1.05s" x="1184" y="668" font-size="20" fill="#212529" text-anchor="end">1.55773</text>
+<text class="val breath" style="animation-delay:1.12s" x="1376" y="668" font-size="20" fill="#212529" text-anchor="end">1.57479</text>
+<text class="val breath" style="animation-delay:1.19s" x="1568" y="668" font-size="20" fill="#212529" text-anchor="end">1.34599</text>
+<text class="val breath" style="animation-delay:1.26s" x="1760" y="668" font-size="20" fill="#212529" text-anchor="end">1.40471</text>
+<text class="val breath" style="animation-delay:1.33s" x="1952" y="668" font-size="20" fill="#212529" text-anchor="end">2.62308</text>
+<text class="val breath" style="animation-delay:1.40s" x="2144" y="668" font-size="20" fill="#212529" text-anchor="end">2.36903</text>
+<text class="val breath" style="animation-delay:1.47s" x="2336" y="668" font-size="20" fill="#212529" text-anchor="end">2.45163</text>
+</g>
+<g class="row" style="animation-delay:0.168s">
+<rect x="0" y="684" width="2352" height="44" fill="#f4f8f7"/>
+<text class="lab" x="12" y="712" font-size="20" fill="#212529">sd_l_dplc_margin_b_min [-0.9,4.1]</text>
+<text class="val breath" style="animation-delay:0.91s" x="608" y="712" font-size="20" fill="#212529" text-anchor="end">0.44622</text>
+<text class="val breath" style="animation-delay:0.98s" x="800" y="712" font-size="20" fill="#212529" text-anchor="end">0.29726</text>
+<text class="val breath" style="animation-delay:1.05s" x="992" y="712" font-size="20" fill="#212529" text-anchor="end">0.32660</text>
+<text class="val breath" style="animation-delay:1.12s" x="1184" y="712" font-size="20" fill="#212529" text-anchor="end">0.54870</text>
+<text class="val breath" style="animation-delay:1.19s" x="1376" y="712" font-size="20" fill="#212529" text-anchor="end">0.60863</text>
+<text class="val breath" style="animation-delay:1.26s" x="1568" y="712" font-size="20" fill="#212529" text-anchor="end">0.44746</text>
+<text class="val breath" style="animation-delay:1.33s" x="1760" y="712" font-size="20" fill="#212529" text-anchor="end">0.49835</text>
+<text class="val breath" style="animation-delay:1.40s" x="1952" y="712" font-size="20" fill="#212529" text-anchor="end">0.92594</text>
+<text class="val breath" style="animation-delay:1.47s" x="2144" y="712" font-size="20" fill="#212529" text-anchor="end">0.72255</text>
+<text class="val breath" style="animation-delay:1.54s" x="2336" y="712" font-size="20" fill="#212529" text-anchor="end">0.79207</text>
+</g>
+<g class="row" style="animation-delay:0.180s">
+<rect x="0" y="728" width="2352" height="44" fill="#ffffff"/>
+<text class="lab" x="12" y="756" font-size="20" fill="#212529">sd_r_dplc_margin_b_max [-0.9,4.1]</text>
+<text class="val breath" style="animation-delay:0.98s" x="608" y="756" font-size="20" fill="#212529" text-anchor="end">1.02005</text>
+<text class="val breath" style="animation-delay:1.05s" x="800" y="756" font-size="20" fill="#212529" text-anchor="end">1.18995</text>
+<text class="val breath" style="animation-delay:1.12s" x="992" y="756" font-size="20" fill="#212529" text-anchor="end">1.10643</text>
+<text class="val breath" style="animation-delay:1.19s" x="1184" y="756" font-size="20" fill="#212529" text-anchor="end">1.20191</text>
+<text class="val breath" style="animation-delay:1.26s" x="1376" y="756" font-size="20" fill="#212529" text-anchor="end">1.48561</text>
+<text class="val breath" style="animation-delay:1.33s" x="1568" y="756" font-size="20" fill="#212529" text-anchor="end">1.70694</text>
+<text class="val breath" style="animation-delay:1.40s" x="1760" y="756" font-size="20" fill="#212529" text-anchor="end">1.58150</text>
+<text class="val breath" style="animation-delay:1.47s" x="1952" y="756" font-size="20" fill="#212529" text-anchor="end">2.78730</text>
+<text class="val breath" style="animation-delay:1.54s" x="2144" y="756" font-size="20" fill="#212529" text-anchor="end">3.14595</text>
+<text class="val breath" style="animation-delay:1.61s" x="2336" y="756" font-size="20" fill="#212529" text-anchor="end">2.95349</text>
+</g>
+<g class="row" style="animation-delay:0.192s">
+<rect x="0" y="772" width="2352" height="44" fill="#f4f8f7"/>
+<text class="lab" x="12" y="800" font-size="20" fill="#212529">sd_r_dplc_margin_b_min [-0.9,4.1]</text>
+<text class="val breath" style="animation-delay:1.05s" x="608" y="800" font-size="20" fill="#212529" text-anchor="end">0.01549</text>
+<text class="val breath" style="animation-delay:1.12s" x="800" y="800" font-size="20" fill="#212529" text-anchor="end">0.11213</text>
+<text class="val breath" style="animation-delay:1.19s" x="992" y="800" font-size="20" fill="#212529" text-anchor="end">0.04589</text>
+<text class="val breath" style="animation-delay:1.26s" x="1184" y="800" font-size="20" fill="#212529" text-anchor="end">-0.04735</text>
+<text class="val breath" style="animation-delay:1.33s" x="1376" y="800" font-size="20" fill="#212529" text-anchor="end">0.06673</text>
+<text class="val breath" style="animation-delay:1.40s" x="1568" y="800" font-size="20" fill="#212529" text-anchor="end">0.19360</text>
+<text class="val breath" style="animation-delay:1.47s" x="1760" y="800" font-size="20" fill="#212529" text-anchor="end">0.12691</text>
+<text class="val breath" style="animation-delay:1.54s" x="1952" y="800" font-size="20" fill="#212529" text-anchor="end">0.10554</text>
+<text class="val breath" style="animation-delay:1.61s" x="2144" y="800" font-size="20" fill="#212529" text-anchor="end">0.29639</text>
+<text class="val breath" style="animation-delay:1.68s" x="2336" y="800" font-size="20" fill="#212529" text-anchor="end">0.20594</text>
+</g>
+<line x1="622" y1="60" x2="622" y2="816" stroke="#d0d8d6" stroke-width="1"/>
+<line x1="814" y1="60" x2="814" y2="816" stroke="#d0d8d6" stroke-width="1"/>
+<line x1="1006" y1="60" x2="1006" y2="816" stroke="#d0d8d6" stroke-width="1"/>
+<line x1="1198" y1="60" x2="1198" y2="816" stroke="#d0d8d6" stroke-width="1"/>
+<line x1="1390" y1="60" x2="1390" y2="816" stroke="#d0d8d6" stroke-width="1"/>
+<line x1="1582" y1="60" x2="1582" y2="816" stroke="#d0d8d6" stroke-width="1"/>
+<line x1="1774" y1="60" x2="1774" y2="816" stroke="#d0d8d6" stroke-width="1"/>
+<line x1="1966" y1="60" x2="1966" y2="816" stroke="#d0d8d6" stroke-width="1"/>
+<line x1="2158" y1="60" x2="2158" y2="816" stroke="#d0d8d6" stroke-width="1"/>
+<line x1="2350" y1="60" x2="2350" y2="816" stroke="#d0d8d6" stroke-width="1"/>
+<line x1="1" y1="112" x2="2351" y2="112" stroke="#d0d8d6" stroke-width="1"/>
+<line x1="1" y1="156" x2="2351" y2="156" stroke="#d0d8d6" stroke-width="1"/>
+<line x1="1" y1="200" x2="2351" y2="200" stroke="#d0d8d6" stroke-width="1"/>
+<line x1="1" y1="244" x2="2351" y2="244" stroke="#d0d8d6" stroke-width="1"/>
+<line x1="1" y1="288" x2="2351" y2="288" stroke="#d0d8d6" stroke-width="1"/>
+<line x1="1" y1="332" x2="2351" y2="332" stroke="#d0d8d6" stroke-width="1"/>
+<line x1="1" y1="376" x2="2351" y2="376" stroke="#d0d8d6" stroke-width="1"/>
+<line x1="1" y1="420" x2="2351" y2="420" stroke="#d0d8d6" stroke-width="1"/>
+<line x1="1" y1="464" x2="2351" y2="464" stroke="#d0d8d6" stroke-width="1"/>
+<line x1="1" y1="508" x2="2351" y2="508" stroke="#d0d8d6" stroke-width="1"/>
+<line x1="1" y1="552" x2="2351" y2="552" stroke="#d0d8d6" stroke-width="1"/>
+<line x1="1" y1="596" x2="2351" y2="596" stroke="#d0d8d6" stroke-width="1"/>
+<line x1="1" y1="640" x2="2351" y2="640" stroke="#d0d8d6" stroke-width="1"/>
+<line x1="1" y1="684" x2="2351" y2="684" stroke="#d0d8d6" stroke-width="1"/>
+<line x1="1" y1="728" x2="2351" y2="728" stroke="#d0d8d6" stroke-width="1"/>
+<line x1="1" y1="772" x2="2351" y2="772" stroke="#d0d8d6" stroke-width="1"/>
+<rect x="1" y="1" width="2350" height="816" fill="none" stroke="#c0c6c6" stroke-width="2"/>
+</svg>

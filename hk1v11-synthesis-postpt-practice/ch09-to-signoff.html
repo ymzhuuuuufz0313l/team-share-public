@@ -7,7 +7,7 @@
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
   <title>九、TO SIGNOFF · HK1V11 综合/签核流程实践</title>
-  <meta name="description" content="最终签核前的最后一道确认：APR 把全部内容修改完成后，再跑一次 postPT + run_summary，确认时序全部 ready，才进入 signoff。1V11 当前处于约…">
+  <meta name="description" content="最终签核前的最后一道确认：APR 修改全部完成后重跑 postPT + run_summary，时序全部 ready 才进入 signoff。1118V1 代（2026-11-18）：hold 全角零违例、setup 30 条收敛至 wc 三颗、sdskew 全在窗——本章含五张签核表图与时钟偏移容限换算。">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Serif+SC:wght@600;900&display=swap" rel="stylesheet">
@@ -25,104 +25,54 @@
   <div class="container with-toc">
     <aside class="toc-wrapper"><div class="toc" id="toc"></div></aside>
     <div class="content">
-      <!-- 最新 · 1104V2 签核状态 -->
-      <div class="section-title">最新 · 1104V2 post-PT 签核状态（10 corner · 1104 代际 hold 修复迭代 · canonical 记录版）</div>
+      <!-- 最新 · 1118V1 签核状态（2026-11-18 换正，canonical 记录版） -->
+      <div class="section-title">最新 · 1118V1 post-PT 签核状态（10 corner · 2026-11-18 重跑 · canonical 记录版）</div>
       <div class="chapter-grid" style="margin-bottom: 12px;">
         <div class="chapter-card card-span card-hero card-center">
-          <div class="num">1104V2 · PACK_TAR_1104V2 · 数据源 <code>summary/latest/report_*.csv</code> · 表图见本章 §6</div>
-          <div class="title" style="font-family: var(--font-mono); font-weight: 600; color: var(--ok);">b 组 margin 20/20 在窗 · hold 修复迭代见效（33 → 22）</div>
-          <div class="desc" style="margin-top: 8px;">1104 代际 hold 修复迭代 run（DC 11-03 → write_sdc 11-03 → PT STA 11-04，三方对齐）· setup 9 格/3 域 · hold 7 格/2 域 · trans 20 格/2 域 · sdskew 出窗仅 1 格（P5 a 侧悬置延续，非新违例）· 本版为网站 canonical 记录版</div>
+          <div class="num">1118V1 · PACK_TAR_1118V1 · 数据源 <code>summary/latest/report_*.csv</code>（PT 代 20261118_0 · HK1V11 commit 82db2cfea）· 表图见本章 §6</div>
+          <div class="title" style="font-family: var(--font-mono); font-weight: 600; color: var(--ok);">hold 全 10 角零违例 · setup 收敛 196 → 30 · 首个 hold-ready 代</div>
+          <div class="desc" style="margin-top: 8px;">1118 代际 APR 后 postPT 重跑（PT 2026-11-18，run 代 20261118_0）· setup 30 条 / 9 红格 / 3 域（全落 wc 三颗，其余 7 颗零违例）· hold 0 违例（全局最小 +0.001875 @lt_cbest_m40，余量薄）· trans 33 条 transition（capacitance 清零）· sdskew 160 格全在窗 · 本版为网站 canonical 记录版</div>
         </div>
         <div class="chapter-card card-center card-mini">
           <div class="num">setup（10 角）</div>
-          <div class="title" style="font-family: var(--font-mono); color: var(--warn);">9 格 / 3 域</div>
-          <div class="desc">worst −0.43070（DCLK_DATA_MUX_SHORT @wc_cbest）</div>
+          <div class="title" style="font-family: var(--font-mono); color: var(--warn);">30 条 / 9 格 3 域</div>
+          <div class="desc">worst −0.087954（RX_CLK @wc_cworst）· wc 三颗各 10 条</div>
         </div>
         <div class="chapter-card card-center card-mini">
           <div class="num">hold（10 角）</div>
-          <div class="title" style="font-family: var(--font-mono); color: var(--warn);">7 格 / 2 域</div>
-          <div class="desc">worst −0.03583（RX_CLK @ml_cbest）</div>
+          <div class="title" style="font-family: var(--font-mono); color: var(--ok);">0 违例</div>
+          <div class="desc">全局最小 +0.001875（@lt_cbest_m40，余量薄）</div>
         </div>
         <div class="chapter-card card-center card-mini">
           <div class="num">trans / cap</div>
-          <div class="title" style="font-family: var(--font-mono); color: var(--warn);">20 格 / 2 域</div>
-          <div class="desc">worst transition −1.99743（@wc_cworst）</div>
+          <div class="title" style="font-family: var(--font-mono); color: var(--warn);">33 条 / 4 格</div>
+          <div class="desc">worst −0.155971（@wc_cbest）· capacitance 10 → 0 清零</div>
         </div>
         <div class="chapter-card card-center card-mini">
-          <div class="num">skew margin_b</div>
-          <div class="title" style="font-family: var(--font-mono); color: var(--ok);">20/20 在窗</div>
-          <div class="desc">l dplc 全正 0.30~0.93 · r dplc 全正 0.02~0.30</div>
-        </div>
-        <div class="chapter-card card-center card-mini">
-          <div class="num">演进</div>
-          <div class="title" style="font-family: var(--font-mono); color: var(--muted);">0918V2 → 1008V3 → 1029V0 → 1104V0 → 1104V2</div>
-          <div class="desc">绝对值跨代际不可横比（新 P&R）· 在窗性质与违例域结构可追</div>
-        </div>
-      </div>
-
-      <!-- 对比 · 1029V0 前代基线 -->
-      <div class="section-title">对比 · 1029V0 post-PT 签核状态（10 corner · 探针 P1 修复后首个 run · 前代基线）</div>
-      <div class="chapter-grid" style="margin-bottom: 12px;">
-        <div class="chapter-card card-span card-hero card-center">
-          <div class="num">1029V0 · PACK_TAR_1029V0 · 约束 600 行 · dplc clk_b 探针 P1 修复后首个 run（审计见 <a href="./ch21-skew-probe-audit.html">ch21</a>）</div>
-          <div class="title" style="font-family: var(--font-mono); font-weight: 600; color: var(--accent);">setup 11 格/4 域 · hold 11 格/3 域 · trans 10 格/2 域</div>
-          <div class="desc" style="margin-top: 8px;">b 组 20/20 在窗；前代新关注 P11 <b style="color:var(--bad);">sd_r_dplc_margin_b_max @wc_cworst = 4.25906 出上界 +4.1</b>（<b style="color:var(--ok);">1104 代际已清零</b>）· worst setup −0.36838（gating @wc_cbest）· worst hold −0.04865（RX_CLK @lt_typ）</div>
-        </div>
-      </div>
-
-      <!-- 历史 · 0918V2 基线（三代并置：最新在顶，历史在下） -->
-      <div class="section-title">对比 · 0918V2 历史基线（早期 post-PT 签核状态）</div>
-      <div class="chapter-grid" style="margin-bottom: 12px;">
-        <div class="chapter-card card-span card-hero card-center">
-          <div class="num">0918V2 · 3 corner 基线（此后 0922→1008 多轮演进，详见 §3 表与下方 1008V3 卡）</div>
-          <div class="title" style="font-family: var(--font-mono); font-weight: 600; color: var(--accent);">setup 29 / 129 / 39 <span style="color:var(--muted);font-size:20px;">·</span> hold 1752 / 1742 / 1750</div>
-          <div class="desc" style="margin-top: 8px;">wc_cworst / wc_cbest / wc_typical · worst setup −0.632（cbest）· worst hold −5.141（cworst）</div>
-        </div>
-        <div class="chapter-card card-center card-mini">
-          <div class="num">setup · 3 corner</div>
-          <div class="title" style="font-family: var(--font-mono);">29 / 129 / 39</div>
-          <div class="desc">−0.255 / −0.632 / −0.403</div>
-        </div>
-        <div class="chapter-card card-center card-mini">
-          <div class="num">hold · 3 corner</div>
-          <div class="title" style="font-family: var(--font-mono);">1752 / 1742 / 1750</div>
-          <div class="desc">−5.141 / −5.078 / −5.123</div>
+          <div class="num">skew margin</div>
+          <div class="title" style="font-family: var(--font-mono); color: var(--ok);">160 格 0 出窗</div>
+          <div class="desc">b 组 20/20 · 1p 80/80 · a 侧 r_min 收回窗内</div>
         </div>
         <div class="chapter-card card-center card-mini">
           <div class="num">演进</div>
-          <div class="title" style="font-family: var(--font-mono); color: var(--ok);">→ 1008V3</div>
-          <div class="desc">约束多轮迭代收敛（见下方最新卡）</div>
+          <div class="title" style="font-family: var(--font-mono); color: var(--muted);">0918V2 → 1008V3 → 1029V0 → 1104V0 → 1104V2 → 1118V1</div>
+          <div class="desc">绝对值跨代际不可横比（新 P&amp;R）· 更早代际卡片见下方归档链接</div>
         </div>
       </div>
 
-      <!-- 对比 · 1008V3 签核状态 -->
-      <div class="section-title">对比 · 1008V3 post-PT 签核状态（10 corner）</div>
+      <!-- 前代 · 1104V2（历史仅保留最近一次；更早代际折叠进整页快照归档） -->
+      <div class="section-title">前代 · 1104V2 post-PT 签核状态（10 corner · 1104 代际 hold 修复迭代 · 最近一次历史）</div>
       <div class="chapter-grid" style="margin-bottom: 12px;">
         <div class="chapter-card card-span card-hero card-center">
-          <div class="num">1008V3 三笔约束生效（G15/K1/I2C async）· 数据源 <code>script/_syn_1008v3_评估报告.md</code></div>
-          <div class="title" style="font-family: var(--font-mono); font-weight: 600; color: var(--accent);">setup 119 <span style="color:var(--muted);font-size:20px;">→</span> 87 <span style="color:var(--muted);font-size:20px;">/</span> hold 7563 <span style="color:var(--muted);font-size:20px;">→</span> 242</div>
-          <div class="desc" style="margin-top: 8px;">hold worst −2.32 <b style="color:var(--ok);">→ −0.2667</b>（wc_cworst RX_CLK）· A/D 簇 mc 清零（FLAG_1H 20 路 + K1 15 路全 MET）</div>
-        </div>
-        <div class="chapter-card card-center card-mini">
-          <div class="num">setup（新 run）</div>
-          <div class="title" style="font-family: var(--font-mono);">87 条</div>
-          <div class="desc">cworst 5/−0.091 · cbest 49/−0.692 · typical 33/−0.199</div>
-        </div>
-        <div class="chapter-card card-center card-mini">
-          <div class="num">hold（9 可比角）</div>
-          <div class="title" style="font-family: var(--font-mono);">242 条</div>
-          <div class="desc">旧 7563 → −7321 · worst −0.2667（wc_cworst）</div>
-        </div>
-        <div class="chapter-card card-center card-mini">
-          <div class="num">SEL-004</div>
-          <div class="title" style="font-family: var(--font-mono); color: var(--ok);">0 条</div>
-          <div class="desc">10 corner read_cons.log 均 0 · 无新增</div>
+          <div class="num">1104V2 · PACK_TAR_1104V2 · hold 修复迭代 run（DC 11-03 → write_sdc 11-03 → PT STA 11-04，三方对齐）· 2026-11-18 被 1118V1 换正</div>
+          <div class="title" style="font-family: var(--font-mono); font-weight: 600; color: var(--accent);">setup 196 条 / 9 格 3 域 · hold 22 条 / 7 格 2 域 · trans 147 + cap 10</div>
+          <div class="desc" style="margin-top: 8px;">worst setup −0.43070（DCLK_DATA_MUX_SHORT @wc_cbest）· worst hold −0.03583（RX_CLK @ml_cbest）· b 组 margin 20/20 在窗 · 时钟偏移容限 左 0.646 / 右 0.449。更早代际对比卡（1029V0 / 1008V3 / 0918V2）、V0↔V2 对比段与旧逐角换算表已随本次换版折叠进整页快照：<a href="./images/archive/20261118/ch09-to-signoff_1104v2.html">ch09-to-signoff_1104v2.html</a>（图/页永不删除，归档只增不改）</div>
         </div>
       </div>
 
       <article class="article loading" id="article"></article>
       <div class="page-nav" id="page-nav"></div>
-      <div class="footer">HK1V11 SYNTHESIS / SIGNOFF PRACTICE · AUTHOR ymzhuuuu · UPDATED 2026-11-04</div>
+      <div class="footer">HK1V11 SYNTHESIS / SIGNOFF PRACTICE · AUTHOR ymzhuuuu · UPDATED 2026-11-18</div>
     </div>
   </div>
   <script type="text/template" id="md">
@@ -159,12 +109,14 @@ flowchart LR
 
 ## 3. 1V11 当前基线与违例分级判读
 
-0918V2 run（历史基线，0922 后已多轮演进，最新状态见 <a href="./ch14-violation-disposition.html">ch14 §5</a>）：
+1118V1 run（2026-11-18 重跑，PT 代 20261118_0；违例处置追踪见 <a href="./ch14-violation-disposition.html">ch14 §5</a>）：
 
 | 指标 | wc_cworst_125 | wc_cbest_125 | wc_typical_125 |
 |---|---|---|---|
-| setup | 29 / −0.255 | **129 / −0.632** | 39 / −0.403 |
-| hold | 1752 / −5.141 | 1742 / −5.078 | 1750 / −5.123 |
+| setup | **10 / −0.087954** | 10 / −0.067471 | 10 / −0.059758 |
+| hold | 0 违例 | 0 违例 | 0 违例 |
+
+hold 全 10 角零违例，全表全局最小 +0.001875 @lt_cbest_m40（余量薄，见 §6.1）。0918V2 历史基线（setup 29/129/39 · hold 1752/1742/1750，worst −5.141）等更早代际数字已折叠进整页快照归档：<a href="./images/archive/20261118/ch09-to-signoff_1104v2.html">ch09-to-signoff_1104v2.html</a>。
 
 违例分级判读（三类，处置不同）：
 
@@ -172,7 +124,7 @@ flowchart LR
 2. **准静态配置跨域**：`R_REG*_L_*` / `R_REG*_F_reg*` 配置写 → mc / 更具体的 max_delay 已收敛（G 系列 + G10，ch10 案例 2/8）。
 3. **报告假值**：哨兵值 / 探针失配 / 非法起点回退（ch10 案例 3/9）→ **修脚本，不是修时序**。
 
-KEY: hold ~1742 条/corner、worst −5.078 是既有 P0（每轮 run 逐条相同 = 零回归基线），独立专项跟进，交付说明中必须注明——不能混进本轮约束工作的结论里。
+KEY: 0918V2 时代的 hold 大亏空 P0（~1742 条/corner、worst −5.078，曾是每轮 run 逐条相同的零回归基线）已随多轮约束迭代收敛——1104V2 剩 22 条，1118V1 全角清零；当前 hold 侧关注点转为「零违例但余量薄」（全局最小 +0.001875 @lt_cbest_m40），签核说明须注明。
 
 ## 4. IO buf type 确认
 
@@ -184,82 +136,83 @@ KEY: hold ~1742 条/corner、worst −5.078 是既有 P0（每轮 run 逐条相�
 
 - [ ] 10 corner 全跑、run_summary 总表无新冒违例
 - [ ] setup：仅剩已定性项（真路径交 APR/设计、mc 豁免对得上 ip_cons 条目）
-- [ ] hold：与基线逐条相同（P0 已注明）
+- [ ] hold：零违例或仅剩已定性项（余量薄处已注明）
 - [ ] skew：margin 全部有数且在确认后的规格窗内（dplc 行已出数）
 - [ ] unconstrained 清零、SEL=0
 - [ ] IO buf type 核对完成
 
-## 6. 1104V2 全量 signoff 报表（2026-11-04 表图，1104 代际 hold 修复迭代 · canonical 记录版）
+## 6. 1118V1 全量 signoff 报表（2026-11-18 表图 · PT 代 20261118_0 · canonical 记录版）
 
-> 五张表**逐项沿用 2M23 signoff 表图体系**（结构/配色/动画照抄 synthesis-integration-flow-guide），唯一改动：**违例红显**（负 slack / 出窗 → 红 `#7f1d1d`）。零手工录入：生成脚本归档于 `images/tools/`（`gen_signoff_1104v2.py`，模板谱系 = `gen_signoff_tables_hk1v11.py` rev5 + `gen_shift_window_hk11.py` v2），直读 **PACK_TAR_1104V2** `summary/latest` csv，六项校验每次生成自动跑。本 run 为 **1104 代际 hold 修复迭代**（DC 11-03 → write_sdc 11-03 → PT STA 11-04，三方对齐），按服务器 **614 行约束（ip_cons 10 条全采）** 口径产出：b 组 margin 20/20 在窗，前代 P11 出上界已清零。**本版为网站记录的 canonical signoff 图**（1104V0 → 1104V2 换正于 2026-11-04，前代套图快照见 §6.5「图版归档」）。
-
-> **V0 ↔ V2 对比（hold 修复迭代见效点）**：hold 总违例 **33 → 22**、worst **−0.0711 → −0.0358**（**改善 49.6%**，RX_CLK 族收敛）；hold 违例角分布 `0 0 0 7 8 11 4 1 1 1 → 0 0 0 5 6 9 2 0 0 0`，**tt 系 3 角清零**；时钟偏移容限**右移 +0.047**（0.402 → 0.449，hold 先碰界角 rx0_00_min 从 −0.048 收敛到 −0.0005）；setup / trans / cap 违例域结构与计数**逐角一致**（setup 总 196 持平、worst −0.43089 → −0.43070 微移、3 域结构不变；trans 147 + cap 10 不变）。
+> 五张表**逐项沿用 2M23 signoff 表图体系**（结构/配色/动画照抄 synthesis-integration-flow-guide），唯一改动：**违例红显**（负 slack / 出窗 → 红 `#7f1d1d`）。零手工录入：生成脚本归档于 `images/tools/`（`gen_signoff_1118v1.py`，模板谱系 = `gen_signoff_1104v2.py`，仅改数据源/标题代际/输出路径/换版自动归档/hold 副标题五处），直读本地库 `SYNTHESIS/top/sta/post/pt/summary/latest` csv（PACK_TAR_1118V1 overlay 后，PT 代 20261118_0，HK1V11 commit 82db2cfea），XML / 无 script / 转录逐值 / 成对完整 / 幂等校验每次生成自动跑。**本版为网站记录的 canonical signoff 图**（1104V2 → 1118V1 换正于 2026-11-18，前代套图与整页快照见 §6.5「图版归档」）。
+>
+> **口径注意（R1）**：lt_cbest_m40 / tt_typical_25 / wc_cbest_125 三颗包内未带 `latest/rpt/`，本章数字与图**仅 summary csv 口径**，不声称 rpt 明细支撑；§6.3 换算的「input port 即头名」行语义沿用 1104V2 代 rpt 核验结论。
+>
+> **较前代 1104V2（hold 修复迭代后的新 P&R 重跑）**：setup **196 → 30**（worst −0.43070 → −0.087954；违例角从 wc 系 3 颗 + lt_cworst 15 条收窄为 wc 系 3 颗各 10 条，其余 7 颗零违例）；hold **22 → 0**（worst −0.03583 → 零违例，全局最小 +0.001875 @lt_cbest_m40，余量薄）；trans **147 → 33**、capacitance **10 → 0**（worst transition −1.997428 → −0.155971）；sdskew 由「b 组 20/20 在窗 + a 侧 1 红格」→ **160 格全在窗**；时钟偏移容限 左 **0.646 → 1.038** / 右 **0.449 → 0.485**。
 
 ### 6.1 setup / hold 总表
 
-![setup 总表](./images/anim/51_signoff_setup_hk11.svg?v=20261104r3)
+![setup 总表](./images/anim/51_signoff_setup_hk11.svg?v=20261118r1)
 
-![hold 总表](./images/anim/52_signoff_hold_hk11.svg?v=20261104r3)
+![hold 总表](./images/anim/52_signoff_hold_hk11.svg?v=20261118r1)
 
-- setup 9 违例格 / 3 域（DCLK_DATA_MUX_SHORT + RX_CLK + gating，3 域结构与 V0 一致），worst −0.43070（DCLK_DATA_MUX_SHORT @wc_cbest_125，7 条）；hold 7 格 / 2 域（RX_CLK + OSC_CLK），worst −0.03583（RX_CLK @ml_cbest_125，2 条）。总违例 setup 196 / hold 22（setup 集中在 wc 系：wc_cworst 53 + wc_cbest 66 + wc_typical 62，另有 lt_cworst 15；hold 集中在 lt 系 + ml，tt 系 3 角清零）。
+- setup 30 违例 / 9 红格 / 3 域（RX_CLK + DCLK_DATA_MUX_SHORT + gating），worst −0.087954（RX_CLK @wc_cworst_125，8 条）。总违例 30 全部集中在 wc 系三颗（wc_cworst 10 / wc_cbest 10 / wc_typical 10，`setup.rpt` 总行口径），其余 7 颗零违例（lt_cworst 自 1104V2 的 15 条清零）；红格分布：RX_CLK 3 格（wc_cbest 7 / wc_cworst 8 / wc_typical 9 条）、DCLK_DATA_MUX_SHORT 3 格（2/3/2）、gating 3 格（2/1/1）——分域行按各自 report 文件计条，与总行（merge 总数）为 csv 内两套并行口径，图内并排呈现，签核计数以 `setup.rpt` 总行为准。
+- hold 全表（34 分域行 + 总行）**零违例**，无一处红格；图副标题提示「全 0 违例·全局最小 +0.001875 @lt_cbest_m40（余量薄）」——全局最小 = 全表最小正 slack（0 值格为无检查行不参与），csv 直算。1104V2 的 7 格 / 2 域（RX_CLK + OSC_CLK）全数清零。
 - 读法照抄 2M23：绿 0 = 零违例；深色正数 = 有 margin 的最差路径余量；深红 = 违例（**浅红底格**），括号内为该角该域违例条数（呼吸常驻）；全表统一 5 位小数；sdskew 表窗口同步写在每行行首。
 
 ### 6.2 trans / cap 总表
 
-![trans 总表](./images/anim/53_signoff_trans_hk11.svg?v=20261104r3)
+![trans 总表](./images/anim/53_signoff_trans_hk11.svg?v=20261118r1)
 
-- 20 格 / 2 域（transition 10 角全违例 + capacitance 10 角全违例），worst −1.997428（transition @wc_cworst_125）。capacitance 每角 1 条（−0.019~−0.042，轻微）；transition 每角 5~45 条（ml_cbest 45 / wc_cbest 34 最重）。
+- 33 条 / 4 红格，全部为 transition 行：ml_cbest_125 24 条（worst −0.083512）+ wc_cbest 3（−0.155971，全表 worst）+ wc_cworst 3（−0.154928）+ wc_typical 3（−0.121504）；capacitance / pulse_width / clock_period 全角清零（1104V2：trans 147 + cap 每角 1 条 → 本代 33 + 0）。
 
 ### 6.3 PHY bus skew
 
-![phy busskew](./images/anim/54_signoff_physkew_hk11.svg?v=20261104r3)
+![phy busskew](./images/anim/54_signoff_physkew_hk11.svg?v=20261118r1)
 
-- `rx0_00_min`（hold）V2 仅 1 角微负（lt_typical −0.00052；V0 为 lt 系 + ml 共 4 角负、最差 −0.04776 @lt_typical——hold 修复主见效点）＝ port→FF hold 族（±0.3 input delay 模型所致，定性见 ch19 §2.1-2.2）；`rx0_00_max`（setup）仅 lt_cworst 1 角微负（−0.05394）。按 2M23 原样负值不红显（深色+呼吸）。
-- 浅蓝底格（辉光呼吸+虚线生长）= `rx0_00_max` 行与 `rx0_00_min` 行各自的最小值格（全角最紧 corner：max 行 @lt_cworst −0.05394、min 行 @lt_typical −0.00052）。
-- `sd_l/r_dplc_clk_b` 两行以真探针持续产出（1104 代际延续，无回归）。
+- `rx0_00_max`（setup 侧）与 `rx0_00_min`（hold 侧）**全角为正**：最紧分别 +0.33822 @lt_cworst / +0.03453 @lt_cbest（浅蓝高亮格）——1104V2 的两处微负（max @lt_cworst −0.054 / min @lt_typical −0.0005）本代转正；按 2M23 原样负值不红显（本代无负值）。`sd_l/r_*` 8 行全正（7.76–12.61 ns），真探针持续产出（1118 代际延续，无回归）。
 
-> **时钟偏移容限换算（2M23 同款口径，从 1104V2 现有报告还原，未改任何脚本/约束）**
+> **时钟偏移容限换算（2M23 同款口径，从 1118V1 现有报告还原，未改任何脚本/约束）**
 >
 > 1V11 的采样窗预算已写进约束：`set_input_delay 0.3/-0.3`（±0.3 = 外部数据眼窗）+ RX_CLK `uncertainty setup 0.4 / hold 0.15`——PT 出的 slack 是**扣除预算后的净余量**，要得到 2M23 风格的"时钟可左移/右移 X ns"裸口径，把扣掉的预算**加回去**：
 >
 > - **左移容限（setup 方向）= port→FF setup slack + 0.3 + 0.4**
 > - **右移容限（hold 方向）= port→FF hold slack + 0.3 + 0.15**　（把 min input delay −0.3 与 hold uncertainty 0.15 还原）
 >
-> port→FF setup 路径**就在现有 rx0_00_max.rpt 里**（本代 `dout_lane[x] (input port` 块即头名/最差路径，本节取其每角最差值）；port→FF hold 即 phy 表 `rx0_00_min` 行。
+> port→FF setup / hold 即 phy csv `rx0_00_max` / `rx0_00_min` 行（本代 csv 直读，逐角值见上图 54）：
 >
 > | 角 | port→FF setup | 左移容限 (+0.7) | port→FF hold | 右移容限 (+0.45) |
 > |---|---|---|---|---|
-> | wc_cworst_125 | +0.68281 | 1.38281 | +0.37080 | 0.82080 |
-> | wc_cbest_125 | +0.88078 | 1.58078 | +0.36551 | 0.81551 |
-> | wc_typical_125 | +0.75991 | 1.45991 | +0.36801 | 0.81801 |
-> | lt_cworst_m40 | −0.05394 | **0.64606** ←全角最小 | +0.00569 | 0.45569 |
-> | lt_cbest_m40 | +0.08300 | 0.78300 | +0.00278 | 0.45278 |
-> | lt_typical_m40 | +0.00689 | 0.70689 | −0.00052 | **0.44948** ←全角最小 |
-> | ml_cbest_125 | +0.24851 | 0.94851 | +0.03371 | 0.48371 |
-> | tt_cworst_25 | +0.19682 | 0.89682 | +0.10744 | 0.55744 |
-> | tt_cbest_25 | +0.35536 | 1.05536 | +0.10417 | 0.55417 |
-> | tt_typical_25 | +0.26065 | 0.96065 | +0.10633 | 0.55633 |
+> | wc_cworst_125 | +1.99210 | 2.69210 | +0.39513 | 0.84513 |
+> | wc_cbest_125 | +2.00851 | 2.70851 | +0.35832 | 0.80832 |
+> | wc_typical_125 | +1.98111 | 2.68111 | +0.39504 | 0.84504 |
+> | lt_cworst_m40 | +0.33822 | **1.03822** ←全角最小 | +0.03506 | 0.48506 |
+> | lt_cbest_m40 | +0.38719 | 1.08718 | +0.03453 | **0.48453** ←全角最小 |
+> | lt_typical_m40 | +0.35138 | 1.05138 | +0.03497 | 0.48497 |
+> | ml_cbest_125 | +0.71687 | 1.41687 | +0.08370 | 0.53370 |
+> | tt_cworst_25 | +0.80837 | 1.50837 | +0.15173 | 0.60173 |
+> | tt_cbest_25 | +0.85286 | 1.55286 | +0.14904 | 0.59904 |
+> | tt_typical_25 | +0.81552 | 1.51552 | +0.15058 | 0.60058 |
 >
-> **结论（1104V2，裸口径）**：采样时钟相对数据**最多左移 0.646 ns**（lt_cworst，setup 侧先碰界）、**最多右移 0.449 ns**（lt_typical，hold 侧先碰界）。较 1104V0（左 0.644 / 右 0.402）**左移持平、右移 +0.047 ns**——右移放宽正是 hold 修复的直接收益（rx0_00_min 先碰界角从 −0.048 收敛到 −0.0005）；左移侧 setup 仍在 lt_cworst 微负（−0.054），采样窗左移空间维持 1104 代际水平（较 1029V0 左 1.094 收窄，新 P&R 所致）。
+> **结论（1118V1，裸口径）**：采样时钟相对数据**最多左移 1.038 ns**（lt_cworst，setup 侧先碰界）、**最多右移 0.485 ns**（lt_cbest，hold 侧先碰界）。较 1104V2（左 0.646 / 右 0.449）**左移 +0.392 / 右移 +0.036 ns**——先碰界角仍落 lt 系，port→FF 两行由「lt 系微负」转全角为正，采样窗两侧同代放宽。
 >
-> 注：① 本代 phy csv 的 max 行（−0.054~+0.881）即 **port→FF setup**（dout_lane input port 为头名），可直接用于本换算——与 1029V0 不同（1029V0 max 行是 FF→FF 抢头名，需另取 input port 块）；② 2M23 的 2.375 修正项是其 `set_input_delay 0` 裸口径下的人工精装修，1V11 预算已在约束内，**不可再叠加同类修正**。
+> 注：① 本代换算全部由 phy csv `rx0_00_max/min` 行直算（无手录）；「input port 即头名」的行语义沿用 1104V2 代 rpt 核验（本代 rpt 仅 7/10 颗在库，见 §6 口径注意）；② 2M23 的 2.375 修正项是其 `set_input_delay 0` 裸口径下的人工精装修，1V11 预算已在约束内，**不可再叠加同类修正**。
 
-![时钟偏移容限](./images/anim/56_signoff_shift_window_hk11.svg?v=20261104r3)
+![时钟偏移容限](./images/anim/56_signoff_shift_window_hk11.svg?v=20261118r1)
 
-上图：① 全景轴——0 为名义采样沿，数据有效窗居中，蓝箭头到红线即左/右可偏移量；② 逐角双条——蓝=左移（setup 侧）、青=右移（hold 侧），红虚线为全角最小（左 0.646 / 右 0.449）。
+上图：① 全景轴——0 为名义采样沿，数据有效窗居中，蓝箭头到红线即左/右可偏移量；② 逐角双条——蓝=左移（setup 侧）、青=右移（hold 侧），红虚线为全角最小（左 1.03822 @lt_cworst / 右 0.48453 @lt_cbest）。
 
-### 6.4 SD skew margin（P1 生效实证）
+### 6.4 SD skew margin（P1 生效实证延续）
 
-![sdskew margin](./images/anim/55_signoff_sdskew_margin_hk11.svg?v=20261104r3)
+![sdskew margin](./images/anim/55_signoff_sdskew_margin_hk11.svg?v=20261118r1)
 
-- **b 组全角收窗（20/20）**：dplc margin_b 全 20 角在窗（l dplc 全正 0.30~0.93 · r dplc 在窗 −0.05~0.30）；前代 P11 红格 `sd_r_dplc_margin_b_max @wc_cworst`（1029V0 = 4.25906 出上界 +4.1）本代**已清零**（1104V2 = 3.146，收回 +4.1 内）。
-- `sd_r_dplc_margin_a_min` 仅 1 红格（−1.02462 @wc_cbest，超下界 −0.9）＝ P5 悬置的「dplc 窗套 a 侧」口径问题延续，非新违例（CLKA 两模式恒 SD_CLK_INV，窗口适用性待规格收口）；V0 为 2 红格（−1.26220 @wc_cbest / −1.04494 @wc_typical），本代 wc_typical 已收回窗内。
+- **全 160 格 0 出窗**（16 行 margin × 10 角）：1p 8 行 80/80 在窗 [−3.5,+3.5]（a_min 行最差 r 侧 −0.79996 / l 侧 −0.25810）；dplc 8 行 80/80 在窗 [−0.9,+4.1]——**b 组 20/20 在窗延续**（l dplc margin_b 0.32–1.11 全正 · r dplc margin_b 0.014–0.327），前代 P11 红格（1029V0 = 4.25906 出上界 +4.1）自 1104V2 收回后本代延续在窗（最差 3.25191）。
+- 前代 P5 悬置的「dplc 窗套 a 侧」红格（1104V2：`sd_r_dplc_margin_a_min` −1.02462 @wc_cbest 出下界 −0.9）本代**收回窗内**（该行最差 −0.79996，距下界 0.10）；口径问题（CLKA 两模式恒 SD_CLK_INV，窗口适用性）仍待规格收口，非新违例。
 
 ### 6.5 图版归档（2026-11-04 起执行的图版标准）
 
-- **主名 = 当前采纳版**：`images/NN_*.svg`（静态）/ `images/anim/NN_*.svg`（动画）永远是网站记录的 canonical 图（现 = 1104V2）；换版只覆盖主名，引用路径不变、`?v=` 递增。
-- **被替换套图快照进 `images/archive/<采纳日期>/`**，文件名带版本标签（本夹：`_1029v0` 静态 6 + 动画 6 + ch09 页快照 · `_1104v0` 静态 6 + 动画 6 · `_1104v2` PNG ×6）；**PNG 快照只进日期夹**，不占主名；**生成脚本统一归拢 `images/tools/`**（标注每个脚本生成哪组图）；**图永不删除**。
-- 当前 `images/archive/` 清单：`20261104/`（1104V2 换正当日三代快照）、`20261027/`（power_compare_1015_1027 静态双版）、`qa/20261027 | 20261028 | 20261104/`（历次 QA 截图）。
+- **主名 = 当前采纳版**：`images/NN_*.svg`（静态）/ `images/anim/NN_*.svg`（动画）永远是网站记录的 canonical 图（现 = 1118V1）；换版只覆盖主名，引用路径不变、`?v=` 递增。
+- **被替换套图快照进 `images/archive/<采纳日期>/`**，文件名带版本标签：1104V2 主名 12 张（静态+动画各 6）快照于 `20261104/_1104v2(_anim)`；1118V1 新代 PNG ×6 快照于 `20261118/_1118v1`；**本页 1104V2 canonical 整页快照**（含 1029V0 / 1008V3 / 0918V2 对比卡、V0↔V2 对比段与旧逐角换算表）= `20261118/ch09-to-signoff_1104v2.html`——被裁剪历史段落的可追溯入口。**PNG 快照只进日期夹**，不占主名；**生成脚本统一归拢 `images/tools/`**（标注每个脚本生成哪组图）；**图/页永不删除、归档只增不改**。
+- 当前 `images/archive/` 清单：`20261118/`（1118V1 换正当日：signoff PNG ×6 + ch09 页快照 + 功耗线快照）、`20261104/`（1104V2 换正当日 `_1029v0`/`_1104v0`/`_1104v2` 三代快照 + ch09_1029v0 页快照）、`20261027/`、`qa/`（历次 QA 截图）等，全量以 `images/archive/README.md` 快照登记表为准。
 
 ## 7. 交叉引用
 
@@ -272,4 +225,4 @@ KEY: hold ~1742 条/corner、worst −5.078 是既有 P0（每轮 run 逐条相�
   <script src="./fx.js?v=11"></script>
 </body>
 </html>
-<!-- ymzhu 2026-11-04 14:26 -->
+<!-- ymzhu 2026-11-18 15:48 -->

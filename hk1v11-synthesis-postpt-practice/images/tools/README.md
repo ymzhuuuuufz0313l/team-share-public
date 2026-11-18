@@ -12,15 +12,28 @@
 | `gen_signoff_1104v2.py` | 1104V2 全套：6 图双版 SVG + `stats_1104v2.json` + 独立 `index.html` | **canonical 记录版（1104V2）唯一生成入口**，源目录 `E:\project\HK1V11\docs\to_signoff_1104v2\`；模板谱系 = 上两者（rev5 + v2），数据源换 PACK_TAR_1104V2 summary（只读）；幂等。本站 `images/` 主名 12 张即其产物（2026-11-04 换正升主名） |
 | `render_png_1104v2.py` | `5{1..6}_signoff_*_hk11.png`（DPR2 快照） | 逐张 msedge 无头渲染（2×viewBox 宽度，PPT 缩放不糊）；PNG 只入 `images/archive/20261104/`，不占主名 |
 | `verify_png_1104v2.py` | （校验，无图产物） | PNG 程序化验收：尺寸/标题条色/底缘无截断/红格全矩阵 vs csv 逐格比对（51/52/55 全量、54 无红底+浅蓝最紧格、56 三要素） |
+| `gen_signoff_1118v1.py` | `images/5{1..6}_signoff_*.svg`（静态）+ `images/anim/` 同名（动画） | **1118V1 站点换版生成器（现役主名 12 张的来源，2026-11-18）**：逐字节抄 gen_signoff_1104v2.py，数据源 = 本地库 `SYNTHESIS/top/sta/post/pt/summary/latest`（PT 代 20261118_0）；写主名前自动把旧 1104V2 主名快照进 `archive/20261104/`（`_1104v2`/`_1104v2_anim` 标签）；hold 副标题带"全 0 违例·全局最小 +0.001875 @lt_cbest_m40（余量薄）"csv 直算提示；`--out DIR` 干跑、`--standalone` 兼收独立版产物 |
+| `render_png_1118v1.py` | `5{1..6}_signoff_*_hk11.png`（DPR2 快照 → 临时目录） | 沿用 1104V2 渲染口径（Edge 无头 DPR2，一次一张），源 = 站点主名静态版；PNG 验毕入 `images/archive/20261118/`（`_1118v1` 标签），不占主名 |
+| `verify_png_1118v1.py` | （校验，无图产物） | 1118V1 PNG 程序化验收：1104V2 版的全矩阵比对口径，行数改由 csv 行数直取；"无红底"改 ≥40px 连续实填判据（抗 ClearType 暖边误报，负控 51 实红图必报 True） |
 | `archive_snapshot.py` | （无图产物；归档动作） | **图版归档自动化**（2026-11-17 审计 A9-1/A9-5）：`snapshot(src, date_tag, version_tag, note)` 把生成器产物快照进 `images/archive/<日期>/`，自动登记 `images/archive/README.md`，并对 archive 全树做 **md5 去重**（同 md5 已存在即跳过拷贝、同名不同 md5 拒绝覆盖）。调用方：`anim/make_anim_skew_probe_audit_1028.py`（动画版）、`E:/project/HK1V11/docs/skew_probe_audit_1028/gen_audit_diagram.py`（静态版 + 发布到本站） |
 
-## 复跑（在 `E:\project\HK1V11\docs\to_signoff_1104v2\`，勿在本目录直跑）
+## 复跑（1104V2 记录版在 `E:\project\HK1V11\docs\to_signoff_1104v2\`，勿在本目录直跑）
 
 ```bash
 cd E:\project\HK1V11\docs\to_signoff_1104v2
 python gen_signoff_1104v2.py    # 51-56 SVG（静态+动画）+ stats + index.html
 python render_png_1104v2.py     # PNG 快照（DPR2）
 python verify_png_1104v2.py     # 程序化验收
+```
+
+## 复跑（1118V1 现役版，在本目录直跑）
+
+```bash
+cd <本站>\images\tools
+python gen_signoff_1118v1.py     # 51-56 SVG 换版（自动先快照旧主名 → archive/20261104/，再覆盖主名）
+python render_png_1118v1.py      # PNG 快照（DPR2 → %TEMP%\signoff_1118v1_png）
+python verify_png_1118v1.py      # 程序化验收（全矩阵 vs csv）
+# 验毕归档 PNG：archive_snapshot.snapshot(<png>, "20261118", version_tag="1118v1", note=...)
 ```
 
 产物回站：静态/动画 SVG 覆盖 `images/`、`images/anim/` 主名（引用路径不变，`?v=` 递增）；PNG 移入当日 `images/archive/<日期>/`；被替换的主名内容先快照进同一日期夹（带版本标签）。
@@ -32,4 +45,4 @@ python verify_png_1104v2.py     # 程序化验收
 - `anim/make_anim_*.py`（功耗 3 张 + skew_probe + 56 动画版）与 `images/anim/make_anim_*.py`（表格 3 张动画版）：按 `anim/MOTION_KIT.md` v4 契约**生成器与输出同目录**，位置即约定，不移入本目录。
 - 仓库根 `scripts/` 下其它站的生成器（search index / chip_sel 等）与 `synthesis-integration-flow-guide/script/`：非本站 signoff 图版体系，不在本目录范围。
 
-<!-- ymzhu 2026-11-17 19:28 -->
+<!-- ymzhu 2026-11-18 15:33 -->
