@@ -50,7 +50,6 @@ text{font-family:ui-monospace,Consolas,monospace,"Microsoft YaHei",sans-serif;fo
 .sweep{transform-box:fill-box;transform-origin:left center;}
 .cap{}
 .breath{opacity:.4;}
-.maxpulse{opacity:1;}
 
 .breath2{opacity:.4;}
 .breath3{opacity:.4;}
@@ -68,7 +67,6 @@ text{font-family:ui-monospace,Consolas,monospace,"Microsoft YaHei",sans-serif;fo
 .b22{}
 .d22{}
 
-.peakglow{}
 
 @media (prefers-reduced-motion:reduce){*{animation:none!important}}
 ]]></style>
@@ -276,11 +274,8 @@ text{font-family:ui-monospace,Consolas,monospace,"Microsoft YaHei",sans-serif;fo
 <text x="626" y="331.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
 </g>
 <g class="r13">
-<rect class="peakglow" x="474" y="344" width="48" height="18" rx="9" fill="#b45310"/>
-<g class="maxpulse">
 <rect class="bar b13" x="382" y="346" width="44" height="14" rx="2" fill="#b45310" fill-opacity="0.85"/>
 <path d="M476 356 L482 356 L479 350 Z" fill="#b45310"/>
-</g>
 <circle class="dot d13" cx="426" cy="353" r="2.5" fill="#b45310"/>
 <text x="10" y="353.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HK1V11 4K180</text>
 <text x="140" y="353.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">0922</text>

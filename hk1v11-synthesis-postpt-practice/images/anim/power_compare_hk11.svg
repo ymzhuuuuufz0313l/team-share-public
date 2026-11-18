@@ -50,7 +50,6 @@ text{font-family:ui-monospace,Consolas,monospace,"Microsoft YaHei",sans-serif;fo
 .sweep{transform-box:fill-box;transform-origin:left center;}
 .cap{}
 .breath{opacity:.4;}
-.maxpulse{opacity:1;}
 
 .breath2{opacity:.4;}
 .breath3{opacity:.4;}
@@ -68,7 +67,6 @@ text{font-family:ui-monospace,Consolas,monospace,"Microsoft YaHei",sans-serif;fo
 .b22{}
 .d22{}
 
-.peakglow{}
 
 
 ]]></style>
@@ -121,7 +119,13 @@ text{font-family:ui-monospace,Consolas,monospace,"Microsoft YaHei",sans-serif;fo
 <stop offset="0.5" stop-color="#7c3aed" stop-opacity="0.25"/>
 <stop offset="1" stop-color="#7c3aed" stop-opacity="0"/>
 </linearGradient>
-<clipPath id="cSweep1117"><rect x="1" y="452" width="603" height="66"/></clipPath>
+<clipPath id="cSweep1117"><rect x="1" y="452" width="634" height="66"/></clipPath>
+<clipPath id="cSweep1118"><rect x="1" y="518" width="634" height="44"/></clipPath>
+<linearGradient id="gCmp1118" x1="0" y1="0" x2="1" y2="0">
+<stop offset="0" stop-color="#0d7377" stop-opacity="0"/>
+<stop offset="0.5" stop-color="#0d7377" stop-opacity="0.25"/>
+<stop offset="1" stop-color="#0d7377" stop-opacity="0"/>
+</linearGradient>
 </defs>
 <rect x="0" y="0" width="636" height="572" fill="#ffffff"/>
 <g class="in head">
@@ -383,11 +387,8 @@ text{font-family:ui-monospace,Consolas,monospace,"Microsoft YaHei",sans-serif;fo
 <g class="row" style="animation-delay:1.44s">
 <g class="cellwave" style="animation-duration:4s;animation-delay:-1.3s">
 <g class="pulse" style="animation-delay:-0.5s">
-<rect class="peakglow" x="474" y="344" width="48" height="18" rx="9" fill="#b45310"/>
-<g class="maxpulse">
 <rect class="bar b13" x="382" y="346" width="44" height="14" rx="2" fill="#b45310" fill-opacity="0.85"/>
 <path d="M476 356 L482 356 L479 350 Z" fill="#b45310"/>
-</g>
 <circle class="dot d13" cx="426" cy="353" r="2.5" fill="#b45310"/>
 </g>
 </g>
@@ -641,7 +642,8 @@ text{font-family:ui-monospace,Consolas,monospace,"Microsoft YaHei",sans-serif;fo
 <g clip-path="url(#cCmp)"></g>
 <g clip-path="url(#cCmp2)"></g>
 <g clip-path="url(#cCmp3)"></g>
-<g clip-path="url(#cSweep1117)"><rect class="cmpband3" x="-180" y="452" width="180" height="66" fill="url(#gCmp3)" style="--sweepP:634px"/></g>
+<g clip-path="url(#cSweep1117)"><rect class="cmpband3" x="-180" y="452" width="180" height="66" fill="url(#gCmp3)" style="--sweepP:816px"/></g>
+<g clip-path="url(#cSweep1118)"><rect class="cmpband3" x="-180" y="518" width="180" height="44" fill="url(#gCmp1118)" style="--sweepP:816px;animation-delay:2.6s"/></g>
 <rect x="0.5" y="0.5" width="635" height="571" fill="none" stroke="#ddd6c8" stroke-width="1"/>
 <!-- ymzhu 2026-11-18 11:12 -->
 </svg>

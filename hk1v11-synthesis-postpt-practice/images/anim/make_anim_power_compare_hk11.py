@@ -2,11 +2,11 @@
 # -*- coding: utf-8 -*-
 """make_anim_power_compare_hk11.py — v4（Motion Kit v4，整体重写；旧版类名/delay 逻辑不沿用）
 
-power_compare_hk11（605×510，柱状对比表，静态版=images/ 下同名 svg；20 行，末三行为
-HK1V11 (1117) 3G / 4G / 4.46G）规格：
+power_compare_hk11（636×572，柱状对比表，静态版=images/ 下同名 svg；23 行，
+末三行为 HK1V11 (1117) 3G / 4G / 4.46G，末两行为 HK1V11 长编码 (1118) 4G / 3G）规格：
 - 入场（总长 ≤2.5s）：
   · 表头组 .head(0)
-  · 数据行 r0~r19 .row，0.15s 起 0.09s 递进（末行 1.86s）
+  · 数据行 r0~r22 .row，0.15s 起 0.09s 递进（末行 2.13s）
   · 每行数值条簇（bar rect [+峰值三角 path] + dot circle）再包一层 .row（行 delay+0.12s，
     末簇 1.98+0.55=2.53s）= 先文字行、后数值条的分层入场
   · 网格线组 .fade(0.05)
@@ -15,18 +15,21 @@ HK1V11 (1117) 3G / 4G / 4.46G）规格：
   · 行波 A（组头）：1015/1027/1117 各组头标签（x=10 的文字，共 8 处：r8/r9/r15=1015 组、
     r10/r16=1027 组、r17/r18/r19=1117 组）各包一层 .cellwave（opacity .72 呼吸），
     1015 组 phase 0s、1027/1117 组 phase 1.2s 错相位（kit 默认 2.6s）；
-  · 行波 B（条簇慢波）：20 行数值条簇（bar+峰值三角+dot；r12 为徽章+条组+dot）逐行包
+  · 行波 B（条簇慢波）：23 行数值条簇（bar+峰值三角+dot）逐行包
     .cellwave，按表格自上而下相位递增 0.1s/行（delay -0.1n，n=0..19）、duration 4s
     ——自上而下的慢速行波扫过整表数值区；4s ≠ 组头 2.6s，两波永不锁相；
-    r10/r12/r16/r19 的 pulse 簇嵌在 cellwave 内壳（脉辉光叠在波上，相位各异）；
+    r10/r11/r13/r17/r20 的 pulse 簇嵌在 cellwave 内壳（脉辉光叠在波上，相位各异）；
     底部色带（breath/breath2/breath3 遗留）无箭头线，dashgrow 跳过；
-  · pulse ×4（错相位）：r12 峰值行 37.9（峰值徽章+条+dot，pulse 琥珀 -0.5s）；
-    r10 HV1V22(1027) 蓝条 pulse-b(-1.9s)；r16 HK1V11(1027) 蓝条 pulse-b(-2.6s)；
-    r19 HK1V11(1117) 4.46G 27.04 紫条 pulse-b3(-1.2s)
-  · 1117 新增行紫色动效（只作用于 r17/r18/r19，既有 17 行不入此类、颜色不串）：
+  · pulse ×5（错相位）：r13 HK1V11 4K180 37.9（峰值三角+条+dot，pulse 琥珀 -0.5s）；
+    r10 HV1V22(1027) 蓝条 pulse-b(-1.9s)；r11 HV1V22(1027) 4G 蓝条 pulse-b(-2.2s)；r17 HK1V11(1027) 蓝条 pulse-b(-2.6s)；
+    r20 HK1V11(1117) 4.46G 27.04 紫条 pulse-b3(-1.2s)
+  · 1118 长编码行青绿扫光（只作用于 r21/r22 两行长编码，颜色 #0d7377，与 1117 紫带错相）：
+    在同一个 cCmp3 占位旁再注入一条 `<rect class="cmpband3" fill="url(#gCmp1118)"/>`，
+    裁剪区 cSweep1118 按两行长编码行底 y 范围算，inline animation-delay 2.6s 与紫带错开
+  · 1117 新增行紫色动效（只作用于 r18/r19/r20，既有行不入此类、颜色不串）：
     ① 呼吸带：各新增行的紫色行底 rect 包 .purpband（3.6s，行间 -1.2s 错相）；
     ② 行进扫光：在源尾 `<g clip-path="url(#cCmp3)"></g>` 占位旁注入贯通三条新增行的
-       `<rect class="cmpband3" ... fill="url(#gCmp3)" style="--sweepP:603px"/>`，裁剪区
+       `<rect class="cmpband3" ... fill="url(#gCmp3)" style="--sweepP:816px"/>`，裁剪区
        cSweep1117 按三条紫色行底 y 范围动态算（静态版保持空白，避免静态图出现固定色块；
        动画版复用 kit 的 sweepMove keyframes，不新造 keyframes）
 - 铁律：源 SVG 只读；text 多重集 / svg 开标签 / 几何颜色零改动；纯 CSS 无 script；
@@ -56,7 +59,7 @@ MOTION_CSS = "\n".join([
     # 既有 17 行不入此类（不串色）。周期 3.6s，行间 -1.2s 错相。
     ".purpband{animation:purp 3.6s ease-in-out infinite}",
     "@keyframes purp{0%,100%{opacity:1}50%{opacity:.45}}",
-    # 1117 4.46G 峰值行（r19）紫色辉光脉冲（与既有 r12 琥珀 / r10·r16 蓝同族错相）
+    # 1117 4.46G 峰值行（r19）紫色辉光脉冲（与既有 r13 琥珀 / r10·r11·r17 蓝同族错相）
     ".pulse-b3{transform-box:fill-box;transform-origin:center;animation:pulseB3 2.8s ease-in-out infinite}",
     "@keyframes pulseB3{0%,100%{opacity:1;filter:drop-shadow(0 0 0 rgba(124,58,237,0))}50%{opacity:.8;filter:drop-shadow(0 0 10px rgba(124,58,237,.75))}}",
 ])
@@ -192,6 +195,22 @@ def build():
     sweep_y0 = min(a for a, _ in purp_spans)
     sweep_y1 = max(b for _, b in purp_spans)
 
+    # 1118 长编码行（r21/r22）：青绿行底 rect（#0d7377）的 y 范围 → 第二条扫光带裁剪区
+    lc_rows = []
+    lc_spans = []
+    for n in range(N_ROWS):
+        blk = lines[row_spans[n][0] + 1:row_spans[n][1]]
+        band = [s for s in blk
+                if s.strip().startswith('<rect x="0"') and "#0d7377" in s]
+        if band:
+            m = re.search(r'y="(-?[\d.]+)"\s+width="[\d.]+"\s+height="([\d.]+)"', band[0])
+            assert m, f"r{n} 长编码行底 rect 解析失败: {band[0]}"
+            lc_rows.append(n)
+            lc_spans.append((float(m.group(1)), float(m.group(1)) + float(m.group(2))))
+    assert lc_rows == [21, 22], f"长编码行应 r21~r22，实得 {lc_rows}"
+    lc_y0 = min(a for a, _ in lc_spans)
+    lc_y1 = max(b for _, b in lc_spans)
+
     # ---- 组装 ----
     o = []
     o.extend(lines[0:style_close + 1])                      # <svg> + 源字体/遗留 class <style>（原样）
@@ -199,8 +218,21 @@ def build():
     o.append("<style>\n" + MOTION_CSS + "\n</style>")      # 元素级动效（仅动画产物）
     o.extend(lines[style_close + 1:defs_close])             # 源 defs（铁律 4：marker/clip 依赖）
     # 动画版新增：1117 三条新增行的行进扫光裁剪区（静态版不注入 → 静态图无固定色块）
-    o.append(f'<clipPath id="cSweep1117"><rect x="1" y="{sweep_y0:g}" width="603" '
+    # 裁剪宽 = 画布宽 - 2（不再硬编码 603，避免与 sweepP 口径不一、右侧 32px 永不参与）
+    CLIP_W = W_PX - 2
+    # 扫光位移：x=-180 宽 180 的带，位移量 = 画布宽 + 180 → 末帧带左缘 = 画布宽，
+    # 完全退出裁剪区（原 603/634 会让亮核停在区内，每 4s 复位瞬间残留一条带再瞬跳）
+    SWEEP_P = W_PX + 180
+    o.append(f'<clipPath id="cSweep1117"><rect x="1" y="{sweep_y0:g}" width="{CLIP_W}" '
              f'height="{sweep_y1 - sweep_y0:g}"/></clipPath>')
+    # 动画版新增：1118 两行长编码的行进扫光裁剪区 + 青绿渐变（静态版不注入）
+    o.append(f'<clipPath id="cSweep1118"><rect x="1" y="{lc_y0:g}" width="{CLIP_W}" '
+             f'height="{lc_y1 - lc_y0:g}"/></clipPath>')
+    o.append('<linearGradient id="gCmp1118" x1="0" y1="0" x2="1" y2="0">')
+    o.append('<stop offset="0" stop-color="#0d7377" stop-opacity="0"/>')
+    o.append('<stop offset="0.5" stop-color="#0d7377" stop-opacity="0.25"/>')
+    o.append('<stop offset="1" stop-color="#0d7377" stop-opacity="0"/>')
+    o.append("</linearGradient>")
     o.append(lines[defs_close])                             # </defs>
     o.extend(lines[defs_close + 1:bg_i + 1])                # 背景 rect（扫光带已移除）
 
@@ -210,7 +242,7 @@ def build():
     o.append("</g>")
 
     # 数据行：行组 .row(0.15+0.09n)；数值条簇内层 .row(+0.12) 再包 .cellwave 条簇慢波
-    # （duration 4s，delay -0.1n 自上而下递增）；r10/r12/r16 簇在 cellwave 内再加 pulse；
+    # （duration 4s，delay -0.1n 自上而下递增）；r10/r11/r13/r17/r20 簇在 cellwave 内再加 pulse；
     # 行尾 1015/1027/1117 组头标签包 .cellwave（1015=0s / 1027·1117=1.2s）
     pulse_of = {13: ("pulse", "-0.5s"), 10: ("pulse-b", "-1.9s"), 11: ("pulse-b", "-2.2s"),
                 17: ("pulse-b", "-2.6s"), 20: ("pulse-b3", "-1.2s")}
@@ -223,10 +255,9 @@ def build():
         d = 0.15 + 0.09 * n
         o.append(f'<g class="r{n} row" style="animation-delay:{d:.2f}s">')
         blk = lines[ro + 1:rc]
-        if n == 13:
-            cs = find_in(blk, lambda s: 'class="peakglow"' in s)
-        else:
-            cs = find_in(blk, lambda s: 'class="bar b' in s and f'b{n}"' in s)
+        # 2026-11-18：r13 的 peakglow 悬浮徽章已按 ymzhu 要求删除（悬空高亮被判读为串行），
+        # 现在所有行统一从数值条 rect 起包，r13 的峰值三角与 pulse 保留
+        cs = find_in(blk, lambda s: 'class="bar b' in s and f'b{n}"' in s)
         ce = find_in(blk, lambda s: f'class="dot d{n}"' in s, cs)
         assert blk[cs].strip().startswith("<rect") and blk[ce].strip().startswith("<circle")
         # 行首区的紫色行底 rect（仅 1117 新增行）包 .purpband 呼吸带；其余行首内容原样
@@ -269,14 +300,18 @@ def build():
     cCmp3_empty = '<g clip-path="url(#cCmp3)"></g>'
     sweep1117 = (f'<g clip-path="url(#cSweep1117)"><rect class="cmpband3" x="-180" '
                  f'y="{sweep_y0:g}" width="180" height="{sweep_y1 - sweep_y0:g}" '
-                 f'fill="url(#gCmp3)" style="--sweepP:{W_PX - 2}px"/></g>')
+                 f'fill="url(#gCmp3)" style="--sweepP:{SWEEP_P}px"/></g>')
+    sweep1118 = (f'<g clip-path="url(#cSweep1118)"><rect class="cmpband3" x="-180" '
+                 f'y="{lc_y0:g}" width="180" height="{lc_y1 - lc_y0:g}" '
+                 f'fill="url(#gCmp1118)" style="--sweepP:{SWEEP_P}px;animation-delay:2.6s"/></g>')
     n_fill = 0
     for s in lines[grid_g_close + 1:]:
         o.append(s)
         if s.strip() == cCmp3_empty:
             o.append(sweep1117)
+            o.append(sweep1118)
             n_fill += 1
-    assert n_fill == 1, f"1117 扫光占位应 1 处，实得 {n_fill}"
+    assert n_fill == 1, f"扫光占位应 1 处，实得 {n_fill}"
 
     text = eol.join(o)
     if tail_nl:
@@ -345,11 +380,19 @@ def main():
     assert rows_g == N_ROWS, f"数据行应 {N_ROWS} 行，实得 {rows_g}"
     purp = len(re.findall(r'class="purpband"', data))
     assert purp == 3, f"1117 紫色呼吸带应 3 条（3G/4G/4.46G），实得 {purp}"
+    bands = len(re.findall(r'class="cmpband3"', data))
+    assert bands == 2, f"行进扫光带应 2 条（1117 紫 + 1118 青绿），实得 {bands}"
+    assert 'url(#gCmp1118)' in data and 'id="cSweep1118"' in data, "1118 扫光裁剪/渐变缺失"
+    # 位移量 ≥ 画布宽 → 带左缘落在裁剪区外，末帧不残留亮核
+    w_out = int(re.search(r'<svg[^>]*width="(\d+)"', data).group(1))
+    ps = {int(m) for m in re.findall(r'--sweepP:(\d+)px', data)}
+    assert ps == {w_out + 180}, f"扫光位移量应 {{{w_out + 180}}}（画布宽+带宽），实得 {ps}"
     print("[make_anim_power_compare_hk11 v4.1]",
           "row_g=", rows_g,
           "cellwave=", data.count('class="cellwave"'),
           "(hdr", n_hdr if "n_hdr" in dir() else 9, "+ cluster", cluster_waves, ")",
           "purpband=", purp,
+          "cmpband3=", bands,
           "pulse=", len(re.findall(r'class="(pulse|pulse-b|pulse-b3)"', data)),
           "fade=", data.count('class="fade"'))
     ok = True
@@ -364,4 +407,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-# ymzhu 2026-11-18 11:09
+# ymzhu 2026-11-18 18:16
