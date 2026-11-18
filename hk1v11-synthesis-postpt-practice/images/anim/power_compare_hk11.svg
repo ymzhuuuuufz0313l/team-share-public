@@ -332,15 +332,15 @@ text{font-family:ui-monospace,Consolas,monospace,"Microsoft YaHei",sans-serif;fo
 </g>
 </g>
 <g class="cellwave" style="animation-delay:1.2s">
-<text x="10" y="309" dominant-baseline="central" fill="#1c2534" font-weight="bold">HV1V22 (1027)</text>
+<text x="10" y="309.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HV1V22 (1027)</text>
 </g>
-<text x="192" y="309" text-anchor="end" dominant-baseline="central" fill="#1c2534">4G</text>
-<text x="254" y="309" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
-<text x="310" y="309" text-anchor="end" dominant-baseline="central" fill="#1c2534">162475</text>
-<text x="354" y="309" text-anchor="end" dominant-baseline="central" fill="#1c2534">1L</text>
-<text x="440" y="309" text-anchor="end" dominant-baseline="central" fill="#3b82f6" font-weight="bold">17.00</text>
-<text x="514" y="309" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
-<text x="594" y="309" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
+<text x="192" y="309.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">4G</text>
+<text x="254" y="309.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
+<text x="310" y="309.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">162475</text>
+<text x="354" y="309.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1L</text>
+<text x="440" y="309.0" text-anchor="end" dominant-baseline="central" fill="#3b82f6" font-weight="bold">17.00</text>
+<text x="514" y="309.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
+<text x="594" y="309.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
 </g>
 <g class="r12 row" style="animation-delay:1.23s">
 <g class="row" style="animation-delay:1.35s">
@@ -349,14 +349,14 @@ text{font-family:ui-monospace,Consolas,monospace,"Microsoft YaHei",sans-serif;fo
 <circle class="dot d12" cx="390" cy="331" r="2.5" fill="#1d4ed8"/>
 </g>
 </g>
-<text x="10" y="331" dominant-baseline="central" fill="#1c2534" font-weight="bold">HK1V11 (0922)</text>
-<text x="192" y="331" text-anchor="end" dominant-baseline="central" fill="#1c2534">2.97G</text>
-<text x="254" y="331" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
-<text x="310" y="331" text-anchor="end" dominant-baseline="central" fill="#1c2534">294907</text>
-<text x="354" y="331" text-anchor="end" dominant-baseline="central" fill="#1c2534">1L</text>
-<text x="440" y="331" text-anchor="end" dominant-baseline="central" fill="#047857" font-weight="bold">21.08</text>
-<text x="514" y="331" text-anchor="end" dominant-baseline="central" fill="#1c2534">21.36</text>
-<text x="594" y="331" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
+<text x="10" y="331.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HK1V11 (0922)</text>
+<text x="192" y="331.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">2.97G</text>
+<text x="254" y="331.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
+<text x="310" y="331.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">294907</text>
+<text x="354" y="331.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1L</text>
+<text x="440" y="331.0" text-anchor="end" dominant-baseline="central" fill="#047857" font-weight="bold">21.08</text>
+<text x="514" y="331.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">21.36</text>
+<text x="594" y="331.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
 </g>
 <g class="r13 row" style="animation-delay:1.32s">
 <g class="row" style="animation-delay:1.44s">
@@ -371,14 +371,14 @@ text{font-family:ui-monospace,Consolas,monospace,"Microsoft YaHei",sans-serif;fo
 </g>
 </g>
 </g>
-<text x="10" y="353" dominant-baseline="central" fill="#1c2534" font-weight="bold">HK1V11 4K180 (0922)</text>
-<text x="192" y="353" text-anchor="end" dominant-baseline="central" fill="#1c2534">4.47G</text>
-<text x="254" y="353" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
-<text x="310" y="353" text-anchor="end" dominant-baseline="central" fill="#1c2534">294907</text>
-<text x="354" y="353" text-anchor="end" dominant-baseline="central" fill="#1c2534">1L</text>
-<text x="440" y="353" text-anchor="end" dominant-baseline="central" fill="#047857" font-weight="bold">37.9</text>
-<text x="514" y="353" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
-<text x="594" y="353" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
+<text x="10" y="353.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HK1V11 4K180 (0922)</text>
+<text x="192" y="353.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">4.47G</text>
+<text x="254" y="353.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
+<text x="310" y="353.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">294907</text>
+<text x="354" y="353.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1L</text>
+<text x="440" y="353.0" text-anchor="end" dominant-baseline="central" fill="#047857" font-weight="bold">37.9</text>
+<text x="514" y="353.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
+<text x="594" y="353.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
 </g>
 <g class="r14 row" style="animation-delay:1.41s">
 <g class="row" style="animation-delay:1.53s">
@@ -387,14 +387,14 @@ text{font-family:ui-monospace,Consolas,monospace,"Microsoft YaHei",sans-serif;fo
 <circle class="dot d14" cx="385" cy="375" r="2.5" fill="#1d4ed8"/>
 </g>
 </g>
-<text x="10" y="375" dominant-baseline="central" fill="#1c2534" font-weight="bold">HK1V11 (1003)</text>
-<text x="192" y="375" text-anchor="end" dominant-baseline="central" fill="#1c2534">2.97G</text>
-<text x="254" y="375" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
-<text x="310" y="375" text-anchor="end" dominant-baseline="central" fill="#1c2534">314707</text>
-<text x="354" y="375" text-anchor="end" dominant-baseline="central" fill="#1c2534">1L</text>
-<text x="440" y="375" text-anchor="end" dominant-baseline="central" fill="#047857" font-weight="bold">16.3</text>
-<text x="514" y="375" text-anchor="end" dominant-baseline="central" fill="#1c2534">16.3</text>
-<text x="594" y="375" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
+<text x="10" y="375.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HK1V11 (1003)</text>
+<text x="192" y="375.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">2.97G</text>
+<text x="254" y="375.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
+<text x="310" y="375.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">314707</text>
+<text x="354" y="375.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1L</text>
+<text x="440" y="375.0" text-anchor="end" dominant-baseline="central" fill="#047857" font-weight="bold">16.3</text>
+<text x="514" y="375.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">16.3</text>
+<text x="594" y="375.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
 </g>
 <g class="r15 row" style="animation-delay:1.50s">
 <g class="row" style="animation-delay:1.62s">
@@ -403,14 +403,14 @@ text{font-family:ui-monospace,Consolas,monospace,"Microsoft YaHei",sans-serif;fo
 <circle class="dot d15" cx="400" cy="397" r="2.5" fill="#1d4ed8"/>
 </g>
 </g>
-<text x="10" y="397" dominant-baseline="central" fill="#1c2534" font-weight="bold">HK1V11 4K180 (1003)</text>
-<text x="192" y="397" text-anchor="end" dominant-baseline="central" fill="#1c2534">4.47G</text>
-<text x="254" y="397" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
-<text x="310" y="397" text-anchor="end" dominant-baseline="central" fill="#1c2534">314707</text>
-<text x="354" y="397" text-anchor="end" dominant-baseline="central" fill="#1c2534">1L</text>
-<text x="440" y="397" text-anchor="end" dominant-baseline="central" fill="#047857" font-weight="bold">29.47</text>
-<text x="514" y="397" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
-<text x="594" y="397" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
+<text x="10" y="397.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HK1V11 4K180 (1003)</text>
+<text x="192" y="397.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">4.47G</text>
+<text x="254" y="397.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
+<text x="310" y="397.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">314707</text>
+<text x="354" y="397.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1L</text>
+<text x="440" y="397.0" text-anchor="end" dominant-baseline="central" fill="#047857" font-weight="bold">29.47</text>
+<text x="514" y="397.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
+<text x="594" y="397.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
 </g>
 <g class="r16 row" style="animation-delay:1.59s">
 <rect x="0" y="408" width="605" height="22" fill="#b45310" fill-opacity="0.08"/>
@@ -421,15 +421,15 @@ text{font-family:ui-monospace,Consolas,monospace,"Microsoft YaHei",sans-serif;fo
 </g>
 </g>
 <g class="cellwave" style="animation-delay:0s">
-<text x="10" y="419" dominant-baseline="central" fill="#1c2534" font-weight="bold">HK1V11 (1015)</text>
+<text x="10" y="419.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HK1V11 (1015)</text>
 </g>
-<text x="192" y="419" text-anchor="end" dominant-baseline="central" fill="#1c2534">4.46G</text>
-<text x="254" y="419" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
-<text x="310" y="419" text-anchor="end" dominant-baseline="central" fill="#1c2534">314707</text>
-<text x="354" y="419" text-anchor="end" dominant-baseline="central" fill="#1c2534">1L</text>
-<text x="440" y="419" text-anchor="end" dominant-baseline="central" fill="#047857" font-weight="bold">25.65</text>
-<text x="514" y="419" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
-<text x="594" y="419" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
+<text x="192" y="419.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">4.46G</text>
+<text x="254" y="419.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
+<text x="310" y="419.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">314707</text>
+<text x="354" y="419.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1L</text>
+<text x="440" y="419.0" text-anchor="end" dominant-baseline="central" fill="#047857" font-weight="bold">25.65</text>
+<text x="514" y="419.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
+<text x="594" y="419.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
 </g>
 <g class="r17 row" style="animation-delay:1.68s">
 <rect x="0" y="430" width="605" height="22" fill="#3b82f6" fill-opacity="0.12"/>
@@ -443,15 +443,15 @@ text{font-family:ui-monospace,Consolas,monospace,"Microsoft YaHei",sans-serif;fo
 </g>
 </g>
 <g class="cellwave" style="animation-delay:1.2s">
-<text x="10" y="441" dominant-baseline="central" fill="#1c2534" font-weight="bold">HK1V11 (1027)</text>
+<text x="10" y="441.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HK1V11 (1027)</text>
 </g>
-<text x="192" y="441" text-anchor="end" dominant-baseline="central" fill="#1c2534">4G</text>
-<text x="254" y="441" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
-<text x="310" y="441" text-anchor="end" dominant-baseline="central" fill="#1c2534">299276</text>
-<text x="354" y="441" text-anchor="end" dominant-baseline="central" fill="#1c2534">1L</text>
-<text x="440" y="441" text-anchor="end" dominant-baseline="central" fill="#3b82f6" font-weight="bold">24.42</text>
-<text x="514" y="441" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
-<text x="594" y="441" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
+<text x="192" y="441.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">4G</text>
+<text x="254" y="441.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
+<text x="310" y="441.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">299276</text>
+<text x="354" y="441.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1L</text>
+<text x="440" y="441.0" text-anchor="end" dominant-baseline="central" fill="#3b82f6" font-weight="bold">24.42</text>
+<text x="514" y="441.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
+<text x="594" y="441.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
 </g>
 <g class="r18 row" style="animation-delay:1.77s">
 <g class="purpband" style="animation-delay:-0s">
@@ -465,15 +465,15 @@ text{font-family:ui-monospace,Consolas,monospace,"Microsoft YaHei",sans-serif;fo
 </g>
 </g>
 <g class="cellwave" style="animation-delay:1.2s">
-<text x="10" y="463" dominant-baseline="central" fill="#1c2534" font-weight="bold">HK1V11 (1117)</text>
+<text x="10" y="463.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HK1V11 (1117)</text>
 </g>
-<text x="192" y="463" text-anchor="end" dominant-baseline="central" fill="#1c2534">3G</text>
-<text x="254" y="463" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
-<text x="310" y="463" text-anchor="end" dominant-baseline="central" fill="#1c2534">310144</text>
-<text x="354" y="463" text-anchor="end" dominant-baseline="central" fill="#1c2534">1L</text>
-<text x="440" y="463" text-anchor="end" dominant-baseline="central" fill="#7c3aed" font-weight="bold">18.47</text>
-<text x="514" y="463" text-anchor="end" dominant-baseline="central" fill="#1c2534">18.087</text>
-<text x="594" y="463" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
+<text x="192" y="463.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">3G</text>
+<text x="254" y="463.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
+<text x="310" y="463.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">310144</text>
+<text x="354" y="463.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1L</text>
+<text x="440" y="463.0" text-anchor="end" dominant-baseline="central" fill="#7c3aed" font-weight="bold">18.47</text>
+<text x="514" y="463.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">18.087</text>
+<text x="594" y="463.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
 </g>
 <g class="r19 row" style="animation-delay:1.86s">
 <g class="purpband" style="animation-delay:-1.2s">
@@ -481,21 +481,21 @@ text{font-family:ui-monospace,Consolas,monospace,"Microsoft YaHei",sans-serif;fo
 </g>
 <g class="row" style="animation-delay:1.98s">
 <g class="cellwave" style="animation-duration:4s;animation-delay:-1.9s">
-<rect class="bar b19" x="366" y="478" width="30" height="14" rx="2" fill="#7c3aed" fill-opacity="0.85"/>
+<rect class="bar b19" x="366" y="478" width="28" height="14" rx="2" fill="#7c3aed" fill-opacity="0.85"/>
 <path d="M441 488 L447 488 L444 482 Z" fill="#7c3aed"/>
-<circle class="dot d19" cx="396" cy="485" r="2.5" fill="#7c3aed"/>
+<circle class="dot d19" cx="394" cy="485" r="2.5" fill="#7c3aed"/>
 </g>
 </g>
 <g class="cellwave" style="animation-delay:1.2s">
-<text x="10" y="485" dominant-baseline="central" fill="#1c2534" font-weight="bold">HK1V11 (1117)</text>
+<text x="10" y="485.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HK1V11 (1117)</text>
 </g>
-<text x="192" y="485" text-anchor="end" dominant-baseline="central" fill="#1c2534">4G</text>
-<text x="254" y="485" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
-<text x="310" y="485" text-anchor="end" dominant-baseline="central" fill="#1c2534">310144</text>
-<text x="354" y="485" text-anchor="end" dominant-baseline="central" fill="#1c2534">1L</text>
-<text x="440" y="485" text-anchor="end" dominant-baseline="central" fill="#7c3aed" font-weight="bold">24.15</text>
-<text x="514" y="485" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
-<text x="594" y="485" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
+<text x="192" y="485.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">4G</text>
+<text x="254" y="485.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
+<text x="310" y="485.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">310144</text>
+<text x="354" y="485.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1L</text>
+<text x="440" y="485.0" text-anchor="end" dominant-baseline="central" fill="#7c3aed" font-weight="bold">24.15</text>
+<text x="514" y="485.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
+<text x="594" y="485.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
 </g>
 <g class="r20 row" style="animation-delay:1.95s">
 <g class="purpband" style="animation-delay:-2.4s">
@@ -511,15 +511,15 @@ text{font-family:ui-monospace,Consolas,monospace,"Microsoft YaHei",sans-serif;fo
 </g>
 </g>
 <g class="cellwave" style="animation-delay:1.2s">
-<text x="10" y="507" dominant-baseline="central" fill="#1c2534" font-weight="bold">HK1V11 (1117)</text>
+<text x="10" y="507.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HK1V11 (1117)</text>
 </g>
-<text x="192" y="507" text-anchor="end" dominant-baseline="central" fill="#1c2534">4.46G</text>
-<text x="254" y="507" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
-<text x="310" y="507" text-anchor="end" dominant-baseline="central" fill="#1c2534">310144</text>
-<text x="354" y="507" text-anchor="end" dominant-baseline="central" fill="#1c2534">1L</text>
-<text x="440" y="507" text-anchor="end" dominant-baseline="central" fill="#7c3aed" font-weight="bold">27.04</text>
-<text x="514" y="507" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
-<text x="594" y="507" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
+<text x="192" y="507.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">4.46G</text>
+<text x="254" y="507.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
+<text x="310" y="507.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">310144</text>
+<text x="354" y="507.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1L</text>
+<text x="440" y="507.0" text-anchor="end" dominant-baseline="central" fill="#7c3aed" font-weight="bold">27.04</text>
+<text x="514" y="507.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
+<text x="594" y="507.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
 </g>
 <g clip-path="url(#cBody)"></g>
 

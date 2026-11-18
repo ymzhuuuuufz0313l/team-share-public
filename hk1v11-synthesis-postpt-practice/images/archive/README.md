@@ -35,4 +35,7 @@
 | 20261102 | `skew_probe_audit_1028_static.svg` | `41239d5c418cc0afef3b3ca28685af09` | 30763 B | skew_probe_audit_1028 静态版（A9-1 自动化归档） |
 | 20261102 | `skew_probe_audit_1028_anim.svg` | `c12c933d3c1604bfcae67847d2acd452` | 34715 B | skew_probe_audit_1028 动画版（A9-1 自动化归档） |
 
-<!-- ymzhu 2026-11-17 19:27 -->
+| 20261118 | `power_compare_hk11_canon1.svg` | `0e6203b0f90ee39ea27fabeba4cc100c` | 26912 B | 改前静态源（21 行，条形宽 30px 例外 / y 整数格式 / 3 处显示串硬编码）；N-4+N-6+标签例外收口前快照 |
+| 20261118 | `power_compare_hk11_canon1_anim.svg` | `90001e1bfe4110fc32d0f539933b3948` | 34416 B | 改前动画产物（由改前静态源派生，21 行）；N-4+N-6+标签例外收口前快照 |
+
+<!-- ymzhu 2026-11-18 09:36 -->
