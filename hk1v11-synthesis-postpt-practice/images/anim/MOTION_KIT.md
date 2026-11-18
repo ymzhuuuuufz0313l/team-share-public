@@ -141,6 +141,12 @@
 - 稳态（v4.1，4 族=新上限）：列车——①时钟 arrival 边（#1c2530，phase 0/-0.75）+数据 arrival 边（#0e7490，phase -0.4/-1.15）各 2 包+拖尾 1.5s/趟（维持不动）；pulse ×3——①slack 绿线组 pulse-t(-0.7s)、②12/14 阈值线对 pulse-b(-2.1s)、③STATUS 行 pulse(-1.4s)；sweepband ×1——②场景表三行区（x60..680/y660..788，P=860）；dashgrow ×6——6 条 12/14 阈值虚线并入 `.march .dashgrow` 双类 + 行内 `animation-name:dashgrow` 钉死（kit CSS 中 .march 声明晚于 .dashgrow，不钉死会级联回 march -16 跳变），3.0s、文档序 0/-0.4/-0.8/-1.2/-1.6/-2.0s 错相位，虚线生长表达阈值推进。
 - 源样式处理 ×2（assert 保护）：上述 6 条阈值虚线（v4 曾行内 `animation:none` 中和，v4.1 起改为 dashgrow 生长）；rowB 行洗矩形静态剥离版漏带 opacity（渲染为实心琥珀盖表）→ 动画版恢复 `style="opacity:.08"`（静态版不动，待上游修）。
 
+### 6.7 power_module_compare_long_short / power_composition_donut_long_short（§4.7 长短编码对比，2026-11-18）→ anim/
+- 生成链不同于 §6.1–6.6 的「改静态 SVG」模式：**tools/gen_long_short_charts.py 一体产出静态版 + 动画版**（同一几何，动画版多注入一段 kit 子集 CSS：rowIn 入场 + cellwave/pulse 呼吸 + reduced-motion；无 transform 动画）。数值全部来自 `script/_power1117/longcode_{4g,3g}_data.json`。
+- bar 图（1260×730，9 行 × 3 系列）：入场——标题 head(0)、网格/图例 fade、行 row 0.15s 起 0.08s 递进（末 ~0.79s）；稳态——每行条簇 cellwave（2.6s，delay -0.12n/行递增）。数据密集度 9×3 低于 20×6 阈值，行波允许。
+- donut 图（760×470，3 片）：入场——扇区环 row、中心/图例 fade；Σ片 == 中心值断言内置。
+- 校验并入 `_svg_qa.py` FILES/PAIRS（HK1V11/script/_chapter_viz/）；`--check` 幂等门在生成器自带。
+
 ## 7. 生成器要求
 
 - 结构：读源 SVG 全文 → 按行解析 → 内容+坐标定位锚点（assert 保护）→ 组装输出（含源 defs/背景 rect）→ 写文件。
@@ -174,4 +180,4 @@ DONE — <name1> / <name2> ...
 
 - v4.2（2026-10-29）：用户定调"所有带列车的图，列车速度全部再降"——元素级列车时长下限 2.4s（0.7/0.8s→2.4s、1.4/1.5s→3.2s 档）；列车仍只允许复制既有箭头几何，不扩新图；donut 永不加行进（用户点名）。
 - v4.2 补充（2026-10-29）：数据密集图（行≥20 且列≥6）数据区禁弥漫性动效（用户：行列多加呼吸影响体验；低密度加很好）；列车全站再降速（元素级 ≥2.4s）。
-<!-- ymzhu 2026-11-04 17:45 -->
+<!-- ymzhu 2026-11-18 11:26 -->

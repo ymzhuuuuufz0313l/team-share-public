@@ -55,3 +55,39 @@ python make_anim_power_compare_hk11.py                                       # �
 缓存查询串由 `?v=20261117b` 升为 `?v=20261118a`（仅防缓存，路径不变）。
 
 <!-- ymzhu 2026-11-18 09:36 -->
+
+## t11→t19 换版快照（2026-11-18 动态列宽改造前）
+
+§4.2 主图/精简图改「列宽按内容动态计算 + 画布加宽」前的改前字节快照（t19，标签
+`1118t11pre`；`_9aa17f` 后缀为 anim 版防重名指纹）：
+
+| 文件 | 原主名 | md5 |
+|---|---|---|
+| `power_compare_hk11_1118t11pre.svg` | `images/power_compare_hk11.svg` | `ae234c50d6b807b5f981dce10e8e0172` |
+| `power_compare_hk11_1118t11pre_9aa17f.svg` | `images/anim/power_compare_hk11.svg` | （指纹后缀见文件名） |
+| `power_compare_hk11_slim_1118t11pre.svg` | `images/power_compare_hk11_slim.svg` | `f51d3376f302f1be32105a92f0ed53db` |
+| `power_compare_hk11_slim_1118t11pre.png` | `images/power_compare_hk11_slim.png` | — |
+| `power_compare_hk11_1118t11pre.png` | back_ppt 主 PNG 快照 | — |
+
+改后（t19 动态列宽版）主名 md5：`power_compare_hk11.svg` = 随内容推导（当前
+`e4c4e05b712a84f75104bda292c158ac`，pad=10 与 PIL 同口径）；ch08 引用 `?v=20261118e`。
+
+## §4.7 两图首版归档登记（R9，2026-11-18）
+
+`power_module_compare_long_short` / `power_composition_donut_long_short`（静态 + anim + PNG，
+tools/gen_long_short_charts.py 产出）为**首版即当前采纳版**（无被替换前身，不产生快照文件），
+此处登记在案：生成器含 `--check` 幂等门与 Σ片==中心断言，尾签名动态时刻（F8）。
+
+| 文件 | md5（2026-11-18 11:46 实测） |
+|---|---|
+| `images/power_module_compare_long_short.svg` | `dadf828a87ee0a9a471f74898ca2201c` |
+| `images/anim/power_module_compare_long_short.svg` | `8e5b0a02ff4db6d63c5ba62bc0aa1a18` |
+| `images/power_composition_donut_long_short.svg` | `681426f0592e4c7753269410d588f726` |
+| `images/anim/power_composition_donut_long_short.svg` | `c4fb15d1d64b747210746b586197974f` |
+| 生成器 `images/tools/gen_long_short_charts.py` | `5fe63e8d3ed52c91a5a0a4f9bf6f85ab` |
+
+## slim 备用件标注（R10，2026-11-18）
+
+`power_compare_hk11_slim.{svg,png}`（back_ppt + 站点 images）为**仓库备选件**：
+仅入库备查，**未接入 ch08 正文、无 anim 版、不进搜索索引**；采纳与否由用户后续拍板，
+如转正须补 MOTION_KIT 登记与 `?v=` 缓存串。

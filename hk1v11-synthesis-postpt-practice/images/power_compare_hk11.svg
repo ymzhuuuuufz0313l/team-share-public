@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="605" height="532" viewBox="0 0 605 532">
+<svg xmlns="http://www.w3.org/2000/svg" width="636" height="572" viewBox="0 0 636 572">
 <style><![CDATA[
 text{font-family:ui-monospace,Consolas,monospace,"Microsoft YaHei",sans-serif;font-size:11px;}
 
@@ -61,307 +61,366 @@ text{font-family:ui-monospace,Consolas,monospace,"Microsoft YaHei",sans-serif;fo
 .r20{}
 .b20{}
 .d20{}
+.r21{}
+.b21{}
+.d21{}
+.r22{}
+.b22{}
+.d22{}
 
 .peakglow{}
 
 @media (prefers-reduced-motion:reduce){*{animation:none!important}}
 ]]></style>
 <defs>
-<clipPath id="cCmp"><rect x="1" y="255" width="603" height="20"/><rect x="1" y="387" width="603" height="20"/></clipPath>
-<clipPath id="cCmp2"><rect x="1" y="276" width="603" height="20"/><rect x="1" y="408" width="603" height="20"/></clipPath>
-<clipPath id="cCmp3"><rect x="1" y="453" width="603" height="20"/></clipPath>
-<clipPath id="cBody"><rect x="0" y="56" width="605" height="440"/></clipPath>
+<clipPath id="cCmp"><rect x="1" y="255" width="634" height="20"/><rect x="1" y="387" width="634" height="20"/></clipPath>
+<clipPath id="cCmp2"><rect x="1" y="276" width="634" height="20"/><rect x="1" y="408" width="634" height="20"/></clipPath>
+<clipPath id="cCmp3"><rect x="1" y="453" width="634" height="20"/></clipPath>
+<clipPath id="cBody"><rect x="0" y="56" width="636" height="484"/></clipPath>
 <linearGradient id="gCmp3" x1="0" y1="0" x2="1" y2="0">
 <stop offset="0" stop-color="#7c3aed" stop-opacity="0"/>
 <stop offset="0.5" stop-color="#7c3aed" stop-opacity="0.25"/>
 <stop offset="1" stop-color="#7c3aed" stop-opacity="0"/>
 </linearGradient>
 </defs>
-<rect x="0" y="0" width="605" height="532" fill="#ffffff"/>
+<rect x="0" y="0" width="636" height="572" fill="#ffffff"/>
 <g class="in">
-<rect x="0" y="0" width="605" height="30" fill="#1c2534"/>
+<rect x="0" y="0" width="636" height="30" fill="#1c2534"/>
 <text x="10" y="15.0" dominant-baseline="central" fill="#f4f1ea" font-weight="bold">PowerPro 功耗对比 — HK1V11（前仿）vs 其他芯片（后仿）</text>
-<rect class="sweep" x="0" y="29" width="605" height="2" fill="#b45309"/>
-<rect x="0" y="30" width="605" height="26" fill="#1c2534"/>
+<rect class="sweep" x="0" y="29" width="636" height="2" fill="#b45309"/>
+<rect x="0" y="30" width="636" height="26" fill="#1c2534"/>
 <text x="10" y="43.0" dominant-baseline="central" fill="#f4f1ea" font-weight="bold">CHIP/Case</text>
-<text x="192" y="43.0" text-anchor="end" dominant-baseline="central" fill="#f4f1ea" font-weight="bold">Clk Freq</text>
-<text x="254" y="43.0" text-anchor="end" dominant-baseline="central" fill="#f4f1ea" font-weight="bold">Process</text>
-<text x="310" y="43.0" text-anchor="end" dominant-baseline="central" fill="#f4f1ea" font-weight="bold">Area</text>
-<text x="354" y="43.0" text-anchor="end" dominant-baseline="central" fill="#f4f1ea" font-weight="bold">Lane</text>
-<text x="440" y="43.0" text-anchor="end" dominant-baseline="central" fill="#f4f1ea" font-weight="bold">Normal (mW)</text>
-<text x="514" y="43.0" text-anchor="end" dominant-baseline="central" fill="#f4f1ea" font-weight="bold">DPLC (mW)</text>
-<text x="594" y="43.0" text-anchor="end" dominant-baseline="central" fill="#f4f1ea" font-weight="bold">DRDOD (mW)</text>
+<text x="140" y="43.0" text-anchor="end" dominant-baseline="central" fill="#f4f1ea" font-weight="bold">Run 代</text>
+<text x="208" y="43.0" text-anchor="end" dominant-baseline="central" fill="#f4f1ea" font-weight="bold">Clk Freq</text>
+<text x="270" y="43.0" text-anchor="end" dominant-baseline="central" fill="#f4f1ea" font-weight="bold">Process</text>
+<text x="326" y="43.0" text-anchor="end" dominant-baseline="central" fill="#f4f1ea" font-weight="bold">Area</text>
+<text x="370" y="43.0" text-anchor="end" dominant-baseline="central" fill="#f4f1ea" font-weight="bold">Lane</text>
+<text x="472" y="43.0" text-anchor="end" dominant-baseline="central" fill="#f4f1ea" font-weight="bold">Normal (mW)</text>
+<text x="546" y="43.0" text-anchor="end" dominant-baseline="central" fill="#f4f1ea" font-weight="bold">DPLC (mW)</text>
+<text x="626" y="43.0" text-anchor="end" dominant-baseline="central" fill="#f4f1ea" font-weight="bold">DRDOD (mW)</text>
+
 </g>
 <g class="r0">
-<rect class="bar b0" x="366" y="60" width="10" height="14" rx="2" fill="#0e7490" fill-opacity="0.25"/>
-<circle class="dot d0" cx="376" cy="67" r="2.5" fill="#0e7490"/>
+<rect class="bar b0" x="382" y="60" width="10" height="14" rx="2" fill="#0e7490" fill-opacity="0.25"/>
+<circle class="dot d0" cx="392" cy="67" r="2.5" fill="#0e7490"/>
 <text x="10" y="67.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HV2M23 (opt)</text>
-<text x="192" y="67.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1.8G</text>
-<text x="254" y="67.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
-<text x="310" y="67.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">170352</text>
-<text x="354" y="67.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1L</text>
-<text x="440" y="67.0" text-anchor="end" dominant-baseline="central" fill="#047857" font-weight="bold">8.91</text>
-<text x="514" y="67.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">9.672</text>
-<text x="594" y="67.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">9.571</text>
+<text x="140" y="67.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">/</text>
+<text x="208" y="67.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1.8G</text>
+<text x="270" y="67.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
+<text x="326" y="67.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">170352</text>
+<text x="370" y="67.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1L</text>
+<text x="472" y="67.0" text-anchor="end" dominant-baseline="central" fill="#047857" font-weight="bold">8.91</text>
+<text x="546" y="67.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">9.672</text>
+<text x="626" y="67.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">9.571</text>
 </g>
 <g class="r1">
-<rect class="bar b1" x="366" y="82" width="15" height="14" rx="2" fill="#0e7490" fill-opacity="0.25"/>
-<circle class="dot d1" cx="381" cy="89" r="2.5" fill="#0e7490"/>
+<rect class="bar b1" x="382" y="82" width="15" height="14" rx="2" fill="#0e7490" fill-opacity="0.25"/>
+<circle class="dot d1" cx="397" cy="89" r="2.5" fill="#0e7490"/>
 <text x="10" y="89.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HV2M23</text>
-<text x="192" y="89.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1.8G</text>
-<text x="254" y="89.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
-<text x="310" y="89.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">170352</text>
-<text x="354" y="89.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1L</text>
-<text x="440" y="89.0" text-anchor="end" dominant-baseline="central" fill="#047857" font-weight="bold">12.503</text>
-<text x="514" y="89.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">13.447</text>
-<text x="594" y="89.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">13.65</text>
+<text x="140" y="89.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">/</text>
+<text x="208" y="89.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1.8G</text>
+<text x="270" y="89.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
+<text x="326" y="89.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">170352</text>
+<text x="370" y="89.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1L</text>
+<text x="472" y="89.0" text-anchor="end" dominant-baseline="central" fill="#047857" font-weight="bold">12.503</text>
+<text x="546" y="89.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">13.447</text>
+<text x="626" y="89.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">13.65</text>
 </g>
 <g class="r2">
-<rect class="bar b2" x="366" y="104" width="7" height="14" rx="2" fill="#0e7490" fill-opacity="0.25"/>
-<circle class="dot d2" cx="373" cy="111" r="2.5" fill="#0e7490"/>
+<rect class="bar b2" x="382" y="104" width="7" height="14" rx="2" fill="#0e7490" fill-opacity="0.25"/>
+<circle class="dot d2" cx="389" cy="111" r="2.5" fill="#0e7490"/>
 <text x="10" y="111.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HV2M23</text>
-<text x="192" y="111.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">0.9G</text>
-<text x="254" y="111.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
-<text x="310" y="111.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">170352</text>
-<text x="354" y="111.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">2L</text>
-<text x="440" y="111.0" text-anchor="end" dominant-baseline="central" fill="#047857" font-weight="bold">6.229</text>
-<text x="514" y="111.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">7.519</text>
-<text x="594" y="111.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">7.976</text>
+<text x="140" y="111.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">/</text>
+<text x="208" y="111.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">0.9G</text>
+<text x="270" y="111.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
+<text x="326" y="111.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">170352</text>
+<text x="370" y="111.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">2L</text>
+<text x="472" y="111.0" text-anchor="end" dominant-baseline="central" fill="#047857" font-weight="bold">6.229</text>
+<text x="546" y="111.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">7.519</text>
+<text x="626" y="111.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">7.976</text>
 </g>
 <g class="r3">
-<rect class="bar b3" x="366" y="126" width="14" height="14" rx="2" fill="#0e7490" fill-opacity="0.25"/>
-<circle class="dot d3" cx="380" cy="133" r="2.5" fill="#0e7490"/>
+<rect class="bar b3" x="382" y="126" width="14" height="14" rx="2" fill="#0e7490" fill-opacity="0.25"/>
+<circle class="dot d3" cx="396" cy="133" r="2.5" fill="#0e7490"/>
 <text x="10" y="133.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HV3310B1</text>
-<text x="192" y="133.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1.8G</text>
-<text x="254" y="133.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">110</text>
-<text x="310" y="133.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">229381</text>
-<text x="354" y="133.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1L</text>
-<text x="440" y="133.0" text-anchor="end" dominant-baseline="central" fill="#047857" font-weight="bold">12.234</text>
-<text x="514" y="133.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
-<text x="594" y="133.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
+<text x="140" y="133.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">/</text>
+<text x="208" y="133.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1.8G</text>
+<text x="270" y="133.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">110</text>
+<text x="326" y="133.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">229381</text>
+<text x="370" y="133.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1L</text>
+<text x="472" y="133.0" text-anchor="end" dominant-baseline="central" fill="#047857" font-weight="bold">12.234</text>
+<text x="546" y="133.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
+<text x="626" y="133.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
 </g>
 <g class="r4">
-<rect class="bar b4" x="366" y="148" width="12" height="14" rx="2" fill="#0e7490" fill-opacity="0.25"/>
-<circle class="dot d4" cx="378" cy="155" r="2.5" fill="#0e7490"/>
+<rect class="bar b4" x="382" y="148" width="12" height="14" rx="2" fill="#0e7490" fill-opacity="0.25"/>
+<circle class="dot d4" cx="394" cy="155" r="2.5" fill="#0e7490"/>
 <text x="10" y="155.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HV3310B1</text>
-<text x="192" y="155.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">0.9G</text>
-<text x="254" y="155.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">110</text>
-<text x="310" y="155.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">229381</text>
-<text x="354" y="155.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">2L</text>
-<text x="440" y="155.0" text-anchor="end" dominant-baseline="central" fill="#047857" font-weight="bold">9.99</text>
-<text x="514" y="155.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
-<text x="594" y="155.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
+<text x="140" y="155.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">/</text>
+<text x="208" y="155.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">0.9G</text>
+<text x="270" y="155.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">110</text>
+<text x="326" y="155.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">229381</text>
+<text x="370" y="155.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">2L</text>
+<text x="472" y="155.0" text-anchor="end" dominant-baseline="central" fill="#047857" font-weight="bold">9.99</text>
+<text x="546" y="155.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
+<text x="626" y="155.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
 </g>
 <g class="r5">
-<rect class="bar b5" x="366" y="170" width="10" height="14" rx="2" fill="#0e7490" fill-opacity="0.25"/>
-<circle class="dot d5" cx="376" cy="177" r="2.5" fill="#0e7490"/>
+<rect class="bar b5" x="382" y="170" width="10" height="14" rx="2" fill="#0e7490" fill-opacity="0.25"/>
+<circle class="dot d5" cx="392" cy="177" r="2.5" fill="#0e7490"/>
 <text x="10" y="177.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HV1V21</text>
-<text x="192" y="177.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1.8G</text>
-<text x="254" y="177.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
-<text x="310" y="177.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">123623</text>
-<text x="354" y="177.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1L</text>
-<text x="440" y="177.0" text-anchor="end" dominant-baseline="central" fill="#047857" font-weight="bold">8.62</text>
-<text x="514" y="177.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
-<text x="594" y="177.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
+<text x="140" y="177.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">/</text>
+<text x="208" y="177.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1.8G</text>
+<text x="270" y="177.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
+<text x="326" y="177.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">123623</text>
+<text x="370" y="177.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1L</text>
+<text x="472" y="177.0" text-anchor="end" dominant-baseline="central" fill="#047857" font-weight="bold">8.62</text>
+<text x="546" y="177.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
+<text x="626" y="177.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
 </g>
 <g class="r6">
-<rect class="bar b6" x="366" y="192" width="7" height="14" rx="2" fill="#0e7490" fill-opacity="0.25"/>
-<circle class="dot d6" cx="373" cy="199" r="2.5" fill="#0e7490"/>
+<rect class="bar b6" x="382" y="192" width="7" height="14" rx="2" fill="#0e7490" fill-opacity="0.25"/>
+<circle class="dot d6" cx="389" cy="199" r="2.5" fill="#0e7490"/>
 <text x="10" y="199.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HV1V21</text>
-<text x="192" y="199.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">0.9G</text>
-<text x="254" y="199.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
-<text x="310" y="199.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">123623</text>
-<text x="354" y="199.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">2L</text>
-<text x="440" y="199.0" text-anchor="end" dominant-baseline="central" fill="#047857" font-weight="bold">6.34</text>
-<text x="514" y="199.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
-<text x="594" y="199.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
+<text x="140" y="199.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">/</text>
+<text x="208" y="199.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">0.9G</text>
+<text x="270" y="199.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
+<text x="326" y="199.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">123623</text>
+<text x="370" y="199.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">2L</text>
+<text x="472" y="199.0" text-anchor="end" dominant-baseline="central" fill="#047857" font-weight="bold">6.34</text>
+<text x="546" y="199.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
+<text x="626" y="199.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
 </g>
 <g class="r7">
-<rect class="bar b7" x="366" y="214" width="18" height="14" rx="2" fill="#0e7490" fill-opacity="0.25"/>
-<circle class="dot d7" cx="384" cy="221" r="2.5" fill="#0e7490"/>
+<rect class="bar b7" x="382" y="214" width="18" height="14" rx="2" fill="#0e7490" fill-opacity="0.25"/>
+<circle class="dot d7" cx="400" cy="221" r="2.5" fill="#0e7490"/>
 <text x="10" y="221.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HV1V22</text>
-<text x="192" y="221.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">4G</text>
-<text x="254" y="221.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
-<text x="310" y="221.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">162475</text>
-<text x="354" y="221.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1L</text>
-<text x="440" y="221.0" text-anchor="end" dominant-baseline="central" fill="#047857" font-weight="bold">15.8</text>
-<text x="514" y="221.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">14.8</text>
-<text x="594" y="221.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
+<text x="140" y="221.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">/</text>
+<text x="208" y="221.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">4G</text>
+<text x="270" y="221.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
+<text x="326" y="221.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">162475</text>
+<text x="370" y="221.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1L</text>
+<text x="472" y="221.0" text-anchor="end" dominant-baseline="central" fill="#047857" font-weight="bold">15.8</text>
+<text x="546" y="221.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">14.8</text>
+<text x="626" y="221.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
 </g>
 <g class="r8">
-<rect x="0" y="232" width="605" height="22" fill="#b45309" fill-opacity="0.08"/>
-<rect class="bar b8" x="366" y="236" width="13" height="14" rx="2" fill="#b45309" fill-opacity="0.30"/>
-<circle class="dot d8" cx="379" cy="243" r="2.5" fill="#b45309"/>
-<text x="10" y="243.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HV1V22 (1015)</text>
-<text x="192" y="243.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">2.67G</text>
-<text x="254" y="243.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
-<text x="310" y="243.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">162475</text>
-<text x="354" y="243.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1L</text>
-<text x="440" y="243.0" text-anchor="end" dominant-baseline="central" fill="#047857" font-weight="bold">11.33</text>
-<text x="514" y="243.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
-<text x="594" y="243.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
+<rect x="0" y="232" width="636" height="22" fill="#b45309" fill-opacity="0.08"/>
+<rect class="bar b8" x="382" y="236" width="13" height="14" rx="2" fill="#b45309" fill-opacity="0.30"/>
+<circle class="dot d8" cx="395" cy="243" r="2.5" fill="#b45309"/>
+<text x="10" y="243.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HV1V22</text>
+<text x="140" y="243.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1015</text>
+<text x="208" y="243.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">2.67G</text>
+<text x="270" y="243.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
+<text x="326" y="243.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">162475</text>
+<text x="370" y="243.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1L</text>
+<text x="472" y="243.0" text-anchor="end" dominant-baseline="central" fill="#047857" font-weight="bold">11.33</text>
+<text x="546" y="243.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
+<text x="626" y="243.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
 </g>
 <g class="r9">
-<rect x="0" y="254" width="605" height="22" fill="#b45309" fill-opacity="0.08"/>
-<rect class="bar b9" x="366" y="258" width="22" height="14" rx="2" fill="#b45309" fill-opacity="0.30"/>
-<circle class="dot d9" cx="388" cy="265" r="2.5" fill="#b45309"/>
-<text x="10" y="265.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HV1V22 (1015)</text>
-<text x="192" y="265.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">4.46G</text>
-<text x="254" y="265.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
-<text x="310" y="265.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">162475</text>
-<text x="354" y="265.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1L</text>
-<text x="440" y="265.0" text-anchor="end" dominant-baseline="central" fill="#047857" font-weight="bold">18.97</text>
-<text x="514" y="265.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
-<text x="594" y="265.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
+<rect x="0" y="254" width="636" height="22" fill="#b45309" fill-opacity="0.08"/>
+<rect class="bar b9" x="382" y="258" width="22" height="14" rx="2" fill="#b45309" fill-opacity="0.30"/>
+<circle class="dot d9" cx="404" cy="265" r="2.5" fill="#b45309"/>
+<text x="10" y="265.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HV1V22</text>
+<text x="140" y="265.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1015</text>
+<text x="208" y="265.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">4.46G</text>
+<text x="270" y="265.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
+<text x="326" y="265.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">162475</text>
+<text x="370" y="265.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1L</text>
+<text x="472" y="265.0" text-anchor="end" dominant-baseline="central" fill="#047857" font-weight="bold">18.97</text>
+<text x="546" y="265.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
+<text x="626" y="265.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
 </g>
 <g class="r10">
-<rect x="0" y="276" width="605" height="22" fill="#3b82f6" fill-opacity="0.12"/>
-<rect class="bar b10" x="366" y="280" width="10" height="14" rx="2" fill="#3b82f6" fill-opacity="0.85"/>
-<path d="M441 290 L447 290 L444 284 Z" fill="#3b82f6"/>
-<circle class="dot d10" cx="376" cy="287" r="2.5" fill="#3b82f6"/>
-<text x="10" y="287.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HV1V22 (1027)</text>
-<text x="192" y="287.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">3G</text>
-<text x="254" y="287.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
-<text x="310" y="287.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">162475</text>
-<text x="354" y="287.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1L</text>
-<text x="440" y="287.0" text-anchor="end" dominant-baseline="central" fill="#3b82f6" font-weight="bold">8.39</text>
-<text x="514" y="287.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
-<text x="594" y="287.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
+<rect x="0" y="276" width="636" height="22" fill="#3b82f6" fill-opacity="0.12"/>
+<rect class="bar b10" x="382" y="280" width="10" height="14" rx="2" fill="#3b82f6" fill-opacity="0.85"/>
+<path d="M476 290 L482 290 L479 284 Z" fill="#3b82f6"/>
+<circle class="dot d10" cx="392" cy="287" r="2.5" fill="#3b82f6"/>
+<text x="10" y="287.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HV1V22</text>
+<text x="140" y="287.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1027</text>
+<text x="208" y="287.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">3G</text>
+<text x="270" y="287.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
+<text x="326" y="287.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">162475</text>
+<text x="370" y="287.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1L</text>
+<text x="472" y="287.0" text-anchor="end" dominant-baseline="central" fill="#3b82f6" font-weight="bold">8.39</text>
+<text x="546" y="287.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
+<text x="626" y="287.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
 </g>
 <g class="r11">
-<rect x="0" y="298" width="605" height="22" fill="#3b82f6" fill-opacity="0.12"/>
-<rect class="bar b11" x="366" y="302" width="20" height="14" rx="2" fill="#3b82f6" fill-opacity="0.85"/>
-<path d="M441 312 L447 312 L444 306 Z" fill="#3b82f6"/>
-<circle class="dot d11" cx="386" cy="309" r="2.5" fill="#3b82f6"/>
-<text x="10" y="309.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HV1V22 (1027)</text>
-<text x="192" y="309.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">4G</text>
-<text x="254" y="309.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
-<text x="310" y="309.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">162475</text>
-<text x="354" y="309.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1L</text>
-<text x="440" y="309.0" text-anchor="end" dominant-baseline="central" fill="#3b82f6" font-weight="bold">17.00</text>
-<text x="514" y="309.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
-<text x="594" y="309.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
+<rect x="0" y="298" width="636" height="22" fill="#3b82f6" fill-opacity="0.12"/>
+<rect class="bar b11" x="382" y="302" width="20" height="14" rx="2" fill="#3b82f6" fill-opacity="0.85"/>
+<path d="M476 312 L482 312 L479 306 Z" fill="#3b82f6"/>
+<circle class="dot d11" cx="402" cy="309" r="2.5" fill="#3b82f6"/>
+<text x="10" y="309.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HV1V22</text>
+<text x="140" y="309.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1027</text>
+<text x="208" y="309.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">4G</text>
+<text x="270" y="309.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
+<text x="326" y="309.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">162475</text>
+<text x="370" y="309.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1L</text>
+<text x="472" y="309.0" text-anchor="end" dominant-baseline="central" fill="#3b82f6" font-weight="bold">17.00</text>
+<text x="546" y="309.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
+<text x="626" y="309.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
 </g>
 <g class="r12">
-<rect class="bar b12" x="366" y="324" width="24" height="14" rx="2" fill="#1d4ed8" fill-opacity="0.25"/>
-<circle class="dot d12" cx="390" cy="331" r="2.5" fill="#1d4ed8"/>
-<text x="10" y="331.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HK1V11 (0922)</text>
-<text x="192" y="331.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">2.97G</text>
-<text x="254" y="331.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
-<text x="310" y="331.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">294907</text>
-<text x="354" y="331.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1L</text>
-<text x="440" y="331.0" text-anchor="end" dominant-baseline="central" fill="#047857" font-weight="bold">21.08</text>
-<text x="514" y="331.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">21.36</text>
-<text x="594" y="331.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
+<rect class="bar b12" x="382" y="324" width="24" height="14" rx="2" fill="#1d4ed8" fill-opacity="0.25"/>
+<circle class="dot d12" cx="406" cy="331" r="2.5" fill="#1d4ed8"/>
+<text x="10" y="331.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HK1V11</text>
+<text x="140" y="331.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">0922</text>
+<text x="208" y="331.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">2.97G</text>
+<text x="270" y="331.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
+<text x="326" y="331.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">294907</text>
+<text x="370" y="331.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1L</text>
+<text x="472" y="331.0" text-anchor="end" dominant-baseline="central" fill="#047857" font-weight="bold">21.08</text>
+<text x="546" y="331.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">21.36</text>
+<text x="626" y="331.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
 </g>
 <g class="r13">
-<rect class="peakglow" x="404" y="344" width="48" height="18" rx="9" fill="#b45310"/>
+<rect class="peakglow" x="474" y="344" width="48" height="18" rx="9" fill="#b45310"/>
 <g class="maxpulse">
-<rect class="bar b13" x="366" y="346" width="44" height="14" rx="2" fill="#b45310" fill-opacity="0.85"/>
-<path d="M441 356 L447 356 L444 350 Z" fill="#b45310"/>
+<rect class="bar b13" x="382" y="346" width="44" height="14" rx="2" fill="#b45310" fill-opacity="0.85"/>
+<path d="M476 356 L482 356 L479 350 Z" fill="#b45310"/>
 </g>
-<circle class="dot d13" cx="410" cy="353" r="2.5" fill="#b45310"/>
-<text x="10" y="353.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HK1V11 4K180 (0922)</text>
-<text x="192" y="353.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">4.47G</text>
-<text x="254" y="353.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
-<text x="310" y="353.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">294907</text>
-<text x="354" y="353.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1L</text>
-<text x="440" y="353.0" text-anchor="end" dominant-baseline="central" fill="#047857" font-weight="bold">37.9</text>
-<text x="514" y="353.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
-<text x="594" y="353.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
+<circle class="dot d13" cx="426" cy="353" r="2.5" fill="#b45310"/>
+<text x="10" y="353.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HK1V11 4K180</text>
+<text x="140" y="353.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">0922</text>
+<text x="208" y="353.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">4.47G</text>
+<text x="270" y="353.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
+<text x="326" y="353.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">294907</text>
+<text x="370" y="353.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1L</text>
+<text x="472" y="353.0" text-anchor="end" dominant-baseline="central" fill="#047857" font-weight="bold">37.9</text>
+<text x="546" y="353.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
+<text x="626" y="353.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
 </g>
 <g class="r14">
-<rect class="bar b14" x="366" y="368" width="19" height="14" rx="2" fill="#1d4ed8" fill-opacity="0.25"/>
-<circle class="dot d14" cx="385" cy="375" r="2.5" fill="#1d4ed8"/>
-<text x="10" y="375.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HK1V11 (1003)</text>
-<text x="192" y="375.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">2.97G</text>
-<text x="254" y="375.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
-<text x="310" y="375.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">314707</text>
-<text x="354" y="375.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1L</text>
-<text x="440" y="375.0" text-anchor="end" dominant-baseline="central" fill="#047857" font-weight="bold">16.3</text>
-<text x="514" y="375.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">16.3</text>
-<text x="594" y="375.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
+<rect class="bar b14" x="382" y="368" width="19" height="14" rx="2" fill="#1d4ed8" fill-opacity="0.25"/>
+<circle class="dot d14" cx="401" cy="375" r="2.5" fill="#1d4ed8"/>
+<text x="10" y="375.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HK1V11</text>
+<text x="140" y="375.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1003</text>
+<text x="208" y="375.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">2.97G</text>
+<text x="270" y="375.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
+<text x="326" y="375.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">314707</text>
+<text x="370" y="375.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1L</text>
+<text x="472" y="375.0" text-anchor="end" dominant-baseline="central" fill="#047857" font-weight="bold">16.3</text>
+<text x="546" y="375.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">16.3</text>
+<text x="626" y="375.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
 </g>
 <g class="r15">
-<rect class="bar b15" x="366" y="390" width="34" height="14" rx="2" fill="#1d4ed8" fill-opacity="0.25"/>
-<circle class="dot d15" cx="400" cy="397" r="2.5" fill="#1d4ed8"/>
-<text x="10" y="397.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HK1V11 4K180 (1003)</text>
-<text x="192" y="397.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">4.47G</text>
-<text x="254" y="397.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
-<text x="310" y="397.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">314707</text>
-<text x="354" y="397.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1L</text>
-<text x="440" y="397.0" text-anchor="end" dominant-baseline="central" fill="#047857" font-weight="bold">29.47</text>
-<text x="514" y="397.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
-<text x="594" y="397.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
+<rect class="bar b15" x="382" y="390" width="34" height="14" rx="2" fill="#1d4ed8" fill-opacity="0.25"/>
+<circle class="dot d15" cx="416" cy="397" r="2.5" fill="#1d4ed8"/>
+<text x="10" y="397.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HK1V11 4K180</text>
+<text x="140" y="397.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1003</text>
+<text x="208" y="397.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">4.47G</text>
+<text x="270" y="397.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
+<text x="326" y="397.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">314707</text>
+<text x="370" y="397.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1L</text>
+<text x="472" y="397.0" text-anchor="end" dominant-baseline="central" fill="#047857" font-weight="bold">29.47</text>
+<text x="546" y="397.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
+<text x="626" y="397.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
 </g>
 <g class="r16">
-<rect x="0" y="408" width="605" height="22" fill="#b45310" fill-opacity="0.08"/>
-<rect class="bar b16" x="366" y="412" width="30" height="14" rx="2" fill="#b45310" fill-opacity="0.30"/>
-<circle class="dot d16" cx="396" cy="419" r="2.5" fill="#b45310"/>
-<text x="10" y="419.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HK1V11 (1015)</text>
-<text x="192" y="419.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">4.46G</text>
-<text x="254" y="419.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
-<text x="310" y="419.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">314707</text>
-<text x="354" y="419.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1L</text>
-<text x="440" y="419.0" text-anchor="end" dominant-baseline="central" fill="#047857" font-weight="bold">25.65</text>
-<text x="514" y="419.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
-<text x="594" y="419.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
+<rect x="0" y="408" width="636" height="22" fill="#b45310" fill-opacity="0.08"/>
+<rect class="bar b16" x="382" y="412" width="30" height="14" rx="2" fill="#b45310" fill-opacity="0.30"/>
+<circle class="dot d16" cx="412" cy="419" r="2.5" fill="#b45310"/>
+<text x="10" y="419.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HK1V11</text>
+<text x="140" y="419.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1015</text>
+<text x="208" y="419.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">4.46G</text>
+<text x="270" y="419.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
+<text x="326" y="419.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">314707</text>
+<text x="370" y="419.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1L</text>
+<text x="472" y="419.0" text-anchor="end" dominant-baseline="central" fill="#047857" font-weight="bold">25.65</text>
+<text x="546" y="419.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
+<text x="626" y="419.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
 </g>
 <g class="r17">
-<rect x="0" y="430" width="605" height="22" fill="#3b82f6" fill-opacity="0.12"/>
-<rect class="bar b17" x="366" y="434" width="28" height="14" rx="2" fill="#3b82f6" fill-opacity="0.85"/>
-<path d="M441 444 L447 444 L444 438 Z" fill="#3b82f6"/>
-<circle class="dot d17" cx="394" cy="441" r="2.5" fill="#3b82f6"/>
-<text x="10" y="441.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HK1V11 (1027)</text>
-<text x="192" y="441.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">4G</text>
-<text x="254" y="441.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
-<text x="310" y="441.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">299276</text>
-<text x="354" y="441.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1L</text>
-<text x="440" y="441.0" text-anchor="end" dominant-baseline="central" fill="#3b82f6" font-weight="bold">24.42</text>
-<text x="514" y="441.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
-<text x="594" y="441.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
+<rect x="0" y="430" width="636" height="22" fill="#3b82f6" fill-opacity="0.12"/>
+<rect class="bar b17" x="382" y="434" width="28" height="14" rx="2" fill="#3b82f6" fill-opacity="0.85"/>
+<path d="M476 444 L482 444 L479 438 Z" fill="#3b82f6"/>
+<circle class="dot d17" cx="410" cy="441" r="2.5" fill="#3b82f6"/>
+<text x="10" y="441.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HK1V11</text>
+<text x="140" y="441.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1027</text>
+<text x="208" y="441.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">4G</text>
+<text x="270" y="441.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
+<text x="326" y="441.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">299276</text>
+<text x="370" y="441.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1L</text>
+<text x="472" y="441.0" text-anchor="end" dominant-baseline="central" fill="#3b82f6" font-weight="bold">24.42</text>
+<text x="546" y="441.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
+<text x="626" y="441.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
 </g>
 <g class="r18">
-<rect x="0" y="452" width="605" height="22" fill="#7c3aed" fill-opacity="0.20"/>
-<rect class="bar b18" x="366" y="456" width="21" height="14" rx="2" fill="#7c3aed" fill-opacity="0.85"/>
-<path d="M441 466 L447 466 L444 460 Z" fill="#7c3aed"/>
-<circle class="dot d18" cx="387" cy="463" r="2.5" fill="#7c3aed"/>
-<text x="10" y="463.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HK1V11 (1117)</text>
-<text x="192" y="463.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">3G</text>
-<text x="254" y="463.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
-<text x="310" y="463.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">310144</text>
-<text x="354" y="463.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1L</text>
-<text x="440" y="463.0" text-anchor="end" dominant-baseline="central" fill="#7c3aed" font-weight="bold">18.47</text>
-<text x="514" y="463.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">18.087</text>
-<text x="594" y="463.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
+<rect x="0" y="452" width="636" height="22" fill="#7c3aed" fill-opacity="0.20"/>
+<rect class="bar b18" x="382" y="456" width="21" height="14" rx="2" fill="#7c3aed" fill-opacity="0.85"/>
+<path d="M476 466 L482 466 L479 460 Z" fill="#7c3aed"/>
+<circle class="dot d18" cx="403" cy="463" r="2.5" fill="#7c3aed"/>
+<text x="10" y="463.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HK1V11</text>
+<text x="140" y="463.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1117</text>
+<text x="208" y="463.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">3G</text>
+<text x="270" y="463.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
+<text x="326" y="463.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">310144</text>
+<text x="370" y="463.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1L</text>
+<text x="472" y="463.0" text-anchor="end" dominant-baseline="central" fill="#7c3aed" font-weight="bold">18.47</text>
+<text x="546" y="463.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">18.087</text>
+<text x="626" y="463.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
 </g>
 <g class="r19">
-<rect x="0" y="474" width="605" height="22" fill="#7c3aed" fill-opacity="0.20"/>
-<rect class="bar b19" x="366" y="478" width="28" height="14" rx="2" fill="#7c3aed" fill-opacity="0.85"/>
-<path d="M441 488 L447 488 L444 482 Z" fill="#7c3aed"/>
-<circle class="dot d19" cx="394" cy="485" r="2.5" fill="#7c3aed"/>
-<text x="10" y="485.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HK1V11 (1117)</text>
-<text x="192" y="485.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">4G</text>
-<text x="254" y="485.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
-<text x="310" y="485.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">310144</text>
-<text x="354" y="485.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1L</text>
-<text x="440" y="485.0" text-anchor="end" dominant-baseline="central" fill="#7c3aed" font-weight="bold">24.15</text>
-<text x="514" y="485.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
-<text x="594" y="485.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
+<rect x="0" y="474" width="636" height="22" fill="#7c3aed" fill-opacity="0.20"/>
+<rect class="bar b19" x="382" y="478" width="28" height="14" rx="2" fill="#7c3aed" fill-opacity="0.85"/>
+<path d="M476 488 L482 488 L479 482 Z" fill="#7c3aed"/>
+<circle class="dot d19" cx="410" cy="485" r="2.5" fill="#7c3aed"/>
+<text x="10" y="485.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HK1V11</text>
+<text x="140" y="485.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1117</text>
+<text x="208" y="485.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">4G</text>
+<text x="270" y="485.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
+<text x="326" y="485.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">310144</text>
+<text x="370" y="485.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1L</text>
+<text x="472" y="485.0" text-anchor="end" dominant-baseline="central" fill="#7c3aed" font-weight="bold">24.15</text>
+<text x="546" y="485.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
+<text x="626" y="485.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
 </g>
 <g class="r20">
-<rect x="0" y="496" width="605" height="22" fill="#7c3aed" fill-opacity="0.20"/>
-<rect class="bar b20" x="366" y="500" width="31" height="14" rx="2" fill="#7c3aed" fill-opacity="0.85"/>
-<path d="M441 510 L447 510 L444 504 Z" fill="#7c3aed"/>
-<circle class="dot d20" cx="397" cy="507" r="2.5" fill="#7c3aed"/>
-<text x="10" y="507.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HK1V11 (1117)</text>
-<text x="192" y="507.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">4.46G</text>
-<text x="254" y="507.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
-<text x="310" y="507.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">310144</text>
-<text x="354" y="507.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1L</text>
-<text x="440" y="507.0" text-anchor="end" dominant-baseline="central" fill="#7c3aed" font-weight="bold">27.04</text>
-<text x="514" y="507.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
-<text x="594" y="507.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
+<rect x="0" y="496" width="636" height="22" fill="#7c3aed" fill-opacity="0.20"/>
+<rect class="bar b20" x="382" y="500" width="31" height="14" rx="2" fill="#7c3aed" fill-opacity="0.85"/>
+<path d="M476 510 L482 510 L479 504 Z" fill="#7c3aed"/>
+<circle class="dot d20" cx="413" cy="507" r="2.5" fill="#7c3aed"/>
+<text x="10" y="507.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HK1V11</text>
+<text x="140" y="507.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1117</text>
+<text x="208" y="507.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">4.46G</text>
+<text x="270" y="507.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
+<text x="326" y="507.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">310144</text>
+<text x="370" y="507.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1L</text>
+<text x="472" y="507.0" text-anchor="end" dominant-baseline="central" fill="#7c3aed" font-weight="bold">27.04</text>
+<text x="546" y="507.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
+<text x="626" y="507.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
+</g>
+<g class="r21">
+<rect x="0" y="518" width="636" height="22" fill="#0d7377" fill-opacity="0.15"/>
+<rect class="bar b21" x="382" y="522" width="30" height="14" rx="2" fill="#0d7377" fill-opacity="0.85"/>
+<path d="M476 532 L482 532 L479 526 Z" fill="#0d7377"/>
+<circle class="dot d21" cx="412" cy="529" r="2.5" fill="#0d7377"/>
+<text x="10" y="529.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HK1V11 长编码</text>
+<text x="140" y="529.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1118</text>
+<text x="208" y="529.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">3G</text>
+<text x="270" y="529.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
+<text x="326" y="529.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">310144</text>
+<text x="370" y="529.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1L</text>
+<text x="472" y="529.0" text-anchor="end" dominant-baseline="central" fill="#0d7377" font-weight="bold">26.23</text>
+<text x="546" y="529.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
+<text x="626" y="529.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
+</g>
+<g class="r22">
+<rect x="0" y="540" width="636" height="22" fill="#0d7377" fill-opacity="0.15"/>
+<rect class="bar b22" x="382" y="544" width="41" height="14" rx="2" fill="#0d7377" fill-opacity="0.85"/>
+<path d="M476 554 L482 554 L479 548 Z" fill="#0d7377"/>
+<circle class="dot d22" cx="423" cy="551" r="2.5" fill="#0d7377"/>
+<text x="10" y="551.0" dominant-baseline="central" fill="#1c2534" font-weight="bold">HK1V11 长编码</text>
+<text x="140" y="551.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1118</text>
+<text x="208" y="551.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">4G</text>
+<text x="270" y="551.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">145</text>
+<text x="326" y="551.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">310144</text>
+<text x="370" y="551.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">1L</text>
+<text x="472" y="551.0" text-anchor="end" dominant-baseline="central" fill="#0d7377" font-weight="bold">35.22</text>
+<text x="546" y="551.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
+<text x="626" y="551.0" text-anchor="end" dominant-baseline="central" fill="#1c2534">-</text>
 </g>
 <g clip-path="url(#cBody)"></g>
 
@@ -369,48 +428,51 @@ text{font-family:ui-monospace,Consolas,monospace,"Microsoft YaHei",sans-serif;fo
 
 
 <g stroke="#ddd6c8" stroke-width="1">
-<line x1="0" y1="30" x2="0" y2="531"/>
-<line x1="134" y1="30" x2="134" y2="531"/>
-<line x1="202" y1="30" x2="202" y2="531"/>
-<line x1="264" y1="30" x2="264" y2="531"/>
-<line x1="320" y1="30" x2="320" y2="531"/>
-<line x1="364" y1="30" x2="364" y2="531"/>
-<line x1="450" y1="30" x2="450" y2="531"/>
-<line x1="524" y1="30" x2="524" y2="531"/>
-<line x1="604" y1="30" x2="604" y2="531"/>
-<line x1="0" y1="30" x2="605" y2="30"/>
-<line x1="0" y1="56" x2="605" y2="56"/>
-<line x1="0" y1="78" x2="605" y2="78"/>
-<line x1="0" y1="100" x2="605" y2="100"/>
-<line x1="0" y1="122" x2="605" y2="122"/>
-<line x1="0" y1="144" x2="605" y2="144"/>
-<line x1="0" y1="166" x2="605" y2="166"/>
-<line x1="0" y1="188" x2="605" y2="188"/>
-<line x1="0" y1="210" x2="605" y2="210"/>
-<line x1="0" y1="232" x2="605" y2="232"/>
-<line x1="0" y1="254" x2="605" y2="254"/>
-<line x1="0" y1="276" x2="605" y2="276"/>
-<line x1="0" y1="298" x2="605" y2="298"/>
-<line x1="0" y1="320" x2="605" y2="320"/>
-<line x1="0" y1="342" x2="605" y2="342"/>
-<line x1="0" y1="364" x2="605" y2="364"/>
-<line x1="0" y1="386" x2="605" y2="386"/>
-<line x1="0" y1="408" x2="605" y2="408"/>
-<line x1="0" y1="430" x2="605" y2="430"/>
-<line x1="0" y1="452" x2="605" y2="452"/>
-<line x1="0" y1="474" x2="605" y2="474"/>
-<line x1="0" y1="496" x2="605" y2="496"/>
-<line x1="0" y1="518" x2="605" y2="518"/>
+<line x1="0" y1="30" x2="0" y2="571"/>
+<line x1="0" y1="30" x2="0" y2="571"/>
+<line x1="95" y1="30" x2="95" y2="571"/>
+<line x1="150" y1="30" x2="150" y2="571"/>
+<line x1="218" y1="30" x2="218" y2="571"/>
+<line x1="280" y1="30" x2="280" y2="571"/>
+<line x1="336" y1="30" x2="336" y2="571"/>
+<line x1="380" y1="30" x2="380" y2="571"/>
+<line x1="482" y1="30" x2="482" y2="571"/>
+<line x1="556" y1="30" x2="556" y2="571"/>
+<line x1="0" y1="30" x2="636" y2="30"/>
+<line x1="0" y1="56" x2="636" y2="56"/>
+<line x1="0" y1="78" x2="636" y2="78"/>
+<line x1="0" y1="100" x2="636" y2="100"/>
+<line x1="0" y1="122" x2="636" y2="122"/>
+<line x1="0" y1="144" x2="636" y2="144"/>
+<line x1="0" y1="166" x2="636" y2="166"/>
+<line x1="0" y1="188" x2="636" y2="188"/>
+<line x1="0" y1="210" x2="636" y2="210"/>
+<line x1="0" y1="232" x2="636" y2="232"/>
+<line x1="0" y1="254" x2="636" y2="254"/>
+<line x1="0" y1="276" x2="636" y2="276"/>
+<line x1="0" y1="298" x2="636" y2="298"/>
+<line x1="0" y1="320" x2="636" y2="320"/>
+<line x1="0" y1="342" x2="636" y2="342"/>
+<line x1="0" y1="364" x2="636" y2="364"/>
+<line x1="0" y1="386" x2="636" y2="386"/>
+<line x1="0" y1="408" x2="636" y2="408"/>
+<line x1="0" y1="430" x2="636" y2="430"/>
+<line x1="0" y1="452" x2="636" y2="452"/>
+<line x1="0" y1="474" x2="636" y2="474"/>
+<line x1="0" y1="496" x2="636" y2="496"/>
+<line x1="0" y1="518" x2="636" y2="518"/>
+<line x1="0" y1="540" x2="636" y2="540"/>
+<line x1="0" y1="562" x2="636" y2="562"/>
 </g>
 <g class="breath" fill="#b45309">
-<rect x="1" y="255" width="603" height="20" rx="3"/>
-<rect x="1" y="409" width="603" height="20" rx="3"/>
+<rect x="1" y="255" width="634" height="20" rx="3"/>
+<rect x="1" y="409" width="634" height="20" rx="3"/>
 </g>
-<g class="breath2" fill="#3b82f6" fill-opacity="0.5"><rect x="1" y="276" width="603" height="20" rx="3"/><rect x="1" y="430" width="603" height="20" rx="3"/></g>
-<g class="breath3" fill="#7c3aed" fill-opacity="0.16"><rect x="1" y="475" width="603" height="20" rx="3"/></g>
+<g class="breath2" fill="#3b82f6" fill-opacity="0.5"><rect x="1" y="276" width="634" height="20" rx="3"/><rect x="1" y="430" width="634" height="20" rx="3"/></g>
+<g class="breath3" fill="#7c3aed" fill-opacity="0.16"><rect x="1" y="475" width="634" height="20" rx="3"/></g>
 <g clip-path="url(#cCmp)"></g>
 <g clip-path="url(#cCmp2)"></g>
 <g clip-path="url(#cCmp3)"></g>
-<rect x="0.5" y="0.5" width="604" height="531" fill="none" stroke="#ddd6c8" stroke-width="1"/>
-<!-- ymzhu 2026-11-17 15:45 -->
+<rect x="0.5" y="0.5" width="635" height="571" fill="none" stroke="#ddd6c8" stroke-width="1"/>
+<!-- ymzhu 2026-11-18 11:12 -->
 </svg>

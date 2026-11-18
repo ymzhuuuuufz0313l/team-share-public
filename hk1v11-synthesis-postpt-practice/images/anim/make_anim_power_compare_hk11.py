@@ -45,7 +45,7 @@ import os
 BASE = Path(r"E:\project\team-share-public\hk1v11-synthesis-postpt-practice")
 SRC = BASE / "images" / "power_compare_hk11.svg"
 OUT = BASE / "images" / "anim" / "power_compare_hk11.svg"
-N_ROWS = 21          # 静态源 = 21 行（原 18 行 + 1117 三条 + 1V22(1027) 3G 8.39 一条，2026-11-17）
+N_ROWS = 23          # 静态源 = 23 行（21 行 + 1118 长编码 4G/3G 两行，2026-11-18）
 
 # 元素级动效声明：静态源只保留视觉初态（opacity/transform-origin），
 # 动画版在这里补回 animation 引用，静态图因此不含未定义 keyframes 的悬空引用
@@ -95,16 +95,17 @@ KIT_CSS = "\n".join([
 ])
 
 def header_wave(blk):
-    """行尾文字块：组头标签（x=10 的 "(1015)"/"(1027)" 文字）各包一层 .cellwave。
+    """行尾文字块：组头标签（x=158 的 Run 代列 "1015"/"1027"/"1117" 文字）各包一层 .cellwave。
 
-    1015 组 phase 0s、1027 组 phase 1.2s（两组合错相位 1.2s）；其余文字原样。
+    2026-11-18 §4.2 改造后，run 代从行名括号后缀改为第二列独立格（x=158，
+    文本不再带括号）。1015 组 phase 0s、1027/1117 组 phase 1.2s；其余文字原样。
     确定性：只依赖源行文本。
     """
     out = []
     for s in blk:
         t = s.strip()
-        if t.startswith('<text x="10"') and ("(1015)" in t or "(1027)" in t or "(1117)" in t):
-            d = 0.0 if "(1015)" in t else 1.2
+        if t.startswith("<text") and (">1015<" in t or ">1027<" in t or ">1117<" in t):
+            d = 0.0 if ">1015<" in t else 1.2
             out.append(f'<g class="cellwave" style="animation-delay:{d:g}s">')
             out.append(s)
             out.append("</g>")
@@ -146,7 +147,10 @@ def build():
     assert len(rm) == 1, f"源 reduced-motion 守卫应恰 1 处，实得 {len(rm)}"
     lines[rm[0]] = ""
     defs_close = find(lambda s: s.strip() == "</defs>")
-    bg_i = find(lambda s: s.strip() == '<rect x="0" y="0" width="605" height="532" fill="#ffffff"/>')
+    # t19：画布宽度动态（列宽按内容推导），从 svg 根标签解析
+    W_PX = int(re.search(r'width="(\d+)"', lines[0]).group(1))
+    bg_i = find(lambda s: s.strip().startswith('<rect x="0" y="0"')
+                and 'height="572"' in s and 'fill="#ffffff"' in s)
     in_g = find(lambda s: s.strip() == '<g class="in">')
     in_g_close = find(lambda s: s.strip() == "</g>", in_g + 1)
     grid_g = find(lambda s: s.strip() == '<g stroke="#ddd6c8" stroke-width="1">')
@@ -176,7 +180,8 @@ def build():
     purp_spans = []
     for n in range(N_ROWS):
         blk = lines[row_spans[n][0] + 1:row_spans[n][1]]
-        if any("HK1V11 (1117)" in s for s in blk):
+        # 2026-11-18 §4.2 改造后行名不再带 "(1117)" 后缀，改认 Run 代列（x=158）的 ">1117<" 文本
+        if any('>1117<' in s and s.strip().startswith("<text") for s in blk):
             band = next(s for s in blk
                         if s.strip().startswith('<rect x="0"') and "#7c3aed" in s)
             m = re.search(r'y="(-?[\d.]+)"\s+width="[\d.]+"\s+height="([\d.]+)"', band)
@@ -210,8 +215,8 @@ def build():
     pulse_of = {13: ("pulse", "-0.5s"), 10: ("pulse-b", "-1.9s"), 11: ("pulse-b", "-2.2s"),
                 17: ("pulse-b", "-2.6s"), 20: ("pulse-b3", "-1.2s")}
     n_hdr = sum(1 for n in range(N_ROWS) for s in lines[row_spans[n][0] + 1:row_spans[n][1]]
-                if s.strip().startswith('<text x="10"')
-                and ("(1015)" in s or "(1027)" in s or "(1117)" in s))
+                if s.strip().startswith("<text")
+                and (">1015<" in s or ">1027<" in s or ">1117<" in s))
     assert n_hdr == 9, f"1015/1027/1117 组头标签应 9 处，实得 {n_hdr}"
     for n in range(N_ROWS):
         ro, rc = row_spans[n]
@@ -264,7 +269,7 @@ def build():
     cCmp3_empty = '<g clip-path="url(#cCmp3)"></g>'
     sweep1117 = (f'<g clip-path="url(#cSweep1117)"><rect class="cmpband3" x="-180" '
                  f'y="{sweep_y0:g}" width="180" height="{sweep_y1 - sweep_y0:g}" '
-                 f'fill="url(#gCmp3)" style="--sweepP:603px"/></g>')
+                 f'fill="url(#gCmp3)" style="--sweepP:{W_PX - 2}px"/></g>')
     n_fill = 0
     for s in lines[grid_g_close + 1:]:
         o.append(s)
@@ -359,4 +364,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-# ymzhu 2026-11-17 17:35
+# ymzhu 2026-11-18 11:09

@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="760" height="470" viewBox="0 0 760 470">
+<style>text{font-family:ui-monospace,Consolas,"Microsoft YaHei",sans-serif;}</style>
+<style>
+.row{opacity:0;animation:rowIn .55s cubic-bezier(.22,.7,.3,1) forwards}
+.head{opacity:0;animation:rowIn .55s cubic-bezier(.22,.7,.3,1) forwards}
+@keyframes rowIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.draw{stroke-dasharray:100;animation:drawIn .6s cubic-bezier(.4,0,.2,1) forwards}
+@keyframes drawIn{from{stroke-dashoffset:100}to{stroke-dashoffset:0}}
+.fade{opacity:0;animation:fadeIn .6s ease forwards}
+@keyframes fadeIn{to{opacity:1}}
+.flowdot{fill:none;stroke-linecap:round;stroke-dasharray:9 91;stroke-width:3.5;animation:flow 2.6s linear infinite}
+@keyframes flow{to{stroke-dashoffset:-100}}
+.flowtail{fill:none;stroke-linecap:round;stroke-dasharray:4 96;stroke-width:8;opacity:.25;animation:flow 2.6s linear infinite}
+.pulse{transform-box:fill-box;transform-origin:center;animation:pulse 2.8s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;filter:drop-shadow(0 0 0 rgba(180,83,9,0))}50%{opacity:.8;filter:drop-shadow(0 0 10px rgba(180,83,9,.75))}}
+.pulse-t{transform-box:fill-box;transform-origin:center;animation:pulseT 2.8s ease-in-out infinite}
+@keyframes pulseT{0%,100%{opacity:1;filter:drop-shadow(0 0 0 rgba(14,116,144,0))}50%{opacity:.8;filter:drop-shadow(0 0 10px rgba(14,116,144,.75))}}
+.pulse-b{transform-box:fill-box;transform-origin:center;animation:pulseB 2.8s ease-in-out infinite}
+@keyframes pulseB{0%,100%{opacity:1;filter:drop-shadow(0 0 0 rgba(29,78,216,0))}50%{opacity:.8;filter:drop-shadow(0 0 10px rgba(29,78,216,.75))}}
+.sweepband{opacity:.85;animation:sweepMove 8s linear infinite}
+@keyframes sweepMove{to{transform:translateX(var(--sweepP,160px))}}
+.dashgrow{stroke-dasharray:7 5;animation:dashgrow 2.6s linear infinite}
+@keyframes dashgrow{from{stroke-dashoffset:72}to{stroke-dashoffset:0}}
+.march{animation:march 1.5s linear infinite}
+@keyframes march{to{stroke-dashoffset:-16}}
+.cellwave{animation:wave 2.6s ease-in-out infinite}
+@keyframes wave{0%,100%{opacity:1}50%{opacity:.72}}
+.breathe{animation:br 3.2s ease-in-out infinite}
+@keyframes br{0%,100%{opacity:1}50%{opacity:.55}}
+.step{animation:stepLit 6s ease-in-out infinite}
+@keyframes stepLit{0%,16%{filter:drop-shadow(0 0 9px rgba(29,78,216,.85))}24%,92%{filter:drop-shadow(0 0 0 rgba(29,78,216,0))}100%{filter:drop-shadow(0 0 9px rgba(29,78,216,.85))}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}.row,.head,.fade{opacity:1!important}.flowdot,.flowtail,.sweepband{display:none!important}}
+</style>
+<rect x="0" y="0" width="760" height="470" fill="#f4f1ea"/>
+<g class="head"><rect x="0" y="0" width="760" height="42" fill="#1c2534"/><text x="14" y="21" dominant-baseline="central" fill="#f4f1ea" font-size="15" font-weight="bold">HK1V11 长编码 @4G 功耗组成（Initial Design）</text><text x="746" y="21" text-anchor="end" dominant-baseline="central" fill="#e8c59e" font-size="12">PACK_TAR_1118V0 rep_dir_1lane_4g_420b_1118</text></g>
+<g class="row"><circle cx="235" cy="240" r="118" fill="none" stroke="#0e7490" stroke-width="44" pathLength="100" stroke-dasharray="53.1099 46.8901" stroke-dashoffset="25.0000"/>
+<circle cx="352.4" cy="251.5" r="2.2" fill="#fffdf7"/></g>
+<g class="row"><circle cx="235" cy="240" r="118" fill="none" stroke="#1d4ed8" stroke-width="44" pathLength="100" stroke-dasharray="3.4999 96.5001" stroke-dashoffset="-28.1099"/>
+<circle cx="199.5" cy="352.5" r="2.2" fill="#fffdf7"/></g>
+<g class="row"><circle cx="235" cy="240" r="118" fill="none" stroke="#a89f8c" stroke-width="44" pathLength="100" stroke-dasharray="43.3902 56.6098" stroke-dashoffset="-31.6098"/>
+<circle cx="119.5" cy="215.7" r="2.2" fill="#fffdf7"/></g>
+<g class="fade">
+<g class="cellwave" style="animation-delay:0s">
+<rect x="470" y="120" width="14" height="10" fill="#0e7490"/><text x="490" y="125" fill="#1c2534" font-size="13">LONG_ENCODING</text><text x="740" y="125" text-anchor="end" fill="#1c2534" font-size="13" font-weight="bold">18,704.72 µW</text><text x="740" y="143" text-anchor="end" fill="#5b6675" font-size="11">53.1%</text>
+</g>
+<g class="cellwave" style="animation-delay:0.7s">
+<rect x="470" y="166" width="14" height="10" fill="#1d4ed8"/><text x="490" y="171" fill="#1c2534" font-size="13">SHORT_ENCODING</text><text x="740" y="171" text-anchor="end" fill="#1c2534" font-size="13" font-weight="bold">1,232.62 µW</text><text x="740" y="189" text-anchor="end" fill="#5b6675" font-size="11">3.5%</text>
+</g>
+<rect x="470" y="212" width="14" height="10" fill="#a89f8c"/><text x="490" y="217" fill="#1c2534" font-size="13">其他（top − 两编码组）</text><text x="740" y="217" text-anchor="end" fill="#1c2534" font-size="13" font-weight="bold">15,281.55 µW</text><text x="740" y="235" text-anchor="end" fill="#5b6675" font-size="11">43.4%</text>
+<text x="380" y="454" text-anchor="middle" fill="#5b6675" font-size="11">长@3G 档：LONG 13,913.32 / SHORT 920.44 / top 26,225.24 µW</text>
+</g>
+<g class="pulse" style="animation-delay:-1.2s"><text x="235" y="228" text-anchor="middle" fill="#1c2534" font-size="26" font-weight="bold">35.22 mW</text><text x="235" y="254" text-anchor="middle" fill="#5b6675" font-size="12">35,218.89 µW</text></g>
+<rect x="0.5" y="0.5" width="759" height="469" fill="none" stroke="#c9bfa8" stroke-width="1"/>
+<!-- ymzhu 2026-11-18 11:27 -->
+</svg>
