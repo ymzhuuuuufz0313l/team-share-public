@@ -329,14 +329,15 @@ def build_shift(path):
     a('<rect x="%.1f" y="248" width="%.1f" height="44" fill="%s" opacity="0.85"/>' % (tx(-0.25), tx(0.25) - tx(-0.25), C_TEAL))
     a('<text x="%.1f" y="275" font-size="12.5" fill="#fffdf7" text-anchor="middle">数据有效窗</text>' % tx(0))
 
+    XL, XR = (tx(0) + tx(LFT)) / 2.0, (tx(0) + tx(RGT)) / 2.0
     a('<line class="arrowDash" x1="%.1f" y1="190" x2="%.1f" y2="190" stroke="%s" stroke-width="3" marker-end="url(#mB)"/>' % (tx(0), tx(LFT), C_BLUE))
-    a('<text x="%.1f" y="174" font-size="13.5" fill="%s" text-anchor="middle" font-weight="bold">← 左移容限 %.5f ns</text>' % (tx(-0.55), C_BLUE, -LFT))
-    a('<text x="%.1f" y="214" font-size="11.5" class="mono" fill="%s" text-anchor="middle">= port→FF setup %+.5f +0.3+0.4</text>' % (tx(-0.55), C_BLUE, lmin[3]))
-    a('<text x="%.1f" y="234" font-size="11" fill="%s" text-anchor="middle">%s（setup 先碰界）</text>' % (tx(-0.55), C_MUTED, lmin[0]))
+    a('<text x="%.1f" y="174" font-size="13.5" fill="%s" text-anchor="middle" font-weight="bold">← 左移容限 %.5f ns</text>' % (XL, C_BLUE, -LFT))
+    a('<text x="%.1f" y="214" font-size="11.5" class="mono" fill="%s" text-anchor="middle">= port→FF setup %+.5f +0.3+0.4</text>' % (XL, C_BLUE, lmin[3]))
+    a('<text x="%.1f" y="234" font-size="11" fill="%s" text-anchor="middle">%s（setup 先碰界）</text>' % (XL, C_MUTED, lmin[0]))
     a('<line class="arrowDash" x1="%.1f" y1="190" x2="%.1f" y2="190" stroke="%s" stroke-width="3" marker-end="url(#mB)"/>' % (tx(0), tx(RGT), C_BLUE))
-    a('<text x="%.1f" y="174" font-size="13.5" fill="%s" text-anchor="middle" font-weight="bold">右移容限 %.5f ns →</text>' % (1030, C_BLUE, RGT))
-    a('<text x="%.1f" y="214" font-size="11.5" class="mono" fill="%s" text-anchor="middle">= port→FF hold %+.5f +0.3+0.15</text>' % (1030, C_BLUE, rmin[4]))
-    a('<text x="%.1f" y="234" font-size="11" fill="%s" text-anchor="middle">%s（hold 先碰界）</text>' % (1030, C_MUTED, rmin[0]))
+    a('<text x="%.1f" y="174" font-size="13.5" fill="%s" text-anchor="middle" font-weight="bold">右移容限 %.5f ns →</text>' % (XR, C_BLUE, RGT))
+    a('<text x="%.1f" y="214" font-size="11.5" class="mono" fill="%s" text-anchor="middle">= port→FF hold %+.5f +0.3+0.15</text>' % (XR, C_BLUE, rmin[4]))
+    a('<text x="%.1f" y="234" font-size="11" fill="%s" text-anchor="middle">%s（hold 先碰界）</text>' % (XR, C_MUTED, rmin[0]))
 
     a('<rect class="formulaGlow" x="60" y="372" width="1320" height="120" rx="2" fill="%s" stroke="%s" stroke-width="1.2"/>' % (C_BG, C_BORDER))
     a('<text x="80" y="398" font-size="13.5" font-weight="bold" fill="%s">换算公式（把 set_input_delay 与 uncertainty 的预算还原成 2M23 裸口径）</text>' % C_AMBER)
@@ -345,27 +346,37 @@ def build_shift(path):
     a('<text x="80" y="472" font-size="11.5" fill="%s">注：%s 代际 port→FF setup = phy csv rx0_00_max 行、port→FF hold = rx0_00_min 行（input port 即头名）；数值全部由 csv 直算，无手录。</text>' % (C_MUTED, GEN))
 
     a('<rect class="panel" x="40" y="540" width="1360" height="330" rx="2" fill="%s" stroke="%s" stroke-width="1.5"/>' % (C_PANEL, C_BORDER))
-    a('<text x="60" y="568" font-size="16.5" font-weight="bold">② 逐角容限（10 corner）</text>')
-    a('<rect x="500" y="558" width="16" height="12" fill="%s" opacity="0.9"/>' % C_BLUE)
-    a('<text x="521" y="568" font-size="12">左移 / setup 侧</text>')
-    a('<rect x="660" y="558" width="16" height="12" fill="%s" opacity="0.9"/>' % C_TEAL)
-    a('<text x="681" y="568" font-size="12">右移 / hold 侧</text>')
-    a('<line x1="820" y1="564" x2="848" y2="564" stroke="%s" stroke-width="2" stroke-dasharray="6,4"/>' % C_RED)
-    a('<text x="856" y="568" font-size="12" fill="%s">全角最小：左 %.5f / 右 %.5f</text>' % (C_RED, -LFT, RGT))
+    a('<text x="60" y="568" font-size="16.5" font-weight="bold">② 逐角容限（10 corner，柱高=该角容限 ns）</text>')
+    a('<rect x="470" y="558" width="16" height="12" fill="%s" opacity="0.9"/>' % C_BLUE)
+    a('<text x="491" y="568" font-size="12">左移 / setup 侧</text>')
+    a('<rect x="630" y="558" width="16" height="12" fill="%s" opacity="0.9"/>' % C_TEAL)
+    a('<text x="651" y="568" font-size="12">右移 / hold 侧</text>')
+    a('<line x1="790" y1="564" x2="818" y2="564" stroke="%s" stroke-width="2" stroke-dasharray="6,4"/>' % C_RED)
+    a('<text x="826" y="568" font-size="12" fill="%s">碰界线（全局最小）：左 %.5f @%s / 右 %.5f @%s</text>' % (C_RED, -LFT, lmin[0], RGT, rmin[0]))
 
-    BX, BW, BGAP = 80, 60, 70
-    BY0, BY1 = 610, 842
-    BMAX = 1.8
-    def by(v): return BY1 - v / BMAX * (BY1 - BY0)
-    a('<line x1="70" y1="%.1f" x2="1345" y2="%.1f" stroke="%s" stroke-width="2" stroke-dasharray="6,4" opacity="0.55"/>' % (by(-LFT), by(-LFT), C_RED))
-    a('<line x1="70" y1="%.1f" x2="1345" y2="%.1f" stroke="%s" stroke-width="2" stroke-dasharray="6,4" opacity="0.55"/>' % (by(RGT), by(RGT), C_RED))
+    # 绘图区：纵轴上限定为 0.5 ns 整数倍（>数据最大值），柱底统一落基线，柱高与刻度同标尺
+    vmax = max(max(c[1] for c in corners), max(c[2] for c in corners))
+    BMAX = (int(vmax * 2) + 1) / 2.0
+    PX0, PX1 = 96, 1316
+    PY0, PY1 = 640, 826
+    def by(v): return PY1 - v / BMAX * (PY1 - PY0)
+    for k in range(int(BMAX * 2) + 1):
+        gv = k / 2.0
+        a('<line x1="%d" y1="%.1f" x2="%d" y2="%.1f" stroke="%s" stroke-width="1"/>' % (PX0, by(gv), PX1, by(gv), C_GRID))
+        a('<text x="%d" y="%.1f" font-size="10" text-anchor="end" class="mono" fill="%s">%.1f</text>' % (PX0 - 8, by(gv) + 3.5, C_MUTED, gv))
+    a('<text x="%d" y="%d" font-size="10" class="mono" fill="%s">ns</text>' % (PX0 - 34, PY0 - 12, C_MUTED))
+    a('<line x1="%d" y1="%d" x2="%d" y2="%d" stroke="%s" stroke-width="2"/>' % (PX0, PY1, PX1, PY1, C_MUTED))
+    for val, lab in ((-LFT, "左移碰界 %.5f" % -LFT), (RGT, "右移碰界 %.5f" % RGT)):
+        a('<line x1="%d" y1="%.1f" x2="%d" y2="%.1f" stroke="%s" stroke-width="1.6" stroke-dasharray="6,4" opacity="0.75"/>' % (PX0, by(val), PX1, by(val), C_RED))
+        a('<text x="%d" y="%.1f" font-size="10" fill="%s" text-anchor="end">%s</text>' % (PX1 - 4, by(val) - 4, C_RED, lab))
+    BW, BGAP, BGAPX = 30, 8, 116
     for i, (name, lft, rgt, _mx, _mn) in enumerate(corners):
-        x = BX + i * (BW + BGAP)
-        a('<rect x="%d" y="%.1f" width="%d" height="%.1f" fill="%s" opacity="0.9"/>' % (x, by(lft), BW // 2, BY1 - by(lft), C_BLUE))
-        a('<rect x="%d" y="%.1f" width="%d" height="%.1f" fill="%s" opacity="0.9"/>' % (x + BW // 2, by(rgt), BW // 2, BY1 - by(rgt), C_TEAL))
-        a('<text x="%d" y="%.1f" font-size="9" text-anchor="middle" class="mono" fill="%s">%.2f</text>' % (x + BW // 4, by(lft) - 5, C_BLUE, lft))
-        a('<text x="%d" y="%.1f" font-size="9" text-anchor="middle" class="mono" fill="%s">%.2f</text>' % (x + BW * 3 // 4, by(rgt) - 5, C_TEAL, rgt))
-        a('<text x="%d" y="858" font-size="10" text-anchor="middle" class="mono" fill="%s">%s</text>' % (x + BW // 2, C_MUTED, name))
+        x = PX0 + 14 + i * BGAPX
+        a('<rect x="%d" y="%.1f" width="%d" height="%.1f" fill="%s" opacity="0.92"/>' % (x, by(lft), BW, PY1 - by(lft), C_BLUE))
+        a('<rect x="%d" y="%.1f" width="%d" height="%.1f" fill="%s" opacity="0.92"/>' % (x + BW + BGAP, by(rgt), BW, PY1 - by(rgt), C_TEAL))
+        a('<text x="%.1f" y="%.1f" font-size="9.5" text-anchor="middle" class="mono" fill="%s">%.2f</text>' % (x + BW / 2.0, by(lft) - 5, C_BLUE, lft))
+        a('<text x="%.1f" y="%.1f" font-size="9.5" text-anchor="middle" class="mono" fill="%s">%.2f</text>' % (x + BW + BGAP + BW / 2.0, by(rgt) - 5, C_TEAL, rgt))
+        a('<text x="%.1f" y="846" font-size="9.5" text-anchor="middle" class="mono" fill="%s">%s</text>' % (x + BW + BGAP / 2.0, C_MUTED, name))
     a('</svg>')
     return "\n".join(L)
 
@@ -804,4 +815,4 @@ if __name__ == "__main__":
              -stats["shift"]["left_min"], stats["shift"]["right_min"]))
     print("ALL", "PASS" if all_ok else "FAIL")
     sys.exit(0 if all_ok else 1)
-# ymzhu 2026-11-18 15:34
+# ymzhu 2026-11-18 17:02

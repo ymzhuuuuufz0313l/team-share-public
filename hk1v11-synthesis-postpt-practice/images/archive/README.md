@@ -60,3 +60,8 @@
 | 20261118 | `55_signoff_sdskew_margin_hk11_1118v1.png` | `cfc9dac88efc594a94a00dda15677840` | 311494 B | 1118V1 新代 DPR2 PNG 快照（render_png_1118v1.py，verify 全过） |
 | 20261118 | `56_signoff_shift_window_hk11_1118v1.png` | `9bbb8efcd35f01a23fc674345dd9ed51` | 219114 B | 1118V1 新代 DPR2 PNG 快照（render_png_1118v1.py，verify 全过） |
 | 20261118 | `ch09-to-signoff_1104v2.html` | `7392aa53ba4d3a961cab73b4e12a8764` | 21382 B | 被 1118V1 页面换版替换（1104V2 canonical 整页快照：含 1029V0/1008V3/0918V2 对比卡、V0↔V2 对比段与逐角换算表——历史段落可追溯入口） |
+| 20261118 | `56_signoff_shift_window_hk11_1118v1r0.svg` | `da5a8b48c76b2c07058de1ad5be3b348` | 10607 B | 1118V1 首版 56（面板②柱高溢出到面板①，已废弃重做） |
+| 20261118 | `56_signoff_shift_window_hk11_1118v1r0_anim.svg` | `d58f280c9de344db10bf1c971545f255` | 11538 B | 1118V1 首版 56（面板②柱高溢出到面板①，已废弃重做） |
+| 20261118 | `56_signoff_shift_window_hk11_1118v1r2.png` | `4c1986ae7748e161c2d14962c65ca4e6` | 232375 B | 1118V1 r2 修正版 56（BMAX 由数据推出=3.0，柱不进面板①） |
+| 20261118 | `56_signoff_shift_window_hk11_1118v1r2.svg` | `9bab3f417cc701c525f2605566e40067` | 12380 B | 1118V1 r2 修正版 56 静态（主名同内容） |
+| 20261118 | `56_signoff_shift_window_hk11_1118v1r2_anim.svg` | `971dfcadd576f8f6e7e6ea0143811df0` | 13311 B | 1118V1 r2 修正版 56 动画（主名同内容） |

@@ -29,78 +29,96 @@
 <rect x="626.2" y="248" width="187.5" height="44" fill="#0e7490" opacity="0.85"/>
 <text x="720.0" y="275" font-size="12.5" fill="#fffdf7" text-anchor="middle">数据有效窗</text>
 <line class="arrowDash" x1="720.0" y1="190" x2="330.7" y2="190" stroke="#1d4ed8" stroke-width="3" marker-end="url(#mB)"/>
-<text x="513.8" y="174" font-size="13.5" fill="#1d4ed8" text-anchor="middle" font-weight="bold">← 左移容限 1.03822 ns</text>
-<text x="513.8" y="214" font-size="11.5" class="mono" fill="#1d4ed8" text-anchor="middle">= port→FF setup +0.33822 +0.3+0.4</text>
-<text x="513.8" y="234" font-size="11" fill="#5b6675" text-anchor="middle">lt_cworst（setup 先碰界）</text>
+<text x="525.3" y="174" font-size="13.5" fill="#1d4ed8" text-anchor="middle" font-weight="bold">← 左移容限 1.03822 ns</text>
+<text x="525.3" y="214" font-size="11.5" class="mono" fill="#1d4ed8" text-anchor="middle">= port→FF setup +0.33822 +0.3+0.4</text>
+<text x="525.3" y="234" font-size="11" fill="#5b6675" text-anchor="middle">lt_cworst（setup 先碰界）</text>
 <line class="arrowDash" x1="720.0" y1="190" x2="901.7" y2="190" stroke="#1d4ed8" stroke-width="3" marker-end="url(#mB)"/>
-<text x="1030.0" y="174" font-size="13.5" fill="#1d4ed8" text-anchor="middle" font-weight="bold">右移容限 0.48453 ns →</text>
-<text x="1030.0" y="214" font-size="11.5" class="mono" fill="#1d4ed8" text-anchor="middle">= port→FF hold +0.03453 +0.3+0.15</text>
-<text x="1030.0" y="234" font-size="11" fill="#5b6675" text-anchor="middle">lt_cbest（hold 先碰界）</text>
+<text x="810.8" y="174" font-size="13.5" fill="#1d4ed8" text-anchor="middle" font-weight="bold">右移容限 0.48453 ns →</text>
+<text x="810.8" y="214" font-size="11.5" class="mono" fill="#1d4ed8" text-anchor="middle">= port→FF hold +0.03453 +0.3+0.15</text>
+<text x="810.8" y="234" font-size="11" fill="#5b6675" text-anchor="middle">lt_cbest（hold 先碰界）</text>
 <rect class="formulaGlow" x="60" y="372" width="1320" height="120" rx="2" fill="#f4f1ea" stroke="#c9bfa8" stroke-width="1.2"/>
 <text x="80" y="398" font-size="13.5" font-weight="bold" fill="#b45309">换算公式（把 set_input_delay 与 uncertainty 的预算还原成 2M23 裸口径）</text>
 <text x="80" y="424" font-size="13" class="mono">左移容限 = port→FF setup slack + 0.3（max input delay） + 0.4（setup uncertainty）</text>
 <text x="80" y="448" font-size="13" class="mono">右移容限 = port→FF hold slack + 0.3（min input delay −0.3 还原） + 0.15（hold uncertainty）</text>
 <text x="80" y="472" font-size="11.5" fill="#5b6675">注：1118V1 代际 port→FF setup = phy csv rx0_00_max 行、port→FF hold = rx0_00_min 行（input port 即头名）；数值全部由 csv 直算，无手录。</text>
 <rect class="panel" x="40" y="540" width="1360" height="330" rx="2" fill="#fffdf7" stroke="#c9bfa8" stroke-width="1.5"/>
-<text x="60" y="568" font-size="16.5" font-weight="bold">② 逐角容限（10 corner）</text>
-<rect x="500" y="558" width="16" height="12" fill="#1d4ed8" opacity="0.9"/>
-<text x="521" y="568" font-size="12">左移 / setup 侧</text>
-<rect x="660" y="558" width="16" height="12" fill="#0e7490" opacity="0.9"/>
-<text x="681" y="568" font-size="12">右移 / hold 侧</text>
-<line x1="820" y1="564" x2="848" y2="564" stroke="#b91c1c" stroke-width="2" stroke-dasharray="6,4"/>
-<text x="856" y="568" font-size="12" fill="#b91c1c">全角最小：左 1.03822 / 右 0.48453</text>
-<line x1="70" y1="708.2" x2="1345" y2="708.2" stroke="#b91c1c" stroke-width="2" stroke-dasharray="6,4" opacity="0.55"/>
-<line x1="70" y1="779.5" x2="1345" y2="779.5" stroke="#b91c1c" stroke-width="2" stroke-dasharray="6,4" opacity="0.55"/>
-<rect x="80" y="495.0" width="30" height="347.0" fill="#1d4ed8" opacity="0.9"/>
-<rect x="110" y="733.1" width="30" height="108.9" fill="#0e7490" opacity="0.9"/>
-<text x="95" y="490.0" font-size="9" text-anchor="middle" class="mono" fill="#1d4ed8">2.69</text>
-<text x="125" y="728.1" font-size="9" text-anchor="middle" class="mono" fill="#0e7490">0.85</text>
-<text x="110" y="858" font-size="10" text-anchor="middle" class="mono" fill="#5b6675">wc_cworst</text>
-<rect x="210" y="492.9" width="30" height="349.1" fill="#1d4ed8" opacity="0.9"/>
-<rect x="240" y="737.8" width="30" height="104.2" fill="#0e7490" opacity="0.9"/>
-<text x="225" y="487.9" font-size="9" text-anchor="middle" class="mono" fill="#1d4ed8">2.71</text>
-<text x="255" y="732.8" font-size="9" text-anchor="middle" class="mono" fill="#0e7490">0.81</text>
-<text x="240" y="858" font-size="10" text-anchor="middle" class="mono" fill="#5b6675">wc_cbest</text>
-<rect x="340" y="496.4" width="30" height="345.6" fill="#1d4ed8" opacity="0.9"/>
-<rect x="370" y="733.1" width="30" height="108.9" fill="#0e7490" opacity="0.9"/>
-<text x="355" y="491.4" font-size="9" text-anchor="middle" class="mono" fill="#1d4ed8">2.68</text>
-<text x="385" y="728.1" font-size="9" text-anchor="middle" class="mono" fill="#0e7490">0.85</text>
-<text x="370" y="858" font-size="10" text-anchor="middle" class="mono" fill="#5b6675">wc_typical</text>
-<rect x="470" y="708.2" width="30" height="133.8" fill="#1d4ed8" opacity="0.9"/>
-<rect x="500" y="779.5" width="30" height="62.5" fill="#0e7490" opacity="0.9"/>
-<text x="485" y="703.2" font-size="9" text-anchor="middle" class="mono" fill="#1d4ed8">1.04</text>
-<text x="515" y="774.5" font-size="9" text-anchor="middle" class="mono" fill="#0e7490">0.49</text>
-<text x="500" y="858" font-size="10" text-anchor="middle" class="mono" fill="#5b6675">lt_cworst</text>
-<rect x="600" y="701.9" width="30" height="140.1" fill="#1d4ed8" opacity="0.9"/>
-<rect x="630" y="779.5" width="30" height="62.5" fill="#0e7490" opacity="0.9"/>
-<text x="615" y="696.9" font-size="9" text-anchor="middle" class="mono" fill="#1d4ed8">1.09</text>
-<text x="645" y="774.5" font-size="9" text-anchor="middle" class="mono" fill="#0e7490">0.48</text>
-<text x="630" y="858" font-size="10" text-anchor="middle" class="mono" fill="#5b6675">lt_cbest</text>
-<rect x="730" y="706.5" width="30" height="135.5" fill="#1d4ed8" opacity="0.9"/>
-<rect x="760" y="779.5" width="30" height="62.5" fill="#0e7490" opacity="0.9"/>
-<text x="745" y="701.5" font-size="9" text-anchor="middle" class="mono" fill="#1d4ed8">1.05</text>
-<text x="775" y="774.5" font-size="9" text-anchor="middle" class="mono" fill="#0e7490">0.48</text>
-<text x="760" y="858" font-size="10" text-anchor="middle" class="mono" fill="#5b6675">lt_typical</text>
-<rect x="860" y="659.4" width="30" height="182.6" fill="#1d4ed8" opacity="0.9"/>
-<rect x="890" y="773.2" width="30" height="68.8" fill="#0e7490" opacity="0.9"/>
-<text x="875" y="654.4" font-size="9" text-anchor="middle" class="mono" fill="#1d4ed8">1.42</text>
-<text x="905" y="768.2" font-size="9" text-anchor="middle" class="mono" fill="#0e7490">0.53</text>
-<text x="890" y="858" font-size="10" text-anchor="middle" class="mono" fill="#5b6675">ml_cbest</text>
-<rect x="990" y="647.6" width="30" height="194.4" fill="#1d4ed8" opacity="0.9"/>
-<rect x="1020" y="764.4" width="30" height="77.6" fill="#0e7490" opacity="0.9"/>
-<text x="1005" y="642.6" font-size="9" text-anchor="middle" class="mono" fill="#1d4ed8">1.51</text>
-<text x="1035" y="759.4" font-size="9" text-anchor="middle" class="mono" fill="#0e7490">0.60</text>
-<text x="1020" y="858" font-size="10" text-anchor="middle" class="mono" fill="#5b6675">tt_cworst</text>
-<rect x="1120" y="641.9" width="30" height="200.1" fill="#1d4ed8" opacity="0.9"/>
-<rect x="1150" y="764.8" width="30" height="77.2" fill="#0e7490" opacity="0.9"/>
-<text x="1135" y="636.9" font-size="9" text-anchor="middle" class="mono" fill="#1d4ed8">1.55</text>
-<text x="1165" y="759.8" font-size="9" text-anchor="middle" class="mono" fill="#0e7490">0.60</text>
-<text x="1150" y="858" font-size="10" text-anchor="middle" class="mono" fill="#5b6675">tt_cbest</text>
-<rect x="1250" y="646.7" width="30" height="195.3" fill="#1d4ed8" opacity="0.9"/>
-<rect x="1280" y="764.6" width="30" height="77.4" fill="#0e7490" opacity="0.9"/>
-<text x="1265" y="641.7" font-size="9" text-anchor="middle" class="mono" fill="#1d4ed8">1.52</text>
-<text x="1295" y="759.6" font-size="9" text-anchor="middle" class="mono" fill="#0e7490">0.60</text>
-<text x="1280" y="858" font-size="10" text-anchor="middle" class="mono" fill="#5b6675">tt_typical</text>
+<text x="60" y="568" font-size="16.5" font-weight="bold">② 逐角容限（10 corner，柱高=该角容限 ns）</text>
+<rect x="470" y="558" width="16" height="12" fill="#1d4ed8" opacity="0.9"/>
+<text x="491" y="568" font-size="12">左移 / setup 侧</text>
+<rect x="630" y="558" width="16" height="12" fill="#0e7490" opacity="0.9"/>
+<text x="651" y="568" font-size="12">右移 / hold 侧</text>
+<line x1="790" y1="564" x2="818" y2="564" stroke="#b91c1c" stroke-width="2" stroke-dasharray="6,4"/>
+<text x="826" y="568" font-size="12" fill="#b91c1c">碰界线（全局最小）：左 1.03822 @lt_cworst / 右 0.48453 @lt_cbest</text>
+<line x1="96" y1="826.0" x2="1316" y2="826.0" stroke="#ddd6c8" stroke-width="1"/>
+<text x="88" y="829.5" font-size="10" text-anchor="end" class="mono" fill="#5b6675">0.0</text>
+<line x1="96" y1="795.0" x2="1316" y2="795.0" stroke="#ddd6c8" stroke-width="1"/>
+<text x="88" y="798.5" font-size="10" text-anchor="end" class="mono" fill="#5b6675">0.5</text>
+<line x1="96" y1="764.0" x2="1316" y2="764.0" stroke="#ddd6c8" stroke-width="1"/>
+<text x="88" y="767.5" font-size="10" text-anchor="end" class="mono" fill="#5b6675">1.0</text>
+<line x1="96" y1="733.0" x2="1316" y2="733.0" stroke="#ddd6c8" stroke-width="1"/>
+<text x="88" y="736.5" font-size="10" text-anchor="end" class="mono" fill="#5b6675">1.5</text>
+<line x1="96" y1="702.0" x2="1316" y2="702.0" stroke="#ddd6c8" stroke-width="1"/>
+<text x="88" y="705.5" font-size="10" text-anchor="end" class="mono" fill="#5b6675">2.0</text>
+<line x1="96" y1="671.0" x2="1316" y2="671.0" stroke="#ddd6c8" stroke-width="1"/>
+<text x="88" y="674.5" font-size="10" text-anchor="end" class="mono" fill="#5b6675">2.5</text>
+<line x1="96" y1="640.0" x2="1316" y2="640.0" stroke="#ddd6c8" stroke-width="1"/>
+<text x="88" y="643.5" font-size="10" text-anchor="end" class="mono" fill="#5b6675">3.0</text>
+<text x="62" y="628" font-size="10" class="mono" fill="#5b6675">ns</text>
+<line x1="96" y1="826" x2="1316" y2="826" stroke="#5b6675" stroke-width="2"/>
+<line x1="96" y1="761.6" x2="1316" y2="761.6" stroke="#b91c1c" stroke-width="1.6" stroke-dasharray="6,4" opacity="0.75"/>
+<text x="1312" y="757.6" font-size="10" fill="#b91c1c" text-anchor="end">左移碰界 1.03822</text>
+<line x1="96" y1="796.0" x2="1316" y2="796.0" stroke="#b91c1c" stroke-width="1.6" stroke-dasharray="6,4" opacity="0.75"/>
+<text x="1312" y="792.0" font-size="10" fill="#b91c1c" text-anchor="end">右移碰界 0.48453</text>
+<rect x="110" y="659.1" width="30" height="166.9" fill="#1d4ed8" opacity="0.92"/>
+<rect x="148" y="773.6" width="30" height="52.4" fill="#0e7490" opacity="0.92"/>
+<text x="125.0" y="654.1" font-size="9.5" text-anchor="middle" class="mono" fill="#1d4ed8">2.69</text>
+<text x="163.0" y="768.6" font-size="9.5" text-anchor="middle" class="mono" fill="#0e7490">0.85</text>
+<text x="144.0" y="846" font-size="9.5" text-anchor="middle" class="mono" fill="#5b6675">wc_cworst</text>
+<rect x="226" y="658.1" width="30" height="167.9" fill="#1d4ed8" opacity="0.92"/>
+<rect x="264" y="775.9" width="30" height="50.1" fill="#0e7490" opacity="0.92"/>
+<text x="241.0" y="653.1" font-size="9.5" text-anchor="middle" class="mono" fill="#1d4ed8">2.71</text>
+<text x="279.0" y="770.9" font-size="9.5" text-anchor="middle" class="mono" fill="#0e7490">0.81</text>
+<text x="260.0" y="846" font-size="9.5" text-anchor="middle" class="mono" fill="#5b6675">wc_cbest</text>
+<rect x="342" y="659.8" width="30" height="166.2" fill="#1d4ed8" opacity="0.92"/>
+<rect x="380" y="773.6" width="30" height="52.4" fill="#0e7490" opacity="0.92"/>
+<text x="357.0" y="654.8" font-size="9.5" text-anchor="middle" class="mono" fill="#1d4ed8">2.68</text>
+<text x="395.0" y="768.6" font-size="9.5" text-anchor="middle" class="mono" fill="#0e7490">0.85</text>
+<text x="376.0" y="846" font-size="9.5" text-anchor="middle" class="mono" fill="#5b6675">wc_typical</text>
+<rect x="458" y="761.6" width="30" height="64.4" fill="#1d4ed8" opacity="0.92"/>
+<rect x="496" y="795.9" width="30" height="30.1" fill="#0e7490" opacity="0.92"/>
+<text x="473.0" y="756.6" font-size="9.5" text-anchor="middle" class="mono" fill="#1d4ed8">1.04</text>
+<text x="511.0" y="790.9" font-size="9.5" text-anchor="middle" class="mono" fill="#0e7490">0.49</text>
+<text x="492.0" y="846" font-size="9.5" text-anchor="middle" class="mono" fill="#5b6675">lt_cworst</text>
+<rect x="574" y="758.6" width="30" height="67.4" fill="#1d4ed8" opacity="0.92"/>
+<rect x="612" y="796.0" width="30" height="30.0" fill="#0e7490" opacity="0.92"/>
+<text x="589.0" y="753.6" font-size="9.5" text-anchor="middle" class="mono" fill="#1d4ed8">1.09</text>
+<text x="627.0" y="791.0" font-size="9.5" text-anchor="middle" class="mono" fill="#0e7490">0.48</text>
+<text x="608.0" y="846" font-size="9.5" text-anchor="middle" class="mono" fill="#5b6675">lt_cbest</text>
+<rect x="690" y="760.8" width="30" height="65.2" fill="#1d4ed8" opacity="0.92"/>
+<rect x="728" y="795.9" width="30" height="30.1" fill="#0e7490" opacity="0.92"/>
+<text x="705.0" y="755.8" font-size="9.5" text-anchor="middle" class="mono" fill="#1d4ed8">1.05</text>
+<text x="743.0" y="790.9" font-size="9.5" text-anchor="middle" class="mono" fill="#0e7490">0.48</text>
+<text x="724.0" y="846" font-size="9.5" text-anchor="middle" class="mono" fill="#5b6675">lt_typical</text>
+<rect x="806" y="738.2" width="30" height="87.8" fill="#1d4ed8" opacity="0.92"/>
+<rect x="844" y="792.9" width="30" height="33.1" fill="#0e7490" opacity="0.92"/>
+<text x="821.0" y="733.2" font-size="9.5" text-anchor="middle" class="mono" fill="#1d4ed8">1.42</text>
+<text x="859.0" y="787.9" font-size="9.5" text-anchor="middle" class="mono" fill="#0e7490">0.53</text>
+<text x="840.0" y="846" font-size="9.5" text-anchor="middle" class="mono" fill="#5b6675">ml_cbest</text>
+<rect x="922" y="732.5" width="30" height="93.5" fill="#1d4ed8" opacity="0.92"/>
+<rect x="960" y="788.7" width="30" height="37.3" fill="#0e7490" opacity="0.92"/>
+<text x="937.0" y="727.5" font-size="9.5" text-anchor="middle" class="mono" fill="#1d4ed8">1.51</text>
+<text x="975.0" y="783.7" font-size="9.5" text-anchor="middle" class="mono" fill="#0e7490">0.60</text>
+<text x="956.0" y="846" font-size="9.5" text-anchor="middle" class="mono" fill="#5b6675">tt_cworst</text>
+<rect x="1038" y="729.7" width="30" height="96.3" fill="#1d4ed8" opacity="0.92"/>
+<rect x="1076" y="788.9" width="30" height="37.1" fill="#0e7490" opacity="0.92"/>
+<text x="1053.0" y="724.7" font-size="9.5" text-anchor="middle" class="mono" fill="#1d4ed8">1.55</text>
+<text x="1091.0" y="783.9" font-size="9.5" text-anchor="middle" class="mono" fill="#0e7490">0.60</text>
+<text x="1072.0" y="846" font-size="9.5" text-anchor="middle" class="mono" fill="#5b6675">tt_cbest</text>
+<rect x="1154" y="732.0" width="30" height="94.0" fill="#1d4ed8" opacity="0.92"/>
+<rect x="1192" y="788.8" width="30" height="37.2" fill="#0e7490" opacity="0.92"/>
+<text x="1169.0" y="727.0" font-size="9.5" text-anchor="middle" class="mono" fill="#1d4ed8">1.52</text>
+<text x="1207.0" y="783.8" font-size="9.5" text-anchor="middle" class="mono" fill="#0e7490">0.60</text>
+<text x="1188.0" y="846" font-size="9.5" text-anchor="middle" class="mono" fill="#5b6675">tt_typical</text>
 <style>
 .head, .panel { opacity:0; animation: rowIn .35s cubic-bezier(.22,.7,.3,1) forwards; }
 .row { opacity:0; animation: rowIn .3s ease forwards; }

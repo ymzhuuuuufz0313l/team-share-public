@@ -151,9 +151,9 @@ KEY: 0918V2 时代的 hold 大亏空 P0（~1742 条/corner、worst −5.078，�
 
 ### 6.1 setup / hold 总表
 
-![setup 总表](./images/anim/51_signoff_setup_hk11.svg?v=20261118r1)
+![setup 总表](./images/anim/51_signoff_setup_hk11.svg?v=20261118r2)
 
-![hold 总表](./images/anim/52_signoff_hold_hk11.svg?v=20261118r1)
+![hold 总表](./images/anim/52_signoff_hold_hk11.svg?v=20261118r2)
 
 - setup 30 违例 / 9 红格 / 3 域（RX_CLK + DCLK_DATA_MUX_SHORT + gating），worst −0.087954（RX_CLK @wc_cworst_125，8 条）。总违例 30 全部集中在 wc 系三颗（wc_cworst 10 / wc_cbest 10 / wc_typical 10，`setup.rpt` 总行口径），其余 7 颗零违例（lt_cworst 自 1104V2 的 15 条清零）；红格分布：RX_CLK 3 格（wc_cbest 7 / wc_cworst 8 / wc_typical 9 条）、DCLK_DATA_MUX_SHORT 3 格（2/3/2）、gating 3 格（2/1/1）——分域行按各自 report 文件计条，与总行（merge 总数）为 csv 内两套并行口径，图内并排呈现，签核计数以 `setup.rpt` 总行为准。
 - hold 全表（34 分域行 + 总行）**零违例**，无一处红格；图副标题提示「全 0 违例·全局最小 +0.001875 @lt_cbest_m40（余量薄）」——全局最小 = 全表最小正 slack（0 值格为无检查行不参与），csv 直算。1104V2 的 7 格 / 2 域（RX_CLK + OSC_CLK）全数清零。
@@ -161,13 +161,13 @@ KEY: 0918V2 时代的 hold 大亏空 P0（~1742 条/corner、worst −5.078，�
 
 ### 6.2 trans / cap 总表
 
-![trans 总表](./images/anim/53_signoff_trans_hk11.svg?v=20261118r1)
+![trans 总表](./images/anim/53_signoff_trans_hk11.svg?v=20261118r2)
 
 - 33 条 / 4 红格，全部为 transition 行：ml_cbest_125 24 条（worst −0.083512）+ wc_cbest 3（−0.155971，全表 worst）+ wc_cworst 3（−0.154928）+ wc_typical 3（−0.121504）；capacitance / pulse_width / clock_period 全角清零（1104V2：trans 147 + cap 每角 1 条 → 本代 33 + 0）。
 
 ### 6.3 PHY bus skew
 
-![phy busskew](./images/anim/54_signoff_physkew_hk11.svg?v=20261118r1)
+![phy busskew](./images/anim/54_signoff_physkew_hk11.svg?v=20261118r2)
 
 - `rx0_00_max`（setup 侧）与 `rx0_00_min`（hold 侧）**全角为正**：最紧分别 +0.33822 @lt_cworst / +0.03453 @lt_cbest（浅蓝高亮格）——1104V2 的两处微负（max @lt_cworst −0.054 / min @lt_typical −0.0005）本代转正；按 2M23 原样负值不红显（本代无负值）。`sd_l/r_*` 8 行全正（7.76–12.61 ns），真探针持续产出（1118 代际延续，无回归）。
 
@@ -197,13 +197,13 @@ KEY: 0918V2 时代的 hold 大亏空 P0（~1742 条/corner、worst −5.078，�
 >
 > 注：① 本代换算全部由 phy csv `rx0_00_max/min` 行直算（无手录）；「input port 即头名」的行语义沿用 1104V2 代 rpt 核验（本代 rpt 仅 7/10 颗在库，见 §6 口径注意）；② 2M23 的 2.375 修正项是其 `set_input_delay 0` 裸口径下的人工精装修，1V11 预算已在约束内，**不可再叠加同类修正**。
 
-![时钟偏移容限](./images/anim/56_signoff_shift_window_hk11.svg?v=20261118r1)
+![时钟偏移容限](./images/anim/56_signoff_shift_window_hk11.svg?v=20261118r2)
 
-上图：① 全景轴——0 为名义采样沿，数据有效窗居中，蓝箭头到红线即左/右可偏移量；② 逐角双条——蓝=左移（setup 侧）、青=右移（hold 侧），红虚线为全角最小（左 1.03822 @lt_cworst / 右 0.48453 @lt_cbest）。
+上图：① 全景轴——0 为名义采样沿，数据有效窗居中，蓝箭头到红线即左/右可偏移量；② 逐角双条——蓝=左移（setup 侧）、青=右移（hold 侧），红虚线为全角最小（左 1.03822 @lt_cworst / 右 0.48453 @lt_cbest）；① 的「数据有效窗」宽度为示意量级（非 csv 直算），判读以 ②的逐角容限为准。
 
 ### 6.4 SD skew margin（P1 生效实证延续）
 
-![sdskew margin](./images/anim/55_signoff_sdskew_margin_hk11.svg?v=20261118r1)
+![sdskew margin](./images/anim/55_signoff_sdskew_margin_hk11.svg?v=20261118r2)
 
 - **全 160 格 0 出窗**（16 行 margin × 10 角）：1p 8 行 80/80 在窗 [−3.5,+3.5]（a_min 行最差 r 侧 −0.79996 / l 侧 −0.25810）；dplc 8 行 80/80 在窗 [−0.9,+4.1]——**b 组 20/20 在窗延续**（l dplc margin_b 0.32–1.11 全正 · r dplc margin_b 0.014–0.327），前代 P11 红格（1029V0 = 4.25906 出上界 +4.1）自 1104V2 收回后本代延续在窗（最差 3.25191）。
 - 前代 P5 悬置的「dplc 窗套 a 侧」红格（1104V2：`sd_r_dplc_margin_a_min` −1.02462 @wc_cbest 出下界 −0.9）本代**收回窗内**（该行最差 −0.79996，距下界 0.10）；口径问题（CLKA 两模式恒 SD_CLK_INV，窗口适用性）仍待规格收口，非新违例。
@@ -211,7 +211,7 @@ KEY: 0918V2 时代的 hold 大亏空 P0（~1742 条/corner、worst −5.078，�
 ### 6.5 图版归档（2026-11-04 起执行的图版标准）
 
 - **主名 = 当前采纳版**：`images/NN_*.svg`（静态）/ `images/anim/NN_*.svg`（动画）永远是网站记录的 canonical 图（现 = 1118V1）；换版只覆盖主名，引用路径不变、`?v=` 递增。
-- **被替换套图快照进 `images/archive/<采纳日期>/`**，文件名带版本标签：1104V2 主名 12 张（静态+动画各 6）快照于 `20261104/_1104v2(_anim)`；1118V1 新代 PNG ×6 快照于 `20261118/_1118v1`；**本页 1104V2 canonical 整页快照**（含 1029V0 / 1008V3 / 0918V2 对比卡、V0↔V2 对比段与旧逐角换算表）= `20261118/ch09-to-signoff_1104v2.html`——被裁剪历史段落的可追溯入口。**PNG 快照只进日期夹**，不占主名；**生成脚本统一归拢 `images/tools/`**（标注每个脚本生成哪组图）；**图/页永不删除、归档只增不改**。
+- **被替换套图快照进 `images/archive/<采纳日期>/`**，文件名带版本标签：1104V2 主名 12 张（静态+动画各 6）快照于 `20261104/_1104v2(_anim)`；1118V1 新代 PNG ×6 快照于 `20261118/_1118v1`；**本页 1104V2 canonical 整页快照**（含 1029V0 / 1008V3 / 0918V2 对比卡、V0↔V2 对比段与旧逐角换算表）= `20261118/ch09-to-signoff_1104v2.html`——被裁剪历史段落的可追溯入口。**56 换正当日修正**（面板②柱高溢出，BMAX 由数据推出 3.0 后重做）另留 `20261118/_1118v1r0`（废弃首版静态+动画）与 `_1118v1r2`（修正版静态+动画+PNG）两组快照，`?v=` 递增至 `20261118r2`。**PNG 快照只进日期夹**，不占主名；**生成脚本统一归拢 `images/tools/`**（标注每个脚本生成哪组图）；**图/页永不删除、归档只增不改**。
 - 当前 `images/archive/` 清单：`20261118/`（1118V1 换正当日：signoff PNG ×6 + ch09 页快照 + 功耗线快照）、`20261104/`（1104V2 换正当日 `_1029v0`/`_1104v0`/`_1104v2` 三代快照 + ch09_1029v0 页快照）、`20261027/`、`qa/`（历次 QA 截图）等，全量以 `images/archive/README.md` 快照登记表为准。
 
 ## 7. 交叉引用
@@ -225,4 +225,4 @@ KEY: 0918V2 时代的 hold 大亏空 P0（~1742 条/corner、worst −5.078，�
   <script src="./fx.js?v=11"></script>
 </body>
 </html>
-<!-- ymzhu 2026-11-18 15:48 -->
+<!-- ymzhu 2026-11-18 16:52 -->
