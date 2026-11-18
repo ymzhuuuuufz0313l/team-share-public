@@ -91,3 +91,28 @@ tools/gen_long_short_charts.py 产出）为**首版即当前采纳版**（无被
 `power_compare_hk11_slim.{svg,png}`（back_ppt + 站点 images）为**仓库备选件**：
 仅入库备查，**未接入 ch08 正文、无 anim 版、不进搜索索引**；采纳与否由用户后续拍板，
 如转正须补 MOTION_KIT 登记与 `?v=` 缓存串。
+
+## 4K180 峰值高亮徽章删除前快照（标签 `1118peakfixpre`，2026-11-18）
+
+用户 2026-11-18 报障：4K180 行「功耗数值上的高亮串行了」。根因是生成器在
+`x=474 y=344 w=48 h=18` 画的一枚琥珀色悬浮药丸（`class="peakglow"`，外裹 `maxpulse`），
+它落在 `-` 与 DPLC 数值列之间的**空白区**，无文字承托，判读时被当成下一列被高亮。
+本次只删该悬浮装饰（峰值三角 `tri` 与脉动动效保留），并给 1118 长编码两行补青绿扫光。
+
+改前原字节快照（`git show HEAD~1:` 取出，未改一字节）：
+
+| 文件 | 原主名 | md5 | 大小 |
+|---|---|---|---|
+| `power_compare_hk11_1118peakfixpre.svg` | `images/power_compare_hk11.svg` | `c6f1f9c4b966f7a7238b4ec877274049` | 31726 B |
+| `power_compare_hk11_1118peakfixpre_anim.svg` | `images/anim/power_compare_hk11.svg` | `c2f087576b6ee5e6f1246f075a535130` | 39556 B |
+
+改后主名 md5（636×572 / 23 行）：
+
+- `images/power_compare_hk11.svg` → `a91c9f92b991138f6f8d9bbf99898ca6`（31580 B）
+- `images/anim/power_compare_hk11.svg` → `62df7d0eb3c81c1d8a351174a44b4396`（RESULT: PASS：
+  `row_g=23 cellwave=32 purpband=3 cmpband3=2 pulse=5`）
+
+ch08 引用缓存串升为 `?v=20261118g`（路径不变）。PNG 侧 `back_ppt/power_compare_hk11*.png`
+由 PIL 生成、从未包含该药丸，本次未重生成。
+
+<!-- ymzhu 2026-11-18 18:20 -->
