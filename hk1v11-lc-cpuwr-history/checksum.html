@@ -411,7 +411,7 @@ LC_CPUWR 的寄存器更新核心机制：**写入一个寄存器需要连续 3 
 
 > **1023v1 更新**：首帧的"比较"与"计数"本身都是非法的（`prev_xsum_a` 复位为 0，首帧若全零会幻影 match；首帧 mismatch 又会提前污染 unlock 计数）。1023v1 已加 `prev_valid_a` + `frm_seen_start_a` 双标志防护，非法帧尾不比较、不计数（保持），详见 §9。
 >
-> **1027v1 注记（两部分）**：①LC_REG_MAPPING 侧新增 `khead_20b_sel` @0x1D[7:3] 仅为字段输出，checksum 机制零改动（0x1D 为既有 Seg1 参与地址）；②**LC_CPUWR 侧修复 Seg1 checksum 0x0A XOR 覆盖丢失**（0721v1 重排回归，详见 §10）——0x0A 同为既有参与地址，修复后 RTL 参与集才与本页各表真正一致。
+> **1027v1 注记（两部分）**：①LC_REG_MAPPING 侧新增 `khead_20b_sel` @0x1D[7:3] 仅为字段输出，checksum 机制零改动（0x1D 为既有 Seg1 参与地址；1111v1 该字段已回 0x1D[7:5] 3 bit，见 register-map §36）；②**LC_CPUWR 侧修复 Seg1 checksum 0x0A XOR 覆盖丢失**（0721v1 重排回归，详见 §10）——0x0A 同为既有参与地址，修复后 RTL 参与集才与本页各表真正一致。
 
 ### 5.3 one-shot unlock 验证陷阱
 
@@ -747,4 +747,4 @@ const article = document.getElementById('article');
 </body>
 </html>
 
-<!-- ymzhu 2026-11-17 19:27 -->
+<!-- ymzhu 2026-11-18 17:13 -->

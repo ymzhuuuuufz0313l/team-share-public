@@ -309,7 +309,7 @@
 | 1 | AVE_RGBW | 0x00[7:5] | t9 迁 RSTN |
 | 2 | AVE_LAST | 0x01[7] | t9 迁 RSTN |
 | 3 | DPLC_GROUP | 0x05[7:5] | t9 迁 RSTN |
-| 4 | DPOLINV / AVE_MODE | 0x06[7,5,3,2,1] | t9 迁 RSTN |
+| 4 | DPOLINV / AVE_MODE | 0x06[7,5,3,2,1] | t9 迁 RSTN（20261111 表新增 bit0 VSYNC_SEL **不在**本清单，属普通 unlock-reset 域） |
 | 5 | CTRLF_CHECKSUM | 0x07[3:0] | t9 迁 RSTN（跨 unlock 保持 chksum_mode）|
 | 6 | 0x20 组 | 0x20[5:0] | 原符合 RSTN |
 | 7 | 0x21 组 | 0x21[5:4] | 原符合 RSTN |
@@ -543,5 +543,6 @@ const article = document.getElementById('article');
   </script>
   <script src="./fx.js?v=11"></script>
 </body>
-<!-- ymzhu 2026-11-17 20:52 -->
 </html>
+
+<!-- ymzhu 2026-11-18 16:15 -->

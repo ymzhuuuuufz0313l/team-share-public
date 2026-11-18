@@ -1,0 +1,31 @@
+{
+  "figure": "reg_table_1111v1",
+  "source": "单一事实源：HK1V11_Register_20261111.xlsm（script/reg_site_1111/excel_20261111_extract.json，T1 提取）；本文件是 gen_reg_table_1111v1.py 的唯一表格数据，改动请只改这里。",
+  "columns": ["序号", "字段 / 项", "旧（1111 表前）", "新（20261111 表）", "落位 / 状态", "类"],
+  "rows": [
+    ["1",
+     "VSYNC_SEL",
+     "—（0x06[0] Reserved，全站零呈现）",
+     "0x06[0] 新字段：0 = FSYNC as VSYNC，1 = BKDU + K1 as VSYNC；默认 1'b0，R/W，Checksum protect",
+     "Reg_1V11 0x06 BIT0；cs=0/1 两描述页均登记；0x06 字节默认 0x02 不变；bit0 属普通 unlock-reset 域（RSTN 例外清单 [7,5,3,2,1] 不含 [0]）",
+     "新增"],
+    ["2",
+     "reg_fbdiv_clk_sel[1:0]",
+     "仅 0810 移址记录（reg50[6:5]→reg53[1:0]，默认 0x00）",
+     "补语义：00/01/10 = CRC Check function on；11 = CRC Check function off",
+     "0x35（reg53）[1:0]，默认 0x00，LSI_PRTECT",
+     "描述"],
+    ["3",
+     "khead_20b_sel[2:0]",
+     "3'b101 = 40bit、其余 = 20bit（sync-1104 §6.4）",
+     "补限定：the register is used only for normal encoding（仅用于 normal encoding）",
+     "0x1D[7:5]，默认 0（2026/11/10 条目）",
+     "描述"],
+    ["4",
+     "SMART_CS[3:0]",
+     "SMART_CS[3:0] 合名（站点历史节沿用）",
+     "拆名 SMART_CS_3/2/1/0（四个单 bit，表内已改，未注变更条目）",
+     "0x02[7:6]、[3:2]，默认 0；低优先，历史节不改名",
+     "更名"]
+  ]
+}

@@ -1,0 +1,3281 @@
+{
+ "_meta": {
+  "source": "HK1V11_Register_20261111.xlsm",
+  "sheets": [
+   "Reg_description_F_CHIP_SEL=0",
+   "Reg_1V11"
+  ],
+  "generator": "script/reg_site_1111/derive_chip_sel_from_excel.py",
+  "rule": "Reg_1V11 提供位图骨架与 Default 字节；F 页有明细的位以 F 页为准；含 ≥1 个非 Reserved 字段的地址出行，连续被排除地址折叠为 gap 行；字段值 = F 页复位字面量，缺省按 Default 字节切片；Σ字段值 == POR 字节已断言",
+  "assertions": [
+   "coverage 8/8 no-overlap",
+   "sum(field bits) == por byte",
+   "check: json <-> excel 逐 (addr, bit-range, name)"
+  ]
+ },
+ "title": "chip_sel = 0 寄存器默认字节映射",
+ "height": 2956,
+ "n_rows": 51,
+ "rows": [
+  {
+   "idx": 0,
+   "addr": "0x00",
+   "dec": 0,
+   "por_byte": "0x00",
+   "por_color": "#22c55e",
+   "fields": [
+    {
+     "bit_high": 7,
+     "bit_low": 5,
+     "name": "AVE_RGBW[2:0]",
+     "value": "3'b000",
+     "fill": "#fef3c7",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "10.0",
+     "value_fs": "9.0"
+    },
+    {
+     "bit_high": 4,
+     "bit_low": 4,
+     "name": "SCREN",
+     "value": "1'b0",
+     "fill": "#ccfbf1",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    },
+    {
+     "bit_high": 3,
+     "bit_low": 0,
+     "name": "Reserved",
+     "value": "0",
+     "fill": "#e2e8f0",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "10.0",
+     "value_fs": "9.0"
+    }
+   ],
+   "items": [
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ]
+   ]
+  },
+  {
+   "idx": 1,
+   "addr": "0x01",
+   "dec": 1,
+   "por_byte": "0x00",
+   "por_color": "#22c55e",
+   "fields": [
+    {
+     "bit_high": 7,
+     "bit_low": 7,
+     "name": "AVE_LAST",
+     "value": "1'b0",
+     "fill": "#fef3c7",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    },
+    {
+     "bit_high": 6,
+     "bit_low": 6,
+     "name": "Reserved",
+     "value": "0",
+     "fill": "#e2e8f0",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    },
+    {
+     "bit_high": 5,
+     "bit_low": 5,
+     "name": "PORSD",
+     "value": "1'b0",
+     "fill": "#ccfbf1",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    },
+    {
+     "bit_high": 4,
+     "bit_low": 0,
+     "name": "Reserved",
+     "value": "0",
+     "fill": "#e2e8f0",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "10.0",
+     "value_fs": "9.0"
+    }
+   ],
+   "items": [
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ]
+   ]
+  },
+  {
+   "idx": 2,
+   "addr": "0x02",
+   "dec": 2,
+   "por_byte": "0x00",
+   "por_color": "#22c55e",
+   "fields": [
+    {
+     "bit_high": 7,
+     "bit_low": 7,
+     "name": "SMART_CS_3",
+     "value": "1'b0",
+     "fill": "#ccfbf1",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    },
+    {
+     "bit_high": 6,
+     "bit_low": 6,
+     "name": "SMART_CS_2",
+     "value": "1'b0",
+     "fill": "#ccfbf1",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    },
+    {
+     "bit_high": 5,
+     "bit_low": 4,
+     "name": "Reserved",
+     "value": "0",
+     "fill": "#e2e8f0",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "10.0",
+     "value_fs": "9.0"
+    },
+    {
+     "bit_high": 3,
+     "bit_low": 3,
+     "name": "SMART_CS_1",
+     "value": "1'b0",
+     "fill": "#ccfbf1",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    },
+    {
+     "bit_high": 2,
+     "bit_low": 2,
+     "name": "SMART_CS_0",
+     "value": "1'b0",
+     "fill": "#ccfbf1",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    },
+    {
+     "bit_high": 1,
+     "bit_low": 1,
+     "name": "sw_reg_lane_ctrl4",
+     "value": "1'b0",
+     "fill": "#ccfbf1",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    },
+    {
+     "bit_high": 0,
+     "bit_low": 0,
+     "name": "sw_reg_lane_ctrl3",
+     "value": "1'b0",
+     "fill": "#ccfbf1",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    }
+   ],
+   "items": [
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ]
+   ]
+  },
+  {
+   "idx": 3,
+   "addr": "0x03",
+   "dec": 3,
+   "por_byte": "0x00",
+   "por_color": "#22c55e",
+   "fields": [
+    {
+     "bit_high": 7,
+     "bit_low": 2,
+     "name": "Reserved",
+     "value": "0",
+     "fill": "#e2e8f0",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "10.0",
+     "value_fs": "9.0"
+    },
+    {
+     "bit_high": 1,
+     "bit_low": 1,
+     "name": "sw_reg_lane_ctrl2",
+     "value": "1'b0",
+     "fill": "#ccfbf1",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    },
+    {
+     "bit_high": 0,
+     "bit_low": 0,
+     "name": "sw_reg_lane_ctrl1",
+     "value": "1'b0",
+     "fill": "#ccfbf1",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    }
+   ],
+   "items": [
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ]
+   ]
+  },
+  {
+   "idx": 4,
+   "addr": "0x04",
+   "dec": 4,
+   "por_byte": "0x00",
+   "por_color": "#22c55e",
+   "fields": [
+    {
+     "bit_high": 7,
+     "bit_low": 5,
+     "name": "SD_CHOP[2:0]",
+     "value": "3'b000",
+     "fill": "#fef3c7",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "10.0",
+     "value_fs": "9.0"
+    },
+    {
+     "bit_high": 4,
+     "bit_low": 1,
+     "name": "Reserved",
+     "value": "0",
+     "fill": "#e2e8f0",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "10.0",
+     "value_fs": "9.0"
+    },
+    {
+     "bit_high": 0,
+     "bit_low": 0,
+     "name": "sw_reg_lane_ctrl0",
+     "value": "1'b0",
+     "fill": "#ccfbf1",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    }
+   ],
+   "items": [
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ]
+   ]
+  },
+  {
+   "idx": 5,
+   "addr": "0x05",
+   "dec": 5,
+   "por_byte": "0x60",
+   "por_color": "#f59e0b",
+   "fields": [
+    {
+     "bit_high": 7,
+     "bit_low": 5,
+     "name": "CH_SEL[2:0]",
+     "value": "3'b011",
+     "fill": "#fef3c7",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "10.0",
+     "value_fs": "9.0"
+    },
+    {
+     "bit_high": 4,
+     "bit_low": 0,
+     "name": "Reserved",
+     "value": "0",
+     "fill": "#e2e8f0",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "10.0",
+     "value_fs": "9.0"
+    }
+   ],
+   "items": [
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ]
+   ]
+  },
+  {
+   "idx": 6,
+   "addr": "0x06",
+   "dec": 6,
+   "por_byte": "0x02",
+   "por_color": "#f59e0b",
+   "fields": [
+    {
+     "bit_high": 7,
+     "bit_low": 7,
+     "name": "DPLC_GROUP",
+     "value": "1'b0",
+     "fill": "#fef3c7",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    },
+    {
+     "bit_high": 6,
+     "bit_low": 6,
+     "name": "Reserved",
+     "value": "0",
+     "fill": "#e2e8f0",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    },
+    {
+     "bit_high": 5,
+     "bit_low": 5,
+     "name": "DPOLINV",
+     "value": "1'b0",
+     "fill": "#fef3c7",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    },
+    {
+     "bit_high": 4,
+     "bit_low": 4,
+     "name": "Reserved",
+     "value": "0",
+     "fill": "#e2e8f0",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    },
+    {
+     "bit_high": 3,
+     "bit_low": 3,
+     "name": "AVE_MODE",
+     "value": "1'b0",
+     "fill": "#fef3c7",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    },
+    {
+     "bit_high": 2,
+     "bit_low": 2,
+     "name": "DPLC_MODE",
+     "value": "1'b0",
+     "fill": "#fef3c7",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    },
+    {
+     "bit_high": 1,
+     "bit_low": 1,
+     "name": "SDC",
+     "value": "1'b1",
+     "fill": "#ccfbf1",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    },
+    {
+     "bit_high": 0,
+     "bit_low": 0,
+     "name": "VSYNC_SEL",
+     "value": "1'b0",
+     "fill": "#ccfbf1",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    }
+   ],
+   "items": [
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ]
+   ]
+  },
+  {
+   "idx": 7,
+   "addr": "0x07",
+   "dec": 7,
+   "por_byte": "0x00",
+   "por_color": "#22c55e",
+   "fields": [
+    {
+     "bit_high": 7,
+     "bit_low": 4,
+     "name": "Reserved",
+     "value": "0",
+     "fill": "#e2e8f0",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "10.0",
+     "value_fs": "9.0"
+    },
+    {
+     "bit_high": 3,
+     "bit_low": 0,
+     "name": "CTRLF_CHECKSUM[3:0]",
+     "value": "4'b0000",
+     "fill": "#ccfbf1",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "10.0",
+     "value_fs": "9.0"
+    }
+   ],
+   "items": [
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ]
+   ]
+  },
+  {
+   "idx": 8,
+   "addr": "0x08",
+   "dec": 8,
+   "por_byte": "0x30",
+   "por_color": "#f59e0b",
+   "fields": [
+    {
+     "bit_high": 7,
+     "bit_low": 6,
+     "name": "SD_CHOP_F[1:0]",
+     "value": "2'b00",
+     "fill": "#fef3c7",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "10.0",
+     "value_fs": "9.0"
+    },
+    {
+     "bit_high": 5,
+     "bit_low": 4,
+     "name": "TP_SEL[1:0]",
+     "value": "2'b11",
+     "fill": "#ccfbf1",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "10.0",
+     "value_fs": "9.0"
+    },
+    {
+     "bit_high": 3,
+     "bit_low": 3,
+     "name": "TP_CONTROL",
+     "value": "1'b0",
+     "fill": "#ccfbf1",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    },
+    {
+     "bit_high": 2,
+     "bit_low": 2,
+     "name": "STP_EN",
+     "value": "1'b0",
+     "fill": "#ccfbf1",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    },
+    {
+     "bit_high": 1,
+     "bit_low": 0,
+     "name": "Reserved",
+     "value": "0",
+     "fill": "#e2e8f0",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "10.0",
+     "value_fs": "9.0"
+    }
+   ],
+   "items": [
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ]
+   ]
+  },
+  {
+   "idx": 9,
+   "addr": "0x09 ~ 0x1C (9 ~ 28)",
+   "kind": "gap",
+   "por_byte": null,
+   "por_color": null,
+   "fields": [],
+   "items": [
+    [
+     "raw",
+     "<rect x=\"170\" y=\"592\" width=\"655\" height=\"46\" fill=\"#e2e8f0\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"4,3\" rx=\"4\"/>"
+    ],
+    [
+     "raw",
+     "<text x=\"497.5\" y=\"619.0\" text-anchor=\"middle\" font-size=\"12\" fill=\"#64748b\">⋯ 无有效字段 ⋯</text>"
+    ]
+   ],
+   "label_fs": "13",
+   "label_fill": "#64748b"
+  },
+  {
+   "idx": 10,
+   "addr": "0x1D",
+   "dec": 29,
+   "por_byte": "0x00",
+   "por_color": "#22c55e",
+   "fields": [
+    {
+     "bit_high": 7,
+     "bit_low": 5,
+     "name": "khead_20b_sel[2:0]",
+     "value": "3'b000",
+     "fill": "#ccfbf1",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "10.0",
+     "value_fs": "9.0"
+    },
+    {
+     "bit_high": 4,
+     "bit_low": 4,
+     "name": "BACSCR_EOL",
+     "value": "1'b0",
+     "fill": "#fef3c7",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    },
+    {
+     "bit_high": 3,
+     "bit_low": 1,
+     "name": "SP_S[2:0]",
+     "value": "3'b000",
+     "fill": "#ccfbf1",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "10.0",
+     "value_fs": "9.0"
+    },
+    {
+     "bit_high": 0,
+     "bit_low": 0,
+     "name": "VPS_EN_0",
+     "value": "1'b0",
+     "fill": "#fef3c7",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    }
+   ],
+   "items": [
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ]
+   ]
+  },
+  {
+   "idx": 11,
+   "addr": "0x1E",
+   "dec": 30,
+   "por_byte": "0x00",
+   "por_color": "#22c55e",
+   "fields": [
+    {
+     "bit_high": 7,
+     "bit_low": 0,
+     "name": "VBK[7:0]",
+     "value": "8'b00000000",
+     "fill": "#fef3c7",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "10.0",
+     "value_fs": "9.0"
+    }
+   ],
+   "items": [
+    [
+     "field",
+     null
+    ]
+   ]
+  },
+  {
+   "idx": 12,
+   "addr": "0x1F",
+   "dec": 31,
+   "por_byte": "0x00",
+   "por_color": "#22c55e",
+   "fields": [
+    {
+     "bit_high": 7,
+     "bit_low": 7,
+     "name": "PWRC_P3",
+     "value": "1'b0",
+     "fill": "#fce7f3",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    },
+    {
+     "bit_high": 6,
+     "bit_low": 6,
+     "name": "PWRC_N3",
+     "value": "1'b0",
+     "fill": "#fce7f3",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    },
+    {
+     "bit_high": 5,
+     "bit_low": 5,
+     "name": "PWRC_P2",
+     "value": "1'b0",
+     "fill": "#fce7f3",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    },
+    {
+     "bit_high": 4,
+     "bit_low": 4,
+     "name": "PWRC_N2",
+     "value": "1'b0",
+     "fill": "#fce7f3",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    },
+    {
+     "bit_high": 3,
+     "bit_low": 3,
+     "name": "PWRC_P1",
+     "value": "1'b0",
+     "fill": "#fce7f3",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    },
+    {
+     "bit_high": 2,
+     "bit_low": 2,
+     "name": "PWRC_N1",
+     "value": "1'b0",
+     "fill": "#fce7f3",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    },
+    {
+     "bit_high": 1,
+     "bit_low": 1,
+     "name": "VBK_EN",
+     "value": "1'b0",
+     "fill": "#fce7f3",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    },
+    {
+     "bit_high": 0,
+     "bit_low": 0,
+     "name": "PWRC_CTRL",
+     "value": "1'b0",
+     "fill": "#fce7f3",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    }
+   ],
+   "items": [
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ]
+   ]
+  },
+  {
+   "idx": 13,
+   "addr": "0x20",
+   "dec": 32,
+   "por_byte": "0x00",
+   "por_color": "#22c55e",
+   "fields": [
+    {
+     "bit_high": 7,
+     "bit_low": 7,
+     "name": "PWRC_TSEL",
+     "value": "1'b0",
+     "fill": "#fef3c7",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    },
+    {
+     "bit_high": 6,
+     "bit_low": 6,
+     "name": "TESTO_EN_OPT",
+     "value": "1'b0",
+     "fill": "#ccfbf1",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    },
+    {
+     "bit_high": 5,
+     "bit_low": 0,
+     "name": "R_TESTO_SEL[5:0]",
+     "value": "6'b000000",
+     "fill": "#ccfbf1",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "10.0",
+     "value_fs": "9.0"
+    }
+   ],
+   "items": [
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ]
+   ]
+  },
+  {
+   "idx": 14,
+   "addr": "0x21",
+   "dec": 33,
+   "por_byte": "0x00",
+   "por_color": "#22c55e",
+   "fields": [
+    {
+     "bit_high": 7,
+     "bit_low": 7,
+     "name": "Reserved",
+     "value": "0",
+     "fill": "#e2e8f0",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    },
+    {
+     "bit_high": 6,
+     "bit_low": 6,
+     "name": "R_FRM_CHK_MODE",
+     "value": "1'b0",
+     "fill": "#ccfbf1",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    },
+    {
+     "bit_high": 5,
+     "bit_low": 4,
+     "name": "R_UTC[1:0]",
+     "value": "2'b00",
+     "fill": "#ccfbf1",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "10.0",
+     "value_fs": "9.0"
+    },
+    {
+     "bit_high": 3,
+     "bit_low": 3,
+     "name": "Reserved",
+     "value": "0",
+     "fill": "#e2e8f0",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    },
+    {
+     "bit_high": 2,
+     "bit_low": 0,
+     "name": "R_MON_DC_VOL[2:0]",
+     "value": "3'b000",
+     "fill": "#ccfbf1",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "10.0",
+     "value_fs": "9.0"
+    }
+   ],
+   "items": [
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ]
+   ]
+  },
+  {
+   "idx": 15,
+   "addr": "0x22",
+   "dec": 34,
+   "por_byte": "0x00",
+   "por_color": "#22c55e",
+   "fields": [
+    {
+     "bit_high": 7,
+     "bit_low": 7,
+     "name": "CVBP_SEPARATE",
+     "value": "1'b0",
+     "fill": "#fef3c7",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    },
+    {
+     "bit_high": 6,
+     "bit_low": 6,
+     "name": "STR",
+     "value": "1'b0",
+     "fill": "#fef3c7",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    },
+    {
+     "bit_high": 5,
+     "bit_low": 5,
+     "name": "SREF_N",
+     "value": "1'b0",
+     "fill": "#fef3c7",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    },
+    {
+     "bit_high": 4,
+     "bit_low": 4,
+     "name": "SRER_N",
+     "value": "1'b0",
+     "fill": "#fef3c7",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    },
+    {
+     "bit_high": 3,
+     "bit_low": 3,
+     "name": "SREF_P",
+     "value": "1'b0",
+     "fill": "#fef3c7",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    },
+    {
+     "bit_high": 2,
+     "bit_low": 2,
+     "name": "SRER_P",
+     "value": "1'b0",
+     "fill": "#fef3c7",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    },
+    {
+     "bit_high": 1,
+     "bit_low": 1,
+     "name": "SRE",
+     "value": "1'b0",
+     "fill": "#fef3c7",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    },
+    {
+     "bit_high": 0,
+     "bit_low": 0,
+     "name": "HIZ_SEL",
+     "value": "1'b0",
+     "fill": "#fef3c7",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    }
+   ],
+   "items": [
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ]
+   ]
+  },
+  {
+   "idx": 16,
+   "addr": "0x23",
+   "dec": 35,
+   "por_byte": "0x00",
+   "por_color": "#22c55e",
+   "fields": [
+    {
+     "bit_high": 7,
+     "bit_low": 4,
+     "name": "reg_ana_test_sel[3:0]",
+     "value": "4'b0000",
+     "fill": "#e0e7ff",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "10.0",
+     "value_fs": "9.0"
+    },
+    {
+     "bit_high": 3,
+     "bit_low": 3,
+     "name": "R_CH34_HIZ",
+     "value": "1'b0",
+     "fill": "#fef3c7",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    },
+    {
+     "bit_high": 2,
+     "bit_low": 2,
+     "name": "R_CH12_HIZ",
+     "value": "1'b0",
+     "fill": "#fef3c7",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    },
+    {
+     "bit_high": 1,
+     "bit_low": 1,
+     "name": "reg_eq_rbc1",
+     "value": "1'b0",
+     "fill": "#e0e7ff",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    },
+    {
+     "bit_high": 0,
+     "bit_low": 0,
+     "name": "reg_eq_rbc0",
+     "value": "1'b0",
+     "fill": "#e0e7ff",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    }
+   ],
+   "items": [
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ]
+   ]
+  },
+  {
+   "idx": 17,
+   "addr": "0x24",
+   "dec": 36,
+   "por_byte": "0x15",
+   "por_color": "#f59e0b",
+   "fields": [
+    {
+     "bit_high": 7,
+     "bit_low": 6,
+     "name": "cr_done_filter[1:0]",
+     "value": "2'b00",
+     "fill": "#ccfbf1",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "10.0",
+     "value_fs": "9.0"
+    },
+    {
+     "bit_high": 5,
+     "bit_low": 0,
+     "name": "reg_cr_done_cnt[5:0]",
+     "value": "6'b010101",
+     "fill": "#ccfbf1",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "10.0",
+     "value_fs": "9.0"
+    }
+   ],
+   "items": [
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ]
+   ]
+  },
+  {
+   "idx": 18,
+   "addr": "0x25",
+   "dec": 37,
+   "por_byte": "0x6C",
+   "por_color": "#f59e0b",
+   "fields": [
+    {
+     "bit_high": 7,
+     "bit_low": 4,
+     "name": "reg_cdr_icp[3:0]",
+     "value": "4'b0110",
+     "fill": "#e0e7ff",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "10.0",
+     "value_fs": "9.0"
+    },
+    {
+     "bit_high": 3,
+     "bit_low": 0,
+     "name": "reg_cdr_rlpf[3:0]",
+     "value": "4'b1100",
+     "fill": "#e0e7ff",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "10.0",
+     "value_fs": "9.0"
+    }
+   ],
+   "items": [
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ]
+   ]
+  },
+  {
+   "idx": 19,
+   "addr": "0x26",
+   "dec": 38,
+   "por_byte": "0xA4",
+   "por_color": "#f59e0b",
+   "fields": [
+    {
+     "bit_high": 7,
+     "bit_low": 4,
+     "name": "reg_kvco_ctrl[3:0]",
+     "value": "4'b1010",
+     "fill": "#e0e7ff",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "10.0",
+     "value_fs": "9.0"
+    },
+    {
+     "bit_high": 3,
+     "bit_low": 3,
+     "name": "Reserved",
+     "value": "0",
+     "fill": "#e2e8f0",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    },
+    {
+     "bit_high": 2,
+     "bit_low": 0,
+     "name": "reg_icp_bias_tune[2:0]",
+     "value": "3'b100",
+     "fill": "#e0e7ff",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "10.0",
+     "value_fs": "9.0"
+    }
+   ],
+   "items": [
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ]
+   ]
+  },
+  {
+   "idx": 20,
+   "addr": "0x27",
+   "dec": 39,
+   "por_byte": "0x00",
+   "por_color": "#22c55e",
+   "fields": [
+    {
+     "bit_high": 7,
+     "bit_low": 7,
+     "name": "ACS_EN",
+     "value": "1'b0",
+     "fill": "#fef3c7",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    },
+    {
+     "bit_high": 6,
+     "bit_low": 2,
+     "name": "Reserved",
+     "value": "0",
+     "fill": "#e2e8f0",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "10.0",
+     "value_fs": "9.0"
+    },
+    {
+     "bit_high": 1,
+     "bit_low": 1,
+     "name": "Level_Skip_frame",
+     "value": "1'b0",
+     "fill": "#ccfbf1",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    },
+    {
+     "bit_high": 0,
+     "bit_low": 0,
+     "name": "Skip_frame_count",
+     "value": "1'b0",
+     "fill": "#ccfbf1",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    }
+   ],
+   "items": [
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ]
+   ]
+  },
+  {
+   "idx": 21,
+   "addr": "0x28",
+   "dec": 40,
+   "por_byte": "0x00",
+   "por_color": "#22c55e",
+   "fields": [
+    {
+     "bit_high": 7,
+     "bit_low": 7,
+     "name": "DBC_VBK_ON",
+     "value": "1'b0",
+     "fill": "#fef3c7",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    },
+    {
+     "bit_high": 6,
+     "bit_low": 6,
+     "name": "Reserved",
+     "value": "0",
+     "fill": "#e2e8f0",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    },
+    {
+     "bit_high": 5,
+     "bit_low": 4,
+     "name": "DBCO_DRV[1:0]",
+     "value": "2'b00",
+     "fill": "#fef3c7",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "10.0",
+     "value_fs": "9.0"
+    },
+    {
+     "bit_high": 3,
+     "bit_low": 3,
+     "name": "Reserved",
+     "value": "0",
+     "fill": "#e2e8f0",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    },
+    {
+     "bit_high": 2,
+     "bit_low": 2,
+     "name": "R_BAC",
+     "value": "1'b0",
+     "fill": "#ccfbf1",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    },
+    {
+     "bit_high": 1,
+     "bit_low": 0,
+     "name": "AABB[1:0]",
+     "value": "2'b00",
+     "fill": "#ccfbf1",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "10.0",
+     "value_fs": "9.0"
+    }
+   ],
+   "items": [
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ]
+   ]
+  },
+  {
+   "idx": 22,
+   "addr": "0x29",
+   "dec": 41,
+   "por_byte": "0x02",
+   "por_color": "#f59e0b",
+   "fields": [
+    {
+     "bit_high": 7,
+     "bit_low": 6,
+     "name": "CP_VBP2R[1:0]",
+     "value": "2'b00",
+     "fill": "#fef3c7",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "10.0",
+     "value_fs": "9.0"
+    },
+    {
+     "bit_high": 5,
+     "bit_low": 4,
+     "name": "CP_VBP1R[1:0]",
+     "value": "2'b00",
+     "fill": "#fef3c7",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "10.0",
+     "value_fs": "9.0"
+    },
+    {
+     "bit_high": 3,
+     "bit_low": 3,
+     "name": "R_MASK_6PIX",
+     "value": "1'b0",
+     "fill": "#ccfbf1",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    },
+    {
+     "bit_high": 2,
+     "bit_low": 1,
+     "name": "R_DBC_WIDTH_OPT[1:0]",
+     "value": "2'b01",
+     "fill": "#fef3c7",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "10.0",
+     "value_fs": "9.0"
+    },
+    {
+     "bit_high": 0,
+     "bit_low": 0,
+     "name": "DBC",
+     "value": "1'b0",
+     "fill": "#fef3c7",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    }
+   ],
+   "items": [
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ]
+   ]
+  },
+  {
+   "idx": 23,
+   "addr": "0x2A",
+   "dec": 42,
+   "por_byte": "0x06",
+   "por_color": "#f59e0b",
+   "fields": [
+    {
+     "bit_high": 7,
+     "bit_low": 6,
+     "name": "CP_VBN2L[1:0]",
+     "value": "2'b00",
+     "fill": "#fef3c7",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "10.0",
+     "value_fs": "9.0"
+    },
+    {
+     "bit_high": 5,
+     "bit_low": 4,
+     "name": "CP_VBN1L[1:0]",
+     "value": "2'b00",
+     "fill": "#fef3c7",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "10.0",
+     "value_fs": "9.0"
+    },
+    {
+     "bit_high": 3,
+     "bit_low": 2,
+     "name": "OVC_NEG[1:0]",
+     "value": "2'b01",
+     "fill": "#fef3c7",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "10.0",
+     "value_fs": "9.0"
+    },
+    {
+     "bit_high": 1,
+     "bit_low": 0,
+     "name": "OVC_POS[1:0]",
+     "value": "2'b10",
+     "fill": "#fef3c7",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "10.0",
+     "value_fs": "9.0"
+    }
+   ],
+   "items": [
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ]
+   ]
+  },
+  {
+   "idx": 24,
+   "addr": "0x2B",
+   "dec": 43,
+   "por_byte": "0x00",
+   "por_color": "#22c55e",
+   "fields": [
+    {
+     "bit_high": 7,
+     "bit_low": 6,
+     "name": "DC_MON_SEL[1:0]",
+     "value": "2'b00",
+     "fill": "#fef3c7",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "10.0",
+     "value_fs": "9.0"
+    },
+    {
+     "bit_high": 5,
+     "bit_low": 4,
+     "name": "DCBIAS_TOT[1:0]",
+     "value": "2'b00",
+     "fill": "#fef3c7",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "10.0",
+     "value_fs": "9.0"
+    },
+    {
+     "bit_high": 3,
+     "bit_low": 0,
+     "name": "DCBIAS_CHOP[3:0]",
+     "value": "4'b0000",
+     "fill": "#fef3c7",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "10.0",
+     "value_fs": "9.0"
+    }
+   ],
+   "items": [
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ]
+   ]
+  },
+  {
+   "idx": 25,
+   "addr": "0x2C",
+   "dec": 44,
+   "por_byte": "0x00",
+   "por_color": "#22c55e",
+   "fields": [
+    {
+     "bit_high": 7,
+     "bit_low": 7,
+     "name": "Reserved",
+     "value": "0",
+     "fill": "#e2e8f0",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    },
+    {
+     "bit_high": 6,
+     "bit_low": 4,
+     "name": "BGR_TRIM[2:0]",
+     "value": "3'b000",
+     "fill": "#fef3c7",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "10.0",
+     "value_fs": "9.0"
+    },
+    {
+     "bit_high": 3,
+     "bit_low": 0,
+     "name": "BGR_SEL[3:0]",
+     "value": "4'b0000",
+     "fill": "#fef3c7",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "10.0",
+     "value_fs": "9.0"
+    }
+   ],
+   "items": [
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ]
+   ]
+  },
+  {
+   "idx": 26,
+   "addr": "0x2D",
+   "dec": 45,
+   "por_byte": "0x00",
+   "por_color": "#22c55e",
+   "fields": [
+    {
+     "bit_high": 7,
+     "bit_low": 6,
+     "name": "CN_VBP2R[1:0]",
+     "value": "2'b00",
+     "fill": "#fef3c7",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "10.0",
+     "value_fs": "9.0"
+    },
+    {
+     "bit_high": 5,
+     "bit_low": 4,
+     "name": "CN_VBP1R[1:0]",
+     "value": "2'b00",
+     "fill": "#fef3c7",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "10.0",
+     "value_fs": "9.0"
+    },
+    {
+     "bit_high": 3,
+     "bit_low": 2,
+     "name": "LENB_SHIFT[1:0]",
+     "value": "2'b00",
+     "fill": "#fef3c7",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "10.0",
+     "value_fs": "9.0"
+    },
+    {
+     "bit_high": 1,
+     "bit_low": 0,
+     "name": "Reserved",
+     "value": "0",
+     "fill": "#e2e8f0",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "10.0",
+     "value_fs": "9.0"
+    }
+   ],
+   "items": [
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ]
+   ]
+  },
+  {
+   "idx": 27,
+   "addr": "0x2E",
+   "dec": 46,
+   "por_byte": "0x00",
+   "por_color": "#22c55e",
+   "fields": [
+    {
+     "bit_high": 7,
+     "bit_low": 6,
+     "name": "CN_VBN2L[1:0]",
+     "value": "2'b00",
+     "fill": "#fef3c7",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "10.0",
+     "value_fs": "9.0"
+    },
+    {
+     "bit_high": 5,
+     "bit_low": 4,
+     "name": "CN_VBN1L[1:0]",
+     "value": "2'b00",
+     "fill": "#fef3c7",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "10.0",
+     "value_fs": "9.0"
+    },
+    {
+     "bit_high": 3,
+     "bit_low": 3,
+     "name": "Reserved",
+     "value": "0",
+     "fill": "#e2e8f0",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    },
+    {
+     "bit_high": 2,
+     "bit_low": 1,
+     "name": "PWRC_LS[1:0]",
+     "value": "2'b00",
+     "fill": "#fef3c7",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "10.0",
+     "value_fs": "9.0"
+    },
+    {
+     "bit_high": 0,
+     "bit_low": 0,
+     "name": "R_PTAT_EN",
+     "value": "1'b0",
+     "fill": "#fef3c7",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    }
+   ],
+   "items": [
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ]
+   ]
+  },
+  {
+   "idx": 28,
+   "addr": "0x2F",
+   "dec": 47,
+   "por_byte": "0x00",
+   "por_color": "#22c55e",
+   "fields": [
+    {
+     "bit_high": 7,
+     "bit_low": 7,
+     "name": "LD_D_OPT",
+     "value": "1'b0",
+     "fill": "#fef3c7",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    },
+    {
+     "bit_high": 6,
+     "bit_low": 2,
+     "name": "HIZ_MIN_VAL[4:0]",
+     "value": "5'b00000",
+     "fill": "#fef3c7",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "10.0",
+     "value_fs": "9.0"
+    },
+    {
+     "bit_high": 1,
+     "bit_low": 1,
+     "name": "HIZ_MIN_SEL",
+     "value": "1'b0",
+     "fill": "#fef3c7",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    },
+    {
+     "bit_high": 0,
+     "bit_low": 0,
+     "name": "SCS_PKT_HALF",
+     "value": "1'b0",
+     "fill": "#ccfbf1",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    }
+   ],
+   "items": [
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ]
+   ]
+  },
+  {
+   "idx": 29,
+   "addr": "0x30",
+   "dec": 48,
+   "por_byte": "0x00",
+   "por_color": "#22c55e",
+   "fields": [
+    {
+     "bit_high": 7,
+     "bit_low": 0,
+     "name": "TEST_PRTCT[7:0]",
+     "value": "8'b00000000",
+     "fill": "#ccfbf1",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "10.0",
+     "value_fs": "9.0"
+    }
+   ],
+   "items": [
+    [
+     "field",
+     null
+    ]
+   ]
+  },
+  {
+   "idx": 30,
+   "addr": "0x31 ~ 0x32 (49 ~ 50)",
+   "kind": "gap",
+   "por_byte": null,
+   "por_color": null,
+   "fields": [],
+   "items": [
+    [
+     "raw",
+     "<rect x=\"170\" y=\"1684\" width=\"655\" height=\"46\" fill=\"#e2e8f0\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"4,3\" rx=\"4\"/>"
+    ],
+    [
+     "raw",
+     "<text x=\"497.5\" y=\"1711.0\" text-anchor=\"middle\" font-size=\"12\" fill=\"#64748b\">⋯ 无有效字段 ⋯</text>"
+    ]
+   ],
+   "label_fs": "13",
+   "label_fill": "#64748b"
+  },
+  {
+   "idx": 31,
+   "addr": "0x33",
+   "dec": 51,
+   "por_byte": "0x00",
+   "por_color": "#22c55e",
+   "fields": [
+    {
+     "bit_high": 7,
+     "bit_low": 7,
+     "name": "reg_pin_eq",
+     "value": "1'b0",
+     "fill": "#ccfbf1",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    },
+    {
+     "bit_high": 6,
+     "bit_low": 2,
+     "name": "Reserved",
+     "value": "0",
+     "fill": "#e2e8f0",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "10.0",
+     "value_fs": "9.0"
+    },
+    {
+     "bit_high": 1,
+     "bit_low": 1,
+     "name": "reg_lane_ck_inv_en",
+     "value": "1'b0",
+     "fill": "#ccfbf1",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    },
+    {
+     "bit_high": 0,
+     "bit_low": 0,
+     "name": "CG_OFF",
+     "value": "1'b0",
+     "fill": "#ccfbf1",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    }
+   ],
+   "items": [
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ]
+   ]
+  },
+  {
+   "idx": 32,
+   "addr": "0x34",
+   "dec": 52,
+   "por_byte": "0x00",
+   "por_color": "#22c55e",
+   "fields": [
+    {
+     "bit_high": 7,
+     "bit_low": 6,
+     "name": "Reserved",
+     "value": "0",
+     "fill": "#e2e8f0",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "10.0",
+     "value_fs": "9.0"
+    },
+    {
+     "bit_high": 5,
+     "bit_low": 5,
+     "name": "regr_lane_vctrl_overflow",
+     "value": "1'b0",
+     "fill": "#e0f2fe",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    },
+    {
+     "bit_high": 4,
+     "bit_low": 4,
+     "name": "regr_lane_vctrl_underflow",
+     "value": "1'b0",
+     "fill": "#e0f2fe",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    },
+    {
+     "bit_high": 3,
+     "bit_low": 3,
+     "name": "regr_lane_pll_lock_flag",
+     "value": "1'b0",
+     "fill": "#e0f2fe",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    },
+    {
+     "bit_high": 2,
+     "bit_low": 2,
+     "name": "regr_lane_pll_fast_lock",
+     "value": "1'b0",
+     "fill": "#e0f2fe",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    },
+    {
+     "bit_high": 1,
+     "bit_low": 1,
+     "name": "regr_lane_pll_fine_lock",
+     "value": "1'b0",
+     "fill": "#e0f2fe",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    },
+    {
+     "bit_high": 0,
+     "bit_low": 0,
+     "name": "regr_lane_pll_done",
+     "value": "1'b0",
+     "fill": "#e0f2fe",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    }
+   ],
+   "items": [
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ]
+   ]
+  },
+  {
+   "idx": 33,
+   "addr": "0x35",
+   "dec": 53,
+   "por_byte": "0x00",
+   "por_color": "#22c55e",
+   "fields": [
+    {
+     "bit_high": 7,
+     "bit_low": 2,
+     "name": "Reserved",
+     "value": "0",
+     "fill": "#e2e8f0",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "10.0",
+     "value_fs": "9.0"
+    },
+    {
+     "bit_high": 1,
+     "bit_low": 0,
+     "name": "reg_fbdiv_clk_sel[1:0]",
+     "value": "2'b00",
+     "fill": "#ccfbf1",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "10.0",
+     "value_fs": "9.0"
+    }
+   ],
+   "items": [
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ]
+   ]
+  },
+  {
+   "idx": 34,
+   "addr": "0x36",
+   "dec": 54,
+   "por_byte": "0x17",
+   "por_color": "#f59e0b",
+   "fields": [
+    {
+     "bit_high": 7,
+     "bit_low": 0,
+     "name": "reg_eq_bias_tune[7:0]",
+     "value": "8'b00010111",
+     "fill": "#ccfbf1",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "10.0",
+     "value_fs": "9.0"
+    }
+   ],
+   "items": [
+    [
+     "field",
+     null
+    ]
+   ]
+  },
+  {
+   "idx": 35,
+   "addr": "0x37",
+   "dec": 55,
+   "por_byte": "0x60",
+   "por_color": "#f59e0b",
+   "fields": [
+    {
+     "bit_high": 7,
+     "bit_low": 7,
+     "name": "Reserved",
+     "value": "0",
+     "fill": "#e2e8f0",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    },
+    {
+     "bit_high": 6,
+     "bit_low": 6,
+     "name": "reg_vos_ad_en",
+     "value": "1'b1",
+     "fill": "#e0e7ff",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    },
+    {
+     "bit_high": 5,
+     "bit_low": 0,
+     "name": "reg_vos_ctrl[5:0]",
+     "value": "6'b100000",
+     "fill": "#e0e7ff",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "10.0",
+     "value_fs": "9.0"
+    }
+   ],
+   "items": [
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ]
+   ]
+  },
+  {
+   "idx": 36,
+   "addr": "0x38",
+   "dec": 56,
+   "por_byte": "0x15",
+   "por_color": "#f59e0b",
+   "fields": [
+    {
+     "bit_high": 7,
+     "bit_low": 6,
+     "name": "Reserved",
+     "value": "0",
+     "fill": "#e2e8f0",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "10.0",
+     "value_fs": "9.0"
+    },
+    {
+     "bit_high": 5,
+     "bit_low": 5,
+     "name": "reg_eol_det",
+     "value": "1'b0",
+     "fill": "#ccfbf1",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    },
+    {
+     "bit_high": 4,
+     "bit_low": 4,
+     "name": "reg_pin_eol_det",
+     "value": "1'b1",
+     "fill": "#ccfbf1",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    },
+    {
+     "bit_high": 3,
+     "bit_low": 2,
+     "name": "UTC_header_cnt[1:0]",
+     "value": "2'b01",
+     "fill": "#ccfbf1",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "10.0",
+     "value_fs": "9.0"
+    },
+    {
+     "bit_high": 1,
+     "bit_low": 0,
+     "name": "UTC_long01_frame[1:0]",
+     "value": "2'b01",
+     "fill": "#ccfbf1",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "10.0",
+     "value_fs": "9.0"
+    }
+   ],
+   "items": [
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ]
+   ]
+  },
+  {
+   "idx": 37,
+   "addr": "0x39",
+   "dec": 57,
+   "por_byte": "0x03",
+   "por_color": "#f59e0b",
+   "fields": [
+    {
+     "bit_high": 7,
+     "bit_low": 7,
+     "name": "Reserved",
+     "value": "0",
+     "fill": "#e2e8f0",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    },
+    {
+     "bit_high": 6,
+     "bit_low": 6,
+     "name": "reg_eol",
+     "value": "1'b0",
+     "fill": "#ccfbf1",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    },
+    {
+     "bit_high": 5,
+     "bit_low": 3,
+     "name": "Reserved",
+     "value": "0",
+     "fill": "#e2e8f0",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "10.0",
+     "value_fs": "9.0"
+    },
+    {
+     "bit_high": 2,
+     "bit_low": 0,
+     "name": "UTC_header_frame[2:0]",
+     "value": "3'b011",
+     "fill": "#ccfbf1",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "10.0",
+     "value_fs": "9.0"
+    }
+   ],
+   "items": [
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ]
+   ]
+  },
+  {
+   "idx": 38,
+   "addr": "0x3A ~ 0x3F (58 ~ 63)",
+   "kind": "gap",
+   "por_byte": null,
+   "por_color": null,
+   "fields": [],
+   "items": [
+    [
+     "raw",
+     "<rect x=\"170\" y=\"2100\" width=\"655\" height=\"46\" fill=\"#e2e8f0\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"4,3\" rx=\"4\"/>"
+    ],
+    [
+     "raw",
+     "<text x=\"497.5\" y=\"2127.0\" text-anchor=\"middle\" font-size=\"12\" fill=\"#64748b\">⋯ 无有效字段 ⋯</text>"
+    ]
+   ],
+   "label_fs": "13",
+   "label_fill": "#64748b"
+  },
+  {
+   "idx": 39,
+   "addr": "0x40",
+   "dec": 64,
+   "por_byte": "0x10",
+   "por_color": "#f59e0b",
+   "fields": [
+    {
+     "bit_high": 7,
+     "bit_low": 5,
+     "name": "Reserved",
+     "value": "0",
+     "fill": "#e2e8f0",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "10.0",
+     "value_fs": "9.0"
+    },
+    {
+     "bit_high": 4,
+     "bit_low": 4,
+     "name": "H4INV",
+     "value": "1'b1",
+     "fill": "#ccfbf1",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    },
+    {
+     "bit_high": 3,
+     "bit_low": 3,
+     "name": "Reserved",
+     "value": "0",
+     "fill": "#e2e8f0",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    },
+    {
+     "bit_high": 2,
+     "bit_low": 2,
+     "name": "POLC",
+     "value": "1'b0",
+     "fill": "#ccfbf1",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    },
+    {
+     "bit_high": 1,
+     "bit_low": 1,
+     "name": "POL",
+     "value": "1'b0",
+     "fill": "#ccfbf1",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    },
+    {
+     "bit_high": 0,
+     "bit_low": 0,
+     "name": "FSYNC",
+     "value": "1'b0",
+     "fill": "#ccfbf1",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    }
+   ],
+   "items": [
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ]
+   ]
+  },
+  {
+   "idx": 40,
+   "addr": "0x41",
+   "dec": 65,
+   "por_byte": "0x05",
+   "por_color": "#f59e0b",
+   "fields": [
+    {
+     "bit_high": 7,
+     "bit_low": 0,
+     "name": "LD_R[7:0]",
+     "value": "8'b00000101",
+     "fill": "#ccfbf1",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "10.0",
+     "value_fs": "9.0"
+    }
+   ],
+   "items": [
+    [
+     "field",
+     null
+    ]
+   ]
+  },
+  {
+   "idx": 41,
+   "addr": "0x42",
+   "dec": 66,
+   "por_byte": "0x16",
+   "por_color": "#f59e0b",
+   "fields": [
+    {
+     "bit_high": 7,
+     "bit_low": 0,
+     "name": "LD_W[7:0]",
+     "value": "8'b00010110",
+     "fill": "#ccfbf1",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "10.0",
+     "value_fs": "9.0"
+    }
+   ],
+   "items": [
+    [
+     "field",
+     null
+    ]
+   ]
+  },
+  {
+   "idx": 42,
+   "addr": "0x43",
+   "dec": 67,
+   "por_byte": "0x00",
+   "por_color": "#22c55e",
+   "fields": [
+    {
+     "bit_high": 7,
+     "bit_low": 7,
+     "name": "VPS_EN[1]",
+     "value": "1'b0",
+     "fill": "#fef3c7",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    },
+    {
+     "bit_high": 6,
+     "bit_low": 6,
+     "name": "POL2",
+     "value": "1'b0",
+     "fill": "#ccfbf1",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    },
+    {
+     "bit_high": 5,
+     "bit_low": 4,
+     "name": "LOAD[1:0]",
+     "value": "2'b00",
+     "fill": "#ccfbf1",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "10.0",
+     "value_fs": "9.0"
+    },
+    {
+     "bit_high": 3,
+     "bit_low": 3,
+     "name": "LD_F",
+     "value": "1'b0",
+     "fill": "#ccfbf1",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    },
+    {
+     "bit_high": 2,
+     "bit_low": 2,
+     "name": "BKDU",
+     "value": "1'b0",
+     "fill": "#ccfbf1",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    },
+    {
+     "bit_high": 1,
+     "bit_low": 1,
+     "name": "CS1",
+     "value": "1'b0",
+     "fill": "#ccfbf1",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    },
+    {
+     "bit_high": 0,
+     "bit_low": 0,
+     "name": "CS0",
+     "value": "1'b0",
+     "fill": "#ccfbf1",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    }
+   ],
+   "items": [
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ]
+   ]
+  },
+  {
+   "idx": 43,
+   "addr": "0x44 ~ 0x8F (68 ~ 143)",
+   "kind": "gap",
+   "por_byte": null,
+   "por_color": null,
+   "fields": [],
+   "items": [
+    [
+     "raw",
+     "<rect x=\"170\" y=\"2360\" width=\"655\" height=\"46\" fill=\"#e2e8f0\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"4,3\" rx=\"4\"/>"
+    ],
+    [
+     "raw",
+     "<text x=\"497.5\" y=\"2387.0\" text-anchor=\"middle\" font-size=\"12\" fill=\"#64748b\">⋯ 无有效字段 ⋯</text>"
+    ]
+   ],
+   "label_fs": "13",
+   "label_fill": "#64748b"
+  },
+  {
+   "idx": 44,
+   "addr": "0x90",
+   "dec": 144,
+   "por_byte": "0x68",
+   "por_color": "#f59e0b",
+   "fields": [
+    {
+     "bit_high": 7,
+     "bit_low": 4,
+     "name": "reg_fast_lock_rlpf[3:0]",
+     "value": "4'b0110",
+     "fill": "#e0e7ff",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "10.0",
+     "value_fs": "9.0"
+    },
+    {
+     "bit_high": 3,
+     "bit_low": 0,
+     "name": "reg_fast_lock_icp[3:0]",
+     "value": "4'b1000",
+     "fill": "#e0e7ff",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "10.0",
+     "value_fs": "9.0"
+    }
+   ],
+   "items": [
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ]
+   ]
+  },
+  {
+   "idx": 45,
+   "addr": "0x91",
+   "dec": 145,
+   "por_byte": "0x3C",
+   "por_color": "#f59e0b",
+   "fields": [
+    {
+     "bit_high": 7,
+     "bit_low": 4,
+     "name": "reg_fine_lock_rlpf[3:0]",
+     "value": "4'b0011",
+     "fill": "#e0e7ff",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "10.0",
+     "value_fs": "9.0"
+    },
+    {
+     "bit_high": 3,
+     "bit_low": 0,
+     "name": "reg_fine_lock_icp[3:0]",
+     "value": "4'b1100",
+     "fill": "#e0e7ff",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "10.0",
+     "value_fs": "9.0"
+    }
+   ],
+   "items": [
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ]
+   ]
+  },
+  {
+   "idx": 46,
+   "addr": "0x92",
+   "dec": 146,
+   "por_byte": "0x02",
+   "por_color": "#f59e0b",
+   "fields": [
+    {
+     "bit_high": 7,
+     "bit_low": 5,
+     "name": "Reserved",
+     "value": "0",
+     "fill": "#e2e8f0",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "10.0",
+     "value_fs": "9.0"
+    },
+    {
+     "bit_high": 4,
+     "bit_low": 3,
+     "name": "FSEL[1:0]",
+     "value": "2'b00",
+     "fill": "#ccfbf1",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "10.0",
+     "value_fs": "9.0"
+    },
+    {
+     "bit_high": 2,
+     "bit_low": 2,
+     "name": "reg_pbs_flt",
+     "value": "1'b0",
+     "fill": "#ccfbf1",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    },
+    {
+     "bit_high": 1,
+     "bit_low": 0,
+     "name": "reg_lock_wd_sel[1:0]",
+     "value": "2'b10",
+     "fill": "#e0e7ff",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "10.0",
+     "value_fs": "9.0"
+    }
+   ],
+   "items": [
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ]
+   ]
+  },
+  {
+   "idx": 47,
+   "addr": "0x93",
+   "dec": 147,
+   "por_byte": "0x02",
+   "por_color": "#f59e0b",
+   "fields": [
+    {
+     "bit_high": 7,
+     "bit_low": 4,
+     "name": "Reserved",
+     "value": "0",
+     "fill": "#e2e8f0",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "10.0",
+     "value_fs": "9.0"
+    },
+    {
+     "bit_high": 3,
+     "bit_low": 0,
+     "name": "BCC_M[3:0]",
+     "value": "4'b0010",
+     "fill": "#e0e7ff",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "10.0",
+     "value_fs": "9.0"
+    }
+   ],
+   "items": [
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ]
+   ]
+  },
+  {
+   "idx": 48,
+   "addr": "0x94 ~ 0x9F (148 ~ 159)",
+   "kind": "gap",
+   "por_byte": null,
+   "por_color": null,
+   "fields": [],
+   "items": [
+    [
+     "raw",
+     "<rect x=\"170\" y=\"2620\" width=\"655\" height=\"46\" fill=\"#e2e8f0\" stroke=\"#94a3b8\" stroke-width=\"1\" stroke-dasharray=\"4,3\" rx=\"4\"/>"
+    ],
+    [
+     "raw",
+     "<text x=\"497.5\" y=\"2647.0\" text-anchor=\"middle\" font-size=\"12\" fill=\"#64748b\">⋯ 无有效字段 ⋯</text>"
+    ]
+   ],
+   "label_fs": "13",
+   "label_fill": "#64748b"
+  },
+  {
+   "idx": 49,
+   "addr": "0xA0",
+   "dec": 160,
+   "por_byte": "0x00",
+   "por_color": "#22c55e",
+   "fields": [
+    {
+     "bit_high": 7,
+     "bit_low": 5,
+     "name": "Reserved",
+     "value": "0",
+     "fill": "#e2e8f0",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "10.0",
+     "value_fs": "9.0"
+    },
+    {
+     "bit_high": 4,
+     "bit_low": 0,
+     "name": "regr_SDID[4:0]",
+     "value": "5'b00000",
+     "fill": "#e0f2fe",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "10.0",
+     "value_fs": "9.0"
+    }
+   ],
+   "items": [
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ]
+   ]
+  },
+  {
+   "idx": 50,
+   "addr": "0xA1",
+   "dec": 161,
+   "por_byte": "0x00",
+   "por_color": "#22c55e",
+   "fields": [
+    {
+     "bit_high": 7,
+     "bit_low": 7,
+     "name": "Reserved",
+     "value": "0",
+     "fill": "#e2e8f0",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    },
+    {
+     "bit_high": 6,
+     "bit_low": 6,
+     "name": "regr_PASS",
+     "value": "1'b0",
+     "fill": "#e0f2fe",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    },
+    {
+     "bit_high": 5,
+     "bit_low": 5,
+     "name": "regr_BCC_FF",
+     "value": "1'b0",
+     "fill": "#e0f2fe",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    },
+    {
+     "bit_high": 4,
+     "bit_low": 4,
+     "name": "regr_AEQ",
+     "value": "1'b0",
+     "fill": "#e0f2fe",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "8.0",
+     "value_fs": "7.0"
+    },
+    {
+     "bit_high": 3,
+     "bit_low": 0,
+     "name": "regr_AEQ_lane_ctrl[3:0]",
+     "value": "4'b0000",
+     "fill": "#e0f2fe",
+     "stroke": "#94a3b8",
+     "stroke_width": "1",
+     "name_fs": "10.0",
+     "value_fs": "9.0"
+    }
+   ],
+   "items": [
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ],
+    [
+     "field",
+     null
+    ]
+   ]
+  }
+ ],
+ "header": [
+  "<text x=\"550.0\" y=\"40\" text-anchor=\"middle\" font-size=\"22\" font-weight=\"bold\" fill=\"#1e293b\">chip_sel = 0 寄存器默认字节映射</text>",
+  "<text x=\"211.0\" y=\"110\" text-anchor=\"middle\" font-size=\"12\" fill=\"#64748b\">[7]</text>",
+  "<text x=\"293.0\" y=\"110\" text-anchor=\"middle\" font-size=\"12\" fill=\"#64748b\">[6]</text>",
+  "<text x=\"375.0\" y=\"110\" text-anchor=\"middle\" font-size=\"12\" fill=\"#64748b\">[5]</text>",
+  "<text x=\"457.0\" y=\"110\" text-anchor=\"middle\" font-size=\"12\" fill=\"#64748b\">[4]</text>",
+  "<text x=\"539.0\" y=\"110\" text-anchor=\"middle\" font-size=\"12\" fill=\"#64748b\">[3]</text>",
+  "<text x=\"621.0\" y=\"110\" text-anchor=\"middle\" font-size=\"12\" fill=\"#64748b\">[2]</text>",
+  "<text x=\"703.0\" y=\"110\" text-anchor=\"middle\" font-size=\"12\" fill=\"#64748b\">[1]</text>",
+  "<text x=\"785.0\" y=\"110\" text-anchor=\"middle\" font-size=\"12\" fill=\"#64748b\">[0]</text>",
+  "<text x=\"874.0\" y=\"96\" text-anchor=\"middle\" font-size=\"10\" fill=\"#64748b\" font-weight=\"600\">POR 默认值</text>"
+ ],
+ "tail": [
+  "<text x=\"90\" y=\"2856\" font-size=\"13\" font-weight=\"600\" fill=\"#1e293b\">图例</text>",
+  "<rect x=\"90\" y=\"2866\" width=\"14\" height=\"14\" fill=\"#e2e8f0\" stroke=\"#94a3b8\" rx=\"2\"/>",
+  "<text x=\"110\" y=\"2877\" font-size=\"11\" fill=\"#1e293b\">Reserved</text>",
+  "<rect x=\"200\" y=\"2866\" width=\"14\" height=\"14\" fill=\"#ccfbf1\" stroke=\"#94a3b8\" rx=\"2\"/>",
+  "<text x=\"220\" y=\"2877\" font-size=\"11\" fill=\"#1e293b\">控制/配置</text>",
+  "<rect x=\"310\" y=\"2866\" width=\"14\" height=\"14\" fill=\"#fef3c7\" stroke=\"#94a3b8\" rx=\"2\"/>",
+  "<text x=\"330\" y=\"2877\" font-size=\"11\" fill=\"#1e293b\">电源/PWRC</text>",
+  "<rect x=\"420\" y=\"2866\" width=\"14\" height=\"14\" fill=\"#e0e7ff\" stroke=\"#94a3b8\" rx=\"2\"/>",
+  "<text x=\"440\" y=\"2877\" font-size=\"11\" fill=\"#1e293b\">CDR/PLL/模拟</text>",
+  "<rect x=\"530\" y=\"2866\" width=\"14\" height=\"14\" fill=\"#e0f2fe\" stroke=\"#94a3b8\" rx=\"2\"/>",
+  "<text x=\"550\" y=\"2877\" font-size=\"11\" fill=\"#1e293b\">状态/只读</text>",
+  "<rect x=\"640\" y=\"2866\" width=\"14\" height=\"14\" fill=\"#fce7f3\" stroke=\"#94a3b8\" rx=\"2\"/>",
+  "<text x=\"660\" y=\"2877\" font-size=\"11\" fill=\"#1e293b\">chip_sel=0/1 语义不同</text>",
+  "<text x=\"550.0\" y=\"2916\" text-anchor=\"middle\" font-size=\"11\" fill=\"#64748b\">1111v1：地址/字段名/复位值均由 HK1V11_Register_20261111.xlsm 机器派生（Reg_description_F_CHIP_SEL=0 + Reg_1V11），右侧标注字节级 POR 默认值（hex）</text>",
+  "<text x=\"550.0\" y=\"2934\" text-anchor=\"middle\" font-size=\"11\" fill=\"#64748b\">虚线折叠行：该地址段在 xlsm 中整字节 Reserved，或表内未收录该地址（无有效字段）</text>"
+ ]
+}

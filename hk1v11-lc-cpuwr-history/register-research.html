@@ -327,7 +327,7 @@
 
 - `0x01[5]` PORSD
 - `0x05[7:5]` CH_SEL
-- `0x06[1:0]` SDC / DPLC_MODE
+- `0x06[7,5,3,2]` DPLC_GROUP / DPOLINV / AVE_MODE / DPLC_MODE 与 `0x06[1]` SDC（`0x06[0]` 20261111 表新增 VSYNC_SEL：0 = FSYNC as VSYNC，1 = BKDU + K1 as VSYNC，默认 1'b0，**属普通 unlock-reset 域**，不在 RSTN 例外清单，见 [复位规格 §2 组 4](./reset-spec.html)）
 - `0x20[5:0]` R_TESTO_SEL
 - `0x21[5:4]` R_UTC
 - `0x30` TEST_PRTCT
@@ -376,7 +376,7 @@
 
 | 地址(dec) | 地址(hex) | 变更 | 状态 |
 |------|------|------|------|
-| 53 | 0x35 | FSEL 移位至 reg146[4:3]；[1:0] 改 reg_fbdiv_clk_sel | RTL/文档一致 |
+| 53 | 0x35 | FSEL 移位至 reg146[4:3]；[1:0] 改 reg_fbdiv_clk_sel（20261111 表补语义：00/01/10 = CRC Check on，11 = CRC Check off） | RTL/文档一致 |
 | 50 | 0x32 | 恢复全 Reserved（原字段错位已修正） | RTL/文档一致 |
 | 51 | 0x33 | sw_reg_lane_ctrl@[5:1]、reg_pin_eq@[7] 迁入 | RTL/文档一致 |
 | 56 | 0x38 | 新增 reg_pin_eol_det@[4]、reg_eol_det@[5]；默认 0x15 | RTL/文档一致 |
@@ -414,7 +414,7 @@
 
 2026-10-27，对 1026 新表与 1022 旧表执行 COM 全量 dump 逐 sheet diff（两文件 1875/1883 行，diff 仅 4 个 hunk）：
 
-- **hunk ①②（history sheet）**：+2 条变更条目——10-26 `khead_20b_sel`（0x1D[7:3]，R/W 默认 5'b00000，5'b10101=20-bit mode / Others=40-bit mode default）与 10-23 TESTO_SEL 表；后者在 1022 文件中已存在，**无新增**
+- **hunk ①②（history sheet）**：+2 条变更条目——10-26 `khead_20b_sel`（0x1D[7:3]，R/W 默认 5'b00000，5'b10101=20-bit mode / Others=40-bit mode default；1111v1 已回 0x1D[7:5] 3 bit，见 register-map §36）与 10-23 TESTO_SEL 表；后者在 1022 文件中已存在，**无新增**
 - **hunk ③④（Reg_1V11 / Reg_description_F_CHIP_SEL=1 / =0）**：0x1D 行字段列 `[7:3] Reserved` → `khead_20b_sel[4:0]`；SP_S[2:0] 保留不变
 - **TESTO sheet**：两版逐字节一致，无动作
 - **errata**：history 条目写 `@0x1D[7:5]`，寄存器表正文为 `[7:3]`（5bit 与 [4:0] 对应）——以正文为准，待反馈 spec owner
@@ -626,4 +626,4 @@ const article = document.getElementById('article');
 </body>
 </html>
 
-<!-- ymzhu 2026-11-17 19:27 -->
+<!-- ymzhu 2026-11-18 17:13 -->

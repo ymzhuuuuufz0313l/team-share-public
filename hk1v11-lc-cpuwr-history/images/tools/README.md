@@ -6,10 +6,12 @@
 
 | 脚本 | 生成目标（主名位） | 复跑法 |
 |------|-------------------|--------|
+| `gen_chip_sel_map.py` | `chip_sel0/1_register_map.svg`（静态事实源，1111v1）——寄存器默认字节映射双图；数据源=`images/data/chip_sel{0,1}_register_map_1111v1.json`（extract 脚本从 1106v4 代反向提取+excel 核对） | `python images/tools/gen_chip_sel_map.py [--out DIR]`（改版自检：行 Σ片==8bit 断言；幂等 SKIPPED） |
+| `gen_reg_table_1111v1.py` | `reg_table_1111v1.svg`（静态）+ `anim/` 动画版——20261111 表变更图；数据源=`images/data/reg_table_1111v1.json` | `python images/tools/gen_reg_table_1111v1.py`（内置 XML/漂移/重叠自检，`ALL PASS` 即成功） |
 | `gen_reg_1104v1.py` | `1104v1_reg_changes.svg`（静态事实源）+ `anim/` 动画版——1104v1 迭代变更表（**r1，含第 7 行输出口归属修正 b49e5741**）；被替换 r0 快照在 `../archive/20261104/` | `python images/tools/gen_reg_1104v1.py`（内置自检：XML 合法 / 静态无动画 / 动画有 / `<text>` 零漂移，`ALL PASS` 即成功） |
 | `gen_reg_sync_1104.py` | `1104_reg_sync_changes.svg`（静态）+ `anim/` 动画版——1104 服务器同步五处差异表（内容稳定，重跑输出字节一致） | `python images/tools/gen_reg_sync_1104.py`（同款自检） |
 | `gen_beat_regroup_svg.py` | `config_data_beat_regroup_0721.svg`——0721v1 配置拍重组对照（历史图，绝对路径输出） | `python images/tools/gen_beat_regroup_svg.py`（尾部 `XML valid` 即成功；动画版由 `anim/make_anim_beat.py` 维护） |
 | `regen_lsi_map.py` | `lsi_unprotected_address_map.svg`——LSI 保护地址图（0827v1；字段源 = `chip_sel0_register_address_map.md`，保护真值 = LC_CPUWR.v RTL） | `python images/tools/regen_lsi_map.py`（绝对路径，位置无关） |
 | `make_sync1104_html.py` | ⚠ **历史脚手架，勿重跑**——首次生成 `sync-1104.html`（仅 §1-5）；现行页面已手工扩展 §6（1104v1），重跑会整页覆盖丢 §6 | 仅留档复现首次建页 |
 
-<!-- ymzhu 2026-11-04 16:12 -->
+<!-- ymzhu 2026-11-18 16:15 -->

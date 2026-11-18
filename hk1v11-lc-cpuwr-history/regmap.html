@@ -811,7 +811,7 @@ chip_sel=0/1 默认字节映射、checksum 地址覆盖、LSI 保护范围、复
 
 ## 32. 1027v1 新增 khead_20b_sel @ 0x1D[7:3]
 
-> ⚠️ **2026-10-29 起本节已被 §34 移址取代**：khead_20b_sel 迁至 0x33[6:2]，输出改由 LC_CPUWR 承载并加 LSI 门控，0x1D[7:3] 回 Reserved。以下为 1027v1 历史记录。
+> ⚠️ **2026-10-29 起本节已被 §34 移址取代**：khead_20b_sel 迁至 0x33[6:2]，输出改由 LC_CPUWR 承载并加 LSI 门控，0x1D[7:3] 回 Reserved。**注（1111v1）**：`HK1V11_Register_20261111.xlsm` 起 khead_20b_sel 已回 **0x1D[7:5]**（3 bit），`0x33[6:2]` 回 Reserved，最终状态见 §36。以下为 1027v1 历史记录。
 
 依 `HK1V11_Register_20261026.xlsm`（1022→1026 全量 diff 唯一功能变更；TESTO sheet 10-23 改动两版内容一致，无新增）：
 
@@ -840,6 +840,8 @@ chip_sel=0/1 默认字节映射、checksum 地址覆盖、LSI 保护范围、复
 
 ## 34. 1029v1 三字段落地：khead 移址 + TP_SEL + BACSCR_EOL（依 HK1V11_Register_20261028.xlsm）
 
+> ⚠️ **本节为 1029v1 历史记录**：`HK1V11_Register_20261111.xlsm`（1111v1）起 `khead_20b_sel[2:0]` 回 **0x1D[7:5]**、`0x33[6:2]` 回 Reserved，当前状态以 §36 为准。
+
 **表源**：20261028 表 COM 全量 diff（新增 `script/dump_reg_full.ps1` + `reg20261028_full_dump.txt`，逐 sheet 结构化对比）。用户 2026-10-29 三项拍板：khead 输出换 LC_CPUWR / 加 LSI 门控 / TP_SEL 位置 = 0x34[7:6]（表内矛盾澄清：history+Reg_1V11=0x34[7:6] vs cs=1 描述=0x03[6:5]（笔误）vs cs=0 缺失）。
 
 | 字段 | 位置 | 默认 | 访问 | 保护 | 输出（均 LC_CPUWR，LSI 门控，上层挂账） |
@@ -865,6 +867,21 @@ chip_sel=0/1 默认字节映射、checksum 地址覆盖、LSI 保护范围、复
 **复位维度**（用户亲自 review）：① unlock reset 例外 13 组全 RSTN（6 组 t9 迁 + 7 组原符合）② I2C_EN=1 全免（I2C_EN_CTL→TEST_EN→I_TEST_REG_EN→RSTNGEN:50）③ PORSD 不受 password&checksum 保护（RSTN+ungated，checksum 排除属 BCC 软件口径）④ password error reset 例外地址段 32-38 / 40-47 / 51 / 53-57 / 144-147（与表 AC 列逐一致）+ 0x40~0x44 端点消歧 + 0xA0~0xA1 只读。
 
 **验证**：RTL 三关全过（iverilog 三件套 syntax_err=0 / rtl-code-review critical=0·high=0·low=3 / rtl-signal-trace 四信号全链连通）。**表作者反馈 5 项**（主表 0X1D 补 SP_S@[3:1] / CTRL_L 注解消歧 / 0x40~0x43 端点明确 / 0xA0~0xA1 注明 / 服务器侧 flat+env+test 重生成 + VPS_EN_1@0x43[7] 建模）。Excel 登记 NO57。
+
+## 36. 20261111 表：VSYNC_SEL 新增 + 描述更新（依 HK1V11_Register_20261111.xlsm，1111v1）
+
+**表源**：20261111 表 COM 通道全量提取（`script/reg_site_1111/excel_20261111_extract.json`）对比站点（T1 差异清单 `site_diff.md`）。11/6 批量变更 1106v2 代已全覆盖，本轮仅四项：
+
+| 字段 | 变更 | 落位 |
+|------|------|------|
+| `VSYNC_SEL` | **新增 @ 0x06[0]**（CTRL_F，I2C+P2P，默认 1'b0，R/W，Checksum protect；0 = FSYNC as VSYNC，1 = BKDU + K1 as VSYNC；cs=0/1 两描述页均登记） | 0x06 字节默认 0x02 不变；bit0 属普通 unlock-reset 域（RSTN 例外清单 [7,5,3,2,1] 不含 [0]）；[图解](./diagrams.html)双版字节映射图已重生成 |
+| `reg_fbdiv_clk_sel[1:0]` | 描述补语义：00/01/10 = CRC Check function **on**，11 = CRC Check function **off** | 0x35（reg53）[1:0]，默认 0x00，LSI_PRTECT（0810 移址记录见 §17） |
+| `khead_20b_sel[2:0]` | 补限定：仅用于 normal encoding（2026/11/10 条目） | **0x1D[7:5]**（3 bit，默认 `3'b000`；`0x33[6:2]` 在 20261111 表中已回 Reserved，§34 的 1029v1 移址为历史记录；限定语义见 [1104 同步 §6.4](./sync-1104.html)） |
+| `SMART_CS[3:0]` | 拆名 SMART_CS_3/2/1/0（四个单 bit，表内已改未注变更条目；低优先，本站历史节保持原名） | 0x02[7:6]、[3:2]，默认 0 |
+
+**PORSD 复位域口径**：以 RTL 1118v1 为准（RSTN，不受 NLOCK reset 控制）——excel 11/6 豁免表漏列 PORSD 属表缺陷，站点呈现按 RTL 终态并加注（见 [复位规格 §4](./reset-spec.html)）。
+
+![20261111 表 · VSYNC_SEL 新增 + 描述更新（1111v1）](./images/anim/reg_table_1111v1.svg?v=20261118)
 
   </script>
   <script>
@@ -1070,4 +1087,4 @@ const article = document.getElementById('article');
 </body>
 </html>
 
-<!-- ymzhu 2026-11-17 19:27 -->
+<!-- ymzhu 2026-11-18 16:40 -->

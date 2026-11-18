@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="561" viewBox="0 0 1100 561" style="background:#ffffff">
+<rect width="1100" height="561" fill="#ffffff"/>
+<text x="550.0" y="42" text-anchor="middle" class="title" font-size="22" font-weight="bold" fill="#1e293b">20261111 表 · VSYNC_SEL 新增 + 描述更新（1111v1）</text>
+<text x="550.0" y="70" text-anchor="middle" font-size="12.5" fill="#64748b">较 20261106 表：D1 新增 VSYNC_SEL@0x06[0]（双版字节映射图已重生成）+ D3 CRC 开关语义 + D4 khead 限定 + D5 SMART_CS 拆名 · 11/6 批量变更 1106v2 代已覆盖</text>
+<defs><linearGradient id="sweepG-1" gradientUnits="userSpaceOnUse" x1="-640" y1="0" x2="620" y2="0"><stop offset="0" stop-color="#b45309" stop-opacity="0"/><stop offset="0.46" stop-color="#b45309" stop-opacity="0"/><stop offset="0.5" stop-color="#b45309" stop-opacity="0.30"/><stop offset="0.54" stop-color="#b45309" stop-opacity="0"/><stop offset="1" stop-color="#b45309" stop-opacity="0"/></linearGradient><clipPath id="sweepC-1"><rect x="40" y="100" width="1020" height="395"/></clipPath></defs><g clip-path="url(#sweepC-1)"><rect class="sweepband" x="-640" y="100" width="1260" height="395" fill="url(#sweepG-1)" style="--sweepP:1260px"/></g><rect class="head" x="40" y="100" width="1020" height="34" fill="#f1f5f9"/>
+<text x="55.0" y="122" text-anchor="middle" font-size="13.5" font-weight="700" fill="#1e293b">#</text>
+<text x="140.0" y="122" text-anchor="middle" font-size="13.5" font-weight="700" fill="#1e293b">字段 / 项</text>
+<text x="352.5" y="122" text-anchor="middle" font-size="13.5" font-weight="700" fill="#1e293b">旧（1111 表前）</text>
+<text x="637.5" y="122" text-anchor="middle" font-size="13.5" font-weight="700" fill="#1e293b">新（20261111 表）</text>
+<text x="891.0" y="122" text-anchor="middle" font-size="13.5" font-weight="700" fill="#1e293b">落位 / 状态</text>
+<text x="1031.0" y="122" text-anchor="middle" font-size="13.5" font-weight="700" fill="#1e293b">类</text>
+<rect class="row" style="animation-delay:0.15s" x="40" y="134" width="1020" height="137" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+<text x="55.0" y="207.5" text-anchor="middle" font-size="14" font-weight="700" fill="#64748b">1</text>
+<text x="82" y="206.5" font-size="12.5" fill="#1e293b" font-weight="600">VSYNC_SEL</text>
+<text x="222" y="206.5" font-size="12" fill="#1e293b">—（0x06[0] Reserved，全站零呈现）</text>
+<text x="507" y="189.0" font-size="12" fill="#1e293b">0x06[0] 新字段：0 = FSYNC as VSYNC，1</text>
+<text x="507" y="206.5" font-size="12" fill="#1e293b">= BKDU + K1 as VSYNC；默认 1'b0，R/W，</text>
+<text x="507" y="224.0" font-size="12" fill="#1e293b">Checksum protect</text>
+<text x="792" y="162.8" font-size="11.5" fill="#64748b">Reg_1V11 0x06 BIT0；cs=0/</text>
+<text x="792" y="180.2" font-size="11.5" fill="#64748b">1 两描述页均登记；0x06</text>
+<text x="792" y="197.8" font-size="11.5" fill="#64748b">字节默认 0x02 不变；bit0</text>
+<text x="792" y="215.2" font-size="11.5" fill="#64748b">属普通 unlock-reset</text>
+<text x="792" y="232.8" font-size="11.5" fill="#64748b">域（RSTN 例外清单 [7,5,3,</text>
+<text x="792" y="250.2" font-size="11.5" fill="#64748b">2,1] 不含 [0]）</text>
+<rect x="1008.0" y="191.0" width="46" height="23" rx="11.5" fill="#ccfbf1" stroke="#0d9488" stroke-width="1"/>
+<text x="1031.0" y="206.5" text-anchor="middle" font-size="11.5" font-weight="700" fill="#0d9488">新增</text>
+<g class="cellwave" style="animation-delay:-0.4s"><rect class="row" style="animation-delay:0.27s" x="40" y="271" width="1020" height="70" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+<text x="55.0" y="311.0" text-anchor="middle" font-size="14" font-weight="700" fill="#64748b">2</text>
+<text x="82" y="301.2" font-size="12.5" fill="#1e293b" font-weight="600">reg_fbdiv_clk_</text>
+<text x="82" y="318.8" font-size="12.5" fill="#1e293b" font-weight="600">sel[1:0]</text>
+<text x="222" y="301.2" font-size="12" fill="#1e293b">仅 0810 移址记录（reg50[6:5]→reg53[1:</text>
+<text x="222" y="318.8" font-size="12" fill="#1e293b">0]，默认 0x00）</text>
+<text x="507" y="301.2" font-size="12" fill="#1e293b">补语义：00/01/10 = CRC Check function</text>
+<text x="507" y="318.8" font-size="12" fill="#1e293b">on；11 = CRC Check function off</text>
+<text x="792" y="301.2" font-size="11.5" fill="#64748b">0x35（reg53）[1:0]，默认</text>
+<text x="792" y="318.8" font-size="11.5" fill="#64748b">0x00，LSI_PRTECT</text>
+<rect x="1008.0" y="294.5" width="46" height="23" rx="11.5" fill="#f7e8d4" stroke="#b45309" stroke-width="1"/>
+<text x="1031.0" y="310.0" text-anchor="middle" font-size="11.5" font-weight="700" fill="#b45309">描述</text>
+</g><g class="cellwave" style="animation-delay:-0.8s"><rect class="row" style="animation-delay:0.39s" x="40" y="341" width="1020" height="84" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+<text x="55.0" y="388.0" text-anchor="middle" font-size="14" font-weight="700" fill="#64748b">3</text>
+<text x="82" y="378.2" font-size="12.5" fill="#1e293b" font-weight="600">khead_20b_</text>
+<text x="82" y="395.8" font-size="12.5" fill="#1e293b" font-weight="600">sel[2:0]</text>
+<text x="222" y="378.2" font-size="12" fill="#1e293b">3'b101 = 40bit、其余 = 20bit（sync-</text>
+<text x="222" y="395.8" font-size="12" fill="#1e293b">1104 §6.4）</text>
+<text x="507" y="369.5" font-size="12" fill="#1e293b">补限定：the register is used only for</text>
+<text x="507" y="387.0" font-size="12" fill="#1e293b">normal encoding（仅用于 normal</text>
+<text x="507" y="404.5" font-size="12" fill="#1e293b">encoding）</text>
+<text x="792" y="378.2" font-size="11.5" fill="#64748b">0x1D[7:5]，默认 0（2026/</text>
+<text x="792" y="395.8" font-size="11.5" fill="#64748b">11/10 条目）</text>
+<rect x="1008.0" y="371.5" width="46" height="23" rx="11.5" fill="#f7e8d4" stroke="#b45309" stroke-width="1"/>
+<text x="1031.0" y="387.0" text-anchor="middle" font-size="11.5" font-weight="700" fill="#b45309">描述</text>
+</g><rect class="row" style="animation-delay:0.51s" x="40" y="425" width="1020" height="70" fill="#f8fafc" stroke="#e2e8f0" stroke-width="1"/>
+<text x="55.0" y="465.0" text-anchor="middle" font-size="14" font-weight="700" fill="#64748b">4</text>
+<text x="82" y="464.0" font-size="12.5" fill="#1e293b" font-weight="600">SMART_CS[3:0]</text>
+<text x="222" y="464.0" font-size="12" fill="#1e293b">SMART_CS[3:0] 合名（站点历史节沿用）</text>
+<text x="507" y="455.2" font-size="12" fill="#1e293b">拆名 SMART_CS_3/2/1/0（四个单 bit，</text>
+<text x="507" y="472.8" font-size="12" fill="#1e293b">表内已改，未注变更条目）</text>
+<text x="792" y="455.2" font-size="11.5" fill="#64748b">0x02[7:6]、[3:2]，默认 0；</text>
+<text x="792" y="472.8" font-size="11.5" fill="#64748b">低优先，历史节不改名</text>
+<rect x="1008.0" y="448.5" width="46" height="23" rx="11.5" fill="#ede9fe" stroke="#7c3aed" stroke-width="1"/>
+<text x="1031.0" y="464.0" text-anchor="middle" font-size="11.5" font-weight="700" fill="#7c3aed">更名</text>
+<text x="550.0" y="521" text-anchor="middle" font-size="12" fill="#64748b">PORSD 复位域以 RTL 1118v1（RSTN，不受 NLOCK reset 控制）为准，excel 11/6 豁免表漏列属表缺陷、站点按 RTL 终态呈现 · 11/11 D1 图已重生成 chip_sel0/1</text>
+<text x="550.0" y="538" text-anchor="middle" font-size="12" fill="#64748b">双版字节映射（VSYNC_SEL@0x06[0]）</text>
+<style>
+.row{opacity:0;animation:rowIn .55s cubic-bezier(.22,.7,.3,1) forwards}
+.head{opacity:0;animation:rowIn .55s cubic-bezier(.22,.7,.3,1) forwards}
+.title{opacity:0;animation:rowIn .5s cubic-bezier(.22,.7,.3,1) forwards}
+@keyframes rowIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.draw{stroke-dasharray:100;animation:drawIn .6s cubic-bezier(.4,0,.2,1) forwards}
+@keyframes drawIn{from{stroke-dashoffset:100}to{stroke-dashoffset:0}}
+.fade{opacity:0;animation:fadeIn .6s ease forwards}
+@keyframes fadeIn{to{opacity:1}}
+.flowdot{fill:none;stroke-linecap:round;stroke-dasharray:9 91;stroke-width:3.5;animation:flow 2.6s linear infinite}
+@keyframes flow{to{stroke-dashoffset:-100}}
+.flowtail{fill:none;stroke-linecap:round;stroke-dasharray:4 96;stroke-width:8;opacity:.25;animation:flow 2.6s linear infinite}
+.pulse{transform-box:fill-box;transform-origin:center;animation:pulse 2.8s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;filter:drop-shadow(0 0 0 rgba(180,83,9,0))}50%{opacity:.8;filter:drop-shadow(0 0 10px rgba(180,83,9,.75))}}
+.pulse-t{transform-box:fill-box;transform-origin:center;animation:pulseT 2.8s ease-in-out infinite}
+@keyframes pulseT{0%,100%{opacity:1;filter:drop-shadow(0 0 0 rgba(14,116,144,0))}50%{opacity:.8;filter:drop-shadow(0 0 10px rgba(14,116,144,.75))}}
+.pulse-b{transform-box:fill-box;transform-origin:center;animation:pulseB 2.8s ease-in-out infinite}
+@keyframes pulseB{0%,100%{opacity:1;filter:drop-shadow(0 0 0 rgba(29,78,216,0))}50%{opacity:.8;filter:drop-shadow(0 0 10px rgba(29,78,216,.75))}}
+.sweepband{opacity:.85;animation:sweepMove 8s linear infinite}
+@keyframes sweepMove{to{transform:translateX(var(--sweepP,160px))}}
+.dashgrow{stroke-dasharray:7 5;animation:dashgrow 2.6s linear infinite}
+@keyframes dashgrow{from{stroke-dashoffset:72}to{stroke-dashoffset:0}}
+.march{animation:march 1.5s linear infinite}
+@keyframes march{to{stroke-dashoffset:-16}}
+.cellwave{animation:wave 2.6s ease-in-out infinite}
+@keyframes wave{0%,100%{opacity:1}50%{opacity:.72}}
+.breathe{animation:br 3.2s ease-in-out infinite}
+@keyframes br{0%,100%{opacity:1}50%{opacity:.55}}
+.step{animation:stepLit 6s ease-in-out infinite}
+@keyframes stepLit{0%,16%{filter:drop-shadow(0 0 9px rgba(29,78,216,.85))}24%,92%{filter:drop-shadow(0 0 0 rgba(29,78,216,0))}100%{filter:drop-shadow(0 0 9px rgba(29,78,216,.85))}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}.row,.head,.fade,.title{opacity:1!important}.flowdot,.flowtail,.sweepband{display:none!important}}
+</style>
+</svg>

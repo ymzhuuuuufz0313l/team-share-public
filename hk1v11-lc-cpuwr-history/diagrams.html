@@ -330,27 +330,27 @@
 
 > ⭐ **本章优先级最高**：建议在读完后文之前，先浏览本章六张全景图，建立 LC_CPUWR 寄存器空间的整体印象，再深入各个变更细节。
 
-> **1027v1 注记**：本章各大图数据已同步 **1027v1**——`0x1D[7:3]` 新增 `khead_20b_sel[4:0]`（1027v1，原 Reserved，默认 `5'b00000`，`5'b10101`=20-bit mode / Others=40-bit mode，无 LSI_PRTECT 门控，详见[寄存器 §32](./regmap.html)）；**LC_CPUWR 侧同日修复 Seg1 checksum 0x0A XOR 覆盖丢失**（0721v1 重排回归，图 3/图 6 注记详见[校验和 §10](./checksum.html)）；`0x08` 字节默认 `0x00`（`reg_eq_rbc1` 1022v1 服务器回退 1→0，rbc[1:0]=2'b00 终局）、`0x36=0x17`（0918v1 保留）、`0x2F[0]` 新增 `SCS_PKT_HALF`（1023v1，默认 0，LSI_PRTECT，详见[寄存器 §31](./regmap.html)）；仅图中 `0x29` 仍显示旧值 `0x00`，读图时按 0918v1 值 `0x02` 修正（详见[寄存器 §23/§26](./regmap.html)）。`SCREN`：0903v1 曾引入 FPGA 强制常开分支，**0909v1 起已注释停用**——全平台（含 FPGA）`R_SCREN=R_REG00_F[4]` 由软件控制（默认关，详见[寄存器 §25](./regmap.html)）。
+> **1111v1 注记**：本章寄存器图数据已按 `HK1V11_Register_20261111.xlsm` **重新机器派生**（`script/reg_site_1111/derive_chip_sel_from_excel.py` 直读 Excel 抽取 JSON，禁止从旧 SVG 反推、禁止手写字段），逐行「Σ字段值 == POR 字节」与 Excel 双向核对均通过。图面事实更新：`0x1D` 位图现为 `[7:5] khead_20b_sel[2:0]`（默认 `3'b000`；`3'b101`=40-bit、其余=20-bit，仅用于 normal encoding，无 LSI 门控，见 [1104 同步 §6.2](./sync-1104.html)）、`[4] BACSCR_EOL`、`[3:1] SP_S[2:0]`、`[0] VPS_EN_0`（详见[寄存器 §32/§36](./regmap.html)）；`0x33[6:2]` 为 Reserved（`0x33` 仅 `[7] reg_pin_eq`、`[1] reg_lane_ck_inv_en`、`[0] CG_OFF`）；`0x02` 的 `SMART_CS_0/1/2/3`（bit2/3/6/7）在 **chip_sel=0 与 chip_sel=1 两版图中都在场**，不再是 cs=1 专用；`0x08` 字节默认 `0x30`（`SD_CHOP_F[1:0]`@[7:6]、`TP_SEL[1:0]`@[5:4]=`2'b11`、`TP_CONTROL`@[3]、`STP_EN`@[2]），`reg_eq_rbc1/0` 位于 `0x23[1:0]`；`0x2F[0]` 仍为 `SCS_PKT_HALF`（默认 `1'b0`）；`0x29` 图中已是 `0x02`。`0x36=0x17` 保留。`SCREN`：0903v1 曾引入 FPGA 强制常开分支，**0909v1 起已注释停用**——全平台（含 FPGA）`R_SCREN=R_REG00_F[4]` 由软件控制（默认关，详见[寄存器 §25](./regmap.html)）。
 >
 > **动画版**：六张图均已提供动画版（行级渐入 + 变更字段高亮），页面默认加载 `images/anim/` 下的动画 SVG；静态原版保留在 `images/` 同名文件。
 
 ## 1. chip_sel = 0 默认字节映射
 
-这张图展示当前（1027v1 数据，0827v1 起的结构基线）chip_sel=0 模式下 POR 后的寄存器默认值布局，与 `LC_CPUWR_history/chip_sel0_register_address_map.md` 及 RTL 中复位默认值完全一致，用于建立寄存器空间基线并支撑后续 chip_sel=1 回拼差异分析。0827v1：0x02/0x03/0x04 新增单 bit `sw_reg_lane_ctrl3/4/1/2/0`（默认 `1'b0`，chip_sel=0/1 共用，由 LC_REG_MAPPING 输出）；`0x33[6:2]` 由 `sw_reg_lane_ctrl[4:0]` 改 Reserved（复位 `5'b00000`，字节默认 `0x08→0x00`）；`0x38[6]` 新增 `reg_eol`（默认 `1'b0`）。0820v1：reg36[7:6] `cr_done_filter[1:0]`；0819v2：reg37/38 CDR/KVCO 默认值由 Loop_sel 选择。**1027v1**：`0x1D[7:3]` 新增 `khead_20b_sel[4:0]`（原 Reserved，默认 `5'b00000`，`5'b10101`=20-bit mode / Others=40-bit mode，无 LSI_PRTECT 门控）；**1023v1**：`0x2F[0]` 新增 `SCS_PKT_HALF`（原 Reserved，默认 `1'b0`，LSI_PRTECT）；**1022v1**：`0x08` 字节默认回退 `0x00`（rbc1 1→0）。
+这张图展示当前（1111v1 数据，0827v1 起的结构基线）chip_sel=0 模式下 POR 后的寄存器默认值布局，字段名/位段/默认值均由脚本从 `HK1V11_Register_20261111.xlsm` 的 `Reg_1V11` + `Reg_description_F_CHIP_SEL=0` 机器派生（`images/data/chip_sel0_register_map_1111v1.json`），用于建立寄存器空间基线并支撑后续 chip_sel=1 回拼差异分析。0827v1：0x02/0x03/0x04 新增单 bit `sw_reg_lane_ctrl3/4/1/2/0`（默认 `1'b0`，chip_sel=0/1 共用，由 LC_REG_MAPPING 输出）；0820v1：reg36[7:6] `cr_done_filter[1:0]`；0819v2：reg37/38 CDR/KVCO 默认值由 Loop_sel 选择。**1111v1 图面事实**：`0x1D` = `[7:5] khead_20b_sel[2:0]`（默认 `3'b000`）+ `[4] BACSCR_EOL` + `[3:1] SP_S[2:0]` + `[0] VPS_EN_0`；`0x33[6:2]` 为 Reserved（`0x33` 其余为 `[7] reg_pin_eq`、`[1] reg_lane_ck_inv_en`、`[0] CG_OFF`）；`0x02` 含 `SMART_CS_0/1/2/3`（bit2/3/6/7，cs=0 与 cs=1 都在场）；`0x08` 字节默认 `0x30`（`SD_CHOP_F[1:0]`@[7:6]、`TP_SEL[1:0]`@[5:4]=`2'b11`），`reg_eq_rbc1/0` 在 `0x23[1:0]`；`0x2F[0]` 为 `SCS_PKT_HALF`（默认 `1'b0`）。xlsm 中整字节 Reserved 或不收录的地址段在图中折叠为一行虚线 `⋯ 无有效字段 ⋯`（避免误标语义）。
 
 chip_sel=0 模式下 POR 后寄存器默认值全景；绿色为控制、黄色为电源、蓝紫为模拟相关字段。
 
-![chip_sel=0 寄存器默认字节映射](./images/anim/chip_sel0_register_map.svg?v=20261101)
+![chip_sel=0 寄存器默认字节映射](./images/anim/chip_sel0_register_map.svg?v=20261118)
 
 ## 2. chip_sel = 1 默认字节映射
 
-这张图展示当前（1027v1 数据，0827v1 起的结构基线）chip_sel=1 模式下 POR 后的寄存器默认值布局，与 `LC_CPUWR_history/chip_sel1_register_address_map.md` 及 `LC_REG_MAPPING.v` 回拼机制一致，用于定位 chip_sel=1 相对于 chip_sel=0 发生默认值变化的字段。0827v1 注：0x02/0x03/0x04 的单 bit `sw_reg_lane_ctrl0~4` 两种 chip_sel 完全共用（图中无差异星标）；`0x33[6:2]` 两种模式同步改 Reserved；SMART_CS 仍为 chip_sel=1 专用。**1027v1**：`0x1D[7:3]` 新增 `khead_20b_sel[4:0]`（字段规格两种 chip_sel 一致，默认 `5'b00000`，无 LSI_PRTECT 门控）；**1023v1**：`0x2F[0]` 新增 `SCS_PKT_HALF`（字段规格两种 chip_sel 一致；作用对象 SMART_CS 为 cs=1 专有）；**1022v1**：`0x08` 字节默认回退 `0x00`（rbc1 1→0）。
+这张图展示当前（1111v1 数据，0827v1 起的结构基线）chip_sel=1 模式下 POR 后的寄存器默认值布局，字段名/位段/默认值由脚本从 `HK1V11_Register_20261111.xlsm` 的 `Reg_1V11` + `Reg_description_F_CHIP_SEL=1` 机器派生（`images/data/chip_sel1_register_map_1111v1.json`），用于定位 chip_sel=1 相对于 chip_sel=0 发生默认值变化的字段。0827v1 注：0x02/0x03/0x04 的单 bit `sw_reg_lane_ctrl0~4` 两种 chip_sel 完全共用（图中无差异星标）。**1111v1 图面事实**：`0x02` 的 `SMART_CS_0/1/2/3`（bit2/3/6/7）在 **cs=0 与 cs=1 两版图中都在场**，不再是 cs=1 专用；`0x33[6:2]` 两版同为 Reserved；`0x1D` = `[7:5] khead_20b_sel[2:0]`（默认 `3'b000`）+ `[4] BACSCR_EOL` + `[3:1] SP_S[2:0]` + `[0] VPS_EN_0`（字段规格两版一致）；`0x2F[0]` 为 `SCS_PKT_HALF`（默认 `1'b0`）；cs=1 独有地址仅 `0x09`（默认 `0xFF`）/ `0x0A`（默认 `0xA5`），由 `Reg_1V11` 的 `CHIP_SEL=1` 行提供，在 cs=0 图中折叠为 `⋯ 无有效字段 ⋯`；`0x1F` **不属于 cs=1 独有**——两版都在场：cs=0 为 `PWRC_P3/PWRC_N3/PWRC_P2/PWRC_N2/PWRC_P1/PWRC_N1/VBK_EN/PWRC_CTRL`（[7]…[0]，POR `0x00`），cs=1 为 `PWRC_NB/NA/PB/PA`（各 2 bit，POR `0xAA`，由 LC_REG_MAPPING 回拼）。
 
 所谓「回拼」是因为 LC_CPUWR 模块内部的默认值逻辑只针对 chip_sel=0 场景实现；当 chip_sel=1 时，部分地址（如 0x09 / 0x0A / 0x1F）需要通过 LC_REG_MAPPING 额外写标志并把对应字节回写到寄存器影子值，才能让 I2C 读出的内容与 chip_sel=1 期望的默认值一致。
 
 chip_sel=1 模式下 POR 后默认值；红色标出与 chip_sel=0 不同、由 LC_REG_MAPPING 回拼的字段。
 
-![chip_sel=1 寄存器默认字节映射](./images/anim/chip_sel1_register_map.svg?v=20261101)
+![chip_sel=1 寄存器默认字节映射](./images/anim/chip_sel1_register_map.svg?v=20261118)
 
 > **0819v2 变更**：上两图中 `reg_cdr_icp`（0x25[7:4]）与 `reg_kvco_ctrl`（0x26[7:4]）的**默认值不再固定**，改由新增输入 `Loop_sel[2:0]` 选择：
 > - `reg_kvco_ctrl`：`Loop_sel[2]=0` → `4'b1010(A)`；`Loop_sel[2]=1` → `4'b1000(8)`
@@ -360,7 +360,7 @@ chip_sel=1 模式下 POR 后默认值；红色标出与 chip_sel=0 不同、由 
 
 ## 3. Checksum 地址覆盖
 
-这张图基于 `LC_CPUWR.v` Part 18 的 checksum 逻辑（参与地址范围自 0810v1 起未变：`0x00~0x1F` 除 0x07，frame_end=0x27），标出参与 XOR 累加的地址范围，帮助确认 0x07 控制寄存器、0x27 frame end 边界以及 Seg1/Seg2 的 checksum 覆盖范围。0827v1 后 0x02 因 cs0/cs1 字段不同继续双行对照，0x03/0x04 的 lane_ctrl 单 bit 两种模式一致、单行展示。图内默认值已同步 **1027v1**（`0x1D[7:3]` 新增 `khead_20b_sel` 默认 `5'b00000`；0x08 rbc1=0）。**LC_CPUWR 1027v1（2026-10-27 晚）修复 0x0A XOR 覆盖丢失**（0721v1 重排回归，DV boundary_chip1 F30 假提交暴露，详见[校验和 §10](./checksum.html)）：本图所示参与集自始为设计意图，修复后 RTL 才真正兑现——**图中脉冲已移至 0x0A 行 PWRC_P[1:0] 单元格**（F30 写入的字段）；checksum 机制本身 1023v1 增加了首帧/幻影防护（不参与地址范围不变，见[校验和 §9](./checksum.html)）。
+这张图基于 `LC_CPUWR.v` Part 18 的 checksum 逻辑（参与地址范围自 0810v1 起未变：`0x00~0x1F` 除 0x07，frame_end=0x27），标出参与 XOR 累加的地址范围，帮助确认 0x07 控制寄存器、0x27 frame end 边界以及 Seg1/Seg2 的 checksum 覆盖范围。0827v1 后 0x02 因 cs0/cs1 字段不同继续双行对照，0x03/0x04 的 lane_ctrl 单 bit 两种模式一致、单行展示。图内默认值口径已对齐 **1111v1**（`HK1V11_Register_20261111.xlsm`）：`0x1D` = `[7:5] khead_20b_sel[2:0]`（默认 `3'b000`）+ `[4] BACSCR_EOL` + `[3:1] SP_S[2:0]` + `[0] VPS_EN_0`；`0x08` 字节默认 `0x30`，`reg_eq_rbc1/0` 位于 `0x23[1:0]`。**LC_CPUWR 1027v1（2026-10-27 晚）修复 0x0A XOR 覆盖丢失**（0721v1 重排回归，DV boundary_chip1 F30 假提交暴露，详见[校验和 §10](./checksum.html)）：本图所示参与集自始为设计意图，修复后 RTL 才真正兑现——**图中脉冲已移至 0x0A 行 PWRC_P[1:0] 单元格**（F30 写入的字段）；checksum 机制本身 1023v1 增加了首帧/幻影防护（不参与地址范围不变，见[校验和 §9](./checksum.html)）。
 
 标出参与 checksum XOR 累加的地址；同一地址在两种 chip_sel 下字段不同时拆成双行展示。
 
@@ -368,19 +368,19 @@ chip_sel=1 模式下 POR 后默认值；红色标出与 chip_sel=0 不同、由 
 
 ## 4. LSI 保护范围
 
-这张图展示各地址在 LSI_PRTECT 下的保护状态（红色=输出/读回经保护掩码，绿色=不受保护，紫色=密码寄存器 0x30），用于理解密码解锁前后的寄存器可见性差异。**0827v1 全部重生成**：字段名/默认值直接取自 `chip_sel0_register_address_map.md`，保护状态对照 RTL 真值；`0x38[6]` 新增 `reg_eol`（受保护）；`0x33[6:2]` 原 `sw_reg_lane_ctrl` 改 Reserved；`0x02/0x03/0x04` 新增单 bit lane_ctrl（地址 ≤0x1F，不受保护）；保护范围自 0810v1 起不变（reg48/reg160/reg161 无掩码、reg147 保留保护）。**1023v1**：`0x2F[0]` 新增 `SCS_PKT_HALF`（受保护，0x2F 整字节本就在保护窗 0x20~0x2F 内，保护范围不变）。**1027v1**：`0x1D[7:3]` 新增 `khead_20b_sel[4:0]`（无 LSI_PRTECT 门控，0x1D 本就在保护窗外，保护状态不变）。
+这张图展示各地址在 LSI_PRTECT 下的保护状态（红色=输出/读回经保护掩码，绿色=不受保护，紫色=密码寄存器 0x30），用于理解密码解锁前后的寄存器可见性差异。**0827v1 全部重生成**：字段名/默认值直接取自 `chip_sel0_register_address_map.md`，保护状态对照 RTL 真值；`0x38[6]` 新增 `reg_eol`（受保护）；`0x33[6:2]` 原 `sw_reg_lane_ctrl` 改 Reserved；`0x02/0x03/0x04` 新增单 bit lane_ctrl（地址 ≤0x1F，不受保护）；保护范围自 0810v1 起不变（reg48/reg160/reg161 无掩码、reg147 保留保护）。**1023v1**：`0x2F[0]` 新增 `SCS_PKT_HALF`（受保护，0x2F 整字节本就在保护窗 0x20~0x2F 内，保护范围不变）。**1111v1**：`0x1D` 位图为 `[7:5] khead_20b_sel[2:0]`（默认 `3'b000`）+ `[4] BACSCR_EOL` + `[3:1] SP_S[2:0]` + `[0] VPS_EN_0`（无 LSI_PRTECT 门控，0x1D 本就在保护窗外，保护状态不变）。
 
 ![LSI 保护范围](./images/anim/lsi_unprotected_address_map.svg?v=20261101)
 
 ## 5. 复位域分类
 
-这张图基于 `LC_CPUWR.v` 寄存器声明中的复位域属性（数据同步至 1027v1），用于判断全局复位或局部复位后哪些配置会被清零、哪些会保持。1023v1 新增的 `0x2F[0] SCS_PKT_HALF` 与字节其余位同属 **N_RST_NLOCK**（`shadow_47_F` 复位块），复位域分类无变化；1027v1 新增的 `0x1D[7:3] khead_20b_sel` 同属 **N_RST_NLOCK**（`R_REG29_F` 复位块，复位 `8'h00`），复位域分类无变化。
+这张图基于 `LC_CPUWR.v` 寄存器声明中的复位域属性（数据同步至 1111v1），用于判断全局复位或局部复位后哪些配置会被清零、哪些会保持。1023v1 新增的 `0x2F[0] SCS_PKT_HALF` 与字节其余位同属 **N_RST_NLOCK**（`shadow_47_F` 复位块），复位域分类无变化；`0x1D` 的 `khead_20b_sel[2:0]`/`BACSCR_EOL`/`SP_S[2:0]`/`VPS_EN_0` 同属 **N_RST_NLOCK**（`R_REG29_F` 复位块，复位 `8'h00`），复位域分类无变化。
 
 > **0827v1 注记**：新增的单 bit `sw_reg_lane_ctrl0~4`（`0x02[1:0]`/`0x03[1:0]`/`0x04[0]`）在 `LC_REG_MAPPING` 中为纯 assign 输出、无独立存储，复位域随承载寄存器 `R_REG02/03/04_F`，均为 **N_RST_NLOCK**；`0x38[6] reg_eol` 同属 N_RST_NLOCK（`R_REG56_F` 复位块）；`0x33[6:2]` 改 Reserved 后复位值 `5'b00000`（原 `5'b00010`）。
 
 标出各寄存器所属的复位域；紫色为 N_RST、青色为 RSTN_SCR_EN，其余多为 N_RST_NLOCK。（0819v1 起端口侧 `N_RST`/`N_RST_NLOCK`/`RSTN_SCR_EN` 已改名 `RSTN`/`RSTN_NLOCK_NORMAL` 等，图中保留旧名以对应复位域语义。）
 
-从 RTL 端口注释与 always 块敏感列表可见：`N_RST` 是全局异步复位，用于影响系统级关键行为的寄存器，如 `0x01 PORSD`、`0x05 CH_SEL`、`0x06 SDC/DPLC_MODE`、`0x20 R_TESTO_SEL`、`0x21 R_UTC` 以及密码寄存器 `0x30 TEST_PRTCT`；`N_RST_NLOCK` 是 Lock 丢失/未锁定复位，覆盖其余大部分普通控制与状态寄存器。
+从 RTL 端口注释与 always 块敏感列表可见：`N_RST` 是全局异步复位，用于影响系统级关键行为的寄存器，如 `0x01 PORSD`、`0x05 CH_SEL`、`0x06 DPLC_GROUP/DPOLINV/AVE_MODE/DPLC_MODE/SDC`（20261111 表起 bit0=VSYNC_SEL，属 N_RST_NLOCK 域）、`0x20 R_TESTO_SEL`、`0x21 R_UTC` 以及密码寄存器 `0x30 TEST_PRTCT`；`N_RST_NLOCK` 是 Lock 丢失/未锁定复位，覆盖其余大部分普通控制与状态寄存器。
 
 SPEC 中「I2C_EN=1 时所有寄存器不做 unlock reset」的 RTL 路径为：通过 I2C 向 `0xF0` 写 `0x5A`、向 `0xF1` 写 `0xA5` 后，`I2C_EN_CTL.v` 输出 `I2C_EN=1`；`I2C_CTL.v` 中 `assign TEST_EN = I2C_EN`，该信号作为 `LC_CPUWR` 的 `I_TEST_REG_EN` 输入；于是 `N_RST_NLOCK_NORMAL = N_RST_NLOCK || I_TEST_REG_EN = 1`，`N_RST_NLOCK` 复位域对所有寄存器失效。
 
@@ -634,4 +634,4 @@ const chapters = [
 </body>
 </html>
 
-<!-- ymzhu 2026-11-17 19:27 -->
+<!-- ymzhu 2026-11-18 17:13 -->

@@ -349,7 +349,7 @@
 | 3 | **BACSCR_EOL** | `R_BACSCR_EOL = LSI_PRTECT?R_REG56_F[7]:1'b0`（0x38[7]） | `R_BACSCR_EOL = R_REG29_F[4]`（**0x1D[4]**，默认 0 不变，无 LSI 门控） |
 | 4 | **VPS_EN[1]** | LC_CPUWR `VPS_EN_1 = R_REG03_F[7]`（F 0x03[7]） | LC_CPUWR 端口/assign **删除**；LC_REG_MAPPING **新增输出** `VPS_EN_1 = R_REG03_L[7]`（**L 0x43[7]**） |
 
-**编码语义（新）**：TP_SEL 00=TP&PORSD / 01=TP / 10=K3 / **11=setting（默认）**；khead_20b_sel **3'b101=40bit、其余=20bit（默认）**；VPS_EN[1]：BKDU&VPS_EN[1]=1 → Sout short to vcom & DRA_OP OFF。
+**编码语义（新）**：TP_SEL 00=TP&PORSD / 01=TP / 10=K3 / **11=setting（默认）**；khead_20b_sel **3'b101=40bit、其余=20bit（默认）**（20261111 表补充限定：该寄存器**仅用于 normal encoding**）；VPS_EN[1]：BKDU&VPS_EN[1]=1 → Sout short to vcom & DRA_OP OFF。
 
 **0x08 字节默认 0x00 → 0x30**（TP_SEL 字段移入 [5:4]，R_REG08_F 与 shadow_08_F 三处复位同步改）。**旧位回 Reserved**：0x33[6:2] / 0x34[7:6] / 0x38[7] / 0x03[7]（存储保留、可写可读回，仅摘输出+注释，遵循 0827v1 0x33 先例）。
 
@@ -588,5 +588,6 @@ const article = document.getElementById('article');
   </script>
   <script src="./fx.js?v=11"></script>
 </body>
-<!-- ymzhu 2026-11-17 20:20 -->
 </html>
+
+<!-- ymzhu 2026-11-18 16:15 -->

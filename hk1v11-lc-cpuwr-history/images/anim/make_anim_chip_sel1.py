@@ -3,24 +3,24 @@
 """make_anim_chip_sel1.py — chip_sel1_register_map.svg 动画版生成器
 （Motion Kit v4；整体重写 v1，v1 类名/delay/呼吸逻辑不沿用）。
 
-源（只读）:  ../chip_sel0_register_map.svg
-输出:        chip_sel0_register_map.svg
+源（只读）:  ../chip_sel1_register_map.svg
+输出:        chip_sel1_register_map.svg
 
-v4 规格（1100×2946，chip_sel=1 寄存器默认字节映射 · 51 行）：
-- 入场：head 标题+位号列+POR 表头(0) → 51 个寄存器行 0.15 起 0.03s 递进
-  （至 1.65）→ 底部图例+脚注 head(1.85)。一次性总长 2.4s ≤ 2.5s。
+v4 规格（1100×3060，chip_sel=1 寄存器默认字节映射 · 53 行 = 48 寄存器行 + 5 折叠行）：
+- 入场：head 标题+位号列+POR 表头(0) → 53 行 0.15 起 0.03s 递进
+  （至 1.71）→ 底部图例+脚注 head(1.8)。一次性总长 2.35s ≤ 2.5s。
 - 稳态（v4.2 数据密集清效；取代 v1 的 233 处低幅呼吸）：
-  本图 51 行 ≥ 20 行阈值 = 数据密集（§3 数据密度硬指标，2026-10-29
+  本图 53 行 ≥ 20 行阈值 = 数据密集（§3 数据密度硬指标，2026-10-29
   用户定调"行列多时呼吸严重影响读数体验"）——数据区禁一切弥漫动效：
-  · v4.2 删除：51 行整行 cellwave 行波（原 0.2s/行、周期 10.2s 地址扫描
+  · v4.2 删除：53 行整行 cellwave 行波（原 0.2s/行、周期 10.2s 地址扫描
     波）与 POR 默认值列 sweepband 语义扫光（含 defs 渐变/clipPath）。
   · 脉冲 pulse×3（v4.1 为 ×4，密集规则 ≤3 → 删 0x30 TEST_PRTCT 行脉冲，
-    该行语义已由 chip_sel0 图的 0x30 pulse 承担；cs=1 独有的 ★ 回拼行
-    与 khead 变更格全保留；相位 -0.7 / -1.4 / -2.1）：
-    0x33 行 khead_20b_sel[4:0] 单元格 pulse（琥珀，LC_CPUWR 1027v1 变更格）；
-    0x0A 行组（PWRC ★ 回拼行，LC_REG_MAPPING 回拼实现、含 checksum 修复
-    相关 PWRC 字节）pulse-b（蓝，整行组，-1.4s）；
-    0x09 行组（SR_NF/NR/PF/PR ★ 回拼行）pulse-t（深青，-2.1s）。
+    该行语义已由 chip_sel0 图的 0x30 pulse 承担）：
+    0x1D 行 khead_20b_sel[2:0] 单元格（rect+2text 三连）pulse（琥珀，
+    -0.7s，1111v1 位图里 khead 字段落在 0x1D[7:5]）；
+    0x0A 行组（PWRC 等 cs=1 独有寄存器行，Reg_1V11 CHIP_SEL=1 才有）pulse-b
+    （蓝，整行组，-1.4s）；
+    0x09 行组（cs=1 独有寄存器行）pulse-t（深青，-2.1s）。
   · chrome 呼吸 cellwave×1（v4.2 第二稳态族补足，唯一许可方式）：
     底部图例+脚注组（非数据 chrome）kit 原幅呼吸（wave 0.72 幅度，
     2.6s）——数据行零波、读数区静止。
@@ -76,13 +76,13 @@ KIT_CSS = "\n".join([
 ])
 
 LABEL_X = "158"
-N_ROWS = 51
+N_ROWS = 53        # 1111v1：48 寄存器行 + 5 折叠行（钉子：与源 SVG 行标签数一致）
 ROW_STEP = 0.03
 # v4.2 密集清效：0x30 行脉冲删（≤3 上限；语义由 chip_sel0 图承担），
-# 保留 khead 变更格 + cs=1 独有的 0x09/0x0A ★ 回拼行
-ROW_PULSES = {"0x0A": ("pulse-b", "-1.4s"),        # PWRC ★ 回拼行
-              "0x09": ("pulse-t", "-2.1s")}        # v4.1：SR_* ★ 回拼行
-CELL_PULSES = {"0x33": ("khead_20b_sel[4:0]", "pulse", "-0.7s")}
+# 保留 0x1D khead 变更格 + cs=1 独有的 0x09/0x0A 行组
+ROW_PULSES = {"0x0A": ("pulse-b", "-1.4s"),        # cs=1 独有寄存器行（PWRC 等）
+              "0x09": ("pulse-t", "-2.1s")}        # cs=1 独有寄存器行
+CELL_PULSES = {"0x1D": ("khead_20b_sel[2:0]", "pulse", "-0.7s")}   # 1111v1：khead 字段现落 0x1D[7:5]
 
 
 def attrs_of(line):
@@ -256,4 +256,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-# ymzhu 2026-11-17 19:34
+# ymzhu 2026-11-18 16:36
