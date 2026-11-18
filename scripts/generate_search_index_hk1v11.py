@@ -101,10 +101,10 @@ def main():
         })
     out_js = os.path.join(SITE_DIR, 'search-index.js')
     payload = json.dumps(index, ensure_ascii=False)
-    with open(out_js, 'w', encoding='utf-8') as f:
+    with open(out_js, 'w', encoding='utf-8', newline='') as f:
         f.write('window.SEARCH_INDEX = ' + payload + ';\n')
     out_json = os.path.join(SITE_DIR, 'search-index.json')
-    with open(out_json, 'w', encoding='utf-8') as f:
+    with open(out_json, 'w', encoding='utf-8', newline='') as f:
         json.dump(index, f, ensure_ascii=False, indent=1)
     total = sum(len(p['sections']) for p in index)
     print('Generated %s: %d pages, %d sections' % (out_js, len(index), total))
@@ -113,4 +113,4 @@ def main():
 if __name__ == '__main__':
     main()
 
-# ymzhu 2026-10-13 16:40
+# ymzhu 2026-11-18 18:25
