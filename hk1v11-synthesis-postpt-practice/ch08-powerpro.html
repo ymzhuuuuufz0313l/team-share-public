@@ -241,7 +241,7 @@ WARNING: PowerPro 读取的 RTL 必须是可综合代码，无法综合会 inter
 
 ### 4.5 跨项目对比：1V11 vs 1V22（HV1V22）同频 4.46G 模块级功耗
 
-> 数据源：1V11 = 1117 包实测（`rep_dir_1lane_4g5_1117`，11-17，Initial **27044 µW**）；1V22 = 1lane@4.46G（1015V1 `rep_1lane_4p5g_dir`，Initial 18969 µW）。两侧同工具（PowerPro 2024.2_1）同库（ENEXCHIP M31HSSC900EL150）同 Initial 口径、同 4.46G 频率档。总差距 = **8074 µW**（按 1V22 中心值 18970 µW 计）。
+> 数据源：1V11 = 1117 包实测（`rep_dir_1lane_4g5_1117`，11-17，Initial **27044 µW**）；1V22 = 1lane@4.46G（1015V1 `rep_1lane_4p5g_dir`，Initial 18970 µW）。两侧同工具（PowerPro 2024.2_1）同库（ENEXCHIP M31HSSC900EL150）同 Initial 口径、同 4.46G 频率档。总差距 = **8074 µW**（按 1V22 中心值 18970 µW 计）。
 
 <div class="section-title">对比 · 1V11 vs 1V22 @4.46G 净差对账</div>
 <div class="chapter-grid" style="margin-bottom: 12px;">
@@ -271,13 +271,15 @@ WARNING: PowerPro 读取的 RTL 必须是可综合代码，无法综合会 inter
     <div class="desc">rx_phy EQ/LEQ 4196 + MON_DISP 588</div>
   </div>
 </div>
-<div style="font-size: 12px; color: var(--muted); margin: -2px 0 10px;">1V22 未分类残差 −0.90 mW（11 组和 18068 vs 中心 18970）</div>
+<div style="font-size: 12px; color: var(--muted); margin: -2px 0 10px;">1V22 未分类残差 −0.90 mW（BAR 口径 11 组和 18068 vs 中心 18970，缺口 902 µW）；DONUT 口径七片实测和 18069 + 残差片 901 = 中心 18970 µW（片和恒等中心，见 §4.5.1 图注）</div>
 
 #### 4.5.1 功耗组成可视化
 
-![1V11 vs 1V22 Module Power Comparison](./images/anim/power_module_compare_1v11_1v22.svg?v=20261117)
+![1V11 vs 1V22 Module Power Comparison](./images/anim/power_module_compare_1v11_1v22.svg?v=20261118a)
 
-![1V11 vs 1V22 Power Composition Donut](./images/anim/power_composition_donut_1v11_1v22.svg?v=20261117)
+![1V11 vs 1V22 Power Composition Donut](./images/anim/power_composition_donut_1v11_1v22.svg?v=20261118a)
+
+> **图注（A0-7）**：1V22 环七片实测和 18069 + 未分类残差片 **901** = 中心 **18970 µW**（片和恒等中心）；百分比分母 = 中心 18970 µW（不再用实测片之和 18069），逐片一位小数舍入后合计 99.9%~100.1% 属正常舍入。 <!-- donut-A0-7 -->
 
 #### 4.5.2 模块级功耗对比（按功能块对齐，组级口径）
 
@@ -306,8 +308,8 @@ WARNING: PowerPro 读取的 RTL 必须是可综合代码，无法综合会 inter
 | MON_DISP（校准屏显）| — | **588** | **−588** | 1V22 独有 |
 | I2C | —（含于「其他小模块」） | 4 | —（含于「其他小模块」） | 两侧均不单列 |
 | **1V22 多出小计** | | | **−4784** | |
-| **1V22 未分类残差** | — | — | **−902** | 1V22 11 组之和 18068 vs 中心 18970 µW 的缺口 |
-| **净差距** | 27044.19 | 18969 | **= 8074.19** ✓ | 按 1V22 中心值 18970 µW 计（27044.19 − 18970）；表内 1V22 列沿用站点既有 18969 显示值 |
+| **1V22 未分类残差** | — | — | **−902** | 1V22 11 组之和 18068 vs 中心 18970 µW 的缺口（11 组口径，= 902 µW；donut 七片口径见 §4.5.1 图注） |
+| **净差距** | 27044.19 | 18970 | **= 8074.19** ✓ | 按 1V22 中心值 18970 µW 计（27044.19 − 18970）；1V22 列同为中心值（N-5 收口，不再有 18969 显示口径） |
 
 </div>
 
@@ -321,7 +323,7 @@ WARNING: PowerPro 读取的 RTL 必须是可综合代码，无法综合会 inter
 - **1V11 明确纯新增**（1V22 活跃层级无对应功能）：面板 SD 时序族 3128 + 长编码 886 ≈ **4.01 mW**
 - **共有/等价功能实现差**：短编码 2173 + DTCTL 1580 + 其他 1053 + ANCTL 1043 + 配置 873 + 时钟 519 ≈ **7.24 mW**——同功能但 1V11 独立模块 + 零细门控 + 全速域实现功耗更高（根因：双引擎并行 + 引擎内零细粒度 ICG + 集中时钟 mux + 全速域）
 - **位置迁移**（BUFFER_I/K 码对齐在 1V22 沉入 rx_phy）：双边同计净差 **+2.51 mW**
-- **1V22 未分类残差**：**−0.90 mW**（11 组和 18068 vs 中心 18970 µW）
+- **1V22 未分类残差**：**−0.90 mW**（11 组和 18068 vs 中心 18970 µW，BAR 口径；donut 七片 + 残差片 901 闭合中心见 §4.5.1）
 
 > RTL 根因与优化建议详见 `script/_1v11_vs_1v22_hdl_crossvalidate.md`（三模型交叉验证权威版）；面板族逐子功能 1V22 对应物排查见 `script/_panel_ctrl_final.md`（t16 交叉验证最终版，K3 t14 × GLM t15）。关键优化着手点：CHPI_SD_CTRL L270/271 有 2 个被注释的 ICG 可直接启用（1V22 已在 LC_CSPIF_L0 实装同款）。
 
@@ -408,4 +410,4 @@ WARNING: PowerPro 读取的 RTL 必须是可综合代码，无法综合会 inter
   <script src="./fx.js?v=11"></script>
 </body>
 </html>
-<!-- ymzhu 2026-11-18 09:36 -->
+<!-- ymzhu 2026-11-18 09:56 -->

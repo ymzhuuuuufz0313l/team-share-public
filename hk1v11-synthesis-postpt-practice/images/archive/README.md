@@ -37,5 +37,7 @@
 
 | 20261118 | `power_compare_hk11_canon1.svg` | `0e6203b0f90ee39ea27fabeba4cc100c` | 26912 B | 改前静态源（21 行，条形宽 30px 例外 / y 整数格式 / 3 处显示串硬编码）；N-4+N-6+标签例外收口前快照 |
 | 20261118 | `power_compare_hk11_canon1_anim.svg` | `90001e1bfe4110fc32d0f539933b3948` | 34416 B | 改前动画产物（由改前静态源派生，21 行）；N-4+N-6+标签例外收口前快照 |
-
-<!-- ymzhu 2026-11-18 09:36 -->
+| 20261118 | `power_composition_donut_1v11_1v22_canon2.svg` | `7ad2cfd443fde919ed78623db82c16d7` | 16118 B | 改前静态源（7 片环形、中心 18970、片和 18069 缺口 901 µW 未成片、百分比按 18069 分母）；N-5+A0-7 残差成片 + 分母改中心前快照 |
+| 20261118 | `power_composition_donut_1v11_1v22_canon2_anim.svg` | `d879486d13b1a9b96d134b452862c112` | 22301 B | 改前动画产物（由改前静态源派生，7 片）；同上快照 |
+| 20261118 | `power_composition_donut_1v11_1v22_canon2.png` | `b2c97face80d0741b6bf75d645355afa` | 291478 B | 改前 PNG 预览（7 片）；同上快照 |
+<!-- ymzhu 2026-11-18 09:56 -->

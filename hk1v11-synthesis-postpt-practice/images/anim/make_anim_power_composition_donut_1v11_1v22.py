@@ -253,7 +253,8 @@ def build():
     o.append(blk[0])
     o.append("</g>")
     sec = [i for i, s in enumerate(blk) if 'class="sector' in s]
-    assert len(sec) == 7, f"右环 sector 应 7（含 top1），实得 {len(sec)}"
+    # 1V22 环 7 片（3G / 历史）或 8 片（4.46G，A0-7 未分类残差片，2026-11-18）
+    assert len(sec) in (7, 8), f"右环 sector 应 7 或 8（含 top1），实得 {len(sec)}"
     o.append('<g class="fade" style="animation-delay:0.9s">')
     o.append('<g class="pulse" style="animation-delay:-2.1s">')
     o.append(blk[sec[0]])
@@ -365,7 +366,9 @@ def main():
     res = check()
     data = OUT.read_text(encoding="utf-8")
     sector_waves = len(re.findall(r'class="cellwave" style="animation-duration:3\.8s', data))
-    assert sector_waves == 14, f"环向扇区波应 14（左8+右6），实得 {sector_waves}"
+    n_sec = len(re.findall(r'class="sector[ "]', data))
+    assert sector_waves == n_sec - 2, (
+        f"环向扇区波应 = 扇区数-2（两环 top1 不叠波）= {n_sec - 2}，实得 {sector_waves}")
     print("[make_anim_power_composition_donut_1v11_1v22 v4.1]",
           "head=", len(re.findall(r'class="f-cjk (title|subtitle) head"', data)),
           "row=", len(re.findall(r'class="[^"]*row"', data)),
@@ -384,4 +387,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-# ymzhu 2026-11-17 15:45
+# ymzhu 2026-11-18 09:52

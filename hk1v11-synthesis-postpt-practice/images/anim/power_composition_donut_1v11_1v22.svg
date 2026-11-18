@@ -60,7 +60,7 @@
 <defs><filter id="glowF" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="5"/></filter></defs>
 <rect width="1200" height="578" fill="#f4f1ea"/>
 <text class="f-cjk title head" style="animation-delay:0s" x="600" y="32" font-size="21" font-weight="bold" fill="#1c2534" text-anchor="middle">1V11 vs 1V22 功耗组成 @4.46G</text>
-<text class="f-cjk subtitle head" style="animation-delay:0.1s" x="600" y="56" font-size="11" fill="#5b6675" text-anchor="middle">PowerPro Initial Design · 同工具/同库/同日 · 扇区占比 = 组成项 / 该代构成合计（top-N+其他；1V11 已含全部分类，1V22 未含未分类 ~0.9 mW）</text>
+<text class="f-cjk subtitle head" style="animation-delay:0.1s" x="600" y="56" font-size="11" fill="#5b6675" text-anchor="middle">PowerPro Initial Design · 同工具/同库/同日 · 扇区占比 = 组成项 / 该代中心合计（top-N+其他；1V11 已含全部分类，1V22 残差 901 µW 显式成片（片和恒等中心）；占比分母=中心合计，逐片舍入后合计允许 ±0.1）</text>
 <g data-gen="1V11" class="row" style="animation-delay:0.2s">
   <rect x="105.0" y="71" width="30" height="13" rx="3" fill="#0e7490"/>
   <text class="f-cjk" x="120.0" y="81" font-size="8.5" font-weight="bold" fill="#fffdf7" text-anchor="middle">1V11</text>
@@ -90,28 +90,30 @@
   <text class="f-cjk" x="1096.8" y="81" font-size="7.5" fill="#1c2534">其他 <tspan class="f-num" fill="#5b6675">1500.2 µW</tspan></text>
 </g>
 <g data-gen="1V22" class="row" style="animation-delay:0.35s">
-  <rect x="137.0" y="89" width="30" height="13" rx="3" fill="#b45309"/>
-  <text class="f-cjk" x="152.0" y="99" font-size="8.5" font-weight="bold" fill="#fffdf7" text-anchor="middle">1V22</text>
+  <rect x="63.0" y="89" width="30" height="13" rx="3" fill="#b45309"/>
+  <text class="f-cjk" x="78.0" y="99" font-size="8.5" font-weight="bold" fill="#fffdf7" text-anchor="middle">1V22</text>
 <g class="cellwave" style="animation-delay:1.3s">
-  <rect x="175.0" y="90.5" width="9" height="9" rx="2" fill="#b45309" fill-opacity="1.00"/>
-  <text class="f-cjk" x="188.0" y="99" font-size="8" fill="#1c2534">LC_CSPIF_L0(含SD时序核) <tspan class="f-num" fill="#5b6675">6389 µW</tspan></text>
+  <rect x="101.0" y="90.5" width="9" height="9" rx="2" fill="#b45309" fill-opacity="1.00"/>
+  <text class="f-cjk" x="114.0" y="99" font-size="8" fill="#1c2534">LC_CSPIF_L0(含SD时序核) <tspan class="f-num" fill="#5b6675">6389 µW</tspan></text>
 </g>
 <g class="cellwave" style="animation-delay:1.9s">
-  <rect x="340.2" y="90.5" width="9" height="9" rx="2" fill="#b45309" fill-opacity="0.85"/>
-  <text class="f-cjk" x="353.2" y="99" font-size="8" fill="#1c2534">rx_phy(EQ/LEQ) <tspan class="f-num" fill="#5b6675">4196 µW</tspan></text>
+  <rect x="266.2" y="90.5" width="9" height="9" rx="2" fill="#b45309" fill-opacity="0.85"/>
+  <text class="f-cjk" x="279.2" y="99" font-size="8" fill="#1c2534">rx_phy(EQ/LEQ) <tspan class="f-num" fill="#5b6675">4196 µW</tspan></text>
 </g>
 <g class="cellwave" style="animation-delay:2.5s">
-  <rect x="468.8" y="90.5" width="9" height="9" rx="2" fill="#b45309" fill-opacity="0.70"/>
-  <text class="f-cjk" x="481.8" y="99" font-size="8" fill="#1c2534">TOTAL_DTCTL(含DPLC) <tspan class="f-num" fill="#5b6675">3294 µW</tspan></text>
+  <rect x="394.8" y="90.5" width="9" height="9" rx="2" fill="#b45309" fill-opacity="0.70"/>
+  <text class="f-cjk" x="407.8" y="99" font-size="8" fill="#1c2534">TOTAL_DTCTL(含DPLC) <tspan class="f-num" fill="#5b6675">3294 µW</tspan></text>
 </g>
-  <rect x="619.3" y="90.5" width="9" height="9" rx="2" fill="#b45309" fill-opacity="0.56"/>
-  <text class="f-cjk" x="632.3" y="99" font-size="8" fill="#1c2534">CSPI_CMD_ALIGN <tspan class="f-num" fill="#5b6675">2201 µW</tspan></text>
-  <rect x="747.8" y="90.5" width="9" height="9" rx="2" fill="#b45309" fill-opacity="0.44"/>
-  <text class="f-cjk" x="760.8" y="99" font-size="8" fill="#1c2534">LC_CPUWR <tspan class="f-num" fill="#5b6675">727 µW</tspan></text>
-  <rect x="843.8" y="90.5" width="9" height="9" rx="2" fill="#b45309" fill-opacity="0.35"/>
-  <text class="f-cjk" x="856.8" y="99" font-size="8" fill="#1c2534">MON_DISP <tspan class="f-num" fill="#5b6675">588 µW</tspan></text>
-  <rect x="939.7" y="90.5" width="9" height="9" rx="2" fill="#b45309" fill-opacity="0.27"/>
-  <text class="f-cjk" x="952.7" y="99" font-size="8" fill="#1c2534">ANCTL+时钟+其他 <tspan class="f-num" fill="#5b6675">674 µW</tspan></text>
+  <rect x="545.2" y="90.5" width="9" height="9" rx="2" fill="#b45309" fill-opacity="0.56"/>
+  <text class="f-cjk" x="558.2" y="99" font-size="8" fill="#1c2534">CSPI_CMD_ALIGN <tspan class="f-num" fill="#5b6675">2201 µW</tspan></text>
+  <rect x="673.8" y="90.5" width="9" height="9" rx="2" fill="#b45309" fill-opacity="0.44"/>
+  <text class="f-cjk" x="686.8" y="99" font-size="8" fill="#1c2534">LC_CPUWR <tspan class="f-num" fill="#5b6675">727 µW</tspan></text>
+  <rect x="769.7" y="90.5" width="9" height="9" rx="2" fill="#b45309" fill-opacity="0.35"/>
+  <text class="f-cjk" x="782.7" y="99" font-size="8" fill="#1c2534">MON_DISP <tspan class="f-num" fill="#5b6675">588 µW</tspan></text>
+  <rect x="865.6" y="90.5" width="9" height="9" rx="2" fill="#b45309" fill-opacity="0.27"/>
+  <text class="f-cjk" x="878.6" y="99" font-size="8" fill="#1c2534">ANCTL+时钟+其他 <tspan class="f-num" fill="#5b6675">674 µW</tspan></text>
+  <rect x="988.9" y="90.5" width="9" height="9" rx="2" fill="#b45309" fill-opacity="0.21"/>
+  <text class="f-cjk" x="1001.9" y="99" font-size="8" fill="#1c2534">未分类残差(补足至中心) <tspan class="f-num" fill="#5b6675">901 µW</tspan></text>
 </g>
 <g data-gen="1V11" class="donut donutL row" style="animation-delay:0.5s">
 <g class="fade" style="animation-delay:0.55s">
@@ -239,86 +241,98 @@
 </g>
 <g class="fade" style="animation-delay:0.9s">
 <g class="pulse" style="animation-delay:-2.1s">
-  <circle class="sector top1" cx="870" cy="330" r="170" pathLength="100" fill="none" stroke="#b45309" stroke-opacity="1.00" stroke-width="52" stroke-dasharray="35.3589 64.6411" stroke-dashoffset="25.0000"/>
+  <circle class="sector top1" cx="870" cy="330" r="170" pathLength="100" fill="none" stroke="#b45309" stroke-opacity="1.00" stroke-width="52" stroke-dasharray="33.6795 66.3205" stroke-dashoffset="25.0000"/>
 </g>
 </g>
 <g class="fade" style="animation-delay:0.97s">
 <g class="cellwave" style="animation-duration:3.8s;animation-delay:-2.2s">
-  <circle class="sector" cx="870" cy="330" r="170" pathLength="100" fill="none" stroke="#b45309" stroke-opacity="0.85" stroke-width="52" stroke-dasharray="23.2221 76.7779" stroke-dashoffset="89.6411"/>
+  <circle class="sector" cx="870" cy="330" r="170" pathLength="100" fill="none" stroke="#b45309" stroke-opacity="0.85" stroke-width="52" stroke-dasharray="22.1191 77.8809" stroke-dashoffset="91.3205"/>
 </g>
 </g>
 <g class="fade" style="animation-delay:1.04s">
 <g class="cellwave" style="animation-duration:3.8s;animation-delay:-2.5s">
-  <circle class="sector" cx="870" cy="330" r="170" pathLength="100" fill="none" stroke="#b45309" stroke-opacity="0.70" stroke-width="52" stroke-dasharray="18.2301 81.7699" stroke-dashoffset="66.4190"/>
+  <circle class="sector" cx="870" cy="330" r="170" pathLength="100" fill="none" stroke="#b45309" stroke-opacity="0.70" stroke-width="52" stroke-dasharray="17.3643 82.6357" stroke-dashoffset="69.2014"/>
 </g>
 </g>
 <g class="fade" style="animation-delay:1.11s">
 <g class="cellwave" style="animation-duration:3.8s;animation-delay:-2.8s">
-  <circle class="sector" cx="870" cy="330" r="170" pathLength="100" fill="none" stroke="#b45309" stroke-opacity="0.56" stroke-width="52" stroke-dasharray="12.1811 87.8189" stroke-dashoffset="48.1889"/>
+  <circle class="sector" cx="870" cy="330" r="170" pathLength="100" fill="none" stroke="#b45309" stroke-opacity="0.56" stroke-width="52" stroke-dasharray="11.6025 88.3975" stroke-dashoffset="51.8371"/>
 </g>
 </g>
 <g class="fade" style="animation-delay:1.18s">
 <g class="cellwave" style="animation-duration:3.8s;animation-delay:-3.1s">
-  <circle class="sector" cx="870" cy="330" r="170" pathLength="100" fill="none" stroke="#b45309" stroke-opacity="0.44" stroke-width="52" stroke-dasharray="4.0235 95.9765" stroke-dashoffset="36.0078"/>
+  <circle class="sector" cx="870" cy="330" r="170" pathLength="100" fill="none" stroke="#b45309" stroke-opacity="0.44" stroke-width="52" stroke-dasharray="3.8324 96.1676" stroke-dashoffset="40.2346"/>
 </g>
 </g>
 <g class="fade" style="animation-delay:1.25s">
 <g class="cellwave" style="animation-duration:3.8s;animation-delay:-3.4s">
-  <circle class="sector" cx="870" cy="330" r="170" pathLength="100" fill="none" stroke="#b45309" stroke-opacity="0.35" stroke-width="52" stroke-dasharray="3.2542 96.7458" stroke-dashoffset="31.9843"/>
+  <circle class="sector" cx="870" cy="330" r="170" pathLength="100" fill="none" stroke="#b45309" stroke-opacity="0.35" stroke-width="52" stroke-dasharray="3.0996 96.9004" stroke-dashoffset="36.4022"/>
 </g>
 </g>
 <g class="fade" style="animation-delay:1.32s">
 <g class="cellwave" style="animation-duration:3.8s;animation-delay:-3.7s">
-  <circle class="sector" cx="870" cy="330" r="170" pathLength="100" fill="none" stroke="#b45309" stroke-opacity="0.27" stroke-width="52" stroke-dasharray="3.7301 96.2699" stroke-dashoffset="28.7301"/>
+  <circle class="sector" cx="870" cy="330" r="170" pathLength="100" fill="none" stroke="#b45309" stroke-opacity="0.27" stroke-width="52" stroke-dasharray="3.5530 96.4470" stroke-dashoffset="33.3026"/>
+</g>
+</g>
+<g class="fade" style="animation-delay:1.39s">
+<g class="cellwave" style="animation-duration:3.8s;animation-delay:-4s">
+  <circle class="sector" cx="870" cy="330" r="170" pathLength="100" fill="none" stroke="#b45309" stroke-opacity="0.21" stroke-width="52" stroke-dasharray="4.7496 95.2504" stroke-dashoffset="29.7496"/>
 </g>
 </g>
 <g class="fade" style="animation-delay:1.45s">
   <g class="lbl">
-    <polyline class="lead" points="1048.3,241.7 1060.6,237.6"/>
-    <text class="f-cjk" x="1054.6" y="232.6" font-size="10" fill="#1c2534" text-anchor="start">LC_CSPIF_L0(含SD时序核)</text>
-    <text class="f-num val" x="1054.6" y="246.6" font-size="9.5" fill="#5b6675" text-anchor="start">6389 µW · 35.4%</text>
+    <polyline class="lead" points="1043.4,232.4 1055.5,227.9"/>
+    <text class="f-cjk" x="1049.5" y="222.9" font-size="10" fill="#1c2534" text-anchor="start">LC_CSPIF_L0(含SD时序核)</text>
+    <text class="f-num val" x="1049.5" y="236.9" font-size="9.5" fill="#5b6675" text-anchor="start">6389 µW · 33.7%</text>
   </g>
 </g>
 <g class="fade" style="animation-delay:1.50s">
   <g class="lbl">
-    <polyline class="lead" points="907.7,525.4 915.0,531.3"/>
-    <text class="f-cjk" x="909.0" y="526.3" font-size="10" fill="#1c2534" text-anchor="start">rx_phy(EQ/LEQ)</text>
-    <text class="f-num val" x="909.0" y="540.3" font-size="9.5" fill="#5b6675" text-anchor="start">4196 µW · 23.2%</text>
+    <polyline class="lead" points="934.6,518.2 942.9,523.8"/>
+    <text class="f-cjk" x="936.9" y="518.8" font-size="10" fill="#1c2534" text-anchor="start">rx_phy(EQ/LEQ)</text>
+    <text class="f-num val" x="936.9" y="532.8" font-size="9.5" fill="#5b6675" text-anchor="start">4196 µW · 22.1%</text>
   </g>
 </g>
 <g class="fade" style="animation-delay:1.55s">
   <g class="lbl">
-    <polyline class="lead" points="691.6,418.2 679.3,420.3"/>
-    <text class="f-cjk" x="685.3" y="415.3" font-size="10" fill="#1c2534" text-anchor="end">TOTAL_DTCTL(含DPLC)</text>
-    <text class="f-num val" x="685.3" y="429.3" font-size="9.5" fill="#5b6675" text-anchor="end">3294 µW · 18.2%</text>
+    <polyline class="lead" points="712.9,452.2 701.4,455.5"/>
+    <text class="f-cjk" x="707.4" y="450.5" font-size="10" fill="#1c2534" text-anchor="end">TOTAL_DTCTL(含DPLC)</text>
+    <text class="f-num val" x="707.4" y="464.5" font-size="9.5" fill="#5b6675" text-anchor="end">3294 µW · 17.4%</text>
   </g>
 </g>
 <g class="fade" style="animation-delay:1.60s">
   <g class="lbl">
-    <polyline class="lead" points="695.0,235.2 682.9,230.9"/>
-    <text class="f-cjk" x="688.9" y="225.9" font-size="10" fill="#1c2534" text-anchor="end">CSPI_CMD_ALIGN</text>
-    <text class="f-num val" x="688.9" y="239.9" font-size="9.5" fill="#5b6675" text-anchor="end">2201 µW · 12.2%</text>
+    <polyline class="lead" points="677.1,280.9 664.4,278.2"/>
+    <text class="f-cjk" x="670.4" y="273.2" font-size="10" fill="#1c2534" text-anchor="end">CSPI_CMD_ALIGN</text>
+    <text class="f-num val" x="670.4" y="287.2" font-size="9.5" fill="#5b6675" text-anchor="end">2201 µW · 11.6%</text>
   </g>
 </g>
 <g class="fade" style="animation-delay:1.65s">
   <g class="lbl">
-    <polyline class="lead" points="763.4,162.0 753.7,182.4"/>
-    <text class="f-cjk" x="759.7" y="177.4" font-size="10" fill="#1c2534" text-anchor="end">LC_CPUWR</text>
-    <text class="f-num val" x="759.7" y="191.4" font-size="9.5" fill="#5b6675" text-anchor="end">727 µW · 4.0%</text>
+    <polyline class="lead" points="722.2,196.7 711.0,212.3"/>
+    <text class="f-cjk" x="717.0" y="207.3" font-size="10" fill="#1c2534" text-anchor="end">LC_CPUWR</text>
+    <text class="f-num val" x="717.0" y="221.3" font-size="9.5" fill="#5b6675" text-anchor="end">727 µW · 3.8%</text>
   </g>
 </g>
 <g class="fade" style="animation-delay:1.70s">
   <g class="lbl">
-    <polyline class="lead" points="804.3,142.2 796.0,153.4"/>
-    <text class="f-cjk" x="802.0" y="148.4" font-size="10" fill="#1c2534" text-anchor="end">MON_DISP</text>
-    <text class="f-num val" x="802.0" y="162.4" font-size="9.5" fill="#5b6675" text-anchor="end">588 µW · 3.3%</text>
+    <polyline class="lead" points="754.5,167.9 744.5,183.3"/>
+    <text class="f-cjk" x="750.5" y="178.3" font-size="10" fill="#1c2534" text-anchor="end">MON_DISP</text>
+    <text class="f-num val" x="750.5" y="192.3" font-size="9.5" fill="#5b6675" text-anchor="end">588 µW · 3.1%</text>
   </g>
 </g>
 <g class="fade" style="animation-delay:1.75s">
   <g class="lbl">
-    <polyline class="lead" points="846.7,132.4 845.9,124.4"/>
-    <text class="f-cjk" x="845.9" y="119.4" font-size="10" fill="#1c2534" text-anchor="middle">ANCTL+时钟+其他</text>
-    <text class="f-num val" x="845.9" y="133.4" font-size="9.5" fill="#5b6675" text-anchor="middle">674 µW · 3.7%</text>
+    <polyline class="lead" points="790.7,147.5 781.9,154.3"/>
+    <text class="f-cjk" x="787.9" y="149.3" font-size="10" fill="#1c2534" text-anchor="end">ANCTL+时钟+其他</text>
+    <text class="f-num val" x="787.9" y="163.3" font-size="9.5" fill="#5b6675" text-anchor="end">674 µW · 3.6%</text>
+  </g>
+</g>
+<g class="fade" style="animation-delay:1.80s">
+  <g class="lbl">
+    <polyline class="lead" points="840.4,133.2 839.4,125.3"/>
+    <text class="f-cjk" x="839.4" y="120.3" font-size="10" fill="#1c2534" text-anchor="middle">未分类残差(补足至中心)</text>
+    <text class="f-num val" x="839.4" y="134.3" font-size="9.5" fill="#5b6675" text-anchor="middle">901 µW · 4.7%</text>
   </g>
 </g>
   <g class="center centerR fade" style="animation-delay:1.75s">
@@ -330,4 +344,4 @@
   </g>
 </g>
 </svg>
-<!-- ymzhu 2026-11-17 15:53 -->
+<!-- ymzhu 2026-11-18 09:52 -->
