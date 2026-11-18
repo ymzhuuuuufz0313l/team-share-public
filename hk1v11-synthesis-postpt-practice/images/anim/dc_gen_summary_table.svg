@@ -75,7 +75,7 @@
       <rect width="2" height="28" fill="#0e7490"/>
     </pattern>
     <clipPath id="clipD2"><rect x="0" y="396" width="3928" height="93"/></clipPath>
-<linearGradient id="sweepG-1" gradientUnits="userSpaceOnUse" x1="-2500.8" y1="0" x2="1667.2" y2="0"><stop offset="0" stop-color="#ffffff" stop-opacity="0"/><stop offset="0.40" stop-color="#ffffff" stop-opacity="0"/><stop offset="0.46" stop-color="#ffffff" stop-opacity=".3"/><stop offset="0.5" stop-color="#ffffff" stop-opacity=".65"/><stop offset="0.54" stop-color="#ffffff" stop-opacity=".3"/><stop offset="0.60" stop-color="#ffffff" stop-opacity="0"/><stop offset="1" stop-color="#ffffff" stop-opacity="0"/></linearGradient>
+<linearGradient id="sweepG-1" gradientUnits="userSpaceOnUse" x1="-3129.6" y1="0" x2="2086.4" y2="0"><stop offset="0" stop-color="#ffffff" stop-opacity="0"/><stop offset="0.40" stop-color="#ffffff" stop-opacity="0"/><stop offset="0.46" stop-color="#ffffff" stop-opacity=".3"/><stop offset="0.5" stop-color="#ffffff" stop-opacity=".65"/><stop offset="0.54" stop-color="#ffffff" stop-opacity=".3"/><stop offset="0.60" stop-color="#ffffff" stop-opacity="0"/><stop offset="1" stop-color="#ffffff" stop-opacity="0"/></linearGradient>
 <clipPath id="sweepC-1"><use href="#shT0"/><use href="#shT1"/><use href="#shT2"/></clipPath>
   </defs>
   <rect x="0" y="0" width="3928" height="489" fill="#fffdf7"/>
@@ -164,6 +164,6 @@
 </g>
   <rect class="tl" x="0" y="216" width="3926" height="6" fill="#0e7490" opacity="0"/>
   <rect x="1.5" y="1.5" width="3925" height="486" fill="none" stroke="#ddd6c8" stroke-width="3"/>
-<g class="fade" style="animation-delay:0.85s"><g clip-path="url(#sweepC-1)"><rect class="sweepband" x="-2500.8" y="200" width="4168" height="280" fill="url(#sweepG-1)" style="--sweepP:4168px"/></g></g>
+<g class="fade" style="animation-delay:0.85s"><g clip-path="url(#sweepC-1)"><rect class="sweepband" x="-3129.6" y="200" width="5216" height="280" fill="url(#sweepG-1)" style="--sweepP:5216px"/></g></g>
 </svg>
-<!-- ymzhu 2026-11-02 19:15 -->
+<!-- ymzhu 2026-11-19 04:19 -->
