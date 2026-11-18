@@ -3,21 +3,22 @@
 """make_anim_lsi — lsi_unprotected_address_map.svg 动画版生成器
 （Motion Kit v4；整体重写 v1，v1 类名/delay/呼吸逻辑不沿用）。
 
-源（只读）:  ../checksum_address_map.svg
-输出:        checksum_address_map.svg
+源（只读）:  ../lsi_unprotected_address_map.svg
+输出:        lsi_unprotected_address_map.svg
 
 v4 规格（1198×2894，LC_CPUWR 1023v1 寄存器 LSI_PRTECT 保护状态 · 50 行）：
 - 入场：head 标题+副标题+位号列头(0) → 50 个寄存器行 0.15 起 0.03s 递进
-  （至 1.62）→ 底部图例+脚注 head(1.85)。一次性总长 2.4s ≤ 2.5s。
+  （末行 1.62 起）→ 底部图例+脚注 head(1.5)。末行 rowIn(.55s) 收尾，
+  一次性总长 1.62+0.55 = 2.17s ≤ 2.5s。
 - 稳态（v4.2 数据密集清效；取代 v1 的 233 处低幅呼吸）：
   本图 50 行 ≥ 20 行阈值 = 数据密集（§3 数据密度硬指标，2026-10-29
   用户定调"行列多时呼吸严重影响读数体验"）——数据区禁一切弥漫动效：
   · v4.2 删除：50 行整行 cellwave 行波（原 0.2s/行、周期 10.0s 地址扫描
     波）。本图无扫光列，无 defs 清理项。
-  · 脉冲 pulse×3（v4.1 为 ×4，密集规则 ≤3 → 删 0x38 reg_eol 行脉冲，
+  · 脉冲 pulse×3（v4.1 为 ×4，密集规则 ≤3 → 删 0x39 reg_eol 行脉冲，
     该行在 reset_domain_address_map 图仍有 pulse-b 强调；本图保留
     受保护/不受保护边界的核心语义；相位 -0.7 / -2.1 / 0）：
-    0x33 行 khead_20b_sel[4:0] 单元格 pulse（琥珀，-0.7s，
+    0x1D[7:5] khead_20b_sel[2:0] 单元格 pulse（琥珀，-0.7s，
     LC_CPUWR 1027v1 变更格）；0x30 密码寄存器行组（TEST_PRTCT，紫色行，
     =8'h72 解锁）pulse-t（深青，-2.1s）；0x20 行组（受保护域起点行，
     PWRC_TSEL/TESTO_EN_OPT/R_TESTO_SEL 测试字段入口，红行）
@@ -78,11 +79,11 @@ KIT_CSS = "\n".join([
 
 LABEL_X = "158"        # 行标签列 x
 ROW_STEP = 0.03        # 入场递进（50 行）
-# v4.2 密集清效：0x38 行脉冲删（≤3 上限；reset_domain 图仍强调该行），
+# v4.2 密集清效：0x39 行脉冲删（≤3 上限；reset_domain 图仍强调该行），
 # 保留 khead 变更格 + 密码行 0x30 + 受保护域起点 0x20
 ROW_PULSES = {"0x30": ("pulse-t", "-2.1s"),
               "0x20": ("pulse", "0s")}            # v4.1：受保护域起点行
-CELL_PULSES = {"0x33": ("khead_20b_sel[4:0]", "pulse", "-0.7s")}
+CELL_PULSES = {"0x1D": ("khead_20b_sel[2:0]", "pulse", "-0.7s")}
 DASHGROW_BANDS = {"0x09"}                          # v4.1：Reserved 带行虚线框
 BAND_GROW = ("3.0s", "-0.5s")
 
@@ -271,4 +272,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-# ymzhu 2026-11-17 19:34
+# ymzhu 2026-11-19 00:59

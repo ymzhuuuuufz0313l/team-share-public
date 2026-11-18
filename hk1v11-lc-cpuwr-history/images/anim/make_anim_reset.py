@@ -3,12 +3,13 @@
 """make_anim_reset — reset_domain_address_map.svg 动画版生成器
 （Motion Kit v4；整体重写 v1，v1 类名/delay/呼吸逻辑不沿用）。
 
-源（只读）:  ../checksum_address_map.svg
-输出:        checksum_address_map.svg
+源（只读）:  ../reset_domain_address_map.svg
+输出:        reset_domain_address_map.svg
 
 v4 规格（866×2956，LC_CPUWR 1023v1 复位域分类 · 51 行）：
 - 入场：head 标题+位号列头(0) → 51 个寄存器行 0.15 起 0.03s 递进
-  （至 1.65）→ 底部图例+脚注 head(1.85)。一次性总长 2.4s ≤ 2.5s。
+  （末行 1.65 起）→ 底部图例+脚注 head(1.5)。末行 rowIn(.55s) 收尾，
+  一次性总长 1.65+0.55 = 2.2s ≤ 2.5s。
 - 稳态（v4.2 数据密集清效；取代 v1 的 233 处低幅呼吸）：
   本图 51 行 ≥ 20 行阈值 = 数据密集（§3 数据密度硬指标，2026-10-29
   用户定调"行列多时呼吸严重影响读数体验"）——数据区禁一切弥漫动效：
@@ -16,11 +17,12 @@ v4 规格（866×2956，LC_CPUWR 1023v1 复位域分类 · 51 行）：
     波）。本图无扫光列，无 defs 清理项。
   · 脉冲 pulse×3 保留（≤3 上限内，v4.1 配置原样；相位 -0.7 / -1.4 /
     -2.1 均布）：
-    0x33 行 khead_20b_sel[4:0] 单元格 pulse（琥珀，LC_CPUWR 1027v1 变更格）；
+    0x1D[7:5] khead_20b_sel[2:0] 单元格 pulse（琥珀，LC_CPUWR 1027v1 变更格）；
     0x30 密码寄存器行组（TEST_PRTCT[7:0]，N_RST 复位域、全图少数橙色行）
     pulse-t（深青）= 特殊复位域指示；
-    0x38 行组（0827v1 新增 reg_eol/reg_eol_det，N_RST_NLOCK 淡蓝多数域
-    内的变更行，密码行/TEST_PRTCT 之外的次关键行）pulse-b（蓝）。
+    0x39[6] 行组（reg_eol/reg_eol_det；0827v1 新增于 0x38[6]，1106v2 移址
+    0x39[6]，0x38[6] 现为 Reserved；N_RST_NLOCK 淡蓝多数域内的变更行，
+    密码行/TEST_PRTCT 之外的次关键行）pulse-b（蓝）。
   · 虚线生长 dashgrow×1 保留（v4.1；非弥漫类，Reserved 带行虚线边框的
     单元素语义强调）：0x0B~0x1C 持续生长回卷（3.0s，-1.2s；源
     dasharray 属性保留、kit CSS 以 7 5 呈现）。稳态 = 脉冲 + 生长
@@ -77,8 +79,8 @@ KIT_CSS = "\n".join([
 
 LABEL_X = "158"        # 行标签列 x
 ROW_STEP = 0.03        # 入场递进（51 行）
-ROW_PULSES = {"0x30": ("pulse-t", "-2.1s"), "0x38": ("pulse-b", "-1.4s")}  # v4.1：+reg_eol 行
-CELL_PULSES = {"0x33": ("khead_20b_sel[4:0]", "pulse", "-0.7s")}
+ROW_PULSES = {"0x30": ("pulse-t", "-2.1s"), "0x39": ("pulse-b", "-1.4s")}  # v4.1：+reg_eol 行（1106 表移址 0x39[6]）
+CELL_PULSES = {"0x1D": ("khead_20b_sel[2:0]", "pulse", "-0.7s")}
 DASHGROW_BANDS = {"0x0B"}                          # v4.1：Reserved 带行虚线框
 BAND_GROW = ("3.0s", "-1.2s")
 
@@ -267,4 +269,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-# ymzhu 2026-11-17 19:34
+# ymzhu 2026-11-19 01:30

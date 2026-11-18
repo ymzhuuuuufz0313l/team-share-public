@@ -33,7 +33,7 @@
 </style>
 <rect width="866" height="2956" fill="#ffffff"/>
 <g class="head">
-<text x="433.0" y="40" text-anchor="middle" font-size="22" font-weight="bold" fill="#1e293b">LC_CPUWR 1023v1 复位域分类</text>
+<text x="433.0" y="40" text-anchor="middle" font-size="22" font-weight="bold" fill="#1e293b">LC_CPUWR 1111v1 复位域分类</text>
 <text x="211.0" y="110" text-anchor="middle" font-size="12" fill="#64748b">[7]</text>
 <text x="293.0" y="110" text-anchor="middle" font-size="12" fill="#64748b">[6]</text>
 <text x="375.0" y="110" text-anchor="middle" font-size="12" fill="#64748b">[5]</text>
@@ -75,15 +75,21 @@
 </g>
 <g class="row" style="animation-delay:0.21s">
 <text x="158" y="256.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x02 (2)</text>
-<rect x="170" y="228" width="163" height="46" fill="#dbeafe" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="251.5" y="249.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">SMART_CS[3:2]</text>
-<text x="251.5" y="263.0" text-anchor="middle" font-size="9.0" fill="#64748b">2'b00</text>
+<rect x="170" y="228" width="81" height="46" fill="#dbeafe" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="210.5" y="249.0" text-anchor="middle" font-size="8.0" font-weight="500" fill="#1e293b">SMART_CS_3</text>
+<text x="210.5" y="263.0" text-anchor="middle" font-size="7.0" fill="#64748b">1'b0</text>
+<rect x="252" y="228" width="81" height="46" fill="#dbeafe" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="292.5" y="249.0" text-anchor="middle" font-size="8.0" font-weight="500" fill="#1e293b">SMART_CS_2</text>
+<text x="292.5" y="263.0" text-anchor="middle" font-size="7.0" fill="#64748b">1'b0</text>
 <rect x="334" y="228" width="163" height="46" fill="#dbeafe" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="415.5" y="249.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">Reserved</text>
 <text x="415.5" y="263.0" text-anchor="middle" font-size="9.0" fill="#64748b">0</text>
-<rect x="498" y="228" width="163" height="46" fill="#dbeafe" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="579.5" y="249.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">SMART_CS[1:0]</text>
-<text x="579.5" y="263.0" text-anchor="middle" font-size="9.0" fill="#64748b">2'b00</text>
+<rect x="498" y="228" width="81" height="46" fill="#dbeafe" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="538.5" y="249.0" text-anchor="middle" font-size="8.0" font-weight="500" fill="#1e293b">SMART_CS_1</text>
+<text x="538.5" y="263.0" text-anchor="middle" font-size="7.0" fill="#64748b">1'b0</text>
+<rect x="580" y="228" width="81" height="46" fill="#dbeafe" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="620.5" y="249.0" text-anchor="middle" font-size="8.0" font-weight="500" fill="#1e293b">SMART_CS_0</text>
+<text x="620.5" y="263.0" text-anchor="middle" font-size="7.0" fill="#64748b">1'b0</text>
 <rect x="662" y="228" width="81" height="46" fill="#dbeafe" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="702.5" y="249.0" text-anchor="middle" font-size="6.7" font-weight="500" fill="#1e293b">sw_reg_lane_ctrl4</text>
 <text x="702.5" y="263.0" text-anchor="middle" font-size="5.7" fill="#64748b">1'b0</text>
@@ -94,7 +100,7 @@
 <g class="row" style="animation-delay:0.24s">
 <text x="158" y="308.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x03 (3)</text>
 <rect x="170" y="280" width="81" height="46" fill="#dbeafe" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="210.5" y="301.0" text-anchor="middle" font-size="8.0" font-weight="500" fill="#1e293b">VPS_EN[1]</text>
+<text x="210.5" y="301.0" text-anchor="middle" font-size="8.0" font-weight="500" fill="#1e293b">Reserved</text>
 <text x="210.5" y="315.0" text-anchor="middle" font-size="7.0" fill="#64748b">1'b0</text>
 <rect x="252" y="280" width="409" height="46" fill="#dbeafe" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="456.5" y="301.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">Reserved</text>
@@ -151,8 +157,8 @@
 <text x="702.5" y="457.0" text-anchor="middle" font-size="8.0" font-weight="500" fill="#1e293b">SDC</text>
 <text x="702.5" y="471.0" text-anchor="middle" font-size="7.0" fill="#64748b">1'b1</text>
 <rect x="744" y="436" width="81" height="46" fill="#dbeafe" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="784.5" y="457.0" text-anchor="middle" font-size="8.0" font-weight="500" fill="#1e293b">Reserved</text>
-<text x="784.5" y="471.0" text-anchor="middle" font-size="7.0" fill="#64748b">0</text>
+<text x="784.5" y="457.0" text-anchor="middle" font-size="8.0" font-weight="500" fill="#1e293b">VSYNC_SEL</text>
+<text x="784.5" y="471.0" text-anchor="middle" font-size="7.0" fill="#64748b">1'b0</text>
 </g>
 <g class="row" style="animation-delay:0.36s">
 <text x="158" y="516.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x07 (7)</text>
@@ -169,20 +175,17 @@
 <text x="251.5" y="561.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">SD_CHOP_F[1:0]</text>
 <text x="251.5" y="575.0" text-anchor="middle" font-size="9.0" fill="#64748b">2'b00</text>
 <rect x="334" y="540" width="163" height="46" fill="#dbeafe" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="415.5" y="561.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">Reserved</text>
-<text x="415.5" y="575.0" text-anchor="middle" font-size="9.0" fill="#64748b">2'b00</text>
+<text x="415.5" y="561.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">TP_SEL[1:0]</text>
+<text x="415.5" y="575.0" text-anchor="middle" font-size="9.0" fill="#64748b">2'b11</text>
 <rect x="498" y="540" width="81" height="46" fill="#dbeafe" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="538.5" y="561.0" text-anchor="middle" font-size="8.0" font-weight="500" fill="#1e293b">TP_CONTROL</text>
 <text x="538.5" y="575.0" text-anchor="middle" font-size="7.0" fill="#64748b">1'b0</text>
 <rect x="580" y="540" width="81" height="46" fill="#dbeafe" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="620.5" y="561.0" text-anchor="middle" font-size="8.0" font-weight="500" fill="#1e293b">STP_EN</text>
 <text x="620.5" y="575.0" text-anchor="middle" font-size="7.0" fill="#64748b">1'b0</text>
-<rect x="662" y="540" width="81" height="46" fill="#dbeafe" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="702.5" y="561.0" text-anchor="middle" font-size="8.0" font-weight="500" fill="#1e293b">reg_eq_rbc1</text>
-<text x="702.5" y="575.0" text-anchor="middle" font-size="7.0" fill="#64748b">1'b0</text>
-<rect x="744" y="540" width="81" height="46" fill="#dbeafe" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="784.5" y="561.0" text-anchor="middle" font-size="8.0" font-weight="500" fill="#1e293b">reg_eq_rbc0</text>
-<text x="784.5" y="575.0" text-anchor="middle" font-size="7.0" fill="#64748b">1'b0</text>
+<rect x="662" y="540" width="163" height="46" fill="#dbeafe" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="743.5" y="561.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">Reserved</text>
+<text x="743.5" y="575.0" text-anchor="middle" font-size="9.0" fill="#64748b">0</text>
 </g>
 <g class="row" style="animation-delay:0.42s">
 <text x="158" y="620.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x09 (9)</text>
@@ -221,12 +224,20 @@
 </g>
 <g class="row" style="animation-delay:0.51s">
 <text x="158" y="776.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x1D (29)</text>
-<rect x="170" y="748" width="409" height="46" fill="#dbeafe" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="374.5" y="769.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">Reserved</text>
-<text x="374.5" y="783.0" text-anchor="middle" font-size="9.0" fill="#64748b">0</text>
-<rect x="580" y="748" width="245" height="46" fill="#dbeafe" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="702.5" y="769.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">SP_S[2:0]</text>
-<text x="702.5" y="783.0" text-anchor="middle" font-size="9.0" fill="#64748b">3'b000</text>
+<g class="pulse" style="animation-delay:-0.7s">
+<rect x="170" y="748" width="245" height="46" fill="#dbeafe" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="292.5" y="769.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">khead_20b_sel[2:0]</text>
+<text x="292.5" y="783.0" text-anchor="middle" font-size="9.0" fill="#64748b">3'b000</text>
+</g>
+<rect x="416" y="748" width="81" height="46" fill="#dbeafe" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="456.5" y="769.0" text-anchor="middle" font-size="8.0" font-weight="500" fill="#1e293b">BACSCR_EOL</text>
+<text x="456.5" y="783.0" text-anchor="middle" font-size="7.0" fill="#64748b">1'b0</text>
+<rect x="498" y="748" width="245" height="46" fill="#dbeafe" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="620.5" y="769.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">SP_S[2:0]</text>
+<text x="620.5" y="783.0" text-anchor="middle" font-size="9.0" fill="#64748b">3'b000</text>
+<rect x="744" y="748" width="81" height="46" fill="#dbeafe" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="784.5" y="769.0" text-anchor="middle" font-size="8.0" font-weight="500" fill="#1e293b">VPS_EN_0</text>
+<text x="784.5" y="783.0" text-anchor="middle" font-size="7.0" fill="#64748b">1'b0</text>
 </g>
 <g class="row" style="animation-delay:0.54s">
 <text x="158" y="828.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x1E (30)</text>
@@ -317,9 +328,12 @@
 <rect x="580" y="1060" width="81" height="46" fill="#dbeafe" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="620.5" y="1081.0" text-anchor="middle" font-size="8.0" font-weight="500" fill="#1e293b">R_CH12_HIZ</text>
 <text x="620.5" y="1095.0" text-anchor="middle" font-size="7.0" fill="#64748b">1'b0</text>
-<rect x="662" y="1060" width="163" height="46" fill="#dbeafe" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="743.5" y="1081.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">Reserved</text>
-<text x="743.5" y="1095.0" text-anchor="middle" font-size="9.0" fill="#64748b">0</text>
+<rect x="662" y="1060" width="81" height="46" fill="#dbeafe" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="702.5" y="1081.0" text-anchor="middle" font-size="8.0" font-weight="500" fill="#1e293b">reg_eq_rbc1</text>
+<text x="702.5" y="1095.0" text-anchor="middle" font-size="7.0" fill="#64748b">1'b0</text>
+<rect x="744" y="1060" width="81" height="46" fill="#dbeafe" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="784.5" y="1081.0" text-anchor="middle" font-size="8.0" font-weight="500" fill="#1e293b">reg_eq_rbc0</text>
+<text x="784.5" y="1095.0" text-anchor="middle" font-size="7.0" fill="#64748b">1'b0</text>
 </g>
 <g class="row" style="animation-delay:0.72s">
 <text x="158" y="1140.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x24 (36)</text>
@@ -372,8 +386,8 @@
 <text x="210.5" y="1341.0" text-anchor="middle" font-size="8.0" font-weight="500" fill="#1e293b">DBC_VBK_ON</text>
 <text x="210.5" y="1355.0" text-anchor="middle" font-size="7.0" fill="#64748b">1'b0</text>
 <rect x="252" y="1320" width="81" height="46" fill="#dbeafe" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="292.5" y="1341.0" text-anchor="middle" font-size="8.0" font-weight="500" fill="#1e293b">VPS_EN[0]</text>
-<text x="292.5" y="1355.0" text-anchor="middle" font-size="7.0" fill="#64748b">1'b0</text>
+<text x="292.5" y="1341.0" text-anchor="middle" font-size="8.0" font-weight="500" fill="#1e293b">Reserved</text>
+<text x="292.5" y="1355.0" text-anchor="middle" font-size="7.0" fill="#64748b">0</text>
 <rect x="334" y="1320" width="163" height="46" fill="#dbeafe" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="415.5" y="1341.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">DBCO_DRV[1:0]</text>
 <text x="415.5" y="1355.0" text-anchor="middle" font-size="9.0" fill="#64748b">2'b00</text>
@@ -400,7 +414,7 @@
 <text x="538.5" y="1407.0" text-anchor="middle" font-size="7.0" fill="#64748b">1'b0</text>
 <rect x="580" y="1372" width="163" height="46" fill="#dbeafe" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="661.5" y="1393.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">R_DBC_WIDTH_OPT[1:0]</text>
-<text x="661.5" y="1407.0" text-anchor="middle" font-size="9.0" fill="#64748b">2'b00</text>
+<text x="661.5" y="1407.0" text-anchor="middle" font-size="9.0" fill="#64748b">2'b01</text>
 <rect x="744" y="1372" width="81" height="46" fill="#dbeafe" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="784.5" y="1393.0" text-anchor="middle" font-size="8.0" font-weight="500" fill="#1e293b">DBC</text>
 <text x="784.5" y="1407.0" text-anchor="middle" font-size="7.0" fill="#64748b">1'b0</text>
@@ -468,7 +482,7 @@
 <text x="415.5" y="1653.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">CN_VBN1L[1:0]</text>
 <text x="415.5" y="1667.0" text-anchor="middle" font-size="9.0" fill="#64748b">2'b00</text>
 <rect x="498" y="1632" width="81" height="46" fill="#dbeafe" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="538.5" y="1653.0" text-anchor="middle" font-size="8.0" font-weight="500" fill="#1e293b">TP_F_AHEAD</text>
+<text x="538.5" y="1653.0" text-anchor="middle" font-size="8.0" font-weight="500" fill="#1e293b">Reserved</text>
 <text x="538.5" y="1667.0" text-anchor="middle" font-size="7.0" fill="#64748b">1'b0</text>
 <rect x="580" y="1632" width="163" height="46" fill="#dbeafe" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="661.5" y="1653.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">PWRC_LS[1:0]</text>
@@ -489,7 +503,7 @@
 <text x="702.5" y="1705.0" text-anchor="middle" font-size="8.0" font-weight="500" fill="#1e293b">HIZ_MIN_SEL</text>
 <text x="702.5" y="1719.0" text-anchor="middle" font-size="7.0" fill="#64748b">1'b0</text>
 <rect x="744" y="1684" width="81" height="46" fill="#dbeafe" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="784.5" y="1705.0" text-anchor="middle" font-size="7.5" font-weight="500" fill="#1e293b">SCS_PKT_HALF</text>
+<text x="784.5" y="1705.0" text-anchor="middle" font-size="8.0" font-weight="500" fill="#1e293b">SCS_PKT_HALF</text>
 <text x="784.5" y="1719.0" text-anchor="middle" font-size="7.0" fill="#64748b">1'b0</text>
 </g>
 <g class="row" style="animation-delay:1.08s">
@@ -510,11 +524,9 @@
 <rect x="170" y="1840" width="81" height="46" fill="#dbeafe" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="210.5" y="1861.0" text-anchor="middle" font-size="8.0" font-weight="500" fill="#1e293b">reg_pin_eq</text>
 <text x="210.5" y="1875.0" text-anchor="middle" font-size="7.0" fill="#64748b">1'b0</text>
-<g class="pulse" style="animation-delay:-0.7s">
 <rect x="252" y="1840" width="409" height="46" fill="#dbeafe" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="456.5" y="1861.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">khead_20b_sel[4:0]</text>
+<text x="456.5" y="1861.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">Reserved</text>
 <text x="456.5" y="1875.0" text-anchor="middle" font-size="9.0" fill="#64748b">5'b00000</text>
-</g>
 <rect x="662" y="1840" width="81" height="46" fill="#dbeafe" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="702.5" y="1861.0" text-anchor="middle" font-size="6.4" font-weight="500" fill="#1e293b">reg_lane_ck_inv_en</text>
 <text x="702.5" y="1875.0" text-anchor="middle" font-size="5.4" fill="#64748b">1'b0</text>
@@ -525,7 +537,7 @@
 <g class="row" style="animation-delay:1.17s">
 <text x="158" y="1920.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x34 (52)</text>
 <rect x="170" y="1892" width="163" height="46" fill="#dbeafe" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="251.5" y="1913.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">TP_SEL[1:0]</text>
+<text x="251.5" y="1913.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">Reserved</text>
 <text x="251.5" y="1927.0" text-anchor="middle" font-size="9.0" fill="#64748b">2'b00</text>
 <rect x="334" y="1892" width="81" height="46" fill="#dbeafe" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="374.5" y="1913.0" text-anchor="middle" font-size="5.0" font-weight="500" fill="#1e293b">regr_lane_vctrl_overflow</text>
@@ -574,13 +586,12 @@
 <text x="579.5" y="2083.0" text-anchor="middle" font-size="9.0" fill="#64748b">6'b100000</text>
 </g>
 <g class="row" style="animation-delay:1.29s">
-<g class="pulse-b" style="animation-delay:-1.4s">
 <text x="158" y="2128.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x38 (56)</text>
 <rect x="170" y="2100" width="81" height="46" fill="#dbeafe" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="210.5" y="2121.0" text-anchor="middle" font-size="8.0" font-weight="500" fill="#1e293b">BACSCR_EOL</text>
+<text x="210.5" y="2121.0" text-anchor="middle" font-size="8.0" font-weight="500" fill="#1e293b">Reserved</text>
 <text x="210.5" y="2135.0" text-anchor="middle" font-size="7.0" fill="#64748b">1'b0</text>
 <rect x="252" y="2100" width="81" height="46" fill="#dbeafe" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="292.5" y="2121.0" text-anchor="middle" font-size="8.0" font-weight="500" fill="#1e293b">reg_eol</text>
+<text x="292.5" y="2121.0" text-anchor="middle" font-size="8.0" font-weight="500" fill="#1e293b">Reserved</text>
 <text x="292.5" y="2135.0" text-anchor="middle" font-size="7.0" fill="#64748b">1'b0</text>
 <rect x="334" y="2100" width="81" height="46" fill="#dbeafe" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="374.5" y="2121.0" text-anchor="middle" font-size="8.0" font-weight="500" fill="#1e293b">reg_eol_det</text>
@@ -595,15 +606,22 @@
 <text x="743.5" y="2121.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">UTC_long01_frame[1:0]</text>
 <text x="743.5" y="2135.0" text-anchor="middle" font-size="9.0" fill="#64748b">2'b01</text>
 </g>
-</g>
 <g class="row" style="animation-delay:1.32s">
+<g class="pulse-b" style="animation-delay:-1.4s">
 <text x="158" y="2180.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x39 (57)</text>
-<rect x="170" y="2152" width="409" height="46" fill="#dbeafe" stroke="#94a3b8" stroke-width="1" rx="4"/>
-<text x="374.5" y="2173.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">Reserved</text>
-<text x="374.5" y="2187.0" text-anchor="middle" font-size="9.0" fill="#64748b">0</text>
+<rect x="170" y="2152" width="81" height="46" fill="#dbeafe" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="210.5" y="2173.0" text-anchor="middle" font-size="8.0" font-weight="500" fill="#1e293b">Reserved</text>
+<text x="210.5" y="2187.0" text-anchor="middle" font-size="7.0" fill="#64748b">0</text>
+<rect x="252" y="2152" width="81" height="46" fill="#dbeafe" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="292.5" y="2173.0" text-anchor="middle" font-size="8.0" font-weight="500" fill="#1e293b">reg_eol</text>
+<text x="292.5" y="2187.0" text-anchor="middle" font-size="7.0" fill="#64748b">1'b0</text>
+<rect x="334" y="2152" width="245" height="46" fill="#dbeafe" stroke="#94a3b8" stroke-width="1" rx="4"/>
+<text x="456.5" y="2173.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">Reserved</text>
+<text x="456.5" y="2187.0" text-anchor="middle" font-size="9.0" fill="#64748b">0</text>
 <rect x="580" y="2152" width="245" height="46" fill="#dbeafe" stroke="#94a3b8" stroke-width="1" rx="4"/>
 <text x="702.5" y="2173.0" text-anchor="middle" font-size="10.0" font-weight="500" fill="#1e293b">UTC_header_frame[2:0]</text>
 <text x="702.5" y="2187.0" text-anchor="middle" font-size="9.0" fill="#64748b">3'b011</text>
+</g>
 </g>
 <g class="row" style="animation-delay:1.35s">
 <text x="158" y="2232.0" text-anchor="end" font-size="14" font-weight="600" fill="#1e293b">0x40 (64)</text>
@@ -741,6 +759,6 @@
 <text x="240" y="2877" font-size="11" fill="#1e293b">N_RST</text>
 <rect x="350" y="2866" width="14" height="14" fill="#22c55e" stroke="#94a3b8" rx="2"/>
 <text x="370" y="2877" font-size="11" fill="#1e293b">RSTN_SCR_EN</text>
-<text x="433.0" y="2926" text-anchor="middle" font-size="11" fill="#64748b">大部分字段由 N_RST_NLOCK 复位；0x30 TEST_PRTCT 由 N_RST 复位；0827v1 新增 0x02/0x03/0x04 单 bit lane_ctrl 与 0x38[6] reg_eol 均为 N_RST_NLOCK</text>
+<text x="433.0" y="2926" text-anchor="middle" font-size="11" fill="#64748b">大部分字段由 N_RST_NLOCK 复位；0x30 TEST_PRTCT 由 N_RST 复位；1111v1 新增 0x02/0x03/0x04 单 bit lane_ctrl 与 0x39[6] reg_eol 均为 N_RST_NLOCK</text>
 </g>
 </svg>

@@ -5,7 +5,7 @@ Generate SVG diagrams for LC_CPUWR register attributes:
 1. Checksum participation
 2. Reset domain classification
 
-Data is derived from the current LC_CPUWR.v RTL analysis (file header 0827v1),
+Data is derived from the current LC_CPUWR.v RTL analysis (file header 1111v1),
 using chip_sel0/1_register_address_map.md for field names/defaults.
 
 NOTE: lsi_unprotected_address_map.svg is NOT generated here anymore — since
@@ -15,7 +15,13 @@ to overwrite it with a legacy layout, so that block was removed.
 """
 
 import re
+import sys
 from pathlib import Path
+
+# 统一输出层（唯一写盘入口：LF + 归档 + --out 预演）
+_IMAGES = Path(__file__).resolve().parents[1] / "hk1v11-lc-cpuwr-history" / "images"
+sys.path.insert(0, str(_IMAGES))
+from _siteio import out_path, write_text_lf  # noqa: E402
 
 # ---------------------------------------------------------------------------
 # Style configuration
@@ -474,20 +480,20 @@ def main():
     map0 = build_address_map(rows0)
     map1 = build_address_map(rows1)
 
-    out_dir = Path("E:/project/team-share-public/hk1v11-lc-cpuwr-history/images")
-    out_dir.mkdir(parents=True, exist_ok=True)
+    img_dir = "images"
+    out_dir = Path("E:/project/team-share-public/hk1v11-lc-cpuwr-history/images")  # 仅用于日志显示
 
     # 1. Checksum participation (dual chip_sel view)
     svg_chk = generate_checksum_dual_svg(
-        "LC_CPUWR 0827v1 参与 checksum 的地址（chip_sel=0 / chip_sel=1 对照）",
+        "LC_CPUWR 1111v1 参与 checksum 的地址（chip_sel=0 / chip_sel=1 对照）",
         map0,
         map1,
     )
-    (out_dir / "checksum_address_map.svg").write_text(svg_chk, encoding="utf-8")
+    write_text_lf(out_path(f"{img_dir}/checksum_address_map.svg"), svg_chk)
 
     # 2. Reset domain
     svg_rst = generate_attr_svg(
-        "LC_CPUWR 0827v1 复位域分类",
+        "LC_CPUWR 1111v1 复位域分类",
         map1,
         lambda dec, name: reset_domain(dec, name),
         [
@@ -495,12 +501,14 @@ def main():
             ("N_RST", "rst_n"),
             ("RSTN_SCR_EN", "rst_scr"),
         ],
-        "大部分字段由 N_RST_NLOCK 复位；0x30 TEST_PRTCT 由 N_RST 复位；0827v1 新增 0x02/0x03/0x04 单 bit lane_ctrl 与 0x38[6] reg_eol 均为 N_RST_NLOCK"
+        "大部分字段由 N_RST_NLOCK 复位；0x30 TEST_PRTCT 由 N_RST 复位；1111v1 新增 0x02/0x03/0x04 单 bit lane_ctrl 与 0x39[6] reg_eol 均为 N_RST_NLOCK"
     )
-    (out_dir / "reset_domain_address_map.svg").write_text(svg_rst, encoding="utf-8")
+    write_text_lf(out_path(f"{img_dir}/reset_domain_address_map.svg"), svg_rst)
 
     print(f"Generated:\n  {out_dir / 'checksum_address_map.svg'}\n  {out_dir / 'reset_domain_address_map.svg'}")
 
 
 if __name__ == "__main__":
     main()
+
+# ymzhu 2026-11-19 00:54

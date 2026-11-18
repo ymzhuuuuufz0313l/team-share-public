@@ -6,7 +6,7 @@
 源（只读）:  ../checksum_address_map.svg
 输出:        checksum_address_map.svg
 
-v4 规格（940×1764，LC_CPUWR 1023v1 参与 checksum 的地址 · chip_sel=0/1 对照）：
+v4 规格（940×1708，LC_CPUWR 1023v1 参与 checksum 的地址 · chip_sel=0/1 对照）：
 - 入场：head 标题+位号列头(0) → 15 个地址行 0.15 起 0.08s 递进（至 1.27）
   → 底部图例+脚注 head(1.5)。一次性总长 1.5+0.55 = 2.05s ≤ 2.5s。
 - 稳态（2 族 + v4.1 加密脉冲；取代 v1 的 233 处低幅呼吸）：
@@ -14,7 +14,8 @@ v4 规格（940×1764，LC_CPUWR 1023v1 参与 checksum 的地址 · chip_sel=0/
     （周期 6.0s）= 地址扫描波。
   · 脉冲 pulse×4（v4.1 +1；相位 0 / -0.7 / -1.4 / -2.1 均布）：
     0x0A cs=1 的 PWRC_P[1:0] 单元格 pulse（琥珀，LC_CPUWR 1027v1 checksum
-    覆盖修复受影响字节）；0x02 行组 pulse-b（蓝，唯一 chip_sel=0/1 对照行）；
+    覆盖修复受影响字节）；0x02 行组 pulse-b（蓝，SMART_CS 逐 bit 拆分的
+    单 bit 行；chip_sel=0/1 分侧成对行另有 0x09/0x0A/0x1F 三组）；
     0x27 行组 pulse-t（深青，frame end 校验字节边界行）；
     0x1F 行组 pulse（琥珀，0s，PWRC 控制字节双行 PWRC_P1..N3/CTRL+NB/NA/PB/PA
     —— 0x27 已有脉冲后按"PWRC 相关另一关键行"选定）。
@@ -247,4 +248,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-# ymzhu 2026-11-17 19:34
+# ymzhu 2026-11-19 01:30
