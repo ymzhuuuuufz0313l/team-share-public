@@ -1,0 +1,390 @@
+Hier Detail Power Report
+Hierarchy;Power Group;Count;Leakage Power(uW);Internal Power(uW);Switching Power(uW);Total Power(uW);Percentage(%)
+u_LOGIC_CENTER;Power Group;Count;Leakage Power(uW);Internal Power(uW);Switching Power(uW);Total Power(uW);Percentage(%)
+ ;io_pad;0;0;0;0;0;0%
+ ;memory;0;0;0;0;0;0%
+ ;black_box;0;0;0;0;0;0%
+ ;register;2959;9.52;17325.14;319.23;17653.88;70.22%
+ ;combinational;10489;2.98;1563.51;1067.43;2633.91;10.48%
+ ;sequential;0;0;0;0;0;0%
+ ;clock_network;398;0.780118;2183.5;2668.48;4852.76;19.3%
+ ;total;13846;13.28;21072.15;4055.14;25140.56;100%
+u_LOGIC_CENTER.LINK_LOGIC.LC_CHPI_DECODE.LONG_ENCODING.LONG_ENCODING_ERROR_CTRL;Power Group;Count;Leakage Power(uW);Internal Power(uW);Switching Power(uW);Total Power(uW);Percentage(%)
+ ;io_pad;0;0;0;0;0;0%
+ ;memory;0;0;0;0;0;0%
+ ;black_box;0;0;0;0;0;0%
+ ;register;17;0.054061;0;0;0.054061;52.26%
+ ;combinational;178;0.046746;0;0;0.046746;45.19%
+ ;sequential;0;0;0;0;0;0%
+ ;clock_network;3;0.002634;0;0;0.002634;2.55%
+ ;total;198;0.103441;0;0;0.103441;100%
+u_LOGIC_CENTER.LINK_LOGIC.LC_CHPI_DECODE.LONG_ENCODING.LONG_ENCODING_OUTPUT;Power Group;Count;Leakage Power(uW);Internal Power(uW);Switching Power(uW);Total Power(uW);Percentage(%)
+ ;io_pad;0;0;0;0;0;0%
+ ;memory;0;0;0;0;0;0%
+ ;black_box;0;0;0;0;0;0%
+ ;register;276;0.871916;438.41;0;439.28;83.1%
+ ;combinational;592;0.148648;0;0;0.148648;0.03%
+ ;sequential;0;0;0;0;0;0%
+ ;clock_network;27;0.019131;25.77;63.37;89.16;16.87%
+ ;total;895;1.04;464.18;63.37;528.59;100%
+u_LOGIC_CENTER.LINK_LOGIC.LC_CHPI_DECODE.LONG_ENCODING.LONG_ENCODING_DESCRAMBLE;Power Group;Count;Leakage Power(uW);Internal Power(uW);Switching Power(uW);Total Power(uW);Percentage(%)
+ ;io_pad;0;0;0;0;0;0%
+ ;memory;0;0;0;0;0;0%
+ ;black_box;0;0;0;0;0;0%
+ ;register;44;0.139922;0;0;0.139922;62.17%
+ ;combinational;231;0.082162;0;0;0.082162;36.5%
+ ;sequential;0;0;0;0;0;0%
+ ;clock_network;4;0.002994;0;0;0.002994;1.33%
+ ;total;279;0.225077;0;0;0.225077;100%
+u_LOGIC_CENTER.LINK_LOGIC.LC_CHPI_DECODE.LONG_ENCODING.LONG_ENCODING_DECODE;Power Group;Count;Leakage Power(uW);Internal Power(uW);Switching Power(uW);Total Power(uW);Percentage(%)
+ ;io_pad;0;0;0;0;0;0%
+ ;memory;0;0;0;0;0;0%
+ ;black_box;0;0;0;0;0;0%
+ ;register;104;0.331246;0;0;0.331246;63.4%
+ ;combinational;692;0.185775;0;0;0.185775;35.56%
+ ;sequential;0;0;0;0;0;0%
+ ;clock_network;8;0.005433;0;0;0.005433;1.04%
+ ;total;804;0.522455;0;0;0.522455;100%
+u_LOGIC_CENTER.LINK_LOGIC.LC_CHPI_DECODE.LONG_ENCODING.LONG_ENCODING_ALIGN;Power Group;Count;Leakage Power(uW);Internal Power(uW);Switching Power(uW);Total Power(uW);Percentage(%)
+ ;io_pad;0;0;0;0;0;0%
+ ;memory;0;0;0;0;0;0%
+ ;black_box;0;0;0;0;0;0%
+ ;register;187;0.598541;44.85;0;45.45;15.62%
+ ;combinational;684;0.214111;124.04;121.17;245.42;84.37%
+ ;sequential;0;0;0;0;0;0%
+ ;clock_network;16;0.010139;0;0;0.010139;0%
+ ;total;887;0.822791;168.88;121.17;290.87;100%
+u_LOGIC_CENTER.LINK_LOGIC.LC_CHPI_DECODE.LONG_ENCODING;Power Group;Count;Leakage Power(uW);Internal Power(uW);Switching Power(uW);Total Power(uW);Percentage(%)
+ ;io_pad;0;0;0;0;0;0%
+ ;memory;0;0;0;0;0;0%
+ ;black_box;0;0;0;0;0;0%
+ ;register;628;2;483.26;0;485.26;59.15%
+ ;combinational;2378;0.677662;124.04;121.17;245.88;29.97%
+ ;sequential;0;0;0;0;0;0%
+ ;clock_network;67;0.045045;25.77;63.37;89.19;10.87%
+ ;total;3073;2.72;633.06;184.54;820.32;100%
+u_LOGIC_CENTER.LINK_LOGIC.LC_CHPI_DECODE.SHORT_ENCODING.SHORT_ENCODING_ERROR_CTRL;Power Group;Count;Leakage Power(uW);Internal Power(uW);Switching Power(uW);Total Power(uW);Percentage(%)
+ ;io_pad;0;0;0;0;0;0%
+ ;memory;0;0;0;0;0;0%
+ ;black_box;0;0;0;0;0;0%
+ ;register;15;0.046588;102.92;0.330784;103.3;66.56%
+ ;combinational;75;0.026453;3.52;0.957211;4.5;2.9%
+ ;sequential;0;0;0;0;0;0%
+ ;clock_network;2;0.002012;38.84;8.55;47.4;30.54%
+ ;total;92;0.075053;145.28;9.84;155.2;100%
+u_LOGIC_CENTER.LINK_LOGIC.LC_CHPI_DECODE.SHORT_ENCODING.SHORT_ENCODING_OUTPUT;Power Group;Count;Leakage Power(uW);Internal Power(uW);Switching Power(uW);Total Power(uW);Percentage(%)
+ ;io_pad;0;0;0;0;0;0%
+ ;memory;0;0;0;0;0;0%
+ ;black_box;0;0;0;0;0;0%
+ ;register;228;0.742737;4339.04;70.6;4410.38;84.57%
+ ;combinational;264;0.075624;230.21;99.53;329.82;6.32%
+ ;sequential;0;0;0;0;0;0%
+ ;clock_network;16;0.012052;176.17;298.46;474.64;9.1%
+ ;total;508;0.830413;4745.42;468.58;5214.84;100%
+u_LOGIC_CENTER.LINK_LOGIC.LC_CHPI_DECODE.SHORT_ENCODING.SHORT_ENCODING_DECODE;Power Group;Count;Leakage Power(uW);Internal Power(uW);Switching Power(uW);Total Power(uW);Percentage(%)
+ ;io_pad;0;0;0;0;0;0%
+ ;memory;0;0;0;0;0;0%
+ ;black_box;0;0;0;0;0;0%
+ ;register;102;0.322197;1399.56;20.4;1420.29;74.38%
+ ;combinational;258;0.105502;126.98;72.51;199.6;10.45%
+ ;sequential;0;0;0;0;0;0%
+ ;clock_network;7;0.004981;85.97;203.59;289.57;15.16%
+ ;total;367;0.43268;1612.51;296.51;1909.46;100%
+u_LOGIC_CENTER.LINK_LOGIC.LC_CHPI_DECODE.SHORT_ENCODING.SHORT_ENCODING_ALIGN;Power Group;Count;Leakage Power(uW);Internal Power(uW);Switching Power(uW);Total Power(uW);Percentage(%)
+ ;io_pad;0;0;0;0;0;0%
+ ;memory;0;0;0;0;0;0%
+ ;black_box;0;0;0;0;0;0%
+ ;register;146;0.464168;2357.06;59.79;2417.32;72.98%
+ ;combinational;821;0.220187;141.32;185.23;326.77;9.87%
+ ;sequential;0;0;0;0;0;0%
+ ;clock_network;12;0.008082;173.51;394.63;568.15;17.15%
+ ;total;979;0.692437;2671.89;639.66;3312.24;100%
+u_LOGIC_CENTER.LINK_LOGIC.LC_CHPI_DECODE.SHORT_ENCODING;Power Group;Count;Leakage Power(uW);Internal Power(uW);Switching Power(uW);Total Power(uW);Percentage(%)
+ ;io_pad;0;0;0;0;0;0%
+ ;memory;0;0;0;0;0;0%
+ ;black_box;0;0;0;0;0;0%
+ ;register;491;1.58;8198.59;151.13;8351.29;76.29%
+ ;combinational;1418;0.427767;502.03;358.24;860.69;7.86%
+ ;sequential;0;0;0;0;0;0%
+ ;clock_network;47;0.032294;603.06;1132.24;1735.32;15.85%
+ ;total;1956;2.04;9303.67;1641.6;10947.31;100%
+u_LOGIC_CENTER.LINK_LOGIC.LC_CHPI_DECODE;Power Group;Count;Leakage Power(uW);Internal Power(uW);Switching Power(uW);Total Power(uW);Percentage(%)
+ ;io_pad;0;0;0;0;0;0%
+ ;memory;0;0;0;0;0;0%
+ ;black_box;0;0;0;0;0;0%
+ ;register;1123;3.58;8733.75;151.13;8888.47;73.8%
+ ;combinational;3908;1.14;690.17;523.03;1214.34;10.08%
+ ;sequential;0;0;0;0;0;0%
+ ;clock_network;118;0.079572;667.94;1273.51;1941.54;16.12%
+ ;total;5149;4.8;10091.87;1947.68;12044.35;100%
+u_LOGIC_CENTER.LINK_LOGIC.LINK_PANEL_CTRL.LENB_CTRL;Power Group;Count;Leakage Power(uW);Internal Power(uW);Switching Power(uW);Total Power(uW);Percentage(%)
+ ;io_pad;0;0;0;0;0;0%
+ ;memory;0;0;0;0;0;0%
+ ;black_box;0;0;0;0;0;0%
+ ;register;3;0.010479;44.41;0.00243;44.42;77.33%
+ ;combinational;44;0.012238;8.84;4.17;13.02;22.67%
+ ;sequential;0;0;0;0;0;0%
+ ;clock_network;0;0;0;0;0;0%
+ ;total;47;0.022717;53.24;4.18;57.44;100%
+u_LOGIC_CENTER.LINK_LOGIC.LINK_PANEL_CTRL.BOE_AUTO_EQ_BCC_CTRL.u_boe_rx_switch_to_bus8;Power Group;Count;Leakage Power(uW);Internal Power(uW);Switching Power(uW);Total Power(uW);Percentage(%)
+ ;io_pad;0;0;0;0;0;0%
+ ;memory;0;0;0;0;0;0%
+ ;black_box;0;0;0;0;0;0%
+ ;register;86;0.274894;0;0;0.274894;75.15%
+ ;combinational;340;0.083294;0;0;0.083294;22.77%
+ ;sequential;0;0;0;0;0;0%
+ ;clock_network;10;0.007589;0;0;0.007589;2.07%
+ ;total;436;0.365777;0;0;0.365777;100%
+u_LOGIC_CENTER.LINK_LOGIC.LINK_PANEL_CTRL.BOE_AUTO_EQ_BCC_CTRL.u_boe_rx_bcc_decoder;Power Group;Count;Leakage Power(uW);Internal Power(uW);Switching Power(uW);Total Power(uW);Percentage(%)
+ ;io_pad;0;0;0;0;0;0%
+ ;memory;0;0;0;0;0;0%
+ ;black_box;0;0;0;0;0;0%
+ ;register;188;0.611806;0;0;0.611806;75.88%
+ ;combinational;672;0.178888;0;0;0.178888;22.19%
+ ;sequential;0;0;0;0;0;0%
+ ;clock_network;21;0.015623;0;0;0.015623;1.94%
+ ;total;881;0.806317;0;0;0.806317;100%
+u_LOGIC_CENTER.LINK_LOGIC.LINK_PANEL_CTRL.BOE_AUTO_EQ_BCC_CTRL;Power Group;Count;Leakage Power(uW);Internal Power(uW);Switching Power(uW);Total Power(uW);Percentage(%)
+ ;io_pad;0;0;0;0;0;0%
+ ;memory;0;0;0;0;0;0%
+ ;black_box;0;0;0;0;0;0%
+ ;register;284;0.919817;0;0;0.919817;75.28%
+ ;combinational;1050;0.274003;0;0;0.274003;22.43%
+ ;sequential;0;0;0;0;0;0%
+ ;clock_network;39;0.028024;0;0;0.028024;2.29%
+ ;total;1373;1.22;0;0;1.22;100%
+u_LOGIC_CENTER.LINK_LOGIC.LINK_PANEL_CTRL.AUTO_EQ_TRAINIG_JUDGE;Power Group;Count;Leakage Power(uW);Internal Power(uW);Switching Power(uW);Total Power(uW);Percentage(%)
+ ;io_pad;0;0;0;0;0;0%
+ ;memory;0;0;0;0;0;0%
+ ;black_box;0;0;0;0;0;0%
+ ;register;11;0.035763;0.071558;0;0.107321;1.08%
+ ;combinational;31;0.007773;7.25;2.54;9.79;98.92%
+ ;sequential;0;0;0;0;0;0%
+ ;clock_network;0;0;0;0;0;0%
+ ;total;42;0.043536;7.32;2.54;9.9;100%
+u_LOGIC_CENTER.LINK_LOGIC.LINK_PANEL_CTRL.SMT_CS;Power Group;Count;Leakage Power(uW);Internal Power(uW);Switching Power(uW);Total Power(uW);Percentage(%)
+ ;io_pad;0;0;0;0;0;0%
+ ;memory;0;0;0;0;0;0%
+ ;black_box;0;0;0;0;0;0%
+ ;register;43;0.133064;352.66;0.701888;353.49;66.4%
+ ;combinational;179;0.060014;41.33;17.75;59.14;11.11%
+ ;sequential;0;0;0;0;0;0%
+ ;clock_network;6;0.005554;73.26;46.48;119.75;22.49%
+ ;total;228;0.198632;467.24;64.93;532.38;100%
+u_LOGIC_CENTER.LINK_LOGIC.LINK_PANEL_CTRL;Power Group;Count;Leakage Power(uW);Internal Power(uW);Switching Power(uW);Total Power(uW);Percentage(%)
+ ;io_pad;0;0;0;0;0;0%
+ ;memory;0;0;0;0;0;0%
+ ;black_box;0;0;0;0;0;0%
+ ;register;501;1.61;1285.48;14.11;1301.21;68.29%
+ ;combinational;1823;0.491143;140.77;80.01;221.27;11.61%
+ ;sequential;0;0;0;0;0;0%
+ ;clock_network;60;0.04691;252.74;130.03;382.82;20.09%
+ ;total;2384;2.15;1679;224.16;1905.3;100%
+u_LOGIC_CENTER.LINK_LOGIC.LINK_PANEL_CTRL.CHPI_SD_CTRL;Power Group;Count;Leakage Power(uW);Internal Power(uW);Switching Power(uW);Total Power(uW);Percentage(%)
+ ;io_pad;0;0;0;0;0;0%
+ ;memory;0;0;0;0;0;0%
+ ;black_box;0;0;0;0;0;0%
+ ;register;160;0.511408;888.35;13.41;902.27;69.17%
+ ;combinational;517;0.136801;83.36;55.55;139.04;10.66%
+ ;sequential;0;0;0;0;0;0%
+ ;clock_network;15;0.013332;179.48;83.55;263.04;20.17%
+ ;total;692;0.661542;1151.19;152.51;1304.36;100%
+u_LOGIC_CENTER.LINK_LOGIC.LINK_IO_CTRL;Power Group;Count;Leakage Power(uW);Internal Power(uW);Switching Power(uW);Total Power(uW);Percentage(%)
+ ;io_pad;0;0;0;0;0;0%
+ ;memory;0;0;0;0;0;0%
+ ;black_box;0;0;0;0;0;0%
+ ;register;31;0.10001;218.4;1.74;220.24;83.1%
+ ;combinational;278;0.078198;12.54;9.01;21.63;8.16%
+ ;sequential;0;0;0;0;0;0%
+ ;clock_network;3;0.003109;23.08;0.073905;23.16;8.74%
+ ;total;312;0.181317;254.03;10.82;265.03;100%
+u_LOGIC_CENTER.LINK_LOGIC.LINK_IO_CTRL.LC_MONBLOCK;Power Group;Count;Leakage Power(uW);Internal Power(uW);Switching Power(uW);Total Power(uW);Percentage(%)
+ ;io_pad;0;0;0;0;0;0%
+ ;memory;0;0;0;0;0;0%
+ ;black_box;0;0;0;0;0;0%
+ ;register;31;0.10001;218.4;1.74;220.24;83.1%
+ ;combinational;265;0.074617;12.54;9.01;21.62;8.16%
+ ;sequential;0;0;0;0;0;0%
+ ;clock_network;3;0.003109;23.08;0.073905;23.16;8.74%
+ ;total;299;0.177736;254.02;10.82;265.02;100%
+u_LOGIC_CENTER.LINK_LOGIC.LINK_CONFIG_CTRL.LC_REG_MAPPING;Power Group;Count;Leakage Power(uW);Internal Power(uW);Switching Power(uW);Total Power(uW);Percentage(%)
+ ;io_pad;0;0;0;0;0;0%
+ ;memory;0;0;0;0;0;0%
+ ;black_box;0;0;0;0;0;0%
+ ;register;33;0.103281;90.81;0.000471;90.91;81.55%
+ ;combinational;235;0.05768;2.26;1.14;3.46;3.11%
+ ;sequential;0;0;0;0;0;0%
+ ;clock_network;4;0.003347;17.08;0.028256;17.11;15.35%
+ ;total;272;0.164309;110.15;1.17;111.49;100%
+u_LOGIC_CENTER.LINK_LOGIC.LINK_CONFIG_CTRL.LC_CPUWR;Power Group;Count;Leakage Power(uW);Internal Power(uW);Switching Power(uW);Total Power(uW);Percentage(%)
+ ;io_pad;0;0;0;0;0;0%
+ ;memory;0;0;0;0;0;0%
+ ;black_box;0;0;0;0;0;0%
+ ;register;518;1.7;974.79;0.000471;976.5;64.11%
+ ;combinational;1436;0.411068;301.04;241.97;543.43;35.67%
+ ;sequential;0;0;0;0;0;0%
+ ;clock_network;87;0.063803;2.65;0.632028;3.35;0.22%
+ ;total;2041;2.18;1278.49;242.61;1523.27;100%
+u_LOGIC_CENTER.LINK_LOGIC.LINK_CONFIG_CTRL.CHPI_CONFIG_L0;Power Group;Count;Leakage Power(uW);Internal Power(uW);Switching Power(uW);Total Power(uW);Percentage(%)
+ ;io_pad;0;0;0;0;0;0%
+ ;memory;0;0;0;0;0;0%
+ ;black_box;0;0;0;0;0;0%
+ ;register;11;0.034059;96.84;0.062347;96.94;99.79%
+ ;combinational;34;0.006321;0.133779;0.066812;0.206912;0.21%
+ ;sequential;0;0;0;0;0;0%
+ ;clock_network;0;0;0;0;0;0%
+ ;total;45;0.04038;96.98;0.12916;97.15;100%
+u_LOGIC_CENTER.LINK_LOGIC.LINK_CONFIG_CTRL;Power Group;Count;Leakage Power(uW);Internal Power(uW);Switching Power(uW);Total Power(uW);Percentage(%)
+ ;io_pad;0;0;0;0;0;0%
+ ;memory;0;0;0;0;0;0%
+ ;black_box;0;0;0;0;0;0%
+ ;register;562;1.84;1162.45;0.063289;1164.35;67.23%
+ ;combinational;1705;0.475069;303.44;243.18;547.1;31.59%
+ ;sequential;0;0;0;0;0;0%
+ ;clock_network;91;0.06715;19.73;0.660284;20.46;1.18%
+ ;total;2358;2.38;1485.62;243.9;1731.9;100%
+u_LOGIC_CENTER.LINK_LOGIC.LINK_FAULT_CTRL.CHPI_FAULT_FLAG;Power Group;Count;Leakage Power(uW);Internal Power(uW);Switching Power(uW);Total Power(uW);Percentage(%)
+ ;io_pad;0;0;0;0;0;0%
+ ;memory;0;0;0;0;0;0%
+ ;black_box;0;0;0;0;0;0%
+ ;register;9;0.028166;5.21;0;5.24;99.94%
+ ;combinational;17;0.003096;0;0;0.003096;0.06%
+ ;sequential;0;0;0;0;0;0%
+ ;clock_network;0;0;0;0;0;0%
+ ;total;26;0.031262;5.21;0;5.24;100%
+u_LOGIC_CENTER.LINK_LOGIC.LINK_FAULT_CTRL.CDR_CRC_DET;Power Group;Count;Leakage Power(uW);Internal Power(uW);Switching Power(uW);Total Power(uW);Percentage(%)
+ ;io_pad;0;0;0;0;0;0%
+ ;memory;0;0;0;0;0;0%
+ ;black_box;0;0;0;0;0;0%
+ ;register;9;0.028573;25.84;0;25.87;31.75%
+ ;combinational;65;0.018769;36.12;10.96;47.09;57.8%
+ ;sequential;0;0;0;0;0;0%
+ ;clock_network;1;0.001012;8.51;0;8.51;10.44%
+ ;total;75;0.048354;70.47;10.96;81.47;100%
+u_LOGIC_CENTER.LINK_LOGIC.LINK_FAULT_CTRL.CHPI_WATCHDOG;Power Group;Count;Leakage Power(uW);Internal Power(uW);Switching Power(uW);Total Power(uW);Percentage(%)
+ ;io_pad;0;0;0;0;0;0%
+ ;memory;0;0;0;0;0;0%
+ ;black_box;0;0;0;0;0;0%
+ ;register;25;0.079285;19.43;0.092671;19.6;82.44%
+ ;combinational;92;0.018092;0.59965;0.374277;0.992019;4.17%
+ ;sequential;0;0;0;0;0;0%
+ ;clock_network;1;0.000662;0.863619;2.32;3.18;13.39%
+ ;total;118;0.098038;20.89;2.79;23.78;100%
+u_LOGIC_CENTER.LINK_LOGIC.LINK_FAULT_CTRL;Power Group;Count;Leakage Power(uW);Internal Power(uW);Switching Power(uW);Total Power(uW);Percentage(%)
+ ;io_pad;0;0;0;0;0;0%
+ ;memory;0;0;0;0;0;0%
+ ;black_box;0;0;0;0;0;0%
+ ;register;43;0.136024;50.48;0.092671;50.71;44.61%
+ ;combinational;175;0.040881;36.72;11.33;48.09;42.3%
+ ;sequential;0;0;0;0;0;0%
+ ;clock_network;3;0.002335;10.23;4.64;14.87;13.08%
+ ;total;221;0.17924;97.43;16.06;113.67;100%
+u_LOGIC_CENTER.LINK_LOGIC;Power Group;Count;Leakage Power(uW);Internal Power(uW);Switching Power(uW);Total Power(uW);Percentage(%)
+ ;io_pad;0;0;0;0;0;0%
+ ;memory;0;0;0;0;0;0%
+ ;black_box;0;0;0;0;0;0%
+ ;register;2260;7.27;11450.57;167.14;11624.98;70.83%
+ ;combinational;7891;2.23;1183.65;866.56;2052.43;12.51%
+ ;sequential;0;0;0;0;0;0%
+ ;clock_network;287;0.205567;1104.09;1631.12;2735.41;16.67%
+ ;total;10438;9.7;13738.3;2664.82;16412.82;100%
+u_LOGIC_CENTER.I2C_CTL.I2C_EN_CTL;Power Group;Count;Leakage Power(uW);Internal Power(uW);Switching Power(uW);Total Power(uW);Percentage(%)
+ ;io_pad;0;0;0;0;0;0%
+ ;memory;0;0;0;0;0;0%
+ ;black_box;0;0;0;0;0;0%
+ ;register;16;0.050881;0;0;0.050881;91.78%
+ ;combinational;15;0.002886;0;0;0.002886;5.21%
+ ;sequential;0;0;0;0;0;0%
+ ;clock_network;2;0.00167;0;0;0.00167;3.01%
+ ;total;33;0.055437;0;0;0.055437;100%
+u_LOGIC_CENTER.I2C_CTL.I2C_ST;Power Group;Count;Leakage Power(uW);Internal Power(uW);Switching Power(uW);Total Power(uW);Percentage(%)
+ ;io_pad;0;0;0;0;0;0%
+ ;memory;0;0;0;0;0;0%
+ ;black_box;0;0;0;0;0;0%
+ ;register;66;0.208747;13.25;0;13.46;99.52%
+ ;combinational;225;0.056157;0;0;0.056157;0.42%
+ ;sequential;0;0;0;0;0;0%
+ ;clock_network;11;0.008121;0;0;0.008121;0.06%
+ ;total;302;0.273025;13.25;0;13.53;100%
+u_LOGIC_CENTER.I2C_CTL;Power Group;Count;Leakage Power(uW);Internal Power(uW);Switching Power(uW);Total Power(uW);Percentage(%)
+ ;io_pad;0;0;0;0;0;0%
+ ;memory;0;0;0;0;0;0%
+ ;black_box;0;0;0;0;0;0%
+ ;register;82;0.259628;13.25;0;13.51;99.45%
+ ;combinational;243;0.060179;0;0;0.060179;0.44%
+ ;sequential;0;0;0;0;0;0%
+ ;clock_network;20;0.015032;0;0;0.015032;0.11%
+ ;total;345;0.334839;13.25;0;13.59;100%
+u_LOGIC_CENTER.CENTER1.DTCTL;Power Group;Count;Leakage Power(uW);Internal Power(uW);Switching Power(uW);Total Power(uW);Percentage(%)
+ ;io_pad;0;0;0;0;0;0%
+ ;memory;0;0;0;0;0;0%
+ ;black_box;0;0;0;0;0;0%
+ ;register;428;1.38;2240.45;39.28;2281.11;70.12%
+ ;combinational;1924;0.597896;305.08;160.34;466.03;14.33%
+ ;sequential;0;0;0;0;0;0%
+ ;clock_network;36;0.229492;244.81;261.06;506.1;15.56%
+ ;total;2388;2.21;2790.34;460.68;3253.23;100%
+u_LOGIC_CENTER.CENTER1.DTCTL.U_DPLC_DATA_GEN;Power Group;Count;Leakage Power(uW);Internal Power(uW);Switching Power(uW);Total Power(uW);Percentage(%)
+ ;io_pad;0;0;0;0;0;0%
+ ;memory;0;0;0;0;0;0%
+ ;black_box;0;0;0;0;0;0%
+ ;register;256;0.81409;0;0;0.81409;70.18%
+ ;combinational;978;0.331721;0;0;0.331721;28.6%
+ ;sequential;0;0;0;0;0;0%
+ ;clock_network;23;0.01415;0;0;0.01415;1.22%
+ ;total;1257;1.16;0;0;1.16;100%
+u_LOGIC_CENTER.CENTER1.ANCTL;Power Group;Count;Leakage Power(uW);Internal Power(uW);Switching Power(uW);Total Power(uW);Percentage(%)
+ ;io_pad;0;0;0;0;0;0%
+ ;memory;0;0;0;0;0;0%
+ ;black_box;0;0;0;0;0;0%
+ ;register;78;0.246064;936.67;0.896671;937.82;73.7%
+ ;combinational;338;0.083201;27.54;20.73;48.36;3.8%
+ ;sequential;0;0;0;0;0;0%
+ ;clock_network;7;0.006135;150.24;136.02;286.27;22.5%
+ ;total;423;0.335399;1114.46;157.64;1272.44;100%
+u_LOGIC_CENTER.CENTER1;Power Group;Count;Leakage Power(uW);Internal Power(uW);Switching Power(uW);Total Power(uW);Percentage(%)
+ ;io_pad;0;0;0;0;0;0%
+ ;memory;0;0;0;0;0;0%
+ ;black_box;0;0;0;0;0;0%
+ ;register;506;1.62;3177.12;40.18;3218.93;71.13%
+ ;combinational;2262;0.681097;332.63;181.07;514.38;11.37%
+ ;sequential;0;0;0;0;0;0%
+ ;clock_network;43;0.235626;395.05;397.08;792.36;17.51%
+ ;total;2811;2.54;3904.8;618.33;4525.67;100%
+u_LOGIC_CENTER.LC_CLK_RST_GEN.CLKGEN;Power Group;Count;Leakage Power(uW);Internal Power(uW);Switching Power(uW);Total Power(uW);Percentage(%)
+ ;io_pad;0;0;0;0;0;0%
+ ;memory;0;0;0;0;0;0%
+ ;black_box;0;0;0;0;0;0%
+ ;register;4;0.013167;184.92;3.72;188.66;35.46%
+ ;combinational;19;0.004759;47.24;9.58;56.82;10.68%
+ ;sequential;0;0;0;0;0;0%
+ ;clock_network;15;0.300003;253.37;32.92;286.59;53.86%
+ ;total;38;0.317928;485.53;46.21;532.06;100%
+u_LOGIC_CENTER.LC_CLK_RST_GEN;Power Group;Count;Leakage Power(uW);Internal Power(uW);Switching Power(uW);Total Power(uW);Percentage(%)
+ ;io_pad;0;0;0;0;0;0%
+ ;memory;0;0;0;0;0;0%
+ ;black_box;0;0;0;0;0;0%
+ ;register;7;0.022708;186.67;3.72;190.41;35.67%
+ ;combinational;30;0.007899;47.24;9.58;56.82;10.64%
+ ;sequential;0;0;0;0;0;0%
+ ;clock_network;15;0.300003;253.37;32.92;286.59;53.69%
+ ;total;52;0.33061;487.27;46.21;533.82;100%
+u_LOGIC_CENTER.BUFFER_I;Power Group;Count;Leakage Power(uW);Internal Power(uW);Switching Power(uW);Total Power(uW);Percentage(%)
+ ;io_pad;0;0;0;0;0;0%
+ ;memory;0;0;0;0;0;0%
+ ;black_box;0;0;0;0;0;0%
+ ;register;104;0.343519;2497.52;108.19;2606.06;85.13%
+ ;combinational;62;0.000845;0;10.22;10.22;0.33%
+ ;sequential;0;0;0;0;0;0%
+ ;clock_network;7;0.004424;126.16;318.66;444.82;14.53%
+ ;total;173;0.348788;2623.68;437.07;3061.1;100%
+__Top_Node__;Power Group;Count;Leakage Power(uW);Internal Power(uW);Switching Power(uW);Total Power(uW);Percentage(%)
+ ;io_pad;0;0;0;0;0;0%
+ ;memory;0;0;0;0;0;0%
+ ;black_box;0;0;0;0;0;0%
+ ;register;2959;9.52;17325.14;319.23;17653.88;70.22%
+ ;combinational;10489;2.98;1563.51;1067.43;2633.91;10.48%
+ ;sequential;0;0;0;0;0;0%
+ ;clock_network;398;0.780118;2183.5;2668.48;4852.76;19.3%
+ ;total;13846;13.28;21072.15;4055.14;25140.56;100%
+
